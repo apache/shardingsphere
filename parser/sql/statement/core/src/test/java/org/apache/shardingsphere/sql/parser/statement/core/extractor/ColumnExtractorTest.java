@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -47,7 +48,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HierarchicalQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlElementFunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlSerializeFunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
@@ -68,8 +72,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 class ColumnExtractorTest {
@@ -101,6 +105,8 @@ class ColumnExtractorTest {
                         "foo_datetime_left",
                         "foo_datetime_right",
                         "foo_expression_projection",
+                        "foo_xml_projection_param",
+                        "bar_xml_projection_attr",
                         "foo_interval_left",
                         "foo_interval_right",
                         "foo_interval_minus",
@@ -116,6 +122,10 @@ class ColumnExtractorTest {
                         "bar_derived_using_column",
                         "foo_where_left",
                         "bar_where_right",
+                        "foo_start_with_left",
+                        "bar_start_with_right",
+                        "foo_connect_by_left",
+                        "bar_connect_by_right",
                         "foo_group_by_column",
                         "foo_group_by_expr_column",
                         "foo_having_left",
@@ -142,6 +152,7 @@ class ColumnExtractorTest {
                 Arguments.of("BetweenExpressionWithColumns", createBetweenExpressionWithColumns(), Arrays.asList("foo_between_left", "foo_between_between", "foo_between_and")),
                 Arguments.of("BetweenExpressionWithNonColumnOperands", createBetweenExpressionWithMixedOperands(),
                         Arrays.asList("foo_between_function_column", "foo_between_binary_left", "bar_between_binary_right")),
+                Arguments.of("ListExpressionWithColumns", createListExpression(), Arrays.asList("foo_list_left", "bar_list_right")),
                 Arguments.of("AggregationProjectionWithFunctionParameters", createAggregationProjectionExpression(),
                         Arrays.asList("foo_agg_direct", "foo_agg_func_direct", "foo_agg_func_binary_left", "bar_agg_func_binary_right")),
                 Arguments.of("AggregationProjectionWithWindow", createAggregationProjectionWithWindow(),
@@ -151,7 +162,11 @@ class ColumnExtractorTest {
                         Arrays.asList("foo_function_direct", "foo_function_binary_left", "bar_function_binary_right")),
                 Arguments.of("FunctionSegmentWithWindow", createFunctionWithWindow(),
                         Arrays.asList("foo_function_param", "foo_window_partition", "bar_window_partition_func",
-                                "foo_window_order_column", "foo_window_order_expr_left", "bar_window_order_expr_right", "foo_window_frame_column")));
+                                "foo_window_order_column", "foo_window_order_expr_left", "bar_window_order_expr_right", "foo_window_frame_column")),
+                Arguments.of("XmlElementFunction", createXmlElementFunctionSegment("foo_xml_element_param", "bar_xml_element_attr"),
+                        Arrays.asList("foo_xml_element_param", "bar_xml_element_attr")),
+                Arguments.of("XmlSerializeFunction", createXmlSerializeFunctionSegment("foo_xml_serialize_param", "bar_xml_serialize_attr"),
+                        Arrays.asList("foo_xml_serialize_param", "bar_xml_serialize_attr")));
     }
     
     private static Collection<WhereSegment> createWhereSegments() {
@@ -170,12 +185,21 @@ class ColumnExtractorTest {
         projections.getProjections().add(aggregationProjectionSegment);
         projections.getProjections().add(new DatetimeProjectionSegment(0, 0, createColumnSegment("foo_datetime_left"), createColumnSegment("foo_datetime_right"), "date_add"));
         projections.getProjections().add(new ExpressionProjectionSegment(0, 0, "foo_expression_projection", createColumnSegment("foo_expression_projection")));
+        projections.getProjections().add(createXmlSerializeFunctionSegment("foo_xml_projection_param", "bar_xml_projection_attr"));
         projections.getProjections().add(new IntervalExpressionProjection(0, 0, createColumnSegment("foo_interval_left"),
                 createColumnSegment("foo_interval_minus"), createColumnSegment("foo_interval_right"), "interval expr"));
         projections.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, createSelectStatementWithProjection("foo_subquery_projection_column"), ""), "subquery"));
         return SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(projections).from(createJoinTableForExtraction())
-                .where(new WhereSegment(0, 0, createBinaryOperation("foo_where_left", "bar_where_right"))).groupBy(createGroupBySegment())
-                .having(new HavingSegment(0, 0, createBinaryOperation("foo_having_left", "bar_having_right"))).orderBy(createOrderBySegment()).combine(createCombineSegment()).build();
+                .where(new WhereSegment(0, 0, createBinaryOperation("foo_where_left", "bar_where_right"))).hierarchicalQuery(createHierarchicalQuerySegment())
+                .groupBy(createGroupBySegment()).having(new HavingSegment(0, 0, createBinaryOperation("foo_having_left", "bar_having_right")))
+                .orderBy(createOrderBySegment()).combine(createCombineSegment()).build();
+    }
+    
+    private static HierarchicalQuerySegment createHierarchicalQuerySegment() {
+        HierarchicalQuerySegment result = new HierarchicalQuerySegment(0, 0);
+        result.setStartWith(createBinaryOperation("foo_start_with_left", "bar_start_with_right"));
+        result.setConnectBy(createBinaryOperation("foo_connect_by_left", "bar_connect_by_right"));
+        return result;
     }
     
     private static SelectStatement createSelectStatementWithoutOptionalSegments() {
@@ -262,6 +286,13 @@ class ColumnExtractorTest {
                 createBinaryOperation("foo_between_binary_left", "bar_between_binary_right"), false);
     }
     
+    private static ListExpression createListExpression() {
+        ListExpression result = new ListExpression(0, 0);
+        result.getItems().add(createColumnSegment("foo_list_left"));
+        result.getItems().add(createFunctionWithSingleColumnParameter("bar_list_right"));
+        return result;
+    }
+    
     private static AggregationProjectionSegment createAggregationProjectionExpression() {
         AggregationProjectionSegment result = new AggregationProjectionSegment(0, 0, AggregationType.SUM, "SUM(expr)");
         result.getParameters().add(createColumnSegment("foo_agg_direct"));
@@ -313,6 +344,18 @@ class ColumnExtractorTest {
         orderByItems.add(new ExpressionOrderByItemSegment(0, 0, "order_by_expr", OrderDirection.ASC, NullsOrderType.FIRST,
                 createBinaryOperation("foo_" + name + "_order_expr_left", "bar_" + name + "_order_expr_right")));
         return new OrderBySegment(0, 0, orderByItems);
+    }
+    
+    private static XmlElementFunctionSegment createXmlElementFunctionSegment(final String parameterColumnName, final String attributeColumnName) {
+        XmlElementFunctionSegment result = new XmlElementFunctionSegment(0, 0, "XMLELEMENT", new IdentifierValue("foo_node"), "XMLELEMENT(...)");
+        result.getParameters().add(createColumnSegment(parameterColumnName));
+        result.getXmlAttributes().add(createFunctionWithSingleColumnParameter(attributeColumnName));
+        return result;
+    }
+    
+    private static XmlSerializeFunctionSegment createXmlSerializeFunctionSegment(final String parameterColumnName, final String attributeColumnName) {
+        return new XmlSerializeFunctionSegment(0, 0, "XMLSERIALIZE", createXmlElementFunctionSegment(parameterColumnName, attributeColumnName),
+                "VARCHAR2(100)", null, null, null, "XMLSERIALIZE(...)");
     }
     
     private static ColumnSegment createColumnSegment(final String columnName) {

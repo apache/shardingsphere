@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
@@ -45,7 +46,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HierarchicalQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlElementFunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlSerializeFunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
@@ -89,6 +93,12 @@ public final class ColumnExtractor {
         if (expression instanceof FunctionSegment) {
             extractColumnsInFunctionSegment((FunctionSegment) expression, result);
         }
+        if (expression instanceof XmlElementFunctionSegment) {
+            extractColumnsInXmlElementFunctionSegment((XmlElementFunctionSegment) expression, result);
+        }
+        if (expression instanceof XmlSerializeFunctionSegment) {
+            result.addAll(extract(((XmlSerializeFunctionSegment) expression).getParameter()));
+        }
         if (expression instanceof CaseWhenExpression) {
             extractColumnsInCaseWhenExpression((CaseWhenExpression) expression, result);
         }
@@ -104,7 +114,39 @@ public final class ColumnExtractor {
         if (expression instanceof RowExpression) {
             extractColumnsInRowExpression((RowExpression) expression, result);
         }
+        if (expression instanceof ListExpression) {
+            extractColumnsInListExpression((ListExpression) expression, result);
+        }
         return result;
+    }
+    
+    /**
+     * Extract returned columns from expression segment.
+     *
+     * @param expression to be extracted expression segment
+     * @return column segments
+     */
+    public static Collection<ColumnSegment> extractReturnedColumns(final ExpressionSegment expression) {
+        Collection<ColumnSegment> result = new LinkedList<>();
+        if (expression instanceof ExpressionProjectionSegment) {
+            result.addAll(extractReturnedColumns(((ExpressionProjectionSegment) expression).getExpr()));
+        }
+        if (expression instanceof CaseWhenExpression) {
+            extractReturnedColumnsInCaseWhenExpression((CaseWhenExpression) expression, result);
+        }
+        if (expression instanceof FunctionSegment && "IFNULL".equalsIgnoreCase(((FunctionSegment) expression).getFunctionName())) {
+            extractColumnsInFunctionSegment((FunctionSegment) expression, result);
+        }
+        return result;
+    }
+    
+    private static void extractReturnedColumnsInCaseWhenExpression(final CaseWhenExpression expression, final Collection<ColumnSegment> result) {
+        if (null != expression.getThenExprs()) {
+            expression.getThenExprs().stream().map(ColumnExtractor::extractIncludeColumnSegment).forEach(result::addAll);
+        }
+        if (null != expression.getElseExpr()) {
+            result.addAll(extractIncludeColumnSegment(expression.getElseExpr()));
+        }
     }
     
     private static void extractColumnsInCaseWhenExpression(final CaseWhenExpression expression, final Collection<ColumnSegment> result) {
@@ -186,6 +228,16 @@ public final class ColumnExtractor {
         }
     }
     
+    private static void extractColumnsInListExpression(final ListExpression expression, final Collection<ColumnSegment> result) {
+        for (ExpressionSegment each : expression.getItems()) {
+            if (each instanceof ColumnSegment) {
+                result.add((ColumnSegment) each);
+            } else {
+                result.addAll(extract(each));
+            }
+        }
+    }
+    
     private static void extractColumnsInAggregationProjectionSegment(final AggregationProjectionSegment expression, final Collection<ColumnSegment> result) {
         for (ExpressionSegment each : expression.getParameters()) {
             if (each instanceof ColumnSegment) {
@@ -233,6 +285,15 @@ public final class ColumnExtractor {
         }
     }
     
+    private static void extractColumnsInXmlElementFunctionSegment(final XmlElementFunctionSegment expression, final Collection<ColumnSegment> result) {
+        for (ExpressionSegment each : expression.getParameters()) {
+            result.addAll(extract(each));
+        }
+        for (ExpressionSegment each : expression.getXmlAttributes()) {
+            result.addAll(extract(each));
+        }
+    }
+    
     /**
      * Extract column segments.
      *
@@ -271,6 +332,7 @@ public final class ColumnExtractor {
     public static void extractFromSelectStatementWithoutProjection(final Collection<ColumnSegment> columnSegments, final SelectStatement statement, final boolean containsSubQuery) {
         statement.getFrom().ifPresent(optional -> extractFromTable(columnSegments, optional, containsSubQuery));
         statement.getWhere().ifPresent(optional -> extractFromWhere(columnSegments, optional, containsSubQuery));
+        statement.getHierarchicalQuery().ifPresent(optional -> extractFromHierarchicalQuery(columnSegments, optional, containsSubQuery));
         statement.getGroupBy().ifPresent(optional -> extractFromGroupBy(columnSegments, optional, containsSubQuery));
         statement.getHaving().ifPresent(optional -> extractFromHaving(columnSegments, optional, containsSubQuery));
         statement.getOrderBy().ifPresent(optional -> extractFromOrderBy(columnSegments, optional, containsSubQuery));
@@ -301,6 +363,9 @@ public final class ColumnExtractor {
             }
             if (each instanceof ExpressionProjectionSegment) {
                 columnSegments.addAll(ExpressionExtractor.extractColumns(((ExpressionProjectionSegment) each).getExpr(), containsSubQuery));
+            }
+            if (each instanceof XmlElementFunctionSegment || each instanceof XmlSerializeFunctionSegment) {
+                columnSegments.addAll(extract((ExpressionSegment) each));
             }
             if (each instanceof IntervalExpressionProjection) {
                 columnSegments.addAll(ExpressionExtractor.extractColumns(((IntervalExpressionProjection) each).getLeft(), containsSubQuery));
@@ -341,6 +406,16 @@ public final class ColumnExtractor {
      */
     public static void extractFromWhere(final Collection<ColumnSegment> columnSegments, final WhereSegment whereSegment, final boolean containsSubQuery) {
         columnSegments.addAll(ExpressionExtractor.extractColumns(whereSegment.getExpr(), containsSubQuery));
+    }
+    
+    private static void extractFromHierarchicalQuery(final Collection<ColumnSegment> columnSegments, final HierarchicalQuerySegment hierarchicalQuerySegment,
+                                                     final boolean containsSubQuery) {
+        if (null != hierarchicalQuerySegment.getStartWith()) {
+            columnSegments.addAll(ExpressionExtractor.extractColumns(hierarchicalQuerySegment.getStartWith(), containsSubQuery));
+        }
+        if (null != hierarchicalQuerySegment.getConnectBy()) {
+            columnSegments.addAll(ExpressionExtractor.extractColumns(hierarchicalQuerySegment.getConnectBy(), containsSubQuery));
+        }
     }
     
     private static void extractFromGroupBy(final Collection<ColumnSegment> columnSegments, final GroupBySegment groupBySegment, final boolean containsSubQuery) {

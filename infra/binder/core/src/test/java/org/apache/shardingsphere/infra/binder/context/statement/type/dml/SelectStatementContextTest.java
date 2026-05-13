@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Aggr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
@@ -53,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.PivotSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -71,6 +73,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -411,6 +414,25 @@ class SelectStatementContextTest {
         SelectStatementContext actual = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
         assertTrue(actual.isContainsEnhancedTable());
         assertTrue(actual.containsDerivedProjections());
+    }
+    
+    @Test
+    void assertDoesNotContainDerivedProjectionsWithPivotOutputShorthandProjection() {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
+        shorthandProjectionSegment.getActualProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("category_id"))));
+        projectionsSegment.getProjections().add(shorthandProjectionSegment);
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("t_order"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(tableNameSegment);
+        tableSegment.setPivot(new PivotSegment(0, 0, Collections.singleton(new ColumnSegment(0, 0, new IdentifierValue("status"))),
+                Collections.singleton(new ColumnSegment(0, 0, new IdentifierValue("on_sale")))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment).from(tableSegment).build();
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        SelectStatementContext actual = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
+        assertTrue(actual.isContainsEnhancedTable());
+        assertFalse(actual.containsDerivedProjections());
     }
     
     @Test

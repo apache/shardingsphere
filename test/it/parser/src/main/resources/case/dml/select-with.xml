@@ -151,6 +151,12 @@
     <select sql-case-id="select_with_subquery_factoring_with_search_depth_first">
         <with start-index="0" stop-index="224">
             <common-table-expression name="org_chart" start-index="5" stop-index="224">
+                <column name="eid" start-index="16" stop-index="18" />
+                <column name="emp_last" start-index="21" stop-index="28" />
+                <column name="mgr_id" start-index="31" stop-index="36" />
+                <column name="reportLevel" start-index="39" stop-index="49" />
+                <column name="salary" start-index="52" stop-index="57" />
+                <column name="job_id" start-index="60" stop-index="65" />
                 <subquery-expression start-index="72" stop-index="181">
                     <select>
                         <from>
@@ -200,6 +206,12 @@
     <select sql-case-id="select_with_subquery_factoring_with_search_depth_first_with_cycle">
         <with start-index="0" stop-index="282">
             <common-table-expression name="dup_hiredate" start-index="5" stop-index="282">
+                <column name="eid" start-index="19" stop-index="21" />
+                <column name="emp_last" start-index="24" stop-index="31" />
+                <column name="mgr_id" start-index="34" stop-index="39" />
+                <column name="reportLevel" start-index="42" stop-index="52" />
+                <column name="hire_date" start-index="55" stop-index="63" />
+                <column name="job_id" start-index="66" stop-index="71" />
                 <subquery-expression start-index="78" stop-index="190">
                     <select>
                         <from>
@@ -229,6 +241,7 @@
                     </select>
                 </subquery-expression>
                 <column name="order1" start-index="229" stop-index="234" />
+                <column name="is_cycle" start-index="256" stop-index="263" />
             </common-table-expression>
         </with>
         <from>
@@ -247,9 +260,41 @@
         </order-by>
     </select>
 
+    <select sql-case-id="select_with_subquery_factoring_with_cycle_parameter_marker">
+        <with start-index="0" stop-index="99">
+            <common-table-expression name="dup_hiredate" start-index="5" stop-index="99">
+                <column name="eid" start-index="19" stop-index="21" />
+                <subquery-expression start-index="28" stop-index="60">
+                    <select>
+                        <projections start-index="35" stop-index="45">
+                            <column-projection name="employee_id" start-index="35" stop-index="45" />
+                        </projections>
+                        <from>
+                            <simple-table name="employees" start-index="52" stop-index="60" />
+                        </from>
+                    </select>
+                </subquery-expression>
+                <column name="is_cycle" start-index="77" stop-index="84" />
+            </common-table-expression>
+        </with>
+        <projections start-index="108" stop-index="120">
+            <column-projection name="eid" start-index="108" stop-index="110" />
+            <column-projection name="is_cycle" start-index="113" stop-index="120" />
+        </projections>
+        <from>
+            <simple-table name="dup_hiredate" start-index="127" stop-index="138" />
+        </from>
+    </select>
+
     <select sql-case-id="select_with_subquery_factoring_with_search_depth_first_with_having">
         <with start-index="0" stop-index="207">
             <common-table-expression name="emp_count" start-index="5" stop-index="207">
+                <column name="eid" start-index="16" stop-index="18" />
+                <column name="emp_last" start-index="21" stop-index="28" />
+                <column name="mgr_id" start-index="31" stop-index="36" />
+                <column name="mgrLevel" start-index="39" stop-index="46" />
+                <column name="salary" start-index="49" stop-index="54" />
+                <column name="cnt_employees" start-index="57" stop-index="69" />
                 <subquery-expression start-index="76" stop-index="164">
                     <select>
                         <from>
@@ -437,6 +482,39 @@
         <from>
             <simple-table name="t" start-index="51" stop-index="51"/>
         </from>
+    </select>
+
+    <select sql-case-id="select_with_oracle_cte_column_aliases">
+        <with start-index="0" stop-index="108">
+            <common-table-expression name="user_cte" start-index="5" stop-index="108">
+                <column name="user_id_alias" start-index="15" stop-index="27" />
+                <column name="user_name_alias" start-index="30" stop-index="44" />
+                <column name="email_alias" start-index="47" stop-index="57" />
+                <subquery-expression start-index="64" stop-index="107">
+                    <select>
+                        <projections start-index="71" stop-index="95">
+                            <column-projection name="user_id" start-index="71" stop-index="77" />
+                            <column-projection name="user_name" start-index="80" stop-index="88" />
+                            <column-projection name="email" start-index="91" stop-index="95" />
+                        </projections>
+                        <from>
+                            <simple-table name="t_user" start-index="102" stop-index="107" />
+                        </from>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <projections start-index="117" stop-index="159">
+            <column-projection name="user_id_alias" start-index="117" stop-index="129" />
+            <column-projection name="user_name_alias" start-index="132" stop-index="146" />
+            <column-projection name="email_alias" start-index="149" stop-index="159" />
+        </projections>
+        <from>
+            <simple-table name="user_cte" start-index="166" stop-index="173" />
+        </from>
+        <order-by start-index="175" stop-index="196">
+            <column-item name="user_id_alias" start-index="184" stop-index="196" />
+        </order-by>
     </select>
 
     <select sql-case-id="select_with_multiple_subquery">

@@ -2787,6 +2787,68 @@
                     </binary-operation-expression>
                 </expr>
             </where>
+            <hierarchical-query start-index="104" stop-index="202">
+                <connect-by>
+                    <binary-operation-expression start-index="115" stop-index="202">
+                        <left>
+                            <binary-operation-expression start-index="115" stop-index="162">
+                                <left>
+                                    <binary-operation-expression start-index="115" stop-index="144">
+                                        <left>
+                                            <column name="l" start-index="115" stop-index="115" />
+                                        </left>
+                                        <operator>&lt;=</operator>
+                                        <right>
+                                            <binary-operation-expression start-index="120" stop-index="144">
+                                                <left>
+                                                    <function function-name="regexp_count" text="regexp_count(c3, ',')" start-index="120" stop-index="140">
+                                                        <parameter>
+                                                            <column name="c3" start-index="133" stop-index="134" />
+                                                        </parameter>
+                                                        <parameter>
+                                                            <literal-expression value="," start-index="137" stop-index="139" />
+                                                        </parameter>
+                                                    </function>
+                                                </left>
+                                                <operator>+</operator>
+                                                <right>
+                                                    <literal-expression value="1" start-index="144" stop-index="144" />
+                                                </right>
+                                            </binary-operation-expression>
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>and</operator>
+                                <right>
+                                    <binary-operation-expression start-index="150" stop-index="162">
+                                        <left>
+                                            <column name="ID" start-index="150" stop-index="151" />
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <column name="ID" start-index="161" stop-index="162" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>and</operator>
+                        <right>
+                            <binary-operation-expression start-index="168" stop-index="202">
+                                <left>
+                                    <column name="value" start-index="174" stop-index="190">
+                                        <owner name="dbms_random" start-index="174" stop-index="184" />
+                                    </column>
+                                </left>
+                                <operator>IS</operator>
+                                <right>
+                                    <literal-expression value="not null" start-index="195" stop-index="202" />
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </connect-by>
+            </hierarchical-query>
         </select>
     </insert>
     

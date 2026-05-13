@@ -28,6 +28,7 @@
     <sql-case id="select_with_in" value="SELECT b, b IN ('20161213'), b in ('20161213', 0) FROM t2" db-types="MySQL" />
     <sql-case id="select_with_st_geom_from_text" value="SELECT ST_GeomFromText('POINT(0 0)') IN (SELECT b FROM t1) AS result" db-types="MySQL" />
     <sql-case id="select_with_st_aswkb_st_geom_form_text" value="SELECT ST_AsWKB(ST_GeomFromText('POINT(0 0)')) IN (SELECT b FROM t1) AS result" db-types="MySQL" />
+    <sql-case id="select_row_value_in_subquery_oracle" value="SELECT order_id FROM t_order WHERE (user_id, merchant_id) IN (SELECT merchant_id, merchant_id FROM t_merchant)" db-types="Oracle" />
     <sql-case id="select_null_in_subquery" value="SELECT NULL IN(SELECT (f1 between 0 and 1) FROM (SELECT f1 FROM t WHERE (@b:=NULL) - f2) as dt)" db-types="MySQL,Doris" />
     <sql-case id="select_with_collate" value="SELECT NAME_CONST('var', 'value') COLLATE latin1_general_cs" db-types="MySQL" />
     <sql-case id="select_collate_parameter_marker" value="SELECT name COLLATE ? FROM t_order" db-types="MySQL,Doris" case-types="PLACEHOLDER" />
@@ -70,6 +71,7 @@
     <sql-case id="select_like_with_single_quotes" value="select id from admin where fullname like 'a%'" db-types="MySQL,Doris" />
     <sql-case id="select_count_tilde_concat" value="SELECT count(0) as orders_count FROM t_order o WHERE o.status ~~ CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_sharding_route_with_binding_tables" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? ORDER BY i.item_id" />
+    <sql-case id="select_like_subquery_oracle" value="SELECT user_id FROM t_user WHERE email LIKE (SELECT email FROM t_user WHERE user_id = 1)" db-types="Oracle" />
     <sql-case id="select_full_route_with_binding_tables" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id" />
     <!--TODO Need to verify case insensitivity of table names in sharding rule-->
     <sql-case id="select_sharding_route_with_broadcast_table" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND o.status = ? ORDER BY i.item_id" />
@@ -142,7 +144,7 @@
     <sql-case id="select_with_cast_as_signed_integer" value="SELECT user_id,CAST(order_id AS SIGNED INTEGER) FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_cast_as_unsigned_integer" value="SELECT CAST(order_id AS UNSIGNED INTEGER),user_id FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_simple_table" value="SELECT * FROM employees WHERE department_id = 30 ORDER BY last_name" db-types="MySQL,Oracle" />
-    <sql-case id="select_with_binding_tables_with_subquery_without_join" value="SELECT a.department_id &quot;Department&quot;, a.num_emp/b.total_count &quot;%_Employees&quot;, a.sal_sum/b.total_sal &quot;%_Salary&quot; 
+    <sql-case id="select_with_binding_tables_with_subquery_without_join" value="SELECT a.department_id &quot;Department&quot;, a.num_emp/b.total_count &quot;%_Employees&quot;, a.sal_sum/b.total_sal &quot;%_Salary&quot;
     FROM (SELECT department_id, COUNT(*) num_emp, SUM(salary) sal_sum FROM employees GROUP BY department_id) a, (SELECT COUNT(*) total_count, SUM(salary) total_sal FROM employees) b ORDER BY a.department_id" db-types="Oracle" />
     <sql-case id="select_with_partitioned_table" value="SELECT * FROM sales PARTITION (sales_q2_2000) s WHERE s.amount_sold > 1500 ORDER BY cust_id, time_id, channel_id" db-types="Oracle" />
     <sql-case id="select_with_binding_tables_without_join" value="SELECT last_name, job_id, departments.department_id, department_name FROM employees, departments WHERE employees.department_id = departments.department_id ORDER BY last_name, job_id" db-types="Oracle" />
@@ -154,11 +156,11 @@
     <sql-case id="select_current_date_function_with_complete_regular_function" value="SELECT * FROM t_order WHERE date = CURRENT_DATE()" db-types="MySQL" />
     <sql-case id="select_current_time_function_with_shorthand_regular_function" value="SELECT * FROM t_order WHERE time = CURRENT_TIME" db-types="MySQL" />
     <sql-case id="select_current_time_function_with_complete_regular_function" value="SELECT * FROM t_order WHERE time = CURRENT_TIME()" db-types="MySQL" />
-    <sql-case id="select_with_model_partition_dimension" value="SELECT country, prod, year, s FROM sales_view_ref MODEL PARTITION BY (country) DIMENSION BY (prod, year) MEASURES (sale s) IGNORE NAV UNIQUE DIMENSION RULES UPSERT SEQUENTIAL ORDER (s[prod='Mouse Pad', year=2001] = s['Mouse Pad', 1999] + s['Mouse Pad', 2000], 
+    <sql-case id="select_with_model_partition_dimension" value="SELECT country, prod, year, s FROM sales_view_ref MODEL PARTITION BY (country) DIMENSION BY (prod, year) MEASURES (sale s) IGNORE NAV UNIQUE DIMENSION RULES UPSERT SEQUENTIAL ORDER (s[prod='Mouse Pad', year=2001] = s['Mouse Pad', 1999] + s['Mouse Pad', 2000],
     s['Standard Mouse', 2002] = s['Standard Mouse', 2001]) ORDER BY country, prod, year" db-types="Oracle" />
     <sql-case id="select_with_model_dimension" value="SELECT country, year, sale, csum FROM (SELECT country, year, SUM(sale) sale FROM sales_view_ref GROUP BY country, year) MODEL DIMENSION BY (country, year) MEASURES (sale, 0 csum) RULES (csum[any, any] = SUM(sale) OVER (PARTITION BY country ORDER BY year ROWS UNBOUNDED PRECEDING)) ORDER BY country, year" db-types="Oracle" />
     <sql-case id="select_with_model_with_single_column_for_loop" value="SELECT SUBSTR(country,1,20) country, SUBSTR(prod,1,15) prod, year, sales FROM sales_view WHERE country='Italy' MODEL RETURN UPDATED ROWS PARTITION BY (country) DIMENSION BY (prod, year) MEASURES (sale sales) RULES (sales[FOR prod in ('Mouse Pad', 'Bounce', 'Y Box'), 2005] = 1.3 * sales[cv(prod), 2001]) ORDER BY country, prod, year" db-types="Oracle" />
-    <sql-case id="select_with_model_with_reference_model" value="SELECT SUBSTR(country,1,20) country, year, localsales, dollarsales FROM sales_view WHERE country IN ('Canada', 'Brazil') GROUP BY country, year MODEL RETURN UPDATED ROWS REFERENCE conv_refmodel ON (SELECT country, exchange_rate AS er FROM dollar_conv) DIMENSION BY (country) MEASURES (er) IGNORE NAV MAIN main_model DIMENSION BY (country, year) 
+    <sql-case id="select_with_model_with_reference_model" value="SELECT SUBSTR(country,1,20) country, year, localsales, dollarsales FROM sales_view WHERE country IN ('Canada', 'Brazil') GROUP BY country, year MODEL RETURN UPDATED ROWS REFERENCE conv_refmodel ON (SELECT country, exchange_rate AS er FROM dollar_conv) DIMENSION BY (country) MEASURES (er) IGNORE NAV MAIN main_model DIMENSION BY (country, year)
     MEASURES (SUM(sale) sales, 0 localsales, 0 dollarsales) IGNORE NAV RULES (localsales['Canada', 2005] = sales[cv(country), 2001] * 1.22, dollarsales['Canada', 2005] = sales[cv(country), 2001] * 1.22 * conv_refmodel.er['Canada'], localsales['Brazil', 2005] = sales[cv(country), 2001] * 1.34, dollarsales['Brazil', 2005] = sales['Brazil', 2001] * 1.34 * er['Brazil'])" db-types="Oracle" />
     <sql-case id="select_with_model_with_order_by" value="SELECT year, sales FROM sales_view WHERE country='Italy' AND prod='Bounce' MODEL DIMENSION BY (year) MEASURES (sale sales) RULES SEQUENTIAL ORDER (sales[ANY] ORDER BY year DESC = sales[cv(year)-1]) ORDER BY year" db-types="Oracle" />
     <sql-case id="select_with_model_with_multi_column_for_loop" value="SELECT country, product, year, s FROM sales_view MODEL DIMENSION BY (country, product, year) MEASURES (sales s) IGNORE NAV RULES UPSERT (s[FOR (country, product, year) IN (SELECT DISTINCT 'new_country', product, year FROM sales_view WHERE country = 'Poland')] = s['Poland',CV(),CV()]) ORDER BY country, year, product" db-types="Oracle" />
@@ -210,6 +212,7 @@
     <sql-case id="select_with_xmlnamespaces_multiple_default_oracle" value="SELECT * FROM XMLTABLE(XMLNAMESPACES(DEFAULT 'uri0', DEFAULT 'uri1'), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy') xt" db-types="Oracle" />
     <sql-case id="select_from_regular_function_table_oracle" value="SELECT * FROM my_func(1, 2) f" db-types="Oracle" />
     <sql-case id="select_with_null_keyword_in_projection" value="select null as order_id, item_id from t_order" db-types="MySQL" />
+    <sql-case id="select_oracle_xmlserialize_xmlelement_name" value="SELECT XMLSERIALIZE(CONTENT XMLELEMENT(NAME user_name_node, user_name) AS VARCHAR2(100)) FROM t_user" db-types="Oracle" />
     <sql-case id="select_literal_type_cast_money" value="SELECT '$99'::money" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_positional_parameter_type_cast_money" value="SELECT $1::money" db-types="PostgreSQL,openGauss" case-types="Placeholder" />
     <sql-case id="select_string_constant_type_cast" value="SELECT int4 '1', money '2'" db-types="PostgreSQL,openGauss" />
@@ -272,6 +275,12 @@
     <sql-case id="select_group_by_rollup_oracle_with_rollup" value="SELECT department_id, COUNT(*) FROM employees GROUP BY ROLLUP(department_id)" db-types="Oracle" />
     <sql-case id="select_with_trim_function_multi" value="select TRIM('  derby '), TRIM(BOTH ' ' FROM '  derby '), TRIM(TRAILING ' ' FROM '  derby '), TRIM(cast (null as char(1)) FROM '  derby '), TRIM(' ' FROM cast(null as varchar(30))), TRIM('y' FROM ' derby') FROM employees" db-types="Oracle" />
     <sql-case id="select_with_trim_function_simple" value="SELECT TRIM( '.,! ' FROM '     #     test    .') AS Result" db-types="SQLServer" />
+    <sql-case id="select_oracle_quantified_some_subquery" value="SELECT user_id FROM t_user WHERE user_id = SOME (SELECT user_id FROM t_order)" db-types="Oracle" />
+    <sql-case id="select_oracle_likec_like2_like4" value="SELECT email LIKE2 'B%', telephone LIKE4 '1%' FROM t_user WHERE user_name LIKEC 'A%'" db-types="Oracle" />
+    <sql-case id="select_oracle_count_unique" value="SELECT COUNT(UNIQUE merchant_id) AS unique_merchant_count FROM t_order" db-types="Oracle" />
+    <sql-case id="select_oracle_model_cv" value="SELECT product_id, projected_price FROM t_product MODEL DIMENSION BY (product_id) MEASURES (price AS projected_price) RULES UPDATE (projected_price[ANY] = projected_price[CV()] * 2) ORDER BY product_id" db-types="Oracle" />
+    <sql-case id="select_oracle_model_cv_parameter" value="SELECT product_id, projected_price FROM t_product MODEL DIMENSION BY (product_id) MEASURES (price AS projected_price) RULES UPDATE (projected_price[ANY] = projected_price[CV()] * ?) ORDER BY product_id" db-types="Oracle" case-types="PLACEHOLDER" />
+    <sql-case id="select_oracle_model_partition_cv_parameter" value="SELECT category_id, product_id, adjusted_price FROM t_product MODEL RETURN UPDATED ROWS PARTITION BY (category_id) DIMENSION BY (product_id) MEASURES (price AS adjusted_price) RULES UPDATE (adjusted_price[ANY] = adjusted_price[CV(product_id)] + ?) ORDER BY category_id, product_id" db-types="Oracle" case-types="PLACEHOLDER" />
     <sql-case id="select_with_trim_function_leading" value="SELECT TRIM(LEADING '.,! ' FROM  '     .#     test    .') AS Result" db-types="SQLServer,Presto" />
     <sql-case id="select_with_trim_function_trailing" value="SELECT TRIM(TRAILING '.,! ' FROM '     .#     test    .') AS Result" db-types="SQLServer,Presto" />
     <sql-case id="select_with_trim_function_both" value="SELECT TRIM(BOTH '123' FROM '123abc123') AS Result" db-types="SQLServer" />
@@ -383,6 +392,7 @@
     <sql-case id="select_try_parse_function" value="SELECT TRY_PARSE('Jabberwokkie' AS datetime2 USING 'en-US') AS Result;" db-types="SQLServer"/>
     <sql-case id="select_three_level_naming" value="SELECT * FROM msdb.managed_backup.fn_available_backups ('MyDB');" db-types="SQLServer"/>
     <sql-case id="select_datatypename_colon_colon_methodname" value="SELECT OrgNode.ToString() AS Text_OrgNode, * FROM HumanResources.EmployeeDemo WHERE OrgNode = hierarchyid::GetRoot();" db-types="SQLServer"/>
+    <sql-case id="select_oracle_unpivot_operator" value="SELECT user_id, contact_type, contact_value FROM (SELECT user_id, user_name, email FROM t_user) UNPIVOT EXCLUDE NULLS (contact_value FOR contact_type IN (user_name AS 'USER_NAME', email AS 'EMAIL')) ORDER BY user_id, contact_type" db-types="Oracle"/>
     <sql-case id="select_string_agg_function" value="SELECT STRING_AGG(CONVERT (NVARCHAR (MAX), FirstName), CHAR(13)) AS csv FROM Person.Person;" db-types="SQLServer"/>
     <sql-case id="select_patindex_function" value="SELECT position = PATINDEX('%ter%', 'interesting data');" db-types="SQLServer"/>
     <sql-case id="select_with_sqlserver_percentile_functions" value="SELECT DISTINCT Name AS DepartmentName, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ph.Rate) OVER (PARTITION BY Name) AS MedianCont, PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ph.Rate) OVER (PARTITION BY Name) AS MedianDisc;" db-types="SQLServer"/>
@@ -541,5 +551,10 @@
     <sql-case id="select_use_index_force_index_for_join" value="SELECT * FROM t1 USE INDEX FOR JOIN (i1) FORCE INDEX FOR JOIN (i2);" db-types="MySQL" />
     <sql-case id="select_group_by_match_against_with_rollup" value="SELECT 1 FROM t GROUP BY a, MATCH (a) AGAINST ('abc') WITH ROLLUP;" db-types="MySQL" />
     <sql-case id="select_for_system_time_as_of_hive" value="SELECT * FROM table_a FOR SYSTEM_TIME AS OF '2021-08-09 10:35:57';" db-types="Hive" />
+    <sql-case id="select_oracle_row_number_window" value="SELECT ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY order_id) AS rn FROM t_order" db-types="Oracle" />
+    <sql-case id="select_oracle_keep_window" value="SELECT MIN(price) KEEP (DENSE_RANK FIRST ORDER BY product_id) OVER (PARTITION BY category_id) AS min_price FROM t_product" db-types="Oracle" />
+    <sql-case id="select_oracle_percentile_cont_window" value="SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price) OVER (PARTITION BY status) AS median_price FROM t_product" db-types="Oracle" />
+    <sql-case id="select_oracle_first_value_ignore_nulls_window" value="SELECT FIRST_VALUE(price) IGNORE NULLS OVER (ORDER BY product_id) AS first_price FROM t_product" db-types="Oracle" />
+    <sql-case id="select_oracle_first_value_window" value="SELECT FIRST_VALUE(price) OVER (ORDER BY product_id) AS first_price FROM t_product" db-types="Oracle" />
     <sql-case id="select_for_system_version_as_of_hive" value="SELECT * FROM table_a FOR SYSTEM_VERSION AS OF 1234567;" db-types="Hive" />
 </sql-cases>

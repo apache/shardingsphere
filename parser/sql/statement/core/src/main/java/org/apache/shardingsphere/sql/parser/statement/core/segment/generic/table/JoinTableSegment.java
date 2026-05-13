@@ -53,6 +53,10 @@ public final class JoinTableSegment implements TableSegment {
     
     private ExpressionSegment condition;
     
+    private Collection<ExpressionSegment> leftQueryPartitionListSegments = new LinkedList<>();
+    
+    private Collection<ExpressionSegment> rightQueryPartitionListSegments = new LinkedList<>();
+    
     private List<ColumnSegment> using = Collections.emptyList();
     
     private List<ColumnSegment> derivedUsing = Collections.emptyList();

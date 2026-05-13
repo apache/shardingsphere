@@ -107,6 +107,36 @@ class ColumnSegmentBinderTest {
     }
     
     @Test
+    void assertBindModelColumn() {
+        SQLStatementBinderContext binderContext = createBinderContext();
+        binderContext.getModelColumnNames().add("projected_price");
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("projected_price"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
+        assertNotNull(actual.getColumnBoundInfo());
+        assertNull(actual.getOtherUsingColumnBoundInfo());
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("projected_price"));
+        assertThat(actual.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+    }
+    
+    @Test
+    void assertBindModelColumnWithSamePhysicalColumn() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        ColumnSegment boundProjectedPriceColumn = new ColumnSegment(0, 0, new IdentifierValue("projected_price"));
+        boundProjectedPriceColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
+                new IdentifierValue("t_product"), new IdentifierValue("projected_price"), TableSourceType.PHYSICAL_TABLE));
+        tableBinderContexts.put(CaseInsensitiveString.of("t_product"),
+                new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundProjectedPriceColumn)), TableSourceType.PHYSICAL_TABLE));
+        SQLStatementBinderContext binderContext = createBinderContext();
+        binderContext.getModelColumnNames().add("projected_price");
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("projected_price"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, tableBinderContexts, LinkedHashMultimap.create());
+        assertNotNull(actual.getColumnBoundInfo());
+        assertNull(actual.getOtherUsingColumnBoundInfo());
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("projected_price"));
+        assertThat(actual.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+    }
+    
+    @Test
     void assertBindWithSameTableAliasAndSameProjection() {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         ColumnSegment boundOrderColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));

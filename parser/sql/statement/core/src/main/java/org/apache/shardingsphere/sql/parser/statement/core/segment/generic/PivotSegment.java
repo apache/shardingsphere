@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +43,12 @@ public final class PivotSegment implements SQLSegment {
     
     private final Collection<ColumnSegment> pivotInColumns;
     
+    private final Collection<ColumnSegment> pivotAggregationColumns = new LinkedList<>();
+    
     private final boolean isUnPivot;
+    
+    @Setter
+    private boolean xml;
     
     @Setter
     private Collection<ColumnSegment> unpivotColumns;

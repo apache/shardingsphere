@@ -18,47 +18,40 @@
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedDelimiterSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Expected JoinTable.
+ * Expected pivot.
  */
 @Getter
-@Setter
-public final class ExpectedJoinTable extends AbstractExpectedDelimiterSQLSegment {
+public final class ExpectedPivot extends AbstractExpectedSQLSegment {
     
-    @XmlElement
-    private ExpectedTable left;
+    @XmlAttribute(name = "unpivot")
+    private boolean unpivot;
     
-    @XmlElement
-    private ExpectedTable right;
+    @XmlAttribute(name = "xml")
+    private boolean xml;
     
-    @XmlElement(name = "on-condition")
-    private ExpectedExpression onCondition;
-    
-    @XmlElement(name = "using-columns")
-    private final List<ExpectedColumn> usingColumns = new LinkedList<>();
-    
-    @XmlElementWrapper(name = "left-query-partition-by")
+    @XmlElementWrapper(name = "aggregation-columns")
     @XmlElement(name = "column")
-    private final List<ExpectedColumn> leftQueryPartitionColumns = new LinkedList<>();
+    private final Collection<ExpectedColumn> aggregationColumns = new LinkedList<>();
     
-    @XmlElementWrapper(name = "right-query-partition-by")
+    @XmlElementWrapper(name = "for-columns")
     @XmlElement(name = "column")
-    private final List<ExpectedColumn> rightQueryPartitionColumns = new LinkedList<>();
+    private final Collection<ExpectedColumn> forColumns = new LinkedList<>();
     
-    @XmlAttribute(name = "join-type")
-    private String joinType;
+    @XmlElementWrapper(name = "in-columns")
+    @XmlElement(name = "column")
+    private final Collection<ExpectedColumn> inColumns = new LinkedList<>();
     
-    @XmlAttribute(name = "natural")
-    private boolean natural;
+    @XmlElementWrapper(name = "unpivot-columns")
+    @XmlElement(name = "column")
+    private final Collection<ExpectedColumn> unpivotColumns = new LinkedList<>();
 }

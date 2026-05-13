@@ -46,6 +46,10 @@ public final class CommonTableExpressionSegment implements TableSegment {
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
+    private final Collection<ColumnSegment> searchColumns = new LinkedList<>();
+    
+    private final Collection<ColumnSegment> cycleColumns = new LinkedList<>();
+    
     @Override
     public Optional<String> getAliasName() {
         return getAlias().map(IdentifierValue::getValue);

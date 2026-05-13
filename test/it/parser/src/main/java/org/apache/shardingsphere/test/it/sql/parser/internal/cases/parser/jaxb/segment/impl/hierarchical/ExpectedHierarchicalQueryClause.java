@@ -15,28 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.window;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.hierarchical;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.orderby.ExpectedOrderByClause;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.Collection;
-import java.util.LinkedList;
 
+/**
+ * Expected hierarchical query clause.
+ */
 @Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedWindowItem extends AbstractExpectedSQLSegment {
+public final class ExpectedHierarchicalQueryClause extends AbstractExpectedSQLSegment {
     
-    @XmlElementWrapper(name = "partition-by")
-    @XmlElement(name = "column")
-    private final Collection<ExpectedColumn> partitionByColumns = new LinkedList<>();
+    @XmlAttribute(name = "no-cycle")
+    private boolean noCycle;
     
-    @XmlElement(name = "order-by")
-    private ExpectedOrderByClause orderByClause;
+    @XmlElement(name = "start-with")
+    private ExpectedExpression startWith;
+    
+    @XmlElement(name = "connect-by")
+    private ExpectedExpression connectBy;
 }

@@ -15,28 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.window;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.xml;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.orderby.ExpectedOrderByClause;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.Collection;
 import java.util.LinkedList;
 
+/**
+ * Expected XML element function segment.
+ */
 @Getter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedWindowItem extends AbstractExpectedSQLSegment {
+@Setter
+public final class ExpectedXmlElementFunctionSegment extends AbstractExpectedSQLSegment {
     
-    @XmlElementWrapper(name = "partition-by")
-    @XmlElement(name = "column")
-    private final Collection<ExpectedColumn> partitionByColumns = new LinkedList<>();
+    @XmlAttribute(name = "function-name")
+    private String functionName;
     
-    @XmlElement(name = "order-by")
-    private ExpectedOrderByClause orderByClause;
+    @XmlAttribute
+    private String identifier;
+    
+    @XmlElement(name = "xml-attribute")
+    private final Collection<ExpectedExpression> xmlAttributes = new LinkedList<>();
+    
+    @XmlElement(name = "parameter")
+    private final Collection<ExpectedExpression> parameters = new LinkedList<>();
 }

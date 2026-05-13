@@ -129,7 +129,7 @@
                 <in-expression start-index="38" stop-index="211">
                     <not>false</not>
                     <left>
-                        <list-expression start-index="38" stop-index="85" literal-start-index="38" literal-stop-index="85">
+                        <row-expression text="(product_id, currency_code, effective_from_date)" start-index="38" stop-index="85" literal-start-index="38" literal-stop-index="85">
                             <items>
                                 <column name="product_id" start-index="39" stop-index="48" literal-start-index="39" literal-stop-index="48" />
                             </items>
@@ -139,7 +139,7 @@
                             <items>
                                 <column name="effective_from_date" start-index="66" stop-index="84" literal-start-index="66" literal-stop-index="84" />
                             </items>
-                        </list-expression>
+                        </row-expression>
                     </left>
                     <right>
                         <subquery start-index="90" stop-index="211">
@@ -764,7 +764,7 @@
             </expr>
         </where>
     </delete>
-    
+
     <delete sql-case-id="delete_with_output_clause_with_compress_function">
         <table name="player" start-index="12" stop-index="17" />
         <output start-index="19" stop-index="134">

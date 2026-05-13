@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlTableFunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.PivotSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.IndexHintSegment;
@@ -47,6 +48,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedHintIndexName;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedIndexHint;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedJoinTable;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedPivot;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSubqueryTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedTable;
@@ -58,6 +60,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -135,6 +138,7 @@ public final class TableAssert {
             assertFalse(actual.getIndexHintSegments().isEmpty());
             assertIs(assertContext, actual.getIndexHintSegments(), expected.getIndexHints());
         }
+        assertPivot(assertContext, actual.getPivot().orElse(null), expected.getPivot());
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
@@ -195,6 +199,7 @@ public final class TableAssert {
                 count++;
             }
         }
+        assertPivot(assertContext, actual.getPivot().orElse(null), expected.getPivot());
     }
     
     /**
@@ -216,6 +221,8 @@ public final class TableAssert {
             ColumnAssert.assertIs(assertContext, actual.getUsing().get(count), each);
             count++;
         }
+        assertColumns(assertContext, actual.getLeftQueryPartitionListSegments(), expected.getLeftQueryPartitionColumns(), "Left query partition");
+        assertColumns(assertContext, actual.getRightQueryPartitionListSegments(), expected.getRightQueryPartitionColumns(), "Right query partition");
     }
     
     /**
@@ -246,6 +253,36 @@ public final class TableAssert {
                 actualTables.size(), is(expectedTables.size()));
         for (int i = 0; i < actualTables.size(); i++) {
             assertIs(assertContext, actualTables.get(i), expectedTables.get(i));
+        }
+    }
+    
+    private static void assertPivot(final SQLCaseAssertContext assertContext, final PivotSegment actual, final ExpectedPivot expected) {
+        if (null == expected) {
+            return;
+        }
+        assertNotNull(actual, assertContext.getText("Actual pivot should exist."));
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        assertThat(assertContext.getText("Pivot unpivot assertion error: "), actual.isUnPivot(), is(expected.isUnpivot()));
+        assertThat(assertContext.getText("Pivot XML assertion error: "), actual.isXml(), is(expected.isXml()));
+        assertColumns(assertContext, actual.getPivotAggregationColumns(), expected.getAggregationColumns(), "Pivot aggregation");
+        assertColumns(assertContext, actual.getPivotForColumns(), expected.getForColumns(), "Pivot for");
+        assertColumns(assertContext, actual.getPivotInColumns(), expected.getInColumns(), "Pivot in");
+        if (null != actual.getUnpivotColumns()) {
+            assertColumns(assertContext, actual.getUnpivotColumns(), expected.getUnpivotColumns(), "Unpivot");
+        }
+    }
+    
+    private static void assertColumns(final SQLCaseAssertContext assertContext, final Collection<? extends ExpressionSegment> actual, final Collection<ExpectedColumn> expected,
+                                      final String segmentName) {
+        if (expected.isEmpty()) {
+            return;
+        }
+        assertThat(assertContext.getText(segmentName + " columns size assertion error: "), actual.size(), is(expected.size()));
+        Iterator<? extends ExpressionSegment> actualIterator = actual.iterator();
+        for (ExpectedColumn each : expected) {
+            ExpressionSegment actualExpression = actualIterator.next();
+            assertTrue(actualExpression instanceof ColumnSegment, assertContext.getText(segmentName + " column expression assertion error: "));
+            ColumnAssert.assertIs(assertContext, (ColumnSegment) actualExpression, each);
         }
     }
     

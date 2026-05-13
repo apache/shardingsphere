@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HierarchicalQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
@@ -92,10 +94,33 @@ class WhereExtractorTest {
         assertThat(actual.getExpr(), is(joinTableSegment.getCondition()));
     }
     
+    @Test
+    void assertExtractHierarchicalQueryWhereSegments() {
+        HierarchicalQuerySegment hierarchicalQuerySegment = new HierarchicalQuerySegment(35, 91);
+        BinaryOperationExpression startWith = createBinaryOperationExpression("parent_extend_id", 46, 61, "null", 66, 69);
+        BinaryOperationExpression connectBy = createBinaryOperationExpression("extend_id", 88, 96, "parent_extend_id", 100, 115);
+        hierarchicalQuerySegment.setStartWith(startWith);
+        hierarchicalQuerySegment.setConnectBy(connectBy);
+        SelectStatement selectStatement = mockSelectStatement();
+        when(selectStatement.getHierarchicalQuery()).thenReturn(Optional.of(hierarchicalQuerySegment));
+        Collection<WhereSegment> actual = WhereExtractor.extractHierarchicalQueryWhereSegments(selectStatement);
+        assertThat(actual.size(), is(2));
+        Iterator<WhereSegment> iterator = actual.iterator();
+        assertThat(iterator.next().getExpr(), is(startWith));
+        assertThat(iterator.next().getExpr(), is(connectBy));
+    }
+    
     private SelectStatement mockSelectStatement() {
         SelectStatement result = mock(SelectStatement.class);
         when(result.withSubqueryType(any())).thenReturn(result);
+        when(result.getHierarchicalQuery()).thenReturn(Optional.empty());
         return result;
+    }
+    
+    private BinaryOperationExpression createBinaryOperationExpression(final String leftColumnName, final int leftStartIndex, final int leftStopIndex,
+                                                                      final String rightColumnName, final int rightStartIndex, final int rightStopIndex) {
+        return new BinaryOperationExpression(leftStartIndex, rightStopIndex, new ColumnSegment(leftStartIndex, leftStopIndex, new IdentifierValue(leftColumnName)),
+                new ColumnSegment(rightStartIndex, rightStopIndex, new IdentifierValue(rightColumnName)), "=", leftColumnName + " = " + rightColumnName);
     }
     
     private JoinTableSegment createJoinTableSegment() {

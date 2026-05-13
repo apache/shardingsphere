@@ -19,36 +19,41 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Optional;
 
 /**
- * Model segment.
+ * Model column segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ModelSegment implements SQLSegment {
+@Setter
+public final class ModelColumnSegment implements SQLSegment, AliasAvailable {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final List<SubquerySegment> referenceModelSelects = new LinkedList<>();
+    private final ExpressionSegment expression;
     
-    private final List<OrderBySegment> orderBySegments = new LinkedList<>();
+    private AliasSegment alias;
     
-    private final List<ModelColumnSegment> partitionColumns = new LinkedList<>();
+    @Override
+    public Optional<String> getAliasName() {
+        return Optional.ofNullable(alias).map(optional -> optional.getIdentifier().getValue());
+    }
     
-    private final List<ModelColumnSegment> dimensionColumns = new LinkedList<>();
+    @Override
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
+    }
     
-    private final List<ModelColumnSegment> measureColumns = new LinkedList<>();
-    
-    private final List<ColumnSegment> cellAssignmentColumns = new LinkedList<>();
-    
-    private final List<SubquerySegment> cellAssignmentSelects = new LinkedList<>();
+    @Override
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
+    }
 }

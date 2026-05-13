@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.RowExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.SubquerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.UnaryOperationExpressionBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.XmlFunctionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -50,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Exis
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
@@ -58,6 +60,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.join.OuterJoinExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlElementFunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlSerializeFunctionSegment;
 
 /**
  * Expression segment binder.
@@ -96,6 +100,9 @@ public final class ExpressionSegmentBinder {
         if (segment instanceof InExpression) {
             return InExpressionBinder.bind((InExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
+        if (segment instanceof ListExpression) {
+            return bindListExpression((ListExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        }
         if (segment instanceof NotExpression) {
             return NotExpressionBinder.bind((NotExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
@@ -104,6 +111,12 @@ public final class ExpressionSegmentBinder {
         }
         if (segment instanceof FunctionSegment) {
             return FunctionExpressionSegmentBinder.bind((FunctionSegment) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        }
+        if (segment instanceof XmlElementFunctionSegment) {
+            return XmlFunctionSegmentBinder.bind((XmlElementFunctionSegment) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        }
+        if (segment instanceof XmlSerializeFunctionSegment) {
+            return XmlFunctionSegmentBinder.bind((XmlSerializeFunctionSegment) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof BetweenExpression) {
             return BetweenExpressionSegmentBinder.bind((BetweenExpression) segment, binderContext, tableBinderContexts, outerTableBinderContexts);
@@ -134,5 +147,15 @@ public final class ExpressionSegmentBinder {
         }
         // TODO support more ExpressionSegment bound
         return segment;
+    }
+    
+    private static ListExpression bindListExpression(final ListExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
+                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        ListExpression result = new ListExpression(segment.getStartIndex(), segment.getStopIndex());
+        for (ExpressionSegment each : segment.getItems()) {
+            result.getItems().add(bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts));
+        }
+        return result;
     }
 }

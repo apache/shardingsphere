@@ -437,7 +437,7 @@ booleanPrimary
     | (PRIOR | DISTINCT) predicate
     | CONNECT_BY_ROOT predicate
     | booleanPrimary SAFE_EQ_ predicate
-    | booleanPrimary comparisonOperator (ALL | ANY) subquery
+    | booleanPrimary comparisonOperator (ALL | ANY | SOME) subquery
     | booleanPrimary comparisonOperator predicate
     | predicate
     ;
@@ -453,7 +453,7 @@ predicate
     | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_ AND predicate
     | bitExpr NOT? IN stringLiterals
     | bitExpr NOT? BETWEEN bitExpr AND predicate
-    | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)?
+    | bitExpr NOT? (LIKE | LIKEC | LIKE2 | LIKE4) simpleExpr (ESCAPE simpleExpr)?
     | bitExpr
     ;
 
@@ -490,7 +490,7 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunction | analyticFunction | specialFunction | regularFunction | xmlFunction
+    : aggregationFunction | analyticFunction | specialFunction | xmlAggFunction | xmlSerializeFunction | regularFunction | xmlFunction
     ;
 
 pseudorecord
@@ -498,7 +498,7 @@ pseudorecord
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? orderByClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? keepClause? overClause? overClause?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL | UNIQUE)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? orderByClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? keepClause? overClause? overClause?
     ;
 
 keepClause
@@ -533,6 +533,7 @@ windowingClause
 
 analyticFunction
     : specifiedAnalyticFunctionName = (LEAD | LAG) ((LP_ expr leadLagInfo? RP_ respectOrIgnoreNulls?) | (LP_ expr respectOrIgnoreNulls? leadLagInfo? RP_)) overClause
+    | specifiedAnalyticFunctionName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ overClause
     | specifiedAnalyticFunctionName = (NTILE | MEDIAN | RATIO_TO_REPORT) LP_ expr RP_ overClause?
     | specifiedAnalyticFunctionName = NTH_VALUE LP_ expr COMMA_ expr RP_ fromFirstOrLast? respectOrIgnoreNulls? overClause
     | specifiedAnalyticFunctionName = (PERCENTILE_CONT | PERCENTILE_DISC | LISTAGG) LP_ expr (COMMA_ expr)* RP_ WITHIN GROUP LP_ orderByClause RP_ overClause?
@@ -1058,10 +1059,12 @@ queryName
 
 cycleValue
     : STRING_
+    | parameterMarker
     ;
 
 noCycleValue
     : STRING_
+    | parameterMarker
     ;
 
 orderingColumn
@@ -1775,7 +1778,7 @@ xmlFunction
     ;
 
 xmlElementFunction
-    : XMLELEMENT LP_ identifier (COMMA_ xmlAttributes)? (COMMA_ exprWithAlias)* RP_
+    : XMLELEMENT LP_ NAME? identifier (COMMA_ xmlAttributes)? (COMMA_ exprWithAlias)* RP_
     ;
 
 exprWithAlias

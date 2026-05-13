@@ -1391,7 +1391,15 @@
     <explain sql-case-id="explain_for_select_xml_query">
         <select>
             <projections start-index="24" stop-index="107">
-                <expression-projection text="XMLQUERY('/PurchaseOrder/LineItems/LineItem')" start-index="24" stop-index="107" />
+                <expression-projection text="XMLQuery('/PurchaseOrder/LineItems/LineItem' PASSING OBJECT_VALUE RETURNING CONTENT)" start-index="24" stop-index="107">
+                    <expr>
+                        <xmlquery-projection function-name="XMLQuery" xquerystring="'/PurchaseOrder/LineItems/LineItem'" start-index="24" stop-index="107">
+                            <parameter>
+                                <column name="OBJECT_VALUE" start-index="77" stop-index="88" />
+                            </parameter>
+                        </xmlquery-projection>
+                    </expr>
+                </expression-projection>
             </projections>
             <from>
                 <simple-table name="po_clob" start-index="114" stop-index="120" />

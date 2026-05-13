@@ -243,6 +243,7 @@
             <shorthand-projection start-index="53" stop-index="53">
                 <actual-projections>
                     <column-projection name="order_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="t_order_tmp" start-index="0" stop-index="0" />
                         <column-bound>
                             <original-database name="foo_db_1" />
                             <original-schema name="foo_db_1" />
@@ -252,6 +253,7 @@
                         </column-bound>
                     </column-projection>
                     <column-projection name="user_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="t_order_tmp" start-index="0" stop-index="0" />
                         <column-bound>
                             <original-database name="foo_db_1" />
                             <original-schema name="foo_db_1" />
@@ -261,6 +263,7 @@
                         </column-bound>
                     </column-projection>
                     <column-projection name="status" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="t_order_tmp" start-index="0" stop-index="0" />
                         <column-bound>
                             <original-database name="foo_db_1" />
                             <original-schema name="foo_db_1" />
@@ -270,6 +273,7 @@
                         </column-bound>
                     </column-projection>
                     <column-projection name="merchant_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="t_order_tmp" start-index="0" stop-index="0" />
                         <column-bound>
                             <original-database name="foo_db_1" />
                             <original-schema name="foo_db_1" />
@@ -279,6 +283,7 @@
                         </column-bound>
                     </column-projection>
                     <column-projection name="remark" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="t_order_tmp" start-index="0" stop-index="0" />
                         <column-bound>
                             <original-database name="foo_db_1" />
                             <original-schema name="foo_db_1" />
@@ -288,6 +293,7 @@
                         </column-bound>
                     </column-projection>
                     <column-projection name="creation_date" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="t_order_tmp" start-index="0" stop-index="0" />
                         <column-bound>
                             <original-database name="foo_db_1" />
                             <original-schema name="foo_db_1" />
@@ -1046,6 +1052,7 @@
             <shorthand-projection start-index="108" stop-index="108">
                 <actual-projections>
                     <column-projection name="user_id" start-index="0" stop-index="0">
+                        <owner name="t_user" start-index="0" stop-index="0" />
                         <column-bound>
                             <original-database name="foo_db_1" />
                             <original-schema name="foo_db_1" />
@@ -1054,8 +1061,11 @@
                             <table-source-type name="TEMPORARY_TABLE"/>
                         </column-bound>
                     </column-projection>
-                    <column-projection name="user_name" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`" />
+                    <column-projection name="user_name" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="t_user" start-index="0" stop-index="0" />
+                    </column-projection>
                     <column-projection name="email" start-index="0" stop-index="0">
+                        <owner name="t_user" start-index="0" stop-index="0" />
                         <column-bound>
                             <original-database name="foo_db_1" />
                             <original-schema name="foo_db_1" />
