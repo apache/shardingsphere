@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
@@ -161,8 +162,9 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertAlterRuleConfiguration() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
@@ -185,8 +187,9 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertRemoveRuleConfigurationItem() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
@@ -201,6 +204,12 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertRemoveSingleRuleConfigurationItem() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes());
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
+        when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
         ruleConfig.setTables(Collections.singleton("ds_0.t_order"));
         DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath("foo_db", "single", new DatabaseRuleItem("unique"));
@@ -213,8 +222,15 @@ class StandaloneMetaDataManagerPersistServiceTest {
     
     @Test
     void assertRemoveRuleConfiguration() {
-        metaDataManagerPersistService.removeRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties())),
-                mock(RuleConfiguration.class), "foo_rule");
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes());
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
+        when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
+        metaDataManagerPersistService.removeRuleConfiguration(database, mock(RuleConfiguration.class), "foo_rule");
         verify(metaDataPersistFacade.getDatabaseRuleService()).delete("foo_db", "foo_rule");
     }
     
@@ -222,6 +238,12 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertRemoveSingleRuleConfiguration() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes());
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
+        when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
         ruleConfig.setTables(Collections.singleton("ds_0.t_order"));
         metaDataManagerPersistService.removeRuleConfiguration(database, ruleConfig, "SINGLE");

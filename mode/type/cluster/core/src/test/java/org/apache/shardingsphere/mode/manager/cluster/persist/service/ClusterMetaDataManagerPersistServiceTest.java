@@ -20,11 +20,16 @@ package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
@@ -156,10 +161,15 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertAlterRuleConfiguration() {
-        RuleConfiguration ruleConfig = new SingleRuleConfiguration();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes());
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
+        when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
+        RuleConfiguration ruleConfig = new SingleRuleConfiguration();
         metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
         verify(metaDataPersistFacade.getDatabaseRuleService()).persist("foo_db", Collections.singleton(ruleConfig));
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistReloadDatabase(eq("foo_db"), any(), any());

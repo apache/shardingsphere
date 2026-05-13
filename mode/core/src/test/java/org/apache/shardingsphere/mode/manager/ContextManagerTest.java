@@ -200,7 +200,7 @@ class ContextManagerTest {
                 MockedStatic<GlobalRulesBuilder> globalRulesBuilder = mockStatic(GlobalRulesBuilder.class);
                 MockedStatic<ShardingSphereStatisticsFactory> statisticsFactory = mockStatic(ShardingSphereStatisticsFactory.class);
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createChangedDatabase("foo_db", false, switchingResource, Collections.emptyList(), metaDataContexts)).thenReturn(database))) {
+                        (mock, context) -> when(mock.createChangedDatabaseByRebuild("foo_db", switchingResource, Collections.emptyList(), metaDataContexts)).thenReturn(database))) {
             genericSchemaManager.when(() -> GenericSchemaManager.getToBeDroppedSchemaNames(any(ShardingSphereDatabase.class), any(ShardingSphereDatabase.class)))
                     .thenReturn(Collections.singleton("foo_schema"));
             globalRulesBuilder.when(() -> GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.emptyList());
@@ -220,7 +220,7 @@ class ContextManagerTest {
         setMetaDataContextManager(metaDataContextManager);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createChangedDatabase("foo_db", false, switchingResource, Collections.emptyList(), metaDataContexts)).thenThrow(SQLException.class))) {
+                        (mock, context) -> when(mock.createChangedDatabaseByRebuild("foo_db", switchingResource, Collections.emptyList(), metaDataContexts)).thenThrow(SQLException.class))) {
             contextManager.reloadDatabase(database);
             verify(metaDataContexts, never()).update(any());
         }

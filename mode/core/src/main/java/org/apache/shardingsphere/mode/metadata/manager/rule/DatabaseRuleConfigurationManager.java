@@ -93,7 +93,7 @@ public final class DatabaseRuleConfigurationManager {
     }
     
     private void refreshMetadata(final String databaseName, final Collection<RuleConfiguration> ruleConfigs, final Collection<ShardingSphereRule> toBeRemovedRules) throws SQLException {
-        metaDataContexts.update(new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).createByAlterRule(databaseName, false, ruleConfigs, metaDataContexts));
+        metaDataContexts.update(new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).createByAlterRule(databaseName, ruleConfigs, metaDataContexts));
         closeOriginalRules(toBeRemovedRules);
     }
     

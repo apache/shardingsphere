@@ -21,8 +21,12 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
@@ -42,6 +46,7 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -155,11 +160,11 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
         MetaDataContexts reloadMetaDataContexts = getReloadedMetaDataContexts(originalMetaDataContexts);
+        ShardingSphereDatabase reloadedDatabase = rebuildDatabaseSchemaIndex(databaseName, reloadMetaDataContexts);
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseStatistics(databaseName))
                 .ifPresent(optional -> optional.getSchemaStatisticsMap().forEach((schemaName, schemaStatistics) -> metaDataPersistFacade.getStatisticsService()
                         .persist(originalMetaDataContexts.getMetaData().getDatabase(databaseName), schemaName, schemaStatistics)));
-        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabase(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
-                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabase(databaseName, reloadedDatabase, originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
     
     @Override
@@ -169,8 +174,8 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
             metaDataPersistFacade.getDataSourceUnitService().delete(database.getName(), each);
             MetaDataContexts reloadMetaDataContexts = getReloadedMetaDataContexts(originalMetaDataContexts);
-            metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabase(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
-                    originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+            ShardingSphereDatabase reloadedDatabase = rebuildDatabaseSchemaIndex(databaseName, reloadMetaDataContexts);
+            metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabase(databaseName, reloadedDatabase, originalMetaDataContexts.getMetaData().getDatabase(databaseName));
             DatabaseStatistics databaseStatistics = reloadMetaDataContexts.getStatistics().getDatabaseStatistics(database.getName());
             if (null != databaseStatistics) {
                 for (Entry<String, SchemaStatistics> entry : databaseStatistics.getSchemaStatisticsMap().entrySet()) {
@@ -199,8 +204,8 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig));
         MetaDataContexts reloadMetaDataContexts = getReloadedMetaDataContexts(originalMetaDataContexts);
-        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabase(
-                database.getName(), reloadMetaDataContexts.getMetaData().getDatabase(database.getName()), originalMetaDataContexts.getMetaData().getDatabase(database.getName()));
+        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabase(database.getName(), rebuildDatabaseSchemaIndex(database.getName(), reloadMetaDataContexts),
+                originalMetaDataContexts.getMetaData().getDatabase(database.getName()));
     }
     
     @Override
@@ -257,5 +262,15 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         RetryExecutor retryExecutor = new RetryExecutor(30000L, 1000L);
         ShardingSpherePreconditions.checkState(retryExecutor.execute(arg -> metaDataContextManager.getMetaDataContexts() != arg, originalMetaDataContexts), ReloadMetaDataContextFailedException::new);
         return metaDataContextManager.getMetaDataContexts();
+    }
+    
+    @SneakyThrows
+    private ShardingSphereDatabase rebuildDatabaseSchemaIndex(final String databaseName, final MetaDataContexts reloadMetaDataContexts) {
+        ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), database.getRuleMetaData().getRules(),
+                reloadMetaDataContexts.getMetaData().getProps(), new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName), database.getIdentifierContext());
+        Collection<ShardingSphereSchema> schemas = new LinkedList<>(GenericSchemaBuilder.build(database.getProtocolType(), material).values());
+        return new ShardingSphereDatabase(database.getName(), database.getProtocolType(), database.getResourceMetaData(),
+                database.getRuleMetaData(), schemas, reloadMetaDataContexts.getMetaData().getProps());
     }
 }
