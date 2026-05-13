@@ -69,9 +69,9 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.KeepCl
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NumberLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OverClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OverClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PackageNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParameterMarkerContext;
@@ -195,7 +195,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -687,12 +686,12 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     private String getLikeOperator(final PredicateContext ctx) {
         if (null != ctx.LIKEC()) {
-            return ctx.LIKEC().getText().toUpperCase(Locale.ENGLISH);
+            return ctx.LIKEC().getText().toUpperCase();
         }
         if (null != ctx.LIKE2()) {
-            return ctx.LIKE2().getText().toUpperCase(Locale.ENGLISH);
+            return ctx.LIKE2().getText().toUpperCase();
         }
-        return (null == ctx.LIKE4() ? ctx.LIKE().getText() : ctx.LIKE4().getText()).toUpperCase(Locale.ENGLISH);
+        return (null == ctx.LIKE4() ? ctx.LIKE().getText() : ctx.LIKE4().getText()).toUpperCase();
     }
     
     private BetweenExpression createBetweenSegment(final PredicateContext ctx) {

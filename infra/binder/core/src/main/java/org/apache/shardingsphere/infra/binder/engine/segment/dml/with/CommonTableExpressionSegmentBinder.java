@@ -86,12 +86,12 @@ public final class CommonTableExpressionSegmentBinder {
                 segment.getStartIndex(), segment.getStopIndex(), boundSubquerySegment.getAliasSegment().orElse(null), boundSubquerySegment.getSubquery());
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts =
                 createCurrentTableBinderContexts(segment.getColumns(), binderContext, boundSubquerySegment.getSubquery());
-        segment.getColumns()
-                .forEach(each -> result.getColumns().add(ColumnSegmentBinder.bind(each, SegmentType.DEFINITION_COLUMNS, binderContext, currentTableBinderContexts, LinkedHashMultimap.create())));
-        segment.getSearchColumns()
-                .forEach(each -> result.getSearchColumns().add(ColumnSegmentBinder.bind(each, SegmentType.DEFINITION_COLUMNS, binderContext, currentTableBinderContexts, LinkedHashMultimap.create())));
-        segment.getCycleColumns()
-                .forEach(each -> result.getCycleColumns().add(ColumnSegmentBinder.bind(each, SegmentType.DEFINITION_COLUMNS, binderContext, currentTableBinderContexts, LinkedHashMultimap.create())));
+        segment.getColumns().forEach(each -> result.getColumns().add(ColumnSegmentBinder.bind(each,
+                SegmentType.DEFINITION_COLUMNS, binderContext, currentTableBinderContexts, LinkedHashMultimap.create())));
+        segment.getSearchColumns().forEach(each -> result.getSearchColumns().add(ColumnSegmentBinder.bind(
+                each, SegmentType.DEFINITION_COLUMNS, binderContext, currentTableBinderContexts, LinkedHashMultimap.create())));
+        segment.getCycleColumns().forEach(each -> result.getCycleColumns().add(ColumnSegmentBinder.bind(
+                each, SegmentType.DEFINITION_COLUMNS, binderContext, currentTableBinderContexts, LinkedHashMultimap.create())));
         putTableBinderContext(segment, tableBinderContexts, recursive);
         putExternalTableBinderContext(segment, binderContext, recursive, currentTableBinderContexts);
         return result;

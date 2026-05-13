@@ -427,8 +427,12 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
             JoinTableSegment joinTableSegment = (JoinTableSegment) tableSegment;
             return isOwnerPivotTable(owner, joinTableSegment.getLeft()) || isOwnerPivotTable(owner, joinTableSegment.getRight());
         }
-        return hasPivot(tableSegment) && (tableSegment.getAliasName().map(optional -> optional.equalsIgnoreCase(owner)).orElse(false)
-                || tableSegment instanceof SimpleTableSegment && ((SimpleTableSegment) tableSegment).getTableName().getIdentifier().getValue().equalsIgnoreCase(owner));
+        return hasPivot(tableSegment) && isOwnerOfTable(owner, tableSegment);
+    }
+    
+    private boolean isOwnerOfTable(final String owner, final TableSegment tableSegment) {
+        return tableSegment.getAliasName().map(optional -> optional.equalsIgnoreCase(owner)).orElse(false)
+                || tableSegment instanceof SimpleTableSegment && ((SimpleTableSegment) tableSegment).getTableName().getIdentifier().getValue().equalsIgnoreCase(owner);
     }
     
     private boolean containsPivotTable(final TableSegment tableSegment) {

@@ -50,7 +50,7 @@ import java.util.LinkedList;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SubqueryTableBindUtils {
     
-    private static final Collection<String> CIPHER_DERIVED_FUNCTION_NAMES = Collections.singleton("IFNULL");
+    private static final Collection<String> RETURNED_COLUMN_DERIVED_FUNCTION_NAMES = Collections.singleton("IFNULL");
     
     /**
      * Create subquery projections.
@@ -97,7 +97,7 @@ public final class SubqueryTableBindUtils {
     private static ColumnProjectionSegment createColumnProjection(final ExpressionSegment expressionSegment, final IdentifierValue subqueryTableName, final DatabaseType databaseType) {
         ColumnSegment newColumnSegment = new ColumnSegment(0, 0,
                 new IdentifierValue(getColumnNameFromExpression(expressionSegment, databaseType), new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter()));
-        if (isCipherDerivedExpression(expressionSegment)) {
+        if (isReturnedColumnDerivedExpression(expressionSegment)) {
             setColumnBoundInfo(newColumnSegment, expressionSegment);
         }
         if (!Strings.isNullOrEmpty(subqueryTableName.getValue())) {
@@ -108,12 +108,12 @@ public final class SubqueryTableBindUtils {
         return result;
     }
     
-    private static boolean isCipherDerivedExpression(final ExpressionSegment expressionSegment) {
+    private static boolean isReturnedColumnDerivedExpression(final ExpressionSegment expressionSegment) {
         if (expressionSegment instanceof ExpressionProjectionSegment) {
-            return isCipherDerivedExpression(((ExpressionProjectionSegment) expressionSegment).getExpr());
+            return isReturnedColumnDerivedExpression(((ExpressionProjectionSegment) expressionSegment).getExpr());
         }
         if (expressionSegment instanceof FunctionSegment) {
-            return CIPHER_DERIVED_FUNCTION_NAMES.contains(((FunctionSegment) expressionSegment).getFunctionName().toUpperCase());
+            return RETURNED_COLUMN_DERIVED_FUNCTION_NAMES.contains(((FunctionSegment) expressionSegment).getFunctionName().toUpperCase());
         }
         return expressionSegment instanceof CaseWhenExpression;
     }

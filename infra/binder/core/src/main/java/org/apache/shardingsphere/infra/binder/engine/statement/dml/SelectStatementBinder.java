@@ -84,8 +84,8 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         ModelSegment boundModel = sqlStatement.getModel().map(optional -> bindModelSegment(optional, binderContext, tableBinderContexts)).orElse(null);
         ProjectionsSegment boundProjections = bindProjections(sqlStatement, binderContext, boundFrom.orElse(null), tableBinderContexts);
         WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
-        HierarchicalQuerySegment boundHierarchicalQuery =
-                sqlStatement.getHierarchicalQuery().map(optional -> HierarchicalQuerySegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+        HierarchicalQuerySegment boundHierarchicalQuery = sqlStatement.getHierarchicalQuery().map(
+                optional -> HierarchicalQuerySegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         CombineSegment boundCombine = sqlStatement.getCombine().map(optional -> CombineSegmentBinder.bind(optional, binderContext, outerTableBinderContexts)).orElse(null);
         LockSegment boundLock = sqlStatement.getLock().map(optional -> LockSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts = createCurrentTableBinderContexts(sqlStatement, binderContext, boundProjections);
@@ -96,8 +96,8 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         HavingSegment boundHaving =
                 sqlStatement.getHaving().map(optional -> HavingSegmentBinder.bind(optional, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         WindowSegment boundWindow = sqlStatement.getWindow().map(optional -> bindWindowSegment(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
-        return copy(sqlStatement, boundWith, boundFrom.orElse(null), boundProjections, boundWhere, boundHierarchicalQuery, boundCombine, boundLock, boundGroupBy, boundOrderBy, boundHaving, boundModel,
-                boundWindow);
+        return copy(sqlStatement, boundWith, boundFrom.orElse(null), boundProjections, boundWhere,
+                boundHierarchicalQuery, boundCombine, boundLock, boundGroupBy, boundOrderBy, boundHaving, boundModel, boundWindow);
     }
     
     private ModelSegment bindModelSegment(final ModelSegment segment, final SQLStatementBinderContext binderContext,

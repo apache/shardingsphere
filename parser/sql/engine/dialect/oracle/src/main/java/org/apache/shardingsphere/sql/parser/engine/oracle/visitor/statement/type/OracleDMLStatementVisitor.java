@@ -518,8 +518,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 pivotInColumns.add(columnSegment);
             });
         }
-        PivotSegment result =
-                new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((CollectionValue<ColumnSegment>) visit(ctx.pivotForClause().columnNames())).getValue(), pivotInColumns);
+        PivotSegment result = new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ((CollectionValue<ColumnSegment>) visit(ctx.pivotForClause().columnNames())).getValue(), pivotInColumns);
         result.setXml(null != ctx.XML());
         ctx.aggregationFunction().forEach(each -> result.getPivotAggregationColumns().addAll(ColumnExtractor.extract((ExpressionSegment) visit(each))));
         return result;
@@ -536,8 +536,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 }
             });
         }
-        PivotSegment result = new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((CollectionValue<ColumnSegment>) visit(ctx.pivotForClause().columnNames())).getValue(),
-                unpivotInColumns, true);
+        PivotSegment result = new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ((CollectionValue<ColumnSegment>) visit(ctx.pivotForClause().columnNames())).getValue(), unpivotInColumns, true);
         result.setUnpivotColumns(null == ctx.columnNames() ? Collections.singleton((ColumnSegment) visit(ctx.columnName())) : ((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
         return result;
     }

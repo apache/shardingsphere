@@ -103,9 +103,8 @@ public final class SimpleTableSegmentBinder {
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
         segment.getOwner().ifPresent(result::setOwner);
         segment.getAliasSegment().ifPresent(result::setAlias);
-        tableBinderContext.ifPresent(context -> segment.getPivot()
-                .map(optional -> PivotSegmentBinder.bind(optional, binderContext, createTableBinderContexts(tableAliasOrName, context), LinkedHashMultimap.create()))
-                .ifPresent(result::setPivot));
+        tableBinderContext.flatMap(context -> segment.getPivot()
+                .map(optional -> PivotSegmentBinder.bind(optional, binderContext, createTableBinderContexts(tableAliasOrName, context), LinkedHashMultimap.create()))).ifPresent(result::setPivot);
         return result;
     }
     
@@ -282,9 +281,8 @@ public final class SimpleTableSegmentBinder {
             return Optional.empty();
         }
         TableSegmentBinderContext tableSegmentBinderContext = binderContext.getExternalTableBinderContexts().get(caseInsensitiveTableName).iterator().next();
-        Collection<ProjectionSegment> subqueryProjections =
-                SubqueryTableBindUtils.createSubqueryProjections(tableSegmentBinderContext.getProjectionSegments(), tableName, binderContext.getSqlStatement().getDatabaseType(),
-                        TableSourceType.TEMPORARY_TABLE);
+        Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
+                tableSegmentBinderContext.getProjectionSegments(), tableName, binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
         SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE);
         if (tableSegmentBinderContext instanceof SimpleTableSegmentBinderContext && ((SimpleTableSegmentBinderContext) tableSegmentBinderContext).isFromWithSegment()) {
             result.setFromWithSegment(true);
