@@ -108,6 +108,19 @@ mcp/*/src/test/java/
 **Structure Decision**: Keep protocol API generalization inside existing MCP modules.
 `mcp/api` owns stable contracts, `mcp/support` owns descriptors and validation, `mcp/core` owns runtime dispatch, and `mcp/bootstrap` owns SDK/wire adapters.
 
+## Adjacent Package Ownership
+
+This package depends on 013 and 014 without re-implementing their owned scope.
+
+- **013 MCP Protocol Field Standardization owns descriptor shape**:
+  YAML field names, descriptor DTO shape, official descriptor metadata placement, ResourceLink metadata naming, and internal naming for completion or navigation descriptor fields.
+- **014 MCP Standard and E2E Hardening owns hardening already accepted there**:
+  public tool naming, tool annotations, output schema runtime validation, E2E packaging/distribution checks, default metadata pagination size, and pagination boundary tests.
+- **015 MCP Protocol API Generalization owns protocol/domain separation**:
+  discovery versus ShardingSphere catalog labeling, provider-driven completion dispatch, protocol error versus business error channels, application pagination labeling, explicit ResourceLink generation contracts, and feature planner API cleanup.
+
+When a task touches descriptor shape, output schema validation, E2E hardening, or pagination-size behavior, it must either reference the 013/014 owner or record why the 015 boundary requires additional work.
+
 ## Implementation Strategy
 
 1. Freeze the official MCP `2025-11-25` source baseline and local evidence before code changes.
@@ -122,15 +135,21 @@ mcp/*/src/test/java/
 
 No constitution violation is expected.
 
-- **Protocol error mapping may require SDK integration seams**:
-  Current controllers return `MCPResponse` payloads before bootstrap mapping.
-  Mitigation is a typed dispatch result or exception path with bootstrap tests.
-- **Completion provider extraction may touch core and support modules**:
-  Current completion logic directly queries metadata and workflow sessions.
-  Mitigation is to start with provider interfaces and migrate existing providers one by one.
+- **Protocol error mapping must not duplicate SDK behavior**:
+  MCP Java SDK `1.1.2` already exposes `McpError` and handles some unknown target cases before ShardingSphere controllers run.
+  Mitigation is to add bootstrap preflight tests for SDK no-match behavior over both Streamable HTTP and STDIO, then change only ShardingSphere-owned matched-template or controller-direct gaps.
+  Matched-template handler miss behavior should stay unit-level when unit tests can fully cover the controller or registry boundary; add E2E only when unit coverage cannot prove the production behavior.
+- **Completion provider extraction crosses module ownership boundaries**:
+  Current completion logic directly queries metadata and workflow sessions, while feature modules depend on `mcp-support` rather than `mcp-core`.
+  Mitigation is to place the package's completion provider contract in `mcp/support` when descriptor or support types are required.
+  Runtime metadata and workflow providers stay in `mcp/core`, while feature modules own feature-specific providers or descriptors.
+  Feature modules must not add a dependency on `shardingsphere-mcp-core`.
 - **Capabilities resource may be depended on by models**:
   Current server instructions recommend reading it first.
   Mitigation is to keep the resource, relabel it as catalog guidance, and keep official list methods authoritative.
+- **Application pagination rename may be a breaking public payload change**:
+  Current tool payloads use `page_token`, `next_page_token`, `has_more`, and `continuation_mode`, while official MCP list pagination uses `cursor` and `nextCursor`.
+  Mitigation is to retain existing tool payload field names, document them as ShardingSphere application pagination, and reserve MCP `cursor`/`nextCursor` for official list methods.
 - **ResourceLink emission may change output ordering**:
   Current recursive scanning implicitly orders links by discovered fields.
   Mitigation is to define explicit provider priority and preserve documented ordering in tests.

@@ -74,6 +74,24 @@ They are not implementation requirements for this package.
 - Q: Should MCP draft behavior be implemented now? -> A: No.
   Draft behavior is only a design risk unless stakeholders explicitly change the target protocol.
 - Q: Should implementation keep old specialized APIs for compatibility? -> A: Compatibility aliases are out of scope unless a future requirement explicitly asks for them.
+- Q: Where should the completion provider contract live? -> A: Use `mcp/support` for this package.
+  Use `mcp/api` only if a later design proves the signature can stay on pure API DTOs without descriptor or support context.
+  Feature modules MUST NOT add a dependency on `shardingsphere-mcp-core` for completion providers.
+- Q: Should protocol error implementation start by changing controllers? -> A: No.
+  First verify MCP Java SDK `1.1.2` no-match wire behavior, then fix only ShardingSphere-owned unsupported-dispatch gaps.
+- Q: Should unknown tool and resource SDK error codes be remapped to ShardingSphere custom codes? -> A: No default remap.
+  Keep SDK-native protocol error behavior unless the preflight test proves a ShardingSphere-owned adapter gap.
+- Q: Should application pagination fields be renamed now? -> A: No default rename.
+  Existing tool payload fields remain unless a later breaking API cleanup is explicitly requested; this package must document them as ShardingSphere application pagination.
+- Q: Is fresh-context doubt-driven review allowed for this package? -> A: Yes.
+- Q: Should the package status change before the SDK wire preflight lands? -> A: No.
+  `Status: Accepted` remains because the requirement is accepted; T005 is an implementation blocker, not an intake blocker.
+- Q: Which transports must the SDK no-match wire preflight cover? -> A: Both Streamable HTTP and STDIO.
+  T005 and the user-story 3 wire tests must prove unknown tool and unknown resource behavior on both transport surfaces.
+- Q: Should matched-template handler miss be forced into an E2E scenario? -> A: Only if unit tests cannot fully cover the behavior.
+  First prove the internal boundary with unit tests; add E2E coverage only when unit-level tests cannot cover the production behavior or transport mapping.
+- Q: May this package add an owner map for 013, 014, and 015? -> A: Yes.
+  The owner map must prevent 015 from re-implementing descriptor shape, E2E hardening, output schema validation, or pagination-size work already owned by adjacent packages.
 
 ## Hard Constraints
 
@@ -87,6 +105,10 @@ They are not implementation requirements for this package.
 - Runtime safety decisions MUST remain typed and internal.
   Exposed metadata may describe derived behavior but MUST NOT drive execution or approval decisions.
 - Side-effecting workflows MUST preserve explicit preview and operator approval boundaries.
+- SDK no-match wire behavior MUST be verified on both Streamable HTTP and STDIO before changing ShardingSphere unsupported-target mappings.
+- Matched-template handler miss behavior SHOULD be covered by unit tests when unit tests can fully exercise the internal boundary.
+  E2E coverage is required only if unit tests cannot cover the behavior or if bootstrap transport mapping changes.
+- Completion provider contracts for this package MUST be defined in `mcp/support` unless the implementation introduces a pure API DTO contract with no descriptor or support-context dependency.
 
 ## User Scenarios and Testing
 
@@ -189,7 +211,9 @@ Verify shared fields are genuinely feature-neutral and feature-specific fields a
 - `database_gateway_` as a service prefix is not itself a protocol violation; the issue is protocol-layer logic that depends on concrete prefixed names.
 - `shardingsphere://` is a valid custom URI scheme for MCP resources; the issue is treating the custom catalog payload as official MCP discovery.
 - Application-level pagination is allowed in a tool payload, but it must be clearly named and documented as a domain payload contract when it differs from MCP `cursor` and `nextCursor`.
+  The default implementation path is retain-and-label, not a breaking rename.
 - SDK gap adapters may remain while MCP Java SDK `1.1.2` lacks some official fields, but adapter workarounds must stay isolated in `mcp/bootstrap`.
+  SDK behavior for unknown tools and resources must be verified before changing ShardingSphere error mapping.
 - Prompt guidance may render a single user message when appropriate, but prompt names should stay user-facing and not merely mirror tool identifiers.
 
 ## Requirements
@@ -202,6 +226,8 @@ Verify shared fields are genuinely feature-neutral and feature-specific fields a
 - **MPAG-FR-004**: Server instructions MAY recommend reading `shardingsphere://capabilities`, but MUST NOT imply that official MCP discovery depends on that resource.
 - **MPAG-FR-005**: Protocol-layer completion dispatch MUST be provider-driven or descriptor-driven.
   It MUST NOT hardcode feature names, tool names, or string containment checks such as `reference.contains("encrypt")`.
+- **MPAG-FR-005a**: The completion provider contract for this package MUST live in `mcp/support` when it uses descriptor types, support context, or support-owned payload DTOs.
+  Feature modules MUST NOT depend on `shardingsphere-mcp-core` to provide completions.
 - **MPAG-FR-006**: Metadata completion for database, schema, table, column, index, and sequence MUST be represented as registered completion provider behavior.
   It MUST NOT be represented as hardcoded branches in the protocol dispatcher.
 - **MPAG-FR-007**: Workflow plan ID completion MUST be represented as a registered completion provider behavior.
@@ -210,6 +236,8 @@ Verify shared fields are genuinely feature-neutral and feature-specific fields a
 - **MPAG-FR-009**: Tool-specific output-field validation MUST move out of generic descriptor validation into descriptor-driven schemas, fixture tests, or feature-owned validators.
 - **MPAG-FR-010**: Unsupported resource URIs MUST surface through MCP protocol error semantics instead of successful resource contents with `response_kind=error`.
 - **MPAG-FR-011**: Unsupported tool names MUST surface through MCP protocol error semantics instead of successful tool results with ShardingSphere recovery payloads.
+- **MPAG-FR-011a**: Unknown tool and unknown resource wire behavior MUST be verified for both Streamable HTTP and STDIO before implementation changes the ShardingSphere error mapping.
+- **MPAG-FR-011b**: Matched-template handler miss behavior MUST be tested at unit level when unit tests can fully cover the internal controller or registry boundary; E2E coverage is required only when unit coverage is insufficient.
 - **MPAG-FR-012**: Supported tool execution errors SHOULD use `isError: true` and SHOULD include actionable structured feedback for model self-correction.
 - **MPAG-FR-013**: ShardingSphere business payload fields such as `response_mode`, `next_actions`, `recovery`, `resource_kind`, and workflow guidance MUST be domain payload fields.
   They MUST be documented and validated as such.
@@ -246,6 +274,7 @@ Verify shared fields are genuinely feature-neutral and feature-specific fields a
 - **MPAG-SC-002**: No protocol-layer completion class contains feature-name string checks for encrypt, mask, or other feature names.
 - **MPAG-SC-003**: Generic descriptor validation contains no hardcoded public tool-name branches.
 - **MPAG-SC-004**: Unsupported resource and unsupported tool calls have protocol-error tests.
+- **MPAG-SC-004a**: Unsupported resource and unsupported tool protocol-error tests cover both Streamable HTTP and STDIO raw wire responses.
 - **MPAG-SC-005**: Supported tool business failures have `isError: true` tests with actionable structured feedback.
 - **MPAG-SC-006**: Capabilities resource snapshots label custom sections as ShardingSphere catalog metadata.
 - **MPAG-SC-007**: Business pagination docs and schema descriptions no longer imply MCP `nextCursor` semantics.

@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.resource;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
+import io.modelcontextprotocol.spec.McpError;
+import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
@@ -42,6 +44,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -50,7 +53,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPResourceSpecificationFactoryTest {
-    
+
     @Test
     void assertCreateResourceSpecifications() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
@@ -66,7 +69,7 @@ class MCPResourceSpecificationFactoryTest {
             assertNotNull(actual.get(0).readHandler());
         }
     }
-    
+
     @Test
     void assertCreateResourceSpecificationsHandleReadResource() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
@@ -80,7 +83,22 @@ class MCPResourceSpecificationFactoryTest {
             assertThat(((TextResourceContents) actual.contents().get(0)).text(), is("{\"status\":\"ok\"}"));
         }
     }
-    
+
+    @Test
+    void assertCreateResourceSpecificationsHandleReadResourceError() {
+        try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
+            mockedResourceHandlerRegistry.when(ResourceHandlerRegistry::getSupportedResourceDescriptors).thenReturn(List.of(createResourceDescriptor()));
+            mockedResourceHandlerRegistry.when(() -> ResourceHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://capabilities"))).thenReturn(Optional.empty());
+            MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
+            when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
+            SyncResourceSpecification actualSpecification = new MCPResourceSpecificationFactory(runtimeContext).createResourceSpecifications().get(0);
+            McpError actual = assertThrows(McpError.class,
+                    () -> actualSpecification.readHandler().apply(mock(McpSyncServerExchange.class), new ReadResourceRequest("shardingsphere://capabilities")));
+            assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.RESOURCE_NOT_FOUND));
+            assertThat(actual.getJsonRpcError().message(), is("Resource not found"));
+        }
+    }
+
     @Test
     void assertCreateResourceTemplateSpecifications() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
@@ -96,12 +114,12 @@ class MCPResourceSpecificationFactoryTest {
             assertNotNull(actual.get(0).readHandler());
         }
     }
-    
+
     private MCPResourceDescriptor createResourceDescriptor() {
         return new MCPFixedResourceDescriptor("shardingsphere://capabilities", "server-capability-catalog", "Server Capability Catalog",
                 "Read the model-facing capability catalog.", Collections.emptyList(), "application/json", MCPAnnotations.EMPTY, null, Collections.emptyMap());
     }
-    
+
     private MCPResourceDescriptor createResourceTemplateDescriptor() {
         return new MCPResourceTemplateDescriptor("shardingsphere://databases/{database}", "logical-database-detail", "Logical Database Detail",
                 "Read one logical database detail.", Collections.emptyList(), "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());

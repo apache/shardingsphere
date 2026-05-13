@@ -38,28 +38,30 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 final class MCPDescriptorCatalogValidator {
-    
+
     private static final Collection<String> BANNED_PUBLIC_ALIAS_FIELDS = List.of(
             "recommended_next_tool", "suggested_next_tool", "suggested_next_tools", "recommended_recovery", "suggested_next_action");
-    
+
     private static final Collection<String> BANNED_NEXT_ACTION_FIELDS = List.of("action_kind", "target_tool", "target_resource", "required_arguments");
-    
+
     private static final Collection<String> RESERVED_RESOURCE_META_FIELDS = List.of("resourceKind", "kind", "objectScope", "feature", "relatedTools", "relatedResources", "useBefore");
-    
+
     private static final Collection<String> ICON_THEMES = List.of("light", "dark");
-    
+
     private static final Collection<String> MODEL_CRITICAL_HINT_FIELDS = List.of(
             "next_actions", "resources_to_read", "resource", "parent_resource", "next_resources", "manual_artifact_summary", "manual_follow_up", "empty_state", "ambiguity_state",
             "recovery", "recovery_guidance", "remediation");
-    
+
     private static final Collection<String> CONTINUATION_MODES = List.of("none", "pagination", "metadata_search");
-    
+
     private static final Collection<String> RECOVERY_CATEGORIES = List.of("not_found", "ambiguous", "empty_scope", "missing_context", "validation", "terminal",
             "unsupported_target", "invalid_enum", "unsafe_sql", "stale_workflow", "unavailable_runtime", "terminal_operator_action");
-    
+
+    private static final int MAX_COMPLETION_VALUES = 100;
+
     private MCPDescriptorCatalogValidator() {
     }
-    
+
     static void validate(final MCPDescriptorCatalog catalog) {
         validateResourceDescriptors(catalog);
         validateToolDescriptors(catalog.getToolDescriptors(), catalog.getToolRuntimeDescriptors());
@@ -67,7 +69,7 @@ final class MCPDescriptorCatalogValidator {
         validateCompletionTargetDescriptors(catalog.getCompletionTargetDescriptors(), catalog.getPromptDescriptors(), catalog.getAllResourceDescriptors());
         validateResourceNavigationDescriptors(catalog.getResourceNavigationDescriptors(), catalog);
     }
-    
+
     private static void validateResourceDescriptors(final MCPDescriptorCatalog catalog) {
         Map<String, MCPResourceDescriptor> registered = new LinkedHashMap<>(catalog.getResourceDescriptors().size() + catalog.getResourceTemplateDescriptors().size(), 1F);
         for (MCPFixedResourceDescriptor each : catalog.getResourceDescriptors()) {
@@ -82,7 +84,7 @@ final class MCPDescriptorCatalogValidator {
             validateResourceVariables(each, findResourceExtension(catalog, each.getUriTemplate()));
         }
     }
-    
+
     private static void validateResourceDescriptor(final MCPResourceDescriptor descriptor, final Map<String, MCPResourceDescriptor> registered) {
         String uriOrTemplate = MCPResourceDescriptorUtils.getUriOrTemplate(descriptor);
         checkNotBlank(descriptor.getName(), String.format("Resource name for `%s`", uriOrTemplate));
@@ -93,11 +95,11 @@ final class MCPDescriptorCatalogValidator {
         checkState(null == registered.putIfAbsent(uriOrTemplate, descriptor), String.format("Duplicate MCP resource descriptor `%s`.", uriOrTemplate));
         validateResourceMeta(descriptor);
     }
-    
+
     private static MCPResourceExtensionDescriptor findResourceExtension(final MCPDescriptorCatalog catalog, final String uriOrTemplate) {
         return catalog.getResourceExtensionDescriptors().stream().filter(each -> uriOrTemplate.equals(each.getUriOrTemplate())).findFirst().orElse(null);
     }
-    
+
     private static void validateResourceMeta(final MCPResourceDescriptor descriptor) {
         String uriOrTemplate = MCPResourceDescriptorUtils.getUriOrTemplate(descriptor);
         for (String each : RESERVED_RESOURCE_META_FIELDS) {
@@ -105,7 +107,7 @@ final class MCPDescriptorCatalogValidator {
         }
         validateMetaKeys(String.format("Resource `%s`", uriOrTemplate), descriptor.getMeta());
     }
-    
+
     private static void validateResourceVariables(final MCPResourceTemplateDescriptor descriptor, final MCPResourceExtensionDescriptor extension) {
         List<String> templateVariables = MCPUriTemplateUtils.extractVariableNames(descriptor.getUriTemplate());
         Set<String> registeredTemplateVariables = new HashSet<>();
@@ -129,7 +131,7 @@ final class MCPDescriptorCatalogValidator {
                     String.format("Resource descriptor `%s` must describe URI template variable `%s`.", descriptor.getUriTemplate(), variableName));
         }
     }
-    
+
     private static void validateToolDescriptors(final Collection<MCPToolDescriptor> descriptors, final Collection<MCPToolRuntimeDescriptor> runtimeDescriptors) {
         Map<String, MCPToolDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         Map<String, MCPToolRuntimeDescriptor> runtimes = runtimeDescriptors.stream()
@@ -149,14 +151,14 @@ final class MCPDescriptorCatalogValidator {
             validatePlanningExecutionMode(each);
         }
     }
-    
+
     private static void validateToolInputSchema(final MCPToolDescriptor descriptor) {
         Map<String, Object> inputSchema = descriptor.getInputSchema();
         checkState("object".equals(inputSchema.get("type")), String.format("Tool `%s` inputSchema must be an object.", descriptor.getName()));
         Object properties = inputSchema.get("properties");
         checkState(properties instanceof Map, String.format("Tool `%s` inputSchema must declare properties.", descriptor.getName()));
     }
-    
+
     private static void validateToolOutputSchema(final MCPToolDescriptor descriptor) {
         Map<String, Object> outputSchema = descriptor.getOutputSchema();
         checkState("object".equals(outputSchema.get("type")), String.format("Tool `%s` outputSchema must be an object.", descriptor.getName()));
@@ -169,11 +171,11 @@ final class MCPDescriptorCatalogValidator {
         validateSearchMetadataOutputItems(descriptor, (Map<?, ?>) properties);
         validateModelCriticalOutputHints(descriptor, (Map<?, ?>) properties);
     }
-    
+
     private static void validateOutputExamples(final MCPToolDescriptor descriptor, final Map<String, Object> outputSchema) {
         checkState(isNonEmptyCollection(outputSchema.get("examples")), String.format("Tool `%s` outputSchema must declare examples.", descriptor.getName()));
     }
-    
+
     private static void validateOutputExampleContractValues(final MCPToolDescriptor descriptor, final Map<String, Object> outputSchema) {
         Object examples = outputSchema.get("examples");
         if (!(examples instanceof Collection)) {
@@ -183,7 +185,7 @@ final class MCPDescriptorCatalogValidator {
             validateExampleContractValue(descriptor, each);
         }
     }
-    
+
     private static void validateExampleContractValue(final MCPToolDescriptor descriptor, final Object value) {
         if (value instanceof Map) {
             validateExampleContractMap(descriptor, (Map<?, ?>) value);
@@ -193,7 +195,7 @@ final class MCPDescriptorCatalogValidator {
             }
         }
     }
-    
+
     private static void validateExampleContractMap(final MCPToolDescriptor descriptor, final Map<?, ?> value) {
         Object responseMode = value.get("response_mode");
         if (null != responseMode) {
@@ -213,7 +215,7 @@ final class MCPDescriptorCatalogValidator {
             validateExampleContractValue(descriptor, each);
         }
     }
-    
+
     private static void validateNoBannedPublicAliasFields(final MCPToolDescriptor descriptor, final Object value) {
         if (value instanceof Map) {
             validateNoBannedPublicAliasFieldMap(descriptor, (Map<?, ?>) value);
@@ -223,7 +225,7 @@ final class MCPDescriptorCatalogValidator {
             }
         }
     }
-    
+
     private static void validateNoBannedPublicAliasFieldMap(final MCPToolDescriptor descriptor, final Map<?, ?> value) {
         for (Entry<?, ?> entry : value.entrySet()) {
             String key = String.valueOf(entry.getKey());
@@ -231,7 +233,7 @@ final class MCPDescriptorCatalogValidator {
             validateNoBannedPublicAliasFields(descriptor, entry.getValue());
         }
     }
-    
+
     private static void validateRequiredOutputFields(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
         for (String each : createRequiredOutputFields(descriptor.getName())) {
             checkState(properties.containsKey(each), String.format("Tool `%s` outputSchema must declare `%s`.", descriptor.getName(), each));
@@ -241,7 +243,7 @@ final class MCPDescriptorCatalogValidator {
             checkDescription(null == description ? "" : description.toString(), String.format("Tool output field `%s.%s` description", descriptor.getName(), each));
         }
     }
-    
+
     private static Collection<String> createRequiredOutputFields(final String toolName) {
         if ("database_gateway_search_metadata".equals(toolName)) {
             return List.of("response_mode", "items", "count", "next_page_token", "has_more", "continuation_mode", "search_context", "total_match_count");
@@ -265,7 +267,7 @@ final class MCPDescriptorCatalogValidator {
         }
         return List.of();
     }
-    
+
     private static void validateModelCriticalOutputHints(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
         for (Entry<?, ?> entry : properties.entrySet()) {
             String fieldName = String.valueOf(entry.getKey());
@@ -275,7 +277,7 @@ final class MCPDescriptorCatalogValidator {
             validateNestedModelCriticalOutputHints(descriptor, entry.getValue());
         }
     }
-    
+
     private static void validateNestedModelCriticalOutputHints(final MCPToolDescriptor descriptor, final Object value) {
         if (!(value instanceof Map)) {
             return;
@@ -289,7 +291,7 @@ final class MCPDescriptorCatalogValidator {
             validateNestedModelCriticalOutputHints(descriptor, items);
         }
     }
-    
+
     private static void validateModelCriticalOutputHint(final MCPToolDescriptor descriptor, final String fieldName, final Object property) {
         checkState(property instanceof Map, String.format("Tool `%s` model-critical output field `%s` must be an object.", descriptor.getName(), fieldName));
         Object description = ((Map<?, ?>) property).get("description");
@@ -298,7 +300,7 @@ final class MCPDescriptorCatalogValidator {
             validateNextActionsSchema(descriptor, (Map<?, ?>) property);
         }
     }
-    
+
     private static void validateNextActionsSchema(final MCPToolDescriptor descriptor, final Map<?, ?> property) {
         checkState("array".equals(property.get("type")), String.format("Tool `%s` next_actions must be an array.", descriptor.getName()));
         Object items = property.get("items");
@@ -316,7 +318,7 @@ final class MCPDescriptorCatalogValidator {
             checkDescription(null == description ? "" : description.toString(), String.format("Tool next_actions item field `%s.%s` description", descriptor.getName(), each));
         }
     }
-    
+
     private static void validateSearchMetadataOutputItems(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
         if (!"database_gateway_search_metadata".equals(descriptor.getName())) {
             return;
@@ -330,7 +332,7 @@ final class MCPDescriptorCatalogValidator {
                 "Tool `database_gateway_search_metadata` outputSchema property `items.items.properties` must declare properties.");
         validateSearchMetadataItemFields((Map<?, ?>) itemProperties);
     }
-    
+
     private static void validateSearchMetadataItemFields(final Map<?, ?> properties) {
         for (String each : List.of("database", "schema", "objectType", "table", "view", "name", "resource", "parent_resource", "next_resources", "derivation_status",
                 "match_kind", "matched_fields", "matched_value")) {
@@ -341,7 +343,7 @@ final class MCPDescriptorCatalogValidator {
             checkDescription(null == description ? "" : description.toString(), String.format("Tool output item field `database_gateway_search_metadata.%s` description", each));
         }
     }
-    
+
     private static void validatePromptDescriptors(final Collection<MCPPromptDescriptor> descriptors, final Collection<MCPPromptTemplateBinding> templateBindings) {
         Map<String, MCPPromptDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         Map<String, MCPPromptTemplateBinding> bindings = templateBindings.stream()
@@ -360,7 +362,7 @@ final class MCPDescriptorCatalogValidator {
             validatePromptGuidanceMeta(each);
         }
     }
-    
+
     private static void validatePromptArguments(final MCPPromptDescriptor descriptor) {
         Map<String, MCPPromptArgumentDescriptor> registered = new LinkedHashMap<>(descriptor.getArguments().size(), 1F);
         for (MCPPromptArgumentDescriptor each : descriptor.getArguments()) {
@@ -370,14 +372,14 @@ final class MCPDescriptorCatalogValidator {
             checkState(null == registered.putIfAbsent(each.getName(), each), String.format("Duplicate MCP prompt argument `%s.%s`.", descriptor.getName(), each.getName()));
         }
     }
-    
+
     private static void validatePromptTemplate(final MCPPromptDescriptor descriptor, final MCPPromptTemplateBinding binding) {
         Set<String> declaredArguments = new HashSet<>(descriptor.getArguments().stream().map(MCPPromptArgumentDescriptor::getName).toList());
         for (String each : MCPPromptTemplateLoader.extractPlaceholders(MCPPromptTemplateLoader.load(binding.getTemplateResource()))) {
             checkState(declaredArguments.contains(each), String.format("Prompt template `%s` has undeclared placeholder `%s`.", binding.getTemplateResource(), each));
         }
     }
-    
+
     private static void validateCompletionTargetDescriptors(final Collection<MCPCompletionTargetDescriptor> descriptors, final Collection<MCPPromptDescriptor> prompts,
                                                             final Collection<MCPResourceDescriptor> resources) {
         Set<String> promptNames = prompts.stream().map(MCPPromptDescriptor::getName).collect(Collectors.toSet());
@@ -388,6 +390,8 @@ final class MCPDescriptorCatalogValidator {
             checkNotBlank(each.getReference(), String.format("Completion reference for `%s`", each.getReferenceType()));
             checkState(!each.getArguments().isEmpty(), String.format("Completion target `%s:%s` must declare arguments.", each.getReferenceType(), each.getReference()));
             checkState(0 <= each.getMaxValues(), String.format("Completion target `%s:%s` maxValues must not be negative.", each.getReferenceType(), each.getReference()));
+            checkState(each.getMaxValues() <= MAX_COMPLETION_VALUES,
+                    String.format("Completion target `%s:%s` maxValues must not exceed %d.", each.getReferenceType(), each.getReference(), MAX_COMPLETION_VALUES));
             validateMetaKeys(String.format("Completion target `%s:%s`", each.getReferenceType(), each.getReference()), each.getMeta());
             validateCompletionArguments(each);
             validateCompletionReference(each, promptNames, resourceUris);
@@ -395,7 +399,7 @@ final class MCPDescriptorCatalogValidator {
                     String.format("Duplicate MCP completion target `%s:%s`.", each.getReferenceType(), each.getReference()));
         }
     }
-    
+
     private static void validateCompletionArguments(final MCPCompletionTargetDescriptor descriptor) {
         Set<String> registered = new HashSet<>();
         for (String each : descriptor.getArguments()) {
@@ -403,7 +407,7 @@ final class MCPDescriptorCatalogValidator {
             checkState(registered.add(each), String.format("Duplicate MCP completion argument `%s` for `%s:%s`.", each, descriptor.getReferenceType(), descriptor.getReference()));
         }
     }
-    
+
     private static void validateCompletionReference(final MCPCompletionTargetDescriptor descriptor, final Set<String> promptNames, final Set<String> resourceUris) {
         if ("prompt".equals(descriptor.getReferenceType())) {
             checkState(promptNames.contains(descriptor.getReference()), String.format("Completion target references unknown prompt `%s`.", descriptor.getReference()));
@@ -415,7 +419,7 @@ final class MCPDescriptorCatalogValidator {
         }
         throw new IllegalStateException(String.format("Unsupported completion reference type `%s`.", descriptor.getReferenceType()));
     }
-    
+
     private static void validateResourceNavigationDescriptors(final Collection<MCPResourceNavigationDescriptor> descriptors, final MCPDescriptorCatalog catalog) {
         Set<String> publicIdentifiers = createPublicIdentifiers(catalog);
         Set<String> registered = new HashSet<>();
@@ -430,14 +434,14 @@ final class MCPDescriptorCatalogValidator {
                     String.format("Duplicate MCP resource navigation `%s` to `%s`.", each.getFrom(), each.getTo()));
         }
     }
-    
+
     private static void validateToolAnnotations(final MCPToolDescriptor descriptor) {
         checkState(!descriptor.getAnnotations().isEmpty(), String.format("Tool `%s` must declare MCP annotations.", descriptor.getName()));
         checkState(null != descriptor.getAnnotations().getReadOnlyHint(), String.format("Tool `%s` annotations must declare readOnlyHint.", descriptor.getName()));
         checkState(null != descriptor.getAnnotations().getDestructiveHint(), String.format("Tool `%s` annotations must declare destructiveHint.", descriptor.getName()));
         checkState(null != descriptor.getAnnotations().getOpenWorldHint(), String.format("Tool `%s` annotations must declare openWorldHint.", descriptor.getName()));
     }
-    
+
     private static Set<String> createPublicIdentifiers(final MCPDescriptorCatalog catalog) {
         Set<String> result = new HashSet<>();
         catalog.getAllResourceDescriptors().stream().map(MCPResourceDescriptorUtils::getUriOrTemplate).forEach(result::add);
@@ -445,7 +449,7 @@ final class MCPDescriptorCatalogValidator {
         catalog.getPromptDescriptors().stream().map(MCPPromptDescriptor::getName).forEach(result::add);
         return result;
     }
-    
+
     private static void validateNavigationArguments(final MCPResourceNavigationDescriptor descriptor) {
         Set<String> registered = new HashSet<>();
         for (String each : descriptor.getRequiredArguments()) {
@@ -458,7 +462,7 @@ final class MCPDescriptorCatalogValidator {
             checkState(registered.add(each), String.format("Duplicate carried argument `%s` for resource navigation `%s` to `%s`.", each, descriptor.getFrom(), descriptor.getTo()));
         }
     }
-    
+
     private static void validateDestructiveToolDescriptor(final MCPToolDescriptor descriptor, final MCPToolRuntimeDescriptor runtimeDescriptor) {
         if (!Boolean.TRUE.equals(descriptor.getAnnotations().getDestructiveHint())) {
             return;
@@ -479,7 +483,7 @@ final class MCPDescriptorCatalogValidator {
         checkState(null != runtimeDescriptor && !runtimeDescriptor.getSideEffectScope().isEmpty(),
                 String.format("Destructive tool `%s` must declare sideEffectScope in internal runtime.", descriptor.getName()));
     }
-    
+
     private static void validateExecuteUpdateDescriptor(final MCPToolDescriptor descriptor) {
         if (!"database_gateway_execute_update".equals(descriptor.getName())) {
             return;
@@ -491,7 +495,7 @@ final class MCPDescriptorCatalogValidator {
         checkState(executionModes instanceof Collection && ((Collection<?>) executionModes).containsAll(List.of("execute", "preview")),
                 "Tool `database_gateway_execute_update` execution_mode must allow execute and preview.");
     }
-    
+
     private static void validatePlanningExecutionMode(final MCPToolDescriptor descriptor) {
         if ("database_gateway_apply_workflow".equals(descriptor.getName()) || "database_gateway_execute_update".equals(descriptor.getName())) {
             return;
@@ -504,7 +508,7 @@ final class MCPDescriptorCatalogValidator {
         checkState(!executionModes.contains("preview"), String.format("Planning tool `%s` execution_mode must not expose preview.", descriptor.getName()));
         checkState(!executionModes.contains("auto-execute"), String.format("Planning tool `%s` execution_mode must not expose auto-execute.", descriptor.getName()));
     }
-    
+
     private static Optional<Map<?, ?>> findToolInputProperty(final MCPToolDescriptor descriptor, final String fieldName) {
         Object properties = descriptor.getInputSchema().get("properties");
         if (!(properties instanceof Map)) {
@@ -513,12 +517,12 @@ final class MCPDescriptorCatalogValidator {
         Object property = ((Map<?, ?>) properties).get(fieldName);
         return property instanceof Map ? Optional.of((Map<?, ?>) property) : Optional.empty();
     }
-    
+
     private static boolean isRequiredToolInput(final MCPToolDescriptor descriptor, final String fieldName) {
         Object required = descriptor.getInputSchema().get("required");
         return required instanceof Collection && ((Collection<?>) required).contains(fieldName);
     }
-    
+
     private static void validatePromptGuidanceMeta(final MCPPromptDescriptor descriptor) {
         validateMetaKeys(String.format("Prompt `%s`", descriptor.getName()), descriptor.getMeta());
         checkState(isNonEmptyCollection(descriptor.getMeta().get(MCPShardingSphereMetadataKeys.STOP_CONDITIONS)),
@@ -526,7 +530,7 @@ final class MCPDescriptorCatalogValidator {
         checkState(isNonEmptyCollection(descriptor.getMeta().get(MCPShardingSphereMetadataKeys.ASK_USER_CONDITIONS)),
                 String.format("Prompt `%s` must declare %s in meta.", descriptor.getName(), MCPShardingSphereMetadataKeys.ASK_USER_CONDITIONS));
     }
-    
+
     private static void validateIcons(final String owner, final Collection<MCPIcon> icons) {
         for (MCPIcon each : icons) {
             checkNotBlank(each.getSrc(), owner + " icon src");
@@ -542,31 +546,31 @@ final class MCPDescriptorCatalogValidator {
             }
         }
     }
-    
+
     private static void validateMetaKeys(final String owner, final Map<String, Object> meta) {
         for (String each : meta.keySet()) {
             checkState(each.startsWith(MCPShardingSphereMetadataKeys.PREFIX), String.format("%s meta key `%s` must use the ShardingSphere MCP namespace.", owner, each));
         }
     }
-    
+
     private static boolean isNonEmptyCollection(final Object value) {
         return value instanceof Collection && !((Collection<?>) value).isEmpty();
     }
-    
+
     private static void checkDescription(final String value, final String label) {
         checkNotBlank(value, label);
         checkState(!value.startsWith(createPlaceholderPrefix("resource:")), String.format("%s must not be a placeholder description.", label));
         checkState(!value.startsWith(createPlaceholderPrefix("resource template:")), String.format("%s must not be a placeholder description.", label));
     }
-    
+
     private static String createPlaceholderPrefix(final String suffix) {
         return "ShardingSphere MCP " + suffix;
     }
-    
+
     private static void checkNotBlank(final String value, final String label) {
         checkState(null != value && !value.isBlank(), String.format("%s is required.", label));
     }
-    
+
     private static void checkState(final boolean expression, final String message) {
         if (!expression) {
             throw new IllegalStateException(message);

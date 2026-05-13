@@ -42,8 +42,11 @@
 
 - [x] Official discovery versus `shardingsphere://capabilities` is covered.
 - [x] Completion provider generalization is covered.
+- [x] Completion provider contract location is clarified as `mcp/support` by default.
 - [x] Tool-specific descriptor validation special cases are covered.
 - [x] Protocol error versus tool execution error semantics are covered.
+- [x] Unknown tool/resource raw wire verification covers both Streamable HTTP and STDIO.
+- [x] Matched-template handler miss coverage is scoped to unit tests unless unit coverage is insufficient.
 - [x] ShardingSphere business payload fields are classified separately from MCP protocol fields.
 - [x] Application pagination versus MCP list pagination is covered.
 - [x] ResourceLink generation special coupling is covered.
@@ -58,6 +61,7 @@
 - [x] Success criteria are measurable against descriptors, protocol behavior, schema snapshots, and tests.
 - [x] Every baseline review gap maps to at least one functional requirement.
 - [x] `tasks.md` maps requirements into phased implementation work with file paths.
+- [x] 013, 014, and 015 ownership boundaries are recorded to prevent duplicate implementation.
 
 ## Readiness Decision
 

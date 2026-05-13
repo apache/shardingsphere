@@ -20,15 +20,21 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.resource;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
+import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
+import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceTemplateDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
+import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
+import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.resource.MCPResourceController;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 
 import java.util.List;
 import java.util.Locale;
@@ -38,16 +44,16 @@ import java.util.stream.Collectors;
  * MCP resource specification factory.
  */
 public final class MCPResourceSpecificationFactory {
-    
+
     private final List<MCPResourceDescriptor> resourceDescriptors;
-    
+
     private final MCPResourceController controller;
-    
+
     public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         resourceDescriptors = ResourceHandlerRegistry.getSupportedResourceDescriptors();
         controller = new MCPResourceController(runtimeContext);
     }
-    
+
     /**
      * Create MCP resource specifications.
      *
@@ -58,7 +64,7 @@ public final class MCPResourceSpecificationFactory {
                 .filter(MCPFixedResourceDescriptor.class::isInstance).map(MCPFixedResourceDescriptor.class::cast)
                 .map(each -> new SyncResourceSpecification(createResource(each), this::handleReadResource)).collect(Collectors.toList());
     }
-    
+
     /**
      * Create MCP resource template specifications.
      *
@@ -70,7 +76,7 @@ public final class MCPResourceSpecificationFactory {
                 .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource))
                 .collect(Collectors.toList());
     }
-    
+
     private McpSchema.Resource createResource(final MCPFixedResourceDescriptor descriptor) {
         McpSchema.Resource.Builder result = McpSchema.Resource.builder()
                 .uri(descriptor.getUri())
@@ -87,7 +93,7 @@ public final class MCPResourceSpecificationFactory {
         }
         return result.build();
     }
-    
+
     private McpSchema.ResourceTemplate createResourceTemplate(final MCPResourceTemplateDescriptor descriptor) {
         McpSchema.ResourceTemplate.Builder result = McpSchema.ResourceTemplate.builder()
                 .uriTemplate(descriptor.getUriTemplate())
@@ -101,25 +107,48 @@ public final class MCPResourceSpecificationFactory {
         }
         return result.build();
     }
-    
+
     private void appendResourceAnnotations(final McpSchema.Resource.Builder builder, final MCPAnnotations annotations) {
         if (!annotations.isEmpty()) {
             builder.annotations(createAnnotations(annotations));
         }
     }
-    
+
     private void appendResourceTemplateAnnotations(final McpSchema.ResourceTemplate.Builder builder, final MCPAnnotations annotations) {
         if (!annotations.isEmpty()) {
             builder.annotations(createAnnotations(annotations));
         }
     }
-    
+
     private McpSchema.Annotations createAnnotations(final MCPAnnotations annotations) {
         List<McpSchema.Role> audience = annotations.getAudience().stream().map(each -> McpSchema.Role.valueOf(each.toUpperCase(Locale.ENGLISH))).toList();
         return new McpSchema.Annotations(audience, annotations.getPriority(), annotations.getLastModified());
     }
-    
+
     private McpSchema.ReadResourceResult handleReadResource(final McpSyncServerExchange exchange, final McpSchema.ReadResourceRequest request) {
-        return MCPTransportPayloadUtils.createReadResourceResult(request.uri(), controller.handle(request.uri()).toPayload());
+        try {
+            return MCPTransportPayloadUtils.createReadResourceResult(request.uri(), controller.handle(request.uri()).toPayload());
+        } catch (final ShardingSphereMCPException | RuntimeDatabaseConnectionException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException ex) {
+            throw createReadResourceError(ex);
+        }
+    }
+
+    private McpError createReadResourceError(final RuntimeException cause) {
+        MCPErrorResponse errorResponse = MCPErrorConverter.convert(cause);
+        return McpError.builder(getJsonRpcErrorCode(cause, errorResponse))
+                .message(getJsonRpcErrorMessage(cause, errorResponse))
+                .data(errorResponse.toPayload())
+                .build();
+    }
+
+    private int getJsonRpcErrorCode(final RuntimeException cause, final MCPErrorResponse errorResponse) {
+        if (cause instanceof UnsupportedResourceUriException) {
+            return McpSchema.ErrorCodes.RESOURCE_NOT_FOUND;
+        }
+        return "invalid_request".equals(errorResponse.getErrorCode()) ? McpSchema.ErrorCodes.INVALID_PARAMS : McpSchema.ErrorCodes.INTERNAL_ERROR;
+    }
+
+    private String getJsonRpcErrorMessage(final RuntimeException cause, final MCPErrorResponse errorResponse) {
+        return cause instanceof UnsupportedResourceUriException ? "Resource not found" : String.valueOf(errorResponse.toPayload().getOrDefault("message", "Resource read failed."));
     }
 }

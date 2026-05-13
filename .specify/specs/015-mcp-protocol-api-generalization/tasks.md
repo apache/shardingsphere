@@ -51,7 +51,13 @@
 - [ ] T003 [P] Add an implementation evidence ledger for current non-general APIs and their target disposition.
   Path: `.specify/specs/015-mcp-protocol-api-generalization/protocol-api-evidence.md`
 - [ ] T004 [P] Confirm overlapping requirements in protocol field standardization and E2E hardening packages to avoid duplicate implementation work.
+  Record the owner map: 013 owns descriptor shape and metadata naming, 014 owns accepted E2E/outputSchema/pagination hardening, and 015 owns protocol/domain separation and API generalization gaps.
   Paths: `.specify/specs/013-mcp-protocol-field-standardization/`, `.specify/specs/014-mcp-standard-and-e2e-hardening/`
+- [ ] T005 [P] Verify MCP Java SDK `1.1.2` wire behavior for completely unknown tools and resources before changing ShardingSphere error mapping.
+  Transport coverage: both Streamable HTTP and STDIO raw wire responses.
+  Assertions: JSON-RPC error is present, normal `result` is absent, resource contents are absent, and tool failures are not wrapped as `CallToolResult.isError`.
+  Paths: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/`,
+  `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/resource/`
 
 **Checkpoint**: The implementation can start with a stable protocol baseline and a non-duplicative scope.
 
@@ -66,7 +72,10 @@
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/resource/`,
   `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/`
 - [ ] T012 [US2] Define a completion provider contract that maps reference type, reference, and argument name to candidate providers.
-  Path: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/completion/`
+  The default location is `mcp/support`; use `mcp/api` only if a later design proves the signature can stay on pure API DTOs without descriptor or support-context dependency.
+  Feature modules must not depend on `shardingsphere-mcp-core` for completion providers.
+  Paths: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/`,
+  `mcp/api/src/main/java/org/apache/shardingsphere/mcp/api/`
 - [ ] T013 [US4] Define the domain payload field policy for `response_mode`, `next_actions`, `recovery`, resource hints, and application pagination.
   Paths: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/protocol/`, `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/descriptors/`
 - [ ] T014 [US4] Define an explicit ResourceLink provider or contract to replace recursive arbitrary map scanning.
@@ -115,7 +124,9 @@
 - [ ] T031 [P] [US2] Add tests for workflow plan ID completion through a provider.
   Path: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/completion/`
 - [ ] T032 [P] [US2] Add tests for encrypt and mask algorithm completion without string containment routing.
-  Path: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/completion/`
+  Verify feature modules do not add a dependency on `shardingsphere-mcp-core`.
+  Paths: `mcp/features/encrypt/src/test/java/`, `mcp/features/mask/src/test/java/`,
+  `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/completion/`
 - [ ] T033 [P] [US2] Add descriptor validator tests proving generic validation no longer hardcodes public tool names.
   Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/`
 
@@ -126,7 +137,10 @@
 - [ ] T035 [US2] Extract workflow plan ID completion logic into a provider.
   Path: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/completion/`
 - [ ] T036 [US2] Extract algorithm completion logic into descriptor or feature-aware providers.
-  Path: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/completion/`
+  Feature providers must not require `mcp/features/*` to depend on `shardingsphere-mcp-core`.
+  Paths: `mcp/api/src/main/java/org/apache/shardingsphere/mcp/api/`,
+  `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/`,
+  `mcp/features/encrypt/src/main/java/`, `mcp/features/mask/src/main/java/`
 - [ ] T037 [US2] Remove hardcoded tool-specific required field branches from the generic descriptor validator.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogValidator.java`
 - [ ] T038 [US2] Move tool-specific output-shape checks into descriptor schema tests or feature-owned validators.
@@ -143,9 +157,15 @@
 
 ### Tests for User Story 3
 
-- [ ] T040 [P] [US3] Add resource read tests for unsupported URI protocol errors.
+- [ ] T040 [P] [US3] Add wire-level resource read tests that separate SDK no-match protocol errors from ShardingSphere matched-template handler misses.
+  Transport coverage: both Streamable HTTP and STDIO raw wire responses for SDK no-match.
+  Assertions: unsupported no-match resource returns JSON-RPC error, no normal `result`, and no successful resource contents.
+  Matched-template handler miss coverage: unit test first; add E2E only if unit tests cannot fully cover the internal boundary or affected transport mapping.
   Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/resource/`
-- [ ] T041 [P] [US3] Add tool call tests for unsupported tool protocol errors.
+- [ ] T041 [P] [US3] Add wire-level tool call tests that separate SDK unknown-tool protocol errors from ShardingSphere controller-direct unsupported dispatch.
+  Transport coverage: both Streamable HTTP and STDIO raw wire responses for SDK unknown-tool.
+  Assertions: unsupported unknown tool returns JSON-RPC error, no normal `result`, and no `CallToolResult.isError` wrapper.
+  Controller-direct unsupported dispatch coverage: unit test first; add E2E only if unit tests cannot fully cover the internal boundary or affected transport mapping.
   Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/`
 - [ ] T042 [P] [US3] Add supported tool business failure tests proving `isError: true` and actionable structured content.
   Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/`
@@ -173,13 +193,14 @@
 ### Tests for User Story 4
 
 - [ ] T050 [P] [US4] Add tests or snapshots proving application pagination fields are documented as domain payload fields.
-  Paths: `mcp/support/src/test/java/`, `mcp/core/src/test/java/`
+  Paths: `mcp/support/src/test/java/`, `mcp/core/src/test/java/`, `mcp/README.md`, `mcp/README_ZH.md`
 - [ ] T051 [P] [US4] Add ResourceLink provider tests with explicit ordering and limits.
   Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/`
 
 ### Implementation for User Story 4
 
 - [ ] T052 [US4] Update payload schema descriptions that mention `next_page_token`, `has_more`, or `continuation_mode` to call them application pagination.
+  Descriptions must state that these fields are not MCP list `cursor` or `nextCursor`.
   Path: `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/descriptors/core.yaml`
 - [ ] T053 [US4] Update shared payload response helpers to keep business fields domain-scoped in names and documentation.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/protocol/`
@@ -232,6 +253,7 @@
 
 - Phase 1 must complete before implementation.
 - Phase 2 blocks all user stories.
+- T005 blocks T011, T040, T041, T043, T044, and T045.
 - User Stories 1, 2, and 3 are P1 and should be implemented before P2 planner and documentation cleanup.
 - User Stories 4 and 5 can proceed in parallel after Phase 2 if write scopes are disjoint.
 - Phase 8 closes the package only after tests and documentation evidence are recorded.

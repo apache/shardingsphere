@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -30,11 +31,12 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
 class ProductionH2CapabilityDiscoveryE2ETest extends ProductionH2RuntimeSmokeE2ETest {
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertReadDatabasesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -43,7 +45,7 @@ class ProductionH2CapabilityDiscoveryE2ETest extends ProductionH2RuntimeSmokeE2E
             MCPPayloadAssertions.assertSingleItemValue(interactionClient.readResource("shardingsphere://databases"), "database", "logic_db");
         }
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertReadDatabaseCapabilitiesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -54,7 +56,7 @@ class ProductionH2CapabilityDiscoveryE2ETest extends ProductionH2RuntimeSmokeE2E
             assertThat(String.valueOf(actual.get("supportsExplainAnalyze")), is("true"));
         }
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertServiceCapabilitiesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -63,7 +65,7 @@ class ProductionH2CapabilityDiscoveryE2ETest extends ProductionH2RuntimeSmokeE2E
             assertOfficialToolNames(((List<?>) interactionClient.readResource("shardingsphere://capabilities").get("supportedTools")).stream().map(String::valueOf).toList());
         }
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertListTools(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -76,7 +78,7 @@ class ProductionH2CapabilityDiscoveryE2ETest extends ProductionH2RuntimeSmokeE2E
             assertToolDefinition(actual, "database_gateway_execute_update", "Execute Update SQL", "sql", "timeout_ms", "integer");
         }
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertListResources(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -86,7 +88,7 @@ class ProductionH2CapabilityDiscoveryE2ETest extends ProductionH2RuntimeSmokeE2E
             assertTrue(getResources(actual).stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.get("uri"))));
         }
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertListResourceTemplates(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -99,15 +101,32 @@ class ProductionH2CapabilityDiscoveryE2ETest extends ProductionH2RuntimeSmokeE2E
             assertTrue(actualTemplates.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}"));
         }
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertRejectUnsupportedResourceUri(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.readResource("unsupported://resource");
-            assertThat(String.valueOf(actual.get("error_code")), is("json_rpc_error"));
-            assertThat(String.valueOf(actual.get("message")), is("Resource not found"));
+            Map<String, Object> actual = interactionClient.sendRawRequest("resources-read-unsupported-1", "resources/read", Map.of("uri", "unsupported://resource"));
+            assertJsonRpcErrorWithoutResult(actual);
+            assertThat(String.valueOf(getMap(actual.get("error")).get("message")), is("Resource not found"));
         }
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertRejectUnsupportedToolName(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> actual = interactionClient.sendRawRequest("tools-call-unsupported-1", "tools/call",
+                    Map.of("name", "unsupported_tool", "arguments", Map.of()));
+            assertJsonRpcErrorWithoutResult(actual);
+            assertFalse(String.valueOf(getMap(actual.get("error")).get("message")).isBlank());
+        }
+    }
+
+    private void assertJsonRpcErrorWithoutResult(final Map<String, Object> actual) {
+        assertTrue(MCPInteractionPayloads.hasJsonRpcError(actual));
+        assertFalse(actual.containsKey("result"));
     }
 }
