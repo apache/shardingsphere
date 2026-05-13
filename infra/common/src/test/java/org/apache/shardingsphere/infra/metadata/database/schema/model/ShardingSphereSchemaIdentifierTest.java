@@ -34,6 +34,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingSphereSchemaIdentifierTest {
@@ -130,5 +131,30 @@ class ShardingSphereSchemaIdentifierTest {
         DatabaseIdentifierContext context = new DatabaseIdentifierContext(new IdentifierCaseRuleSet(IdentifierCaseRuleSets.newUpperCaseRuleSet().getRule(IdentifierScope.TABLE), scopedRules), true);
         schema.refreshIdentifierContext(context);
         assertThat(schema.getTable("FOO_TBL"), is(upperCaseTable));
+    }
+    
+    @Test
+    void assertRemoveTableByLogicalTableIndexWhenHeterogeneousLookupEnabled() {
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
+        Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
+        scopedRules.put(IdentifierScope.LOGICAL_TABLE, IdentifierCaseRuleSets.newLowerCaseRuleSet().getRule(IdentifierScope.TABLE));
+        DatabaseIdentifierContext context = new DatabaseIdentifierContext(new IdentifierCaseRuleSet(IdentifierCaseRuleSets.newUpperCaseRuleSet().getRule(IdentifierScope.TABLE), scopedRules), true);
+        schema.refreshIdentifierContext(context);
+        schema.removeTable("FOO_TBL");
+        assertNull(schema.getTable("foo_tbl"));
+    }
+    
+    @Test
+    void assertRemoveTablePrioritizesPhysicalTableIndexWhenBothIndexesCanMatch() {
+        ShardingSphereTable lowerCaseTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable upperCaseTable = new ShardingSphereTable("FOO_TBL", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Arrays.asList(lowerCaseTable, upperCaseTable), Collections.emptyList());
+        Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
+        scopedRules.put(IdentifierScope.LOGICAL_TABLE, IdentifierCaseRuleSets.newLowerCaseRuleSet().getRule(IdentifierScope.TABLE));
+        DatabaseIdentifierContext context = new DatabaseIdentifierContext(new IdentifierCaseRuleSet(IdentifierCaseRuleSets.newUpperCaseRuleSet().getRule(IdentifierScope.TABLE), scopedRules), true);
+        schema.refreshIdentifierContext(context);
+        schema.removeTable("FOO_TBL");
+        assertThat(schema.getTable("FOO_TBL"), is(lowerCaseTable));
     }
 }
