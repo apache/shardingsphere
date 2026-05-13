@@ -1357,6 +1357,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.specialDatatype()) {
             result.setDataTypeName(((KeywordValue) visit(ctx.specialDatatype().dataTypeName())).getValue());
         }
+        if (null != ctx.customDataType()) {
+            result.setDataTypeName(ctx.customDataType().getText());
+        }
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         if (null != ctx.dataTypeLength()) {

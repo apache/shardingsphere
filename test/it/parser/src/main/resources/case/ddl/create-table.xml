@@ -2149,7 +2149,47 @@
         <column-definition type="VARCHAR2" start-index="111" stop-index="132">
             <column name="last_name" />
         </column-definition>
-        <column-definition type="phone_ntabtyp" start-index="135" stop-index="159">
+        <column-definition type="oe.phone_ntabtyp" start-index="135" stop-index="162">
+            <column name="phones_ntab" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_nested_table_mixed_column_properties_xmltype_first" db-types="Oracle">
+        <table name="t_nested_mix" start-index="13" stop-index="24" />
+        <column-definition type="XMLTYPE" start-index="27" stop-index="37">
+            <column name="doc" />
+        </column-definition>
+        <column-definition type="phone_ntabtyp" start-index="40" stop-index="64">
+            <column name="phones_ntab" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_nested_table_mixed_column_properties_nested_first" db-types="Oracle">
+        <table name="t_nested_mix2" start-index="13" stop-index="25" />
+        <column-definition type="XMLTYPE" start-index="28" stop-index="38">
+            <column name="doc" />
+        </column-definition>
+        <column-definition type="phone_ntabtyp" start-index="41" stop-index="65">
+            <column name="phones_ntab" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_nested_table_mixed_column_properties_lob_first" db-types="Oracle">
+        <table name="t_nested_lob_mix" start-index="13" stop-index="28" />
+        <column-definition type="CLOB" start-index="31" stop-index="38">
+            <column name="doc" />
+        </column-definition>
+        <column-definition type="phone_ntabtyp" start-index="41" stop-index="65">
+            <column name="phones_ntab" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_nested_table_mixed_column_properties_nested_first_lob" db-types="Oracle">
+        <table name="t_nested_lob_mix2" start-index="13" stop-index="29" />
+        <column-definition type="CLOB" start-index="32" stop-index="39">
+            <column name="doc" />
+        </column-definition>
+        <column-definition type="phone_ntabtyp" start-index="42" stop-index="66">
             <column name="phones_ntab" />
         </column-definition>
     </create-table>

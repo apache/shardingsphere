@@ -286,8 +286,7 @@ oidIndexClause
     ;
 
 createRelationalTableClause
-    : (LP_ relationalProperties RP_)? immutableTableClauses? blockchainTableClauses? collationClause? commitClause? parallelClause? physicalProperties?
-    nestedTableColProperties* tableProperties?
+    : (LP_ relationalProperties RP_)? immutableTableClauses? blockchainTableClauses? collationClause? commitClause? parallelClause? physicalProperties? tableProperties?
     ;
 
 createParentClause
@@ -690,6 +689,7 @@ columnProperty
     : objectTypeColProperties
     | xmlTypeColProperties
     | lobStorageClause
+    | nestedTableColProperties
     ;
 
 xmlTypeColProperties
