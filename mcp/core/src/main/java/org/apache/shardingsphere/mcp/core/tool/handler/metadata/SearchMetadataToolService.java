@@ -32,7 +32,7 @@ import java.util.Set;
  */
 public final class SearchMetadataToolService {
     
-    static final int DEFAULT_PAGE_SIZE = 100;
+    static final int DEFAULT_PAGE_SIZE = 50;
     
     static final int MAX_PAGE_SIZE = 500;
     

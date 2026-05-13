@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
+import io.modelcontextprotocol.json.schema.JsonSchemaValidator;
+import io.modelcontextprotocol.json.schema.JsonSchemaValidator.ValidationResponse;
+import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification.Builder;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
@@ -26,12 +29,14 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -45,6 +50,8 @@ public final class MCPToolSpecificationFactory {
     
     private final MCPToolElicitationHandler elicitationHandler;
     
+    private final JsonSchemaValidator outputSchemaValidator;
+    
     /**
      * Create MCP tool specification factory.
      *
@@ -54,6 +61,7 @@ public final class MCPToolSpecificationFactory {
         toolDescriptors = ToolHandlerRegistry.getSupportedToolDescriptors();
         toolController = new MCPToolController(runtimeContext);
         elicitationHandler = new MCPToolElicitationHandler(toolController);
+        outputSchemaValidator = new DefaultJsonSchemaValidator();
     }
     
     /**
@@ -70,7 +78,7 @@ public final class MCPToolSpecificationFactory {
                 .name(toolDescriptor.getName())
                 .title(toolDescriptor.getTitle())
                 .description(toolDescriptor.getDescription())
-                .inputSchema(createInputSchema(toolDescriptor.toInputSchema()));
+                .inputSchema(createInputSchema(toolDescriptor.getInputSchema()));
         if (!toolDescriptor.getOutputSchema().isEmpty()) {
             result.outputSchema(toolDescriptor.getOutputSchema());
         }
@@ -94,7 +102,7 @@ public final class MCPToolSpecificationFactory {
     
     private McpSchema.ToolAnnotations createToolAnnotations(final MCPToolAnnotations annotations) {
         return new McpSchema.ToolAnnotations(annotations.getTitle(), annotations.getReadOnlyHint(), annotations.getDestructiveHint(), annotations.getIdempotentHint(),
-                annotations.getOpenWorldHint(), annotations.getReturnDirect());
+                annotations.getOpenWorldHint(), null);
     }
     
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
@@ -103,9 +111,25 @@ public final class MCPToolSpecificationFactory {
         Map<String, Object> payload = response.toPayload();
         Optional<MCPToolDescriptor> toolDescriptor = findToolDescriptor(request.name());
         if (toolDescriptor.isPresent() && elicitationHandler.shouldElicit(exchange, toolDescriptor.get(), payload)) {
-            return MCPTransportPayloadUtils.createCallToolResult(elicitationHandler.handle(exchange, toolDescriptor.get(), arguments, response, payload));
+            return createCallToolResult(toolDescriptor.get(), elicitationHandler.handle(exchange, toolDescriptor.get(), arguments, response, payload));
         }
-        return MCPTransportPayloadUtils.createCallToolResult(response);
+        return toolDescriptor.map(each -> createCallToolResult(each, response)).orElseGet(() -> MCPTransportPayloadUtils.createCallToolResult(response));
+    }
+    
+    private McpSchema.CallToolResult createCallToolResult(final MCPToolDescriptor toolDescriptor, final MCPResponse response) {
+        if (response instanceof MCPErrorResponse) {
+            return MCPTransportPayloadUtils.createCallToolResult(response);
+        }
+        Map<String, Object> payload = response.toPayload();
+        if (toolDescriptor.getOutputSchema().isEmpty()) {
+            return MCPTransportPayloadUtils.createCallToolResult(payload);
+        }
+        ValidationResponse validation = outputSchemaValidator.validate(toolDescriptor.getOutputSchema(), payload);
+        if (validation.valid()) {
+            return MCPTransportPayloadUtils.createCallToolResult(payload);
+        }
+        return MCPTransportPayloadUtils.createCallToolResult(new MCPErrorResponse("invalid_output_schema", String.format(
+                "Tool `%s` structuredContent does not match declared outputSchema: %s", toolDescriptor.getName(), Objects.toString(validation.errorMessage(), "validation failed"))));
     }
     
     private Optional<MCPToolDescriptor> findToolDescriptor(final String toolName) {

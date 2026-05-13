@@ -37,6 +37,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.prompt.MCPPromptSpecifi
 import org.apache.shardingsphere.mcp.bootstrap.transport.resource.MCPResourceSpecificationFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.tool.MCPToolSpecificationFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 import reactor.core.publisher.Mono;
@@ -66,7 +67,7 @@ class MCPSyncServerFactoryTest {
         assertFalse(actual.getServerCapabilities().tools().listChanged());
         assertFalse(actual.getServerCapabilities().prompts().listChanged());
         assertNotNull(actual.getServerCapabilities().completions());
-        assertThat(actual.listTools().stream().map(McpSchema.Tool::name).toList(), is(List.of("search_metadata")));
+        assertThat(actual.listTools().stream().map(McpSchema.Tool::name).toList(), is(List.of("database_gateway_search_metadata")));
         assertThat(actual.listResources().stream().map(McpSchema.Resource::uri).toList(), is(List.of("shardingsphere://capabilities")));
         assertThat(actual.listResourceTemplates().stream().map(McpSchema.ResourceTemplate::uriTemplate).toList(),
                 is(List.of("shardingsphere://databases/{database}")));
@@ -91,7 +92,7 @@ class MCPSyncServerFactoryTest {
         MCPPromptSpecificationFactory promptSpecificationFactory = mock(MCPPromptSpecificationFactory.class);
         MCPCompletionSpecificationFactory completionSpecificationFactory = mock(MCPCompletionSpecificationFactory.class);
         when(toolSpecificationFactory.createToolSpecifications()).thenReturn(List.of(new SyncToolSpecification(
-                McpSchema.Tool.builder().name("search_metadata").title("Search Metadata").description("Search metadata").inputSchema(
+                McpSchema.Tool.builder().name("database_gateway_search_metadata").title("Search Metadata").description("Search metadata").inputSchema(
                         new McpSchema.JsonSchema("object", Map.of(), List.of(), true, Map.of(), Map.of())).build(),
                 (exchange, request) -> MCPTransportPayloadUtils.createCallToolResult(Map.of("status", "ok")))));
         when(resourceSpecificationFactory.createResourceSpecifications()).thenReturn(List.of(new SyncResourceSpecification(
@@ -107,7 +108,9 @@ class MCPSyncServerFactoryTest {
         when(completionSpecificationFactory.createCompletionSpecifications()).thenReturn(List.of(new SyncCompletionSpecification(new McpSchema.PromptReference("inspect_metadata"),
                 (exchange, request) -> new McpSchema.CompleteResult(new McpSchema.CompleteResult.CompleteCompletion(List.of(), 0, false)))));
         McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
-        MCPSyncServerFactory result = new MCPSyncServerFactory(mock(MCPRuntimeContext.class), jsonMapper);
+        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
+        when(runtimeContext.getSessionManager()).thenReturn(mock(MCPSessionManager.class));
+        MCPSyncServerFactory result = new MCPSyncServerFactory(runtimeContext, jsonMapper);
         setField(result, "toolSpecificationFactory", toolSpecificationFactory);
         setField(result, "resourceSpecificationFactory", resourceSpecificationFactory);
         setField(result, "promptSpecificationFactory", promptSpecificationFactory);

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequence
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
@@ -262,38 +263,39 @@ public final class MCPCompletionService {
                                            final Map<String, String> contextArguments, final Map<String, Object> inferredContextArguments, final List<CompletionCandidate> candidates,
                                            final List<CompletionCandidate> filteredCandidates, final List<CompletionCandidate> returnedCandidates) {
         Map<String, Object> result = new LinkedHashMap<>(14, 1F);
-        result.put("response_mode", MCPResponseMode.LIST);
-        result.put("referenceType", descriptor.getReferenceType());
-        result.put("reference", descriptor.getReference());
-        result.put("argument", argumentName);
-        result.put("prefix", prefix);
-        result.put("matchStrategy", matchStrategy);
-        result.put("contextArguments", contextArguments);
-        result.put("candidateCount", candidates.size());
-        result.put("matchedCandidateCount", filteredCandidates.size());
-        result.put("returnedCandidateCount", returnedCandidates.size());
-        result.put("continuation_mode", filteredCandidates.size() > returnedCandidates.size() ? "pagination" : "none");
+        result.put(MCPShardingSphereMetadataKeys.RESPONSE_MODE, MCPResponseMode.LIST);
+        result.put(MCPShardingSphereMetadataKeys.REFERENCE_TYPE, descriptor.getReferenceType());
+        result.put(MCPShardingSphereMetadataKeys.REFERENCE, descriptor.getReference());
+        result.put(MCPShardingSphereMetadataKeys.ARGUMENT, argumentName);
+        result.put(MCPShardingSphereMetadataKeys.PREFIX_ARGUMENT, prefix);
+        result.put(MCPShardingSphereMetadataKeys.MATCH_STRATEGY, matchStrategy);
+        result.put(MCPShardingSphereMetadataKeys.CONTEXT_ARGUMENTS, contextArguments);
+        result.put(MCPShardingSphereMetadataKeys.CANDIDATE_COUNT, candidates.size());
+        result.put(MCPShardingSphereMetadataKeys.MATCHED_CANDIDATE_COUNT, filteredCandidates.size());
+        result.put(MCPShardingSphereMetadataKeys.RETURNED_CANDIDATE_COUNT, returnedCandidates.size());
+        result.put(MCPShardingSphereMetadataKeys.CONTINUATION_MODE, filteredCandidates.size() > returnedCandidates.size() ? "pagination" : "none");
         putInferredContext(result, inferredContextArguments);
         List<String> missingContextArguments = createMissingContextArguments(argumentName, contextArguments);
-        result.put("missingContextArguments", missingContextArguments);
+        result.put(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS, missingContextArguments);
         String diagnostic = createDiagnostic(candidates, filteredCandidates, missingContextArguments);
-        result.put("diagnostic", diagnostic);
+        result.put(MCPShardingSphereMetadataKeys.DIAGNOSTIC, diagnostic);
         if (!"ok".equals(diagnostic)) {
-            result.put("recovery", createRecovery(argumentName, prefix, contextArguments, diagnostic, missingContextArguments));
+            result.put(MCPShardingSphereMetadataKeys.RECOVERY, createRecovery(argumentName, prefix, contextArguments, diagnostic, missingContextArguments));
         }
         List<Map<String, Object>> nextActions = createNextActions(descriptor, argumentName, prefix, contextArguments, diagnostic, missingContextArguments);
         if (!nextActions.isEmpty()) {
-            result.put("next_actions", nextActions);
+            result.put(MCPShardingSphereMetadataKeys.NEXT_ACTIONS, nextActions);
         }
-        result.put("rankingPolicy", List.of("exact-prefix-match", "contains-fallback-when-prefix-has-no-match", "recent-plan-first-for-plan_id", "case-insensitive-lexical"));
-        result.put("valueDetails", returnedCandidates.stream().map(this::createValueDetail).toList());
+        result.put(MCPShardingSphereMetadataKeys.RANKING_POLICY, List.of("exact-prefix-match", "contains-fallback-when-prefix-has-no-match", "recent-plan-first-for-plan_id",
+                "case-insensitive-lexical"));
+        result.put(MCPShardingSphereMetadataKeys.VALUE_DETAILS, returnedCandidates.stream().map(this::createValueDetail).toList());
         return result;
     }
     
     private void putInferredContext(final Map<String, Object> target, final Map<String, Object> inferredContextArguments) {
         if (!inferredContextArguments.isEmpty()) {
-            target.put("inferredContextArguments", inferredContextArguments);
-            target.put("argument_provenance", createArgumentProvenance(inferredContextArguments));
+            target.put(MCPShardingSphereMetadataKeys.INFERRED_CONTEXT_ARGUMENTS, inferredContextArguments);
+            target.put(MCPShardingSphereMetadataKeys.ARGUMENT_PROVENANCE, createArgumentProvenance(inferredContextArguments));
         }
     }
     

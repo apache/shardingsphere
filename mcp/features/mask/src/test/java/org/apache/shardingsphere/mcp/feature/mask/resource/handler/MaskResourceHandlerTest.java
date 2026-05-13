@@ -23,6 +23,8 @@ import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceDescriptorUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -41,14 +43,15 @@ import static org.mockito.Mockito.when;
 class MaskResourceHandlerTest {
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("assertGetUriPatternArguments")
-    void assertGetUriPattern(final String name, final MCPResourceHandler<MCPDatabaseHandlerContext> handler, final String expectedUriPattern) {
-        assertThat(handler.getResourceDescriptor().getUriTemplate(), is(expectedUriPattern));
+    @MethodSource("assertGetUriOrTemplateArguments")
+    void assertGetUriOrTemplate(final String name, final MCPResourceHandler<MCPDatabaseHandlerContext> handler, final String expectedUriOrTemplate) {
+        assertThat(MCPResourceDescriptorUtils.getUriOrTemplate(handler.getResourceDescriptor()), is(expectedUriOrTemplate));
     }
     
     @Test
     void assertGetMaskRuleResourceKind() {
-        assertThat(new MaskRuleHandler().getResourceDescriptor().getResourceKind(), is("list"));
+        String actualUriTemplate = MCPResourceDescriptorUtils.getUriOrTemplate(new MaskRuleHandler().getResourceDescriptor());
+        assertThat(MCPDescriptorRegistry.getRequiredResourceExtensionDescriptor(actualUriTemplate).getResourceKind(), is("list"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -73,7 +76,7 @@ class MaskResourceHandlerTest {
         assertThat(((Map<?, ?>) actual.toPayload().get("parent_resource")).get("uri"), is(expectedParentUri));
     }
     
-    private static Stream<Arguments> assertGetUriPatternArguments() {
+    private static Stream<Arguments> assertGetUriOrTemplateArguments() {
         return Stream.of(
                 Arguments.of("mask algorithms URI", new MaskAlgorithmsHandler(), "shardingsphere://features/mask/algorithms"),
                 Arguments.of("mask rules URI", new MaskRulesHandler(), "shardingsphere://features/mask/databases/{database}/rules"),

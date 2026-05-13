@@ -26,8 +26,6 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
@@ -60,33 +58,36 @@ class ToolHandlerRegistryTest {
     
     @Test
     void assertGetSupportedTools() {
-        assertThat(ToolHandlerRegistry.getSupportedTools(), contains("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow"));
+        assertThat(ToolHandlerRegistry.getSupportedTools(), contains("database_gateway_search_metadata", "database_gateway_execute_query",
+                "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow"));
     }
     
     @Test
     void assertGetSupportedToolDescriptors() {
         List<MCPToolDescriptor> actual = ToolHandlerRegistry.getSupportedToolDescriptors();
-        assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(), is(List.of("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow")));
+        assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(),
+                is(List.of("database_gateway_search_metadata", "database_gateway_execute_query", "database_gateway_execute_update",
+                        "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
         assertToolFields(actual.get(1), List.of("database", "schema", "sql", "max_rows", "timeout_ms"));
         assertRequiredFields(actual.get(1), List.of("database", "sql"));
         assertToolFields(actual.get(2), List.of("database", "schema", "sql", "execution_mode", "approved_by_user", "max_rows", "timeout_ms"));
         assertRequiredFields(actual.get(2), List.of("database", "sql", "execution_mode"));
-        assertField(actual.get(2), "execution_mode", MCPToolValueDefinition.Type.STRING, List.of("execute", "preview"), true);
-        assertField(actual.get(2), "approved_by_user", MCPToolValueDefinition.Type.BOOLEAN, List.of(), false);
-        assertField(actual.get(2), "max_rows", MCPToolValueDefinition.Type.INTEGER, List.of(), false);
-        assertField(actual.get(2), "timeout_ms", MCPToolValueDefinition.Type.INTEGER, List.of(), false);
+        assertField(actual.get(2), "execution_mode", "string", List.of("execute", "preview"), true);
+        assertField(actual.get(2), "approved_by_user", "boolean", List.of(), false);
+        assertField(actual.get(2), "max_rows", "integer", List.of(), false);
+        assertField(actual.get(2), "timeout_ms", "integer", List.of(), false);
         assertToolFields(actual.get(3), List.of("plan_id", "execution_mode", "approved_steps", "approved_by_user"));
         assertRequiredFields(actual.get(3), List.of("plan_id", "execution_mode"));
-        assertField(actual.get(3), "execution_mode", MCPToolValueDefinition.Type.STRING, List.of("preview", "review-then-execute", "manual-only"), true);
-        assertField(actual.get(3), "approved_steps", MCPToolValueDefinition.Type.ARRAY, List.of(), false);
-        assertField(actual.get(3), "approved_by_user", MCPToolValueDefinition.Type.BOOLEAN, List.of(), false);
+        assertField(actual.get(3), "execution_mode", "string", List.of("preview", "review-then-execute", "manual-only"), true);
+        assertField(actual.get(3), "approved_steps", "array", List.of(), false);
+        assertField(actual.get(3), "approved_by_user", "boolean", List.of(), false);
     }
     
     @Test
     void assertFindRegisteredTool() {
-        Optional<MCPToolHandler<?>> actual = ToolHandlerRegistry.findRegisteredTool("search_metadata");
+        Optional<MCPToolHandler<?>> actual = ToolHandlerRegistry.findRegisteredTool("database_gateway_search_metadata");
         assertTrue(actual.isPresent());
-        assertThat(actual.orElseThrow().getToolDescriptor().getName(), is("search_metadata"));
+        assertThat(actual.orElseThrow().getToolDescriptor().getName(), is("database_gateway_search_metadata"));
     }
     
     @Test
@@ -94,7 +95,7 @@ class ToolHandlerRegistryTest {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
         runtimeContext.getSessionManager().createSession("session-1");
         try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
-            Optional<MCPResponse> actual = ToolHandlerRegistry.dispatch(requestContext, "session-1", "search_metadata", Map.of("query", "order", "object_types", List.of("index")));
+            Optional<MCPResponse> actual = ToolHandlerRegistry.dispatch(requestContext, "session-1", "database_gateway_search_metadata", Map.of("query", "order", "object_types", List.of("index")));
             assertTrue(actual.isPresent());
             assertThat(((List<?>) actual.orElseThrow().toPayload().get("items")).size(), is(1));
         }
@@ -113,17 +114,25 @@ class ToolHandlerRegistryTest {
     @Test
     void assertDispatchWithMissingRequiredArgument() {
         MCPInvalidRequestException actual =
-                assertThrows(MCPInvalidRequestException.class, () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "execute_query", Map.of("database", "logic_db")));
+                assertThrows(MCPInvalidRequestException.class, () -> ToolHandlerRegistry.dispatch(
+                        mock(MCPRequestScope.class), "session-1", "database_gateway_execute_query", Map.of("database", "logic_db")));
+        assertThat(actual.getMessage(), is("sql is required."));
+    }
+    
+    @Test
+    void assertDispatchWithBlankRequiredTextArgument() {
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "database_gateway_execute_query", Map.of("database", "logic_db", "sql", "   ")));
         assertThat(actual.getMessage(), is("sql is required."));
     }
     
     @Test
     void assertDispatchWithMissingExecutionMode() {
         MCPExecutionModeRequiredException actual = assertThrows(MCPExecutionModeRequiredException.class,
-                () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "execute_update",
+                () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "database_gateway_execute_update",
                         Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1")));
-        assertThat(actual.getMessage(), is("execute_update execution_mode is required."));
-        assertThat(actual.getToolName(), is("execute_update"));
+        assertThat(actual.getMessage(), is("database_gateway_execute_update execution_mode is required."));
+        assertThat(actual.getToolName(), is("database_gateway_execute_update"));
         assertThat(actual.getAllowedValues(), is(List.of("execute", "preview")));
         assertThat(actual.getSuggestedArguments(), is(Map.of("database", "logic_db", "schema", "public",
                 "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview")));
@@ -145,10 +154,10 @@ class ToolHandlerRegistryTest {
     
     @Test
     void assertCreateRegisteredToolsWithInvalidHandlers() {
-        MCPToolHandler<?> firstHandler = createToolHandler("search_metadata");
-        MCPToolHandler<?> secondHandler = createToolHandler("search_metadata");
+        MCPToolHandler<?> firstHandler = createToolHandler("database_gateway_search_metadata");
+        MCPToolHandler<?> secondHandler = createToolHandler("database_gateway_search_metadata");
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(firstHandler, secondHandler)));
-        assertThat(actual.getMessage(), is(String.format("Duplicate tool name `search_metadata` with `%s` and `%s`.",
+        assertThat(actual.getMessage(), is(String.format("Duplicate tool name `database_gateway_search_metadata` with `%s` and `%s`.",
                 firstHandler.getClass().getName(), secondHandler.getClass().getName())));
         MCPToolHandler<?> handler = mock(MCPToolHandler.class);
         actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(handler)));
@@ -162,18 +171,19 @@ class ToolHandlerRegistryTest {
         MCPToolHandler<MCPHandlerContext> unsupportedHandler = mock(MCPToolHandler.class);
         when(unsupportedHandler.getContextType()).thenReturn(MCPHandlerContext.class);
         when(unsupportedHandler.getToolDescriptor()).thenReturn(
-                new MCPToolDescriptor("unsupported", "Unsupported", "Unsupported tool.", List.of(), Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap()));
+                new MCPToolDescriptor(List.of(), "unsupported", "Unsupported", "Unsupported tool.", Map.of("type", "object", "properties", Map.of(), "required", List.of(),
+                        "additionalProperties", false), Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap()));
         actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(unsupportedHandler)));
         assertThat(actual.getMessage(), is(String.format("Unsupported handler context type `%s` for `%s`.", MCPHandlerContext.class.getName(), unsupportedHandler.getClass().getName())));
     }
     
     @Test
     void assertCreateRegisteredTools() {
-        MCPToolHandler<?> firstHandler = createToolHandler("search_metadata");
-        MCPToolHandler<?> secondHandler = createToolHandler("execute_query");
+        MCPToolHandler<?> firstHandler = createToolHandler("database_gateway_search_metadata");
+        MCPToolHandler<?> secondHandler = createToolHandler("database_gateway_execute_query");
         Map<String, MCPToolHandler<?>> actual = ToolHandlerRegistry.createRegisteredTools(List.of(firstHandler, secondHandler));
         assertThat(actual.size(), is(2));
-        assertThat(actual.keySet().stream().toList(), is(List.of("search_metadata", "execute_query")));
+        assertThat(actual.keySet().stream().toList(), is(List.of("database_gateway_search_metadata", "database_gateway_execute_query")));
     }
     
     private static MCPToolHandler<?> createToolHandler(final String toolName) {
@@ -186,23 +196,27 @@ class ToolHandlerRegistryTest {
     }
     
     private static void assertToolFields(final MCPToolDescriptor descriptor, final List<String> expectedFieldNames) {
-        assertThat(descriptor.getFields().stream().map(MCPToolFieldDefinition::getName).toList(), is(expectedFieldNames));
+        assertThat(getInputProperties(descriptor).keySet().stream().map(Object::toString).toList(), is(expectedFieldNames));
     }
     
     private static void assertRequiredFields(final MCPToolDescriptor descriptor, final List<String> expectedRequiredFieldNames) {
-        assertThat(descriptor.getFields().stream().filter(MCPToolFieldDefinition::isRequired).map(MCPToolFieldDefinition::getName).toList(), is(expectedRequiredFieldNames));
+        assertThat((List<?>) descriptor.getInputSchema().get("required"), is(expectedRequiredFieldNames));
     }
     
-    private static void assertField(final MCPToolDescriptor descriptor, final String fieldName, final MCPToolValueDefinition.Type expectedType, final List<String> expectedEnumValues,
-                                    final boolean expectedRequired) {
-        MCPToolFieldDefinition actual = findField(descriptor, fieldName);
-        assertThat(actual.getValueDefinition().getType(), is(expectedType));
-        assertThat(actual.getValueDefinition().getEnumValues(), is(expectedEnumValues));
-        assertThat(actual.isRequired(), is(expectedRequired));
+    private static void assertField(final MCPToolDescriptor descriptor, final String fieldName, final String expectedType, final List<String> expectedEnumValues, final boolean expectedRequired) {
+        Map<?, ?> actual = findField(descriptor, fieldName);
+        Object enumValues = actual.get("enum");
+        assertThat(actual.get("type"), is(expectedType));
+        assertThat(enumValues instanceof List<?> ? (List<?>) enumValues : List.of(), is(expectedEnumValues));
+        assertThat(((List<?>) descriptor.getInputSchema().get("required")).contains(fieldName), is(expectedRequired));
     }
     
-    private static MCPToolFieldDefinition findField(final MCPToolDescriptor descriptor, final String fieldName) {
-        return descriptor.getFields().stream().filter(each -> fieldName.equals(each.getName())).findFirst().orElseThrow();
+    private static Map<?, ?> findField(final MCPToolDescriptor descriptor, final String fieldName) {
+        return (Map<?, ?>) getInputProperties(descriptor).get(fieldName);
+    }
+    
+    private static Map<?, ?> getInputProperties(final MCPToolDescriptor descriptor) {
+        return (Map<?, ?>) descriptor.getInputSchema().get("properties");
     }
     
     private static ClassLoader createIsolatedToolHandlerRegistryClassLoader() {

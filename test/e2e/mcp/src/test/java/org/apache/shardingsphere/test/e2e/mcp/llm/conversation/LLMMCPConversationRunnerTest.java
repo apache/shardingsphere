@@ -79,15 +79,15 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithExecuteQuery() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(3);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         final ArgumentCaptor<List<Map<String, Object>>> actualTools = createToolDefinitionsCaptor();
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "execute_query", executeQueryArguments, "tool-call-response"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+                createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
-                createFinalAnswerCompletion(List.of("execute_query"), 2, "final-answer-response"));
+                createFinalAnswerCompletion(List.of("database_gateway_execute_query"), 2, "final-answer-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
@@ -97,15 +97,15 @@ class LLMMCPConversationRunnerTest {
         assertThat(actual.getRawModelOutputs(), CoreMatchers.is(List.of("tool-call-response", "final-answer-response")));
         verify(llmChatClient).complete(anyList(), actualTools.capture(), eq("required"), eq(false));
         verify(mcpInteractionClient).open();
-        verify(mcpInteractionClient).call("execute_query", executeQueryArguments);
+        verify(mcpInteractionClient).call("database_gateway_execute_query", executeQueryArguments);
         verify(mcpInteractionClient).close();
-        assertThat(getToolName(actualTools.getValue().get(0)), CoreMatchers.is("execute_query"));
+        assertThat(getToolName(actualTools.getValue().get(0)), CoreMatchers.is("database_gateway_execute_query"));
         assertThat(getMap(getFunction(actualTools.getValue().get(0)).get("parameters")).get("required"), CoreMatchers.is(List.of("database", "sql")));
     }
     
     @Test
     void assertRunPromptsExactFinalInteractionSequence() throws IOException, InterruptedException {
-        final List<String> toolNames = List.of("execute_query", "execute_update");
+        final List<String> toolNames = List.of("database_gateway_execute_query", "database_gateway_execute_update");
         final LLME2EScenario actualScenario = createScenario(toolNames);
         final LLMMCPConversationRunner actualRunner = createRunner(3);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
@@ -117,11 +117,11 @@ class LLMMCPConversationRunnerTest {
         final ArgumentCaptor<List<LLMChatMessage>> actualFinalMessages = createChatMessagesCaptor();
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(new LLMChatCompletion("",
                 List.of(
-                        new LLMToolCall("tool-1", "execute_query", JsonUtils.toJsonString(executeQueryArguments)),
-                        new LLMToolCall("tool-2", "execute_update", JsonUtils.toJsonString(executeUpdateArguments))),
+                        new LLMToolCall("tool-1", "database_gateway_execute_query", JsonUtils.toJsonString(executeQueryArguments)),
+                        new LLMToolCall("tool-2", "database_gateway_execute_update", JsonUtils.toJsonString(executeUpdateArguments))),
                 "tool-call-response"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
-        when(mcpInteractionClient.call("execute_update", executeUpdateArguments)).thenReturn(Map.of("result_kind", "preview"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+        when(mcpInteractionClient.call("database_gateway_execute_update", executeUpdateArguments)).thenReturn(Map.of("result_kind", "preview"));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 createFinalAnswerCompletion(toolNames, 2, "final-answer-response"));
         
@@ -131,13 +131,13 @@ class LLMMCPConversationRunnerTest {
         verify(llmChatClient).complete(actualFinalMessages.capture(), eq(List.of()), eq("none"), eq(true));
         final List<LLMChatMessage> actualMessages = actualFinalMessages.getValue();
         final String actualInstruction = actualMessages.get(actualMessages.size() - 1).getContent();
-        assertThat(actualInstruction, CoreMatchers.containsString("interactionSequence exactly to this JSON array: [\"execute_query\",\"execute_update\"]"));
-        assertThat(actualInstruction, CoreMatchers.not(CoreMatchers.containsString("search_metadata")));
+        assertThat(actualInstruction, CoreMatchers.containsString("interactionSequence exactly to this JSON array: [\"database_gateway_execute_query\",\"database_gateway_execute_update\"]"));
+        assertThat(actualInstruction, CoreMatchers.not(CoreMatchers.containsString("database_gateway_search_metadata")));
     }
     
     @Test
     void assertRunWithResourceBridgeSequence() throws IOException, InterruptedException {
-        final List<String> actualToolNames = List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "execute_query");
+        final List<String> actualToolNames = List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query");
         final LLME2EScenario actualScenario = createScenario(actualToolNames);
         final LLMMCPConversationRunner actualRunner = createRunner(3);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
@@ -145,11 +145,11 @@ class LLMMCPConversationRunnerTest {
                 List.of(
                         new LLMToolCall("tool-1", MCPInteractionActionNames.LIST_RESOURCES, "{}"),
                         new LLMToolCall("tool-2", MCPInteractionActionNames.READ_RESOURCE, JsonUtils.toJsonString(Map.of("uri", RESOURCE_URI))),
-                        new LLMToolCall("tool-3", "execute_query", JsonUtils.toJsonString(executeQueryArguments))),
+                        new LLMToolCall("tool-3", "database_gateway_execute_query", JsonUtils.toJsonString(executeQueryArguments))),
                 "tool-call-response"));
         when(mcpInteractionClient.listResources()).thenReturn(Map.of("resources", List.of(Map.of("uri", RESOURCE_URI))));
-        when(mcpInteractionClient.readResource(RESOURCE_URI)).thenReturn(Map.of("supportedTools", List.of("search_metadata", "execute_query")));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload("2"));
+        when(mcpInteractionClient.readResource(RESOURCE_URI)).thenReturn(Map.of("supportedTools", List.of("database_gateway_search_metadata", "database_gateway_execute_query")));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload("2"));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 createFinalAnswerCompletion(actualToolNames, "2", "final-answer-response"));
         
@@ -160,16 +160,17 @@ class LLMMCPConversationRunnerTest {
         assertThat(actual.getInteractionTrace().get(0).getActionKind(), CoreMatchers.is(MCPInteractionActionNames.RESOURCE_LIST_KIND));
         assertThat(actual.getInteractionTrace().get(0).getActionOrigin(), CoreMatchers.is(MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN));
         assertThat(actual.getInteractionTrace().get(1).getActionKind(), CoreMatchers.is(MCPInteractionActionNames.RESOURCE_READ_KIND));
-        assertThat(actual.getInteractionTrace().get(2).getTargetName(), CoreMatchers.is("execute_query"));
+        assertThat(actual.getInteractionTrace().get(2).getTargetName(), CoreMatchers.is("database_gateway_execute_query"));
         assertThat(actual.getInteractionTrace().get(2).getActionOrigin(), CoreMatchers.is(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN));
         verify(mcpInteractionClient).listResources();
         verify(mcpInteractionClient).readResource(RESOURCE_URI);
-        verify(mcpInteractionClient).call("execute_query", executeQueryArguments);
+        verify(mcpInteractionClient).call("database_gateway_execute_query", executeQueryArguments);
     }
     
     @Test
     void assertRunWithWorkflowContextRecoveryReadback() throws IOException, InterruptedException {
-        final List<String> actualToolNames = List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "validate_workflow", "execute_query");
+        final List<String> actualToolNames = List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_mask_rule", "database_gateway_apply_workflow",
+                "database_gateway_validate_workflow", "database_gateway_execute_query");
         final LLME2EScenario actualScenario = createScenario(actualToolNames);
         final LLMMCPConversationRunner actualRunner = createRunner(3);
         final String workflowResourceUri = "shardingsphere://workflows/plan-1";
@@ -180,23 +181,24 @@ class LLMMCPConversationRunnerTest {
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(new LLMChatCompletion("",
                 List.of(
                         new LLMToolCall("tool-1", MCPInteractionActionNames.READ_RESOURCE, JsonUtils.toJsonString(Map.of("uri", "shardingsphere://features/mask/algorithms"))),
-                        new LLMToolCall("tool-2", "plan_mask_rule", JsonUtils.toJsonString(planArguments)),
+                        new LLMToolCall("tool-2", "database_gateway_plan_mask_rule", JsonUtils.toJsonString(planArguments)),
                         new LLMToolCall("tool-3", MCPInteractionActionNames.READ_RESOURCE, JsonUtils.toJsonString(Map.of("uri", "shardingsphere://runtime"))),
                         new LLMToolCall("tool-4", MCPInteractionActionNames.READ_RESOURCE, JsonUtils.toJsonString(Map.of("uri", workflowResourceUri))),
-                        new LLMToolCall("tool-5", "apply_workflow", JsonUtils.toJsonString(applyArguments)),
-                        new LLMToolCall("tool-6", "validate_workflow", JsonUtils.toJsonString(validateArguments)),
-                        new LLMToolCall("tool-7", "execute_query", JsonUtils.toJsonString(executeQueryArguments))),
+                        new LLMToolCall("tool-5", "database_gateway_apply_workflow", JsonUtils.toJsonString(applyArguments)),
+                        new LLMToolCall("tool-6", "database_gateway_validate_workflow", JsonUtils.toJsonString(validateArguments)),
+                        new LLMToolCall("tool-7", "database_gateway_execute_query", JsonUtils.toJsonString(executeQueryArguments))),
                 "tool-call-response"));
         when(mcpInteractionClient.readResource("shardingsphere://features/mask/algorithms")).thenReturn(Map.of("algorithms", List.of(Map.of("type", "MD5"))));
-        when(mcpInteractionClient.call("plan_mask_rule", planArguments)).thenReturn(Map.of("plan_id", "plan-1", "resources_to_read", List.of(Map.of("uri", workflowResourceUri))));
+        when(mcpInteractionClient.call("database_gateway_plan_mask_rule", planArguments)).thenReturn(Map.of("plan_id", "plan-1", "resources_to_read", List.of(Map.of("uri", workflowResourceUri))));
         when(mcpInteractionClient.readResource("shardingsphere://runtime")).thenReturn(Map.of("status", "available", "capability_fingerprint", "abc"));
         when(mcpInteractionClient.readResource(workflowResourceUri)).thenReturn(Map.of("plan_id", "plan-1", "status", "planned"));
-        when(mcpInteractionClient.call("apply_workflow", applyArguments)).thenReturn(Map.of("status", "awaiting-manual-execution", "response_mode", "manual_only"));
-        when(mcpInteractionClient.call("validate_workflow", validateArguments)).thenReturn(Map.of("status", "passed", "overall_status", "passed"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+        when(mcpInteractionClient.call("database_gateway_apply_workflow", applyArguments)).thenReturn(Map.of("status", "awaiting-manual-execution", "response_mode", "manual_only"));
+        when(mcpInteractionClient.call("database_gateway_validate_workflow", validateArguments)).thenReturn(Map.of("status", "passed", "overall_status", "passed"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 createFinalAnswerCompletion(List.of(
-                        MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", MCPInteractionActionNames.READ_RESOURCE, "apply_workflow", "validate_workflow", "execute_query"), 2,
+                        MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_mask_rule", MCPInteractionActionNames.READ_RESOURCE, "database_gateway_apply_workflow",
+                        "database_gateway_validate_workflow", "database_gateway_execute_query"), 2,
                         "final-answer-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
@@ -204,13 +206,14 @@ class LLMMCPConversationRunnerTest {
         assertTrue(actual.getAssertionReport().isSuccess());
         assertThat(actual.getInteractionTrace().size(), CoreMatchers.is(7));
         verify(mcpInteractionClient).readResource(workflowResourceUri);
-        verify(mcpInteractionClient).call("apply_workflow", applyArguments);
-        verify(mcpInteractionClient).call("validate_workflow", validateArguments);
+        verify(mcpInteractionClient).call("database_gateway_apply_workflow", applyArguments);
+        verify(mcpInteractionClient).call("database_gateway_validate_workflow", validateArguments);
     }
     
     @Test
     void assertRunWithPromptAndCompletionBridgeSequence() throws IOException, InterruptedException {
-        final List<String> actualToolNames = List.of(MCPInteractionActionNames.LIST_PROMPTS, MCPInteractionActionNames.GET_PROMPT, MCPInteractionActionNames.COMPLETE, "execute_query");
+        final List<String> actualToolNames = List.of(MCPInteractionActionNames.LIST_PROMPTS, MCPInteractionActionNames.GET_PROMPT, MCPInteractionActionNames.COMPLETE,
+                "database_gateway_execute_query");
         final LLME2EScenario actualScenario = createScenario(actualToolNames);
         final LLMMCPConversationRunner actualRunner = createRunner(3);
         final Map<String, Object> promptArguments = Map.of("query", "orders", "database", DATABASE_NAME);
@@ -228,12 +231,12 @@ class LLMMCPConversationRunnerTest {
                                 "argument_name", "schema",
                                 "argument_value", "pub",
                                 "context_arguments", completionContext))),
-                        new LLMToolCall("tool-4", "execute_query", JsonUtils.toJsonString(executeQueryArguments))),
+                        new LLMToolCall("tool-4", "database_gateway_execute_query", JsonUtils.toJsonString(executeQueryArguments))),
                 "tool-call-response"));
         when(mcpInteractionClient.listPrompts()).thenReturn(Map.of("prompts", List.of(Map.of("name", PROMPT_NAME))));
         when(mcpInteractionClient.getPrompt(PROMPT_NAME, promptArguments)).thenReturn(Map.of("description", "Inspect metadata", "messages", List.of()));
         when(mcpInteractionClient.complete(completionReference, "schema", "pub", completionContext)).thenReturn(Map.of("completion", Map.of("values", List.of("public"))));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 createFinalAnswerCompletion(actualToolNames, 2, "final-answer-response"));
         
@@ -256,7 +259,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithSearchMetadataToolDefinition() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("search_metadata"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_search_metadata"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         final ArgumentCaptor<List<Map<String, Object>>> actualTools = createToolDefinitionsCaptor();
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
@@ -266,7 +269,7 @@ class LLMMCPConversationRunnerTest {
         
         assertThat(actual.getAssertionReport().getFailureType(), CoreMatchers.is("missing_required_tool_coverage"));
         verify(llmChatClient).complete(anyList(), actualTools.capture(), eq("required"), eq(false));
-        assertThat(getToolName(actualTools.getValue().get(0)), CoreMatchers.is("search_metadata"));
+        assertThat(getToolName(actualTools.getValue().get(0)), CoreMatchers.is("database_gateway_search_metadata"));
         assertThat(getRequiredFields(actualTools.getValue().get(0)), CoreMatchers.is(List.of()));
         assertThat(getPropertyType(actualTools.getValue().get(0), "query"), CoreMatchers.is("string"));
         assertThat(getPropertyType(actualTools.getValue().get(0), "object_types"), CoreMatchers.is("array"));
@@ -276,7 +279,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithUnexpectedTool() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 new LLMChatCompletion("", List.of(new LLMToolCall("tool-1", "unsupported_tool", "{}")), "tool-call-response"));
@@ -292,15 +295,15 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithInvalidToolArgumentsJson() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                new LLMChatCompletion("", List.of(new LLMToolCall("tool-1", "execute_query", "{invalid")), "tool-call-response"));
+                new LLMChatCompletion("", List.of(new LLMToolCall("tool-1", "database_gateway_execute_query", "{invalid")), "tool-call-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), CoreMatchers.is("invalid_tool_arguments"));
-        assertThat(actual.getInteractionTrace().get(0).getTargetName(), CoreMatchers.is("execute_query"));
+        assertThat(actual.getInteractionTrace().get(0).getTargetName(), CoreMatchers.is("database_gateway_execute_query"));
         verify(mcpInteractionClient).open();
         verify(mcpInteractionClient, never()).call(anyString(), anyMap());
         verify(mcpInteractionClient).close();
@@ -322,78 +325,78 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithUnsafeSqlAttempted() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "execute_query",
+                createToolCallCompletion("tool-1", "database_gateway_execute_query",
                         Map.of("database", DATABASE_NAME, "schema", SCHEMA_NAME, "sql", "UPDATE orders SET status = 'DONE'"),
                         "tool-call-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), CoreMatchers.is("unsafe_sql_attempted"));
-        assertThat(actual.getInteractionTrace().get(0).getTargetName(), CoreMatchers.is("execute_query"));
+        assertThat(actual.getInteractionTrace().get(0).getTargetName(), CoreMatchers.is("database_gateway_execute_query"));
         verify(mcpInteractionClient, never()).call(anyString(), anyMap());
     }
     
     @Test
     void assertRunWithUnsafeExecuteUpdateAttempted() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_update"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_update"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "execute_update",
+                createToolCallCompletion("tool-1", "database_gateway_execute_update",
                         Map.of("database", DATABASE_NAME, "schema", SCHEMA_NAME, "sql", "UPDATE orders SET status = 'DONE'", "execution_mode", "execute"),
                         "tool-call-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), CoreMatchers.is("unsafe_sql_execution_attempted"));
-        assertThat(actual.getInteractionTrace().get(0).getTargetName(), CoreMatchers.is("execute_update"));
+        assertThat(actual.getInteractionTrace().get(0).getTargetName(), CoreMatchers.is("database_gateway_execute_update"));
         verify(mcpInteractionClient, never()).call(anyString(), anyMap());
     }
     
     @Test
     void assertRunWithUnsafeWorkflowExecutionAttempted() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("apply_workflow"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_apply_workflow"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "apply_workflow", Map.of("plan_id", "plan-1", "execution_mode", "review-then-execute"), "tool-call-response"));
+                createToolCallCompletion("tool-1", "database_gateway_apply_workflow", Map.of("plan_id", "plan-1", "execution_mode", "review-then-execute"), "tool-call-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), CoreMatchers.is("unsafe_workflow_execution_attempted"));
-        assertThat(actual.getInteractionTrace().get(0).getTargetName(), CoreMatchers.is("apply_workflow"));
+        assertThat(actual.getInteractionTrace().get(0).getTargetName(), CoreMatchers.is("database_gateway_apply_workflow"));
         verify(mcpInteractionClient, never()).call(anyString(), anyMap());
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("unexpectedQueryResultCases")
     void assertRunWithUnexpectedQueryResult(final String caseName, final Map<String, Object> finalAnswerPayload) throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(2);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "execute_query", executeQueryArguments, "tool-call-response"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+                createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 new LLMChatCompletion(JsonUtils.toJsonString(finalAnswerPayload), List.of(), caseName));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), CoreMatchers.is("unexpected_query_result"));
-        verify(mcpInteractionClient).call("execute_query", executeQueryArguments);
+        verify(mcpInteractionClient).call("database_gateway_execute_query", executeQueryArguments);
     }
     
     @Test
     void assertRunAcceptsObjectInteractionSequence() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(2);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         final Map<String, Object> finalAnswerPayload = createFinalAnswerPayload(List.of(), 2);
-        finalAnswerPayload.put("interactionSequence", List.of(Map.of("tool", "execute_query", "arguments", executeQueryArguments)));
+        finalAnswerPayload.put("interactionSequence", List.of(Map.of("tool", "database_gateway_execute_query", "arguments", executeQueryArguments)));
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "execute_query", executeQueryArguments, "tool-call-response"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+                createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 new LLMChatCompletion(JsonUtils.toJsonString(finalAnswerPayload), List.of(), "final-answer-response"));
         
@@ -404,19 +407,19 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunAcceptsCollapsedRepeatedInteractionSequence() throws IOException, InterruptedException {
-        final List<String> toolNames = List.of("search_metadata", "execute_query");
+        final List<String> toolNames = List.of("database_gateway_search_metadata", "database_gateway_execute_query");
         final LLME2EScenario actualScenario = createScenario(toolNames);
         final LLMMCPConversationRunner actualRunner = createRunner(2);
         final Map<String, Object> searchMetadataArguments = Map.of("database", DATABASE_NAME, "schema", SCHEMA_NAME, "query", TABLE_NAME);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(new LLMChatCompletion("",
                 List.of(
-                        new LLMToolCall("tool-1", "search_metadata", JsonUtils.toJsonString(searchMetadataArguments)),
-                        new LLMToolCall("tool-2", "search_metadata", JsonUtils.toJsonString(searchMetadataArguments)),
-                        new LLMToolCall("tool-3", "execute_query", JsonUtils.toJsonString(executeQueryArguments))),
+                        new LLMToolCall("tool-1", "database_gateway_search_metadata", JsonUtils.toJsonString(searchMetadataArguments)),
+                        new LLMToolCall("tool-2", "database_gateway_search_metadata", JsonUtils.toJsonString(searchMetadataArguments)),
+                        new LLMToolCall("tool-3", "database_gateway_execute_query", JsonUtils.toJsonString(executeQueryArguments))),
                 "tool-call-response"));
-        when(mcpInteractionClient.call("search_metadata", searchMetadataArguments)).thenReturn(Map.of("items", List.of()));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+        when(mcpInteractionClient.call("database_gateway_search_metadata", searchMetadataArguments)).thenReturn(Map.of("items", List.of()));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 createFinalAnswerCompletion(toolNames, 2, "final-answer-response"));
         
@@ -427,14 +430,14 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunAcceptsSchemaQualifiedQuery() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(2);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
-        final Map<String, Object> finalAnswerPayload = createFinalAnswerPayload(List.of("execute_query"), 2);
+        final Map<String, Object> finalAnswerPayload = createFinalAnswerPayload(List.of("database_gateway_execute_query"), 2);
         finalAnswerPayload.put("query", "SELECT COUNT(*) AS total_orders FROM public.orders");
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "execute_query", executeQueryArguments, "tool-call-response"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+                createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 new LLMChatCompletion(JsonUtils.toJsonString(finalAnswerPayload), List.of(), "final-answer-response"));
         
@@ -455,14 +458,14 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithNonNumericExecuteQueryTrace() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(2);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "execute_query", executeQueryArguments, "tool-call-response"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload("NaN"));
+                createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload("NaN"));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
-                createFinalAnswerCompletion(List.of("execute_query"), 2, "final-answer-response"));
+                createFinalAnswerCompletion(List.of("database_gateway_execute_query"), 2, "final-answer-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
@@ -471,14 +474,14 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithNonResultSetExecuteQueryTrace() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(2);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "execute_query", executeQueryArguments, "tool-call-response"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(Map.of("result_kind", "update_count", "update_count", 1));
+                createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(Map.of("result_kind", "update_count", "update_count", 1));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
-                createFinalAnswerCompletion(List.of("execute_query"), 2, "final-answer-response"));
+                createFinalAnswerCompletion(List.of("database_gateway_execute_query"), 2, "final-answer-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
@@ -487,7 +490,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithMissingRequiredToolCoverage() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response"));
@@ -502,7 +505,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunNamesRemainingToolsWhenCoverageIsMissing() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(2);
         final ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
@@ -514,7 +517,7 @@ class LLMMCPConversationRunnerTest {
         verify(llmChatClient, times(2)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
         final List<LLMChatMessage> actualSecondTurnMessages = actualMessages.getAllValues().get(1);
         assertThat(actualSecondTurnMessages.get(actualSecondTurnMessages.size() - 1).getContent(),
-                CoreMatchers.containsString("Remaining required MCP tools: execute_query"));
+                CoreMatchers.containsString("Remaining required MCP tools: database_gateway_execute_query"));
         assertThat(actualSecondTurnMessages.get(actualSecondTurnMessages.size() - 1).getContent(), CoreMatchers.containsString("actual MCP tool_call"));
         assertThat(actualSecondTurnMessages.get(actualSecondTurnMessages.size() - 1).getContent(), CoreMatchers.containsString("database `logic_db`"));
         assertThat(actualSecondTurnMessages.get(actualSecondTurnMessages.size() - 1).getContent(), CoreMatchers.containsString("schema `public`"));
@@ -542,7 +545,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunNamesPreviewModeWhenUpdateCoverageIsMissing() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_update"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_update"));
         final LLMMCPConversationRunner actualRunner = createRunner(2);
         final ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
@@ -554,7 +557,7 @@ class LLMMCPConversationRunnerTest {
         verify(llmChatClient, times(2)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
         final List<LLMChatMessage> actualSecondTurnMessages = actualMessages.getAllValues().get(1);
         final String actualRetryInstruction = actualSecondTurnMessages.get(actualSecondTurnMessages.size() - 1).getContent();
-        assertThat(actualRetryInstruction, CoreMatchers.containsString("Remaining required MCP tools: execute_update"));
+        assertThat(actualRetryInstruction, CoreMatchers.containsString("Remaining required MCP tools: database_gateway_execute_update"));
         assertThat(actualRetryInstruction, CoreMatchers.containsString("database `logic_db`"));
         assertThat(actualRetryInstruction, CoreMatchers.containsString("schema `public`"));
         assertThat(actualRetryInstruction, CoreMatchers.containsString("execution_mode=preview"));
@@ -562,37 +565,56 @@ class LLMMCPConversationRunnerTest {
     }
     
     @Test
+    void assertRunNamesPlanIdRuleWhenPlanningCoverageIsMissing() throws IOException, InterruptedException {
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_plan_mask_rule"));
+        final LLMMCPConversationRunner actualRunner = createRunner(2);
+        final ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
+        when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+                new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response-1"));
+        
+        final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
+        
+        assertThat(actual.getAssertionReport().getFailureType(), CoreMatchers.is("missing_required_tool_coverage"));
+        verify(llmChatClient, times(2)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
+        final List<LLMChatMessage> actualSecondTurnMessages = actualMessages.getAllValues().get(1);
+        final String actualRetryInstruction = actualSecondTurnMessages.get(actualSecondTurnMessages.size() - 1).getContent();
+        assertThat(actualRetryInstruction, CoreMatchers.containsString("Remaining required MCP tools: database_gateway_plan_mask_rule"));
+        assertThat(actualRetryInstruction, CoreMatchers.containsString("For a new database_gateway_plan_* call"));
+        assertThat(actualRetryInstruction, CoreMatchers.containsString("omit plan_id"));
+    }
+    
+    @Test
     void assertRunRequiresToolCallWhenExpectedExecuteQueryIsReturnedAsText() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(3);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 new LLMChatCompletion(QUERY, List.of(), "query-text-response"),
-                createToolCallCompletion("tool-1", "execute_query", executeQueryArguments, "query-tool-response"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+                createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "query-tool-response"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
-                createFinalAnswerCompletion(List.of("execute_query"), 2, "final-answer-response"));
+                createFinalAnswerCompletion(List.of("database_gateway_execute_query"), 2, "final-answer-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertTrue(actual.getAssertionReport().isSuccess());
         assertThat(actual.getInteractionTrace().size(), CoreMatchers.is(1));
-        assertThat(actual.getInteractionTrace().get(0).getTargetName(), CoreMatchers.is("execute_query"));
+        assertThat(actual.getInteractionTrace().get(0).getTargetName(), CoreMatchers.is("database_gateway_execute_query"));
         assertThat(actual.getInteractionTrace().get(0).getActionOrigin(), CoreMatchers.is(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN));
-        verify(mcpInteractionClient).call("execute_query", executeQueryArguments);
+        verify(mcpInteractionClient).call("database_gateway_execute_query", executeQueryArguments);
         verify(llmChatClient, times(2)).complete(anyList(), anyList(), eq("required"), eq(false));
     }
     
     @Test
     void assertRunNamesLatestPlanIdWhenWorkflowCoverageIsMissing() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("plan_mask_rule", "apply_workflow"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_plan_mask_rule", "database_gateway_apply_workflow"));
         final LLMMCPConversationRunner actualRunner = createRunner(3);
         final Map<String, Object> planArguments = Map.of("database", DATABASE_NAME, "schema", SCHEMA_NAME, "table", TABLE_NAME, "column", "status");
         final ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "plan_mask_rule", planArguments, "plan-response"),
+                createToolCallCompletion("tool-1", "database_gateway_plan_mask_rule", planArguments, "plan-response"),
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response-1"));
-        when(mcpInteractionClient.call("plan_mask_rule", planArguments)).thenReturn(Map.of("plan_id", "plan-1"));
+        when(mcpInteractionClient.call("database_gateway_plan_mask_rule", planArguments)).thenReturn(Map.of("plan_id", "plan-1"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
@@ -600,26 +622,26 @@ class LLMMCPConversationRunnerTest {
         verify(llmChatClient, times(3)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
         final List<LLMChatMessage> actualThirdTurnMessages = actualMessages.getAllValues().get(2);
         final String actualRetryInstruction = actualThirdTurnMessages.get(actualThirdTurnMessages.size() - 1).getContent();
-        assertThat(actualRetryInstruction, CoreMatchers.containsString("Remaining required MCP tools: apply_workflow"));
+        assertThat(actualRetryInstruction, CoreMatchers.containsString("Remaining required MCP tools: database_gateway_apply_workflow"));
         assertThat(actualRetryInstruction, CoreMatchers.containsString("set plan_id `plan-1`"));
         assertThat(actualRetryInstruction, CoreMatchers.containsString("do not use placeholder text `plan_id`"));
     }
     
     @Test
     void assertRunRetriesExpectedExecuteQueryBeforeFinalAnswer() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(4);
         final Map<String, Object> wrongQueryArguments = Map.of("database", "analytics_db", "schema", SCHEMA_NAME, "sql", QUERY, "max_rows", 10);
         final Map<String, Object> expectedQueryArguments = createExecuteQueryArguments(QUERY);
         final ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "execute_query", wrongQueryArguments, "wrong-query-response"));
-        when(mcpInteractionClient.call("execute_query", wrongQueryArguments)).thenReturn(createResultSetPayload(4));
+                createToolCallCompletion("tool-1", "database_gateway_execute_query", wrongQueryArguments, "wrong-query-response"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", wrongQueryArguments)).thenReturn(createResultSetPayload(4));
         when(llmChatClient.complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-2", "execute_query", expectedQueryArguments, "expected-query-response"));
-        when(mcpInteractionClient.call("execute_query", expectedQueryArguments)).thenReturn(createResultSetPayload(2));
+                createToolCallCompletion("tool-2", "database_gateway_execute_query", expectedQueryArguments, "expected-query-response"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", expectedQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
-                createFinalAnswerCompletion(List.of("execute_query"), 2, "final-answer-response"));
+                createFinalAnswerCompletion(List.of("database_gateway_execute_query"), 2, "final-answer-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
@@ -628,13 +650,13 @@ class LLMMCPConversationRunnerTest {
         final List<LLMChatMessage> actualAutoTurnMessages = actualMessages.getValue();
         assertTrue(actualAutoTurnMessages.stream()
                 .map(LLMChatMessage::getContent)
-                .anyMatch(each -> each.contains("latest successful execute_query did not use database `logic_db`")));
+                .anyMatch(each -> each.contains("latest successful database_gateway_execute_query did not use database `logic_db`")));
         assertThat(actual.getInteractionTrace().size(), CoreMatchers.is(2));
     }
     
     @Test
     void assertRunRecoversCompletionArguments() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of(MCPInteractionActionNames.COMPLETE, "execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of(MCPInteractionActionNames.COMPLETE, "database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(4);
         final Map<String, Object> completionReference = Map.of("type", "ref/prompt", "name", PROMPT_NAME);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
@@ -646,12 +668,12 @@ class LLMMCPConversationRunnerTest {
                                         "reference", completionReference,
                                         "argument_name", "schema",
                                         "argument_value", "pub"))),
-                                new LLMToolCall("tool-3", "execute_query", JsonUtils.toJsonString(executeQueryArguments))),
+                                new LLMToolCall("tool-3", "database_gateway_execute_query", JsonUtils.toJsonString(executeQueryArguments))),
                         "retry-completion-response"));
         when(mcpInteractionClient.complete(completionReference, "schema", "pub", Map.of())).thenReturn(Map.of("completion", Map.of("values", List.of(SCHEMA_NAME))));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
-                createFinalAnswerCompletion(List.of(MCPInteractionActionNames.COMPLETE, "execute_query"), 2, "final-answer-response"));
+                createFinalAnswerCompletion(List.of(MCPInteractionActionNames.COMPLETE, "database_gateway_execute_query"), 2, "final-answer-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
@@ -663,7 +685,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunNormalizesCompletionArgumentName() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of(MCPInteractionActionNames.COMPLETE, "execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of(MCPInteractionActionNames.COMPLETE, "database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(3);
         final Map<String, Object> completionReference = Map.of("type", "ref/prompt", "name", PROMPT_NAME);
         final Map<String, String> completionContext = Map.of("database", DATABASE_NAME);
@@ -675,11 +697,11 @@ class LLMMCPConversationRunnerTest {
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", MCPInteractionActionNames.COMPLETE, completionArguments, "completion-response"),
-                createToolCallCompletion("tool-2", "execute_query", executeQueryArguments, "query-response"));
+                createToolCallCompletion("tool-2", "database_gateway_execute_query", executeQueryArguments, "query-response"));
         when(mcpInteractionClient.complete(completionReference, "schema", "pub", completionContext)).thenReturn(Map.of("completion", Map.of("values", List.of(SCHEMA_NAME))));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
-                createFinalAnswerCompletion(List.of(MCPInteractionActionNames.COMPLETE, "execute_query"), 2, "final-answer-response"));
+                createFinalAnswerCompletion(List.of(MCPInteractionActionNames.COMPLETE, "database_gateway_execute_query"), 2, "final-answer-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
@@ -690,7 +712,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunDefaultsCompletionReferenceFromPrompt() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of(MCPInteractionActionNames.GET_PROMPT, MCPInteractionActionNames.COMPLETE, "execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of(MCPInteractionActionNames.GET_PROMPT, MCPInteractionActionNames.COMPLETE, "database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(5);
         final Map<String, Object> getPromptArguments = Map.of("name", PROMPT_NAME);
         final Map<String, Object> completionReference = Map.of("type", "ref/prompt", "name", PROMPT_NAME);
@@ -699,12 +721,12 @@ class LLMMCPConversationRunnerTest {
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", MCPInteractionActionNames.GET_PROMPT, getPromptArguments, "prompt-response"),
                 createToolCallCompletion("tool-2", MCPInteractionActionNames.COMPLETE, completionArguments, "completion-response"),
-                createToolCallCompletion("tool-3", "execute_query", executeQueryArguments, "query-response"));
+                createToolCallCompletion("tool-3", "database_gateway_execute_query", executeQueryArguments, "query-response"));
         when(mcpInteractionClient.getPrompt(PROMPT_NAME, Map.of())).thenReturn(Map.of("messages", List.of()));
         when(mcpInteractionClient.complete(completionReference, "schema", "pub", Map.of())).thenReturn(Map.of("completion", Map.of("values", List.of(SCHEMA_NAME))));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
-                createFinalAnswerCompletion(List.of(MCPInteractionActionNames.GET_PROMPT, MCPInteractionActionNames.COMPLETE, "execute_query"), 2, "final-answer-response"));
+                createFinalAnswerCompletion(List.of(MCPInteractionActionNames.GET_PROMPT, MCPInteractionActionNames.COMPLETE, "database_gateway_execute_query"), 2, "final-answer-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
@@ -714,7 +736,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunPromptsImmediateResourceNextAction() throws IOException, InterruptedException {
-        final List<String> toolNames = List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_query");
+        final List<String> toolNames = List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query");
         final LLME2EScenario actualScenario = createScenario(toolNames);
         final LLMMCPConversationRunner actualRunner = createRunner(4);
         final Map<String, Object> runtimeArguments = Map.of("uri", "shardingsphere://runtime");
@@ -724,15 +746,15 @@ class LLMMCPConversationRunnerTest {
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", MCPInteractionActionNames.READ_RESOURCE, runtimeArguments, "runtime-response"),
                 createToolCallCompletion("tool-2", MCPInteractionActionNames.READ_RESOURCE, capabilitiesArguments, "capabilities-response"),
-                createToolCallCompletion("tool-3", "execute_query", executeQueryArguments, "query-response"));
+                createToolCallCompletion("tool-3", "database_gateway_execute_query", executeQueryArguments, "query-response"));
         when(mcpInteractionClient.readResource("shardingsphere://runtime")).thenReturn(Map.of("next_actions", List.of(Map.of(
                 "type", "resource_read",
                 "resource_uri", RESOURCE_URI,
                 "requires_user_approval", false))));
         when(mcpInteractionClient.readResource(RESOURCE_URI)).thenReturn(Map.of("response_mode", "capabilities"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
-                createFinalAnswerCompletion(List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_query"), 2, "final-answer-response"));
+                createFinalAnswerCompletion(List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"), 2, "final-answer-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
@@ -743,7 +765,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunPromptsImmediateToolNextAction() throws IOException, InterruptedException {
-        final List<String> toolNames = List.of("plan_mask_rule", "apply_workflow", "execute_query");
+        final List<String> toolNames = List.of("database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_execute_query");
         final LLME2EScenario actualScenario = createScenario(toolNames);
         final LLMMCPConversationRunner actualRunner = createRunner(4);
         final Map<String, Object> planArguments = Map.of("database", DATABASE_NAME, "schema", SCHEMA_NAME, "table", TABLE_NAME, "column", "status");
@@ -751,16 +773,16 @@ class LLMMCPConversationRunnerTest {
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         final ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "plan_mask_rule", planArguments, "plan-response"),
-                createToolCallCompletion("tool-2", "apply_workflow", Map.of("plan_id", "plan_id", "execution_mode", "preview"), "apply-response"),
-                createToolCallCompletion("tool-3", "execute_query", executeQueryArguments, "query-response"));
-        when(mcpInteractionClient.call("plan_mask_rule", planArguments)).thenReturn(Map.of("plan_id", "plan-1", "next_actions", List.of(Map.of(
+                createToolCallCompletion("tool-1", "database_gateway_plan_mask_rule", planArguments, "plan-response"),
+                createToolCallCompletion("tool-2", "database_gateway_apply_workflow", Map.of("plan_id", "plan_id", "execution_mode", "preview"), "apply-response"),
+                createToolCallCompletion("tool-3", "database_gateway_execute_query", executeQueryArguments, "query-response"));
+        when(mcpInteractionClient.call("database_gateway_plan_mask_rule", planArguments)).thenReturn(Map.of("plan_id", "plan-1", "next_actions", List.of(Map.of(
                 "type", "tool_call",
-                "tool_name", "apply_workflow",
+                "tool_name", "database_gateway_apply_workflow",
                 "arguments", applyArguments,
                 "requires_user_approval", false))));
-        when(mcpInteractionClient.call("apply_workflow", applyArguments)).thenReturn(Map.of("response_mode", "preview"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+        when(mcpInteractionClient.call("database_gateway_apply_workflow", applyArguments)).thenReturn(Map.of("response_mode", "preview"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 createFinalAnswerCompletion(toolNames, 2, "final-answer-response"));
         
@@ -769,13 +791,13 @@ class LLMMCPConversationRunnerTest {
         assertTrue(actual.getAssertionReport().isSuccess());
         assertThat(actual.getInteractionTrace().get(1).getActionOrigin(), CoreMatchers.is(MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN));
         verify(llmChatClient, times(3)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
-        assertTrue(containsMessage(actualMessages.getAllValues().get(1), "Call `apply_workflow` now with exactly these arguments"));
+        assertTrue(containsMessage(actualMessages.getAllValues().get(1), "Call `database_gateway_apply_workflow` now with exactly these arguments"));
         assertTrue(containsMessage(actualMessages.getAllValues().get(1), "\"plan_id\":\"plan-1\""));
     }
     
     @Test
     void assertRunPromptsExactResourceAfterList() throws IOException, InterruptedException {
-        final List<String> toolNames = List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "execute_query");
+        final List<String> toolNames = List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query");
         final String tableResourceUri = "shardingsphere://databases/logic_db/schemas/public/tables/orders";
         final LLME2EScenario actualScenario = createScenario(toolNames, "Read exact `" + tableResourceUri + "` before querying.");
         final LLMMCPConversationRunner actualRunner = createRunner(4);
@@ -785,10 +807,10 @@ class LLMMCPConversationRunnerTest {
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", MCPInteractionActionNames.LIST_RESOURCES, Map.of(), "list-response"),
                 createToolCallCompletion("tool-2", MCPInteractionActionNames.READ_RESOURCE, readResourceArguments, "resource-response"),
-                createToolCallCompletion("tool-3", "execute_query", executeQueryArguments, "query-response"));
+                createToolCallCompletion("tool-3", "database_gateway_execute_query", executeQueryArguments, "query-response"));
         when(mcpInteractionClient.listResources()).thenReturn(Map.of("resources", List.of(Map.of("uri", RESOURCE_URI))));
         when(mcpInteractionClient.readResource(tableResourceUri)).thenReturn(Map.of("found", true));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 createFinalAnswerCompletion(toolNames, 2, "final-answer-response"));
         
@@ -802,7 +824,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunFollowsPendingNextActionBeforeFinalAnswer() throws IOException, InterruptedException {
-        final List<String> toolNames = List.of("apply_workflow", "execute_query");
+        final List<String> toolNames = List.of("database_gateway_apply_workflow", "database_gateway_execute_query");
         final LLME2EScenario actualScenario = createScenario(toolNames);
         final LLMMCPConversationRunner actualRunner = createRunner(3);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
@@ -811,37 +833,37 @@ class LLMMCPConversationRunnerTest {
         final ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(new LLMChatCompletion("",
                 List.of(
-                        new LLMToolCall("tool-1", "execute_query", JsonUtils.toJsonString(executeQueryArguments)),
-                        new LLMToolCall("tool-2", "apply_workflow", JsonUtils.toJsonString(previewArguments))),
+                        new LLMToolCall("tool-1", "database_gateway_execute_query", JsonUtils.toJsonString(executeQueryArguments)),
+                        new LLMToolCall("tool-2", "database_gateway_apply_workflow", JsonUtils.toJsonString(previewArguments))),
                 "initial-response"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
-        when(mcpInteractionClient.call("apply_workflow", previewArguments)).thenReturn(Map.of("response_mode", "preview", "next_actions", List.of(Map.of(
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+        when(mcpInteractionClient.call("database_gateway_apply_workflow", previewArguments)).thenReturn(Map.of("response_mode", "preview", "next_actions", List.of(Map.of(
                 "type", "tool_call",
-                "tool_name", "apply_workflow",
+                "tool_name", "database_gateway_apply_workflow",
                 "arguments", manualArguments,
                 "requires_user_approval", false))));
         when(llmChatClient.complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-3", "apply_workflow", manualArguments, "manual-response"));
-        when(mcpInteractionClient.call("apply_workflow", manualArguments)).thenReturn(Map.of("response_mode", "manual_only"));
+                createToolCallCompletion("tool-3", "database_gateway_apply_workflow", manualArguments, "manual-response"));
+        when(mcpInteractionClient.call("database_gateway_apply_workflow", manualArguments)).thenReturn(Map.of("response_mode", "manual_only"));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
-                createFinalAnswerCompletion(List.of("execute_query", "apply_workflow"), 2, "final-answer-response"));
+                createFinalAnswerCompletion(List.of("database_gateway_execute_query", "database_gateway_apply_workflow"), 2, "final-answer-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertTrue(actual.getAssertionReport().isSuccess());
         verify(llmChatClient).complete(actualMessages.capture(), anyList(), eq("auto"), eq(false));
-        assertTrue(containsMessage(actualMessages.getValue(), "Call `apply_workflow` now with exactly these arguments"));
+        assertTrue(containsMessage(actualMessages.getValue(), "Call `database_gateway_apply_workflow` now with exactly these arguments"));
     }
     
     @Test
     void assertRunWithExecuteQueryErrorPayloadIgnoredForCoverage() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(2);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "execute_query", executeQueryArguments, "tool-call-response"),
+                createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"),
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(Map.of("error_code", "tool_failed"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(Map.of("error_code", "tool_failed"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
@@ -851,12 +873,12 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithInvalidFinalJson() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(3);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "execute_query", executeQueryArguments, "tool-call-response"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+                createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 new LLMChatCompletion("not-json", List.of(), "invalid-final-response-1"),
                 new LLMChatCompletion("still-not-json", List.of(), "invalid-final-response-2"));
@@ -871,12 +893,12 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithMcpActionFailure() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "execute_query", executeQueryArguments, "tool-call-response"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenThrow(new IOException("boom"));
+                createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
+        when(mcpInteractionClient.call("database_gateway_execute_query", executeQueryArguments)).thenThrow(new IOException("boom"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
@@ -885,7 +907,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithMcpRuntimeUnavailable() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         doThrow(new IOException("boom")).when(mcpInteractionClient).open();
         
@@ -898,7 +920,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithModelRequestIOException() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenThrow(new IOException("http 500"));
         
@@ -911,7 +933,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithInterruptedConversation() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenThrow(new InterruptedException("boom"));
         try {
@@ -926,7 +948,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithModelServiceUnavailable() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         doThrow(new IllegalStateException("Model service is not ready for `qwen3:1.7b`.")).when(llmChatClient).waitUntilReady();
         
@@ -939,7 +961,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunIgnoresCloseIOException() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response"));
@@ -953,7 +975,7 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunRestoresInterruptOnCloseFailure() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("execute_query"));
+        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response"));
@@ -1019,7 +1041,7 @@ class LLMMCPConversationRunnerTest {
         result.put("table", TABLE_NAME);
         result.put("query", QUERY);
         result.put("totalOrders", 2);
-        result.put("interactionSequence", List.of("execute_query"));
+        result.put("interactionSequence", List.of("database_gateway_execute_query"));
         result.put(fieldName, fieldValue);
         return result;
     }

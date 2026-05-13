@@ -38,11 +38,15 @@ public final class YamlMCPToolDescriptor {
     
     private String description;
     
-    private Collection<YamlMCPToolFieldDefinition> fields = new LinkedList<>();
+    private Collection<YamlMCPIcon> icons = new LinkedList<>();
+    
+    private Map<String, Object> inputSchema = new LinkedHashMap<>();
     
     private Map<String, Object> outputSchema = new LinkedHashMap<>();
     
     private YamlMCPToolAnnotations annotations;
+    
+    private YamlMCPToolRuntimeDescriptor runtime;
     
     private Map<String, Object> meta = new LinkedHashMap<>();
 }

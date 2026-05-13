@@ -122,7 +122,7 @@ def main() -> None:
         )
         tools_result = read_response(process, "tool-list-1")
         tool_names = {each["name"] for each in tools_result["tools"]}
-        expected_tool_names = {"search_metadata", "execute_query"}
+        expected_tool_names = {"database_gateway_search_metadata", "database_gateway_execute_query"}
         if not expected_tool_names.issubset(tool_names):
             raise AssertionError(f"Expected tools/list to expose {sorted(expected_tool_names)}. Actual tools: {sorted(tool_names)}")
         write_request(
@@ -139,14 +139,17 @@ def main() -> None:
                 "jsonrpc": "2.0",
                 "id": "tool-call-1",
                 "method": "tools/call",
-                "params": {"name": "search_metadata", "arguments": {"database": "orders", "query": "order", "object_types": ["TABLE"]}},
+                "params": {
+                    "name": "database_gateway_search_metadata",
+                    "arguments": {"database": "orders", "query": "order", "object_types": ["TABLE"]},
+                },
             },
         )
         search_result = read_response(process, "tool-call-1")
         search_items = search_result.get("structuredContent", {}).get("items", [])
         search_item_names = {each.get("name") for each in search_items if isinstance(each, dict)}
         if "orders" not in search_item_names:
-            raise AssertionError(f"Expected search_metadata to expose the orders table. Actual search items: {search_items}")
+            raise AssertionError(f"Expected database_gateway_search_metadata to expose the orders table. Actual search items: {search_items}")
         assert process.stdin is not None
         process.stdin.close()
         exit_code = process.wait(timeout=PROCESS_TIMEOUT_SECONDS)

@@ -143,9 +143,9 @@ class WorkflowPlanPayloadBuilderTest {
         assertFalse((Boolean) actual.get("requires_user_approval"));
         Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
         assertTrue((Boolean) actualReviewFocus.get("requires_user_approval"));
-        assertThat(actualReviewFocus.get("next_review_action"), is("call_apply_workflow_preview"));
+        assertThat(actualReviewFocus.get("next_review_action"), is("call_database_gateway_apply_workflow_preview"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
-        assertThat(actualNextAction.get("tool_name"), is("apply_workflow"));
+        assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
         assertFalse((Boolean) actualNextAction.get("requires_user_approval"));
     }
@@ -169,7 +169,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertFalse((Boolean) actualReviewFocus.get("requires_user_approval"));
         assertThat(((Map<?, ?>) actual.get("argument_provenance")).get("execution_mode"), is("inferred_from_intent"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
-        assertThat(actualNextAction.get("tool_name"), is("apply_workflow"));
+        assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
         assertFalse((Boolean) actualNextAction.get("requires_user_approval"));
     }
@@ -189,7 +189,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(actual.get("response_mode"), is("terminal"));
         assertFalse(actual.containsKey("recommended_next_tool"));
         assertThat(actualNextAction.get("type"), is("tool_call"));
-        assertThat(actualNextAction.get("tool_name"), is("plan_encrypt_rule"));
+        assertThat(actualNextAction.get("tool_name"), is("database_gateway_plan_encrypt_rule"));
     }
     
     private List<String> extractResourceUris(final List<?> resources) {

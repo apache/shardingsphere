@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
@@ -42,9 +43,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
     private static final List<String> OFFICIAL_TOOL_NAMES = List.of(
-            "search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow", "plan_encrypt_rule", "plan_mask_rule");
+            "database_gateway_search_metadata", "database_gateway_execute_query", "database_gateway_execute_update", "database_gateway_apply_workflow",
+            "database_gateway_validate_workflow", "database_gateway_plan_encrypt_rule", "database_gateway_plan_mask_rule");
     
-    private static final String PLAN_MASK_TOOL_NAME = "plan_mask_rule";
+    private static final String PLAN_MASK_TOOL_NAME = "database_gateway_plan_mask_rule";
     
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();
@@ -124,7 +126,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(((List<?>) actualCapabilities.get("supportedTools")).stream().map(String::valueOf).toList(), containsInAnyOrder(OFFICIAL_TOOL_NAMES.toArray()));
         assertTrue(((List<?>) actualCapabilities.get("prompts")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
         assertTrue(((List<?>) actualCapabilities.get("completionTargets")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
-        assertTrue(((List<?>) actualCapabilities.get("resourceNavigation")).stream().map(String::valueOf).anyMatch(each -> each.contains("apply_workflow")));
+        assertTrue(((List<?>) actualCapabilities.get("resourceNavigation")).stream().map(String::valueOf).anyMatch(each -> each.contains("database_gateway_apply_workflow")));
         Map<String, Object> actualFingerprints = castToMap(actualCapabilities.get("fingerprints"));
         assertFalse(String.valueOf(actualFingerprints.get("descriptorCatalog")).isEmpty());
         assertFalse(String.valueOf(actualFingerprints.get("promptSet")).isEmpty());
@@ -185,14 +187,14 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(promptResponse.statusCode(), is(200));
         Map<String, Object> promptPayload = getResultPayload(promptResponse);
         assertTrue(String.valueOf(promptPayload).contains("Stop conditions"));
-        assertTrue(String.valueOf(promptPayload).contains("stopConditions"));
+        assertTrue(String.valueOf(promptPayload).contains(MCPShardingSphereMetadataKeys.STOP_CONDITIONS));
         assertModelFacingPayloadContract(promptPayload);
         HttpResponse<String> completionResponse = sendCompletionRequest(httpClient, sessionId, Map.of("type", "ref/prompt", "name", "inspect_metadata"),
                 "schema", "pub", Map.of());
         assertThat(completionResponse.statusCode(), is(200));
         Map<String, Object> completionPayload = getResultPayload(completionResponse);
         assertTrue(String.valueOf(completionPayload).contains("missing_context"));
-        assertTrue(String.valueOf(completionPayload).contains("missingContextArguments"));
+        assertTrue(String.valueOf(completionPayload).contains(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS));
         assertModelFacingPayloadContract(completionPayload);
     }
     
@@ -207,13 +209,13 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         Map<String, Object> actualResult = getResultPayload(actual);
         assertModelFacingPayloadContract(actualResult);
         Map<String, Object> actualSearchMetadataTool = castToMapList(actualResult.get("tools")).stream()
-                .filter(each -> "search_metadata".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
+                .filter(each -> "database_gateway_search_metadata".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
         Map<String, Object> actualSearchMetadataOutputProperties = castToMap(castToMap(actualSearchMetadataTool.get("outputSchema")).get("properties"));
         Map<String, Object> actualSearchMetadataItemProperties = castToMap(castToMap(castToMap(actualSearchMetadataOutputProperties.get("items")).get("items")).get("properties"));
         assertThat(String.valueOf(castToMap(actualSearchMetadataItemProperties.get("resource")).get("type")), is("object"));
         assertThat(String.valueOf(castToMap(actualSearchMetadataItemProperties.get("next_resources")).get("type")), is("array"));
         Map<String, Object> actualTool = castToMapList(actualResult.get("tools")).stream()
-                .filter(each -> "execute_update".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
+                .filter(each -> "database_gateway_execute_update".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
         Map<String, Object> actualOutputProperties = castToMap(castToMap(actualTool.get("outputSchema")).get("properties"));
         assertThat(String.valueOf(castToMap(actualOutputProperties.get("next_actions")).get("type")), is("array"));
     }
@@ -257,7 +259,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_update",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> structuredContent = getStructuredContent(actual.body());
@@ -279,7 +281,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_update",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> structuredContent = getStructuredContent(actual.body());
@@ -289,7 +291,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         List<Map<String, Object>> nextActions = castToMapList(structuredContent.get("next_actions"));
         assertThat(nextActions.stream().map(each -> String.valueOf(each.get("type"))).toList(), is(List.of("ask_user", "tool_call")));
         Map<String, Object> callToolAction = nextActions.get(1);
-        assertThat(String.valueOf(callToolAction.get("tool_name")), is("execute_update"));
+        assertThat(String.valueOf(callToolAction.get("tool_name")), is("database_gateway_execute_update"));
         assertThat(String.valueOf(castToMap(callToolAction.get("arguments")).get("execution_mode")), is("execute"));
         assertTrue((Boolean) callToolAction.get("requires_user_approval"));
     }
@@ -299,7 +301,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "plan_encrypt_rule",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_encrypt_rule",
                 Map.of("table", "orders", "column", "status", "natural_language_intent", "encrypt status with reversible encryption, no equality, no like"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> structuredContent = getStructuredContent(actual.body());

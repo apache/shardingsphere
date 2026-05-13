@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
+import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 
@@ -36,8 +35,10 @@ import java.util.Map;
  */
 public final class PluginFixturePingToolHandler implements MCPToolHandler<MCPServiceHandlerContext> {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("fixture_ping", "Fixture Ping", "Return a fixture ping response for packaged plugin discovery.",
-            List.of(new MCPToolFieldDefinition("message", MCPToolValueDefinition.string("Fixture message."), true)), Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor(List.of(new MCPIcon("https://example.invalid/fixture-ping.png", "image/png", List.of("64x64"), "light")),
+            "fixture_ping", "Fixture Ping", "Return a fixture ping response for packaged plugin discovery.",
+            Map.of("type", "object", "properties", Map.of("message", Map.of("type", "string", "description", "Fixture message.")), "required", List.of("message"), "additionalProperties", false),
+            Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
     
     @Override
     public Class<MCPServiceHandlerContext> getContextType() {

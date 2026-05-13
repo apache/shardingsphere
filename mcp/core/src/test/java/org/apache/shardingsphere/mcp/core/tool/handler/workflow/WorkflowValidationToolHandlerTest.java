@@ -42,7 +42,7 @@ class WorkflowValidationToolHandlerTest {
     @Test
     void assertGetToolDescriptor() {
         MCPToolDescriptor actual = new WorkflowValidationToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(WorkflowHandlerTestFixture.createDefinition("encrypt.rule")))).getToolDescriptor();
-        assertThat(actual.getName(), is("validate_workflow"));
+        assertThat(actual.getName(), is("database_gateway_validate_workflow"));
     }
     
     @Test

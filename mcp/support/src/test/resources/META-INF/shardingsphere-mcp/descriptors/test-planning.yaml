@@ -1,4 +1,3 @@
-#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -16,102 +15,92 @@
 #
 
 resources:
-  - uriTemplate: shardingsphere://workflow/test-resource
+  - uri: shardingsphere://workflow/test-resource
     name: workflow_test_resource
     title: Workflow Test Resource
     description: "Workflow descriptor resource used by descriptor catalog loader tests."
+    icons:
+      - src: https://example.invalid/workflow-test-resource.png
+        mimeType: image/png
+        sizes:
+          - 64x64
+        theme: light
     mimeType: application/json
-    resourceKind: detail
+    extension:
+      resourceKind: detail
 
 tools:
-  - name: plan_encrypt_rule
+  - name: database_gateway_plan_encrypt_rule
     title: Plan Encrypt Rule
     description: "Plan a test encrypt workflow descriptor without executing changes."
-    fields:
-      - name: plan_id
-        required: false
-        valueDefinition:
-          type: STRING
+    icons:
+      - src: https://example.invalid/plan-encrypt-rule.png
+        mimeType: image/png
+        sizes:
+          - any
+    inputSchema:
+      type: object
+      properties:
+        plan_id:
+          type: string
           description: "Optional existing workflow plan identifier."
-      - name: database
-        required: false
-        valueDefinition:
-          type: STRING
+        database:
+          type: string
           description: "Logical database name."
-      - name: schema
-        required: false
-        valueDefinition:
-          type: STRING
+        schema:
+          type: string
           description: "Optional schema name."
-      - name: table
-        required: false
-        valueDefinition:
-          type: STRING
+        table:
+          type: string
           description: "Logical table name."
-      - name: column
-        required: false
-        valueDefinition:
-          type: STRING
+        column:
+          type: string
           description: "Logical column name."
-      - name: operation_type
-        required: false
-        valueDefinition:
-          type: STRING
+        operation_type:
+          type: string
           description: "Lifecycle operation."
-          enumValues:
+          enum:
             - create
             - alter
             - drop
-      - name: natural_language_intent
-        required: false
-        valueDefinition:
-          type: STRING
+        natural_language_intent:
+          type: string
           description: "Natural language user request."
-      - name: structured_intent_evidence
-        required: false
-        valueDefinition:
-          type: OBJECT
+        structured_intent_evidence:
+          type: object
           description: "Structured intent evidence."
+          properties:
+            field_semantics:
+              type: string
+              description: "Field semantics."
+          required: []
           additionalProperties: false
-          objectProperties:
-            - name: field_semantics
-              required: false
-              valueDefinition:
-                type: STRING
-                description: "Field semantics."
-      - name: delivery_mode
-        required: false
-        valueDefinition:
-          type: STRING
+        delivery_mode:
+          type: string
           description: "Delivery mode."
-          enumValues:
+          enum:
             - all-at-once
             - step-by-step
-      - name: execution_mode
-        required: false
-        valueDefinition:
-          type: STRING
+        execution_mode:
+          type: string
           description: "Execution mode."
-          enumValues:
+          enum:
             - review-then-execute
             - manual-only
-      - name: algorithm_type
-        required: false
-        valueDefinition:
-          type: STRING
+        algorithm_type:
+          type: string
           description: "Algorithm type."
-      - name: user_overrides
-        required: false
-        valueDefinition:
-          type: OBJECT
+        user_overrides:
+          type: object
           description: "User overrides."
+          properties:
+            algorithm_type:
+              type: string
+              description: "Algorithm type override."
+          required: []
           additionalProperties: false
-          objectProperties:
-            - name: algorithm_type
-              required: false
-              valueDefinition:
-                type: STRING
-                description: "Algorithm type override."
+      required: []
+      additionalProperties: false
     outputSchema:
       type: object
       properties:
@@ -120,7 +109,7 @@ tools:
           description: "Machine-readable response mode for planning or terminal workflow states."
         plan_id:
           type: string
-          description: "Workflow plan identifier for apply_workflow and validate_workflow."
+          description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
         workflow_kind:
           type: string
           description: "Workflow kind resolved by the planner."
@@ -168,13 +157,12 @@ tools:
           next_actions:
             - order: 1
               type: tool_call
-              title: Call apply_workflow
+              title: Call database_gateway_apply_workflow
               reason: Preview generated workflow artifacts.
               requires_user_approval: false
     annotations:
       title: Plan Encrypt Rule
-      readOnlyHint: true
+      readOnlyHint: false
       destructiveHint: false
       idempotentHint: false
       openWorldHint: true
-      returnDirect: false

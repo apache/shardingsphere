@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.api.resource.descriptor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
+import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 
 import java.util.List;
 import java.util.Map;
@@ -26,44 +26,54 @@ import java.util.Map;
 /**
  * MCP resource descriptor.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MCPResourceDescriptor {
-    
-    private final String uriTemplate;
-    
-    private final String name;
-    
-    private final String title;
-    
-    private final String description;
-    
-    private final String mimeType;
-    
-    private final List<MCPResourceParameterDescriptor> parameters;
-    
-    private final MCPResourceAnnotations annotations;
-    
-    private final String resourceKind;
-    
-    private final String objectScope;
-    
-    private final String feature;
-    
-    private final List<String> relatedTools;
-    
-    private final List<String> relatedResources;
-    
-    private final List<String> useBefore;
-    
-    private final Map<String, Object> meta;
+public interface MCPResourceDescriptor {
     
     /**
-     * Judge whether the resource is a URI template.
+     * Get resource name.
      *
-     * @return true if the resource is a URI template
+     * @return resource name
      */
-    public boolean isTemplated() {
-        return null != uriTemplate && uriTemplate.contains("{");
-    }
+    String getName();
+    
+    /**
+     * Get resource title.
+     *
+     * @return resource title
+     */
+    String getTitle();
+    
+    /**
+     * Get resource description.
+     *
+     * @return resource description
+     */
+    String getDescription();
+    
+    /**
+     * Get resource icons.
+     *
+     * @return resource icons
+     */
+    List<MCPIcon> getIcons();
+    
+    /**
+     * Get resource MIME type.
+     *
+     * @return resource MIME type
+     */
+    String getMimeType();
+    
+    /**
+     * Get resource annotations.
+     *
+     * @return resource annotations
+     */
+    MCPAnnotations getAnnotations();
+    
+    /**
+     * Get resource metadata.
+     *
+     * @return resource metadata
+     */
+    Map<String, Object> getMeta();
 }

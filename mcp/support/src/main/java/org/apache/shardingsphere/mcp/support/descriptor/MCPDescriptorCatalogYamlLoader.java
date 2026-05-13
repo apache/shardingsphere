@@ -45,7 +45,9 @@ final class MCPDescriptorCatalogYamlLoader {
             if (null == inputStream) {
                 throw new IllegalStateException(String.format("MCP descriptor resource `%s` is not found.", resourceName));
             }
-            return YamlEngine.unmarshal(inputStream.readAllBytes(), YamlMCPDescriptorCatalog.class);
+            byte[] yamlBytes = inputStream.readAllBytes();
+            MCPDescriptorYamlKeyValidator.validate(resourceName, yamlBytes);
+            return YamlEngine.unmarshal(yamlBytes, YamlMCPDescriptorCatalog.class);
         } catch (final IOException ex) {
             throw new IllegalStateException(String.format("Failed to load MCP descriptor resource `%s`.", resourceName), ex);
         }

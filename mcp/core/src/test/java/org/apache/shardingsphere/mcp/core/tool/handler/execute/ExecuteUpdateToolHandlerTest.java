@@ -71,7 +71,7 @@ class ExecuteUpdateToolHandlerTest {
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "execute"))));
-        assertThat(actual.getMessage(), is("execute_update approved_by_user=true is required for real side effects."));
+        assertThat(actual.getMessage(), is("database_gateway_execute_update approved_by_user=true is required for real side effects."));
         verifyNoInteractions(executionFacade);
     }
     
@@ -82,7 +82,7 @@ class ExecuteUpdateToolHandlerTest {
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'"))));
-        assertThat(actual.getMessage(), is("execute_update execution_mode is required."));
+        assertThat(actual.getMessage(), is("database_gateway_execute_update execution_mode is required."));
         verifyNoInteractions(executionFacade);
     }
     
@@ -93,7 +93,7 @@ class ExecuteUpdateToolHandlerTest {
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "sql", "select * from orders", "execution_mode", "execute"))));
-        assertThat(actual.getMessage(), is("execute_update does not accept read-only SQL. Use execute_query for read-only SQL."));
+        assertThat(actual.getMessage(), is("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL."));
         verifyNoInteractions(executionFacade);
     }
     
@@ -124,7 +124,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("ask_user"));
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("order"), is(1));
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("required_inputs"), is(List.of("approved_by_user")));
-        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("tool_name"), is("execute_update"));
+        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("tool_name"), is("database_gateway_execute_update"));
         assertThat(((Map<?, ?>) actualNextActions.get(1)).get("depends_on"), is(List.of(1)));
         assertThat(((Map<?, ?>) ((Map<?, ?>) actualNextActions.get(1)).get("arguments")).get("execution_mode"), is("execute"));
         assertTrue((Boolean) ((Map<?, ?>) ((Map<?, ?>) actualNextActions.get(1)).get("arguments")).get("approved_by_user"));
@@ -142,7 +142,7 @@ class ExecuteUpdateToolHandlerTest {
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'", "execution_mode", "dry-run"))));
-        assertThat(actual.getMessage(), is("execute_update execution_mode must be one of [execute, preview]."));
+        assertThat(actual.getMessage(), is("database_gateway_execute_update execution_mode must be one of [execute, preview]."));
         verifyNoInteractions(executionFacade);
     }
     
@@ -153,7 +153,7 @@ class ExecuteUpdateToolHandlerTest {
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "sql", "EXPLAIN ANALYZE SELECT * FROM orders", "execution_mode", "execute"))));
-        assertThat(actual.getMessage(), is("execute_update does not accept read-only SQL. Use execute_query for read-only SQL."));
+        assertThat(actual.getMessage(), is("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL."));
         verifyNoInteractions(executionFacade);
     }
 }

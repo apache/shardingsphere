@@ -66,7 +66,7 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         String executionMode = toolArguments.getStringArgument("execution_mode");
         if (executionMode.isEmpty()) {
-            throw new MCPExecutionModeRequiredException("apply_workflow", List.of("preview", "review-then-execute", "manual-only"),
+            throw new MCPExecutionModeRequiredException("database_gateway_apply_workflow", List.of("preview", "review-then-execute", "manual-only"),
                     createPreviewSuggestedArguments(toolCall.getArguments()));
         }
         MCPDatabaseHandlerContext databaseContext = workflowContext.getDatabaseContext();

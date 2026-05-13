@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.prompt;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncPromptSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
 class MCPPromptSpecificationFactoryTest {
@@ -38,7 +40,7 @@ class MCPPromptSpecificationFactoryTest {
         SyncPromptSpecification actualPromptSpecification = findPrompt(actual, "safe_sql_execution");
         assertThat(actualPromptSpecification.prompt().title(), is("Safe SQL Execution"));
         assertThat(actualPromptSpecification.prompt().arguments().size(), is(3));
-        assertThat(actualPromptSpecification.prompt().meta().get("relatedTools"), is(List.of("execute_query", "execute_update")));
+        assertThat(actualPromptSpecification.prompt().meta().get(MCPShardingSphereMetadataKeys.RELATED_TOOLS), is(List.of("database_gateway_execute_query", "database_gateway_execute_update")));
     }
     
     @Test
@@ -47,14 +49,14 @@ class MCPPromptSpecificationFactoryTest {
         McpSchema.GetPromptResult actual = promptSpecification.promptHandler().apply(mock(McpSyncServerExchange.class),
                 new McpSchema.GetPromptRequest("inspect_metadata", Map.of("database", "logic_db", "schema", "public", "query", "orders")));
         assertThat(actual.description(),
-                is("Guide the model to inspect ShardingSphere logical metadata by reading capability and metadata resources before choosing search_metadata or detail resources."));
+                is("Guide the model to inspect ShardingSphere logical metadata by reading capability and metadata resources before choosing database_gateway_search_metadata or detail resources."));
         assertThat(((McpSchema.TextContent) actual.messages().get(0).content()).text(), containsString("database: logic_db"));
         assertThat(((McpSchema.TextContent) actual.messages().get(0).content()).text(), containsString("query: orders"));
         assertThat(((McpSchema.TextContent) actual.messages().get(0).content()).text(), containsString("Stop conditions:"));
-        assertThat(actual.meta().get("stopConditions"), is(List.of(
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.STOP_CONDITIONS), is(List.of(
                 "Stop after returning resolved metadata paths or after identifying the exact resource/tool to call next.",
                 "Stop without SQL execution when the user only asked to inspect metadata.")));
-        assertThat(actual.meta().get("templateResource"), is("META-INF/shardingsphere-mcp/prompts/inspect-metadata.md"));
+        assertFalse(actual.meta().containsKey("templateResource"));
     }
     
     private SyncPromptSpecification findPrompt(final List<SyncPromptSpecification> specifications, final String name) {

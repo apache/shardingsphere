@@ -35,7 +35,7 @@ import java.util.Map;
  */
 public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPDescriptorRegistry.getRequiredToolDescriptor("execute_query");
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPDescriptorRegistry.getRequiredToolDescriptor("database_gateway_execute_query");
     
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
@@ -52,9 +52,9 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         String sql = toolArguments.getStringArgument("sql");
         checkReadOnlyQuery(toolArguments, sql);
-        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, "execute_query");
+        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, "database_gateway_execute_query");
         return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments,
-                resolveSchema(databaseContext, toolArguments), sql, "execute_query"));
+                resolveSchema(databaseContext, toolArguments), sql, "database_gateway_execute_query"));
     }
     
     private String resolveSchema(final MCPDatabaseHandlerContext databaseContext, final MCPToolArguments toolArguments) {
@@ -73,8 +73,10 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
     private void checkReadOnlyQuery(final MCPToolArguments toolArguments, final String sql) {
         ClassificationResult classificationResult = new StatementClassifier().classify(sql);
         if (!SQLExecutionToolHandlerSupport.isReadOnlyStatement(classificationResult.getStatementClass())) {
-            throw new SQLToolMismatchException("execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use execute_update for side-effecting SQL.",
-                    "execute_query", "execute_update", classificationResult, createSuggestedArguments(toolArguments, classificationResult));
+            throw new SQLToolMismatchException(
+                    "database_gateway_execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL.",
+                    "database_gateway_execute_query", "database_gateway_execute_update", classificationResult,
+                    createSuggestedArguments(toolArguments, classificationResult));
         }
     }
     

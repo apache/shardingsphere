@@ -44,11 +44,11 @@ class MCPNextActionUtilsTest {
     
     @Test
     void assertCallTool() {
-        Map<String, Object> actual = MCPNextActionUtils.callTool("search_metadata", "Search metadata.", Map.of("page_size", 100), false);
+        Map<String, Object> actual = MCPNextActionUtils.callTool("database_gateway_search_metadata", "Search metadata.", Map.of("page_size", 100), false);
         assertThat(actual.get("order"), is(1));
         assertThat(actual.get("type"), is("tool_call"));
-        assertThat(actual.get("title"), is("Call search_metadata"));
-        assertThat(actual.get("tool_name"), is("search_metadata"));
+        assertThat(actual.get("title"), is("Call database_gateway_search_metadata"));
+        assertThat(actual.get("tool_name"), is("database_gateway_search_metadata"));
         assertThat(actual.get("arguments"), is(Map.of("page_size", 100)));
         assertFalse((Boolean) actual.get("requires_user_approval"));
         assertNoLegacyAliases(actual);
@@ -56,10 +56,10 @@ class MCPNextActionUtilsTest {
     
     @Test
     void assertRetryTool() {
-        Map<String, Object> actual = MCPNextActionUtils.retryTool("execute_update", "Retry in preview mode.", Map.of("execution_mode", "preview"), true);
+        Map<String, Object> actual = MCPNextActionUtils.retryTool("database_gateway_execute_update", "Retry in preview mode.", Map.of("execution_mode", "preview"), true);
         assertThat(actual.get("type"), is("tool_call"));
-        assertThat(actual.get("title"), is("Retry execute_update"));
-        assertThat(actual.get("tool_name"), is("execute_update"));
+        assertThat(actual.get("title"), is("Retry database_gateway_execute_update"));
+        assertThat(actual.get("tool_name"), is("database_gateway_execute_update"));
         assertThat(actual.get("arguments"), is(Map.of("execution_mode", "preview")));
         assertTrue((Boolean) actual.get("requires_user_approval"));
         assertNoLegacyAliases(actual);
@@ -73,7 +73,7 @@ class MCPNextActionUtilsTest {
     @Test
     void assertCompleteArgument() {
         Map<String, Object> actual = MCPNextActionUtils.completeArgument("ref/prompt", "inspect_metadata", "schema", "pub", Map.of("database", "logic_db"),
-                List.of("table"), "tool", "search_metadata", Map.of("query", "orders"), "Complete schema.");
+                List.of("table"), "tool", "database_gateway_search_metadata", Map.of("query", "orders"), "Complete schema.");
         assertThat(actual.get("type"), is("completion"));
         assertThat(actual.get("title"), is("Complete schema"));
         assertThat(actual.get("reference_type"), is("ref/prompt"));
@@ -83,7 +83,7 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("context_arguments"), is(Map.of("database", "logic_db")));
         assertThat(actual.get("missing_context_arguments"), is(List.of("table")));
         assertThat(actual.get("resume_target_type"), is("tool"));
-        assertThat(actual.get("resume_target"), is("search_metadata"));
+        assertThat(actual.get("resume_target"), is("database_gateway_search_metadata"));
         assertThat(actual.get("resume_arguments"), is(Map.of("query", "orders")));
         assertFalse((Boolean) actual.get("requires_user_approval"));
         assertNoLegacyAliases(actual);

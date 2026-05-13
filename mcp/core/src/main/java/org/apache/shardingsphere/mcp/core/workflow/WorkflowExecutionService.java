@@ -102,18 +102,18 @@ public final class WorkflowExecutionService {
     
     private String requireExecutionMode(final WorkflowContextSnapshot snapshot, final String executionMode) {
         if (executionMode.isEmpty()) {
-            throw new MCPExecutionModeRequiredException("apply_workflow", EXECUTION_MODES, createPreviewSuggestedArguments(snapshot));
+            throw new MCPExecutionModeRequiredException("database_gateway_apply_workflow", EXECUTION_MODES, createPreviewSuggestedArguments(snapshot));
         }
         String result = executionMode.toLowerCase();
         if (!EXECUTION_MODES.contains(result)) {
-            throw new MCPInvalidExecutionModeException("apply_workflow", EXECUTION_MODES, createPreviewSuggestedArguments(snapshot));
+            throw new MCPInvalidExecutionModeException("database_gateway_apply_workflow", EXECUTION_MODES, createPreviewSuggestedArguments(snapshot));
         }
         return result;
     }
     
     private void requireUserApproval(final WorkflowContextSnapshot snapshot, final String executionMode, final boolean approvedByUser) {
         if (EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(executionMode) && !approvedByUser) {
-            throw new MCPUserApprovalRequiredException("apply_workflow", createApprovedExecutionArguments(snapshot, executionMode));
+            throw new MCPUserApprovalRequiredException("database_gateway_apply_workflow", createApprovedExecutionArguments(snapshot, executionMode));
         }
     }
     
@@ -230,7 +230,7 @@ public final class WorkflowExecutionService {
     
     private Map<String, Object> createPreviewNextAction(final WorkflowContextSnapshot snapshot) {
         String executionMode = resolveApprovedExecutionMode(snapshot);
-        return MCPNextActionUtils.callTool("apply_workflow", createPreviewNextActionReason(executionMode),
+        return MCPNextActionUtils.callTool("database_gateway_apply_workflow", createPreviewNextActionReason(executionMode),
                 createApprovedExecutionArguments(snapshot, executionMode), !EXECUTION_MODE_MANUAL_ONLY.equals(executionMode));
     }
     
@@ -407,8 +407,8 @@ public final class WorkflowExecutionService {
                 "confirmation_required", true,
                 "confirmation_field", "manual_artifacts_executed",
                 "validation_blocked_until", "manual_artifacts_executed",
-                "validation_tool_after_manual_execution", "validate_workflow",
-                "safe_independent_read_only_checks", "execute_query may run before manual execution confirmation when the user asked for read-only verification.");
+                "validation_tool_after_manual_execution", "database_gateway_validate_workflow",
+                "safe_independent_read_only_checks", "database_gateway_execute_query may run before manual execution confirmation when the user asked for read-only verification.");
     }
     
     private static Map<String, Object> createManualArtifactSummary(final String planId, final Map<String, Object> manualArtifactPackage) {
@@ -423,7 +423,7 @@ public final class WorkflowExecutionService {
         result.put("external_execution_required", true);
         result.put("requires_user_confirmation", true);
         result.put("validation_blocked_until", "manual_artifacts_executed");
-        result.put("validation_tool_after_manual_execution", "validate_workflow");
+        result.put("validation_tool_after_manual_execution", "database_gateway_validate_workflow");
         result.put("validation_arguments_after_manual_execution", Map.of("plan_id", planId));
         return result;
     }

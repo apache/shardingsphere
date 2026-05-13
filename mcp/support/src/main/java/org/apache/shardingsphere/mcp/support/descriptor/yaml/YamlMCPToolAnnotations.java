@@ -36,6 +36,4 @@ public final class YamlMCPToolAnnotations {
     private Boolean idempotentHint;
     
     private Boolean openWorldHint;
-    
-    private Boolean returnDirect;
 }

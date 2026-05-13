@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -69,7 +70,10 @@ public final class MCPTransportPayloadUtils {
             result.addContent(each);
         }
         if (0 < resourceLinks.totalCount()) {
-            result.meta(Map.of("resource_links_emitted", resourceLinks.links().size(), "resource_links_omitted", resourceLinks.omittedCount(), "resource_link_limit", RESOURCE_LINK_LIMIT));
+            result.meta(Map.of(
+                    MCPShardingSphereMetadataKeys.RESOURCE_LINKS_EMITTED, resourceLinks.links().size(),
+                    MCPShardingSphereMetadataKeys.RESOURCE_LINKS_OMITTED, resourceLinks.omittedCount(),
+                    MCPShardingSphereMetadataKeys.RESOURCE_LINK_LIMIT, RESOURCE_LINK_LIMIT));
         }
         return result.build();
     }
@@ -163,9 +167,9 @@ public final class MCPTransportPayloadUtils {
     
     private static Map<String, Object> createResourceLinkMeta(final ResourceLinkCandidate candidate) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put("resource_kind", Objects.toString(candidate.hint().get("resource_kind"), ""));
-        result.put("purpose", Objects.toString(candidate.hint().get("purpose"), ""));
-        result.put("source_field", candidate.sourceField());
+        result.put(MCPShardingSphereMetadataKeys.RESOURCE_KIND, Objects.toString(candidate.hint().get("resource_kind"), ""));
+        result.put(MCPShardingSphereMetadataKeys.PURPOSE, Objects.toString(candidate.hint().get("purpose"), ""));
+        result.put(MCPShardingSphereMetadataKeys.SOURCE_FIELD, candidate.sourceField());
         return result;
     }
     

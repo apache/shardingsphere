@@ -47,6 +47,8 @@ public final class LLMMCPConversationRunner {
     
     private static final Pattern RESOURCE_URI_PATTERN = Pattern.compile("shardingsphere://[^`\\s,]+");
     
+    private static final String PLANNING_TOOL_NAME_PREFIX = "database_gateway_plan_";
+    
     private final int maxTurns;
     
     private final LLMChatModelClient llmChatClient;
@@ -157,7 +159,7 @@ public final class LLMMCPConversationRunner {
         if (hasPendingImmediateNextAction(artifacts.getInteractionTrace())) {
             return false;
         }
-        if (scenario.getRequiredToolNames().contains("execute_query") && !hasExpectedExecuteQuery(scenario.getExpectedAnswer(), artifacts.getInteractionTrace())) {
+        if (scenario.getRequiredToolNames().contains("database_gateway_execute_query") && !hasExpectedExecuteQuery(scenario.getExpectedAnswer(), artifacts.getInteractionTrace())) {
             messages.add(LLMChatMessage.user(createExpectedQueryInstruction(scenario.getExpectedAnswer())));
             return false;
         }
@@ -168,7 +170,7 @@ public final class LLMMCPConversationRunner {
     private boolean hasExpectedExecuteQuery(final LLMStructuredAnswer expectedAnswer, final List<MCPInteractionTraceRecord> interactionTrace) {
         for (int index = interactionTrace.size() - 1; index >= 0; index--) {
             MCPInteractionTraceRecord each = interactionTrace.get(index);
-            if (!"execute_query".equals(each.getTargetName())) {
+            if (!"database_gateway_execute_query".equals(each.getTargetName())) {
                 continue;
             }
             return each.isValid()
@@ -181,8 +183,8 @@ public final class LLMMCPConversationRunner {
     
     private String createExpectedQueryInstruction(final LLMStructuredAnswer expectedAnswer) {
         return String.format(Locale.ENGLISH,
-                "Required MCP tool coverage is present, but the latest successful execute_query did not use database `%s`, schema `%s`, and query `%s`. "
-                        + "Call execute_query now with exactly those arguments before returning the final JSON.",
+                "Required MCP tool coverage is present, but the latest successful database_gateway_execute_query did not use database `%s`, schema `%s`, and query `%s`. "
+                        + "Call database_gateway_execute_query now with exactly those arguments before returning the final JSON.",
                 expectedAnswer.getDatabase(), expectedAnswer.getSchema(), expectedAnswer.getQuery());
     }
     
@@ -368,7 +370,7 @@ public final class LLMMCPConversationRunner {
     }
     
     private Map<String, Object> normalizeWorkflowPlanIdArgument(final String toolName, final Map<String, Object> args, final List<MCPInteractionTraceRecord> interactionTrace) {
-        if (!("apply_workflow".equals(toolName) || "validate_workflow".equals(toolName)) || !isPlanIdPlaceholder(args.get("plan_id"))) {
+        if (!("database_gateway_apply_workflow".equals(toolName) || "database_gateway_validate_workflow".equals(toolName)) || !isPlanIdPlaceholder(args.get("plan_id"))) {
             return args;
         }
         String latestPlanId = findLatestPlanId(interactionTrace);
@@ -491,7 +493,7 @@ public final class LLMMCPConversationRunner {
         final LLMStructuredAnswer expectedAnswer = scenario.getExpectedAnswer();
         final String interactionSequence = JsonUtils.toJsonString(createComparableInteractionSequence(interactionTrace));
         final String prompt = "Return JSON only with keys database, schema, table, query, totalOrders, interactionSequence. "
-                + "Use database `%s`, schema `%s`, table `%s`, and query `%s`; set totalOrders from the latest successful execute_query result. "
+                + "Use database `%s`, schema `%s`, table `%s`, and query `%s`; set totalOrders from the latest successful database_gateway_execute_query result. "
                 + "Set interactionSequence exactly to this JSON array: %s. "
                 + "Do not add inferred, expected, available, or failed MCP action names. Required tools are `%s`.";
         return String.format(Locale.ENGLISH,
@@ -513,39 +515,40 @@ public final class LLMMCPConversationRunner {
     private String createRequiredToolCallInstruction(final LLME2EScenario scenario, final LLMMCPConversationArtifacts artifacts) {
         final List<String> missingToolNames = LLMMCPInteractionCoverage.findMissingRequiredInteractionNames(scenario.getRequiredToolNames(), artifacts.getInteractionTrace());
         final LLMStructuredAnswer expectedAnswer = scenario.getExpectedAnswer();
-        final String previewInstruction = missingToolNames.contains("execute_update")
+        final String previewInstruction = missingToolNames.contains("database_gateway_execute_update")
                 ? String.format(Locale.ENGLISH,
-                        " For execute_update, set database `%s`, schema `%s`, execution_mode=preview, and keep the side-effecting SQL unchanged; do not use execution_mode=execute.",
+                        " For database_gateway_execute_update, set database `%s`, schema `%s`, execution_mode=preview, and keep the side-effecting SQL unchanged; do not use execution_mode=execute.",
                         expectedAnswer.getDatabase(), expectedAnswer.getSchema())
                 : "";
         final String resourceInstruction = missingToolNames.contains(MCPInteractionActionNames.READ_RESOURCE)
                 ? " For mcp_read_resource, use an exact shardingsphere:// URI from the user request or the latest tool response; do not invent abbreviated URI strings."
                 : "";
         final String planningInstruction = hasMissingPlanningTool(missingToolNames)
-                ? " For a new plan_* call, omit plan_id unless a previous MCP planning response returned an actual plan_id."
+                ? " For a new database_gateway_plan_* call, omit plan_id unless a previous MCP planning response returned an actual plan_id."
                 : "";
         final String workflowPlanInstruction = createWorkflowPlanInstruction(missingToolNames, artifacts.getInteractionTrace());
         return String.format(Locale.ENGLISH,
                 "Required MCP tool coverage is incomplete. Remaining required MCP tools: %s. "
                         + "Call one remaining tool as an actual MCP tool_call now; do not answer in text, do not write JSON, and do not write <tool_call> markup. "
-                        + "If execute_query is remaining, set database `%s`, schema `%s`, and sql `%s`.%s%s%s%s",
+                        + "If database_gateway_execute_query is remaining, set database `%s`, schema `%s`, and sql `%s`.%s%s%s%s",
                 String.join(", ", missingToolNames), expectedAnswer.getDatabase(), expectedAnswer.getSchema(), expectedAnswer.getQuery(), previewInstruction, resourceInstruction,
                 planningInstruction, workflowPlanInstruction);
     }
     
     private boolean hasMissingPlanningTool(final List<String> missingToolNames) {
-        return missingToolNames.stream().anyMatch(each -> each.startsWith("plan_"));
+        return missingToolNames.stream().anyMatch(each -> each.startsWith(PLANNING_TOOL_NAME_PREFIX));
     }
     
     private String createWorkflowPlanInstruction(final List<String> missingToolNames, final List<MCPInteractionTraceRecord> interactionTrace) {
-        if (!missingToolNames.contains("apply_workflow") && !missingToolNames.contains("validate_workflow")) {
+        if (!missingToolNames.contains("database_gateway_apply_workflow") && !missingToolNames.contains("database_gateway_validate_workflow")) {
             return "";
         }
         String latestPlanId = findLatestPlanId(interactionTrace);
         return latestPlanId.isEmpty()
-                ? " For apply_workflow or validate_workflow, use an actual plan_id returned by a successful planning tool call; do not use placeholder text `plan_id`."
+                ? " For database_gateway_apply_workflow or database_gateway_validate_workflow, use an actual plan_id returned by a successful planning tool call; "
+                        + "do not use placeholder text `plan_id`."
                 : String.format(Locale.ENGLISH,
-                        " For apply_workflow or validate_workflow, set plan_id `%s`; do not use placeholder text `plan_id`.", latestPlanId);
+                        " For database_gateway_apply_workflow or database_gateway_validate_workflow, set plan_id `%s`; do not use placeholder text `plan_id`.", latestPlanId);
     }
     
     private String findLatestPlanId(final List<MCPInteractionTraceRecord> interactionTrace) {

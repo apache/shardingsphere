@@ -41,104 +41,83 @@ resourceTemplates:
     name: logical-database-detail
     title: Logical Database Detail
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/capabilities
     name: database-capabilities
     title: Database Capabilities
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas
     name: schemas
     title: Schemas
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}
     name: schema-detail
     title: Schema Detail
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/sequences
     name: sequences
     title: Sequences
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}
     name: sequence-detail
     title: Sequence Detail
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables
     name: tables
     title: Tables
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
     name: table-detail
     title: Table Detail
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
     name: table-columns
     title: Table Columns
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}
     name: table-column-detail
     title: Table Column Detail
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
     name: table-indexes
     title: Table Indexes
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}
     name: table-index-detail
     title: Table Index Detail
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views
     name: views
     title: Views
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}
     name: view-detail
     title: View Detail
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns
     name: view-columns
     title: View Columns
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}
     name: view-column-detail
     title: View Column Detail
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://features/encrypt/databases/{database}/rules
     name: encrypt-rules
     title: Encrypt Rules
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules
     name: encrypt-table-rule
     title: Encrypt Table Rule
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://features/mask/databases/{database}/rules
     name: mask-rules
     title: Mask Rules
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://features/mask/databases/{database}/tables/{table}/rules
     name: mask-table-rule
     title: Mask Table Rule
     mimeType: application/json
-    parameters: []
   - uriTemplate: shardingsphere://workflows/{plan_id}
     name: workflow-plan
     title: Workflow Plan
     mimeType: application/json
-    parameters: []

@@ -22,6 +22,7 @@ import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
 import io.modelcontextprotocol.spec.McpSchema.ResourceLink;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.junit.jupiter.api.Test;
 
@@ -74,12 +75,12 @@ class MCPTransportPayloadUtilsTest {
         io.modelcontextprotocol.spec.McpSchema.CallToolResult actual = MCPTransportPayloadUtils.createCallToolResult(payload);
         assertThat(actual.structuredContent(), is(payload));
         assertThat(actual.content().size(), is(25));
-        assertThat(actual.meta().get("resource_links_emitted"), is(24));
-        assertThat(actual.meta().get("resource_links_omitted"), is(9));
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.RESOURCE_LINKS_EMITTED), is(24));
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.RESOURCE_LINKS_OMITTED), is(9));
         assertThat(((ResourceLink) actual.content().get(1)).uri(), is("shardingsphere://capabilities"));
         assertThat(((ResourceLink) actual.content().get(2)).uri(), is("shardingsphere://databases/logic_db"));
         assertThat(((ResourceLink) actual.content().get(3)).uri(), is("shardingsphere://databases"));
-        assertThat(((Map<?, ?>) actual.content().get(1).meta()).get("source_field"), is("resources_to_read"));
+        assertThat(((Map<?, ?>) actual.content().get(1).meta()).get(MCPShardingSphereMetadataKeys.SOURCE_FIELD), is("resources_to_read"));
     }
     
     @Test

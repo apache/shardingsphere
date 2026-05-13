@@ -48,7 +48,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EnabledIf("isEnabled")
 class PackagedDistributionPluginDiscoveryE2ETest {
     
-    private static final List<String> CORE_TOOL_NAMES = List.of("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow");
+    private static final List<String> CORE_TOOL_NAMES = List.of("database_gateway_search_metadata", "database_gateway_execute_query", "database_gateway_execute_update",
+            "database_gateway_apply_workflow", "database_gateway_validate_workflow");
     
     private static final List<String> REMOVED_FEATURE_TOOL_NAMES = OfficialMCPToolNames.getAll().stream().filter(each -> !CORE_TOOL_NAMES.contains(each)).toList();
     
@@ -74,7 +75,8 @@ class PackagedDistributionPluginDiscoveryE2ETest {
         try (MCPInteractionClient interactionClient = new PackagedDistributionStdioInteractionClient(distribution.home(), distribution.configFile())) {
             interactionClient.open();
             assertDiscoveredTools(interactionClient.listTools());
-            assertSearchMetadataTool(interactionClient.call("search_metadata", Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE"))));
+            assertDiscoveredResources(interactionClient.listResources());
+            assertSearchMetadataTool(interactionClient.call("database_gateway_search_metadata", Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE"))));
             assertFixtureTool(interactionClient.call("fixture_ping", Map.of("message", "hello")));
             assertFixtureResource(interactionClient.readResource(FIXTURE_RESOURCE_URI));
             assertCapabilities(interactionClient.readResource("shardingsphere://capabilities"));
@@ -83,10 +85,29 @@ class PackagedDistributionPluginDiscoveryE2ETest {
     
     private void assertDiscoveredTools(final List<Map<String, Object>> tools) {
         List<String> actualToolNames = tools.stream().map(each -> String.valueOf(each.get("name"))).toList();
-        assertThat(actualToolNames, hasItems("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow", "fixture_ping"));
+        assertThat(actualToolNames, hasItems("database_gateway_search_metadata", "database_gateway_execute_query", "database_gateway_execute_update",
+                "database_gateway_apply_workflow", "database_gateway_validate_workflow", "fixture_ping"));
         for (String each : REMOVED_FEATURE_TOOL_NAMES) {
             assertFalse(actualToolNames.contains(each));
         }
+        Map<String, Object> actualFixtureTool = tools.stream().filter(each -> "fixture_ping".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
+        assertDescriptorIcon(actualFixtureTool, "https://example.invalid/fixture-ping.png");
+    }
+    
+    private void assertDiscoveredResources(final Map<String, Object> payload) {
+        List<Map<String, Object>> actualResources = MCPInteractionPayloads.castToList(payload.get("resources"));
+        Map<String, Object> actualFixtureResource = actualResources.stream().filter(each -> FIXTURE_RESOURCE_URI.equals(each.get("uri"))).findFirst().orElseThrow(IllegalStateException::new);
+        assertDescriptorIcon(actualFixtureResource, "https://example.invalid/test-fixture-status.png");
+    }
+    
+    private void assertDescriptorIcon(final Map<String, Object> descriptor, final String expectedSource) {
+        List<Map<String, Object>> actualIcons = MCPInteractionPayloads.castToList(descriptor.get("icons"));
+        assertThat(actualIcons.size(), is(1));
+        Map<String, Object> actualIcon = actualIcons.get(0);
+        assertThat(actualIcon.get("src"), is(expectedSource));
+        assertThat(actualIcon.get("mimeType"), is("image/png"));
+        assertThat(actualIcon.get("sizes"), is(List.of("64x64")));
+        assertThat(actualIcon.get("theme"), is("light"));
     }
     
     private void assertSearchMetadataTool(final Map<String, Object> payload) {
@@ -108,7 +129,8 @@ class PackagedDistributionPluginDiscoveryE2ETest {
     
     private void assertCapabilities(final Map<String, Object> payload) {
         List<String> actualSupportedTools = ((List<?>) payload.get("supportedTools")).stream().map(String::valueOf).toList();
-        assertThat(actualSupportedTools, hasItems("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow", "fixture_ping"));
+        assertThat(actualSupportedTools, hasItems("database_gateway_search_metadata", "database_gateway_execute_query", "database_gateway_execute_update",
+                "database_gateway_apply_workflow", "database_gateway_validate_workflow", "fixture_ping"));
         for (String each : REMOVED_FEATURE_TOOL_NAMES) {
             assertFalse(actualSupportedTools.contains(each));
         }

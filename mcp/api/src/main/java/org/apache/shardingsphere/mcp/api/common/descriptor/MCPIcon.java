@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.descriptor.yaml;
+package org.apache.shardingsphere.mcp.api.common.descriptor;
 
 import lombok.Getter;
-import lombok.Setter;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
- * YAML MCP resource URI template parameter descriptor.
+ * MCP icon descriptor.
  */
 @Getter
-@Setter
-public final class YamlMCPResourceParameterDescriptor {
+public final class MCPIcon {
     
-    private String name;
+    private final String src;
     
-    private String title;
+    private final String mimeType;
     
-    private String description;
+    private final List<String> sizes;
     
-    private boolean required;
+    private final String theme;
     
-    private String scope;
+    public MCPIcon(final String src, final String mimeType, final List<String> sizes, final String theme) {
+        this.src = src;
+        this.mimeType = mimeType;
+        this.sizes = null == sizes ? Collections.emptyList() : sizes;
+        this.theme = theme;
+    }
 }

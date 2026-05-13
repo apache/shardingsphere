@@ -26,16 +26,16 @@ User context:
 - plan_id: {{plan_id}}
 
 Model path:
-1. Complete or read database, schema, table, and column metadata before calling plan_mask_rule.
+1. Complete or read database, schema, table, and column metadata before calling database_gateway_plan_mask_rule.
 2. Read shardingsphere://features/mask/algorithms before choosing algorithm_type.
 3. Read existing mask rules for the database or table when database and table are known.
-4. Call plan_mask_rule with gathered logical names and any user-approved algorithm choice.
-5. Use apply_workflow with execution_mode=preview before applying generated DistSQL unless the user already approved the plan.
+4. Call database_gateway_plan_mask_rule with gathered logical names and any user-approved algorithm choice.
+5. Use database_gateway_apply_workflow with execution_mode=preview before applying generated DistSQL unless the user already approved the plan.
 
 Ask-user conditions:
 - Ask when field semantics or masking strategy are unclear.
 - Ask before applying generated DistSQL that changes runtime state.
 
 Stop conditions:
-- Stop after plan_mask_rule returns a planned workflow with plan_id and reviewable artifacts.
+- Stop after database_gateway_plan_mask_rule returns a planned workflow with plan_id and reviewable artifacts.
 - Stop after a clarifying response lists missing inputs instead of guessing mask strategy.

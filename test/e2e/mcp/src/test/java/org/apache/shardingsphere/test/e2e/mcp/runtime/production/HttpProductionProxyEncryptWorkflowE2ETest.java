@@ -34,7 +34,7 @@ import static org.hamcrest.Matchers.is;
 
 class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyWorkflowE2ETest {
     
-    private static final String PLAN_TOOL_NAME = "plan_encrypt_rule";
+    private static final String PLAN_TOOL_NAME = "database_gateway_plan_encrypt_rule";
     
     private static final String APPLY_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
     
@@ -162,7 +162,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     @Test
     void assertPlanAutoRenamesDerivedColumnWhenCipherColumnConflictsThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            interactionClient.call("execute_update",
+            interactionClient.call("database_gateway_execute_update",
                     Map.of("database", getLogicalDatabaseName(), "schema", "public",
                             "sql", "ALTER TABLE orders ADD COLUMN status_cipher VARCHAR(32), ADD COLUMN status_cipher_1 VARCHAR(32)",
                             "execution_mode", "execute", "approved_by_user", true));

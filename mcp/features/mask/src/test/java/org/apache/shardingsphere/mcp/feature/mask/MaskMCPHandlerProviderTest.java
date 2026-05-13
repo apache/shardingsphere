@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.mcp.feature.mask;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceDescriptorUtils;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -29,13 +30,14 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class MaskMCPHandlerProviderTest {
     
     @Test
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new MaskMCPHandlerProvider().getResourceHandlers();
-        assertThat(actual.stream().map(each -> each.getResourceDescriptor().getUriTemplate()).toList(), is(List.of(
+        assertThat(actual.stream().map(each -> MCPResourceDescriptorUtils.getUriOrTemplate(each.getResourceDescriptor())).toList(), is(List.of(
                 "shardingsphere://features/mask/algorithms",
                 "shardingsphere://features/mask/databases/{database}/rules",
                 "shardingsphere://features/mask/databases/{database}/tables/{table}/rules")));
@@ -43,8 +45,11 @@ class MaskMCPHandlerProviderTest {
     
     @Test
     void assertGetToolHandlers() {
-        Collection<MCPToolHandler<?>> actual = new MaskMCPHandlerProvider().getToolHandlers();
-        assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(), is(List.of("plan_mask_rule")));
+        MCPToolDescriptor actual = new MaskMCPHandlerProvider().getToolHandlers().iterator().next().getToolDescriptor();
+        assertThat(actual.getName(), is("database_gateway_plan_mask_rule"));
+        assertFalse(actual.getAnnotations().getReadOnlyHint());
+        assertFalse(actual.getAnnotations().getDestructiveHint());
+        assertFalse(actual.getAnnotations().getIdempotentHint());
     }
     
     @Test

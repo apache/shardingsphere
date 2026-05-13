@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -38,9 +38,11 @@ public final class YamlMCPPromptDescriptor {
     
     private String description;
     
+    private Collection<YamlMCPIcon> icons = new LinkedList<>();
+    
     private Collection<YamlMCPPromptArgumentDescriptor> arguments = new LinkedList<>();
     
-    private String templateResource;
+    private YamlMCPPromptBindingDescriptor binding;
     
     private Map<String, Object> meta = new LinkedHashMap<>();
 }

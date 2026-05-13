@@ -33,7 +33,7 @@ final class LLMSmokeScenarioFactory {
     
     private static final String USER_PROMPT_RESOURCE = "llm/suite/smoke/minimal-smoke-user-prompt.md";
     
-    private static final List<String> SMOKE_INTERACTION_SEQUENCE = List.of("search_metadata", MCPInteractionActionNames.READ_RESOURCE, "execute_query");
+    private static final List<String> SMOKE_INTERACTION_SEQUENCE = List.of("database_gateway_search_metadata", MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query");
     
     LLME2EScenario createMinimalSmokeScenario(final String scenarioId, final String databaseName, final String schemaName,
                                               final String tableName, final String query, final int totalOrders) {

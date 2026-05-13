@@ -118,7 +118,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
     void assertSearchMetadataTablesAndViewsWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<Map<String, Object>> items = getPayloadItems(interactionClient.call("search_metadata",
+            List<Map<String, Object>> items = getPayloadItems(interactionClient.call("database_gateway_search_metadata",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "query", "order", "object_types", List.of("TABLE", "VIEW"))));
             assertThat(items.stream().map(each -> String.valueOf(each.get("name"))).toList(), is(List.of("order_items", "orders", "active_orders")));
         }
@@ -153,7 +153,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
     void assertExecuteSelectWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("execute_query",
+            Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
             assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
         }
@@ -164,7 +164,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
     void assertExecuteUpdateWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("execute_update",
+            Map<String, Object> actual = interactionClient.call("database_gateway_execute_update",
                     createExecuteUpdateArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
             assertThat(String.valueOf(actual.get("result_kind")), is("update_count"));
             assertThat(String.valueOf(actual.get("affected_rows")), is("1"));
@@ -189,10 +189,10 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
     void assertExecuteRollbackWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> beginResponse = interactionClient.call("execute_update", createExecuteUpdateArguments("BEGIN"));
-            interactionClient.call("execute_update",
+            Map<String, Object> beginResponse = interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("BEGIN"));
+            interactionClient.call("database_gateway_execute_update",
                     createExecuteUpdateArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
-            Map<String, Object> rollbackResponse = interactionClient.call("execute_update", createExecuteUpdateArguments("ROLLBACK"));
+            Map<String, Object> rollbackResponse = interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("ROLLBACK"));
             assertThat(String.valueOf(beginResponse.get("message")), is("Transaction started."));
             assertThat(String.valueOf(rollbackResponse.get("message")), is("Transaction rolled back."));
             assertThat(MySQLRuntimeTestSupport.querySingleString(container, String.format("SELECT status FROM %s.orders WHERE order_id = 1", physicalSchemaName)), is("NEW"));
@@ -204,8 +204,8 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
     void assertCloseRollsBackPendingTransactionWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            interactionClient.call("execute_update", createExecuteUpdateArguments("BEGIN"));
-            interactionClient.call("execute_update",
+            interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("BEGIN"));
+            interactionClient.call("database_gateway_execute_update",
                     createExecuteUpdateArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
             interactionClient.close();
             assertThat(MySQLRuntimeTestSupport.querySingleString(container, String.format("SELECT status FROM %s.orders WHERE order_id = 1", physicalSchemaName)), is("NEW"));

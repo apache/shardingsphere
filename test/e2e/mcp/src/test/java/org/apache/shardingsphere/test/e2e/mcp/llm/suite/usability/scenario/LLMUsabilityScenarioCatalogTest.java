@@ -39,11 +39,11 @@ class LLMUsabilityScenarioCatalogTest {
         Map<String, LLMUsabilityScenario> actualScenarios = actual.stream().collect(Collectors.toMap(LLMUsabilityScenario::getScenarioId, each -> each));
         assertThat(actualScenarios.keySet(), hasItems("natural-metadata-lookup-h2", "natural-read-only-sql-h2", "natural-side-effect-preview-h2",
                 "natural-workflow-manual-export-h2", "natural-table-resource-h2"));
-        assertThat(actualScenarios.get("natural-side-effect-preview-h2").getLlmScenario().getRequiredToolNames(), is(List.of("execute_update", "execute_query")));
+        assertThat(actualScenarios.get("natural-side-effect-preview-h2").getLlmScenario().getRequiredToolNames(), is(List.of("database_gateway_execute_update", "database_gateway_execute_query")));
         assertThat(actualScenarios.get("natural-table-resource-h2").getExpectedResourceUris(),
                 is(List.of("shardingsphere://databases/logic_db/schemas/public/tables/orders")));
         assertThat(actualScenarios.get("natural-workflow-manual-export-h2").getLlmScenario().getRequiredToolNames(),
-                is(List.of("plan_mask_rule", "apply_workflow", "execute_query")));
+                is(List.of("database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_execute_query")));
         assertThat(actualScenarios.get("natural-workflow-manual-export-h2").getExpectedResourceUris(), is(List.of()));
         assertThat(actualScenarios.get("natural-workflow-manual-export-h2").getLlmScenario().getUserPrompt(),
                 containsString("table `orders`, and column `status`"));
@@ -67,7 +67,7 @@ class LLMUsabilityScenarioCatalogTest {
         assertThat(actualScenarios.get("extended-recovery-bad-resource-h2").getExpectedRecoveryCategory(), is("not_found"));
         assertThat(actualScenarios.get("extended-prompt-completion-inspect-h2").getLlmScenario().getUserPrompt(), containsString("Use the MCP prompt list"));
         assertThat(actualScenarios.get("extended-workflow-context-recovery-h2").getLlmScenario().getRequiredToolNames(),
-                is(List.of("mcp_read_resource", "plan_mask_rule", "apply_workflow", "execute_query")));
+                is(List.of("mcp_read_resource", "database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_execute_query")));
         assertThat(actualScenarios.get("extended-workflow-context-recovery-h2").getLlmScenario().getUserPrompt(), containsString("Do not validate the workflow"));
         assertTrue(actualScenarios.get("extended-recovery-missing-database-h2").isNaturalTask());
         assertTrue(actualScenarios.get("extended-prompt-completion-inspect-h2").isProtocolContract());

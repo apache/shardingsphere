@@ -67,10 +67,10 @@ class PackagedDistributionSmokeE2ETest {
                 PackagedDistributionHttpRuntime runtime = new PackagedDistributionHttpRuntime(distribution);
                 MCPInteractionClient interactionClient = runtime.openInteractionClient()) {
             assertOfficialPackagedRuntime(distribution.home(), RuntimeTransport.HTTP, interactionClient);
-            List<String> actualSearchItems = getItemNames(interactionClient.call("search_metadata",
+            List<String> actualSearchItems = getItemNames(interactionClient.call("database_gateway_search_metadata",
                     Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE", "VIEW"))));
             assertThat(actualSearchItems, hasItems("orders", "order_items", "active_orders"));
-            Map<String, Object> actualResult = interactionClient.call("execute_query",
+            Map<String, Object> actualResult = interactionClient.call("database_gateway_execute_query",
                     Map.of("database", "orders", "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
             assertThat(String.valueOf(actualResult.get("result_kind")), is("result_set"));
         }
@@ -82,10 +82,10 @@ class PackagedDistributionSmokeE2ETest {
         try (MCPInteractionClient interactionClient = new PackagedDistributionStdioInteractionClient(distribution.home(), distribution.configFile())) {
             interactionClient.open();
             assertOfficialPackagedRuntime(distribution.home(), RuntimeTransport.STDIO, interactionClient);
-            List<String> actualSearchItems = getItemNames(interactionClient.call("search_metadata",
+            List<String> actualSearchItems = getItemNames(interactionClient.call("database_gateway_search_metadata",
                     Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE"))));
             assertThat(actualSearchItems, hasItems("orders", "order_items"));
-            Map<String, Object> actualResult = interactionClient.call("execute_query",
+            Map<String, Object> actualResult = interactionClient.call("database_gateway_execute_query",
                     Map.of("database", "orders", "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
             assertThat(String.valueOf(actualResult.get("result_kind")), is("result_set"));
         }

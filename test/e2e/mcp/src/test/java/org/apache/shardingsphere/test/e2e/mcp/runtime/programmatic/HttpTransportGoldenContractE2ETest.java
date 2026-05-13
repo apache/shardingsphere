@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPGoldenContractAssertions;
@@ -43,7 +44,7 @@ import static org.hamcrest.Matchers.is;
 @EnabledIf("isEnabled")
 class HttpTransportGoldenContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
-    private static final String PLAN_MASK_TOOL_NAME = "plan_mask_rule";
+    private static final String PLAN_MASK_TOOL_NAME = "database_gateway_plan_mask_rule";
     
     private static final String GOLDEN_RESOURCE_PATH = "golden/model-contract/";
     
@@ -158,11 +159,11 @@ class HttpTransportGoldenContractE2ETest extends AbstractHttpProgrammaticRuntime
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         Map<String, Object> actual = new LinkedHashMap<>(6, 1F);
-        HttpResponse<String> missingExecutionModeResponse = sendToolCallRequest(httpClient, sessionId, "execute_update",
+        HttpResponse<String> missingExecutionModeResponse = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1"));
         assertThat(missingExecutionModeResponse.statusCode(), is(200));
         actual.put("executeUpdateMissingExecutionMode", summarizeRecoveryPayload(getStructuredContent(missingExecutionModeResponse.body())));
-        HttpResponse<String> previewResponse = sendToolCallRequest(httpClient, sessionId, "execute_update",
+        HttpResponse<String> previewResponse = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview"));
         assertThat(previewResponse.statusCode(), is(200));
         actual.put("executeUpdatePreview", summarizeExecuteUpdatePreview(getStructuredContent(previewResponse.body())));
@@ -208,8 +209,7 @@ class HttpTransportGoldenContractE2ETest extends AbstractHttpProgrammaticRuntime
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("uri", resource.get("uri"));
         result.put("name", resource.get("name"));
-        result.put("resourceKind", resource.get("resourceKind"));
-        result.put("relatedTools", resource.getOrDefault("relatedTools", List.of()));
+        result.put("meta", summarizeResourceMeta(resource));
         return result;
     }
     
@@ -221,9 +221,23 @@ class HttpTransportGoldenContractE2ETest extends AbstractHttpProgrammaticRuntime
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("uriTemplate", resourceTemplate.get("uriTemplate"));
         result.put("name", resourceTemplate.get("name"));
-        result.put("resourceKind", resourceTemplate.get("resourceKind"));
-        result.put("parameters", summarizeParameters(castToMapList(resourceTemplate.get("parameters"))));
+        result.put("meta", summarizeResourceMeta(resourceTemplate));
         return result;
+    }
+    
+    private Map<String, Object> summarizeResourceMeta(final Map<String, Object> resource) {
+        Map<String, Object> meta = castToMap(resource.getOrDefault("meta", Map.of()));
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put(MCPShardingSphereMetadataKeys.RESOURCE_KIND, meta.get(MCPShardingSphereMetadataKeys.RESOURCE_KIND));
+        putIfNotEmpty(result, MCPShardingSphereMetadataKeys.RELATED_TOOLS, (List<?>) meta.get(MCPShardingSphereMetadataKeys.RELATED_TOOLS));
+        putIfNotEmpty(result, MCPShardingSphereMetadataKeys.URI_VARIABLES, summarizeParameters(castToMapList(meta.get(MCPShardingSphereMetadataKeys.URI_VARIABLES))));
+        return removeNullValues(result);
+    }
+    
+    private void putIfNotEmpty(final Map<String, Object> target, final String key, final List<?> value) {
+        if (null != value && !value.isEmpty()) {
+            target.put(key, value);
+        }
     }
     
     private List<Map<String, Object>> summarizeCapabilityTools(final List<Map<String, Object>> tools) {
@@ -255,12 +269,11 @@ class HttpTransportGoldenContractE2ETest extends AbstractHttpProgrammaticRuntime
     }
     
     private Map<String, Object> summarizeProtocolResourceTemplate(final Map<String, Object> resourceTemplate) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("uriTemplate", resourceTemplate.get("uriTemplate"));
         result.put("name", resourceTemplate.get("name"));
         result.put("title", resourceTemplate.get("title"));
         result.put("mimeType", resourceTemplate.get("mimeType"));
-        result.put("parameters", summarizeParameters(castToMapList(resourceTemplate.get("parameters"))));
         return result;
     }
     
@@ -280,7 +293,7 @@ class HttpTransportGoldenContractE2ETest extends AbstractHttpProgrammaticRuntime
     }
     
     private List<Map<String, Object>> summarizePrompts(final List<Map<String, Object>> prompts) {
-        return prompts.stream().map(this::summarizePrompt).toList();
+        return prompts.stream().sorted(Comparator.comparing(each -> String.valueOf(each.get("name")))).map(this::summarizePrompt).toList();
     }
     
     private Map<String, Object> summarizePrompt(final Map<String, Object> prompt) {
@@ -417,8 +430,11 @@ class HttpTransportGoldenContractE2ETest extends AbstractHttpProgrammaticRuntime
         result.put("question", nextAction.get("question"));
         result.put("required_inputs", nextAction.get("required_inputs"));
         result.put("reason", nextAction.get("reason"));
-        return result.entrySet().stream().filter(entry -> null != entry.getValue()).collect(
-                LinkedHashMap::new, (map, entry) -> map.put(entry.getKey(), entry.getValue()), Map::putAll);
+        return removeNullValues(result);
+    }
+    
+    private Map<String, Object> removeNullValues(final Map<String, Object> value) {
+        return value.entrySet().stream().filter(entry -> null != entry.getValue()).collect(LinkedHashMap::new, (map, entry) -> map.put(entry.getKey(), entry.getValue()), Map::putAll);
     }
     
     private List<Map<String, Object>> summarizeParameters(final List<Map<String, Object>> params) {

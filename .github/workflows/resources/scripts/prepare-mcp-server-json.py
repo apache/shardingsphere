@@ -39,8 +39,9 @@ def main() -> None:
     path = Path(args.path)
     server = json.loads(path.read_text())
     server["version"] = args.version
-    server["packages"][0]["identifier"] = args.identifier
-    server["packages"][0]["version"] = args.version
+    for package in server["packages"]:
+        package["identifier"] = args.identifier
+        package["version"] = args.version
     path.write_text(json.dumps(server, indent=2) + "\n")
 
 

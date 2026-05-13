@@ -46,8 +46,8 @@ class SearchMetadataToolHandlerTest {
     @Test
     void assertGetSearchMetadataToolDescriptor() {
         MCPToolDescriptor actual = new SearchMetadataToolHandler().getToolDescriptor();
-        assertThat(actual.getName(), is("search_metadata"));
-        assertThat(actual.getFields().size(), is(6));
+        assertThat(actual.getName(), is("database_gateway_search_metadata"));
+        assertThat(((Map<?, ?>) actual.getInputSchema().get("properties")).size(), is(6));
         Map<?, ?> actualProperties = (Map<?, ?>) actual.getOutputSchema().get("properties");
         Map<?, ?> actualItems = (Map<?, ?>) ((Map<?, ?>) actualProperties.get("items")).get("items");
         Map<?, ?> actualItemProperties = (Map<?, ?>) actualItems.get("properties");
@@ -149,7 +149,7 @@ class SearchMetadataToolHandlerTest {
             assertThat(((Map<?, ?>) actualPayload.get("empty_state")).get("state"), is("no_match"));
             Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
             assertThat(actualNextAction.get("type"), is("tool_call"));
-            assertThat(actualNextAction.get("tool_name"), is("search_metadata"));
+            assertThat(actualNextAction.get("tool_name"), is("database_gateway_search_metadata"));
             assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("query"), is("missing"));
             assertFalse(((Map<?, ?>) actualNextAction.get("arguments")).containsKey("database"));
         }
@@ -163,7 +163,7 @@ class SearchMetadataToolHandlerTest {
             assertThat(actualPayload.get("next_page_token"), is("1"));
             Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
             assertThat(actualNextAction.get("type"), is("tool_call"));
-            assertThat(actualNextAction.get("tool_name"), is("search_metadata"));
+            assertThat(actualNextAction.get("tool_name"), is("database_gateway_search_metadata"));
             assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("page_token"), is("1"));
             assertThat(actualNextAction.get("order"), is(1));
         }

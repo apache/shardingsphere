@@ -50,7 +50,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata",
                 Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("TABLE", "VIEW")));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualPayload = getStructuredContent(actual.body());
@@ -73,7 +73,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata", arguments);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", arguments);
         assertThat(actual.statusCode(), is(200));
         assertThat(getItemNames(getStructuredContent(actual.body())), is(expectedNames));
     }
@@ -91,7 +91,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata", Map.of("query", "metric"));
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", Map.of("query", "metric"));
         assertThat(actual.statusCode(), is(200));
         assertThat(getItemNames(getStructuredContent(actual.body())), is(List.of("metrics", "metric_id", "metric_name", "PRIMARY_KEY_3")));
     }
@@ -103,7 +103,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         String sessionId = initializeSession(httpClient);
         Map<String, Object> firstPageArguments = createSearchArguments("logic_db", "public", "order", List.of("TABLE", "VIEW"));
         firstPageArguments.put("page_size", 2);
-        HttpResponse<String> firstPage = sendToolCallRequest(httpClient, sessionId, "search_metadata", firstPageArguments);
+        HttpResponse<String> firstPage = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", firstPageArguments);
         assertThat(firstPage.statusCode(), is(200));
         Map<String, Object> firstPagePayload = getStructuredContent(firstPage.body());
         assertThat(getItemNames(firstPagePayload), is(List.of("order_items", "orders")));
@@ -112,7 +112,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         Map<String, Object> secondPageArguments = createSearchArguments("logic_db", "public", "order", List.of("TABLE", "VIEW"));
         secondPageArguments.put("page_size", 2);
         secondPageArguments.put("page_token", "2");
-        HttpResponse<String> secondPage = sendToolCallRequest(httpClient, sessionId, "search_metadata", secondPageArguments);
+        HttpResponse<String> secondPage = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", secondPageArguments);
         assertThat(secondPage.statusCode(), is(200));
         Map<String, Object> secondPagePayload = getStructuredContent(secondPage.body());
         assertThat(getItemNames(secondPagePayload), is(List.of("active_orders")));
@@ -127,7 +127,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         String sessionId = initializeSession(httpClient);
         Map<String, Object> arguments = createSearchArguments("logic_db", "public", "order", List.of("TABLE", "VIEW"));
         arguments.put("page_token", "99");
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata", arguments);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", arguments);
         assertThat(actual.statusCode(), is(200));
         assertThat(getItemNames(getStructuredContent(actual.body())), is(List.of()));
     }
@@ -137,7 +137,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata", Map.of("schema", "public", "query", "order"));
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", Map.of("schema", "public", "query", "order"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualPayload = getStructuredContent(actual.body());
         assertThat(String.valueOf(actualPayload.get("error_code")), is("invalid_request"));
@@ -151,7 +151,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         String sessionId = initializeSession(httpClient);
         Map<String, Object> arguments = createSearchArguments("logic_db", "public", "order", List.of("TABLE", "VIEW"));
         arguments.put("page_token", "invalid");
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata", arguments);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", arguments);
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualPayload = getStructuredContent(actual.body());
         assertThat(String.valueOf(actualPayload.get("error_code")), is("invalid_request"));
@@ -163,7 +163,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata",
                 Map.of("database", "logic_db", "schema", "public", "query", "order",
                         "object_types", List.of("TABLE", "VIEW", "INDEX", "MATERIALIZED_VIEW", "SEQUENCE")));
         assertThat(actual.statusCode(), is(200));

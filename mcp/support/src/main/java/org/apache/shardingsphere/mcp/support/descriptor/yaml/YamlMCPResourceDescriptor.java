@@ -32,6 +32,8 @@ import java.util.Map;
 @Setter
 public final class YamlMCPResourceDescriptor {
     
+    private String uri;
+    
     private String uriTemplate;
     
     private String name;
@@ -40,23 +42,15 @@ public final class YamlMCPResourceDescriptor {
     
     private String description;
     
+    private Collection<YamlMCPIcon> icons = new LinkedList<>();
+    
     private String mimeType;
     
-    private Collection<YamlMCPResourceParameterDescriptor> parameters = new LinkedList<>();
+    private YamlMCPAnnotations annotations;
     
-    private YamlMCPResourceAnnotations annotations;
-    
-    private String resourceKind;
-    
-    private String objectScope;
-    
-    private String feature;
-    
-    private Collection<String> relatedTools = new LinkedList<>();
-    
-    private Collection<String> relatedResources = new LinkedList<>();
-    
-    private Collection<String> useBefore = new LinkedList<>();
+    private Long size;
     
     private Map<String, Object> meta = new LinkedHashMap<>();
+    
+    private YamlMCPResourceExtensionDescriptor extension;
 }

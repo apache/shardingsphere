@@ -16,7 +16,7 @@
 #
 
 tools:
-  - name: apply_workflow
+  - name: database_gateway_apply_workflow
     title: Apply Workflow
     inputProperties:
       - plan_id
@@ -49,7 +49,7 @@ tools:
       - argument_provenance
       - next_actions
       - requires_user_approval
-  - name: execute_query
+  - name: database_gateway_execute_query
     title: Execute Read-Only SQL
     inputProperties:
       - database
@@ -76,7 +76,7 @@ tools:
       - applied_timeout_ms
       - truncated
       - next_actions
-  - name: execute_update
+  - name: database_gateway_execute_update
     title: Execute Update SQL
     inputProperties:
       - database
@@ -121,7 +121,7 @@ tools:
       - ask_user_when_uncertain
       - next_actions
       - truncated
-  - name: plan_encrypt_rule
+  - name: database_gateway_plan_encrypt_rule
     title: Plan Encrypt Rule
     inputProperties:
       - plan_id
@@ -166,7 +166,7 @@ tools:
       - next_actions
       - resources_to_read
       - requires_user_approval
-  - name: plan_mask_rule
+  - name: database_gateway_plan_mask_rule
     title: Plan Mask Rule
     inputProperties:
       - plan_id
@@ -203,7 +203,7 @@ tools:
       - next_actions
       - resources_to_read
       - requires_user_approval
-  - name: search_metadata
+  - name: database_gateway_search_metadata
     title: Search Metadata
     inputProperties:
       - database
@@ -225,7 +225,7 @@ tools:
       - empty_state
       - ambiguity_state
       - next_actions
-  - name: validate_workflow
+  - name: database_gateway_validate_workflow
     title: Validate Workflow
     inputProperties:
       - plan_id
@@ -243,7 +243,7 @@ tools:
       - next_actions
       - requires_user_approval
 prompts:
-  - name: plan_encrypt_rule
+  - name: database_gateway_plan_encrypt_rule
     title: Plan Encrypt Rule
     arguments:
       - name: database
@@ -258,7 +258,7 @@ prompts:
         required: false
       - name: plan_id
         required: false
-  - name: plan_mask_rule
+  - name: database_gateway_plan_mask_rule
     title: Plan Mask Rule
     arguments:
       - name: database
@@ -273,13 +273,6 @@ prompts:
         required: false
       - name: plan_id
         required: false
-  - name: recover_workflow
-    title: Recover Workflow
-    arguments:
-      - name: plan_id
-        required: false
-      - name: failure_summary
-        required: false
   - name: inspect_metadata
     title: Inspect Metadata
     arguments:
@@ -288,6 +281,13 @@ prompts:
       - name: schema
         required: false
       - name: query
+        required: false
+  - name: recover_workflow
+    title: Recover Workflow
+    arguments:
+      - name: plan_id
+        required: false
+      - name: failure_summary
         required: false
   - name: safe_sql_execution
     title: Safe SQL Execution
@@ -299,32 +299,32 @@ prompts:
       - name: sql_intent
         required: true
 inspectMetadataPrompt:
-  description: Guide the model to inspect ShardingSphere logical metadata by reading capability and metadata resources before choosing search_metadata or detail resources.
+  description: Guide the model to inspect ShardingSphere logical metadata by reading capability and metadata resources before choosing database_gateway_search_metadata or detail resources.
   messages:
     - role: user
       contentType: text
-      textSha256: a651accc5332cede2918dcb1d83b954a727b9f0030db89e9d25a413d092267b2
+      textSha256: 6e262bbbb37152b6ac9d37dfdba7c3ed52e3f6713fb6e78be3bdad4af9c582d3
 missingContextCompletion:
   completion:
     values: []
     total: 0
     hasMore: false
   _meta:
-    response_mode: list
-    referenceType: prompt
-    reference: inspect_metadata
-    argument: schema
-    prefix: pub
-    matchStrategy: contains_fallback
-    contextArguments: {}
-    candidateCount: 0
-    matchedCandidateCount: 0
-    returnedCandidateCount: 0
-    continuation_mode: none
-    missingContextArguments:
+    org.apache.shardingsphere/response-mode: list
+    org.apache.shardingsphere/reference-type: prompt
+    org.apache.shardingsphere/reference: inspect_metadata
+    org.apache.shardingsphere/argument: schema
+    org.apache.shardingsphere/prefix: pub
+    org.apache.shardingsphere/match-strategy: contains_fallback
+    org.apache.shardingsphere/context-arguments: {}
+    org.apache.shardingsphere/candidate-count: 0
+    org.apache.shardingsphere/matched-candidate-count: 0
+    org.apache.shardingsphere/returned-candidate-count: 0
+    org.apache.shardingsphere/continuation-mode: none
+    org.apache.shardingsphere/missing-context-arguments:
       - database
-    diagnostic: missing_context
-    recovery:
+    org.apache.shardingsphere/diagnostic: missing_context
+    org.apache.shardingsphere/recovery:
       response_mode: recovery
       recovery_category: missing_context
       category: missing_context
@@ -333,16 +333,16 @@ missingContextCompletion:
       missing_fields:
         - database
       parent_resource_uri: shardingsphere://databases
-    next_actions:
+    org.apache.shardingsphere/next-actions:
       - order: 1
         type: resource_read
         title: Read resource
         requires_user_approval: false
         reason: Read the nearest metadata resource before retrying this completion.
         resource_uri: shardingsphere://databases
-    rankingPolicy:
+    org.apache.shardingsphere/ranking-policy:
       - exact-prefix-match
       - contains-fallback-when-prefix-has-no-match
       - recent-plan-first-for-plan_id
       - case-insensitive-lexical
-    valueDetails: []
+    org.apache.shardingsphere/value-details: []

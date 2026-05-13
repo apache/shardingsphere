@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
@@ -52,11 +53,11 @@ class MCPCompletionSpecificationFactoryTest {
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("database", "logic")));
         assertThat(actual.completion().values(), is(List.of("logic_db")));
         assertFalse(actual.completion().hasMore());
-        assertThat(actual.meta().get("response_mode"), is("list"));
-        assertThat(actual.meta().get("diagnostic"), is("ok"));
-        assertThat(actual.meta().get("matchStrategy"), is("prefix"));
-        assertThat(actual.meta().get("matchedCandidateCount"), is(1));
-        assertThat(((List<?>) actual.meta().get("valueDetails")).size(), is(1));
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.RESPONSE_MODE), is("list"));
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.MATCH_STRATEGY), is("prefix"));
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.MATCHED_CANDIDATE_COUNT), is(1));
+        assertThat(((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.VALUE_DETAILS)).size(), is(1));
     }
     
     @Test
@@ -66,8 +67,8 @@ class MCPCompletionSpecificationFactoryTest {
         McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("database", "house")));
         assertThat(actual.completion().values(), is(List.of("warehouse")));
-        assertThat(actual.meta().get("matchStrategy"), is("contains_fallback"));
-        assertTrue(((List<?>) actual.meta().get("rankingPolicy")).contains("contains-fallback-when-prefix-has-no-match"));
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.MATCH_STRATEGY), is("contains_fallback"));
+        assertTrue(((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.RANKING_POLICY)).contains("contains-fallback-when-prefix-has-no-match"));
     }
     
     @Test
@@ -77,10 +78,10 @@ class MCPCompletionSpecificationFactoryTest {
         McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("table", "ord")));
         assertThat(actual.completion().values(), is(List.of()));
-        assertThat(actual.meta().get("diagnostic"), is("missing_context"));
-        assertThat(actual.meta().get("missingContextArguments"), is(List.of("database", "schema")));
-        assertThat(((Map<?, ?>) actual.meta().get("recovery")).get("recovery_category"), is("missing_context"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get("next_actions")).get(0);
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("missing_context"));
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS), is(List.of("database", "schema")));
+        assertThat(((Map<?, ?>) actual.meta().get(MCPShardingSphereMetadataKeys.RECOVERY)).get("recovery_category"), is("missing_context"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
         assertThat(actualNextAction.get("type"), is("resource_read"));
         assertThat(actualNextAction.get("resource_uri"), is("shardingsphere://databases"));
     }
@@ -92,8 +93,8 @@ class MCPCompletionSpecificationFactoryTest {
         McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("database", "zzz")));
         assertThat(actual.completion().values(), is(List.of()));
-        assertThat(actual.meta().get("diagnostic"), is("prefix_filtered_all_candidates"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get("next_actions")).get(0);
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("prefix_filtered_all_candidates"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
         assertThat(actualNextAction.get("type"), is("completion"));
         assertThat(actualNextAction.get("argument_name"), is("database"));
     }
@@ -105,8 +106,8 @@ class MCPCompletionSpecificationFactoryTest {
         McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("recover_workflow"), new McpSchema.CompleteRequest.CompleteArgument("plan_id", "")));
         assertThat(actual.completion().values(), is(List.of()));
-        assertThat(actual.meta().get("diagnostic"), is("no_candidates"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get("next_actions")).get(0);
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("no_candidates"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
         assertThat(actualNextAction.get("type"), is("resource_read"));
         assertThat(actualNextAction.get("resource_uri"), is("shardingsphere://capabilities"));
     }
@@ -123,7 +124,7 @@ class MCPCompletionSpecificationFactoryTest {
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("recover_workflow"), new McpSchema.CompleteRequest.CompleteArgument("plan_id", "plan-")));
         assertThat(actual.completion().values(), is(List.of("plan-1")));
         assertThat(actual.completion().total(), is(1));
-        assertThat(((Map<?, ?>) ((List<?>) actual.meta().get("valueDetails")).get(0)).get("rankingReason"), is("recent-plan-first-for-plan_id"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.VALUE_DETAILS)).get(0)).get("rankingReason"), is("recent-plan-first-for-plan_id"));
     }
     
     @Test

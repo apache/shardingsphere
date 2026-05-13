@@ -42,14 +42,14 @@ final class LLMMCPSafetyValidator {
         if (MCPInteractionActionNames.GET_PROMPT.equals(actionName) && Objects.toString(arguments.get("name"), "").trim().isEmpty()) {
             return Optional.of(new LLMMCPToolCallValidationFailure(MCPInteractionActionNames.PROMPT_GET_KIND, "invalid_tool_arguments", "Model returned an empty prompt name."));
         }
-        if ("execute_query".equals(actionName) && !isReadOnlyQuery(arguments)) {
+        if ("database_gateway_execute_query".equals(actionName) && !isReadOnlyQuery(arguments)) {
             return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_sql_attempted", "Model attempted a non-read-only SQL statement."));
         }
-        if ("execute_update".equals(actionName) && !EXECUTION_MODE_PREVIEW.equals(Objects.toString(arguments.get("execution_mode"), ""))) {
+        if ("database_gateway_execute_update".equals(actionName) && !EXECUTION_MODE_PREVIEW.equals(Objects.toString(arguments.get("execution_mode"), ""))) {
             return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_sql_execution_attempted",
                     "Model attempted to execute side-effecting SQL in an LLM usability scenario."));
         }
-        if ("apply_workflow".equals(actionName) && !isSafeWorkflowExecutionMode(arguments)) {
+        if ("database_gateway_apply_workflow".equals(actionName) && !isSafeWorkflowExecutionMode(arguments)) {
             return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_workflow_execution_attempted",
                     "Model attempted to execute workflow side effects in an LLM usability scenario."));
         }

@@ -22,9 +22,9 @@ import io.modelcontextprotocol.spec.McpSchema;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.core.tool.MCPToolController;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -39,8 +39,6 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 final class MCPToolElicitationHandler {
-    
-    private static final String WORKFLOW_ROLE_KEY = "workflowRole";
     
     private static final String PLANNING_WORKFLOW_ROLE = "plan";
     
@@ -59,7 +57,8 @@ final class MCPToolElicitationHandler {
     }
     
     private boolean isPlanningTool(final MCPToolDescriptor toolDescriptor) {
-        return PLANNING_WORKFLOW_ROLE.equals(Objects.toString(toolDescriptor.getMeta().get(WORKFLOW_ROLE_KEY), "").trim());
+        return MCPDescriptorRegistry.findToolRuntimeDescriptor(toolDescriptor.getName())
+                .map(runtimeDescriptor -> PLANNING_WORKFLOW_ROLE.equals(runtimeDescriptor.getWorkflowRole())).orElse(false);
     }
     
     private boolean supportsFormElicitation(final McpSyncServerExchange exchange) {
@@ -80,7 +79,7 @@ final class MCPToolElicitationHandler {
         return McpSchema.ElicitRequest.builder()
                 .message(String.format("Provide missing ShardingSphere workflow inputs for `%s`.", toolName))
                 .requestedSchema(createElicitRequestedSchema(payload))
-                .meta(Map.of("tool", toolName, "plan_id", Objects.toString(payload.get("plan_id"), "")))
+                .meta(Map.of(MCPShardingSphereMetadataKeys.TOOL, toolName, MCPShardingSphereMetadataKeys.PLAN_ID, Objects.toString(payload.get("plan_id"), "")))
                 .build();
     }
     
@@ -153,44 +152,37 @@ final class MCPToolElicitationHandler {
     }
     
     private boolean hasArgument(final MCPToolDescriptor toolDescriptor, final String argumentName) {
-        for (MCPToolFieldDefinition each : toolDescriptor.getFields()) {
-            if (argumentName.equals(each.getName())) {
-                return true;
-            }
-        }
-        return false;
+        return getInputProperties(toolDescriptor).containsKey(argumentName);
     }
     
     private boolean isObjectArgument(final MCPToolDescriptor toolDescriptor, final String argumentName) {
-        for (MCPToolFieldDefinition each : toolDescriptor.getFields()) {
-            if (argumentName.equals(each.getName()) && Type.OBJECT == each.getValueDefinition().getType()) {
-                return true;
-            }
-        }
-        return false;
+        Object property = getInputProperties(toolDescriptor).get(argumentName);
+        return property instanceof Map && "object".equals(((Map<?, ?>) property).get("type"));
     }
     
     private Optional<String> findObjectArgumentName(final MCPToolDescriptor toolDescriptor, final String fieldName) {
         String result = null;
-        for (MCPToolFieldDefinition each : toolDescriptor.getFields()) {
-            if (Type.OBJECT != each.getValueDefinition().getType() || !hasObjectProperty(each, fieldName)) {
+        for (Entry<String, Object> entry : getInputProperties(toolDescriptor).entrySet()) {
+            if (!(entry.getValue() instanceof Map) || !"object".equals(((Map<?, ?>) entry.getValue()).get("type")) || !hasObjectProperty((Map<?, ?>) entry.getValue(), fieldName)) {
                 continue;
             }
             if (null != result) {
                 return Optional.empty();
             }
-            result = each.getName();
+            result = entry.getKey();
         }
         return Optional.ofNullable(result);
     }
     
-    private boolean hasObjectProperty(final MCPToolFieldDefinition fieldDefinition, final String fieldName) {
-        for (MCPToolFieldDefinition each : fieldDefinition.getValueDefinition().getObjectProperties()) {
-            if (fieldName.equals(each.getName())) {
-                return true;
-            }
-        }
-        return false;
+    private boolean hasObjectProperty(final Map<?, ?> objectProperty, final String fieldName) {
+        Object properties = objectProperty.get("properties");
+        return properties instanceof Map && ((Map<?, ?>) properties).containsKey(fieldName);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getInputProperties(final MCPToolDescriptor toolDescriptor) {
+        Object properties = toolDescriptor.getInputSchema().get("properties");
+        return properties instanceof Map ? (Map<String, Object>) properties : Map.of();
     }
     
     private void putNestedArgument(final Map<String, Object> arguments, final String argumentName, final String fieldName, final Object value) {

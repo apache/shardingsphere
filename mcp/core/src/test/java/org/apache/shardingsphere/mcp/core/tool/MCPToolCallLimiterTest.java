@@ -30,41 +30,41 @@ class MCPToolCallLimiterTest {
     @Test
     void assertAcquire() {
         final MCPToolCallLimiter limiter = new MCPToolCallLimiter(2);
-        assertDoesNotThrow(() -> limiter.acquire("session-1", "search_metadata"));
-        assertDoesNotThrow(() -> limiter.acquire("session-1", "execute_query"));
+        assertDoesNotThrow(() -> limiter.acquire("session-1", "database_gateway_search_metadata"));
+        assertDoesNotThrow(() -> limiter.acquire("session-1", "database_gateway_execute_query"));
     }
     
     @Test
     void assertAcquireWithDifferentSessions() {
         final MCPToolCallLimiter limiter = new MCPToolCallLimiter(1);
-        limiter.acquire("session-1", "search_metadata");
-        assertDoesNotThrow(() -> limiter.acquire("session-2", "search_metadata"));
+        limiter.acquire("session-1", "database_gateway_search_metadata");
+        assertDoesNotThrow(() -> limiter.acquire("session-2", "database_gateway_search_metadata"));
     }
     
     @Test
     void assertAcquireWithExceededLimit() {
         final MCPToolCallLimiter limiter = new MCPToolCallLimiter(1);
-        limiter.acquire("session-1", "search_metadata");
-        final MCPToolCallLimitExceededException actual = assertThrows(MCPToolCallLimitExceededException.class, () -> limiter.acquire("session-1", "execute_query"));
+        limiter.acquire("session-1", "database_gateway_search_metadata");
+        final MCPToolCallLimitExceededException actual = assertThrows(MCPToolCallLimitExceededException.class, () -> limiter.acquire("session-1", "database_gateway_execute_query"));
         assertThat(actual.getSessionId(), is("session-1"));
-        assertThat(actual.getToolName(), is("execute_query"));
+        assertThat(actual.getToolName(), is("database_gateway_execute_query"));
         assertThat(actual.getMaxToolCallsPerSession(), is(1));
     }
     
     @Test
     void assertAcquireWithBlankSession() {
         final MCPToolCallLimiter limiter = new MCPToolCallLimiter(1);
-        limiter.acquire(" ", "search_metadata");
-        final MCPToolCallLimitExceededException actual = assertThrows(MCPToolCallLimitExceededException.class, () -> limiter.acquire(" ", "execute_query"));
+        limiter.acquire(" ", "database_gateway_search_metadata");
+        final MCPToolCallLimitExceededException actual = assertThrows(MCPToolCallLimitExceededException.class, () -> limiter.acquire(" ", "database_gateway_execute_query"));
         assertThat(actual.getSessionId(), is("anonymous"));
     }
     
     @Test
     void assertReleaseSession() {
         final MCPToolCallLimiter limiter = new MCPToolCallLimiter(1);
-        limiter.acquire("session-1", "search_metadata");
+        limiter.acquire("session-1", "database_gateway_search_metadata");
         limiter.releaseSession("session-1");
-        assertDoesNotThrow(() -> limiter.acquire("session-1", "execute_query"));
+        assertDoesNotThrow(() -> limiter.acquire("session-1", "database_gateway_execute_query"));
     }
     
     @Test

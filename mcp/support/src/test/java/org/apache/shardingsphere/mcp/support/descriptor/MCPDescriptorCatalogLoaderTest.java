@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -38,24 +37,26 @@ class MCPDescriptorCatalogLoaderTest {
     void assertLoadValidatesDescriptorQuality() {
         MCPDescriptorCatalog actual = MCPDescriptorCatalogLoader.load();
         Set<String> actualToolNames = actual.getToolDescriptors().stream().map(MCPToolDescriptor::getName).collect(Collectors.toSet());
-        assertTrue(actualToolNames.contains("apply_workflow"));
-        assertTrue(actualToolNames.contains("validate_workflow"));
-        assertOutputProperties(actual, "apply_workflow", Set.of(
+        assertToolNames(actualToolNames);
+        assertOutputProperties(actual, "database_gateway_apply_workflow", Set.of(
                 "response_mode", "plan_id", "execution_mode", "next_actions", "requires_user_approval", "manual_artifact_package", "manual_artifact_summary", "manual_follow_up", "argument_provenance",
                 "approval_summary",
                 "approval_question", "review_focus"));
-        assertOutputProperties(actual, "validate_workflow", Set.of("response_mode", "plan_id", "status", "recovery_guidance", "next_actions", "sections", "mismatches"));
+        assertOutputProperties(actual, "database_gateway_validate_workflow", Set.of("response_mode", "plan_id", "status", "recovery_guidance", "next_actions", "sections", "mismatches"));
+        assertPlanningToolAnnotations(actual);
         assertResourceDescriptor(actual);
+        assertOfficialOptionalFields(actual);
         assertNoBannedPublicAliasFields(actual);
+        assertNoResponseFormatOptions(actual);
+        assertNoToolExecutionPayload(actual);
     }
     
     @Test
     void assertLoadValidatesEnumFields() {
         MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
-        MCPToolDescriptor actual = findTool(catalog, "apply_workflow");
-        MCPToolFieldDefinition actualExecutionMode = findField(actual, "execution_mode");
-        assertThat(actualExecutionMode.getValueDefinition().getEnumValues(), is(List.of("preview", "review-then-execute", "manual-only")));
-        assertFalse(findField(actual, "approved_by_user").isRequired());
+        MCPToolDescriptor actual = findTool(catalog, "database_gateway_apply_workflow");
+        assertThat(findInputProperty(actual, "execution_mode").get("enum"), is(List.of("preview", "review-then-execute", "manual-only")));
+        assertFalse(isRequiredInput(actual, "approved_by_user"));
     }
     
     private void assertOutputProperties(final MCPDescriptorCatalog catalog, final String toolName, final Set<String> expectedProperties) {
@@ -65,30 +66,74 @@ class MCPDescriptorCatalogLoaderTest {
         }
     }
     
+    private void assertToolNames(final Set<String> actualToolNames) {
+        assertTrue(actualToolNames.contains("database_gateway_apply_workflow"));
+        assertTrue(actualToolNames.contains("database_gateway_validate_workflow"));
+        assertTrue(actualToolNames.stream().allMatch(each -> each.startsWith("database_gateway_")));
+    }
+    
+    private void assertPlanningToolAnnotations(final MCPDescriptorCatalog catalog) {
+        for (String each : List.of("database_gateway_plan_encrypt_rule")) {
+            MCPToolDescriptor actual = findTool(catalog, each);
+            assertFalse(actual.getAnnotations().getReadOnlyHint());
+            assertFalse(actual.getAnnotations().getDestructiveHint());
+            assertFalse(actual.getAnnotations().getIdempotentHint());
+        }
+    }
+    
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
         return catalog.getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
     }
     
     private MCPResourceDescriptor findResource(final MCPDescriptorCatalog catalog, final String uriTemplate) {
-        return catalog.getResourceDescriptors().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst().orElseThrow();
+        return catalog.getAllResourceDescriptors().stream().filter(each -> uriTemplate.equals(MCPResourceDescriptorUtils.getUriOrTemplate(each))).findFirst().orElseThrow();
     }
     
-    private MCPToolFieldDefinition findField(final MCPToolDescriptor toolDescriptor, final String fieldName) {
-        return toolDescriptor.getFields().stream().filter(each -> fieldName.equals(each.getName())).findFirst().orElseThrow();
+    private MCPResourceExtensionDescriptor findResourceExtension(final MCPDescriptorCatalog catalog, final String uriTemplate) {
+        return catalog.getResourceExtensionDescriptors().stream().filter(each -> uriTemplate.equals(each.getUriOrTemplate())).findFirst().orElseThrow();
+    }
+    
+    private Map<?, ?> findInputProperty(final MCPToolDescriptor toolDescriptor, final String fieldName) {
+        Object properties = toolDescriptor.getInputSchema().get("properties");
+        return (Map<?, ?>) ((Map<?, ?>) properties).get(fieldName);
+    }
+    
+    private boolean isRequiredInput(final MCPToolDescriptor toolDescriptor, final String fieldName) {
+        return ((List<?>) toolDescriptor.getInputSchema().get("required")).contains(fieldName);
     }
     
     private void assertResourceDescriptor(final MCPDescriptorCatalog catalog) {
+        MCPResourceExtensionDescriptor extension = findResourceExtension(catalog, "shardingsphere://workflows/{plan_id}");
+        assertThat(extension.getResourceKind(), is("detail"));
+        assertThat(extension.getObjectScope(), is("workflow-plan"));
+        assertThat(extension.getRelatedTools(), is(List.of("database_gateway_validate_workflow", "database_gateway_apply_workflow")));
         MCPResourceDescriptor actual = findResource(catalog, "shardingsphere://workflows/{plan_id}");
-        assertThat(actual.getResourceKind(), is("detail"));
-        assertThat(actual.getObjectScope(), is("workflow-plan"));
-        assertThat(actual.getRelatedTools(), is(List.of("validate_workflow", "apply_workflow")));
         assertTrue(actual.getMeta().isEmpty());
-        assertThat(findResource(catalog, "shardingsphere://workflow/test-resource").getResourceKind(), is("detail"));
+        assertThat(findResourceExtension(catalog, "shardingsphere://workflow/test-resource").getResourceKind(), is("detail"));
+    }
+    
+    private void assertOfficialOptionalFields(final MCPDescriptorCatalog catalog) {
+        MCPResourceDescriptor resource = findResource(catalog, "shardingsphere://workflow/test-resource");
+        assertThat(resource.getIcons().get(0).getSizes(), is(List.of("64x64")));
     }
     
     private void assertNoBannedPublicAliasFields(final MCPDescriptorCatalog catalog) {
         for (MCPToolDescriptor each : catalog.getToolDescriptors()) {
             assertFalse(containsBannedPublicAliasField(each.getOutputSchema()));
+        }
+    }
+    
+    private void assertNoResponseFormatOptions(final MCPDescriptorCatalog catalog) {
+        for (MCPToolDescriptor each : catalog.getToolDescriptors()) {
+            assertFalse(containsResponseFormatOption(each.getInputSchema()));
+            assertFalse(containsResponseFormatOption(each.getOutputSchema()));
+        }
+    }
+    
+    private void assertNoToolExecutionPayload(final MCPDescriptorCatalog catalog) {
+        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(catalog, List.of(), List.of(), List.of());
+        for (Object each : (List<?>) payload.get("tools")) {
+            assertFalse(((Map<?, ?>) each).containsKey("execution"));
         }
     }
     
@@ -113,6 +158,32 @@ class MCPDescriptorCatalogLoaderTest {
         }
         for (Object each : value.values()) {
             if (containsBannedPublicAliasField(each)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsResponseFormatOption(final Object value) {
+        if (value instanceof Map) {
+            return containsResponseFormatOptionMap((Map<?, ?>) value);
+        }
+        if (value instanceof Iterable) {
+            for (Object each : (Iterable<?>) value) {
+                if (containsResponseFormatOption(each)) {
+                    return true;
+                }
+            }
+        }
+        return value instanceof String && String.valueOf(value).toLowerCase().contains("response_format");
+    }
+    
+    private boolean containsResponseFormatOptionMap(final Map<?, ?> value) {
+        if (value.containsKey("response_format") || value.containsKey("responseFormat")) {
+            return true;
+        }
+        for (Object each : value.values()) {
+            if (containsResponseFormatOption(each)) {
                 return true;
             }
         }

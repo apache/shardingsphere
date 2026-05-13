@@ -56,7 +56,7 @@ final class LLMMCPFinalAnswerValidator {
         }
         int actualTotalOrders = getActualTotalOrders(interactionTrace);
         if (actualTotalOrders != actualAnswer.getTotalOrders() || expectedAnswer.getTotalOrders() != actualAnswer.getTotalOrders()) {
-            return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer totalOrders does not match the execute_query result.");
+            return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer totalOrders does not match the database_gateway_execute_query result.");
         }
         if (!createComparableInteractionSequence(interactionTrace).equals(collapseConsecutiveActionNames(actualAnswer.getInteractionSequence()))) {
             return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer interactionSequence does not match the observed interaction trace.");
@@ -105,7 +105,7 @@ final class LLMMCPFinalAnswerValidator {
     private int getActualTotalOrders(final List<MCPInteractionTraceRecord> interactionTrace) {
         for (int index = interactionTrace.size() - 1; index >= 0; index--) {
             MCPInteractionTraceRecord each = interactionTrace.get(index);
-            if (!"execute_query".equals(each.getTargetName())) {
+            if (!"database_gateway_execute_query".equals(each.getTargetName())) {
                 continue;
             }
             Object resultKind = each.getStructuredContent().get("result_kind");
@@ -117,7 +117,7 @@ final class LLMMCPFinalAnswerValidator {
                 return getActualTotalOrders(rows.get(0).get(0));
             }
         }
-        throw new IllegalArgumentException("The execute_query trace does not contain a numeric result set.");
+        throw new IllegalArgumentException("The database_gateway_execute_query trace does not contain a numeric result set.");
     }
     
     private int getActualTotalOrders(final Object value) {
@@ -127,7 +127,7 @@ final class LLMMCPFinalAnswerValidator {
         try {
             return Integer.parseInt(Objects.toString(value, "").trim());
         } catch (final NumberFormatException ex) {
-            throw new IllegalArgumentException("The execute_query trace does not contain a numeric result set.", ex);
+            throw new IllegalArgumentException("The database_gateway_execute_query trace does not contain a numeric result set.", ex);
         }
     }
 }

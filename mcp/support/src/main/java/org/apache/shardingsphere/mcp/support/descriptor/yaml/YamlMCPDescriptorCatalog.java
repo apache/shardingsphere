@@ -33,6 +33,8 @@ public final class YamlMCPDescriptorCatalog implements YamlConfiguration {
     
     private Collection<YamlMCPResourceDescriptor> resources = new LinkedList<>();
     
+    private Collection<YamlMCPResourceDescriptor> resourceTemplates = new LinkedList<>();
+    
     private Collection<YamlMCPToolDescriptor> tools = new LinkedList<>();
     
     private Collection<YamlMCPPromptDescriptor> prompts = new LinkedList<>();

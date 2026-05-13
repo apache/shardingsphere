@@ -15,41 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.descriptor.yaml;
+package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * YAML MCP tool value definition.
+ * MCP tool runtime descriptor.
  */
 @Getter
-@Setter
-public final class YamlMCPToolValueDefinition {
+public final class MCPToolRuntimeDescriptor {
     
-    private Type type;
+    private final String toolName;
     
-    private String description;
+    private final String workflowRole;
     
-    private YamlMCPToolValueDefinition itemDefinition;
+    private final boolean requiresUserApproval;
     
-    private Collection<String> enumValues = new LinkedList<>();
+    private final List<String> sideEffectScope;
     
-    private Collection<YamlMCPToolFieldDefinition> objectProperties = new LinkedList<>();
-    
-    private Boolean additionalProperties;
-    
-    private Object defaultValue;
-    
-    private Integer minimumValue;
-    
-    private Integer maximumValue;
-    
-    private Collection<Object> examples = new LinkedList<>();
-    
-    private String pattern;
+    public MCPToolRuntimeDescriptor(final String toolName, final String workflowRole, final boolean requiresUserApproval, final List<String> sideEffectScope) {
+        this.toolName = toolName;
+        this.workflowRole = workflowRole;
+        this.requiresUserApproval = requiresUserApproval;
+        this.sideEffectScope = null == sideEffectScope ? Collections.emptyList() : sideEffectScope;
+    }
 }

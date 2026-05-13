@@ -41,7 +41,7 @@ class PackagedDistributionProcessSupportTest {
         Path distributionHome = Path.of("/tmp/mcp-dist");
         Path configFile = distributionHome.resolve("conf/mcp.yaml");
         ProcessBuilder actual = PackagedDistributionProcessSupport.createProcessBuilder(distributionHome, configFile);
-        assertThat(actual.command(), is(PackagedDistributionProcessSupport.createCommand(distributionHome, configFile, System.getProperty("os.name", ""), System.getProperty("java.home", ""))));
+        assertThat(actual.command(), is(PackagedDistributionProcessSupport.createCommand(distributionHome, configFile, System.getProperty("os.name", ""))));
         assertThat(actual.directory(), is(distributionHome.toFile()));
     }
     
@@ -49,69 +49,16 @@ class PackagedDistributionProcessSupportTest {
     void assertCreateCommandForUnix() {
         Path distributionHome = Path.of("/tmp/mcp-dist");
         Path configFile = distributionHome.resolve("conf/mcp.yaml");
-        String actualJavaCommand = Path.of(System.getProperty("java.home"), "bin", "java").toString();
-        String actualClassPath = String.join(":",
-                distributionHome.resolve("conf").toString(),
-                distributionHome.resolve("lib").resolve("*").toString(),
-                distributionHome.resolve("plugins").resolve("*").toString());
-        List<String> actual = PackagedDistributionProcessSupport.createCommand(distributionHome, configFile, "Linux", System.getProperty("java.home"));
-        assertThat(actual, is(List.of(actualJavaCommand,
-                "-DAPP_HOME=" + distributionHome,
-                "-Dlogback.configurationFile=" + distributionHome.resolve("conf/logback.xml"),
-                "-cp", actualClassPath,
-                "org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap", configFile.toString())));
+        List<String> actual = PackagedDistributionProcessSupport.createCommand(distributionHome, configFile, "Linux");
+        assertThat(actual, is(List.of(distributionHome.resolve("bin/start.sh").toString(), configFile.toString())));
     }
     
     @Test
-    void assertCreateCommandForWindows() throws IOException {
+    void assertCreateCommandForWindows() {
         Path distributionHome = Path.of("/tmp/mcp-dist");
         Path configFile = distributionHome.resolve("conf/mcp.yaml");
-        Path javaHome = tempDir.resolve("jdk-21");
-        Path javaCommand = javaHome.resolve("bin/java.exe");
-        Files.createDirectories(javaCommand.getParent());
-        Files.writeString(javaCommand, "");
-        String actualClassPath = String.join(";",
-                distributionHome.resolve("conf").toString(),
-                distributionHome.resolve("lib").resolve("*").toString(),
-                distributionHome.resolve("plugins").resolve("*").toString());
-        List<String> actual = PackagedDistributionProcessSupport.createCommand(distributionHome, configFile, "Windows 11", javaHome.toString());
-        assertThat(actual, is(List.of(javaCommand.toString(),
-                "-DAPP_HOME=" + distributionHome,
-                "-Dlogback.configurationFile=" + distributionHome.resolve("conf/logback.xml"),
-                "-cp", actualClassPath,
-                "org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap", configFile.toString())));
-    }
-    
-    @Test
-    void assertCreateCommandForWindowsWithMissingJavaHome() {
-        Path distributionHome = Path.of("/tmp/mcp-dist");
-        Path configFile = distributionHome.resolve("conf/mcp.yaml");
-        String actualClassPath = String.join(";",
-                distributionHome.resolve("conf").toString(),
-                distributionHome.resolve("lib").resolve("*").toString(),
-                distributionHome.resolve("plugins").resolve("*").toString());
-        List<String> actual = PackagedDistributionProcessSupport.createCommand(distributionHome, configFile, "Windows 11", tempDir.resolve("missing-java-home").toString());
-        assertThat(actual, is(List.of("java.exe",
-                "-DAPP_HOME=" + distributionHome,
-                "-Dlogback.configurationFile=" + distributionHome.resolve("conf/logback.xml"),
-                "-cp", actualClassPath,
-                "org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap", configFile.toString())));
-    }
-    
-    @Test
-    void assertCreateCommandForUnixWithBlankJavaHome() {
-        Path distributionHome = Path.of("/tmp/mcp-dist");
-        Path configFile = distributionHome.resolve("conf/mcp.yaml");
-        String actualClassPath = String.join(":",
-                distributionHome.resolve("conf").toString(),
-                distributionHome.resolve("lib").resolve("*").toString(),
-                distributionHome.resolve("plugins").resolve("*").toString());
-        List<String> actual = PackagedDistributionProcessSupport.createCommand(distributionHome, configFile, "Linux", "");
-        assertThat(actual, is(List.of("java",
-                "-DAPP_HOME=" + distributionHome,
-                "-Dlogback.configurationFile=" + distributionHome.resolve("conf/logback.xml"),
-                "-cp", actualClassPath,
-                "org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap", configFile.toString())));
+        List<String> actual = PackagedDistributionProcessSupport.createCommand(distributionHome, configFile, "Windows 11");
+        assertThat(actual, is(List.of("cmd", "/c", distributionHome.resolve("bin/start.bat").toString(), configFile.toString())));
     }
     
     @Test

@@ -189,7 +189,7 @@ class WorkflowValidationSupportTest {
         assertThat(actualResult.get("response_mode"), is("validation"));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
         assertThat(actualResult.get("status"), is("failed"));
-        assertThat(actualResult.get("recovery_guidance"), is("Inspect mismatches, adjust the plan or runtime state, then run validate_workflow again."));
+        assertThat(actualResult.get("recovery_guidance"), is("Inspect mismatches, adjust the plan or runtime state, then run database_gateway_validate_workflow again."));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("next_actions")).get(0)).get("type"), is("ask_user"));
     }
     
@@ -205,7 +205,7 @@ class WorkflowValidationSupportTest {
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         List<?> actualNextActions = (List<?>) actualResult.get("next_actions");
         assertFalse(actualResult.containsKey("recommended_next_tool"));
-        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("tool_name"), is("plan_encrypt_rule"));
+        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("tool_name"), is("database_gateway_plan_encrypt_rule"));
     }
     
     @Test
@@ -220,7 +220,7 @@ class WorkflowValidationSupportTest {
         workflowSessionContext.save(snapshot);
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualResult.get("next_actions")).get(0);
-        assertThat(actualResult.get("recovery_guidance"), is("Manual-only artifacts are exported but not executed by MCP. Execute them manually, then run validate_workflow again."));
+        assertThat(actualResult.get("recovery_guidance"), is("Manual-only artifacts are exported but not executed by MCP. Execute them manually, then run database_gateway_validate_workflow again."));
         assertTrue((Boolean) actualResult.get("requires_user_approval"));
         assertThat(actualNextAction.get("type"), is("ask_user"));
         assertThat(actualNextAction.get("required_inputs"), is(List.of("manual_artifacts_executed")));

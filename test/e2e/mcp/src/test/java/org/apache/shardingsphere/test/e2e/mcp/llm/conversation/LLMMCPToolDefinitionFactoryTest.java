@@ -65,7 +65,7 @@ class LLMMCPToolDefinitionFactoryTest {
         assertThat(function.get("name"), is(toolDescriptor.getName()));
         assertThat(function.get("description"), is(toolDescriptor.getDescription()));
         Map<?, ?> parameters = getParameters(toolDefinition);
-        assertThat(parameters, is(toolDescriptor.toInputSchema()));
+        assertThat(parameters, is(toolDescriptor.getInputSchema()));
         Map<?, ?> actualProperties = getProperties(parameters);
         if (actualProperties.containsKey("approved_by_user")) {
             assertApprovalField(toolDefinition);

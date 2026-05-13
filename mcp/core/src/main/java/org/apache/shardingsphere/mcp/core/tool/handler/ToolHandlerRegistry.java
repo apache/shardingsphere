@@ -25,19 +25,14 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerLoader;
-import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
-import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMissingToolArgumentException;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -124,43 +119,11 @@ public final class ToolHandlerRegistry {
         if (toolHandler.isEmpty()) {
             return Optional.empty();
         }
-        checkRequiredArguments(arguments, toolHandler.get().getToolDescriptor());
+        MCPToolArgumentContract.create(toolHandler.get().getToolDescriptor()).validate(arguments);
         return Optional.of(dispatch(requestScope, toolHandler.get(), new MCPToolCall(sessionId, arguments)));
     }
     
     private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolHandler<T> toolHandler, final MCPToolCall toolCall) {
         return toolHandler.handle(MCPHandlerContexts.resolve(requestScope, toolHandler.getContextType(), toolHandler.getClass()), toolCall);
-    }
-    
-    private static void checkRequiredArguments(final Map<String, Object> arguments, final MCPToolDescriptor toolDescriptor) {
-        for (MCPToolFieldDefinition each : toolDescriptor.getFields()) {
-            if (!each.isRequired()) {
-                continue;
-            }
-            ShardingSpherePreconditions.checkContainsKey(arguments, each.getName(), () -> createMissingArgumentException(arguments, toolDescriptor, each));
-            if (Type.STRING == each.getValueDefinition().getType()) {
-                checkRequiredTextArgument(arguments, toolDescriptor, each);
-            }
-        }
-    }
-    
-    private static void checkRequiredTextArgument(final Map<String, Object> arguments, final MCPToolDescriptor toolDescriptor, final MCPToolFieldDefinition fieldDefinition) {
-        String actualValue = Objects.toString(arguments.get(fieldDefinition.getName()), "").trim();
-        ShardingSpherePreconditions.checkState(!actualValue.isEmpty(), () -> createMissingArgumentException(arguments, toolDescriptor, fieldDefinition));
-    }
-    
-    private static RuntimeException createMissingArgumentException(final Map<String, Object> arguments, final MCPToolDescriptor toolDescriptor,
-                                                                   final MCPToolFieldDefinition fieldDefinition) {
-        return "execution_mode".equals(fieldDefinition.getName())
-                ? new MCPExecutionModeRequiredException(toolDescriptor.getName(), fieldDefinition.getValueDefinition().getEnumValues().stream().toList(),
-                        createExecutionModeSuggestedArguments(arguments))
-                : new MCPMissingToolArgumentException(fieldDefinition.getName());
-    }
-    
-    private static Map<String, Object> createExecutionModeSuggestedArguments(final Map<String, Object> arguments) {
-        Map<String, Object> result = new LinkedHashMap<>(arguments);
-        result.remove("execution_mode");
-        result.put("execution_mode", "preview");
-        return result;
     }
 }

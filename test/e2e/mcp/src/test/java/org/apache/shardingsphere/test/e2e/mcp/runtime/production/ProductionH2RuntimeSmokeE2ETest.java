@@ -77,10 +77,10 @@ abstract class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParamete
         assertFalse(((List<?>) capabilities.get("common_flows")).isEmpty());
         Map<String, Object> modelFirstSummary = getMap(capabilities.get("model_first_summary"));
         assertThat(modelFirstSummary.get("safe_first_resource"), is("shardingsphere://capabilities"));
-        assertThat(getMap(getMap(modelFirstSummary.get("sql_tool_selection")).get("read_only")).get("tool"), is("execute_query"));
-        assertThat(getMap(getMap(modelFirstSummary.get("workflow_rule")).get("preview_tool")).get("tool"), is("apply_workflow"));
-        assertThat(getMap(capabilities.get("surface_summary")).get("read_only_sql_tool"), is("execute_query"));
-        assertThat(getMap(capabilities.get("surface_summary")).get("side_effect_sql_tool"), is("execute_update"));
+        assertThat(getMap(getMap(modelFirstSummary.get("sql_tool_selection")).get("read_only")).get("tool"), is("database_gateway_execute_query"));
+        assertThat(getMap(getMap(modelFirstSummary.get("workflow_rule")).get("preview_tool")).get("tool"), is("database_gateway_apply_workflow"));
+        assertThat(getMap(capabilities.get("surface_summary")).get("read_only_sql_tool"), is("database_gateway_execute_query"));
+        assertThat(getMap(capabilities.get("surface_summary")).get("side_effect_sql_tool"), is("database_gateway_execute_update"));
     }
     
     protected void assertAiNativeDiscovery(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
@@ -90,7 +90,7 @@ abstract class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParamete
         assertTrue(getResources(interactionClient.listResources()).stream().anyMatch(each -> "shardingsphere://runtime".equals(each.get("uri"))));
         assertTrue(getResourceTemplates(interactionClient.listResourceTemplates()).stream()
                 .anyMatch(each -> "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}".equals(each.get("uriTemplate"))));
-        assertTrue(interactionClient.listTools().stream().anyMatch(each -> "execute_update".equals(each.get("name")) && getMap(each.get("outputSchema")).containsKey("properties")));
+        assertTrue(interactionClient.listTools().stream().anyMatch(each -> "database_gateway_execute_update".equals(each.get("name")) && getMap(each.get("outputSchema")).containsKey("properties")));
         Map<String, Object> promptPayload = interactionClient.getPrompt("inspect_metadata", Map.of("database", "logic_db", "schema", "public", "query", "orders"));
         assertTrue(String.valueOf(promptPayload).contains("Stop conditions"));
         Map<String, Object> completionPayload = interactionClient.complete(Map.of("type", "ref/prompt", "name", "inspect_metadata"), "schema", "pub", Map.of("database", "logic_db"));
@@ -98,7 +98,7 @@ abstract class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParamete
     }
     
     protected void assertAiNativeSqlPreview(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
-        Map<String, Object> actual = interactionClient.call("execute_update",
+        Map<String, Object> actual = interactionClient.call("database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "preview"));
         assertThat(String.valueOf(actual.get("response_mode")), is("preview"));
         assertThat(String.valueOf(actual.get("result_kind")), is("preview"));
@@ -110,7 +110,7 @@ abstract class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParamete
     }
     
     protected void assertAiNativeSqlResult(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
-        Map<String, Object> actual = interactionClient.call("execute_query",
+        Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT order_id, status FROM orders ORDER BY order_id", "max_rows", 1));
         assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
         assertThat(String.valueOf(actual.get("row_object_status")), is("available"));

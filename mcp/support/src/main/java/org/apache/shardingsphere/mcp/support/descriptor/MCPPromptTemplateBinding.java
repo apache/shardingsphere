@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.descriptor.yaml;
+package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * YAML MCP tool field definition.
+ * MCP prompt template binding.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlMCPToolFieldDefinition {
+public final class MCPPromptTemplateBinding {
     
-    private String name;
+    private final String promptName;
     
-    private YamlMCPToolValueDefinition valueDefinition;
-    
-    private boolean required;
+    private final String templateResource;
 }

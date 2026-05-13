@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.resource.descriptor;
+package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
 
 /**
- * MCP resource URI template parameter descriptor.
+ * YAML MCP annotations.
  */
-@RequiredArgsConstructor
 @Getter
-public final class MCPResourceParameterDescriptor {
+@Setter
+public final class YamlMCPAnnotations {
     
-    private final String name;
+    private List<String> audience;
     
-    private final String title;
+    private Double priority;
     
-    private final String description;
-    
-    private final boolean required;
-    
-    private final String scope;
+    private String lastModified;
 }

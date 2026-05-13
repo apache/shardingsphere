@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MaskFeatureDefinition {
     
-    public static final String PLAN_TOOL_NAME = "plan_mask_rule";
+    public static final String PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
     
     public static final WorkflowKind WORKFLOW_KIND = WorkflowKind.valueOf("mask.rule");
     

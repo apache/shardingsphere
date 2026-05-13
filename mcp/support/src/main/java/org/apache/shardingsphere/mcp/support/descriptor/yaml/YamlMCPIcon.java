@@ -20,18 +20,21 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * YAML MCP resource annotations.
+ * YAML MCP icon descriptor.
  */
 @Getter
 @Setter
-public final class YamlMCPResourceAnnotations {
+public final class YamlMCPIcon {
     
-    private List<String> audience;
+    private String src;
     
-    private Double priority;
+    private String mimeType;
     
-    private String lastModified;
+    private Collection<String> sizes = new LinkedList<>();
+    
+    private String theme;
 }

@@ -24,8 +24,17 @@ on:
       - opened
       - reopened
       - synchronize
-      - labeled
       - ready_for_review
+    paths:
+      - '.github/workflows/mcp-llm-e2e.yml'
+      - '.github/workflows/jdk21-subchain-ci.yml'
+      - 'pom.xml'
+      - 'mcp/**'
+      - 'distribution/pom.xml'
+      - 'distribution/mcp/**'
+      - 'test/e2e/pom.xml'
+      - 'test/e2e/mcp/**'
+      - '.specify/specs/*mcp*/**'
   schedule:
     - cron: '0 17 * * 1-5'
   workflow_dispatch:
@@ -50,12 +59,12 @@ env:
 jobs:
   global-environment:
     name: Import Global Environment
-    if: github.repository == 'apache/shardingsphere' && (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'mcp'))
+    if: github.repository == 'apache/shardingsphere'
     uses: ./.github/workflows/required-reusable.yml
 
   mcp-llm-e2e:
     name: MCP - LLM E2E
-    if: github.repository == 'apache/shardingsphere' && (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'mcp'))
+    if: github.repository == 'apache/shardingsphere'
     needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 60

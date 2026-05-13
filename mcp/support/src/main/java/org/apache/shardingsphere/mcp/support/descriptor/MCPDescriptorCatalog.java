@@ -18,11 +18,15 @@
 package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceTemplateDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * MCP descriptor catalog.
@@ -30,23 +34,49 @@ import java.util.Collections;
 @Getter
 public final class MCPDescriptorCatalog {
     
-    private final Collection<MCPResourceDescriptor> resourceDescriptors;
+    private final Collection<MCPFixedResourceDescriptor> resourceDescriptors;
+    
+    private final Collection<MCPResourceTemplateDescriptor> resourceTemplateDescriptors;
+    
+    private final Collection<MCPResourceExtensionDescriptor> resourceExtensionDescriptors;
     
     private final Collection<MCPToolDescriptor> toolDescriptors;
     
     private final Collection<MCPPromptDescriptor> promptDescriptors;
     
+    private final Collection<MCPPromptTemplateBinding> promptTemplateBindings;
+    
+    private final Collection<MCPToolRuntimeDescriptor> toolRuntimeDescriptors;
+    
     private final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors;
     
     private final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors;
     
-    public MCPDescriptorCatalog(final Collection<MCPResourceDescriptor> resourceDescriptors, final Collection<MCPToolDescriptor> toolDescriptors,
-                                final Collection<MCPPromptDescriptor> promptDescriptors, final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors,
-                                final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors) {
+    public MCPDescriptorCatalog(final Collection<MCPFixedResourceDescriptor> resourceDescriptors, final Collection<MCPResourceTemplateDescriptor> resourceTemplateDescriptors,
+                                final Collection<MCPResourceExtensionDescriptor> resourceExtensionDescriptors, final Collection<MCPToolDescriptor> toolDescriptors,
+                                final Collection<MCPPromptDescriptor> promptDescriptors, final Collection<MCPPromptTemplateBinding> promptTemplateBindings,
+                                final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors, final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors,
+                                final Collection<MCPToolRuntimeDescriptor> toolRuntimeDescriptors) {
         this.resourceDescriptors = null == resourceDescriptors ? Collections.emptyList() : resourceDescriptors;
+        this.resourceTemplateDescriptors = null == resourceTemplateDescriptors ? Collections.emptyList() : resourceTemplateDescriptors;
+        this.resourceExtensionDescriptors = null == resourceExtensionDescriptors ? Collections.emptyList() : resourceExtensionDescriptors;
         this.toolDescriptors = null == toolDescriptors ? Collections.emptyList() : toolDescriptors;
         this.promptDescriptors = null == promptDescriptors ? Collections.emptyList() : promptDescriptors;
+        this.promptTemplateBindings = null == promptTemplateBindings ? Collections.emptyList() : promptTemplateBindings;
         this.completionTargetDescriptors = null == completionTargetDescriptors ? Collections.emptyList() : completionTargetDescriptors;
         this.resourceNavigationDescriptors = null == resourceNavigationDescriptors ? Collections.emptyList() : resourceNavigationDescriptors;
+        this.toolRuntimeDescriptors = null == toolRuntimeDescriptors ? Collections.emptyList() : toolRuntimeDescriptors;
+    }
+    
+    /**
+     * Get all resource descriptors.
+     *
+     * @return all resource descriptors
+     */
+    public Collection<MCPResourceDescriptor> getAllResourceDescriptors() {
+        Collection<MCPResourceDescriptor> result = new LinkedList<>();
+        result.addAll(resourceDescriptors);
+        result.addAll(resourceTemplateDescriptors);
+        return result;
     }
 }

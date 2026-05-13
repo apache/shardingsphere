@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.core.handler.core;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceDescriptorUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -34,17 +35,18 @@ class CoreHandlerProviderTest {
     void assertGetToolHandlers() {
         Collection<MCPToolHandler<?>> actual = new CoreHandlerProvider().getToolHandlers();
         assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(),
-                is(List.of("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow")));
+                is(List.of("database_gateway_search_metadata", "database_gateway_execute_query", "database_gateway_execute_update",
+                        "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
     }
     
     @Test
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new CoreHandlerProvider().getResourceHandlers();
         assertThat(actual.size(), is(20));
-        List<String> actualUriPatterns = actual.stream().map(each -> each.getResourceDescriptor().getUriTemplate()).toList();
-        assertTrue(actualUriPatterns.contains("shardingsphere://capabilities"));
-        assertTrue(actualUriPatterns.contains("shardingsphere://runtime"));
-        assertTrue(actualUriPatterns.contains("shardingsphere://workflows/{plan_id}"));
-        assertTrue(actualUriPatterns.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
+        List<String> actualUris = actual.stream().map(each -> MCPResourceDescriptorUtils.getUriOrTemplate(each.getResourceDescriptor())).toList();
+        assertTrue(actualUris.contains("shardingsphere://capabilities"));
+        assertTrue(actualUris.contains("shardingsphere://runtime"));
+        assertTrue(actualUris.contains("shardingsphere://workflows/{plan_id}"));
+        assertTrue(actualUris.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
     }
 }

@@ -124,7 +124,7 @@ final class LLMMCPToolDefinitionFactory {
         return Map.of("type", "function", "function", Map.of(
                 "name", toolDescriptor.getName(),
                 "description", toolDescriptor.getDescription(),
-                "parameters", toolDescriptor.toInputSchema()));
+                "parameters", toolDescriptor.getInputSchema()));
     }
     
     private MCPToolDescriptor getToolDescriptor(final String toolName) {

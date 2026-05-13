@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.mcp.api.tool.descriptor;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /**
  * MCP tool descriptor.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MCPToolDescriptor {
+    
+    private final List<MCPIcon> icons;
     
     private final String name;
     
@@ -38,7 +38,7 @@ public final class MCPToolDescriptor {
     
     private final String description;
     
-    private final List<MCPToolFieldDefinition> fields;
+    private final Map<String, Object> inputSchema;
     
     private final Map<String, Object> outputSchema;
     
@@ -46,25 +46,15 @@ public final class MCPToolDescriptor {
     
     private final Map<String, Object> meta;
     
-    /**
-     * To input schema.
-     *
-     * @return input schema
-     */
-    public Map<String, Object> toInputSchema() {
-        Map<String, Object> properties = new LinkedHashMap<>(fields.size(), 1F);
-        List<String> required = new ArrayList<>(fields.size());
-        for (MCPToolFieldDefinition each : fields) {
-            properties.put(each.getName(), each.getValueDefinition().toSchemaFragment());
-            if (each.isRequired()) {
-                required.add(each.getName());
-            }
-        }
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("type", "object");
-        result.put("properties", properties);
-        result.put("required", required);
-        result.put("additionalProperties", false);
-        return result;
+    public MCPToolDescriptor(final List<MCPIcon> icons, final String name, final String title, final String description, final Map<String, Object> inputSchema,
+                             final Map<String, Object> outputSchema, final MCPToolAnnotations annotations, final Map<String, Object> meta) {
+        this.icons = null == icons ? Collections.emptyList() : icons;
+        this.name = name;
+        this.title = title;
+        this.description = description;
+        this.inputSchema = null == inputSchema ? Collections.emptyMap() : inputSchema;
+        this.outputSchema = null == outputSchema ? Collections.emptyMap() : outputSchema;
+        this.annotations = null == annotations ? MCPToolAnnotations.EMPTY : annotations;
+        this.meta = null == meta ? Collections.emptyMap() : meta;
     }
 }

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerLoader;
 import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceDescriptorUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,11 +70,11 @@ public final class ResourceHandlerRegistry {
         for (MCPResourceHandler<?> each : handlers) {
             MCPResourceDescriptor descriptor = each.getResourceDescriptor();
             ShardingSpherePreconditions.checkNotNull(descriptor, () -> new IllegalArgumentException(String.format("Resource descriptor is required for `%s`.", each.getClass().getName())));
-            String uriTemplate = descriptor.getUriTemplate();
-            ShardingSpherePreconditions.checkState(null != uriTemplate && !uriTemplate.isBlank(),
-                    () -> new IllegalArgumentException(String.format("Resource URI template is required for `%s`.", each.getClass().getName())));
+            String uriOrTemplate = MCPResourceDescriptorUtils.getUriOrTemplate(descriptor);
+            ShardingSpherePreconditions.checkState(null != uriOrTemplate && !uriOrTemplate.isBlank(),
+                    () -> new IllegalArgumentException(String.format("Resource URI or URI template is required for `%s`.", each.getClass().getName())));
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
-            result.put(new MCPUriPattern(uriTemplate), each);
+            result.put(new MCPUriPattern(uriOrTemplate), each);
         }
         return result;
     }

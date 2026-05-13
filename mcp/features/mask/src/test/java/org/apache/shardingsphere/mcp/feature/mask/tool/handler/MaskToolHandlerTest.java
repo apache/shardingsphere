@@ -58,7 +58,7 @@ class MaskToolHandlerTest {
     @Test
     void assertGetPlanMaskRuleToolDescriptor() {
         MCPToolDescriptor actual = new PlanMaskRuleToolHandler().getToolDescriptor();
-        assertThat(actual.getName(), is("plan_mask_rule"));
+        assertThat(actual.getName(), is("database_gateway_plan_mask_rule"));
     }
     
     @Test

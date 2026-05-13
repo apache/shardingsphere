@@ -26,7 +26,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -38,14 +37,6 @@ import java.util.concurrent.TimeUnit;
 public final class PackagedDistributionProcessSupport implements AutoCloseable {
     
     private static final long PROCESS_STOP_TIMEOUT_SECONDS = 5L;
-    
-    private static final String JAVA_COMMAND_NAME = "java";
-    
-    private static final String MAIN_CLASS_NAME = "org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap";
-    
-    private static final String UNIX_CLASS_PATH_SEPARATOR = ":";
-    
-    private static final String WINDOWS_CLASS_PATH_SEPARATOR = ";";
     
     private static final String WINDOWS_OS_NAME_PREFIX = "windows";
     
@@ -88,24 +79,14 @@ public final class PackagedDistributionProcessSupport implements AutoCloseable {
      */
     public static ProcessBuilder createProcessBuilder(final Path distributionHome, final Path configFile) {
         @SuppressWarnings("UseOfProcessBuilder")
-        ProcessBuilder result = new ProcessBuilder(createCommand(distributionHome, configFile, System.getProperty("os.name", ""), System.getProperty("java.home", "")));
+        ProcessBuilder result = new ProcessBuilder(createCommand(distributionHome, configFile, System.getProperty("os.name", "")));
         result.directory(distributionHome.toFile());
         return result;
     }
     
-    static List<String> createCommand(final Path distributionHome, final Path configFile, final String osName, final String javaHome) {
-        return List.of(resolveJavaCommand(osName, javaHome),
-                "-DAPP_HOME=" + distributionHome,
-                "-Dlogback.configurationFile=" + distributionHome.resolve("conf/logback.xml"),
-                "-cp", createClassPath(distributionHome, osName),
-                MAIN_CLASS_NAME, configFile.toString());
-    }
-    
-    static String createClassPath(final Path distributionHome, final String osName) {
-        return String.join(getClassPathSeparator(osName),
-                distributionHome.resolve("conf").toString(),
-                distributionHome.resolve("lib").resolve("*").toString(),
-                distributionHome.resolve("plugins").resolve("*").toString());
+    static List<String> createCommand(final Path distributionHome, final Path configFile, final String osName) {
+        Path startScript = resolveStartScript(distributionHome, osName);
+        return isWindows(osName) ? List.of("cmd", "/c", startScript.toString(), configFile.toString()) : List.of(startScript.toString(), configFile.toString());
     }
     
     static Path resolveStartScript(final Path distributionHome) {
@@ -193,18 +174,6 @@ public final class PackagedDistributionProcessSupport implements AutoCloseable {
     
     private static boolean isWindows(final String osName) {
         return osName.toLowerCase(Locale.ENGLISH).startsWith(WINDOWS_OS_NAME_PREFIX);
-    }
-    
-    private static String getClassPathSeparator(final String osName) {
-        return isWindows(osName) ? WINDOWS_CLASS_PATH_SEPARATOR : UNIX_CLASS_PATH_SEPARATOR;
-    }
-    
-    private static String resolveJavaCommand(final String osName, final String javaHome) {
-        if (javaHome.isBlank()) {
-            return isWindows(osName) ? JAVA_COMMAND_NAME + ".exe" : JAVA_COMMAND_NAME;
-        }
-        Path result = Paths.get(javaHome, "bin", isWindows(osName) ? JAVA_COMMAND_NAME + ".exe" : JAVA_COMMAND_NAME);
-        return Files.exists(result) ? result.toString() : result.getFileName().toString();
     }
     
     private void collectOutput(final Process process, final List<String> outputMessages) {

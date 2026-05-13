@@ -37,22 +37,22 @@ import java.util.Map;
 final class MCPWorkflowRecoveryPayloadFactory {
     
     static Map<String, Object> createMissingExecutionModeRecovery(final MCPExecutionModeRequiredException cause) {
-        return "apply_workflow".equals(cause.getToolName()) ? createMissingWorkflowExecutionModeRecovery(cause) : createMissingUpdateExecutionModeRecovery(cause);
+        return "database_gateway_apply_workflow".equals(cause.getToolName()) ? createMissingWorkflowExecutionModeRecovery(cause) : createMissingUpdateExecutionModeRecovery(cause);
     }
     
     static Map<String, Object> createInvalidExecutionModeRecovery(final MCPInvalidExecutionModeException cause) {
-        return "apply_workflow".equals(cause.getToolName()) ? createInvalidWorkflowExecutionModeRecovery(cause) : createInvalidUpdateExecutionModeRecovery(cause);
+        return "database_gateway_apply_workflow".equals(cause.getToolName()) ? createInvalidWorkflowExecutionModeRecovery(cause) : createInvalidUpdateExecutionModeRecovery(cause);
     }
     
     static Map<String, Object> createInvalidApprovedStepsRecovery(final MCPInvalidApprovedStepsException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
-                "invalid_enum_value", "Retry apply_workflow with approved_steps copied from preview_artifacts.approval_step, or omit approved_steps to apply every artifact.");
+                "invalid_enum_value", "Retry database_gateway_apply_workflow with approved_steps copied from preview_artifacts.approval_step, or omit approved_steps to apply every artifact.");
         Map<String, Object> suggestedArguments = MCPRecoveryPayloadSupport.getSuggestedArguments(cause.getSuggestedArguments(), Map.of("execution_mode", "preview"));
         result.put("field", "approved_steps");
         result.put("allowed_values", cause.getAllowedValues());
         result.put("suggested_arguments", suggestedArguments);
         result.put("next_actions", List.of(MCPNextActionUtils.callTool(
-                "apply_workflow", "Preview again, then copy only visible approval_step values into approved_steps after user approval.", suggestedArguments, true)));
+                "database_gateway_apply_workflow", "Preview again, then copy only visible approval_step values into approved_steps after user approval.", suggestedArguments, true)));
         result.put("requires_user_approval", true);
         result.put("ask_user_when_uncertain", true);
         return result;
@@ -111,19 +111,19 @@ final class MCPWorkflowRecoveryPayloadFactory {
     
     private static Map<String, Object> createMissingWorkflowExecutionModeRecovery(final MCPExecutionModeRequiredException cause) {
         return createExecutionModeRecovery("missing_execution_mode",
-                "Retry apply_workflow with execution_mode=preview, review the preview, then use review-then-execute or manual-only after approval.",
-                cause.getToolName(), cause.getAllowedValues(), cause.getSuggestedArguments(), "Retry apply_workflow with execution_mode=preview first.", true, true);
+                "Retry database_gateway_apply_workflow with execution_mode=preview, review the preview, then use review-then-execute or manual-only after approval.",
+                cause.getToolName(), cause.getAllowedValues(), cause.getSuggestedArguments(), "Retry database_gateway_apply_workflow with execution_mode=preview first.", true, true);
     }
     
     private static Map<String, Object> createInvalidUpdateExecutionModeRecovery(final MCPInvalidExecutionModeException cause) {
         return createExecutionModeRecovery("invalid_enum_value", "Retry with execution_mode=preview or execution_mode=execute.", cause.getToolName(), cause.getAllowedValues(),
-                cause.getSuggestedArguments(), "Retry execute_update with execution_mode=preview first.", false, false);
+                cause.getSuggestedArguments(), "Retry database_gateway_execute_update with execution_mode=preview first.", false, false);
     }
     
     private static Map<String, Object> createInvalidWorkflowExecutionModeRecovery(final MCPInvalidExecutionModeException cause) {
         return createExecutionModeRecovery("invalid_enum_value",
-                "Retry apply_workflow with execution_mode=preview, review the preview, then use review-then-execute or manual-only after approval.",
-                cause.getToolName(), cause.getAllowedValues(), cause.getSuggestedArguments(), "Retry apply_workflow with execution_mode=preview first.", false, false);
+                "Retry database_gateway_apply_workflow with execution_mode=preview, review the preview, then use review-then-execute or manual-only after approval.",
+                cause.getToolName(), cause.getAllowedValues(), cause.getSuggestedArguments(), "Retry database_gateway_apply_workflow with execution_mode=preview first.", false, false);
     }
     
     private static Map<String, Object> createExecutionModeRecovery(final String category, final String modelAction, final String toolName, final List<String> allowedValues,

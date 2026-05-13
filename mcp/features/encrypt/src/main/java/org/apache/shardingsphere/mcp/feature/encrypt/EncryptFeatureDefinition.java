@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptFeatureDefinition {
     
-    public static final String PLAN_TOOL_NAME = "plan_encrypt_rule";
+    public static final String PLAN_TOOL_NAME = "database_gateway_plan_encrypt_rule";
     
     public static final WorkflowKind WORKFLOW_KIND = WorkflowKind.valueOf("encrypt.rule");
     

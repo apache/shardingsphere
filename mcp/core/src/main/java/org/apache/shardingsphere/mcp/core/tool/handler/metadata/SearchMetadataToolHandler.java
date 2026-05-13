@@ -50,7 +50,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
             SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
             SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX, SupportedMCPMetadataObjectType.SEQUENCE);
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPDescriptorRegistry.getRequiredToolDescriptor("search_metadata");
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPDescriptorRegistry.getRequiredToolDescriptor("database_gateway_search_metadata");
     
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
@@ -79,7 +79,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         try {
             return toolArguments.getIntegerArgument("page_size", SearchMetadataToolService.DEFAULT_PAGE_SIZE, 1, SearchMetadataToolService.MAX_PAGE_SIZE);
         } catch (final MCPInvalidRequestException ex) {
-            throw new MCPInvalidToolArgumentException("search_metadata", "search_metadata", "page_size", 1, SearchMetadataToolService.MAX_PAGE_SIZE,
+            throw new MCPInvalidToolArgumentException("database_gateway_search_metadata", "database_gateway_search_metadata", "page_size", 1, SearchMetadataToolService.MAX_PAGE_SIZE,
                     SearchMetadataToolService.DEFAULT_PAGE_SIZE, ex);
         }
     }
@@ -107,7 +107,8 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     private List<Map<String, Object>> createResultNextActions(final MetadataSearchRequest request, final MetadataSearchResult searchResult, final List<String> duplicatedNames) {
         List<Map<String, Object>> result = new LinkedList<>();
         if (!searchResult.getNextPageToken().isEmpty()) {
-            result.add(MCPNextActionUtils.callTool("search_metadata", "Continue this metadata search with next_page_token.", createNextPageArguments(request, searchResult.getNextPageToken()), false));
+            result.add(MCPNextActionUtils.callTool("database_gateway_search_metadata", "Continue this metadata search with next_page_token.",
+                    createNextPageArguments(request, searchResult.getNextPageToken()), false));
         }
         if (isBroadSearchGuarded(searchResult)) {
             result.add(MCPNextActionUtils.askUser("Blank cross-database metadata search listed databases only. Choose a database, query, or object type before searching deeper metadata.",
@@ -235,7 +236,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     
     private Map<String, Object> createEmptySearchNextAction(final MetadataSearchRequest request) {
         if (!request.getQuery().isEmpty() || !request.getSchema().isEmpty()) {
-            return MCPNextActionUtils.callTool("search_metadata", "Retry search_metadata with a broader scope.", createBroadenedSearchArguments(request), false);
+            return MCPNextActionUtils.callTool("database_gateway_search_metadata", "Retry database_gateway_search_metadata with a broader scope.", createBroadenedSearchArguments(request), false);
         }
         return MCPNextActionUtils.readResource("shardingsphere://databases", "Read configured databases before choosing a narrower metadata search.");
     }

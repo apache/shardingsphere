@@ -20,10 +20,11 @@ package org.apache.shardingsphere.mcp.core.handler;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceDescriptorUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -44,12 +45,12 @@ class MCPHandlerLoaderTest {
     @Test
     void assertLoadToolHandlers() {
         MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
-        List<MCPToolHandler<?>> toolHandlers = List.of(createToolHandler("search_metadata"), createToolHandler("plan_encrypt_rule"));
+        List<MCPToolHandler<?>> toolHandlers = List.of(createToolHandler("database_gateway_search_metadata"), createToolHandler("database_gateway_plan_encrypt_rule"));
         when(provider.getToolHandlers()).thenReturn(toolHandlers);
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(provider));
             List<String> actual = MCPHandlerLoader.loadToolHandlers().stream().map(each -> each.getToolDescriptor().getName()).toList();
-            assertThat(actual, is(List.of("search_metadata", "plan_encrypt_rule")));
+            assertThat(actual, is(List.of("database_gateway_search_metadata", "database_gateway_plan_encrypt_rule")));
         }
     }
     
@@ -61,7 +62,7 @@ class MCPHandlerLoaderTest {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(provider));
             Collection<MCPResourceHandler<?>> actual = MCPHandlerLoader.loadResourceHandlers();
-            assertThat(actual.stream().map(each -> each.getResourceDescriptor().getUriTemplate()).toList(), is(List.of("shardingsphere://foo")));
+            assertThat(actual.stream().map(each -> MCPResourceDescriptorUtils.getUriOrTemplate(each.getResourceDescriptor())).toList(), is(List.of("shardingsphere://foo")));
         }
     }
     
@@ -77,7 +78,7 @@ class MCPHandlerLoaderTest {
     void assertCreateToolHandlersWithNullHandler() {
         MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
         List<MCPToolHandler<?>> toolHandlers = new ArrayList<>();
-        toolHandlers.add(createToolHandler("search_metadata"));
+        toolHandlers.add(createToolHandler("database_gateway_search_metadata"));
         toolHandlers.add(null);
         when(provider.getToolHandlers()).thenReturn(toolHandlers);
         NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPHandlerLoader.createToolHandlers(provider));
@@ -118,8 +119,8 @@ class MCPHandlerLoaderTest {
     
     private static MCPResourceHandler<?> createResourceHandler(final String uriTemplate) {
         MCPResourceHandler<?> result = mock(MCPResourceHandler.class);
-        when(result.getResourceDescriptor()).thenReturn(new MCPResourceDescriptor(uriTemplate, "foo", "Foo", "Read the fixture foo resource.", "application/json", Collections.emptyList(),
-                MCPResourceAnnotations.EMPTY, null, null, null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyMap()));
+        when(result.getResourceDescriptor()).thenReturn(new MCPFixedResourceDescriptor(uriTemplate, "foo", "Foo", "Read the fixture foo resource.", Collections.emptyList(),
+                "application/json", MCPAnnotations.EMPTY, null, Collections.emptyMap()));
         return result;
     }
 }

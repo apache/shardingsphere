@@ -37,9 +37,9 @@ class MCPModelFirstContractPayloadBuilderTest {
         assertThat(actual.get("safe_first_resource"), is("shardingsphere://capabilities"));
         assertThat(castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting")).get("execute_requires"), is("approved_by_user=true"));
         Map<?, ?> actualWorkflowRule = castToMap(actual.get("workflow_rule"));
-        assertTrue(actualWorkflowRule.containsKey("planning_tools"));
+        assertThat(actualWorkflowRule.get("planning_tools"), is(List.of("database_gateway_plan_encrypt_rule")));
         assertThat(castToMap(actualWorkflowRule.get("preview_tool")).get("execution_mode"), is("preview"));
-        assertThat(actualWorkflowRule.get("validate_tool"), is("validate_workflow"));
+        assertThat(actualWorkflowRule.get("validate_tool"), is("database_gateway_validate_workflow"));
     }
     
     @Test
@@ -64,8 +64,8 @@ class MCPModelFirstContractPayloadBuilderTest {
     void assertCreateCommonFlows() {
         List<Map<String, Object>> actual = builder.createCommonFlows();
         Map<?, ?> actualSideEffectingSql = findByKey(actual, "flow_id", "side_effecting_sql");
-        assertThat(actualSideEffectingSql.get("referenced_tools"), is(List.of("execute_update")));
-        assertTrue(((Collection<?>) actualSideEffectingSql.get("steps")).contains("call_tool execute_update execution_mode=preview"));
+        assertThat(actualSideEffectingSql.get("referenced_tools"), is(List.of("database_gateway_execute_update")));
+        assertTrue(((Collection<?>) actualSideEffectingSql.get("steps")).contains("call_tool database_gateway_execute_update execution_mode=preview"));
     }
     
     @Test

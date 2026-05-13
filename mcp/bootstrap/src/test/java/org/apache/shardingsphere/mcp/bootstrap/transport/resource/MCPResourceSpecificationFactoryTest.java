@@ -23,9 +23,10 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceParameterDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceTemplateDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
@@ -92,21 +93,17 @@ class MCPResourceSpecificationFactoryTest {
             assertThat(actual.get(0).resourceTemplate().title(), is("Logical Database Detail"));
             assertThat(actual.get(0).resourceTemplate().description(), is("Read one logical database detail."));
             assertThat(actual.get(0).resourceTemplate().mimeType(), is("application/json"));
-            assertThat(((List<?>) actual.get(0).resourceTemplate().meta().get("parameters")).size(), is(1));
             assertNotNull(actual.get(0).readHandler());
         }
     }
     
     private MCPResourceDescriptor createResourceDescriptor() {
-        return new MCPResourceDescriptor("shardingsphere://capabilities", "server-capability-catalog", "Server Capability Catalog", "Read the model-facing capability catalog.", "application/json",
-                Collections.emptyList(),
-                MCPResourceAnnotations.EMPTY, null, null, null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyMap());
+        return new MCPFixedResourceDescriptor("shardingsphere://capabilities", "server-capability-catalog", "Server Capability Catalog",
+                "Read the model-facing capability catalog.", Collections.emptyList(), "application/json", MCPAnnotations.EMPTY, null, Collections.emptyMap());
     }
     
     private MCPResourceDescriptor createResourceTemplateDescriptor() {
-        return new MCPResourceDescriptor("shardingsphere://databases/{database}", "logical-database-detail", "Logical Database Detail",
-                "Read one logical database detail.", "application/json",
-                List.of(new MCPResourceParameterDescriptor("database", "Logical Database", "ShardingSphere logical database name.", true, "logical-database")),
-                null, "detail", null, null, List.of(), List.of(), List.of(), Map.of());
+        return new MCPResourceTemplateDescriptor("shardingsphere://databases/{database}", "logical-database-detail", "Logical Database Detail",
+                "Read one logical database detail.", Collections.emptyList(), "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());
     }
 }

@@ -114,8 +114,8 @@ final class MCPBasicRecoveryPayloadFactory {
         result.put("field", "object_types");
         result.put("allowed_values", cause.getAllowedValues());
         result.put("suggested_arguments", Map.of("object_types", cause.getAllowedValues()));
-        result.put("next_actions", List.of(MCPNextActionUtils.retryTool("search_metadata",
-                "Retry search_metadata with allowed object_types values, or omit object_types to search every supported metadata type.",
+        result.put("next_actions", List.of(MCPNextActionUtils.retryTool("database_gateway_search_metadata",
+                "Retry database_gateway_search_metadata with allowed object_types values, or omit object_types to search every supported metadata type.",
                 Map.of("object_types", cause.getAllowedValues()), false)));
         result.put("requires_user_approval", false);
         result.put("ask_user_when_uncertain", false);
@@ -127,12 +127,12 @@ final class MCPBasicRecoveryPayloadFactory {
                 "invalid_page_token", "Retry without page_token, or use the next_page_token returned by the previous search page.");
         result.put("field", "page_token");
         result.put("argument_path", "page_token");
-        result.put("source_tool", "search_metadata");
-        result.put("tool_name", "search_metadata");
+        result.put("source_tool", "database_gateway_search_metadata");
+        result.put("tool_name", "database_gateway_search_metadata");
         result.put("minimum_value", 0);
         result.put("suggested_value", "");
         result.put("suggested_arguments", Map.of("page_token", ""));
-        result.put("next_actions", List.of(MCPNextActionUtils.retryTool("search_metadata",
+        result.put("next_actions", List.of(MCPNextActionUtils.retryTool("database_gateway_search_metadata",
                 "Retry the same search without page_token, or use a next_page_token returned by the previous page.", Map.of("page_token", ""), false)));
         result.put("requires_user_approval", false);
         result.put("ask_user_when_uncertain", false);

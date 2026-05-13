@@ -1,4 +1,3 @@
-#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -15,29 +14,31 @@
 # limitations under the License.
 #
 
-resources:
+resourceTemplates:
   - uriTemplate: shardingsphere://workflows/{plan_id}
     name: workflow-plan
     title: Workflow Plan
     description: "Read one current in-memory workflow plan by plan_id. Use after planning tools to review status, clarification questions, artifacts, and next actions."
     mimeType: application/json
-    parameters:
-      - name: plan_id
-        title: Plan ID
-        description: "Workflow plan_id returned by a planning tool in the current MCP runtime."
-        required: true
-        scope: workflow-plan
-    resourceKind: detail
-    objectScope: workflow-plan
-    relatedTools:
-      - validate_workflow
-      - apply_workflow
+    extension:
+      uriVariables:
+        - name: plan_id
+          title: Plan ID
+          description: "Workflow plan_id returned by a planning tool in the current MCP runtime."
+          required: true
+          scope: workflow-plan
+      resourceKind: detail
+      objectScope: workflow-plan
+      relatedTools:
+        - database_gateway_validate_workflow
+        - database_gateway_apply_workflow
 
 prompts:
   - name: inspect_metadata
     title: Inspect Metadata
-    description: "Guide the model to inspect ShardingSphere logical metadata by reading capability and metadata resources before choosing search_metadata or detail resources."
-    templateResource: META-INF/shardingsphere-mcp/prompts/inspect-metadata.md
+    description: "Guide the model to inspect ShardingSphere logical metadata by reading capability and metadata resources before choosing database_gateway_search_metadata or detail resources."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/inspect-metadata.md
     arguments:
       - name: database
         title: Logical Database
@@ -52,21 +53,22 @@ prompts:
         description: "Optional object name fragment, table name, column name, or user-provided metadata target."
         required: false
     meta:
-      relatedTools:
-        - search_metadata
-      relatedResources:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_search_metadata
+      org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://capabilities
         - shardingsphere://databases
-      stopConditions:
+      org.apache.shardingsphere/stop-conditions:
         - "Stop after returning resolved metadata paths or after identifying the exact resource/tool to call next."
         - "Stop without SQL execution when the user only asked to inspect metadata."
-      askUserConditions:
+      org.apache.shardingsphere/ask-user-conditions:
         - "Ask the user for the logical database when multiple databases match and no safe default is visible."
         - "Ask the user to choose an object when search results remain ambiguous after metadata lookup."
   - name: safe_sql_execution
     title: Safe SQL Execution
-    description: "Guide the model to choose execute_query for read-only SQL and execute_update preview before any side-effecting SQL execution."
-    templateResource: META-INF/shardingsphere-mcp/prompts/safe-sql-execution.md
+    description: "Guide the model to choose database_gateway_execute_query for read-only SQL and database_gateway_execute_update preview before any side-effecting SQL execution."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/safe-sql-execution.md
     arguments:
       - name: database
         title: Logical Database
@@ -81,21 +83,22 @@ prompts:
         description: "User-facing intent or SQL draft to classify before choosing an execution tool."
         required: true
     meta:
-      relatedTools:
-        - execute_query
-        - execute_update
-      relatedResources:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_execute_query
+        - database_gateway_execute_update
+      org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://databases/{database}/capabilities
-      stopConditions:
-        - "Stop after execute_query returns the requested read-only result."
-        - "Stop after execute_update preview until the user approves the reviewed side effects."
-      askUserConditions:
-        - "Ask before execute_update execution when the preview has not been approved."
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after database_gateway_execute_query returns the requested read-only result."
+        - "Stop after database_gateway_execute_update preview until the user approves the reviewed side effects."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask before database_gateway_execute_update execution when the preview has not been approved."
         - "Ask when the SQL intent cannot be classified as read-only or side-effecting."
   - name: recover_workflow
     title: Recover Workflow
     description: "Guide the model to recover a failed or stale ShardingSphere workflow by checking the current-session plan_id and re-planning when the plan is unavailable."
-    templateResource: META-INF/shardingsphere-mcp/prompts/recover-workflow.md
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/recover-workflow.md
     arguments:
       - name: plan_id
         title: Workflow Plan ID
@@ -106,15 +109,15 @@ prompts:
         description: "Optional error payload or user-provided symptom to use during recovery."
         required: false
     meta:
-      relatedTools:
-        - apply_workflow
-        - validate_workflow
-        - plan_encrypt_rule
-        - plan_mask_rule
-      stopConditions:
-        - "Stop after validate_workflow confirms the current plan or after a replacement plan is created."
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
+        - database_gateway_plan_encrypt_rule
+        - database_gateway_plan_mask_rule
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after database_gateway_validate_workflow confirms the current plan or after a replacement plan is created."
         - "Stop when the plan_id is unavailable and the matching planning tool needs fresh user inputs."
-      askUserConditions:
+      org.apache.shardingsphere/ask-user-conditions:
         - "Ask which workflow kind to re-plan when the failure summary does not identify encrypt or mask."
         - "Ask before applying recovered artifacts that would change runtime state."
 
@@ -148,15 +151,15 @@ completionTargets:
       - plan_id
     maxValues: 50
 resourceNavigation:
-  - from: apply_workflow
-    to: validate_workflow
+  - from: database_gateway_apply_workflow
+    to: database_gateway_validate_workflow
     requiredArguments:
       - plan_id
     carriedArguments:
       - plan_id
     description: "Validate runtime state after previewing or applying workflow artifacts."
   - from: recover_workflow
-    to: validate_workflow
+    to: database_gateway_validate_workflow
     requiredArguments:
       - plan_id
     carriedArguments:
@@ -164,41 +167,39 @@ resourceNavigation:
     description: "Validate a current-session workflow when recovery starts from an existing plan."
 
 tools:
-  - name: apply_workflow
+  - name: database_gateway_apply_workflow
     title: Apply Workflow
     description: "Preview or apply a previously planned ShardingSphere MCP workflow. Use execution_mode=preview before side effects unless the user has already reviewed and approved the plan."
-    fields:
-      - name: plan_id
-        required: true
-        valueDefinition:
-          type: STRING
+    inputSchema:
+      type: object
+      properties:
+        plan_id:
+          type: string
           description: "Workflow plan identifier returned by a planning tool."
-      - name: execution_mode
-        required: true
-        valueDefinition:
-          type: STRING
+        execution_mode:
+          type: string
           description: "Required safety gate. Use preview to inspect generated side effects without applying artifacts, or use an execution mode approved by the user."
-          enumValues:
+          enum:
             - preview
             - review-then-execute
             - manual-only
-      - name: approved_steps
-        required: false
-        valueDefinition:
-          type: ARRAY
+        approved_steps:
+          type: array
           description: "Optional execution filter, not an approval token. Omit to apply every artifact after user approval, or pass only visible preview_artifacts.approval_step values."
-          itemDefinition:
-            type: STRING
+          items:
+            type: string
             description: "Allowed workflow artifact step: ddl, index_ddl, or rule_distsql."
-            enumValues:
+            enum:
               - ddl
               - index_ddl
               - rule_distsql
-      - name: approved_by_user
-        required: false
-        valueDefinition:
-          type: BOOLEAN
+        approved_by_user:
+          type: boolean
           description: "Must be true when execution_mode=review-then-execute. Preview and manual-only calls do not require this field."
+      required:
+        - plan_id
+        - execution_mode
+      additionalProperties: false
     outputSchema:
       type: object
       properties:
@@ -314,7 +315,7 @@ tools:
           description: "Manual-only compact artifact summary with counts, external execution requirement, confirmation gate, and validation arguments to use after manual execution."
         manual_follow_up:
           type: object
-          description: "Manual-only confirmation contract; validate_workflow is blocked until manual_artifacts_executed is confirmed, while independent read-only execute_query checks remain allowed."
+          description: "Manual-only confirmation contract; database_gateway_validate_workflow is blocked until manual_artifacts_executed is confirmed, while independent read-only database_gateway_execute_query checks remain allowed."
         argument_provenance:
           type: object
           description: "Source of reusable apply arguments, such as server_generated or server_defaulted."
@@ -379,25 +380,28 @@ tools:
       destructiveHint: true
       idempotentHint: false
       openWorldHint: true
-      returnDirect: false
-    meta:
+    runtime:
       workflowRole: apply
+      requiresUserApproval: true
       sideEffectScope:
         - rule-metadata
         - physical-structure
         - physical-data
-      requiresUserApproval: true
-      followUpTools:
-        - validate_workflow
-  - name: validate_workflow
+    meta:
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_validate_workflow
+  - name: database_gateway_validate_workflow
     title: Validate Workflow
-    description: "Validate a planned or applied workflow against visible metadata and generated artifacts. Use after planning for review, and after apply_workflow to confirm the runtime state."
-    fields:
-      - name: plan_id
-        required: true
-        valueDefinition:
-          type: STRING
+    description: "Validate a planned or applied workflow against visible metadata and generated artifacts. Use after planning for review, and after database_gateway_apply_workflow to confirm the runtime state."
+    inputSchema:
+      type: object
+      properties:
+        plan_id:
+          type: string
           description: "Workflow plan identifier returned by a planning tool."
+      required:
+        - plan_id
+      additionalProperties: false
     outputSchema:
       type: object
       properties:
@@ -542,8 +546,8 @@ tools:
       destructiveHint: false
       idempotentHint: true
       openWorldHint: true
-      returnDirect: false
-    meta:
+    runtime:
       workflowRole: validate
-      relatedTools:
-        - apply_workflow
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_apply_workflow

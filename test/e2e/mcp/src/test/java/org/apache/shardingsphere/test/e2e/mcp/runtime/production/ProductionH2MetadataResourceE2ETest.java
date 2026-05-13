@@ -100,7 +100,7 @@ class ProductionH2MetadataResourceE2ETest extends ProductionH2RuntimeSmokeE2ETes
     void assertSearchSequence(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            MCPPayloadAssertions.assertSingleItemValue(interactionClient.call("search_metadata",
+            MCPPayloadAssertions.assertSingleItemValue(interactionClient.call("database_gateway_search_metadata",
                     Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("SEQUENCE"))), "name", "order_seq");
         }
     }
@@ -110,7 +110,7 @@ class ProductionH2MetadataResourceE2ETest extends ProductionH2RuntimeSmokeE2ETes
     void assertSearchTableAndViewMetadata(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            MCPPayloadAssertions.assertItemValues(interactionClient.call("search_metadata",
+            MCPPayloadAssertions.assertItemValues(interactionClient.call("database_gateway_search_metadata",
                     Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("TABLE", "VIEW"))), "name",
                     List.of("order_items", "orders", "active_orders"));
         }
@@ -121,7 +121,7 @@ class ProductionH2MetadataResourceE2ETest extends ProductionH2RuntimeSmokeE2ETes
     void assertRejectUnsupportedObjectType(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("search_metadata",
+            Map<String, Object> actual = interactionClient.call("database_gateway_search_metadata",
                     Map.of("database", "logic_db", "schema", "public", "query", "order",
                             "object_types", List.of("TABLE", "VIEW", "INDEX", "MATERIALIZED_VIEW", "SEQUENCE")));
             assertThat(String.valueOf(actual.get("error_code")), is("invalid_request"));

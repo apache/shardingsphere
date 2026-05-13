@@ -69,7 +69,7 @@ public final class MCPUriTemplateUtils {
     }
     
     private static List<String> getMissingVariableNames(final String uriTemplate, final MCPUriVariables variables) {
-        return extractVariableNames(uriTemplate).stream().filter(variables::containsVariable).map(variables::getValue).collect(Collectors.toList());
+        return extractVariableNames(uriTemplate).stream().filter(each -> !variables.containsVariable(each)).collect(Collectors.toList());
     }
     
     private static String expandKnownVariables(final String uriTemplate, final MCPUriVariables variables) {

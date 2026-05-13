@@ -64,7 +64,7 @@ class EncryptToolHandlerTest {
     @Test
     void assertGetPlanEncryptRuleToolDescriptor() {
         MCPToolDescriptor actual = new PlanEncryptRuleToolHandler().getToolDescriptor();
-        assertThat(actual.getName(), is("plan_encrypt_rule"));
+        assertThat(actual.getName(), is("database_gateway_plan_encrypt_rule"));
     }
     
     @Test

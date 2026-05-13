@@ -123,11 +123,11 @@ curl -sS http://127.0.0.1:18088/mcp \
 说明：
 
 - metadata 的 list / detail / capability discovery 统一走 `resources/read`。
-- 当前 public tools 包括 `search_metadata`、`execute_query`、`execute_update`、`plan_encrypt_rule`、`plan_mask_rule`、`apply_workflow` 和 `validate_workflow`。
-- `execute_query` 只接受只读 `SELECT` 和 `EXPLAIN ANALYZE`；DML、DDL、DCL、事务控制、savepoint 以及其他支持的有副作用 SQL 要使用 `execute_update`。
-- `execute_query.max_rows` 省略或传 `0` 时使用服务端默认值 `100`；显式传 `1` 到 `5000` 用于限制返回行数。
+- 当前 public tools 包括 `database_gateway_search_metadata`、`database_gateway_execute_query`、`database_gateway_execute_update`、`database_gateway_plan_encrypt_rule`、`database_gateway_plan_mask_rule`、`database_gateway_apply_workflow` 和 `database_gateway_validate_workflow`。
+- `database_gateway_execute_query` 只接受只读 `SELECT` 和 `EXPLAIN ANALYZE`；DML、DDL、DCL、事务控制、savepoint 以及其他支持的有副作用 SQL 要使用 `database_gateway_execute_update`。
+- `database_gateway_execute_query.max_rows` 省略或传 `0` 时使用服务端默认值 `100`；显式传 `1` 到 `5000` 用于限制返回行数。
 - 加密与脱敏 workflow 面向由 ShardingSphere-Proxy 暴露的逻辑库；下文会单独说明这部分的前置条件和使用方式。
-- `search_metadata.object_types` 只接受 `database`、`schema`、`table`、`view`、`column`、`index`、`sequence`。
+- `database_gateway_search_metadata.object_types` 只接受 `database`、`schema`、`table`、`view`、`column`、`index`、`sequence`。
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
@@ -135,7 +135,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"search_metadata","arguments":{"database":"orders","query":"order","object_types":["table","view"]}}}'
+  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"orders","query":"order","object_types":["table","view"]}}}'
 ```
 
 预期结果：
@@ -149,7 +149,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"tool-2","method":"tools/call","params":{"name":"execute_query","arguments":{"database":"orders","schema":"public","sql":"SELECT status FROM orders ORDER BY order_id","max_rows":10}}}'
+  --data '{"jsonrpc":"2.0","id":"tool-2","method":"tools/call","params":{"name":"database_gateway_execute_query","arguments":{"database":"orders","schema":"public","sql":"SELECT status FROM orders ORDER BY order_id","max_rows":10}}}'
 ```
 
 预期结果：
@@ -396,19 +396,19 @@ encrypt 和 mask 模块本身就是最直接的参考实现。
 
 加密 feature 对外暴露 1 个 planning tool：
 
-- `plan_encrypt_rule`
+- `database_gateway_plan_encrypt_rule`
   - 识别加密意图，补全缺失参数，生成派生列方案、DDL、DistSQL、索引计划和校验策略。
 
 脱敏 feature 对外暴露 1 个 planning tool：
 
-- `plan_mask_rule`
+- `database_gateway_plan_mask_rule`
   - 识别脱敏意图，补全缺失参数，生成 DistSQL 和校验策略。
 
 workflow runtime 额外提供 2 个 encrypt / mask 共用的 generic tools：
 
-- `apply_workflow`
+- `database_gateway_apply_workflow`
   - 按当前 `plan_id` 执行生成的 artifacts，或在 `manual-only` 模式下导出人工执行包。
-- `validate_workflow`
+- `database_gateway_validate_workflow`
   - 按 workflow 自身的校验层级检查当前 plan 的最终结果。
 
 Workflow 同时补充了以下 feature resources：
@@ -425,9 +425,9 @@ Workflow 同时补充了以下 feature resources：
 ### 使用前先记住这几条
 
 - 整个 workflow 必须复用同一个 `MCP-Session-Id`。`plan`、`apply`、`validate` 如果切换到别的 session，后续调用会因为 plan 归属不一致而失败。
-- 第一次调用 `plan_encrypt_rule` 或 `plan_mask_rule` 时不需要 `plan_id`；只要拿到 `plan_id`，后续所有补问、继续规划、执行和校验都继续使用这个 `plan_id`，但只在当前 feature 的 workflow 内复用。
-- `plan_encrypt_rule` 和 `plan_mask_rule` 只负责规划，不会执行任何 DDL 或 DistSQL；真正执行统一通过 `apply_workflow`。
-- `validate_workflow` 只做校验，不会修改规则，也不会补执行遗漏步骤。
+- 第一次调用 `database_gateway_plan_encrypt_rule` 或 `database_gateway_plan_mask_rule` 时不需要 `plan_id`；只要拿到 `plan_id`，后续所有补问、继续规划、执行和校验都继续使用这个 `plan_id`，但只在当前 feature 的 workflow 内复用。
+- `database_gateway_plan_encrypt_rule` 和 `database_gateway_plan_mask_rule` 只负责规划，不会执行任何 DDL 或 DistSQL；真正执行统一通过 `database_gateway_apply_workflow`。
+- `database_gateway_validate_workflow` 只做校验，不会修改规则，也不会补执行遗漏步骤。
 - 用户始终面向逻辑库、逻辑表、逻辑列发起请求。对加密场景，MCP 可能会自动规划并创建物理派生列，但对用户暴露的目标仍然是 Proxy 里的逻辑对象。
 - `schema` 是可选的；如果 Proxy 逻辑库下只有一个 schema，MCP 会自动补齐；如果无法唯一定位，MCP 会明确返回 `请明确 schema。`。
 - `delivery_mode` 只影响客户端如何组织对话和展示步骤，不影响最终生成的 artifacts；真正影响执行行为的是 `execution_mode`。
@@ -438,18 +438,18 @@ Workflow 同时补充了以下 feature resources：
 
 如果你想把一次加密或脱敏 workflow 稳定跑通，直接按下面顺序调用即可：
 
-1. 先调用对应 feature 的 planner：加密用 `plan_encrypt_rule`，脱敏用 `plan_mask_rule`，不要直接从 `apply` 开始。
+1. 先调用对应 feature 的 planner：加密用 `database_gateway_plan_encrypt_rule`，脱敏用 `database_gateway_plan_mask_rule`，不要直接从 `apply` 开始。
 2. 如果返回 `status = clarifying`，读取 `clarification_questions`，按其中的 `field` 补齐参数，并带上同一个 `plan_id` 再次调用同一个 `plan_*_rule`。
 3. 如果返回 `status = planned`，重点 review `derived_column_plan`、`ddl_artifacts`、`distsql_artifacts`、`index_plan`。
-4. 调用 `apply_workflow` 并显式设置 `execution_mode=preview`，先查看 artifacts 和副作用范围，不改变运行时状态。
-5. 用户确认后，再用 `execution_mode=review-then-execute` 和 `approved_by_user=true` 调用 `apply_workflow`，或者用 `manual-only` 导出人工执行包。
+4. 调用 `database_gateway_apply_workflow` 并显式设置 `execution_mode=preview`，先查看 artifacts 和副作用范围，不改变运行时状态。
+5. 用户确认后，再用 `execution_mode=review-then-execute` 和 `approved_by_user=true` 调用 `database_gateway_apply_workflow`，或者用 `manual-only` 导出人工执行包。
 6. 如果 `apply` 返回 `awaiting-manual-execution`，先把 `manual_artifact_package` 里的 SQL / DistSQL 在 Proxy 上手工执行完，再进入下一步。
-7. 调用 `validate_workflow`，确认返回中的校验层级都通过。
+7. 调用 `database_gateway_validate_workflow`，确认返回中的校验层级都通过。
 8. 如果 `validate` 失败，优先看 `issues` 和 `mismatches`，修复后再继续补执行或重新规划。
 
 ### 整体交互方式
 
-`plan_encrypt_rule` 和 `plan_mask_rule` 每次都会返回全局步骤列表，并告诉客户端当前走到哪一步。默认步骤如下：
+`database_gateway_plan_encrypt_rule` 和 `database_gateway_plan_mask_rule` 每次都会返回全局步骤列表，并告诉客户端当前走到哪一步。默认步骤如下：
 
 1. 确认 database、table、column 和目标生命周期
 2. 检查现有规则、插件和逻辑元数据
@@ -467,18 +467,18 @@ Workflow 同时补充了以下 feature resources：
 - `planned`
   - artifacts 已生成，可以进入 apply。
 - `completed`
-  - `apply_workflow` 已执行完成。
+  - `database_gateway_apply_workflow` 已执行完成。
 - `awaiting-manual-execution`
   - 选择了 `manual-only`，系统只导出了 artifacts，没有自动执行。
 - `validated`
-  - `validate_workflow` 已通过。
+  - `database_gateway_validate_workflow` 已通过。
 
 另外：
 
 - `delivery_mode` 支持 `all-at-once` 和 `step-by-step`
   - MCP 会把选定模式写回 plan 响应，便于 client 决定一次展示完整计划还是按步骤组织对话。
 - 规划阶段的 `execution_mode` 支持 `review-then-execute` 和 `manual-only`，表示最终 apply 的偏好。
-- `apply_workflow` 必须显式传入 `execution_mode`
+- `database_gateway_apply_workflow` 必须显式传入 `execution_mode`
   - 先用 `preview` 预览，再在用户确认后使用带 `approved_by_user=true` 的 `review-then-execute`，或者用 `manual-only` 只导出人工执行包。
 
 ### 看到不同状态时，下一步该做什么
@@ -486,9 +486,9 @@ Workflow 同时补充了以下 feature resources：
 - `clarifying`
   - 说明信息还不够。读取 `clarification_questions`，按其中的 `field` 补齐参数，并带上同一个 `plan_id` 继续调用对应的 `plan_*_rule`。
 - `planned`
-  - 说明执行包已经生成好了。此时不要再补问，应该 review artifacts，然后进入 `apply_workflow`。
+  - 说明执行包已经生成好了。此时不要再补问，应该 review artifacts，然后进入 `database_gateway_apply_workflow`。
 - `completed`
-  - 说明自动执行已经结束。下一步就是 `validate_workflow`。
+  - 说明自动执行已经结束。下一步就是 `database_gateway_validate_workflow`。
 - `awaiting-manual-execution`
   - 说明你选择了 `manual-only`。下一步不是重新 `apply`，而是先手工执行返回的 artifacts，然后再 `validate`。
 - `validated`
@@ -498,7 +498,7 @@ Workflow 同时补充了以下 feature resources：
 
 ### 最常看的返回字段
 
-`plan_encrypt_rule` 和 `plan_mask_rule` 返回里，最值得优先看的字段是：
+`database_gateway_plan_encrypt_rule` 和 `database_gateway_plan_mask_rule` 返回里，最值得优先看的字段是：
 
 - `plan_id`
   - 本次 workflow 的唯一标识，后续所有补问、执行、校验都依赖它。
@@ -517,7 +517,7 @@ Workflow 同时补充了以下 feature resources：
 - `index_plan`
   - 只对加密出现，且仅在等值查询或模糊查询需要派生索引时返回。
 
-`apply_workflow` 返回里，最值得优先看的字段是：
+`database_gateway_apply_workflow` 返回里，最值得优先看的字段是：
 
 - `status`
 - `issues`
@@ -527,7 +527,7 @@ Workflow 同时补充了以下 feature resources：
 - `skipped_artifacts`
 - `manual_artifact_package`
 
-`validate_workflow` 返回里，最值得优先看的字段是：
+`database_gateway_validate_workflow` 返回里，最值得优先看的字段是：
 
 - `status`
 - `overall_status`
@@ -571,7 +571,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"encrypt-plan-1",
     "method":"tools/call",
     "params":{
-      "name":"plan_encrypt_rule",
+      "name":"database_gateway_plan_encrypt_rule",
       "arguments":{
         "database":"logic_db",
         "table":"orders",
@@ -609,7 +609,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"encrypt-plan-clarifying-1",
     "method":"tools/call",
     "params":{
-      "name":"plan_encrypt_rule",
+      "name":"database_gateway_plan_encrypt_rule",
       "arguments":{
         "database":"logic_db",
         "table":"orders",
@@ -661,7 +661,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"encrypt-plan-clarifying-2",
     "method":"tools/call",
     "params":{
-      "name":"plan_encrypt_rule",
+      "name":"database_gateway_plan_encrypt_rule",
       "arguments":{
         "plan_id":"'"${PLAN_ID}"'",
         "primary_algorithm_properties":{"aes-key-value":"123456abc"}
@@ -709,7 +709,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
 ```
 
 典型响应片段如下：
@@ -735,7 +735,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_validate_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 典型响应片段如下：
@@ -755,14 +755,14 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 #### 缺少算法或属性时
 
-如果自然语言没有说清算法，或者像 `AES` 这样的算法缺少 `aes-key-value` 之类的必填属性，`plan_encrypt_rule` 会返回：
+如果自然语言没有说清算法，或者像 `AES` 这样的算法缺少 `aes-key-value` 之类的必填属性，`database_gateway_plan_encrypt_rule` 会返回：
 
 - `status = clarifying`
 - `clarification_questions`
 - `algorithm_recommendations`
 - `property_requirements`
 
-此时应带上同一个 `plan_id` 再次调用 `plan_encrypt_rule`，把缺失参数补齐，而不是重新开一个计划。
+此时应带上同一个 `plan_id` 再次调用 `database_gateway_plan_encrypt_rule`，把缺失参数补齐，而不是重新开一个计划。
 
 #### 默认派生列规则
 
@@ -773,7 +773,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 #### 执行与校验
 
-规划阶段默认的最终模式是 `review-then-execute`，但 `apply_workflow` 必须先 `preview`，真实副作用执行必须显式传入 `approved_by_user=true`。
+规划阶段默认的最终模式是 `review-then-execute`，但 `database_gateway_apply_workflow` 必须先 `preview`，真实副作用执行必须显式传入 `approved_by_user=true`。
 先预览：
 
 ```bash
@@ -782,7 +782,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"preview\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"preview\"}}}"
 ```
 
 用户确认预览结果后，执行已确认的 artifacts：
@@ -793,7 +793,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
 ```
 
 如果只想让 MCP 生成 SQL 和 DistSQL，不自动执行，可以改为：
@@ -804,7 +804,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-3\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"manual-only\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-3\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"manual-only\"}}}"
 ```
 
 `manual-only` 会返回 `manual_artifact_package`，里面包含：
@@ -816,7 +816,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 如果要分步执行，可以把 `approved_steps` 作为执行过滤器，只允许 `ddl`、`index_ddl` 或 `rule_distsql`。
 它不是 approval token；应在用户批准 preview 后，从 `preview_artifacts[].approval_step` 复制取值。
 未知值会被拒绝，不会静默跳过。
-这类分步执行主要用于 review 或灰度流程；如果只执行了一部分，`validate_workflow` 很可能会先失败，直到剩余步骤也补执行完成。
+这类分步执行主要用于 review 或灰度流程；如果只执行了一部分，`database_gateway_validate_workflow` 很可能会先失败，直到剩余步骤也补执行完成。
 
 执行完成后，建议立刻调用：
 
@@ -826,7 +826,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_validate_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 校验会覆盖 4 层：
@@ -851,7 +851,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"encrypt-plan-drop-1",
     "method":"tools/call",
     "params":{
-      "name":"plan_encrypt_rule",
+      "name":"database_gateway_plan_encrypt_rule",
       "arguments":{
         "database":"logic_db",
         "table":"orders",
@@ -910,7 +910,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"mask-plan-1",
     "method":"tools/call",
     "params":{
-      "name":"plan_mask_rule",
+      "name":"database_gateway_plan_mask_rule",
       "arguments":{
         "database":"logic_db",
         "table":"orders",
@@ -948,7 +948,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"mask-plan-clarifying-1",
     "method":"tools/call",
     "params":{
-      "name":"plan_mask_rule",
+      "name":"database_gateway_plan_mask_rule",
       "arguments":{
         "database":"logic_db",
         "table":"orders",
@@ -994,7 +994,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"mask-plan-clarifying-2",
     "method":"tools/call",
     "params":{
-      "name":"plan_mask_rule",
+      "name":"database_gateway_plan_mask_rule",
       "arguments":{
         "plan_id":"'"${PLAN_ID}"'",
         "primary_algorithm_properties":{"from-x":"4","to-y":"7"}
@@ -1029,7 +1029,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
 ```
 
 第 4 步：校验脱敏规则
@@ -1040,7 +1040,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_validate_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 只要 `rule_validation`、`logical_metadata_validation` 和 `sql_executability_validation` 都通过，这次脱敏 workflow 就可以认为生效了。
@@ -1060,7 +1060,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"mask-plan-2",
     "method":"tools/call",
     "params":{
-      "name":"plan_mask_rule",
+      "name":"database_gateway_plan_mask_rule",
       "arguments":{
         "database":"logic_db",
         "table":"orders",

@@ -47,7 +47,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_update",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "execute"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
@@ -57,7 +57,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         assertTrue((Boolean) recovery.get("requires_user_approval"));
         List<Map<String, Object>> nextActions = castToMapList(recovery.get("next_actions"));
         assertThat(String.valueOf(nextActions.get(0).get("type")), is("ask_user"));
-        assertThat(String.valueOf(nextActions.get(1).get("tool_name")), is("execute_update"));
+        assertThat(String.valueOf(nextActions.get(1).get("tool_name")), is("database_gateway_execute_update"));
         assertTrue((Boolean) nextActions.get(1).get("requires_user_approval"));
         assertModelFacingPayloadContract(payload);
     }
@@ -67,7 +67,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_update",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1",
                         "execution_mode", "execute", "approved_by_user", true));
         assertThat(actual.statusCode(), is(200));
@@ -84,7 +84,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_update",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "preview"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
@@ -93,7 +93,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         assertTrue((Boolean) payload.get("requires_user_approval"));
         List<Map<String, Object>> nextActions = castToMapList(payload.get("next_actions"));
         assertThat(String.valueOf(nextActions.get(0).get("type")), is("ask_user"));
-        assertThat(String.valueOf(nextActions.get(1).get("tool_name")), is("execute_update"));
+        assertThat(String.valueOf(nextActions.get(1).get("tool_name")), is("database_gateway_execute_update"));
         assertTrue((Boolean) nextActions.get(1).get("requires_user_approval"));
         assertModelFacingPayloadContract(payload);
     }
@@ -148,7 +148,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
     }
     
     private String createMaskRulePlan(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "plan_mask_rule", Map.of(
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_mask_rule", Map.of(
                 "database", "logic_db",
                 "schema", "public",
                 "table", "orders",

@@ -45,9 +45,9 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowGuidancePayloadBuilder {
     
-    private static final String APPLY_WORKFLOW = "apply_workflow";
+    private static final String APPLY_WORKFLOW = "database_gateway_apply_workflow";
     
-    private static final String VALIDATE_WORKFLOW = "validate_workflow";
+    private static final String VALIDATE_WORKFLOW = "database_gateway_validate_workflow";
     
     private static final String EXECUTION_MODE_PREVIEW = "preview";
     
@@ -95,7 +95,7 @@ public final class WorkflowGuidancePayloadBuilder {
             nextActions.add(createUserAction("Confirm the manual artifacts were executed outside MCP before validation.", true, List.of("manual_artifacts_executed")));
         }
         if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
-            nextActions.add(createUserAction("Inspect issues and retry apply_workflow only after the failed artifact is corrected.", true, List.of("issues")));
+            nextActions.add(createUserAction("Inspect issues and retry database_gateway_apply_workflow only after the failed artifact is corrected.", true, List.of("issues")));
         }
         payload.put("next_actions", addSequencing(nextActions));
         payload.put("requires_user_approval", WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status) || WorkflowLifecycle.STATUS_FAILED.equals(status));
@@ -117,13 +117,13 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static String createValidationRecovery(final WorkflowContextSnapshot snapshot) {
         return isManualOnlyWorkflow(snapshot)
-                ? "Manual-only artifacts are exported but not executed by MCP. Execute them manually, then run validate_workflow again."
-                : "Inspect mismatches, adjust the plan or runtime state, then run validate_workflow again.";
+                ? "Manual-only artifacts are exported but not executed by MCP. Execute them manually, then run database_gateway_validate_workflow again."
+                : "Inspect mismatches, adjust the plan or runtime state, then run database_gateway_validate_workflow again.";
     }
     
     private static List<Map<String, Object>> createValidationFailureActions(final WorkflowContextSnapshot snapshot) {
         if (isManualOnlyWorkflow(snapshot)) {
-            return List.of(createUserAction("Confirm the manual artifacts were executed outside MCP, then run validate_workflow again.", true, List.of("manual_artifacts_executed")));
+            return List.of(createUserAction("Confirm the manual artifacts were executed outside MCP, then run database_gateway_validate_workflow again.", true, List.of("manual_artifacts_executed")));
         }
         String planningTool = resolvePlanningTool(snapshot);
         return planningTool.isEmpty()
@@ -345,9 +345,9 @@ public final class WorkflowGuidancePayloadBuilder {
     private static String resolvePlanningTool(final WorkflowContextSnapshot snapshot) {
         String workflowKind = resolveWorkflowKind(snapshot);
         if ("encrypt.rule".equals(workflowKind)) {
-            return "plan_encrypt_rule";
+            return "database_gateway_plan_encrypt_rule";
         }
-        return "mask.rule".equals(workflowKind) ? "plan_mask_rule" : "";
+        return "mask.rule".equals(workflowKind) ? "database_gateway_plan_mask_rule" : "";
     }
     
     private static String resolveWorkflowKind(final WorkflowContextSnapshot snapshot) {

@@ -47,7 +47,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
                 createExecuteQueryArguments("logic_db", "public", "SELECT * FROM orders", 10));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
@@ -59,7 +59,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
                 createExecuteQueryArguments("logic_db", "public", "WITH foo_orders AS (SELECT * FROM orders) SELECT * FROM foo_orders"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
@@ -72,7 +72,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
                 createExecuteQueryArguments("logic_db", "public", "WITH updated_orders AS (UPDATE orders SET status = status WHERE order_id = -1 RETURNING *) SELECT * FROM updated_orders"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
@@ -80,7 +80,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         Map<String, Object> recovery = castToMap(payload.get("recovery"));
         assertThat(String.valueOf(recovery.get("recovery_category")), is("unsafe_sql"));
         Map<String, Object> nextAction = castToMapList(recovery.get("next_actions")).get(0);
-        assertThat(String.valueOf(nextAction.get("tool_name")), is("execute_update"));
+        assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_update"));
         assertThat(String.valueOf(castToMap(nextAction.get("arguments")).get("execution_mode")), is("preview"));
     }
     
@@ -89,8 +89,8 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        sendToolCallRequest(httpClient, sessionId, "execute_update", createExecuteSQLArguments("logic_db", "public", "BEGIN"));
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_update",
+        sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", createExecuteSQLArguments("logic_db", "public", "BEGIN"));
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 createExecuteSQLArguments("analytics_db", "public", "BEGIN"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
@@ -104,7 +104,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_update",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", sql, "execution_mode", "preview"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
@@ -120,7 +120,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
                 createExecuteQueryArguments("logic_db", "public", "SELECT 1; SELECT 2"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
@@ -132,7 +132,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
                 createExecuteQueryArguments("logic_db", "public", "SHOW TABLES"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
@@ -146,7 +146,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
                 createExecuteQueryArguments("logic_db", "public", "SET search_path public"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
@@ -161,7 +161,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public"));
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", Map.of("database", "logic_db", "schema", "public"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));

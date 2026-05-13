@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceDescriptorUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -37,7 +38,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertGetResourceDescriptor() {
         MetadataResourceHandler actual = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> List.of());
-        assertThat(actual.getResourceDescriptor().getUriTemplate(), is("shardingsphere://databases"));
+        assertThat(MCPResourceDescriptorUtils.getUriOrTemplate(actual.getResourceDescriptor()), is("shardingsphere://databases"));
         assertThat(actual.getResourceDescriptor().getTitle(), is("Logical Databases"));
     }
     
@@ -61,12 +62,12 @@ class MetadataResourceHandlerTest {
         assertThat(actualPayload.get("returned_count"), is(100));
         assertTrue((Boolean) actualPayload.get("truncated"));
         assertTrue((Boolean) actualPayload.get("has_more"));
-        assertThat(actualPayload.get("continuation_mode"), is("search_metadata"));
+        assertThat(actualPayload.get("continuation_mode"), is("metadata_search"));
         assertThat(((Map<?, ?>) actualPayload.get("large_result_guidance")).get("state"), is("broad_metadata_list"));
         assertThat(((Map<?, ?>) actualPayload.get("large_result_guidance")).get("threshold"), is(100));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
-        assertThat(actualNextAction.get("tool_name"), is("search_metadata"));
-        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("page_size"), is(100));
+        assertThat(actualNextAction.get("tool_name"), is("database_gateway_search_metadata"));
+        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("page_size"), is(50));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("object_types"), is(List.of("database")));
     }
     

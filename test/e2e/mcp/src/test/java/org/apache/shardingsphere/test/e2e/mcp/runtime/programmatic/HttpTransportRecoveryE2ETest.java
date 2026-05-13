@@ -48,7 +48,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("schema", "public", "sql", "SELECT * FROM orders"));
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", Map.of("schema", "public", "sql", "SELECT * FROM orders"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
@@ -70,14 +70,14 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_update",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders", "execution_mode", "preview"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         Map<String, Object> recovery = assertRecoveryCategory(payload, "unsupported_target");
         Map<String, Object> nextAction = getFirstNextAction(recovery);
-        assertThat(String.valueOf(nextAction.get("tool_name")), is("execute_query"));
-        HttpResponse<String> followUp = sendToolCallRequest(httpClient, sessionId, "execute_query", castToMap(nextAction.get("arguments")));
+        assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_query"));
+        HttpResponse<String> followUp = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", castToMap(nextAction.get("arguments")));
         assertThat(followUp.statusCode(), is(200));
         assertThat(String.valueOf(getStructuredContent(followUp.body()).get("result_kind")), is("result_set"));
         assertModelFacingPayloadContract(payload);
@@ -88,18 +88,18 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_update",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "run"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         Map<String, Object> recovery = assertRecoveryCategory(payload, "invalid_enum");
         Map<String, Object> nextAction = getFirstNextAction(recovery);
-        assertThat(String.valueOf(nextAction.get("tool_name")), is("execute_update"));
+        assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_update"));
         Map<String, Object> retryArguments = castToMap(nextAction.get("arguments"));
         assertThat(String.valueOf(retryArguments.get("execution_mode")), is("preview"));
         assertThat(String.valueOf(retryArguments.get("database")), is("logic_db"));
         assertThat(String.valueOf(retryArguments.get("schema")), is("public"));
-        HttpResponse<String> retry = sendToolCallRequest(httpClient, sessionId, "execute_update", retryArguments);
+        HttpResponse<String> retry = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", retryArguments);
         assertThat(retry.statusCode(), is(200));
         assertThat(String.valueOf(getStructuredContent(retry.body()).get("result_kind")), is("preview"));
         assertModelFacingPayloadContract(payload);
@@ -110,16 +110,16 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         Map<String, Object> recovery = assertRecoveryCategory(payload, "unsafe_sql");
         Map<String, Object> nextAction = getFirstNextAction(recovery);
-        assertThat(String.valueOf(nextAction.get("tool_name")), is("execute_update"));
+        assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_update"));
         Map<String, Object> retryArguments = castToMap(nextAction.get("arguments"));
         assertThat(String.valueOf(retryArguments.get("execution_mode")), is("preview"));
-        HttpResponse<String> retry = sendToolCallRequest(httpClient, sessionId, "execute_update", retryArguments);
+        HttpResponse<String> retry = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", retryArguments);
         assertThat(retry.statusCode(), is(200));
         assertThat(String.valueOf(getStructuredContent(retry.body()).get("result_kind")), is("preview"));
         assertModelFacingPayloadContract(payload);

@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
+import io.modelcontextprotocol.json.schema.JsonSchemaValidator;
+import io.modelcontextprotocol.json.schema.JsonSchemaValidator.ValidationResponse;
+import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
@@ -26,17 +29,18 @@ import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -45,6 +49,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -60,11 +65,11 @@ class MCPToolSpecificationFactoryTest {
     @Test
     void assertCreateToolSpecifications() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
-            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("search_metadata")));
-            MCPToolSpecificationFactory actualFactory = new MCPToolSpecificationFactory(mock(MCPRuntimeContext.class));
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("database_gateway_search_metadata")));
+            MCPToolSpecificationFactory actualFactory = new MCPToolSpecificationFactory(mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS));
             List<SyncToolSpecification> actual = actualFactory.createToolSpecifications();
             assertThat(actual.size(), is(1));
-            assertThat(actual.get(0).tool().name(), is("search_metadata"));
+            assertThat(actual.get(0).tool().name(), is("database_gateway_search_metadata"));
             assertThat(actual.get(0).tool().title(), is("Search Metadata"));
             assertThat(actual.get(0).tool().description(), is("Search database metadata."));
             assertThat(actual.get(0).tool().inputSchema().type(), is("object"));
@@ -77,7 +82,8 @@ class MCPToolSpecificationFactoryTest {
                     "items", Map.of("type", "string", "description", "Object type.", "enum", List.of("TABLE", "VIEW")))));
             assertThat(actual.get(0).tool().outputSchema(), is(Map.of("type", "object")));
             assertTrue(actual.get(0).tool().annotations().readOnlyHint());
-            assertThat(actual.get(0).tool().meta(), is(Map.of("relatedResources", List.of("shardingsphere://databases"))));
+            assertNull(actual.get(0).tool().annotations().returnDirect());
+            assertThat(actual.get(0).tool().meta(), is(Map.of(MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS, List.of("shardingsphere://databases"))));
             assertNotNull(actual.get(0).callHandler());
         }
     }
@@ -86,15 +92,15 @@ class MCPToolSpecificationFactoryTest {
     void assertCreateToolSpecificationsHandleNullArguments() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
             MCPResponse response = new MCPMapResponse(Map.of("status", "ok"));
-            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("search_metadata")));
-            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("search_metadata"), eq(Map.of())))
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("database_gateway_search_metadata")));
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("database_gateway_search_metadata"), eq(Map.of())))
                     .thenReturn(Optional.of(response));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
             McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
             when(exchange.sessionId()).thenReturn("session-id");
-            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("search_metadata", null));
+            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("database_gateway_search_metadata", null));
             assertThat(actual.structuredContent(), is(Map.of("status", "ok")));
             assertThat(((TextContent) actual.content().get(0)).text(), is("{\"status\":\"ok\"}"));
             assertFalse(actual.isError());
@@ -104,15 +110,15 @@ class MCPToolSpecificationFactoryTest {
     @Test
     void assertCreateToolSpecificationsHandleErrorResponse() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
-            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("search_metadata")));
-            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("search_metadata"), eq(Map.of("query", "foo_query"))))
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("database_gateway_search_metadata")));
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("database_gateway_search_metadata"), eq(Map.of("query", "foo_query"))))
                     .thenReturn(Optional.of(new MCPErrorResponse("invalid_request", "")));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
             McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
             when(exchange.sessionId()).thenReturn("session-id");
-            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("search_metadata", Map.of("query", "foo_query")));
+            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("database_gateway_search_metadata", Map.of("query", "foo_query")));
             @SuppressWarnings("unchecked")
             Map<String, Object> actualPayload = (Map<String, Object>) actual.structuredContent();
             assertThat(actualPayload.get("response_mode"), is("recovery"));
@@ -123,9 +129,45 @@ class MCPToolSpecificationFactoryTest {
     }
     
     @Test
+    void assertCreateToolSpecificationsValidateStructuredOutput() {
+        try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createStrictToolDescriptor("database_gateway_search_metadata")));
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("database_gateway_search_metadata"), eq(Map.of())))
+                    .thenReturn(Optional.of(new MCPMapResponse(Map.of("count", 1))));
+            MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
+            when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
+            SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
+            McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
+            when(exchange.sessionId()).thenReturn("session-id");
+            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("database_gateway_search_metadata", Map.of()));
+            @SuppressWarnings("unchecked")
+            Map<String, Object> actualPayload = (Map<String, Object>) actual.structuredContent();
+            assertThat(actualPayload.get("error_code"), is("invalid_output_schema"));
+            assertTrue(String.valueOf(actualPayload.get("message")).contains("database_gateway_search_metadata"));
+            assertTrue(actual.isError());
+        }
+    }
+    
+    @Test
+    void assertToolOutputSchemaExamplesMatchSchemas() {
+        JsonSchemaValidator validator = new DefaultJsonSchemaValidator();
+        for (MCPToolDescriptor each : ToolHandlerRegistry.getSupportedToolDescriptors()) {
+            for (Map<String, Object> example : getOutputSchemaExamples(each)) {
+                ValidationResponse actual = validator.validate(each.getOutputSchema(), example);
+                assertTrue(actual.valid(), () -> String.format("Invalid outputSchema example for `%s`: %s", each.getName(), actual.errorMessage()));
+            }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> getOutputSchemaExamples(final MCPToolDescriptor toolDescriptor) {
+        return toolDescriptor.getOutputSchema().containsKey("examples") ? (List<Map<String, Object>>) toolDescriptor.getOutputSchema().get("examples") : List.of();
+    }
+    
+    @Test
     void assertCreateToolSpecificationsHandleInteractiveElicitation() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
-            String toolName = "custom_planning_tool";
+            String toolName = "database_gateway_plan_encrypt_rule";
             MCPResponse clarifyingResponse = new MCPMapResponse(createClarifyingPayload());
             MCPResponse plannedResponse = new MCPMapResponse(Map.of("status", "planned"));
             mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createPlanningToolDescriptor(toolName)));
@@ -138,7 +180,10 @@ class MCPToolSpecificationFactoryTest {
                     Map.of("custom_properties.secret-key", "foo_secret", "requires_review", true)));
             CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest(toolName, Map.of()));
             assertThat(actual.structuredContent(), is(Map.of("status", "planned")));
-            verify(exchange).createElicitation(any());
+            ArgumentCaptor<McpSchema.ElicitRequest> requestCaptor = ArgumentCaptor.forClass(McpSchema.ElicitRequest.class);
+            verify(exchange).createElicitation(requestCaptor.capture());
+            assertThat(requestCaptor.getValue().meta().get(MCPShardingSphereMetadataKeys.TOOL), is(toolName));
+            assertThat(requestCaptor.getValue().meta().get(MCPShardingSphereMetadataKeys.PLAN_ID), is("plan-1"));
             mockedToolHandlerRegistry.verify(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq(toolName), eq(createElicitedArguments())));
         }
     }
@@ -148,14 +193,32 @@ class MCPToolSpecificationFactoryTest {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
             Map<String, Object> expectedPayload = createClarifyingPayload();
             MCPResponse response = new MCPMapResponse(expectedPayload);
-            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("custom_tool")));
-            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("custom_tool"), eq(Map.of())))
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("database_gateway_search_metadata")));
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("database_gateway_search_metadata"), eq(Map.of())))
                     .thenReturn(Optional.of(response));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of()));
-            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("custom_tool", Map.of()));
+            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("database_gateway_search_metadata", Map.of()));
+            assertThat(actual.structuredContent(), is(expectedPayload));
+            verify(exchange, never()).createElicitation(any());
+        }
+    }
+    
+    @Test
+    void assertCreateToolSpecificationsSkipElicitationWithoutRuntimeDescriptor() {
+        try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
+            Map<String, Object> expectedPayload = createClarifyingPayload();
+            MCPResponse response = new MCPMapResponse(expectedPayload);
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("fixture_ping")));
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("fixture_ping"), eq(Map.of())))
+                    .thenReturn(Optional.of(response));
+            MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
+            when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
+            SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
+            McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of()));
+            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("fixture_ping", Map.of()));
             assertThat(actual.structuredContent(), is(expectedPayload));
             verify(exchange, never()).createElicitation(any());
         }
@@ -166,15 +229,15 @@ class MCPToolSpecificationFactoryTest {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
             Map<String, Object> expectedPayload = createClarifyingPayload();
             MCPResponse response = new MCPMapResponse(expectedPayload);
-            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createPlanningToolDescriptor("plan_encrypt_rule")));
-            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("plan_encrypt_rule"), eq(Map.of())))
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createPlanningToolDescriptor("database_gateway_plan_encrypt_rule")));
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("database_gateway_plan_encrypt_rule"), eq(Map.of())))
                     .thenReturn(Optional.of(response));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
             McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
             when(exchange.sessionId()).thenReturn("session-id");
-            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("plan_encrypt_rule", Map.of()));
+            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("database_gateway_plan_encrypt_rule", Map.of()));
             assertThat(actual.structuredContent(), is(expectedPayload));
             verify(exchange, never()).createElicitation(any());
         }
@@ -194,14 +257,14 @@ class MCPToolSpecificationFactoryTest {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
             Map<String, Object> expectedPayload = createClarifyingPayload();
             MCPResponse response = new MCPMapResponse(expectedPayload);
-            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createPlanningToolDescriptor("plan_encrypt_rule")));
-            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("plan_encrypt_rule"), eq(Map.of())))
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createPlanningToolDescriptor("database_gateway_plan_encrypt_rule")));
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("database_gateway_plan_encrypt_rule"), eq(Map.of())))
                     .thenReturn(Optional.of(response));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(action, Map.of()));
-            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("plan_encrypt_rule", Map.of()));
+            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("database_gateway_plan_encrypt_rule", Map.of()));
             assertThat(actual.structuredContent(), is(expectedPayload));
             verify(exchange).createElicitation(any());
         }
@@ -232,19 +295,36 @@ class MCPToolSpecificationFactoryTest {
     }
     
     private MCPToolDescriptor createToolDescriptor(final String toolName) {
-        return new MCPToolDescriptor(toolName, "Search Metadata", "Search database metadata.", List.of(
-                new MCPToolFieldDefinition("query", MCPToolValueDefinition.string("Search query."), true),
-                new MCPToolFieldDefinition("object_types", MCPToolValueDefinition.array("Optional object-type filter.",
-                        MCPToolValueDefinition.stringEnum("Object type.", List.of("TABLE", "VIEW"))), false)),
-                Map.of("type", "object"), new MCPToolAnnotations("Search Metadata", true, false, true, true, false),
-                Map.of("relatedResources", List.of("shardingsphere://databases")));
+        Map<String, Object> properties = new LinkedHashMap<>(2, 1F);
+        properties.put("query", Map.of("type", "string", "description", "Search query."));
+        properties.put("object_types", Map.of("type", "array", "description", "Optional object-type filter.",
+                "items", Map.of("type", "string", "description", "Object type.", "enum", List.of("TABLE", "VIEW"))));
+        return new MCPToolDescriptor(List.of(), toolName, "Search Metadata", "Search database metadata.", createInputSchema(properties, List.of("query")),
+                Map.of("type", "object"), new MCPToolAnnotations("Search Metadata", true, false, true, true),
+                Map.of(MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS, List.of("shardingsphere://databases")));
+    }
+    
+    private MCPToolDescriptor createStrictToolDescriptor(final String toolName) {
+        return new MCPToolDescriptor(List.of(), toolName, "Search Metadata", "Search database metadata.", createInputSchema(Map.of(), List.of()),
+                Map.of("type", "object", "properties", Map.of("status", Map.of("type", "string")), "required", List.of("status")),
+                new MCPToolAnnotations("Search Metadata", true, false, true, true), Collections.emptyMap());
     }
     
     private MCPToolDescriptor createPlanningToolDescriptor(final String toolName) {
-        return new MCPToolDescriptor(toolName, "Plan Custom Rule", "Plan a custom rule.", List.of(
-                new MCPToolFieldDefinition("custom_properties", MCPToolValueDefinition.object("Custom properties."), false),
-                new MCPToolFieldDefinition("intent", MCPToolValueDefinition.object("Intent.",
-                        List.of(new MCPToolFieldDefinition("requires_review", MCPToolValueDefinition.bool("Requires review."), false)), false), false)),
-                Map.of("type", "object"), new MCPToolAnnotations("Plan Custom Rule", false, false, true, true, false), Map.of("workflowRole", "plan"));
+        Map<String, Object> properties = new LinkedHashMap<>(2, 1F);
+        properties.put("custom_properties", Map.of("type", "object", "description", "Custom properties.", "additionalProperties", true));
+        properties.put("intent", Map.of("type", "object", "description", "Intent.", "properties",
+                Map.of("requires_review", Map.of("type", "boolean", "description", "Requires review.")), "required", List.of(), "additionalProperties", false));
+        return new MCPToolDescriptor(List.of(), toolName, "Plan Custom Rule", "Plan a custom rule.", createInputSchema(properties, List.of()),
+                Map.of("type", "object"), new MCPToolAnnotations("Plan Custom Rule", false, false, true, true), Collections.emptyMap());
+    }
+    
+    private Map<String, Object> createInputSchema(final Map<String, Object> properties, final List<String> required) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("type", "object");
+        result.put("properties", properties);
+        result.put("required", required);
+        result.put("additionalProperties", false);
+        return result;
     }
 }

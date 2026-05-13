@@ -97,7 +97,7 @@ class ExecuteQueryToolHandlerTest {
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'"))));
-        assertThat(actual.getMessage(), is("execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use execute_update for side-effecting SQL."));
+        assertThat(actual.getMessage(), is("database_gateway_execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL."));
         verifyNoInteractions(executionFacade);
     }
     

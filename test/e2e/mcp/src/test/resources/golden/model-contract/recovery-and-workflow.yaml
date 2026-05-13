@@ -18,11 +18,11 @@
 executeUpdateMissingExecutionMode:
   response_mode: recovery
   error_code: invalid_request
-  message: execute_update execution_mode is required.
+  message: database_gateway_execute_update execution_mode is required.
   recovery:
     category: missing_execution_mode
-    source_tool: execute_update
-    tool_name: execute_update
+    source_tool: database_gateway_execute_update
+    tool_name: database_gateway_execute_update
     suggested_arguments:
       database: logic_db
       schema: public
@@ -31,8 +31,8 @@ executeUpdateMissingExecutionMode:
     next_actions:
       - order: 1
         type: tool_call
-        title: Retry execute_update
-        tool_name: execute_update
+        title: Retry database_gateway_execute_update
+        tool_name: database_gateway_execute_update
         arguments:
           database: logic_db
           schema: public
@@ -58,8 +58,8 @@ executeUpdatePreview:
       reason: Review normalized_sql and side_effect_scope with the user before execution.
     - order: 2
       type: tool_call
-      title: Call execute_update
-      tool_name: execute_update
+      title: Call database_gateway_execute_update
+      tool_name: database_gateway_execute_update
       arguments:
         database: logic_db
         schema: public
@@ -67,7 +67,7 @@ executeUpdatePreview:
         execution_mode: execute
         approved_by_user: true
       requires_user_approval: true
-      reason: After explicit approval, call execute_update with suggested_arguments.
+      reason: After explicit approval, call database_gateway_execute_update with suggested_arguments.
 workflowPlan:
   response_mode: planning
   plan_id: <plan_id>
@@ -116,12 +116,12 @@ workflowPlan:
       - rule-metadata
     manual_only: false
     requires_user_approval: true
-    next_review_action: call_apply_workflow_preview
+    next_review_action: call_database_gateway_apply_workflow_preview
   next_actions:
     - order: 1
       type: tool_call
-      title: Call apply_workflow
-      tool_name: apply_workflow
+      title: Call database_gateway_apply_workflow
+      tool_name: database_gateway_apply_workflow
       arguments:
         execution_mode: preview
         plan_id: <plan_id>
@@ -146,8 +146,8 @@ workflowApplyPreview:
       reason: Review preview_artifacts and approve only the intended workflow side effects.
     - order: 2
       type: tool_call
-      title: Call apply_workflow
-      tool_name: apply_workflow
+      title: Call database_gateway_apply_workflow
+      tool_name: database_gateway_apply_workflow
       arguments:
         approved_by_user: true
         plan_id: <plan_id>
@@ -167,7 +167,7 @@ workflowApplyManualOnly:
     external_execution_required: true
     requires_user_confirmation: true
     validation_blocked_until: manual_artifacts_executed
-    validation_tool_after_manual_execution: validate_workflow
+    validation_tool_after_manual_execution: database_gateway_validate_workflow
     validation_arguments_after_manual_execution:
       plan_id: <plan_id>
   manual_artifact_package:
@@ -231,13 +231,13 @@ workflowValidate:
       actual: ''
       impact: Mask rule is missing.
       remediation: Create or alter the mask rule again.
-  recovery_guidance: Inspect mismatches, adjust the plan or runtime state, then run validate_workflow again.
+  recovery_guidance: Inspect mismatches, adjust the plan or runtime state, then run database_gateway_validate_workflow again.
   requires_user_approval: false
   next_actions:
     - order: 1
       type: tool_call
-      title: Call plan_mask_rule
-      tool_name: plan_mask_rule
+      title: Call database_gateway_plan_mask_rule
+      tool_name: database_gateway_plan_mask_rule
       arguments:
         plan_id: <plan_id>
       requires_user_approval: false

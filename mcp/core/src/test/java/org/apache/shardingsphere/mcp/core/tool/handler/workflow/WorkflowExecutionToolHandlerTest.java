@@ -48,7 +48,7 @@ class WorkflowExecutionToolHandlerTest {
     @Test
     void assertGetExecutionToolDescriptor() {
         MCPToolDescriptor actual = new WorkflowExecutionToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(WorkflowHandlerTestFixture.createDefinition("encrypt.rule")))).getToolDescriptor();
-        assertThat(actual.getName(), is("apply_workflow"));
+        assertThat(actual.getName(), is("database_gateway_apply_workflow"));
     }
     
     @Test
@@ -84,7 +84,7 @@ class WorkflowExecutionToolHandlerTest {
         WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(WorkflowHandlerTestFixture.createDefinition("encrypt.rule"))));
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
                 () -> handler.handle(fixture.workflowContext(), new MCPToolCall("session-1", Map.of("plan_id", "plan-1"))));
-        assertThat(actual.getMessage(), is("apply_workflow execution_mode is required."));
+        assertThat(actual.getMessage(), is("database_gateway_apply_workflow execution_mode is required."));
     }
     
     private WorkflowExecutionToolHandler createExecutionToolHandler(final WorkflowExecutionService executionService,

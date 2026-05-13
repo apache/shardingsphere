@@ -56,7 +56,12 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
     private Path baseDirectory;
     
     public StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPRuntimeContext runtimeContext) {
-        this(config, createSyncServerFactory(runtimeContext), createTransportServlet(config, runtimeContext));
+        this(config, runtimeContext, MCPTransportJsonMapperFactory.createListResponseMapper());
+    }
+    
+    private StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
+        this(config, new MCPSyncServerFactory(runtimeContext, jsonMapper),
+                new StreamableHttpMCPServlet(runtimeContext.getSessionManager(), jsonMapper, config.getBindHost(), config.getAccessToken(), config.getEndpointPath()));
     }
     
     StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPSyncServerFactory syncServerFactory, final StreamableHttpMCPServlet transportServlet) {
@@ -68,15 +73,6 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
     private static HttpTransportConfiguration requireValidConfig(final HttpTransportConfiguration config) {
         config.validate();
         return config;
-    }
-    
-    private static MCPSyncServerFactory createSyncServerFactory(final MCPRuntimeContext runtimeContext) {
-        return new MCPSyncServerFactory(runtimeContext, MCPTransportJsonMapperFactory.create());
-    }
-    
-    private static StreamableHttpMCPServlet createTransportServlet(final HttpTransportConfiguration config, final MCPRuntimeContext runtimeContext) {
-        McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
-        return new StreamableHttpMCPServlet(runtimeContext.getSessionManager(), jsonMapper, config.getBindHost(), config.getAccessToken(), config.getEndpointPath());
     }
     
     @Override

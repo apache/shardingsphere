@@ -83,7 +83,7 @@ class WorkflowExecutionServiceTest {
         assertTrue((Boolean) actualManualArtifactSummary.get("external_execution_required"));
         assertTrue((Boolean) actualManualArtifactSummary.get("requires_user_confirmation"));
         assertThat(actualManualArtifactSummary.get("validation_blocked_until"), is("manual_artifacts_executed"));
-        assertThat(actualManualArtifactSummary.get("validation_tool_after_manual_execution"), is("validate_workflow"));
+        assertThat(actualManualArtifactSummary.get("validation_tool_after_manual_execution"), is("database_gateway_validate_workflow"));
         assertThat(((Map<?, ?>) actualManualArtifactSummary.get("validation_arguments_after_manual_execution")).get("plan_id"), is("plan-1"));
         Map<?, ?> actualManualArtifactPackage = (Map<?, ?>) actualResponse.get("manual_artifact_package");
         Map<?, ?> actualArtifact = (Map<?, ?>) ((List<?>) actualManualArtifactPackage.get("distsql_artifacts")).get(0);
@@ -127,7 +127,7 @@ class WorkflowExecutionServiceTest {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> executionService.apply(new InMemoryWorkflowSessionContext(),
                 mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP,
                 "session-1", createSnapshot(), List.of(), "", false));
-        assertThat(actual.getMessage(), is("apply_workflow execution_mode is required."));
+        assertThat(actual.getMessage(), is("database_gateway_apply_workflow execution_mode is required."));
     }
     
     @Test
@@ -136,7 +136,7 @@ class WorkflowExecutionServiceTest {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> executionService.apply(new InMemoryWorkflowSessionContext(),
                 mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP,
                 "session-1", createSnapshot(), List.of(), "auto-execute", false));
-        assertThat(actual.getMessage(), is("apply_workflow execution_mode must be one of [preview, review-then-execute, manual-only]."));
+        assertThat(actual.getMessage(), is("database_gateway_apply_workflow execution_mode must be one of [preview, review-then-execute, manual-only]."));
     }
     
     @Test
@@ -154,7 +154,7 @@ class WorkflowExecutionServiceTest {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> executionService.apply(new InMemoryWorkflowSessionContext(),
                 mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP,
                 "session-1", createSnapshot(), List.of(), "review-then-execute", false));
-        assertThat(actual.getMessage(), is("apply_workflow approved_by_user=true is required for real side effects."));
+        assertThat(actual.getMessage(), is("database_gateway_apply_workflow approved_by_user=true is required for real side effects."));
     }
     
     @Test

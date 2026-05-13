@@ -37,6 +37,6 @@ public final class MCPTransportConstants {
     
     public static final String SERVER_INSTRUCTIONS = "Apache ShardingSphere MCP. Read `shardingsphere://capabilities` first as the current public-surface source of truth, "
             + "then use resource-first metadata discovery. "
-            + "Use `execute_query` only for read-only SELECT or EXPLAIN ANALYZE. Use `execute_update` with `execution_mode=preview` before side effects, "
+            + "Use `database_gateway_execute_query` only for read-only SELECT or EXPLAIN ANALYZE. Use `database_gateway_execute_update` with `execution_mode=preview` before side effects, "
             + "and continue from `next_actions` or `recovery.next_actions` instead of guessing hidden tools or arguments.";
 }

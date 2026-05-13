@@ -33,10 +33,12 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MCPSQLRecoveryPayloadFactory {
     
+    private static final int METADATA_SEARCH_PAGE_SIZE = 50;
+    
     static Map<String, Object> createSQLToolMismatchRecovery(final SQLToolMismatchException cause) {
-        boolean requiresUserApproval = "execute_update".equals(cause.getTargetTool());
+        boolean requiresUserApproval = "database_gateway_execute_update".equals(cause.getTargetTool());
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(createSQLToolMismatchCategory(cause),
-                requiresUserApproval ? "Use execute_update in preview mode, then ask for approval before execution." : "Use execute_query for this read-only SQL.");
+                requiresUserApproval ? "Use database_gateway_execute_update in preview mode, then ask for approval before execution." : "Use database_gateway_execute_query for this read-only SQL.");
         result.put("source_tool", cause.getSourceTool());
         result.put("statement_class", cause.getClassificationResult().getStatementClass().name().toLowerCase(Locale.ENGLISH));
         result.put("statement_type", cause.getClassificationResult().getStatementType());
@@ -52,15 +54,16 @@ final class MCPSQLRecoveryPayloadFactory {
     
     static Map<String, Object> createMetadataIntrospectionSQLRecovery(final MetadataIntrospectionSQLStatementException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
-                "metadata_introspection_sql", "Use logical metadata resources or search_metadata instead of console-style metadata SQL.");
+                "metadata_introspection_sql", "Use logical metadata resources or database_gateway_search_metadata instead of console-style metadata SQL.");
         result.put("statement_type", cause.getStatementType());
         result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://databases", "logical-database", "Read logical databases before choosing a metadata scope."));
-        result.put("suggested_arguments", Map.of("page_size", 100));
+        result.put("suggested_arguments", Map.of("page_size", METADATA_SEARCH_PAGE_SIZE));
         result.put("next_actions", MCPNextActionUtils.ordered(
                 MCPNextActionUtils.readResource("shardingsphere://databases", "Read logical databases before choosing a metadata scope."),
-                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("search_metadata",
-                        "Search metadata with an explicit database, schema, query, or object_types scope instead of executing metadata SQL.", Map.of("page_size", 100), false), 1)));
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_search_metadata",
+                        "Search metadata with an explicit database, schema, query, or object_types scope instead of executing metadata SQL.",
+                        Map.of("page_size", METADATA_SEARCH_PAGE_SIZE), false), 1)));
         result.put("requires_user_approval", false);
         result.put("ask_user_when_uncertain", false);
         return result;
@@ -100,12 +103,12 @@ final class MCPSQLRecoveryPayloadFactory {
     }
     
     private static String createSQLToolMismatchCategory(final SQLToolMismatchException cause) {
-        return "execute_update".equals(cause.getTargetTool()) ? "unsafe_sql_attempted" : "read_only_sql_sent_to_update_tool";
+        return "database_gateway_execute_update".equals(cause.getTargetTool()) ? "unsafe_sql_attempted" : "read_only_sql_sent_to_update_tool";
     }
     
     private static String createSQLToolMismatchActionReason(final SQLToolMismatchException cause) {
-        return "execute_update".equals(cause.getTargetTool())
+        return "database_gateway_execute_update".equals(cause.getTargetTool())
                 ? "Retry side-effecting SQL in preview mode with the normalized SQL and preserved context."
-                : "Retry the read-only SQL with execute_query using the normalized SQL and preserved context.";
+                : "Retry the read-only SQL with database_gateway_execute_query using the normalized SQL and preserved context.";
     }
 }

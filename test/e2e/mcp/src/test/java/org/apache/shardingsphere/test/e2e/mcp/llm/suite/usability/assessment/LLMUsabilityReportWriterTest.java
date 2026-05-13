@@ -36,7 +36,7 @@ class LLMUsabilityReportWriterTest {
     @Test
     void assertWriteScorecardSummary() throws IOException {
         LLMUsabilityScenarioResult scenarioResult = new LLMUsabilityScenarioResult("scenario-1", LLMUsabilityDimension.TOOL, "h2",
-                List.of("natural-task"), false, "wrong_tool", "Expected execute_query.", false, 1, 3, false, false, 0.0D, true,
+                List.of("natural-task"), false, "wrong_tool", "Expected database_gateway_execute_query.", false, 1, 3, false, false, 0.0D, true,
                 false, false, false, true, List.of());
         LLMUsabilityScorecard scorecard = new LLMUsabilityScorecard("suite-1", "run-1", 75.0D, false, 0.0D, 0.0D, 1.0D, 0.0D,
                 0.33D, 3.0D, 0.0D, 1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, List.of(scenarioResult));
@@ -67,7 +67,7 @@ class LLMUsabilityReportWriterTest {
                 + "- harnessRecoveryRate: 1.0" + lineSeparator
                 + lineSeparator
                 + "## Scenario Results" + lineSeparator
-                + "- scenario-1: FAIL failureType=wrong_tool, roundTrips=3, invalidCalls=1, nativeToolCall=false, harnessRecovery=true, message=Expected execute_query."
+                + "- scenario-1: FAIL failureType=wrong_tool, roundTrips=3, invalidCalls=1, nativeToolCall=false, harnessRecovery=true, message=Expected database_gateway_execute_query."
                 + lineSeparator;
     }
 }

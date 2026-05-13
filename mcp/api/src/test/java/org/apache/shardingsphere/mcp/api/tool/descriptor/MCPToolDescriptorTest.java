@@ -29,20 +29,17 @@ import static org.hamcrest.Matchers.is;
 class MCPToolDescriptorTest {
     
     @Test
-    void assertToInputSchema() {
-        MCPToolDescriptor actual = new MCPToolDescriptor("foo_tool", "Foo Tool", "Foo tool.", List.of(
-                new MCPToolFieldDefinition("query", MCPToolValueDefinition.string("Search query."), true),
-                new MCPToolFieldDefinition("object_types",
-                        MCPToolValueDefinition.array("Object types.", MCPToolValueDefinition.string("Object type.")), false)),
-                Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
+    void assertGetInputSchema() {
         Map<String, Object> expectedProperties = Map.of(
                 "query", Map.of("type", "string", "description", "Search query."),
                 "object_types", Map.of("type", "array", "description", "Object types.", "items",
                         Map.of("type", "string", "description", "Object type.")));
-        assertThat(actual.toInputSchema(), is(Map.of(
+        Map<String, Object> inputSchema = Map.of(
                 "type", "object",
                 "properties", expectedProperties,
                 "required", List.of("query"),
-                "additionalProperties", false)));
+                "additionalProperties", false);
+        MCPToolDescriptor actual = new MCPToolDescriptor(List.of(), "foo_tool", "Foo Tool", "Foo tool.", inputSchema, Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
+        assertThat(actual.getInputSchema(), is(inputSchema));
     }
 }

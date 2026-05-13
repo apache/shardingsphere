@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class MCPToolAnnotations {
     
-    public static final MCPToolAnnotations EMPTY = new MCPToolAnnotations(null, null, null, null, null, null);
+    public static final MCPToolAnnotations EMPTY = new MCPToolAnnotations(null, null, null, null, null);
     
     private final String title;
     
@@ -39,14 +39,12 @@ public final class MCPToolAnnotations {
     
     private final Boolean openWorldHint;
     
-    private final Boolean returnDirect;
-    
     /**
      * Judge whether annotations are empty.
      *
      * @return true if annotations are empty
      */
     public boolean isEmpty() {
-        return (null == title || title.isBlank()) && null == readOnlyHint && null == destructiveHint && null == idempotentHint && null == openWorldHint && null == returnDirect;
+        return (null == title || title.isBlank()) && null == readOnlyHint && null == destructiveHint && null == idempotentHint && null == openWorldHint;
     }
 }

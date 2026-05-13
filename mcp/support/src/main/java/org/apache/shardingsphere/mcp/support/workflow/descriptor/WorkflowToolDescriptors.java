@@ -25,9 +25,9 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
  */
 public final class WorkflowToolDescriptors {
     
-    public static final String APPLY_TOOL_NAME = "apply_workflow";
+    public static final String APPLY_TOOL_NAME = "database_gateway_apply_workflow";
     
-    public static final String VALIDATE_TOOL_NAME = "validate_workflow";
+    public static final String VALIDATE_TOOL_NAME = "database_gateway_validate_workflow";
     
     private WorkflowToolDescriptors() {
     }

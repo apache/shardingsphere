@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.is;
 
 class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWorkflowE2ETest {
     
-    private static final String PLAN_TOOL_NAME = "plan_mask_rule";
+    private static final String PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
     
     private static final String APPLY_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
     

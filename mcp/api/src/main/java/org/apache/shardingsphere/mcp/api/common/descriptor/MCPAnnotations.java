@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.resource.descriptor;
+package org.apache.shardingsphere.mcp.api.common.descriptor;
 
 import lombok.Getter;
 
@@ -23,12 +23,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * MCP resource annotations.
+ * MCP annotations.
  */
 @Getter
-public final class MCPResourceAnnotations {
+public final class MCPAnnotations {
     
-    public static final MCPResourceAnnotations EMPTY = new MCPResourceAnnotations(Collections.emptyList(), null, null);
+    public static final MCPAnnotations EMPTY = new MCPAnnotations(Collections.emptyList(), null, null);
     
     private final List<String> audience;
     
@@ -36,7 +36,7 @@ public final class MCPResourceAnnotations {
     
     private final String lastModified;
     
-    public MCPResourceAnnotations(final List<String> audience, final Double priority, final String lastModified) {
+    public MCPAnnotations(final List<String> audience, final Double priority, final String lastModified) {
         this.audience = null == audience ? Collections.emptyList() : audience;
         this.priority = priority;
         this.lastModified = lastModified;

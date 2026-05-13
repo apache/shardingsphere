@@ -19,12 +19,12 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.prompt;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncPromptSpecification;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptArgumentDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateBinding;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateLoader;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -60,14 +60,9 @@ public final class MCPPromptSpecificationFactory {
     
     private McpSchema.GetPromptResult handle(final McpSchema.GetPromptRequest request, final MCPPromptDescriptor descriptor) {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
-        String text = MCPPromptTemplateLoader.render(MCPPromptTemplateLoader.load(descriptor.getTemplateResource()), arguments);
+        MCPPromptTemplateBinding binding = MCPDescriptorRegistry.getRequiredPromptTemplateBinding(descriptor.getName());
+        String text = MCPPromptTemplateLoader.render(MCPPromptTemplateLoader.load(binding.getTemplateResource()), arguments);
         return new McpSchema.GetPromptResult(descriptor.getDescription(), List.of(new McpSchema.PromptMessage(McpSchema.Role.USER, new McpSchema.TextContent(text))),
-                createPromptMeta(descriptor));
-    }
-    
-    private Map<String, Object> createPromptMeta(final MCPPromptDescriptor descriptor) {
-        Map<String, Object> result = new LinkedHashMap<>(descriptor.getMeta());
-        result.put("templateResource", descriptor.getTemplateResource());
-        return result;
+                descriptor.getMeta());
     }
 }

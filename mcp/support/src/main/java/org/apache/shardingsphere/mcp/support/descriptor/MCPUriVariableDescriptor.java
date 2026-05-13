@@ -18,16 +18,14 @@
 package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
- * MCP prompt descriptor.
+ * MCP URI variable descriptor.
  */
+@RequiredArgsConstructor
 @Getter
-public final class MCPPromptDescriptor {
+public final class MCPUriVariableDescriptor {
     
     private final String name;
     
@@ -35,19 +33,7 @@ public final class MCPPromptDescriptor {
     
     private final String description;
     
-    private final List<MCPPromptArgumentDescriptor> arguments;
+    private final boolean required;
     
-    private final String templateResource;
-    
-    private final Map<String, Object> meta;
-    
-    public MCPPromptDescriptor(final String name, final String title, final String description, final List<MCPPromptArgumentDescriptor> arguments,
-                               final String templateResource, final Map<String, Object> meta) {
-        this.name = name;
-        this.title = title;
-        this.description = description;
-        this.arguments = null == arguments ? Collections.emptyList() : arguments;
-        this.templateResource = templateResource;
-        this.meta = null == meta ? Collections.emptyMap() : meta;
-    }
+    private final String scope;
 }

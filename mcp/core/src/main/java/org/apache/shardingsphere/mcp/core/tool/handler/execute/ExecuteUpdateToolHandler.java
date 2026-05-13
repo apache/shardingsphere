@@ -44,7 +44,7 @@ import java.util.Map;
  */
 public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPDescriptorRegistry.getRequiredToolDescriptor("execute_update");
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPDescriptorRegistry.getRequiredToolDescriptor("database_gateway_execute_update");
     
     private static final String EXECUTION_MODE_EXECUTE = "execute";
     
@@ -76,21 +76,22 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
             return createPreviewResponse(toolArguments, classificationResult);
         }
         requireUserApproval(toolArguments, classificationResult);
-        return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql, "execute_update"))
+        return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql, "database_gateway_execute_update"))
                 .withExecutionMode(EXECUTION_MODE_EXECUTE);
     }
     
     private void requireUserApproval(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
         if (!toolArguments.getBooleanArgument(APPROVED_BY_USER, false)) {
-            throw new MCPUserApprovalRequiredException("execute_update", createSuggestedArguments(toolArguments, classificationResult));
+            throw new MCPUserApprovalRequiredException("database_gateway_execute_update", createSuggestedArguments(toolArguments, classificationResult));
         }
     }
     
     private ClassificationResult checkUpdateStatement(final MCPToolArguments toolArguments, final String sql) {
         ClassificationResult classificationResult = new StatementClassifier().classify(sql);
         if (SQLExecutionToolHandlerSupport.isReadOnlyStatement(classificationResult.getStatementClass())) {
-            throw new SQLToolMismatchException("execute_update does not accept read-only SQL. Use execute_query for read-only SQL.", "execute_update", "execute_query",
-                    classificationResult, createQuerySuggestedArguments(toolArguments, classificationResult));
+            throw new SQLToolMismatchException("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL.",
+                    "database_gateway_execute_update", "database_gateway_execute_query", classificationResult,
+                    createQuerySuggestedArguments(toolArguments, classificationResult));
         }
         return classificationResult;
     }
@@ -98,12 +99,12 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     private String resolveExecutionMode(final MCPToolArguments toolArguments) {
         String result = toolArguments.getStringArgument("execution_mode");
         if (result.isEmpty()) {
-            throw new MCPExecutionModeRequiredException("execute_update", EXECUTION_MODES, createPreviewSuggestedArguments(toolArguments));
+            throw new MCPExecutionModeRequiredException("database_gateway_execute_update", EXECUTION_MODES, createPreviewSuggestedArguments(toolArguments));
         }
         if (EXECUTION_MODE_EXECUTE.equals(result) || EXECUTION_MODE_PREVIEW.equals(result)) {
             return result;
         }
-        throw new MCPInvalidExecutionModeException("execute_update", EXECUTION_MODES, createPreviewSuggestedArguments(toolArguments));
+        throw new MCPInvalidExecutionModeException("database_gateway_execute_update", EXECUTION_MODES, createPreviewSuggestedArguments(toolArguments));
     }
     
     private MCPResponse createPreviewResponse(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
@@ -123,7 +124,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         classificationResult.getSavepointName().ifPresent(optional -> result.put("savepoint", optional));
         result.put("requires_user_approval", true);
         result.put("ask_user_when_uncertain", true);
-        result.put("approval_guidance", "Review normalized_sql and side_effect_scope before calling execute_update with execution_mode=execute and approved_by_user=true.");
+        result.put("approval_guidance", "Review normalized_sql and side_effect_scope before calling database_gateway_execute_update with execution_mode=execute and approved_by_user=true.");
         result.put("approval_summary", createApprovalSummary(classificationResult));
         result.put("approval_question", createApprovalQuestion(classificationResult));
         Map<String, Object> suggestedArguments = createSuggestedArguments(toolArguments, classificationResult);
@@ -132,7 +133,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         result.put("argument_provenance", createArgumentProvenance(suggestedArguments));
         result.put("next_actions", MCPNextActionUtils.ordered(
                 MCPNextActionUtils.askUser("Review normalized_sql and side_effect_scope with the user before execution.", List.of(APPROVED_BY_USER), true),
-                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("execute_update", "After explicit approval, call execute_update with suggested_arguments.",
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_execute_update", "After explicit approval, call database_gateway_execute_update with suggested_arguments.",
                         suggestedArguments, true), 1)));
         return new MCPMapResponse(result);
     }

@@ -28,6 +28,12 @@ on:
       - 'distribution/mcp/**'
       - 'test/e2e/pom.xml'
       - 'test/e2e/mcp/**'
+      - '.specify/specs/*mcp*/**'
+      - '.github/workflows/mcp-llm-e2e.yml'
+      - '.github/workflows/mcp-llm-usability-e2e.yml'
+      - '.github/workflows/mcp-build.yml'
+      - '.github/workflows/resources/scripts/mcp-stdio-smoke.py'
+      - '.github/workflows/resources/scripts/prepare-mcp-server-json.py'
   workflow_dispatch:
 
 concurrency:
@@ -45,12 +51,12 @@ jobs:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
-  jdk21-subchain-ci:
-    name: JDK 21 Subchain - CI
+  mcp-default-e2e:
+    name: MCP E2E - Default Reactor
     if: github.repository == 'apache/shardingsphere'
     needs: global-environment
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
@@ -58,9 +64,71 @@ jobs:
           java-version: '21'
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
           cache-suffix: 'mcp'
-      - name: Run and Install JDK 21 Subchain Tests
+          enable-docker-setup: 'true'
+      - name: Run MCP Default E2E
         run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
-      - name: Package JDK 21 Subchain Distribution
+
+  mcp-h2-stdio-e2e:
+    name: MCP E2E - H2 STDIO
+    if: github.repository == 'apache/shardingsphere'
+    needs: global-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          java-version: '21'
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+          cache-suffix: 'mcp'
+      - name: Run MCP H2 STDIO E2E
+        run: >
+          ./mvnw -pl test/e2e/mcp -am test
+          -DskipITs -Dspotless.skip=true
+          -Dtest=ProductionH2CapabilityDiscoveryE2ETest,ProductionH2MetadataResourceE2ETest,ProductionH2SQLExecutionE2ETest,ProductionH2AiNativeInteractionE2ETest,ProductionMultiDatabaseE2ETest
+          -Dsurefire.failIfNoSpecifiedTests=true
+          -Dmcp.e2e.production.h2.enabled=false
+          -Dmcp.e2e.production.stdio.enabled=true
+          -B -ntp
+
+  mcp-mysql-e2e:
+    name: MCP E2E - MySQL HTTP and STDIO
+    if: github.repository == 'apache/shardingsphere'
+    needs: global-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          java-version: '21'
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+          cache-suffix: 'mcp'
+          enable-docker-setup: 'true'
+      - name: Run MCP MySQL HTTP and STDIO E2E
+        run: >
+          ./mvnw -pl test/e2e/mcp -am test
+          -DskipITs -Dspotless.skip=true
+          -Dtest=ProductionMySQLRuntimeSmokeE2ETest,HttpProductionProxyEncryptWorkflowE2ETest,HttpProductionProxyMaskWorkflowE2ETest
+          -Dsurefire.failIfNoSpecifiedTests=true
+          -Dmcp.e2e.production.mysql.enabled=true
+          -Dmcp.e2e.production.stdio.enabled=true
+          -B -ntp
+
+  mcp-distribution-e2e:
+    name: MCP E2E - Distribution
+    if: github.repository == 'apache/shardingsphere'
+    needs: global-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          java-version: '21'
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+          cache-suffix: 'mcp'
+      - name: Package MCP Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
       - name: Validate MCP Registry Metadata
         shell: bash
@@ -77,14 +145,15 @@ jobs:
           from pathlib import Path
           server = json.loads(Path("mcp/server.json").read_text())
           assert server["name"] == "io.github.apache/shardingsphere-mcp"
-          package = server["packages"][0]
-          assert package["registryType"] == "oci"
-          assert package["transport"]["type"] == "stdio"
-          assert package["environmentVariables"][0]["name"] == "SHARDINGSPHERE_MCP_TRANSPORT"
+          assert {package["transport"]["type"] for package in server["packages"]} == {"stdio", "streamable-http"}
+          for package in server["packages"]:
+            assert package["registryType"] == "oci"
+            assert package["identifier"].startswith("ghcr.io/apache/shardingsphere-mcp:")
+            assert package["environmentVariables"][0]["name"] == "SHARDINGSPHERE_MCP_TRANSPORT"
           PY
           grep -q '^ARG MCP_SERVER_NAME=io.github.apache/shardingsphere-mcp$' distribution/mcp/Dockerfile
           grep -q 'io.modelcontextprotocol.server.name="${MCP_SERVER_NAME}"' distribution/mcp/Dockerfile
-      - name: Run JDK 21 Subchain Distribution Smoke
+      - name: Run MCP Distribution Smoke
         shell: bash
         run: |
           set -euo pipefail
@@ -100,7 +169,24 @@ jobs:
             -Dmcp.e2e.distribution.enabled=true \
             -Dmcp.distribution.home="${DISTRIBUTION_HOME}" \
             -B -ntp
-      - name: Build JDK 21 Subchain Docker Image
+
+  mcp-stdio-container-e2e:
+    name: MCP E2E - STDIO Container
+    if: github.repository == 'apache/shardingsphere'
+    needs: global-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          java-version: '21'
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+          cache-suffix: 'mcp'
+          enable-docker-setup: 'true'
+      - name: Package MCP Distribution
+        run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
+      - name: Build MCP Docker Image
         run: docker build -f distribution/mcp/Dockerfile -t shardingsphere-mcp-ci:local distribution/mcp/target
-      - name: Run JDK 21 Subchain STDIO Container Smoke
+      - name: Run MCP STDIO Container Smoke
         run: python3 .github/workflows/resources/scripts/mcp-stdio-smoke.py shardingsphere-mcp-ci:local

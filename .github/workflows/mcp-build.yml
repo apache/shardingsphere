@@ -109,6 +109,22 @@ jobs:
           python3 .github/workflows/resources/scripts/prepare-mcp-server-json.py \
             --version "${{ steps.release-version.outputs.version }}" \
             --identifier "${{ steps.release-version.outputs.identifier }}"
+      - name: Validate MCP Registry Metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          server = json.loads(Path("mcp/server.json").read_text())
+          assert "SNAPSHOT" not in server["version"]
+          assert {package["transport"]["type"] for package in server["packages"]} == {"stdio", "streamable-http"}
+          for package in server["packages"]:
+            assert "SNAPSHOT" not in package["identifier"]
+            assert "SNAPSHOT" not in package["version"]
+            assert package["identifier"].startswith("ghcr.io/apache/shardingsphere-mcp:")
+            assert package["version"] == server["version"]
+          PY
       - name: Login Container Registry
         uses: docker/login-action@v3
         with:
@@ -131,7 +147,8 @@ jobs:
             MCP_SOURCE_URL=https://github.com/apache/shardingsphere
       - name: Install MCP Publisher
         run: |
-          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+          MCP_PUBLISHER_ARCHIVE="mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz"
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/${MCP_PUBLISHER_ARCHIVE}" | tar xz mcp-publisher
       - name: Authenticate to MCP Registry
         working-directory: mcp
         run: ../mcp-publisher login github-oidc

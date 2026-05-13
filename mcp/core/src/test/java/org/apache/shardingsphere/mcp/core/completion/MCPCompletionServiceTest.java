@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContex
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
@@ -49,8 +50,8 @@ class MCPCompletionServiceTest {
         assertThat(actual.getValues(), is(List.of("logic_db")));
         assertThat(actual.getTotal(), is(2));
         assertTrue(actual.isHasMore());
-        assertThat(actual.getMeta().get("diagnostic"), is("ok"));
-        assertThat(actual.getMeta().get("returnedCandidateCount"), is(1));
+        assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
+        assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.RETURNED_CANDIDATE_COUNT), is(1));
     }
     
     @Test
@@ -58,10 +59,10 @@ class MCPCompletionServiceTest {
         MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext())).complete("session-1",
                 createDescriptor("prompt", "inspect_metadata", "table", 50), "table", "order", new LinkedHashMap<>());
         assertThat(actual.getValues(), is(List.of()));
-        assertThat(actual.getMeta().get("diagnostic"), is("missing_context"));
-        assertThat(actual.getMeta().get("missingContextArguments"), is(List.of("database", "schema")));
-        assertThat(((Map<?, ?>) actual.getMeta().get("recovery")).get("recovery_category"), is("missing_context"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.getMeta().get("next_actions")).get(0);
+        assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("missing_context"));
+        assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS), is(List.of("database", "schema")));
+        assertThat(((Map<?, ?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.RECOVERY)).get("recovery_category"), is("missing_context"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
         assertThat(actualNextAction.get("resource_uri"), is("shardingsphere://databases"));
     }
     
@@ -75,7 +76,7 @@ class MCPCompletionServiceTest {
         MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(workflowSessionContext)).complete("session-1",
                 createDescriptor("prompt", "recover_workflow", "plan_id", 50), "plan_id", "plan-", new LinkedHashMap<>());
         assertThat(actual.getValues(), is(List.of("plan-new", "plan-old")));
-        assertThat(((Map<?, ?>) ((List<?>) actual.getMeta().get("valueDetails")).get(0)).get("rankingReason"), is("recent-plan-first-for-plan_id"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.VALUE_DETAILS)).get(0)).get("rankingReason"), is("recent-plan-first-for-plan_id"));
     }
     
     private MCPCompletionTargetDescriptor createDescriptor(final String referenceType, final String reference, final String argument, final int maxValues) {

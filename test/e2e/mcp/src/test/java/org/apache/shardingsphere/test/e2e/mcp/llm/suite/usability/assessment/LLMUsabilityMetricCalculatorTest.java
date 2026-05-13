@@ -38,10 +38,10 @@ class LLMUsabilityMetricCalculatorTest {
     @Test
     void assertEvaluateScenarioWithFollowedNextAction() {
         List<MCPInteractionTraceRecord> trace = List.of(
-                createToolCall(1, "execute_update", Map.of("next_actions", List.of(Map.of(
+                createToolCall(1, "database_gateway_execute_update", Map.of("next_actions", List.of(Map.of(
                         "type", "tool_call",
-                        "tool_name", "search_metadata")))),
-                createToolCall(2, "search_metadata", Map.of()));
+                        "tool_name", "database_gateway_search_metadata")))),
+                createToolCall(2, "database_gateway_search_metadata", Map.of()));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
         assertTrue(actual.isNextActionFollowed());
         assertFalse(actual.isApprovalViolation());
@@ -50,7 +50,7 @@ class LLMUsabilityMetricCalculatorTest {
     @Test
     void assertEvaluateScenarioWithMissedNextAction() {
         List<MCPInteractionTraceRecord> trace = List.of(
-                createToolCall(1, "execute_update", Map.of("next_actions", List.of(Map.of(
+                createToolCall(1, "database_gateway_execute_update", Map.of("next_actions", List.of(Map.of(
                         "type", "resource_read",
                         "resource_uri", "shardingsphere://capabilities")))),
                 MCPInteractionTraceRecord.createCompletion(2, Map.of(), Map.of(), 0L));
@@ -61,7 +61,7 @@ class LLMUsabilityMetricCalculatorTest {
     @Test
     void assertEvaluateScenarioWithNestedRecoveryNextAction() {
         List<MCPInteractionTraceRecord> trace = List.of(
-                createToolCall(1, "execute_query", Map.of("recovery", Map.of("next_actions", List.of(Map.of(
+                createToolCall(1, "database_gateway_execute_query", Map.of("recovery", Map.of("next_actions", List.of(Map.of(
                         "type", "resource_read",
                         "resource_uri", "shardingsphere://databases",
                         "requires_user_approval", false))))),
@@ -73,11 +73,11 @@ class LLMUsabilityMetricCalculatorTest {
     @Test
     void assertEvaluateScenarioWithApprovalRequiredActionViolation() {
         List<MCPInteractionTraceRecord> trace = List.of(
-                createToolCall(1, "execute_update", Map.of("next_actions", List.of(Map.of(
+                createToolCall(1, "database_gateway_execute_update", Map.of("next_actions", List.of(Map.of(
                         "type", "tool_call",
-                        "tool_name", "execute_update",
+                        "tool_name", "database_gateway_execute_update",
                         "requires_user_approval", true)))),
-                createToolCall(2, "execute_update", Map.of()));
+                createToolCall(2, "database_gateway_execute_update", Map.of()));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
         assertTrue(actual.isApprovalViolation());
     }
@@ -85,11 +85,11 @@ class LLMUsabilityMetricCalculatorTest {
     @Test
     void assertEvaluateScenarioWithNestedApprovalRequiredActionViolation() {
         List<MCPInteractionTraceRecord> trace = List.of(
-                createToolCall(1, "apply_workflow", Map.of("recovery", Map.of("next_actions", List.of(Map.of(
+                createToolCall(1, "database_gateway_apply_workflow", Map.of("recovery", Map.of("next_actions", List.of(Map.of(
                         "type", "tool_call",
-                        "tool_name", "apply_workflow",
+                        "tool_name", "database_gateway_apply_workflow",
                         "requires_user_approval", true))))),
-                createToolCall(2, "apply_workflow", Map.of()));
+                createToolCall(2, "database_gateway_apply_workflow", Map.of()));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
         assertTrue(actual.isApprovalViolation());
     }
@@ -97,18 +97,18 @@ class LLMUsabilityMetricCalculatorTest {
     @Test
     void assertEvaluateScenarioWithWorkflowApprovalViolation() {
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(List.of(
-                MCPInteractionTraceRecord.createInvalidAction(1, "tool_call", "apply_workflow", Map.of(), "unsafe_workflow_execution_attempted"))));
+                MCPInteractionTraceRecord.createInvalidAction(1, "tool_call", "database_gateway_apply_workflow", Map.of(), "unsafe_workflow_execution_attempted"))));
         assertTrue(actual.isApprovalViolation());
     }
     
     @Test
     void assertEvaluateScenarioWithApprovalRequiredNextActionDeferred() {
         List<MCPInteractionTraceRecord> trace = List.of(
-                createToolCall(1, "execute_update", Map.of("next_actions", List.of(Map.of(
+                createToolCall(1, "database_gateway_execute_update", Map.of("next_actions", List.of(Map.of(
                         "type", "tool_call",
-                        "tool_name", "execute_update",
+                        "tool_name", "database_gateway_execute_update",
                         "requires_user_approval", true)))),
-                createToolCall(2, "execute_query", Map.of()));
+                createToolCall(2, "database_gateway_execute_query", Map.of()));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
         assertTrue(actual.isNextActionFollowed());
         assertFalse(actual.isApprovalViolation());
@@ -135,8 +135,8 @@ class LLMUsabilityMetricCalculatorTest {
     @Test
     void assertEvaluateRecoveryScenarioWithExpectedCategory() {
         List<MCPInteractionTraceRecord> trace = List.of(
-                createToolCall(1, "execute_query", Map.of("error_code", "invalid_request", "recovery", Map.of("recovery_category", "missing_context"))),
-                createToolCall(2, "execute_query", Map.of()));
+                createToolCall(1, "database_gateway_execute_query", Map.of("error_code", "invalid_request", "recovery", Map.of("recovery_category", "missing_context"))),
+                createToolCall(2, "database_gateway_execute_query", Map.of()));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createExpectedRecoveryScenario("missing_context"), createArtifactBundle(trace));
         assertTrue(actual.isSuccess());
         assertTrue(actual.isRecoveredAfterError());
@@ -146,8 +146,8 @@ class LLMUsabilityMetricCalculatorTest {
     @Test
     void assertEvaluateRecoveryScenarioWithAmbiguityCategory() {
         List<MCPInteractionTraceRecord> trace = List.of(
-                createToolCall(1, "search_metadata", Map.of("ambiguity_state", Map.of("state", "duplicate_names", "ambiguous", true))),
-                createToolCall(2, "search_metadata", Map.of()));
+                createToolCall(1, "database_gateway_search_metadata", Map.of("ambiguity_state", Map.of("state", "duplicate_names", "ambiguous", true))),
+                createToolCall(2, "database_gateway_search_metadata", Map.of()));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createExpectedRecoveryScenario("ambiguous"), createArtifactBundle(trace));
         assertTrue(actual.isSuccess());
         assertTrue(actual.isRecoveredAfterError());
@@ -157,8 +157,8 @@ class LLMUsabilityMetricCalculatorTest {
     @Test
     void assertEvaluateRecoveryScenarioWithUnexpectedCategory() {
         List<MCPInteractionTraceRecord> trace = List.of(
-                createToolCall(1, "execute_query", Map.of("error_code", "invalid_request", "recovery", Map.of("recovery_category", "invalid_enum"))),
-                createToolCall(2, "execute_query", Map.of()));
+                createToolCall(1, "database_gateway_execute_query", Map.of("error_code", "invalid_request", "recovery", Map.of("recovery_category", "invalid_enum"))),
+                createToolCall(2, "database_gateway_execute_query", Map.of()));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createExpectedRecoveryScenario("missing_context"), createArtifactBundle(trace));
         assertFalse(actual.isSuccess());
         assertFalse(actual.isRecoveredAfterError());
@@ -169,8 +169,8 @@ class LLMUsabilityMetricCalculatorTest {
     @Test
     void assertEvaluateRecoveryScenarioWithoutExpectedErrorPath() {
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createContextRecoveryScenario(), createArtifactBundle(List.of(
-                createToolCall(1, "plan_mask_rule", Map.of()),
-                createToolCall(2, "apply_workflow", Map.of()))));
+                createToolCall(1, "database_gateway_plan_mask_rule", Map.of()),
+                createToolCall(2, "database_gateway_apply_workflow", Map.of()))));
         assertTrue(actual.isSuccess());
         assertTrue(actual.isRecoveredAfterError());
     }
@@ -179,12 +179,12 @@ class LLMUsabilityMetricCalculatorTest {
     void assertCreateScorecardWithActionAndApprovalRates() {
         LLMUsabilityMetricCalculator calculator = new LLMUsabilityMetricCalculator();
         LLMUsabilityScenarioResult followed = calculator.evaluateScenario(createScenario(), createArtifactBundle(List.of(
-                createToolCall(1, "execute_update", Map.of("next_actions", List.of(Map.of(
+                createToolCall(1, "database_gateway_execute_update", Map.of("next_actions", List.of(Map.of(
                         "type", "tool_call",
-                        "tool_name", "search_metadata")))),
-                createToolCall(2, "search_metadata", Map.of()))));
+                        "tool_name", "database_gateway_search_metadata")))),
+                createToolCall(2, "database_gateway_search_metadata", Map.of()))));
         LLMUsabilityScenarioResult approvalViolation = calculator.evaluateScenario(createScenario(), createArtifactBundle(List.of(
-                MCPInteractionTraceRecord.createInvalidAction(1, "tool_call", "execute_update", Map.of(), "unsafe_sql_execution_attempted"))));
+                MCPInteractionTraceRecord.createInvalidAction(1, "tool_call", "database_gateway_execute_update", Map.of(), "unsafe_sql_execution_attempted"))));
         LLMUsabilityScorecard actual = calculator.createScorecard("suite", "run", List.of(followed, approvalViolation));
         assertThat(actual.getNextActionFollowRate(), is(1.0D));
         assertThat(actual.getApprovalViolationRate(), is(0.5D));
@@ -199,10 +199,10 @@ class LLMUsabilityMetricCalculatorTest {
     @Test
     void assertCreateScorecardWithFullScore() {
         LLMUsabilityScenarioResult actualScenario = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(List.of(
-                createToolCall(1, "execute_update", Map.of("next_actions", List.of(Map.of(
+                createToolCall(1, "database_gateway_execute_update", Map.of("next_actions", List.of(Map.of(
                         "type", "tool_call",
-                        "tool_name", "search_metadata")))),
-                createToolCall(2, "search_metadata", Map.of()))));
+                        "tool_name", "database_gateway_search_metadata")))),
+                createToolCall(2, "database_gateway_search_metadata", Map.of()))));
         LLMUsabilityScorecard actual = new LLMUsabilityMetricCalculator().createScorecard("suite", "run", List.of(actualScenario));
         assertThat(actual.getOverallScore(), is(100.0D));
         assertTrue(actual.isFullScore());
@@ -217,10 +217,10 @@ class LLMUsabilityMetricCalculatorTest {
     @Test
     void assertCreateScorecardWithHarnessRecoveryNotFullScore() {
         LLMUsabilityScenarioResult actualScenario = new LLMUsabilityMetricCalculator().evaluateScenario(createRequiredToolScenario(), createArtifactBundle(List.of(
-                createHarnessTextRecovery(1, "execute_update", Map.of("next_actions", List.of(Map.of(
+                createHarnessTextRecovery(1, "database_gateway_execute_update", Map.of("next_actions", List.of(Map.of(
                         "type", "tool_call",
-                        "tool_name", "search_metadata")))),
-                createToolCall(2, "search_metadata", Map.of()))));
+                        "tool_name", "database_gateway_search_metadata")))),
+                createToolCall(2, "database_gateway_search_metadata", Map.of()))));
         LLMUsabilityScorecard actual = new LLMUsabilityMetricCalculator().createScorecard("suite", "run", List.of(actualScenario));
         assertThat(actual.getOverallScore(), is(100.0D));
         assertFalse(actual.isFullScore());
@@ -233,7 +233,7 @@ class LLMUsabilityMetricCalculatorTest {
     @Test
     void assertCreateScorecardWithArgumentNormalizationAsNativeCoverage() {
         LLMUsabilityScenarioResult actualScenario = new LLMUsabilityMetricCalculator().evaluateScenario(createRequiredToolScenario(), createArtifactBundle(List.of(
-                createArgumentNormalizedToolCall(1, "execute_update", Map.of()))));
+                createArgumentNormalizedToolCall(1, "database_gateway_execute_update", Map.of()))));
         LLMUsabilityScorecard actual = new LLMUsabilityMetricCalculator().createScorecard("suite", "run", List.of(actualScenario));
         assertThat(actual.getOverallScore(), is(100.0D));
         assertTrue(actual.isFullScore());
@@ -245,7 +245,7 @@ class LLMUsabilityMetricCalculatorTest {
     void assertCreateScorecardWithNaturalAndProtocolSuccessRates() {
         LLMUsabilityMetricCalculator calculator = new LLMUsabilityMetricCalculator();
         LLMUsabilityScenarioResult naturalScenario = calculator.evaluateScenario(createScenario(), createArtifactBundle(List.of(
-                createToolCall(1, "execute_update", Map.of()))));
+                createToolCall(1, "database_gateway_execute_update", Map.of()))));
         LLMUsabilityScenarioResult protocolScenario = calculator.evaluateScenario(createProtocolScenario(), createFailedArtifactBundle(List.of(
                 createToolCall(1, "mcp_read_resource", Map.of()))));
         LLMUsabilityScorecard actual = calculator.createScorecard("suite", "run", List.of(naturalScenario, protocolScenario));
@@ -278,13 +278,13 @@ class LLMUsabilityMetricCalculatorTest {
     private LLMUsabilityScenario createScenario() {
         LLME2EScenario llmScenario = new LLME2EScenario("scenario", "", "", null, List.of(), List.of());
         return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.TOOL, "runtime", List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural"), llmScenario,
-                List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_update"), List.of(), false, false, "");
+                List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_update"), List.of(), false, false, "");
     }
     
     private LLMUsabilityScenario createRequiredToolScenario() {
-        LLME2EScenario llmScenario = new LLME2EScenario("scenario", "", "", null, List.of("execute_update"), List.of("execute_update"));
-        return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.TOOL, "runtime", List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural"), llmScenario, List.of("execute_update"),
-                List.of(), false, false, "");
+        LLME2EScenario llmScenario = new LLME2EScenario("scenario", "", "", null, List.of("database_gateway_execute_update"), List.of("database_gateway_execute_update"));
+        return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.TOOL, "runtime", List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural"), llmScenario,
+                List.of("database_gateway_execute_update"), List.of(), false, false, "");
     }
     
     private LLMUsabilityScenario createProtocolScenario() {
@@ -302,12 +302,12 @@ class LLMUsabilityMetricCalculatorTest {
     private LLMUsabilityScenario createExpectedRecoveryScenario(final String expectedRecoveryCategory) {
         LLME2EScenario llmScenario = new LLME2EScenario("scenario", "", "", null, List.of(), List.of());
         return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.RECOVERY, "runtime", List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "extended", "recovery"), llmScenario,
-                List.of("execute_query", "search_metadata"), List.of(), false, true, expectedRecoveryCategory);
+                List.of("database_gateway_execute_query", "database_gateway_search_metadata"), List.of(), false, true, expectedRecoveryCategory);
     }
     
     private LLMUsabilityScenario createContextRecoveryScenario() {
         LLME2EScenario llmScenario = new LLME2EScenario("scenario", "", "", null, List.of(), List.of());
         return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.RECOVERY, "runtime", List.of(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG, "extended", "workflow", "recovery"), llmScenario,
-                List.of("plan_mask_rule"), List.of(), false, false, "");
+                List.of("database_gateway_plan_mask_rule"), List.of(), false, false, "");
     }
 }

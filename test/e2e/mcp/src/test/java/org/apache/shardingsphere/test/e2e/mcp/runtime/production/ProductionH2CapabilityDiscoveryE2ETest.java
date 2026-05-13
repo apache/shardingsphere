@@ -71,9 +71,9 @@ class ProductionH2CapabilityDiscoveryE2ETest extends ProductionH2RuntimeSmokeE2E
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> actual = interactionClient.listTools();
             assertOfficialToolNames(actual.stream().map(each -> String.valueOf(each.get("name"))).toList());
-            assertToolDefinition(actual, "search_metadata", "Search Metadata", "", "object_types", "array");
-            assertToolDefinition(actual, "execute_query", "Execute Read-Only SQL", "sql", "timeout_ms", "integer");
-            assertToolDefinition(actual, "execute_update", "Execute Update SQL", "sql", "timeout_ms", "integer");
+            assertToolDefinition(actual, "database_gateway_search_metadata", "Search Metadata", "", "object_types", "array");
+            assertToolDefinition(actual, "database_gateway_execute_query", "Execute Read-Only SQL", "sql", "timeout_ms", "integer");
+            assertToolDefinition(actual, "database_gateway_execute_update", "Execute Update SQL", "sql", "timeout_ms", "integer");
         }
     }
     

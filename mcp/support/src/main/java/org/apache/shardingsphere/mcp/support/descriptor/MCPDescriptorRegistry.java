@@ -19,7 +19,10 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceTemplateDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 
 import java.util.Collection;
@@ -38,13 +41,31 @@ public final class MCPDescriptorRegistry {
     
     private static final Map<String, MCPResourceDescriptor> RESOURCE_DESCRIPTORS = createResourceDescriptors();
     
+    private static final Map<String, MCPResourceExtensionDescriptor> RESOURCE_EXTENSION_DESCRIPTORS = createResourceExtensionDescriptors();
+    
     private static final Map<String, MCPToolDescriptor> TOOL_DESCRIPTORS = createToolDescriptors();
     
     private static final Map<String, MCPPromptDescriptor> PROMPT_DESCRIPTORS = createPromptDescriptors();
     
+    private static final Map<String, MCPPromptTemplateBinding> PROMPT_TEMPLATE_BINDINGS = createPromptTemplateBindings();
+    
+    private static final Map<String, MCPToolRuntimeDescriptor> TOOL_RUNTIME_DESCRIPTORS = createToolRuntimeDescriptors();
+    
     private static Map<String, MCPResourceDescriptor> createResourceDescriptors() {
-        return CATALOG.getResourceDescriptors().stream()
-                .collect(Collectors.toMap(MCPResourceDescriptor::getUriTemplate, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getResourceDescriptors().size(), 1F)));
+        Map<String, MCPResourceDescriptor> result = new LinkedHashMap<>(CATALOG.getResourceDescriptors().size() + CATALOG.getResourceTemplateDescriptors().size(), 1F);
+        for (MCPFixedResourceDescriptor each : CATALOG.getResourceDescriptors()) {
+            result.put(each.getUri(), each);
+        }
+        for (MCPResourceTemplateDescriptor each : CATALOG.getResourceTemplateDescriptors()) {
+            result.put(each.getUriTemplate(), each);
+        }
+        return result;
+    }
+    
+    private static Map<String, MCPResourceExtensionDescriptor> createResourceExtensionDescriptors() {
+        return CATALOG.getResourceExtensionDescriptors().stream()
+                .collect(Collectors.toMap(MCPResourceExtensionDescriptor::getUriOrTemplate, each -> each, (a, b) -> b,
+                        () -> new LinkedHashMap<>(CATALOG.getResourceExtensionDescriptors().size(), 1F)));
     }
     
     private static Map<String, MCPToolDescriptor> createToolDescriptors() {
@@ -57,14 +78,35 @@ public final class MCPDescriptorRegistry {
                 .collect(Collectors.toMap(MCPPromptDescriptor::getName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getPromptDescriptors().size(), 1F)));
     }
     
+    private static Map<String, MCPPromptTemplateBinding> createPromptTemplateBindings() {
+        return CATALOG.getPromptTemplateBindings().stream()
+                .collect(Collectors.toMap(MCPPromptTemplateBinding::getPromptName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getPromptTemplateBindings().size(), 1F)));
+    }
+    
+    private static Map<String, MCPToolRuntimeDescriptor> createToolRuntimeDescriptors() {
+        return CATALOG.getToolRuntimeDescriptors().stream()
+                .collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getToolRuntimeDescriptors().size(), 1F)));
+    }
+    
     /**
      * Get required resource descriptor.
      *
-     * @param uriTemplate URI template
+     * @param uriOrTemplate resource URI or resource template URI template
      * @return resource descriptor
      */
-    public static MCPResourceDescriptor getRequiredResourceDescriptor(final String uriTemplate) {
-        return Optional.ofNullable(RESOURCE_DESCRIPTORS.get(uriTemplate)).orElseThrow(() -> new IllegalStateException(String.format("MCP resource descriptor is required for `%s`.", uriTemplate)));
+    public static MCPResourceDescriptor getRequiredResourceDescriptor(final String uriOrTemplate) {
+        return Optional.ofNullable(RESOURCE_DESCRIPTORS.get(uriOrTemplate)).orElseThrow(() -> new IllegalStateException(String.format("MCP resource descriptor is required for `%s`.", uriOrTemplate)));
+    }
+    
+    /**
+     * Get required resource extension descriptor.
+     *
+     * @param uriOrTemplate resource URI or resource template URI template
+     * @return resource extension descriptor
+     */
+    public static MCPResourceExtensionDescriptor getRequiredResourceExtensionDescriptor(final String uriOrTemplate) {
+        return Optional.ofNullable(RESOURCE_EXTENSION_DESCRIPTORS.get(uriOrTemplate)).orElseThrow(
+                () -> new IllegalStateException(String.format("MCP resource extension descriptor is required for `%s`.", uriOrTemplate)));
     }
     
     /**
@@ -84,6 +126,27 @@ public final class MCPDescriptorRegistry {
      */
     public static Collection<MCPPromptDescriptor> getPromptDescriptors() {
         return CATALOG.getPromptDescriptors();
+    }
+    
+    /**
+     * Get required prompt template binding.
+     *
+     * @param promptName prompt name
+     * @return prompt template binding
+     */
+    public static MCPPromptTemplateBinding getRequiredPromptTemplateBinding(final String promptName) {
+        return Optional.ofNullable(PROMPT_TEMPLATE_BINDINGS.get(promptName)).orElseThrow(
+                () -> new IllegalStateException(String.format("MCP prompt template binding is required for `%s`.", promptName)));
+    }
+    
+    /**
+     * Find tool runtime descriptor.
+     *
+     * @param toolName tool name
+     * @return found tool runtime descriptor
+     */
+    public static Optional<MCPToolRuntimeDescriptor> findToolRuntimeDescriptor(final String toolName) {
+        return Optional.ofNullable(TOOL_RUNTIME_DESCRIPTORS.get(toolName));
     }
     
     /**

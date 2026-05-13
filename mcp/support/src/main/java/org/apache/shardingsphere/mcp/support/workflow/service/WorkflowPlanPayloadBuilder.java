@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
@@ -177,6 +178,6 @@ public final class WorkflowPlanPayloadBuilder {
         if (WorkflowLifecycle.STATUS_CLARIFYING.equals(snapshot.getStatus())) {
             return "answer_clarification_questions";
         }
-        return WorkflowLifecycle.STATUS_PLANNED.equals(snapshot.getStatus()) ? "call_apply_workflow_preview" : "inspect_issues";
+        return WorkflowLifecycle.STATUS_PLANNED.equals(snapshot.getStatus()) ? "call_" + WorkflowToolDescriptors.APPLY_TOOL_NAME + "_preview" : "inspect_issues";
     }
 }

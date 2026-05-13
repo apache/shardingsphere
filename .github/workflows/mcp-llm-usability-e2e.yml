@@ -18,6 +18,23 @@
 name: MCP - LLM Usability E2E
 
 on:
+  pull_request:
+    branches: [ master ]
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths:
+      - '.github/workflows/mcp-llm-usability-e2e.yml'
+      - '.github/workflows/jdk21-subchain-ci.yml'
+      - 'pom.xml'
+      - 'mcp/**'
+      - 'distribution/pom.xml'
+      - 'distribution/mcp/**'
+      - 'test/e2e/pom.xml'
+      - 'test/e2e/mcp/**'
+      - '.specify/specs/*mcp*/**'
   schedule:
     - cron: '0 19 * * 1-5'
   workflow_dispatch:

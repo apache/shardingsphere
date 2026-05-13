@@ -24,15 +24,15 @@ User context:
 
 Model path:
 1. Read shardingsphere://databases/{{database}}/capabilities before execution when statement support is uncertain.
-2. Use execute_query only for one SELECT or EXPLAIN ANALYZE statement.
-3. Use execute_update with execution_mode=preview for DML, DDL, DCL, transaction control, or savepoint statements before asking the user for approval.
-4. After the user approves the preview, call execute_update with execution_mode=execute, approved_by_user=true, and the reviewed SQL.
+2. Use database_gateway_execute_query only for one SELECT or EXPLAIN ANALYZE statement.
+3. Use database_gateway_execute_update with execution_mode=preview for DML, DDL, DCL, transaction control, or savepoint statements before asking the user for approval.
+4. After the user approves the preview, call database_gateway_execute_update with execution_mode=execute, approved_by_user=true, and the reviewed SQL.
 5. Never split or batch multiple SQL statements into one MCP call.
 
 Ask-user conditions:
-- Ask before execute_update execution when the preview has not been approved.
+- Ask before database_gateway_execute_update execution when the preview has not been approved.
 - Ask when the SQL intent cannot be classified as read-only or side-effecting.
 
 Stop conditions:
-- Stop after execute_query returns the requested read-only result.
-- Stop after execute_update preview until the user approves the reviewed side effects.
+- Stop after database_gateway_execute_query returns the requested read-only result.
+- Stop after database_gateway_execute_update preview until the user approves the reviewed side effects.
