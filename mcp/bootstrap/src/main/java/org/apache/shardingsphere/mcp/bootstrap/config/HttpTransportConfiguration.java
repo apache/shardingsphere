@@ -34,56 +34,56 @@ import java.util.Objects;
  */
 @Getter
 public final class HttpTransportConfiguration {
-
+    
     private final boolean enabled;
-
+    
     private final String bindHost;
-
+    
     private final boolean allowRemoteAccess;
-
+    
     private final String accessToken;
-
+    
     private final int port;
-
+    
     private final String endpointPath;
-
+    
     private final List<String> allowedOrigins;
-
+    
     private final List<String> authorizationServers;
-
+    
     private final List<String> scopesSupported;
-
+    
     private final String protectedResource;
-
+    
     private final OAuthIntrospectionConfiguration oauthIntrospection;
-
+    
     public HttpTransportConfiguration(final boolean enabled, final String bindHost, final boolean allowRemoteAccess, final String accessToken, final int port,
                                       final String endpointPath) {
         this(enabled, bindHost, allowRemoteAccess, accessToken, port, endpointPath, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
                 new OAuthIntrospectionConfiguration());
     }
-
+    
     public HttpTransportConfiguration(final boolean enabled, final String bindHost, final boolean allowRemoteAccess, final String accessToken, final int port,
                                       final String endpointPath, final Collection<String> authorizationServers, final Collection<String> scopesSupported,
                                       final String protectedResource) {
         this(enabled, bindHost, allowRemoteAccess, accessToken, port, endpointPath, Collections.emptyList(), authorizationServers, scopesSupported, protectedResource,
                 new OAuthIntrospectionConfiguration());
     }
-
+    
     public HttpTransportConfiguration(final boolean enabled, final String bindHost, final boolean allowRemoteAccess, final String accessToken, final int port,
                                       final String endpointPath, final Collection<String> authorizationServers, final Collection<String> scopesSupported,
                                       final String protectedResource, final OAuthIntrospectionConfiguration oauthIntrospection) {
         this(enabled, bindHost, allowRemoteAccess, accessToken, port, endpointPath, Collections.emptyList(), authorizationServers, scopesSupported, protectedResource,
                 oauthIntrospection);
     }
-
+    
     public HttpTransportConfiguration(final boolean enabled, final String bindHost, final boolean allowRemoteAccess, final String accessToken, final int port,
                                       final String endpointPath, final Collection<String> allowedOrigins, final Collection<String> authorizationServers,
                                       final Collection<String> scopesSupported, final String protectedResource) {
         this(enabled, bindHost, allowRemoteAccess, accessToken, port, endpointPath, allowedOrigins, authorizationServers, scopesSupported, protectedResource,
                 new OAuthIntrospectionConfiguration());
     }
-
+    
     public HttpTransportConfiguration(final boolean enabled, final String bindHost, final boolean allowRemoteAccess, final String accessToken, final int port,
                                       final String endpointPath, final Collection<String> allowedOrigins, final Collection<String> authorizationServers,
                                       final Collection<String> scopesSupported, final String protectedResource, final OAuthIntrospectionConfiguration oauthIntrospection) {
@@ -99,7 +99,7 @@ public final class HttpTransportConfiguration {
         this.protectedResource = Objects.toString(protectedResource, "").trim();
         this.oauthIntrospection = null == oauthIntrospection ? new OAuthIntrospectionConfiguration() : oauthIntrospection;
     }
-
+    
     /**
      * Validate HTTP transport configuration.
      */
@@ -125,7 +125,7 @@ public final class HttpTransportConfiguration {
         ShardingSpherePreconditions.checkState(!oauthIntrospection.isEnabled() || hasValidOAuthIntrospection(),
                 () -> new IllegalArgumentException("Property `transport.http.oauthIntrospection` must include a valid endpoint, clientId, clientSecret, and non-negative cacheTtlMillis."));
     }
-
+    
     /**
      * Judge whether OAuth protected resource metadata is enabled.
      *
@@ -134,35 +134,35 @@ public final class HttpTransportConfiguration {
     public boolean isProtectedResourceMetadataEnabled() {
         return hasAuthorizationServers();
     }
-
+    
     private boolean isLoopbackBinding() {
         return HttpTransportHostUtils.isLoopbackHost(bindHost);
     }
-
+    
     private boolean hasAccessToken() {
         return !Objects.toString(accessToken, "").trim().isEmpty();
     }
-
+    
     private boolean hasAllowedOrigins() {
         return !allowedOrigins.isEmpty();
     }
-
+    
     private boolean hasValidAllowedOrigins() {
         return allowedOrigins.stream().allMatch(HttpTransportOriginUtils::isValidOrigin);
     }
-
+    
     private boolean hasAuthorization() {
         return hasAccessToken() || oauthIntrospection.isEnabled();
     }
-
+    
     private boolean hasAuthorizationServers() {
         return !authorizationServers.isEmpty();
     }
-
+    
     private boolean hasHttpsAuthorizationServers() {
         return authorizationServers.stream().allMatch(this::isHttpsAuthorizationServer);
     }
-
+    
     private boolean isHttpsAuthorizationServer(final String value) {
         try {
             URI uri = URI.create(value);
@@ -172,12 +172,12 @@ public final class HttpTransportConfiguration {
             return false;
         }
     }
-
+    
     private boolean hasValidOAuthIntrospection() {
         return isValidIntrospectionEndpoint(oauthIntrospection.getEndpoint()) && !oauthIntrospection.getClientId().isEmpty() && !oauthIntrospection.getClientSecret().isEmpty()
                 && oauthIntrospection.getCacheTtlMillis() >= 0L && isValidExpectedIssuer();
     }
-
+    
     private boolean isValidIntrospectionEndpoint(final String value) {
         try {
             URI uri = URI.create(value);
@@ -188,11 +188,11 @@ public final class HttpTransportConfiguration {
             return false;
         }
     }
-
+    
     private boolean isValidExpectedIssuer() {
         return oauthIntrospection.getExpectedIssuer().isEmpty() || isHttpsAuthorizationServer(oauthIntrospection.getExpectedIssuer());
     }
-
+    
     private List<String> createTextList(final Collection<String> values) {
         return null == values ? Collections.emptyList() : values.stream().map(each -> Objects.toString(each, "").trim()).filter(each -> !each.isEmpty()).toList();
     }

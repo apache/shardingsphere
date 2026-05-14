@@ -135,6 +135,7 @@
 
 - [x] T040 [P] [US3] Add schema validation tests for representative `structuredContent` payloads of every tool declaring `outputSchema`.
   Paths: `mcp/core/src/test/java/`, `mcp/features/*/src/test/java/`, `mcp/support/src/test/java/`
+  Cross-link: package 016 T035 keeps output-schema strictness owned by 014; 016 only adds input-schema dispatch enforcement.
 - [x] T041 [P] [US3] Add or strengthen MySQL, STDIO, distribution, Docker or registry smoke, remote HTTP, and live LLM PR command documentation and smoke assertions.
   Path: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/`
 - [x] T042 [P] [US3] Add remote HTTP security coverage for token, origin, protocol-version, session, and DELETE behavior.
@@ -147,6 +148,7 @@
 - [x] T044 [US3] Validate returned `structuredContent` against declared `outputSchema` before exposing tool results.
   Paths: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/`,
   `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/`
+  Cross-link: package 016 T034 adds model-correctable input-schema errors before dispatch and does not change 014 output-schema behavior.
 - [x] T045 [US3] Add or update E2E evidence matrix documentation for PR path filters, running-mode defaults, commands, artifacts, and duration budgets.
   Path: `.specify/specs/014-mcp-standard-and-e2e-hardening/plan.md`
 - [x] T046 [US3] Add timeout and artifact expectations for MySQL, STDIO, distribution, Docker or registry smoke, remote HTTP, and live LLM running modes.

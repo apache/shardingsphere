@@ -48,8 +48,6 @@ public final class YamlMCPResourceDescriptor {
     
     private YamlMCPAnnotations annotations;
     
-    private Long size;
-    
     private Map<String, Object> meta = new LinkedHashMap<>();
     
     private YamlMCPResourceExtensionDescriptor extension;

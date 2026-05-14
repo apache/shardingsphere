@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidMetadataObjectTypesException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
@@ -95,6 +96,43 @@ final class MCPBasicRecoveryPayloadFactory {
     static Map<String, Object> createInvalidToolArgumentRecovery(final MCPInvalidToolArgumentException cause) {
         return createInvalidIntegerArgumentRecovery(cause.getArgumentPath(), cause.getSuggestedValue(), cause.getSourceTool(), cause.getTargetTool(), cause.getMinimumValue(),
                 cause.getMaximumValue());
+    }
+    
+    static Map<String, Object> createToolArgumentContractViolationRecovery(final MCPToolArgumentContractViolationException cause) {
+        Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(cause.getCategory(), createToolArgumentContractModelAction(cause));
+        result.put("field", cause.getArgumentPath());
+        result.put("argument_path", cause.getArgumentPath());
+        result.put("tool_name", cause.getToolName());
+        if (!cause.getExpectedType().isEmpty()) {
+            result.put("expected_type", cause.getExpectedType());
+        }
+        if (!cause.getAllowedValues().isEmpty()) {
+            result.put("allowed_values", cause.getAllowedValues());
+        }
+        if (!cause.getSuggestedArguments().isEmpty()) {
+            result.put("suggested_arguments", cause.getSuggestedArguments());
+        }
+        result.put("next_actions", createToolArgumentContractNextActions(cause));
+        result.put("requires_user_approval", false);
+        result.put("ask_user_when_uncertain", cause.getSuggestedArguments().isEmpty());
+        return result;
+    }
+    
+    private static String createToolArgumentContractModelAction(final MCPToolArgumentContractViolationException cause) {
+        if ("unknown_argument".equals(cause.getCategory())) {
+            return "Remove arguments that are not declared by the tool inputSchema before retrying.";
+        }
+        if ("invalid_enum_value".equals(cause.getCategory())) {
+            return "Retry with one of the allowed enum values, or omit the optional argument when safe.";
+        }
+        return "Retry with a value that matches the declared inputSchema type.";
+    }
+    
+    private static List<Map<String, Object>> createToolArgumentContractNextActions(final MCPToolArgumentContractViolationException cause) {
+        if (cause.getSuggestedArguments().isEmpty()) {
+            return List.of(MCPNextActionUtils.askUser("Ask the user for a value that matches the tool inputSchema.", List.of(cause.getArgumentPath()), false));
+        }
+        return List.of(MCPNextActionUtils.retryTool(cause.getToolName(), "Retry with arguments that match the tool inputSchema.", cause.getSuggestedArguments(), false));
     }
     
     static Map<String, Object> createMissingArgumentRecovery(final String argumentName) {

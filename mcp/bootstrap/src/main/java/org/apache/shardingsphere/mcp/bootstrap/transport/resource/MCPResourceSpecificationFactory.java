@@ -85,9 +85,6 @@ public final class MCPResourceSpecificationFactory {
                 .description(descriptor.getDescription())
                 .mimeType(descriptor.getMimeType());
         appendResourceAnnotations(result, descriptor.getAnnotations());
-        if (null != descriptor.getSize()) {
-            result.size(descriptor.getSize());
-        }
         if (!descriptor.getMeta().isEmpty()) {
             result.meta(descriptor.getMeta());
         }

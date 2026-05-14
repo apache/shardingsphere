@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidMetadataO
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMissingToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMultipleSQLStatementsException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUserApprovalRequiredException;
@@ -95,6 +96,9 @@ final class MCPRecoveryPayloadFactory {
         }
         if (cause instanceof MCPInvalidToolArgumentException) {
             return MCPBasicRecoveryPayloadFactory.createInvalidToolArgumentRecovery((MCPInvalidToolArgumentException) cause);
+        }
+        if (cause instanceof MCPToolArgumentContractViolationException) {
+            return MCPBasicRecoveryPayloadFactory.createToolArgumentContractViolationRecovery((MCPToolArgumentContractViolationException) cause);
         }
         if (cause instanceof MCPMissingToolArgumentException) {
             return MCPBasicRecoveryPayloadFactory.createMissingArgumentRecovery(((MCPMissingToolArgumentException) cause).getArgumentName());

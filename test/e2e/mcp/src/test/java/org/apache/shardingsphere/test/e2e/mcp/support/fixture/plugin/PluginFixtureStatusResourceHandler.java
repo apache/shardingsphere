@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
+import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
@@ -47,7 +47,7 @@ public final class PluginFixtureStatusResourceHandler implements MCPResourceHand
     public MCPResourceDescriptor getResourceDescriptor() {
         return new MCPFixedResourceDescriptor(URI_PATTERN, "test-fixture-status", "Test Fixture Status",
                 "Read the packaged MCP test fixture status used by e2e plugin discovery tests.",
-                List.of(new MCPIcon("https://example.invalid/test-fixture-status.png", "image/png", List.of("64x64"), "light")), "application/json", MCPAnnotations.EMPTY, null,
+                List.of(new MCPIcon("https://example.invalid/test-fixture-status.png", "image/png", List.of("64x64"), "light")), "application/json", MCPAnnotations.EMPTY,
                 Collections.emptyMap());
     }
     

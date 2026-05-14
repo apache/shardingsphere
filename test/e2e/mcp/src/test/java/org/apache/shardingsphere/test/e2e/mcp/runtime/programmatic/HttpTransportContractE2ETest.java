@@ -81,7 +81,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(actual.statusCode(), is(400));
         assertFalse(actual.headers().firstValue("MCP-Session-Id").isPresent());
     }
-
+    
     @Test
     void assertRejectInitializeWithUnsupportedAcceptHeader() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -91,7 +91,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(actual.statusCode(), is(400));
         assertFalse(actual.headers().firstValue("MCP-Session-Id").isPresent());
     }
-
+    
     @Test
     void assertRejectInitializeWithSseOnlyAcceptHeader() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -101,7 +101,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(actual.statusCode(), is(400));
         assertFalse(actual.headers().firstValue("MCP-Session-Id").isPresent());
     }
-
+    
     @Test
     void assertRejectEventStreamWithoutAcceptHeader() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -110,7 +110,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpResponse<String> actual = openEventStream(httpClient, createSessionHeaders(sessionId));
         assertThat(actual.statusCode(), is(400));
     }
-
+    
     @Test
     void assertRejectEventStreamWithUnsupportedAcceptHeader() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -313,6 +313,28 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(String.valueOf(retryAction.get("type")), is("tool_call"));
         assertThat(castToMap(retryAction.get("arguments")), is(expectedArguments));
         assertTrue((Boolean) retryAction.get("requires_user_approval"));
+    }
+    
+    @Test
+    void assertRejectToolCallWithInvalidInputSchema() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata",
+                Map.of("query", "order", "object_types", List.of("TABLE")));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> structuredContent = getStructuredContent(actual.body());
+        assertThat(String.valueOf(structuredContent.get("error_code")), is("invalid_request"));
+        assertModelFacingPayloadContract(structuredContent);
+        Map<String, Object> recovery = castToMap(structuredContent.get("recovery"));
+        assertThat(recovery.get("category"), is("invalid_enum_value"));
+        assertThat(recovery.get("field"), is("object_types[0]"));
+        assertThat(recovery.get("allowed_values"), is(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
+        assertThat(recovery.get("suggested_arguments"), is(Map.of("query", "order")));
+        Map<String, Object> retryAction = castToMapList(recovery.get("next_actions")).iterator().next();
+        assertThat(String.valueOf(retryAction.get("type")), is("tool_call"));
+        assertThat(castToMap(retryAction.get("arguments")), is(Map.of("query", "order")));
+        assertFalse((Boolean) retryAction.get("requires_user_approval"));
     }
     
     @Test

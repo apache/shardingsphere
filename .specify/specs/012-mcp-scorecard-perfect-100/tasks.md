@@ -102,6 +102,11 @@
 - [x] T087 Update README, README_ZH, protocol evidence, scorecard, evidence ledger, and mcp-builder artifacts only after passing implementation evidence exists.
 - [x] T088 Run scoped Maven tests plus Checkstyle and Spotless for `mcp/bootstrap`, `mcp/core`, `mcp/support`, and `test/e2e/mcp`.
 
+### Package 016 Cross-Link
+
+- Package 016 T023 revalidated that inactive, expired, wrong issuer, introspection failure, challenge, and no-token-passthrough evidence remains owned here
+  by T080-T088 and must not be duplicated inside package 016.
+
 ## Dependencies
 
 - Phase 1 blocks all score updates.

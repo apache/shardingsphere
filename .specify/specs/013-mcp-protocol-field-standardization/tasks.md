@@ -171,6 +171,7 @@
   Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/`
 - [ ] T043 [P] [US3] Add tests for `inputSchema` structural validation, the supported runtime-enforced schema subset, and `outputSchema` structural validation.
   Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/`
+  Cross-link: package 016 T035 enforces currently declared runtime enum values exactly at dispatch time; 013 still owns canonical public casing selection and descriptor-load validation.
 - [ ] T048 [P] [US3] Add tests for strict raw YAML key rejection and local tool name policy.
   Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/`
 
@@ -201,6 +202,7 @@
   Path: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/resource/handler/`
 - [ ] T051 [P] [US4] Update tool registry tests for argument validation through the compiled argument contract and `outputSchema` conformance for `structuredContent`.
   Path: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/tool/handler/`
+  Cross-link: package 016 adds registry-path input-schema enforcement evidence; 013 keeps the broader compiled-contract cleanup tied to descriptor field standardization.
 - [ ] T052 [P] [US4] Preserve workflow preview, approval, and validation tests after `workflowRole` leaves public `meta`.
   Path: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/tool/handler/workflow/`
 
@@ -210,6 +212,7 @@
   Path: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/resource/handler/ResourceHandlerRegistry.java`
 - [ ] T054 [US4] Replace tool registry dependence on `fields` with a compiled internal argument contract derived from `inputSchema`.
   Path: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/ToolHandlerRegistry.java`
+  Cross-link: package 016 T033 uses the existing registry contract to enforce required fields, primitive types, enum values, and unknown-field policy without changing descriptor ownership.
 - [ ] T055 [US4] Remove transport-layer dependence on public `workflowRole` and descriptor `fields` during elicitation.
   Path: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolElicitationHandler.java`
 - [ ] T056 [US4] Keep runtime approval and destructive-operation policy in typed internal configuration.

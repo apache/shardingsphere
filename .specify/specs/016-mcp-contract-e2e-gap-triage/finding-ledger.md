@@ -59,6 +59,9 @@ Owner states:
     `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`.
   - Evidence gate: no form-mode request asks for passwords, API keys, access tokens, or payment credentials.
     Sensitive collection uses URL mode, OAuth, environment, or explicit out-of-band configuration.
+    Implemented by T020/T024 on 2026-05-14: form elicitation now runs only for non-sensitive clarification questions;
+    questions marked `secret`, using `input_type=secret`, or naming password/token/key/secret/credential fields stay in the tool response
+    so the client can collect values through URL mode when available, a secret manager, a protected environment variable, or an operator-controlled channel.
 
 - **MCE-P0-002 Strict Streamable HTTP negotiation**
   - Owner: 016, new-owner.
@@ -92,6 +95,8 @@ Owner states:
     `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization`.
   - Evidence gate: 012 must cover inactive, expired, wrong issuer, wrong audience/resource, insufficient scope,
     introspection failure, 401/403 challenge, and no token passthrough.
+    Cross-linked by T023 on 2026-05-14: package 016 keeps this as tracked-only, while package 012 remains the implementation and evidence owner
+    through its complete OAuth token validation gate.
 
 - **MCE-P1-001 Input-schema enforcement**
   - Owner: 016, new-owner.
@@ -105,6 +110,10 @@ Owner states:
     `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactoryTest.java`;
     `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportContractE2ETest.java`.
   - Evidence gate: required fields, enum values, types, and unknown-field policy are enforced before handler execution.
+  - Closure evidence on 2026-05-14:
+    `MCPToolArgumentContract` enforces the supported `inputSchema` subset before handler dispatch;
+    `MCPToolArgumentContractViolationException` and recovery payload conversion return model-correctable errors;
+    `ToolHandlerRegistryTest`, `MCPToolSpecificationFactoryTest`, and `HttpTransportContractE2ETest` cover registry, SDK-facing, and HTTP paths.
 
 - **MCE-P1-002 Output-schema strictness**
   - Owner: 014, tracked-only.
@@ -118,6 +127,7 @@ Owner states:
     `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml`;
     `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`.
   - Evidence gate: 014 records validation evidence or removes non-conforming schemas.
+    Cross-linked by T035 on 2026-05-14: package 016 does not expand output-schema behavior; package 014 remains the strictness and descriptor conformance owner.
 
 - **MCE-P1-003 Canonical enum casing**
   - Owner: 013, tracked-only.
@@ -132,6 +142,8 @@ Owner states:
     `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/tool/handler/ToolHandlerRegistryTest.java`;
     `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support`.
   - Evidence gate: one canonical public casing for `object_types` and related enums.
+    Cross-linked by T035 on 2026-05-14: package 016 rejects values that do not exactly match declared enum entries, while package 013 remains the owner
+    for choosing and documenting canonical public casing across descriptors, clients, scripts, and docs.
 
 - **MCE-P1-004 Lifecycle initialized evidence**
   - Owner: 016, new-owner.

@@ -31,7 +31,7 @@ class MCPResourceDescriptorTest {
     @Test
     void assertGetUriForFixedResource() {
         MCPFixedResourceDescriptor actual = new MCPFixedResourceDescriptor("shardingsphere://databases", "databases", "Databases", "List databases.", Collections.emptyList(),
-                "application/json", MCPAnnotations.EMPTY, null, Collections.emptyMap());
+                "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());
         assertThat(actual.getUri(), is("shardingsphere://databases"));
     }
     
@@ -45,7 +45,7 @@ class MCPResourceDescriptorTest {
     @Test
     void assertMetaIsKeptAsMetadataOnly() {
         MCPResourceDescriptor actual = new MCPFixedResourceDescriptor("shardingsphere://features/encrypt/algorithms", "encrypt-algorithms", "Encrypt Algorithms",
-                "List encrypt algorithms.", Collections.emptyList(), "application/json", MCPAnnotations.EMPTY, null, Map.of("org.apache.shardingsphere/runtime-visibility", "ShardingSphere-Proxy"));
+                "List encrypt algorithms.", Collections.emptyList(), "application/json", MCPAnnotations.EMPTY, Map.of("org.apache.shardingsphere/runtime-visibility", "ShardingSphere-Proxy"));
         assertThat(actual.getMeta(), is(Map.of("org.apache.shardingsphere/runtime-visibility", "ShardingSphere-Proxy")));
     }
 }

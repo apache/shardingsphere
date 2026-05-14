@@ -227,8 +227,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
             result.put("parent_resource", MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent",
                     "Read the parent metadata resource before broadening or correcting the request.", "parent_resource"));
         }
-        List<Map<String, Object>> nextResources = MCPDescriptorRegistry.getResourceNavigationDescriptors().stream()
-                .filter(each -> uriOrTemplate.equals(each.getFrom()))
+        List<Map<String, Object>> nextResources = MCPDescriptorRegistry.getResourceNavigationDescriptors(uriOrTemplate).stream()
                 .filter(each -> each.getTo().startsWith("shardingsphere://"))
                 .map(each -> createNextResourceHint(each.getTo(), each.getDescription(), uriVariables)).flatMap(Optional::stream).toList();
         if (!nextResources.isEmpty()) {

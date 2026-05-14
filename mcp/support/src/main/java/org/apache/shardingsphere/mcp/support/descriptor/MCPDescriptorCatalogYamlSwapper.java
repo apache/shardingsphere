@@ -21,8 +21,7 @@ import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceTemplateDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPAnnotations;
@@ -44,6 +43,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 final class MCPDescriptorCatalogYamlSwapper {
     
@@ -51,8 +51,8 @@ final class MCPDescriptorCatalogYamlSwapper {
     }
     
     static MCPDescriptorCatalog swap(final Collection<YamlMCPDescriptorCatalog> yamlCatalogs) {
-        Collection<MCPFixedResourceDescriptor> resourceDescriptors = new LinkedList<>();
-        Collection<MCPResourceTemplateDescriptor> resourceTemplateDescriptors = new LinkedList<>();
+        Collection<MCPResourceDescriptor> resourceDescriptors = new LinkedList<>();
+        Collection<MCPResourceDescriptor> resourceTemplateDescriptors = new LinkedList<>();
         Collection<MCPResourceExtensionDescriptor> resourceExtensionDescriptors = new LinkedList<>();
         Collection<MCPToolDescriptor> toolDescriptors = new LinkedList<>();
         Collection<MCPPromptDescriptor> promptDescriptors = new LinkedList<>();
@@ -73,19 +73,19 @@ final class MCPDescriptorCatalogYamlSwapper {
                 completionTargetDescriptors, resourceNavigationDescriptors, toolRuntimeDescriptors);
     }
     
-    private static void swapFixedResourceDescriptors(final Collection<YamlMCPResourceDescriptor> yamlDescriptors, final Collection<MCPFixedResourceDescriptor> resources,
+    private static void swapFixedResourceDescriptors(final Collection<YamlMCPResourceDescriptor> yamlDescriptors, final Collection<MCPResourceDescriptor> resources,
                                                      final Collection<MCPResourceExtensionDescriptor> resourceExtensions) {
         for (YamlMCPResourceDescriptor each : emptyIfNull(yamlDescriptors)) {
-            resources.add(new MCPFixedResourceDescriptor(each.getUri(), each.getName(), each.getTitle(), each.getDescription(), swapIcons(each.getIcons()), each.getMimeType(),
-                    swapResourceAnnotations(each.getAnnotations()), each.getSize(), emptyMapIfNull(each.getMeta())));
+            resources.add(new MCPResourceDescriptor(each.getUri(), each.getName(), each.getTitle(), each.getDescription(), swapIcons(each.getIcons()), each.getMimeType(),
+                    swapResourceAnnotations(each.getAnnotations()), emptyMapIfNull(each.getMeta())));
             resourceExtensions.add(swapResourceExtension(each.getUri(), each.getExtension()));
         }
     }
     
-    private static void swapResourceTemplateDescriptors(final Collection<YamlMCPResourceDescriptor> yamlDescriptors, final Collection<MCPResourceTemplateDescriptor> resourceTemplates,
+    private static void swapResourceTemplateDescriptors(final Collection<YamlMCPResourceDescriptor> yamlDescriptors, final Collection<MCPResourceDescriptor> resourceTemplates,
                                                         final Collection<MCPResourceExtensionDescriptor> resourceExtensions) {
         for (YamlMCPResourceDescriptor each : emptyIfNull(yamlDescriptors)) {
-            resourceTemplates.add(new MCPResourceTemplateDescriptor(each.getUriTemplate(), each.getName(), each.getTitle(), each.getDescription(), swapIcons(each.getIcons()), each.getMimeType(),
+            resourceTemplates.add(new MCPResourceDescriptor(each.getUriTemplate(), each.getName(), each.getTitle(), each.getDescription(), swapIcons(each.getIcons()), each.getMimeType(),
                     swapResourceAnnotations(each.getAnnotations()), emptyMapIfNull(each.getMeta())));
             resourceExtensions.add(swapResourceExtension(each.getUriTemplate(), each.getExtension()));
         }
@@ -131,11 +131,7 @@ final class MCPDescriptorCatalogYamlSwapper {
     }
     
     private static List<MCPIcon> swapIcons(final Collection<YamlMCPIcon> yamlIcons) {
-        List<MCPIcon> result = new LinkedList<>();
-        for (YamlMCPIcon each : emptyIfNull(yamlIcons)) {
-            result.add(new MCPIcon(each.getSrc(), each.getMimeType(), List.copyOf(emptyIfNull(each.getSizes())), each.getTheme()));
-        }
-        return result;
+        return emptyIfNull(yamlIcons).stream().map(each -> new MCPIcon(each.getSrc(), each.getMimeType(), List.copyOf(emptyIfNull(each.getSizes())), each.getTheme())).collect(Collectors.toList());
     }
     
     private static List<MCPPromptArgumentDescriptor> swapPromptArguments(final Collection<YamlMCPPromptArgumentDescriptor> yamlArguments) {

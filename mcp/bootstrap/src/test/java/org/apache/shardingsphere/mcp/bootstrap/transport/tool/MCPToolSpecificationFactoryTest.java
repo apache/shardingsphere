@@ -129,6 +129,26 @@ class MCPToolSpecificationFactoryTest {
     }
     
     @Test
+    void assertCreateToolSpecificationsRejectInvalidInputSchema() {
+        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
+        when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
+        SyncToolSpecification actualSpecification = findToolSpecification(new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications(), "database_gateway_search_metadata");
+        McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
+        when(exchange.sessionId()).thenReturn("session-id");
+        CallToolResult actual = actualSpecification.callHandler().apply(exchange,
+                new CallToolRequest("database_gateway_search_metadata", Map.of("query", "order", "object_types", List.of("TABLE"))));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> actualPayload = (Map<String, Object>) actual.structuredContent();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actualPayload.get("recovery");
+        assertThat(actualPayload.get("error_code"), is("invalid_request"));
+        assertThat(actualRecovery.get("category"), is("invalid_enum_value"));
+        assertThat(actualRecovery.get("field"), is("object_types[0]"));
+        assertThat(actualRecovery.get("allowed_values"), is(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
+        assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("query", "order")));
+        assertTrue(actual.isError());
+    }
+    
+    @Test
     void assertCreateToolSpecificationsValidateStructuredOutput() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
             mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createStrictToolDescriptor("database_gateway_search_metadata")));
@@ -310,6 +330,10 @@ class MCPToolSpecificationFactoryTest {
         when(result.getClientCapabilities()).thenReturn(McpSchema.ClientCapabilities.builder().elicitation().build());
         when(result.createElicitation(any())).thenReturn(elicitationResult);
         return result;
+    }
+    
+    private SyncToolSpecification findToolSpecification(final List<SyncToolSpecification> specifications, final String toolName) {
+        return specifications.stream().filter(each -> toolName.equals(each.tool().name())).findFirst().orElseThrow();
     }
     
     private Map<String, Object> createClarifyingPayload() {

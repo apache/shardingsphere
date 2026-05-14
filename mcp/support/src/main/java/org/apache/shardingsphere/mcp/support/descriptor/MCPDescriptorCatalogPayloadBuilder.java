@@ -100,14 +100,13 @@ final class MCPDescriptorCatalogPayloadBuilder {
     }
     
     private Map<String, Object> toResourcePayload(final MCPFixedResourceDescriptor descriptor) {
-        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("uri", descriptor.getUri());
         result.put("name", descriptor.getName());
         result.put("title", descriptor.getTitle());
         result.put("description", descriptor.getDescription());
         putIfNotEmpty(result, "icons", descriptor.getIcons().stream().map(this::toIconPayload).toList());
         result.put("mimeType", descriptor.getMimeType());
-        putIfPresent(result, "size", descriptor.getSize());
         if (!descriptor.getAnnotations().isEmpty()) {
             result.put("annotations", toResourceAnnotationsPayload(descriptor.getAnnotations()));
         }

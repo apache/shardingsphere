@@ -117,7 +117,7 @@ class MCPResourceSpecificationFactoryTest {
     
     private MCPResourceDescriptor createResourceDescriptor() {
         return new MCPFixedResourceDescriptor("shardingsphere://capabilities", "server-capability-catalog", "Server Capability Catalog",
-                "Read the model-facing capability catalog.", Collections.emptyList(), "application/json", MCPAnnotations.EMPTY, null, Collections.emptyMap());
+                "Read the model-facing capability catalog.", Collections.emptyList(), "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());
     }
     
     private MCPResourceDescriptor createResourceTemplateDescriptor() {

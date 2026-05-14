@@ -27,6 +27,8 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,7 +48,11 @@ public final class MCPDescriptorRegistry {
     private static final Map<String, MCPToolDescriptor> TOOL_DESCRIPTORS = createToolDescriptors();
     
     private static final Map<String, MCPPromptDescriptor> PROMPT_DESCRIPTORS = createPromptDescriptors();
-    
+
+    private static final Map<String, MCPCompletionTargetDescriptor> COMPLETION_TARGET_DESCRIPTORS = createCompletionTargetDescriptors();
+
+    private static final Map<String, Collection<MCPResourceNavigationDescriptor>> RESOURCE_NAVIGATION_DESCRIPTORS_BY_FROM = createResourceNavigationDescriptors();
+
     private static final Map<String, MCPPromptTemplateBinding> PROMPT_TEMPLATE_BINDINGS = createPromptTemplateBindings();
     
     private static final Map<String, MCPToolRuntimeDescriptor> TOOL_RUNTIME_DESCRIPTORS = createToolRuntimeDescriptors();
@@ -77,7 +83,25 @@ public final class MCPDescriptorRegistry {
         return CATALOG.getPromptDescriptors().stream()
                 .collect(Collectors.toMap(MCPPromptDescriptor::getName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getPromptDescriptors().size(), 1F)));
     }
-    
+
+    private static Map<String, MCPCompletionTargetDescriptor> createCompletionTargetDescriptors() {
+        return CATALOG.getCompletionTargetDescriptors().stream()
+                .collect(Collectors.toMap(MCPDescriptorRegistry::createCompletionTargetDescriptorKey, each -> each, (a, b) -> b,
+                        () -> new LinkedHashMap<>(CATALOG.getCompletionTargetDescriptors().size(), 1F)));
+    }
+
+    private static String createCompletionTargetDescriptorKey(final MCPCompletionTargetDescriptor descriptor) {
+        return descriptor.getReferenceType() + ":" + descriptor.getReference();
+    }
+
+    private static Map<String, Collection<MCPResourceNavigationDescriptor>> createResourceNavigationDescriptors() {
+        Map<String, Collection<MCPResourceNavigationDescriptor>> result = new LinkedHashMap<>(CATALOG.getResourceNavigationDescriptors().size(), 1F);
+        for (MCPResourceNavigationDescriptor each : CATALOG.getResourceNavigationDescriptors()) {
+            result.computeIfAbsent(each.getFrom(), unused -> new LinkedList<>()).add(each);
+        }
+        return result;
+    }
+
     private static Map<String, MCPPromptTemplateBinding> createPromptTemplateBindings() {
         return CATALOG.getPromptTemplateBindings().stream()
                 .collect(Collectors.toMap(MCPPromptTemplateBinding::getPromptName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getPromptTemplateBindings().size(), 1F)));
@@ -125,7 +149,7 @@ public final class MCPDescriptorRegistry {
      * @return prompt descriptors
      */
     public static Collection<MCPPromptDescriptor> getPromptDescriptors() {
-        return CATALOG.getPromptDescriptors();
+        return PROMPT_DESCRIPTORS.values();
     }
     
     /**
@@ -155,7 +179,7 @@ public final class MCPDescriptorRegistry {
      * @return completion target descriptors
      */
     public static Collection<MCPCompletionTargetDescriptor> getCompletionTargetDescriptors() {
-        return CATALOG.getCompletionTargetDescriptors();
+        return COMPLETION_TARGET_DESCRIPTORS.values();
     }
     
     /**
@@ -164,7 +188,17 @@ public final class MCPDescriptorRegistry {
      * @return resource navigation descriptors
      */
     public static Collection<MCPResourceNavigationDescriptor> getResourceNavigationDescriptors() {
-        return CATALOG.getResourceNavigationDescriptors();
+        return RESOURCE_NAVIGATION_DESCRIPTORS_BY_FROM.values().stream().flatMap(Collection::stream).toList();
+    }
+
+    /**
+     * Get resource navigation descriptors by source.
+     *
+     * @param from source resource URI, resource template, tool name or prompt name
+     * @return resource navigation descriptors
+     */
+    public static Collection<MCPResourceNavigationDescriptor> getResourceNavigationDescriptors(final String from) {
+        return RESOURCE_NAVIGATION_DESCRIPTORS_BY_FROM.getOrDefault(from, List.of());
     }
     
     /**

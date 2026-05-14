@@ -30,26 +30,26 @@ import java.util.LinkedList;
 @Getter
 @Setter
 public final class YamlHttpTransportConfiguration implements YamlConfiguration {
-
+    
     private boolean enabled;
-
+    
     private String bindHost;
-
+    
     private boolean allowRemoteAccess;
-
+    
     private String accessToken;
-
+    
     private Integer port;
-
+    
     private String endpointPath;
-
+    
     private Collection<String> allowedOrigins = new LinkedList<>();
-
+    
     private Collection<String> authorizationServers = new LinkedList<>();
-
+    
     private Collection<String> scopesSupported = new LinkedList<>();
-
+    
     private String protectedResource;
-
+    
     private YamlOAuthIntrospectionConfiguration oauthIntrospection = new YamlOAuthIntrospectionConfiguration();
 }

@@ -150,6 +150,15 @@ class MCPDescriptorYamlKeyValidatorTest {
     }
     
     @Test
+    void assertValidateUnknownResourceSizeKey() {
+        assertUnknownKey("""
+                resources:
+                  - uri: shardingsphere://capabilities
+                    size: 128
+                """, "$.resources[0].size");
+    }
+    
+    @Test
     void assertValidateUnknownToolExecutionKey() {
         assertUnknownKey("""
                 tools:

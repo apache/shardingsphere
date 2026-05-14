@@ -31,7 +31,7 @@ final class MCPDescriptorYamlKeyValidator {
     
     private static final Collection<String> ROOT_KEYS = Set.of("resources", "resourceTemplates", "tools", "prompts", "completionTargets", "resourceNavigation");
     
-    private static final Collection<String> RESOURCE_KEYS = Set.of("uri", "name", "title", "description", "icons", "mimeType", "size", "annotations", "meta", "extension");
+    private static final Collection<String> RESOURCE_KEYS = Set.of("uri", "name", "title", "description", "icons", "mimeType", "annotations", "meta", "extension");
     
     private static final Collection<String> RESOURCE_TEMPLATE_KEYS = Set.of("uriTemplate", "name", "title", "description", "icons", "mimeType", "annotations", "meta", "extension");
     

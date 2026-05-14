@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidMetadataO
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMissingToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMultipleSQLStatementsException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUserApprovalRequiredException;
@@ -285,6 +286,26 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("argument_path"), is("timeout_ms"));
         assertThat(actualNextAction.get("type"), is("ask_user"));
         assertFalse(actualNextAction.containsKey("tool_name"));
+    }
+    
+    @Test
+    void assertConvertToolArgumentContractViolationWithRecovery() {
+        Map<String, Object> suggestedArguments = Map.of("query", "order");
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPToolArgumentContractViolationException("database_gateway_search_metadata", "object_types[0]",
+                "invalid_enum_value", "", List.of("database", "schema", "table"), suggestedArguments)).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actual.get("error_code"), is("invalid_request"));
+        assertThat(actualRecovery.get("category"), is("invalid_enum_value"));
+        assertThat(actualRecovery.get("recovery_category"), is("invalid_enum"));
+        assertThat(actualRecovery.get("field"), is("object_types[0]"));
+        assertThat(actualRecovery.get("argument_path"), is("object_types[0]"));
+        assertThat(actualRecovery.get("tool_name"), is("database_gateway_search_metadata"));
+        assertThat(actualRecovery.get("allowed_values"), is(List.of("database", "schema", "table")));
+        assertThat(actualRecovery.get("suggested_arguments"), is(suggestedArguments));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
+        assertThat(actualNextAction.get("type"), is("tool_call"));
+        assertThat(actualNextAction.get("tool_name"), is("database_gateway_search_metadata"));
+        assertFalse((Boolean) actualRecovery.get("requires_user_approval"));
     }
     
     @Test

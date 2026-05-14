@@ -30,6 +30,9 @@ import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidApprovedStepsException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -136,6 +139,62 @@ class ToolHandlerRegistryTest {
         assertThat(actual.getAllowedValues(), is(List.of("execute", "preview")));
         assertThat(actual.getSuggestedArguments(), is(Map.of("database", "logic_db", "schema", "public",
                 "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview")));
+    }
+    
+    @Test
+    void assertDispatchWithInvalidArgumentType() {
+        MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
+                () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "database_gateway_search_metadata",
+                        Map.of("query", "order", "object_types", "table")));
+        assertThat(actual.getMessage(), is("object_types must be an array."));
+        assertThat(actual.getToolName(), is("database_gateway_search_metadata"));
+        assertThat(actual.getArgumentPath(), is("object_types"));
+        assertThat(actual.getCategory(), is("invalid_argument_type"));
+        assertThat(actual.getExpectedType(), is("array"));
+        assertThat(actual.getSuggestedArguments(), is(Map.of("query", "order")));
+    }
+    
+    @Test
+    void assertDispatchWithInvalidEnumArgument() {
+        MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
+                () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "database_gateway_search_metadata",
+                        Map.of("query", "order", "object_types", List.of("TABLE"))));
+        assertThat(actual.getMessage(), is("object_types[0] must be one of [database, schema, table, view, column, index, sequence]."));
+        assertThat(actual.getArgumentPath(), is("object_types[0]"));
+        assertThat(actual.getCategory(), is("invalid_enum_value"));
+        assertThat(actual.getAllowedValues(), is(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
+        assertThat(actual.getSuggestedArguments(), is(Map.of("query", "order")));
+    }
+    
+    @Test
+    void assertDispatchWithInvalidExecutionMode() {
+        MCPInvalidExecutionModeException actual = assertThrows(MCPInvalidExecutionModeException.class,
+                () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "database_gateway_execute_update",
+                        Map.of("database", "logic_db", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "RUN")));
+        assertThat(actual.getMessage(), is("database_gateway_execute_update execution_mode must be one of [execute, preview]."));
+        assertThat(actual.getAllowedValues(), is(List.of("execute", "preview")));
+        assertThat(actual.getSuggestedArguments(), is(Map.of("database", "logic_db", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview")));
+    }
+    
+    @Test
+    void assertDispatchWithInvalidApprovedSteps() {
+        MCPInvalidApprovedStepsException actual = assertThrows(MCPInvalidApprovedStepsException.class,
+                () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "database_gateway_apply_workflow",
+                        Map.of("plan_id", "plan-1", "execution_mode", "preview", "approved_steps", List.of("all"))));
+        assertThat(actual.getMessage(), is("approved_steps must contain only [ddl, index_ddl, rule_distsql]."));
+        assertThat(actual.getAllowedValues(), is(List.of("ddl", "index_ddl", "rule_distsql")));
+        assertThat(actual.getSuggestedArguments(), is(Map.of("plan_id", "plan-1", "execution_mode", "preview")));
+    }
+    
+    @Test
+    void assertDispatchWithUnknownArgument() {
+        MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
+                () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "database_gateway_execute_query",
+                        Map.of("database", "logic_db", "sql", "SELECT 1", "limit", 10)));
+        assertThat(actual.getMessage(), is("limit is not a supported argument for database_gateway_execute_query."));
+        assertThat(actual.getCategory(), is("unknown_argument"));
+        assertThat(actual.getArgumentPath(), is("limit"));
+        assertThat(actual.getSuggestedArguments(), is(Map.of("database", "logic_db", "sql", "SELECT 1")));
     }
     
     @Test

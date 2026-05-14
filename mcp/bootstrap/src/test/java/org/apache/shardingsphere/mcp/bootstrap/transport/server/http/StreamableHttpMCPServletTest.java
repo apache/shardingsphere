@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 class StreamableHttpMCPServletTest {
     
     private static final String ACCEPT = "application/json, text/event-stream";
-
+    
     @Test
     void assertProtocolVersions() throws ReflectiveOperationException {
         StreamableHttpMCPServlet actual = createServlet(mock(HttpServletStreamableServerTransportProvider.class), mock(MCPSessionManager.class),

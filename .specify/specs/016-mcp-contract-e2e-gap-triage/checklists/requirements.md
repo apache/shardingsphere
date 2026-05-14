@@ -25,7 +25,7 @@
 
 - [x] Current branch is `001-shardingsphere-mcp`.
 - [x] No `git switch`, `git checkout`, branch creation script, or branch-changing Speckit command was run.
-- [x] The current pass is documentation-only and does not modify production Java, tests, scripts, generated files, or runtime configuration.
+- [x] The initial requirements pass was documentation-only; implementation slices are now tracked in `tasks.md` with command evidence.
 - [x] Existing unrelated dirty worktree changes are preserved.
 - [x] The package records the user's instruction to manage the findings through Speckit.
 
@@ -70,3 +70,9 @@
 - [x] Ready as a starting requirements draft.
 - [x] Ready for implementation planning.
 - [x] Ready for implementation by task slice.
+
+## Implementation Slice Evidence
+
+- [x] T021/T025 strict HTTP Accept negotiation evidence recorded in `tasks.md`.
+- [x] T022/T026 remote HTTP origin allowlist evidence recorded in `tasks.md`.
+- [x] T020/T023/T024 secret-safe elicitation evidence recorded in `tasks.md`.

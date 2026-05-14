@@ -44,18 +44,27 @@ Official source URLs:
 
 - **MCE-P0-001 Secret-safe elicitation**
   - Source: MCP elicitation forbids using elicitation to collect sensitive values.
-  - Current evidence:
-    `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolElicitationHandler.java:47-83`
-    creates form elicitation for planning tools when descriptors provide questions.
-  - Current evidence:
-    `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactoryTest.java:168-187`
-    accepts a form response containing secret-like input.
-  - Current evidence:
+  - SDK evidence:
+    `io.modelcontextprotocol.spec.McpSchema$ElicitRequest` in MCP Java SDK `1.1.2` exposes message, requestedSchema, and meta only,
+    so URL-mode elicitation is not available through the current Java SDK surface.
+  - Closure evidence:
+    `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolElicitationHandler.java:50-101`
+    checks clarification questions before form elicitation and blocks questions marked `secret`, using `input_type=secret`,
+    or naming password/token/key/secret/credential fields.
+  - Closure evidence:
+    `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolElicitationHandler.java:136-140`
+    keeps form schemas non-sensitive and no longer emits password-format form fields.
+  - Closure evidence:
+    `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactoryTest.java:168-221`
+    proves normal non-sensitive form elicitation still works and secret-bearing, secret-input-type, and sensitive-field-name questions do not call `createElicitation`.
+  - Closure evidence:
+    `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/MCPDocumentationContractTest.java:79-95`
+    pins README coverage for MCP form elicitation, URL mode, and secret manager guidance.
+  - Closure evidence:
     `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml`
     and `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`
-    carry descriptor questions and workflow prompts that need a sensitive-field audit.
-  - Target: descriptor audit plus bootstrap unit and HTTP contract evidence that form elicitation never requests passwords,
-    API keys, tokens, payment credentials, or connection secrets.
+    document that secret-marked workflow questions require out-of-band client or operator handling instead of MCP form elicitation.
+  - Target: closed for the form-elicitation safety slice. Future URL-mode implementation remains blocked on an SDK surface that exposes URL-mode request fields.
 
 - **MCE-P0-002 Strict Streamable HTTP negotiation**
   - Source: MCP Streamable HTTP clients include explicit `Accept` negotiation for JSON and SSE response types.
@@ -107,22 +116,33 @@ Official source URLs:
 
 - **MCE-P1-001 Input-schema enforcement**
   - Source: MCP tool `inputSchema` is the client-visible argument contract.
-  - Current evidence:
-    `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/MCPToolArgumentContract.java:46-53`
-    validates only required argument presence and required text.
-  - Current evidence:
-    `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/MCPToolController.java:56-60`
-    dispatches handler arguments without schema validation.
-  - Current evidence:
-    `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactory.java:108-117`
-    validates output after handler execution, not input before execution.
-  - Target unit:
-    extend `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/tool/handler/ToolHandlerRegistryTest.java`,
-    or add `MCPToolArgumentContractTest` beside `MCPToolArgumentContract` when direct contract coverage is preferable.
-  - Target bootstrap:
-    `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactoryTest.java`.
-  - Target E2E:
-    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportContractE2ETest.java`.
+  - Closure evidence:
+    `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/MCPToolArgumentContract.java:77`
+    now validates arguments through the declared schema before handler execution.
+  - Closure evidence:
+    `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/MCPToolArgumentContract.java:93`
+    covers required fields and required text values.
+  - Closure evidence:
+    `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/MCPToolArgumentContract.java:116`
+    covers unknown arguments when `additionalProperties` is false.
+  - Closure evidence:
+    `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/MCPToolArgumentContract.java:128`
+    covers primitive types, arrays, objects, and declared enum values.
+  - Closure evidence:
+    `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/protocol/exception/MCPToolArgumentContractViolationException.java:30`
+    represents generic contract violations that remain recoverable by the model.
+  - Closure evidence:
+    `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/protocol/error/MCPBasicRecoveryPayloadFactory.java:101`
+    converts schema violations into stable recovery payloads.
+  - Closure evidence:
+    `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/tool/handler/ToolHandlerRegistryTest.java:145`
+    covers registry-level invalid type, invalid enum, invalid execution mode, invalid approved steps, and unknown argument cases.
+  - Closure evidence:
+    `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactoryTest.java:132`
+    covers the SDK-facing `CallToolResult` error path.
+  - Closure evidence:
+    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportContractE2ETest.java:319`
+    covers HTTP invalid input and stable recovery fields.
 
 - **MCE-P1-002 Output-schema strictness**
   - Source: MCP structured output should conform to declared `outputSchema`.

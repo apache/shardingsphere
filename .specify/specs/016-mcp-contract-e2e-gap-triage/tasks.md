@@ -70,7 +70,7 @@
 
 ### Tests for P0
 
-- [ ] T020 [P] [US1] Add secret-safe elicitation tests proving form elicitation never requests secrets.
+- [x] T020 [P] [US1] Add secret-safe elicitation tests proving form elicitation never requests secrets.
   Paths: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactoryTest.java`,
   `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/`
 - [x] T021 [P] [US1] Add strict Streamable HTTP `Accept` negotiation tests for missing and unsupported headers.
@@ -81,12 +81,12 @@
   `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/validator/ServerTransportSecurityValidatorFactoryTest.java`,
   `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/validator/constraint/LoopbackOriginHeaderConstraintTest.java`,
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportSecurityE2ETest.java`
-- [ ] T023 [US1] Cross-link OAuth inactive, expired, wrong issuer, introspection failure, challenge, and no-token-passthrough tests to package 012.
+- [x] T023 [US1] Cross-link OAuth inactive, expired, wrong issuer, introspection failure, challenge, and no-token-passthrough tests to package 012.
   Path: `.specify/specs/012-mcp-scorecard-perfect-100/tasks.md`
 
 ### Implementation for P0
 
-- [ ] T024 [US1] Remove or bypass form-mode elicitation for secret-bearing workflow questions and document approved secret channels.
+- [x] T024 [US1] Remove or bypass form-mode elicitation for secret-bearing workflow questions and document approved secret channels.
   Paths: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolElicitationHandler.java`,
   `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml`,
   `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`,
@@ -111,24 +111,27 @@
 
 ### Tests for Tool Contracts
 
-- [ ] T030 [P] [US2] Add input-schema validation tests through the existing handler registry path.
+- [x] T030 [P] [US2] Add input-schema validation tests through the existing handler registry path.
   Path: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/tool/handler/ToolHandlerRegistryTest.java`
-- [ ] T031 [P] [US2] Add SDK-facing tool-call tests proving invalid input never reaches handler dispatch.
+- [x] T031 [P] [US2] Add SDK-facing tool-call tests proving invalid input never reaches handler dispatch.
   Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactoryTest.java`
-- [ ] T032 [P] [US2] Add one HTTP contract smoke for invalid tool input and stable recovery fields.
+- [x] T032 [P] [US2] Add one HTTP contract smoke for invalid tool input and stable recovery fields.
   Path: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportContractE2ETest.java`
 
 ### Implementation for Tool Contracts
 
-- [ ] T033 [US2] Enforce declared `inputSchema` required fields, primitive types, enum values, and unknown-field policy.
+- [x] T033 [US2] Enforce declared `inputSchema` required fields, primitive types, enum values, and unknown-field policy.
   Paths: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/MCPToolArgumentContract.java`,
-  `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/request/MCPToolArguments.java`
-- [ ] T034 [US2] Ensure bootstrap tool calls validate input before dispatch and return model-correctable errors.
-  Paths: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/MCPToolController.java`,
-  `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactory.java`
-- [ ] T035 [US2] Cross-link output-schema strictness and canonical enum casing to packages 014 and 013.
+  `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/protocol/exception/MCPToolArgumentContractViolationException.java`
+- [x] T034 [US2] Ensure bootstrap tool calls validate input before dispatch and return model-correctable errors.
+  Paths: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/protocol/error/MCPBasicRecoveryPayloadFactory.java`,
+  `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/protocol/error/MCPRecoveryPayloadFactory.java`,
+  `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactoryTest.java`
+- [x] T035 [US2] Cross-link output-schema strictness and canonical enum casing to packages 014 and 013.
   Paths: `.specify/specs/014-mcp-standard-and-e2e-hardening/tasks.md`,
   `.specify/specs/013-mcp-protocol-field-standardization/tasks.md`
+  Evidence: package 016 now enforces declared input enum values exactly; package 013 remains owner for canonical casing policy,
+  and package 014 remains owner for output-schema strictness.
 
 **Checkpoint**: Tool descriptors are executable contracts, not only client hints.
 
@@ -265,3 +268,34 @@ They touch one transport behavior, have clear existing contradictory evidence, a
     exited `0`; 0 Checkstyle violations.
   - `git diff --check`
     exited `0`; no whitespace errors.
+
+### 2026-05-14: T020/T023/T024 Secret-Safe Elicitation
+
+- Source: MCP Elicitation `2025-11-25` says form mode must not collect sensitive values. Local SDK verification showed MCP Java SDK `1.1.2`
+  `ElicitRequest` does not expose URL-mode fields, so the safe implementation is to avoid form elicitation for secret-bearing questions.
+- Code: `MCPToolElicitationHandler` now gates form elicitation on non-sensitive clarification questions only. Questions marked `secret`, using `input_type=secret`,
+  or naming password/token/key/secret/credential fields return as tool clarifications and do not call `createElicitation`.
+- Code: removed password-format form schema generation for clarification questions.
+- Tests: `MCPToolSpecificationFactoryTest` now proves non-sensitive form elicitation still works, and covers `secret=true`, `input_type=secret`,
+  and sensitive field-name fallback without calling MCP form elicitation.
+- Docs: English and Chinese README files plus encrypt/mask descriptors document URL mode when available, secret manager, protected environment variables,
+  and operator-controlled channels as approved secret paths.
+- Cross-link: package 012 remains owner for inactive, expired, wrong issuer, introspection failure, challenge, and no-token-passthrough OAuth evidence.
+- Verification:
+  - `./mvnw -pl mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dtest=MCPToolSpecificationFactoryTest,MCPDocumentationContractTest,HttpTransportOriginUtilsTest,YamlHttpTransportConfigurationSwapperTest,MCPLaunchConfigurationTest,ServerTransportSecurityValidatorFactoryTest,AllowedOriginHeaderConstraintTest,LoopbackOriginHeaderConstraintTest,StreamableHttpMCPServletTest -Dsurefire.failIfNoSpecifiedTests=false test`
+    exited `0`; 102 tests ran with 0 failures, 0 errors, and 0 skipped.
+  - `./mvnw -pl mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dtest=MCPToolSpecificationFactoryTest,MCPDocumentationContractTest -Dsurefire.failIfNoSpecifiedTests=false test`
+    exited `0`; 17 focused tests ran with 0 failures, 0 errors, and 0 skipped after the final readability cleanup.
+  - `./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/bootstrap,test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dtest=MCPResourceDescriptorTest,MCPDescriptorCatalogLoaderTest,ResourceHandlerRegistryTest,MCPResourceSpecificationFactoryTest,MCPToolSpecificationFactoryTest,MCPDocumentationContractTest,StreamableHttpMCPServletTest,HttpTransportContractE2ETest,HttpTransportSecurityE2ETest -Dsurefire.failIfNoSpecifiedTests=false test`
+    exited `0`; 89 targeted API/support/core/bootstrap/e2e tests ran with 0 failures, 0 errors, and 0 skipped.
+  - `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dtest=HttpTransportSecurityE2ETest -Dsurefire.failIfNoSpecifiedTests=false test`
+    exited `0`; `HttpTransportSecurityE2ETest` ran 7 tests with 0 failures, 0 errors, and 0 skipped.
+  - `./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/bootstrap,test/e2e/mcp -Pcheck -DskipTests checkstyle:check`
+    exited `0`; 0 Checkstyle violations across currently dirty MCP modules.
+  - `./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/bootstrap,test/e2e/mcp -Pcheck -DskipTests spotless:check`
+    exited `0`; Spotless reported all checked Java and POM files clean after `spotless:apply`.
+  - `git diff --check`
+    exited `2`; failures are Spotless-required Java blank-line indentation in changed files. `git -c core.whitespace=-blank-at-eol diff --check` exited `0`.
+  - `rg` scans for password-format elicitation, sample cleartext docs secrets, and local `final` variables in changed files found no remaining unsafe matches.
+  - `git branch --show-current`
+    exited `0` and returned `001-shardingsphere-mcp`.

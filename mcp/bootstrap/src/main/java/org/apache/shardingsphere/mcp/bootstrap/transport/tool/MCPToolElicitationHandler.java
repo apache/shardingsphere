@@ -88,11 +88,15 @@ final class MCPToolElicitationHandler {
     }
     
     private boolean isSensitiveClarificationQuestion(final Map<?, ?> question) {
-        return Boolean.TRUE.equals(question.get("secret")) || "secret".equals(Objects.toString(question.get("input_type"), "").toLowerCase(Locale.ENGLISH)) || isSensitiveFieldName(question);
+        return Boolean.TRUE.equals(question.get("secret")) || isSecretInputType(question) || isSensitiveFieldName(question);
+    }
+    
+    private boolean isSecretInputType(final Map<?, ?> question) {
+        return "secret".equals(Objects.toString(question.get("input_type"), "").trim().toLowerCase(Locale.ENGLISH));
     }
     
     private boolean isSensitiveFieldName(final Map<?, ?> question) {
-        String fieldName = Objects.toString(question.get("field"), "").toLowerCase(Locale.ENGLISH);
+        String fieldName = Objects.toString(question.get("field"), "").trim().toLowerCase(Locale.ENGLISH);
         for (String each : SENSITIVE_FIELD_NAME_MARKERS) {
             if (fieldName.contains(each)) {
                 return true;

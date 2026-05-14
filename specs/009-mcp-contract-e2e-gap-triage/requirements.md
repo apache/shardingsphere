@@ -125,5 +125,7 @@ Before implementation starts:
 - Implementation task generation completed.
 - First implementation slice completed for strict HTTP `Accept` negotiation.
 - Second implementation slice completed for remote HTTP `Origin` allowlist configuration and validator wiring.
-- Production and E2E test source changed for T021/T025 and T022/T026; CI workflow, generated files, and runtime configuration were not changed.
-- Next step is executing the remaining P0 secret-safe elicitation slice from `tasks.md`, recommended as T020/T024.
+- Third implementation slice completed for secret-safe elicitation, approved secret-channel documentation, and package-012 OAuth cross-linking.
+- Production, descriptor, README, and E2E test source changed for T020/T021/T022/T023/T024/T025/T026; CI workflow, generated files, and runtime configuration were not changed.
+- P0 owned-by-016 safety and transport work is now closed for this requirements package.
+- Next recommended step is the P1 tool-contract slice from `tasks.md`, starting with T030/T031/T033/T034.

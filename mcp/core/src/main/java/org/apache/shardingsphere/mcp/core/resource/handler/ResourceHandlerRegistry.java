@@ -68,9 +68,7 @@ public final class ResourceHandlerRegistry {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPResourceHandler<?> each : handlers) {
-            MCPResourceDescriptor descriptor = each.getResourceDescriptor();
-            ShardingSpherePreconditions.checkNotNull(descriptor, () -> new IllegalArgumentException(String.format("Resource descriptor is required for `%s`.", each.getClass().getName())));
-            String uriOrTemplate = MCPResourceDescriptorUtils.getUriOrTemplate(descriptor);
+            String uriOrTemplate = MCPResourceDescriptorUtils.getUriOrTemplate(each.getResourceDescriptor());
             ShardingSpherePreconditions.checkState(null != uriOrTemplate && !uriOrTemplate.isBlank(),
                     () -> new IllegalArgumentException(String.format("Resource URI or URI template is required for `%s`.", each.getClass().getName())));
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
