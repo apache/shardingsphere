@@ -207,6 +207,41 @@ Descriptors must describe what the model should use the surface for, not just re
 - Recoverable error payloads keep the original `error_code` and `message`, and add `recovery` hints for missing arguments,
   unsupported tools or resources, invalid enum values, workflow state errors, and unsafe SQL tool selection.
 
+Descriptor annotations follow the MCP `2025-11-25` schema and are developer-maintained surface metadata, not end-user runtime configuration:
+
+- Resource annotations are optional. When present, they may only use `audience`, `priority`, and `lastModified`; omit the whole `annotations` map when no field is needed.
+- Resource `audience` values must be MCP roles `user` or `assistant`; `priority` must be finite and between `0.0` and `1.0`; `lastModified` must include an ISO 8601 UTC marker or offset.
+- Tool annotations use MCP `ToolAnnotations`. MCP defines effective defaults of `readOnlyHint=false`, `destructiveHint=true`, `idempotentHint=false`, and `openWorldHint=true`.
+- ShardingSphere public tool descriptors must still declare all four tool boolean hints explicitly in YAML, so reviewers can see the safety decision before primitive defaults are applied.
+- Tool annotations are client hints only. They do not replace runtime validation, SQL safety checks, user approval, or server-side authorization.
+
+### MCP Protocol Capability Scope
+
+ShardingSphere MCP targets MCP protocol revision `2025-11-25`. The public protocol surface is intentionally narrow:
+
+- `resources`, `tools`, `prompts`, and `completions` are enabled. The server supports `resources/list`, `resources/templates/list`,
+  `resources/read`, `tools/list`, `tools/call`, `prompts/list`, `prompts/get`, and `completion/complete`.
+- Resource subscriptions and resource/tool/prompt list-changed notifications are not implemented. The server advertises `subscribe=false` and `listChanged=false` for those primitives.
+- The MCP Java SDK advertises `logging` and accepts `logging/setLevel`; ShardingSphere MCP does not emit ShardingSphere product log messages
+  through `notifications/message`. Operational logs stay in stderr or `logs/mcp.log`.
+- `progress`, `notifications/cancelled`, and task-augmented requests are future scope for ShardingSphere MCP. Clients should use structured workflow tool responses and workflow resources for status.
+- `roots` and `sampling` are client capabilities. ShardingSphere MCP does not require roots and does not send `sampling/createMessage` requests.
+- Elicitation is client-negotiated and used only for non-sensitive workflow clarification. Secret-bearing fields remain out-of-band as described in the workflow security notes.
+
+### ShardingSphere Feature Scope
+
+The runtime exposes ShardingSphere through logical database metadata, safe SQL tools, and selected workflow helpers. Current V1 scope:
+
+- Supported: logical database discovery; schemas, tables, views, columns, indexes, and sequences where JDBC metadata and dialect capability permit;
+  read-only query; side-effecting SQL preview or execute with explicit approval; encrypt and mask planning, apply, and validation workflows against
+  ShardingSphere-Proxy; encrypt and mask algorithm and rule resources.
+- Partially supported: dialect-specific SQL and metadata capability discovery through `shardingsphere://databases/{database}/capabilities`;
+  unsupported statement classes and metadata object types return structured MCP errors.
+- Future scope: direct MCP management for sharding rules, readwrite-splitting, shadow, traffic governance, database discovery rule configuration,
+  mode governance or registry operations, and observability metrics, tracing, or dashboards.
+- Unsupported in V1: using encrypt or mask workflows against physical storage databases directly, applying workflow changes without preview and explicit
+  user approval, or treating MCP as a general ShardingSphere administration shell.
+
 ### Read `shardingsphere://databases/orders/schemas/public/sequences`
 
 ```bash

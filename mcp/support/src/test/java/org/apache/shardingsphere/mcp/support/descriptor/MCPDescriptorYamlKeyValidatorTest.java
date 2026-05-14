@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MCPDescriptorYamlKeyValidatorTest {
-    
+
     @Test
     void assertValidate() {
         String yamlContent = """
@@ -101,12 +101,12 @@ class MCPDescriptorYamlKeyValidatorTest {
                 """;
         assertDoesNotThrow(() -> MCPDescriptorYamlKeyValidator.validate("test.yaml", toBytes(yamlContent)));
     }
-    
+
     @Test
     void assertValidateUnknownRootKey() {
         assertUnknownKey("unknown: true", "$.unknown");
     }
-    
+
     @Test
     void assertValidateUnknownToolKey() {
         assertUnknownKey("""
@@ -115,7 +115,7 @@ class MCPDescriptorYamlKeyValidatorTest {
                     unknown: true
                 """, "$.tools[0].unknown");
     }
-    
+
     @Test
     void assertValidateUnknownToolAnnotationKey() {
         assertUnknownKey("""
@@ -125,7 +125,62 @@ class MCPDescriptorYamlKeyValidatorTest {
                       returnDirect: false
                 """, "$.tools[0].annotations.returnDirect");
     }
-    
+
+    @Test
+    void assertValidateUnknownResourceAnnotationKey() {
+        assertUnknownKey("""
+                resources:
+                  - uri: shardingsphere://capabilities
+                    annotations:
+                      importance: 1.0
+                """, "$.resources[0].annotations.importance");
+    }
+
+    @Test
+    void assertValidateRejectsEmptyResourceAnnotations() {
+        assertValidationError("""
+                resources:
+                  - uri: shardingsphere://capabilities
+                    annotations: {}
+                """, "MCP descriptor resource `test.yaml` must omit empty annotations at `$.resources[0].annotations`.");
+    }
+
+    @Test
+    void assertValidateRejectsEmptyToolAnnotations() {
+        assertValidationError("""
+                tools:
+                  - name: database_gateway_search_metadata
+                    annotations: {}
+                """, "MCP descriptor resource `test.yaml` must omit empty annotations at `$.tools[0].annotations`.");
+    }
+
+    @Test
+    void assertValidateRejectsMissingToolAnnotationHint() {
+        assertValidationError("""
+                tools:
+                  - name: database_gateway_search_metadata
+                    annotations:
+                      title: Search Metadata
+                      readOnlyHint: true
+                      destructiveHint: false
+                      idempotentHint: true
+                """, "MCP descriptor resource `test.yaml` must declare `$.tools[0].annotations.openWorldHint`.");
+    }
+
+    @Test
+    void assertValidateRejectsNonBooleanToolAnnotationHint() {
+        assertValidationError("""
+                tools:
+                  - name: database_gateway_search_metadata
+                    annotations:
+                      title: Search Metadata
+                      readOnlyHint: "yes"
+                      destructiveHint: false
+                      idempotentHint: true
+                      openWorldHint: true
+                """, "MCP descriptor resource `test.yaml` expects boolean at `$.tools[0].annotations.readOnlyHint`.");
+    }
+
     @Test
     void assertValidateUnknownResourceSizeKey() {
         assertUnknownKey("""
@@ -134,7 +189,7 @@ class MCPDescriptorYamlKeyValidatorTest {
                     size: 128
                 """, "$.resources[0].size");
     }
-    
+
     @Test
     void assertValidateUnknownToolExecutionKey() {
         assertUnknownKey("""
@@ -144,7 +199,7 @@ class MCPDescriptorYamlKeyValidatorTest {
                       unknown: true
                 """, "$.tools[0].execution");
     }
-    
+
     @Test
     void assertValidateUnknownResourceExtensionKey() {
         assertUnknownKey("""
@@ -154,13 +209,19 @@ class MCPDescriptorYamlKeyValidatorTest {
                       unknown: true
                 """, "$.resourceTemplates[0].extension.unknown");
     }
-    
+
     private void assertUnknownKey(final String yamlContent, final String expectedKeyPath) {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> MCPDescriptorYamlKeyValidator.validate("test.yaml", toBytes(yamlContent)));
         assertThat(actual.getMessage(), is(String.format("MCP descriptor resource `test.yaml` contains unknown key `%s`.", expectedKeyPath)));
     }
-    
+
+    private void assertValidationError(final String yamlContent, final String expectedMessage) {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> MCPDescriptorYamlKeyValidator.validate("test.yaml", toBytes(yamlContent)));
+        assertThat(actual.getMessage(), is(expectedMessage));
+    }
+
     private byte[] toBytes(final String yamlContent) {
         return yamlContent.getBytes(StandardCharsets.UTF_8);
     }

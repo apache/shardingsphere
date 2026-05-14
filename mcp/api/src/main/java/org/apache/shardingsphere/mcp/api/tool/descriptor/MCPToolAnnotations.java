@@ -17,34 +17,49 @@
 
 package org.apache.shardingsphere.mcp.api.tool.descriptor;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * MCP tool annotations.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MCPToolAnnotations {
-    
-    public static final MCPToolAnnotations EMPTY = new MCPToolAnnotations(null, null, null, null, null);
-    
+
+    public static final MCPToolAnnotations EMPTY = new MCPToolAnnotations(null, false, true, false, true, false);
+
     private final String title;
-    
-    private final Boolean readOnlyHint;
-    
-    private final Boolean destructiveHint;
-    
-    private final Boolean idempotentHint;
-    
-    private final Boolean openWorldHint;
-    
+
+    private final boolean readOnlyHint;
+
+    private final boolean destructiveHint;
+
+    private final boolean idempotentHint;
+
+    private final boolean openWorldHint;
+
+    @Getter(AccessLevel.NONE)
+    private final boolean declared;
+
+    public MCPToolAnnotations(final String title, final boolean readOnlyHint, final boolean destructiveHint, final boolean idempotentHint, final boolean openWorldHint) {
+        this(title, readOnlyHint, destructiveHint, idempotentHint, openWorldHint, true);
+    }
+
+    private MCPToolAnnotations(final String title, final boolean readOnlyHint, final boolean destructiveHint, final boolean idempotentHint, final boolean openWorldHint, final boolean declared) {
+        this.title = title;
+        this.readOnlyHint = readOnlyHint;
+        this.destructiveHint = destructiveHint;
+        this.idempotentHint = idempotentHint;
+        this.openWorldHint = openWorldHint;
+        this.declared = declared;
+    }
+
     /**
      * Judge whether annotations are empty.
      *
      * @return true if annotations are empty
      */
     public boolean isEmpty() {
-        return (null == title || title.isBlank()) && null == readOnlyHint && null == destructiveHint && null == idempotentHint && null == openWorldHint;
+        return !declared;
     }
 }

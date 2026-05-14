@@ -15,36 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.descriptor.yaml;
+package org.apache.shardingsphere.mcp.api.resource.descriptor;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-/**
- * YAML MCP resource annotations.
- */
-@Getter
-public final class YamlMCPResourceAnnotations {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-    @Setter
-    private List<String> audience;
+class MCPResourceAnnotationsTest {
 
-    private double priority;
+    @Test
+    void assertEmpty() {
+        MCPResourceAnnotations actual = MCPResourceAnnotations.EMPTY;
+        assertTrue(actual.isEmpty());
+        assertFalse(actual.isPriorityPresent());
+    }
 
-    private boolean priorityPresent;
-
-    @Setter
-    private String lastModified;
-
-    /**
-     * Set priority and mark it as explicitly declared.
-     *
-     * @param priority priority
-     */
-    public void setPriority(final double priority) {
-        this.priority = priority;
-        priorityPresent = true;
+    @Test
+    void assertPriorityZeroIsPresent() {
+        MCPResourceAnnotations actual = new MCPResourceAnnotations(List.of(), 0D, true, null);
+        assertFalse(actual.isEmpty());
+        assertTrue(actual.isPriorityPresent());
+        assertThat(actual.getPriority(), is(0D));
     }
 }

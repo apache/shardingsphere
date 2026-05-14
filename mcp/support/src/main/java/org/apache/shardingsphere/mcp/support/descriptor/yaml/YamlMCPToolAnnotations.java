@@ -26,14 +26,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class YamlMCPToolAnnotations {
-    
+
     private String title;
-    
-    private Boolean readOnlyHint;
-    
-    private Boolean destructiveHint;
-    
-    private Boolean idempotentHint;
-    
-    private Boolean openWorldHint;
+
+    private boolean readOnlyHint;
+
+    private boolean destructiveHint = true;
+
+    private boolean idempotentHint;
+
+    private boolean openWorldHint = true;
 }

@@ -35,24 +35,24 @@ import java.util.regex.Pattern;
  * MCP Registry metadata command.
  */
 public final class MCPRegistryMetadataCommand {
-
+    
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
-
+    
     private static final String SCHEMA_URL = "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json";
-
+    
     private static final String SERVER_NAME = "io.github.apache/shardingsphere-mcp";
-
+    
     private static final Pattern OCI_IDENTIFIER_PATTERN = Pattern.compile("^ghcr\\.io/apache/shardingsphere-mcp:[^:\\s]+$");
-
+    
     private static final Pattern VERSION_RANGE_PATTERN = Pattern.compile("^(?:[\\^~]|[<>]=?|.*(?:\\*|\\.x|\\s-\\s|\\|\\|).*)");
-
+    
     private static final Set<String> SUPPORTED_TRANSPORTS = Set.of("stdio", "streamable-http");
-
+    
     private static final String PACKAGE_SHAPE_ERROR_MESSAGE = "server.json packages must contain exactly one stdio OCI package and one streamable-http OCI package.";
-
+    
     private MCPRegistryMetadataCommand() {
     }
-
+    
     /**
      * Main entrance.
      *
@@ -69,7 +69,7 @@ public final class MCPRegistryMetadataCommand {
             System.exit(1);
         }
     }
-
+    
     /**
      * Execute metadata preparation or validation.
      *
@@ -89,7 +89,7 @@ public final class MCPRegistryMetadataCommand {
             Files.writeString(options.path(), JSON_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(server) + System.lineSeparator());
         }
     }
-
+    
     private static CommandOptions parseOptions(final String[] args) {
         Path path = Path.of("mcp/server.json");
         String version = "";
@@ -99,37 +99,38 @@ public final class MCPRegistryMetadataCommand {
         int index = 0;
         while (index < args.length) {
             switch (args[index]) {
-                case "--path" -> {
+                case "--path":
                     path = Path.of(readOptionValue(args, index + 1, "--path"));
                     index += 2;
-                }
-                case "--version" -> {
+                    break;
+                case "--version":
                     version = readOptionValue(args, index + 1, "--version");
                     index += 2;
-                }
-                case "--identifier" -> {
+                    break;
+                case "--identifier":
                     identifier = readOptionValue(args, index + 1, "--identifier");
                     index += 2;
-                }
-                case "--validate-only" -> {
+                    break;
+                case "--validate-only":
                     validateOnly = true;
                     index++;
-                }
-                case "--allow-snapshot" -> {
+                    break;
+                case "--allow-snapshot":
                     allowSnapshot = true;
                     index++;
-                }
-                default -> throw new IllegalArgumentException("Unknown argument: " + args[index]);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown argument: " + args[index]);
             }
         }
         return new CommandOptions(path, version, identifier, validateOnly, allowSnapshot);
     }
-
+    
     private static String readOptionValue(final String[] args, final int index, final String optionName) {
         require(index < args.length && !args[index].startsWith("--"), optionName + " requires a value.");
         return args[index];
     }
-
+    
     private static void prepareServerJson(final Map<String, Object> server, final String version, final String identifier) {
         server.put("version", version);
         for (Map<String, Object> each : getPackages(server)) {
@@ -137,7 +138,7 @@ public final class MCPRegistryMetadataCommand {
             each.put("version", version);
         }
     }
-
+    
     private static void validateServerJson(final Map<String, Object> server, final boolean allowSnapshot) {
         require(SCHEMA_URL.equals(server.get("$schema")), "server.json must use the official MCP Registry schema.");
         require(SERVER_NAME.equals(server.get("name")), "server.json name must match the published ShardingSphere MCP server name.");
@@ -148,11 +149,12 @@ public final class MCPRegistryMetadataCommand {
         require(SUPPORTED_TRANSPORTS.size() == packages.size(), PACKAGE_SHAPE_ERROR_MESSAGE);
         Set<String> transportTypes = new LinkedHashSet<>(packages.size(), 1F);
         for (Map<String, Object> each : packages) {
-            require(transportTypes.add(validatePackage(each, String.valueOf(server.get("version")), allowSnapshot)), PACKAGE_SHAPE_ERROR_MESSAGE);
+            String transportType = validatePackage(each, String.valueOf(server.get("version")), allowSnapshot);
+            require(transportTypes.add(transportType), PACKAGE_SHAPE_ERROR_MESSAGE);
         }
         require(SUPPORTED_TRANSPORTS.equals(transportTypes), PACKAGE_SHAPE_ERROR_MESSAGE);
     }
-
+    
     private static String validatePackage(final Map<String, Object> packageMetadata, final String serverVersion, final boolean allowSnapshot) {
         require("oci".equals(packageMetadata.get("registryType")), "MCP Registry package registryType must be oci.");
         String identifier = String.valueOf(packageMetadata.get("identifier"));
@@ -173,25 +175,25 @@ public final class MCPRegistryMetadataCommand {
         requireEnvironmentVariable(packageMetadata, "SHARDINGSPHERE_MCP_CONFIG");
         return transportType;
     }
-
+    
     private static List<Map<String, Object>> getPackages(final Map<String, Object> server) {
         Object packages = server.get("packages");
         require(packages instanceof List<?>, "server.json packages must be a non-empty array.");
         return ((List<?>) packages).stream().map(each -> asMap(each, "MCP Registry package must be an object.")).toList();
     }
-
+    
     @SuppressWarnings("unchecked")
     private static Map<String, Object> asMap(final Object value, final String message) {
         require(value instanceof Map<?, ?>, message);
         return (Map<String, Object>) value;
     }
-
+    
     private static void requireString(final Map<String, Object> target, final String key, final int maxLength) {
         Object value = target.get(key);
         require(value instanceof String && !((String) value).isBlank(), "server.json field " + key + " must be a non-empty string.");
         require(((String) value).length() <= maxLength, "server.json field " + key + " must be at most " + maxLength + " characters.");
     }
-
+    
     private static void validateVersion(final String label, final String value, final boolean allowSnapshot) {
         require(!value.isBlank() && !"null".equals(value), label + " must be a non-empty string.");
         require(!"latest".equals(value), label + " must not use latest.");
@@ -200,7 +202,7 @@ public final class MCPRegistryMetadataCommand {
             require(!value.contains("SNAPSHOT"), label + " must not contain SNAPSHOT for publication.");
         }
     }
-
+    
     private static void requireHttpUrl(final Object value) {
         require(value instanceof String && !((String) value).isBlank(), "streamable-http transport must define a URL.");
         try {
@@ -210,20 +212,20 @@ public final class MCPRegistryMetadataCommand {
             throw new IllegalArgumentException("streamable-http transport URL must be an HTTP URL.", ex);
         }
     }
-
+    
     private static void requireEnvironmentVariable(final Map<String, Object> packageMetadata, final String name) {
         Object envVars = packageMetadata.get("environmentVariables");
         require(envVars instanceof List<?>, "MCP Registry package must define " + name + ".");
         require(((List<?>) envVars).stream().filter(each -> each instanceof Map<?, ?>).map(each -> (Map<?, ?>) each).anyMatch(each -> name.equals(each.get("name"))),
                 "MCP Registry package must define " + name + ".");
     }
-
+    
     private static void require(final boolean condition, final String message) {
         if (!condition) {
             throw new IllegalArgumentException(message);
         }
     }
-
+    
     private record CommandOptions(Path path, String version, String identifier, boolean validateOnly, boolean allowSnapshot) {
     }
 }

@@ -195,23 +195,38 @@
   - Duplicate `streamable-http` packages are rejected.
   - More than two package entries are rejected even when the transport type set is `stdio` plus `streamable-http`.
   - No JSON Schema validator dependency is introduced; live package existence and ownership checks remain owned by `mcp-publisher publish`.
-- [ ] T052 [P] [US5] Add capability-scope tests or snapshots proving unimplemented optional MCP capabilities are not advertised.
+- [x] T052 [P] [US5] Add capability-scope tests or snapshots proving unimplemented optional MCP capabilities are not advertised.
   Paths: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/MCPSyncServerFactoryTest.java`,
   `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/resource/handler/capability/ServerCapabilitiesHandlerTest.java`
-- [ ] T053 [P] [US4] Reduce golden and recovery E2E assertions to stable structured fields and one canonical snapshot gate.
+  Evidence: bootstrap tests now pin initialized server capabilities, including SDK-injected `logging`, implemented resources/tools/prompts/completions,
+  and disabled resource/tool/prompt change signals. Core capability payload tests now pin `protocolAvailability` to the implemented domain catalog surface
+  and reject unsupported optional entries such as progress, cancellation, tasks, roots, sampling, subscriptions, and `listChanged`.
+- [x] T053 [P] [US4] Reduce golden and recovery E2E assertions to stable structured fields and one canonical snapshot gate.
   Paths: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportGoldenContractE2ETest.java`,
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportRecoveryE2ETest.java`
+  Evidence: `HttpTransportGoldenContractE2ETest` now keeps only `capabilities.yaml` as the canonical transport-visible snapshot gate.
+  Resource/template/tool/prompt/completion/workflow snapshot gates were removed in favor of existing structured HTTP contract assertions and descriptor/schema tests,
+  and the replaced golden YAML files were deleted. `HttpTransportRecoveryE2ETest` now centralizes stable `error_code` and `recovery_category` assertions
+  and checks follow-up recovery evidence through structured resource and completion fields instead of stringified payload text.
 
 ### Documentation and Scope
 
-- [ ] T054 [US5] Document optional MCP capability support, unsupported items, and future scope.
+- [x] T054 [US5] Document optional MCP capability support, unsupported items, and future scope.
   Path: `mcp/README.md`
-- [ ] T055 [US5] Document ShardingSphere feature breadth for sharding, readwrite-splitting, shadow, traffic, discovery, governance, and observability.
+  Evidence: `mcp/README.md` now separates implemented resources/tools/prompts/completions, disabled subscribe/list-changed signals,
+  SDK-owned logging, future progress/cancellation/tasks, client roots/sampling, and non-sensitive elicitation scope.
+- [x] T055 [US5] Document ShardingSphere feature breadth for sharding, readwrite-splitting, shadow, traffic, discovery, governance, and observability.
   Path: `mcp/README.md`
-- [ ] T056 [US4] Keep fixture/helper tests as `KEEP-SUPPORT` and exclude them from product-path E2E release claims.
+  Evidence: `mcp/README.md` now classifies supported, partially supported, future, and unsupported V1 ShardingSphere feature scope,
+  including sharding, readwrite-splitting, shadow, traffic governance, database discovery rule configuration, mode governance, and observability.
+- [x] T056 [US4] Keep fixture/helper tests as `KEEP-SUPPORT` and exclude them from product-path E2E release claims.
   Path: `.specify/specs/016-mcp-contract-e2e-gap-triage/e2e-test-disposition.md`
-- [ ] T057 [US4] Cross-link prompt/resource catalog clarity and canonical error channels to package 015.
+  Evidence: `e2e-test-disposition.md` now has an explicit release evidence boundary. `KEEP-SUPPORT` fixture/helper rows are support evidence only,
+  while product-path release claims cite `KEEP-E2E` rows. The reduced golden and recovery tests are reclassified as stable `KEEP-E2E` gates.
+- [x] T057 [US4] Cross-link prompt/resource catalog clarity and canonical error channels to package 015.
   Path: `.specify/specs/015-mcp-protocol-api-generalization/tasks.md`
+  Evidence: package 015 now records package 016 as the owner for E2E disposition and release-evidence boundaries,
+  while prompt/resource catalog clarity and canonical error-channel implementation remain owned by package 015.
 
 **Checkpoint**: Release readiness and product scope are explicit, not implied by broad product names or brittle snapshots.
 
@@ -333,7 +348,7 @@ They touch one transport behavior, have clear existing contradictory evidence, a
   - `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dtest=HttpProductionProxyEncryptWorkflowE2ETest,HttpProductionProxyMaskWorkflowE2ETest -Dsurefire.failIfNoSpecifiedTests=false test`
     exited `0`; 18 production Proxy workflow E2E tests ran with 0 failures, 0 errors, and 0 skipped.
   - `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dtest=HttpTransportGoldenContractE2ETest,HttpTransportContractE2ETest -Dsurefire.failIfNoSpecifiedTests=false test`
-    exited `1` before golden snapshots were updated, then exited `0` after updating `capabilities.yaml` and `tools-prompts-completion.yaml`.
+    exited `1` before golden snapshots were updated, then exited `0` after updating the then-active golden snapshots.
   - `./mvnw -pl mcp/support,mcp/core,mcp/features/encrypt,test/e2e/mcp spotless:apply -Pcheck`
     exited `0`; Spotless restored the repository's expected Java blank-line formatting after whitespace review.
   - `./mvnw -pl mcp/support,mcp/core,mcp/features/encrypt,test/e2e/mcp -DskipTests checkstyle:check -Pcheck`

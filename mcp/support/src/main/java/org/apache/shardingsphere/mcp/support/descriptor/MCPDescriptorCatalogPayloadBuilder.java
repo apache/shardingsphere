@@ -37,21 +37,21 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 final class MCPDescriptorCatalogPayloadBuilder {
-    
+
     private final MCPDescriptorCatalog catalog;
-    
+
     private final MCPModelFirstContractPayloadBuilder modelFirstContractPayloadBuilder;
-    
+
     private MCPDescriptorCatalogPayloadBuilder(final MCPDescriptorCatalog catalog) {
         this.catalog = catalog;
         modelFirstContractPayloadBuilder = new MCPModelFirstContractPayloadBuilder(catalog);
     }
-    
+
     static Map<String, Object> build(final MCPDescriptorCatalog catalog, final Collection<String> supportedResources, final Collection<String> supportedTools,
                                      final Collection<?> supportedStatements) {
         return new MCPDescriptorCatalogPayloadBuilder(catalog).build(supportedResources, supportedTools, supportedStatements);
     }
-    
+
     private Map<String, Object> build(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         List<Map<String, Object>> resources = catalog.getResourceDescriptors().stream().map(this::toResourcePayload).toList();
@@ -81,11 +81,11 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("fingerprints", createFingerprints(resources, resourceTemplates, tools, prompts, completionTargets, resourceNavigation));
         return result;
     }
-    
+
     static String createDescriptorCatalogFingerprint(final MCPDescriptorCatalog catalog) {
         return new MCPDescriptorCatalogPayloadBuilder(catalog).createDescriptorCatalogFingerprint();
     }
-    
+
     private String createDescriptorCatalogFingerprint() {
         List<Map<String, Object>> resources = catalog.getResourceDescriptors().stream().map(this::toResourcePayload).toList();
         List<Map<String, Object>> resourceTemplates = catalog.getResourceTemplateDescriptors().stream().map(this::toResourceTemplatePayload).toList();
@@ -95,7 +95,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         List<Map<String, Object>> resourceNavigation = catalog.getResourceNavigationDescriptors().stream().map(this::toResourceNavigationPayload).toList();
         return String.valueOf(createFingerprints(resources, resourceTemplates, tools, prompts, completionTargets, resourceNavigation).get("descriptorCatalog"));
     }
-    
+
     private Map<String, Object> toResourcePayload(final MCPResourceDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("uri", descriptor.getUriTemplate());
@@ -112,7 +112,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-    
+
     private Map<String, Object> toResourceTemplatePayload(final MCPResourceDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("uriTemplate", descriptor.getUriTemplate());
@@ -129,7 +129,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-    
+
     private Map<String, Object> createResourceMeta(final MCPResourceDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(descriptor.getMeta());
         MCPResourceExtensionDescriptor extension = findResourceExtension(descriptor.getUriTemplate());
@@ -147,11 +147,11 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-    
+
     private MCPResourceExtensionDescriptor findResourceExtension(final String uriOrTemplate) {
         return catalog.getResourceExtensionDescriptors().stream().filter(each -> uriOrTemplate.equals(each.getUriOrTemplate())).findFirst().orElse(null);
     }
-    
+
     private Map<String, Object> toUriVariablePayload(final MCPUriVariableDescriptor parameter) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("name", parameter.getName());
@@ -161,7 +161,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("scope", parameter.getScope());
         return result;
     }
-    
+
     private Map<String, Object> toToolPayload(final MCPToolDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("name", descriptor.getName());
@@ -177,7 +177,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-    
+
     private Map<String, Object> toPromptPayload(final MCPPromptDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(7, 1F);
         result.put("name", descriptor.getName());
@@ -189,7 +189,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-    
+
     private Map<String, Object> toPromptArgumentPayload(final MCPPromptArgumentDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("name", descriptor.getName());
@@ -202,7 +202,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-    
+
     private Map<String, Object> toCompletionTargetPayload(final MCPCompletionTargetDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("referenceType", descriptor.getReferenceType());
@@ -214,7 +214,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-    
+
     private Map<String, Object> toResourceNavigationPayload(final MCPResourceNavigationDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(7, 1F);
         result.put("from", descriptor.getFrom());
@@ -226,7 +226,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("description", descriptor.getDescription());
         return result;
     }
-    
+
     private Map<String, Object> createCompletionHint(final String argumentName) {
         List<Map<String, Object>> references = catalog.getCompletionTargetDescriptors().stream()
                 .filter(each -> each.getArguments().contains(argumentName)).map(this::createCompletionReferenceHint).toList();
@@ -242,7 +242,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-    
+
     private Map<String, Object> createCompletionReferenceHint(final MCPCompletionTargetDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("referenceType", descriptor.getReferenceType());
@@ -250,7 +250,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("maxValues", descriptor.getMaxValues());
         return result;
     }
-    
+
     private List<String> createCompletionRequiredContextArguments(final String argumentName) {
         if ("schema".equals(argumentName)) {
             return List.of("database");
@@ -263,7 +263,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return List.of();
     }
-    
+
     private String resolveReferenceType(final String reference) {
         if (catalog.getAllResourceDescriptors().stream().anyMatch(each -> each.getUriTemplate().equals(reference))) {
             return reference.contains("{") ? "resource_template" : "resource";
@@ -276,13 +276,13 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return "unknown";
     }
-    
+
     private Map<String, Object> toResourceAnnotationsPayload(final MCPResourceAnnotations annotations) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         if (!annotations.getAudience().isEmpty()) {
             result.put("audience", annotations.getAudience());
         }
-        if (null != annotations.getPriority()) {
+        if (annotations.isPriorityPresent()) {
             result.put("priority", annotations.getPriority());
         }
         if (null != annotations.getLastModified() && !annotations.getLastModified().isBlank()) {
@@ -290,29 +290,29 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-    
+
     private Map<String, Object> toToolAnnotationsPayload(final MCPToolAnnotations annotations) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         putIfPresent(result, "title", annotations.getTitle());
-        putIfPresent(result, "readOnlyHint", annotations.getReadOnlyHint());
-        putIfPresent(result, "destructiveHint", annotations.getDestructiveHint());
-        putIfPresent(result, "idempotentHint", annotations.getIdempotentHint());
-        putIfPresent(result, "openWorldHint", annotations.getOpenWorldHint());
+        result.put("readOnlyHint", annotations.isReadOnlyHint());
+        result.put("destructiveHint", annotations.isDestructiveHint());
+        result.put("idempotentHint", annotations.isIdempotentHint());
+        result.put("openWorldHint", annotations.isOpenWorldHint());
         return result;
     }
-    
+
     private void putIfPresent(final Map<String, Object> target, final String key, final Object value) {
         if (null != value) {
             target.put(key, value);
         }
     }
-    
+
     private void putIfNotEmpty(final Map<String, Object> target, final String key, final Collection<?> values) {
         if (!values.isEmpty()) {
             target.put(key, values);
         }
     }
-    
+
     private Map<String, Object> createProtocolAvailability(final boolean hasResourceNavigation) {
         Map<String, Object> result = new LinkedHashMap<>(12, 1F);
         result.put("resources", true);
@@ -325,7 +325,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("resourceNavigation", hasResourceNavigation);
         return result;
     }
-    
+
     private Map<String, Object> createFingerprints(final List<Map<String, Object>> resources, final List<Map<String, Object>> resourceTemplates,
                                                    final List<Map<String, Object>> tools, final List<Map<String, Object>> prompts,
                                                    final List<Map<String, Object>> completionTargets, final List<Map<String, Object>> resourceNavigation) {
@@ -343,7 +343,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("modelFacingSchemas", createHash(createModelFacingSchemas(resources, resourceTemplates, tools)));
         return result;
     }
-    
+
     private List<Map<String, Object>> createModelFacingSchemas(final List<Map<String, Object>> resources, final List<Map<String, Object>> resourceTemplates,
                                                                final List<Map<String, Object>> tools) {
         List<Map<String, Object>> result = new LinkedList<>();
@@ -352,15 +352,15 @@ final class MCPDescriptorCatalogPayloadBuilder {
         tools.stream().map(this::createToolSchema).forEach(result::add);
         return result;
     }
-    
+
     private Map<String, Object> createResourceSchema(final Map<String, Object> resource) {
         return resource.containsKey("uriTemplate") ? Map.of("uriTemplate", resource.get("uriTemplate")) : Map.of("uri", resource.get("uri"));
     }
-    
+
     private Map<String, Object> createToolSchema(final Map<String, Object> tool) {
         return Map.of("name", tool.get("name"), "inputSchema", tool.get("inputSchema"), "outputSchema", tool.get("outputSchema"));
     }
-    
+
     private String createHash(final Object value) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -370,7 +370,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
             throw new IllegalStateException("SHA-256 is not available.", ex);
         }
     }
-    
+
     private String toHex(final byte[] bytes) {
         StringBuilder result = new StringBuilder(bytes.length * 2);
         for (byte each : bytes) {
@@ -382,7 +382,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result.toString();
     }
-    
+
     private String canonicalize(final Object value) {
         if (null == value) {
             return "null";
@@ -398,7 +398,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return "\"" + escape(String.valueOf(value)) + "\"";
     }
-    
+
     private String canonicalizeMap(final Map<?, ?> value) {
         StringBuilder result = new StringBuilder("{");
         List<? extends Entry<?, ?>> entries = value.entrySet().stream()
@@ -412,7 +412,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result.append('}').toString();
     }
-    
+
     private String canonicalizeCollection(final Collection<?> value) {
         StringBuilder result = new StringBuilder("[");
         int index = 0;
@@ -424,7 +424,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result.append(']').toString();
     }
-    
+
     private String escape(final String value) {
         return value.replace("\\", "\\\\").replace("\"", "\\\"");
     }

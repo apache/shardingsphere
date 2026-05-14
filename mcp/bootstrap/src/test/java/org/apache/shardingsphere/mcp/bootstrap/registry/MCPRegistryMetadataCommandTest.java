@@ -35,18 +35,20 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MCPRegistryMetadataCommandTest {
-
+    
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
-
+    
+    private static final String PACKAGE_SHAPE_ERROR_MESSAGE = "server.json packages must contain exactly one stdio OCI package and one streamable-http OCI package.";
+    
     @TempDir
     private Path tempDir;
-
+    
     @Test
     void assertMain() throws IOException {
         Path serverPath = createServerJson(createServerMetadata());
         assertDoesNotThrow(() -> MCPRegistryMetadataCommand.main(new String[]{"--path", serverPath.toString(), "--validate-only", "--allow-snapshot"}));
     }
-
+    
     @Test
     void assertExecuteForReleaseRewrite() throws IOException {
         Path serverPath = createServerJson(createServerMetadata());
@@ -56,7 +58,7 @@ class MCPRegistryMetadataCommandTest {
         assertThat(getPackageValues(actual, "identifier"), is(List.of("ghcr.io/apache/shardingsphere-mcp:5.5.4", "ghcr.io/apache/shardingsphere-mcp:5.5.4")));
         assertThat(getPackageValues(actual, "version"), is(List.of("5.5.4", "5.5.4")));
     }
-
+    
     @Test
     void assertExecuteRejectsReleaseSnapshot() throws IOException {
         Path serverPath = createServerJson(createServerMetadata());
@@ -64,13 +66,13 @@ class MCPRegistryMetadataCommandTest {
                 "--path", serverPath.toString(), "--version", "5.5.4-SNAPSHOT", "--identifier", "ghcr.io/apache/shardingsphere-mcp:5.5.4-SNAPSHOT"));
         assertThat(actual.getMessage(), is("server version must not contain SNAPSHOT for publication."));
     }
-
+    
     @Test
     void assertExecuteValidatesDevelopmentSnapshot() throws IOException {
         Path serverPath = createServerJson(createServerMetadata());
         assertDoesNotThrow(() -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
     }
-
+    
     @Test
     void assertExecuteRejectsMissingHttpUrl() throws IOException {
         Map<String, Object> server = createServerMetadata();
@@ -80,7 +82,7 @@ class MCPRegistryMetadataCommandTest {
                 () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
         assertThat(actual.getMessage(), is("streamable-http transport must define a URL."));
     }
-
+    
     @Test
     void assertExecuteRejectsMismatchedPackageVersion() throws IOException {
         Map<String, Object> server = createServerMetadata();
@@ -90,61 +92,59 @@ class MCPRegistryMetadataCommandTest {
                 () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
         assertThat(actual.getMessage(), is("MCP Registry package version must match the server version."));
     }
-
+    
     @Test
     void assertExecuteRejectsDuplicateStdioPackage() throws IOException {
         Map<String, Object> server = createServerMetadata();
         server.put("packages", List.of(createPackage("stdio", ""), createPackage("stdio", "")));
-        Path serverPath = createServerJson(server);
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
-        assertThat(actual.getMessage(), is("server.json packages must contain exactly one stdio OCI package and one streamable-http OCI package."));
+        assertPackageShapeRejected(server);
     }
-
+    
     @Test
     void assertExecuteRejectsDuplicateStreamableHttpPackage() throws IOException {
         Map<String, Object> server = createServerMetadata();
         server.put("packages", List.of(createPackage("streamable-http", "http://127.0.0.1:18088/mcp"), createPackage("streamable-http", "http://127.0.0.1:18088/mcp")));
-        Path serverPath = createServerJson(server);
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
-        assertThat(actual.getMessage(), is("server.json packages must contain exactly one stdio OCI package and one streamable-http OCI package."));
+        assertPackageShapeRejected(server);
     }
-
+    
     @Test
     void assertExecuteRejectsExtraPackage() throws IOException {
         Map<String, Object> server = createServerMetadata();
         server.put("packages", List.of(createPackage("stdio", ""), createPackage("streamable-http", "http://127.0.0.1:18088/mcp"), createPackage("stdio", "")));
-        Path serverPath = createServerJson(server);
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
-        assertThat(actual.getMessage(), is("server.json packages must contain exactly one stdio OCI package and one streamable-http OCI package."));
+        assertPackageShapeRejected(server);
     }
-
+    
     @Test
     void assertExecuteRejectsMissingReleaseArguments() throws IOException {
         Path serverPath = createServerJson(createServerMetadata());
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString()));
         assertThat(actual.getMessage(), is("--version and --identifier are required unless --validate-only is set."));
     }
-
+    
     @Test
     void assertExecuteValidatesSourceMetadata() {
         Path serverPath = resolveMCPDirectory().resolve("server.json");
         assertDoesNotThrow(() -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
     }
-
+    
     private Path createServerJson(final Map<String, Object> server) throws IOException {
         Path result = tempDir.resolve("server.json");
         Files.writeString(result, JSON_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(server));
         return result;
     }
-
+    
+    private void assertPackageShapeRejected(final Map<String, Object> server) throws IOException {
+        Path serverPath = createServerJson(server);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
+        assertThat(actual.getMessage(), is(PACKAGE_SHAPE_ERROR_MESSAGE));
+    }
+    
     private Map<String, Object> readServerJson(final Path serverPath) throws IOException {
         return JSON_MAPPER.readValue(serverPath.toFile(), new TypeReference<>() {
         });
     }
-
+    
     private Map<String, Object> createServerMetadata() {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("$schema", "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json");
@@ -155,7 +155,7 @@ class MCPRegistryMetadataCommandTest {
         result.put("packages", List.of(createPackage("stdio", ""), createPackage("streamable-http", "http://127.0.0.1:18088/mcp")));
         return result;
     }
-
+    
     private Map<String, Object> createPackage(final String transportType, final String url) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("registryType", "oci");
@@ -167,7 +167,7 @@ class MCPRegistryMetadataCommandTest {
                 createEnvironmentVariable("SHARDINGSPHERE_MCP_CONFIG", "Optional absolute config path inside the OCI container.")));
         return result;
     }
-
+    
     private Map<String, Object> createTransport(final String transportType, final String url) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         result.put("type", transportType);
@@ -176,7 +176,7 @@ class MCPRegistryMetadataCommandTest {
         }
         return result;
     }
-
+    
     private Map<String, Object> createEnvironmentVariable(final String name, final String description) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("name", name);
@@ -186,16 +186,16 @@ class MCPRegistryMetadataCommandTest {
         result.put("isSecret", false);
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     private List<Map<String, Object>> getPackages(final Map<String, Object> server) {
         return (List<Map<String, Object>>) server.get("packages");
     }
-
+    
     private List<Object> getPackageValues(final Map<String, Object> server, final String key) {
         return getPackages(server).stream().map(each -> each.get(key)).toList();
     }
-
+    
     private Path resolveMCPDirectory() {
         Path result = Path.of("").toAbsolutePath();
         while (null != result && !Files.exists(result.resolve("mcp/README.md"))) {

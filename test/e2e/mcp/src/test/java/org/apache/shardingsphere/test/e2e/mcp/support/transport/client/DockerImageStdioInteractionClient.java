@@ -24,14 +24,14 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public final class DockerImageStdioInteractionClient extends AbstractProcessMCPStdioInteractionClient {
-
+    
     private final String imageName;
-
+    
     @Override
     protected ProcessBuilder createProcessBuilder() {
         return new ProcessBuilder("docker", "run", "--rm", "-i", "-e", "SHARDINGSPHERE_MCP_TRANSPORT=stdio", imageName);
     }
-
+    
     @Override
     protected String getClientName() {
         return "mcp-e2e-container-stdio";

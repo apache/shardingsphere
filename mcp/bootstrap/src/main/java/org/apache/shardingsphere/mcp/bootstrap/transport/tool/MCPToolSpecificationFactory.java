@@ -43,15 +43,15 @@ import java.util.Optional;
  * MCP tool specification factory.
  */
 public final class MCPToolSpecificationFactory {
-    
+
     private final List<MCPToolDescriptor> toolDescriptors;
-    
+
     private final MCPToolController toolController;
-    
+
     private final MCPToolElicitationHandler elicitationHandler;
-    
+
     private final JsonSchemaValidator outputSchemaValidator;
-    
+
     /**
      * Create MCP tool specification factory.
      *
@@ -63,7 +63,7 @@ public final class MCPToolSpecificationFactory {
         elicitationHandler = new MCPToolElicitationHandler(toolController);
         outputSchemaValidator = new DefaultJsonSchemaValidator();
     }
-    
+
     /**
      * Create MCP tool specifications.
      *
@@ -72,7 +72,7 @@ public final class MCPToolSpecificationFactory {
     public List<SyncToolSpecification> createToolSpecifications() {
         return toolDescriptors.stream().map(each -> new Builder().tool(createTool(each)).callHandler(this::handle).build()).toList();
     }
-    
+
     private McpSchema.Tool createTool(final MCPToolDescriptor toolDescriptor) {
         McpSchema.Tool.Builder result = McpSchema.Tool.builder()
                 .name(toolDescriptor.getName())
@@ -90,7 +90,7 @@ public final class MCPToolSpecificationFactory {
         }
         return result.build();
     }
-    
+
     @SuppressWarnings("unchecked")
     private McpSchema.JsonSchema createInputSchema(final Map<String, Object> inputSchema) {
         Map<String, Object> properties = (Map<String, Object>) inputSchema.get("properties");
@@ -99,12 +99,12 @@ public final class MCPToolSpecificationFactory {
         return new McpSchema.JsonSchema(String.valueOf(inputSchema.get("type")), properties, required, additionalProperties, Collections.emptyMap(),
                 Collections.emptyMap());
     }
-    
+
     private McpSchema.ToolAnnotations createToolAnnotations(final MCPToolAnnotations annotations) {
-        return new McpSchema.ToolAnnotations(annotations.getTitle(), annotations.getReadOnlyHint(), annotations.getDestructiveHint(), annotations.getIdempotentHint(),
-                annotations.getOpenWorldHint(), null);
+        return new McpSchema.ToolAnnotations(annotations.getTitle(), annotations.isReadOnlyHint(), annotations.isDestructiveHint(), annotations.isIdempotentHint(),
+                annotations.isOpenWorldHint(), null);
     }
-    
+
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
         MCPResponse response = toolController.handle(exchange.sessionId(), request.name(), arguments);
@@ -115,7 +115,7 @@ public final class MCPToolSpecificationFactory {
         }
         return toolDescriptor.map(each -> createCallToolResult(each, response)).orElseGet(() -> MCPTransportPayloadUtils.createCallToolResult(response));
     }
-    
+
     private McpSchema.CallToolResult createCallToolResult(final MCPToolDescriptor toolDescriptor, final MCPResponse response) {
         if (response instanceof MCPErrorResponse) {
             return MCPTransportPayloadUtils.createCallToolResult(response);
@@ -131,7 +131,7 @@ public final class MCPToolSpecificationFactory {
         return MCPTransportPayloadUtils.createCallToolResult(new MCPErrorResponse("invalid_output_schema", String.format(
                 "Tool `%s` structuredContent does not match declared outputSchema: %s", toolDescriptor.getName(), Objects.toString(validation.errorMessage(), "validation failed"))));
     }
-    
+
     private Optional<MCPToolDescriptor> findToolDescriptor(final String toolName) {
         for (MCPToolDescriptor each : toolDescriptors) {
             if (toolName.equals(each.getName())) {

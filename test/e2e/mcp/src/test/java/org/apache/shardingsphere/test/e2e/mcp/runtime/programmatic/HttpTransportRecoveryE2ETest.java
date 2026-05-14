@@ -51,8 +51,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", Map.of("schema", "public", "sql", "SELECT * FROM orders"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
-        Map<String, Object> recovery = assertRecoveryCategory(payload, "missing_context");
+        Map<String, Object> recovery = assertRecoveryCategory(payload, "invalid_request", "missing_context");
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("type")), is("resource_read"));
         assertThat(String.valueOf(nextAction.get("resource_uri")), is("shardingsphere://databases"));
@@ -60,7 +59,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(followUp.statusCode(), is(200));
         Map<String, Object> resourcePayload = getFirstResourcePayload(followUp.body());
         assertThat(String.valueOf(resourcePayload.get("response_mode")), is("list"));
-        assertTrue(String.valueOf(resourcePayload.get("items")).contains("logic_db"));
+        assertDatabaseListContains(resourcePayload, "logic_db");
         assertModelFacingPayloadContract(payload);
         assertModelFacingPayloadContract(resourcePayload);
     }
@@ -74,7 +73,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders", "execution_mode", "preview"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = assertRecoveryCategory(payload, "unsupported_target");
+        Map<String, Object> recovery = assertRecoveryCategory(payload, "unsupported", "unsupported_target");
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_query"));
         HttpResponse<String> followUp = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", castToMap(nextAction.get("arguments")));
@@ -92,7 +91,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "run"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = assertRecoveryCategory(payload, "invalid_enum");
+        Map<String, Object> recovery = assertRecoveryCategory(payload, "invalid_request", "invalid_enum");
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_update"));
         Map<String, Object> retryArguments = castToMap(nextAction.get("arguments"));
@@ -114,7 +113,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = assertRecoveryCategory(payload, "unsafe_sql");
+        Map<String, Object> recovery = assertRecoveryCategory(payload, "unsupported", "unsafe_sql");
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_update"));
         Map<String, Object> retryArguments = castToMap(nextAction.get("arguments"));
@@ -134,7 +133,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 Map.of("plan_id", "plan-missing", "execution_mode", "preview"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = assertRecoveryCategory(payload, "stale_workflow");
+        Map<String, Object> recovery = assertRecoveryCategory(payload, "invalid_request", "stale_workflow");
         assertThat(String.valueOf(recovery.get("plan_id")), is("plan-missing"));
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("type")), is("completion"));
@@ -147,7 +146,8 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertModelFacingPayloadContract(completionPayload);
     }
     
-    private Map<String, Object> assertRecoveryCategory(final Map<String, Object> payload, final String expectedRecoveryCategory) {
+    private Map<String, Object> assertRecoveryCategory(final Map<String, Object> payload, final String expectedErrorCode, final String expectedRecoveryCategory) {
+        assertThat(String.valueOf(payload.get("error_code")), is(expectedErrorCode));
         Map<String, Object> result = castToMap(payload.get("recovery"));
         assertThat(String.valueOf(result.get("recovery_category")), is(expectedRecoveryCategory));
         return result;
@@ -155,6 +155,10 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     
     private Map<String, Object> getFirstNextAction(final Map<String, Object> recovery) {
         return castToMapList(recovery.get("next_actions")).iterator().next();
+    }
+    
+    private void assertDatabaseListContains(final Map<String, Object> payload, final String expectedDatabase) {
+        assertTrue(castToMapList(payload.get("items")).stream().anyMatch(each -> expectedDatabase.equals(each.get("database"))));
     }
     
     private HttpResponse<String> sendCompletionRequest(final HttpClient httpClient, final String sessionId, final Map<String, Object> reference,

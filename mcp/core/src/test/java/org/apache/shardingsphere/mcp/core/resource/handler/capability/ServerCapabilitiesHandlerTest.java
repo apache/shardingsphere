@@ -38,33 +38,38 @@ class ServerCapabilitiesHandlerTest {
     
     @Test
     void assertHandleReturnsCoreModelSurfaceContract() {
+        Map<String, Object> actual = createCapabilitiesPayload();
+        assertGoldenTopLevelKeys(actual);
+        assertTrue(((Collection<?>) actual.get("supportedResources")).contains("shardingsphere://capabilities"));
+        assertTrue(((Collection<?>) actual.get("supportedTools")).containsAll(List.of("database_gateway_search_metadata", "database_gateway_execute_query",
+                "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
+        assertFalse(((List<?>) actual.get("resources")).isEmpty());
+        assertFalse(((List<?>) actual.get("resourceTemplates")).isEmpty());
+        assertFalse(((List<?>) actual.get("tools")).isEmpty());
+        assertFalse(((List<?>) actual.get("prompts")).isEmpty());
+        assertFalse(((List<?>) actual.get("completionTargets")).isEmpty());
+        assertFalse(((List<?>) actual.get("resourceNavigation")).isEmpty());
+        assertTrue(((Map<?, ?>) actual.get("fingerprints")).containsKey("descriptorCatalog"));
+        assertModelFirstSummary(actual);
+        assertModelContract(actual);
+        assertSurfaceSummary(actual);
+        assertFieldNamingContract(actual);
+        assertNextActionContract(actual);
+        assertCommonFlows(actual);
+        assertSecurityHints(actual);
+        assertLegacyPayloadFieldsAbsent(actual);
+        assertResourcePayloadContracts(actual);
+        assertCoreToolSchemas(actual);
+    }
+    
+    @Test
+    void assertHandleReturnsImplementedProtocolAvailabilityOnly() {
+        assertProtocolAvailability(createCapabilitiesPayload());
+    }
+    
+    private Map<String, Object> createCapabilitiesPayload() {
         try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext())) {
-            Map<String, Object> actual = new ServerCapabilitiesHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
-            assertGoldenTopLevelKeys(actual);
-            assertTrue(((Collection<?>) actual.get("supportedResources")).contains("shardingsphere://capabilities"));
-            assertTrue(((Collection<?>) actual.get("supportedTools")).containsAll(List.of("database_gateway_search_metadata", "database_gateway_execute_query",
-                    "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
-            assertFalse(((List<?>) actual.get("resources")).isEmpty());
-            assertFalse(((List<?>) actual.get("resourceTemplates")).isEmpty());
-            assertFalse(((List<?>) actual.get("tools")).isEmpty());
-            assertFalse(((List<?>) actual.get("prompts")).isEmpty());
-            assertFalse(((List<?>) actual.get("completionTargets")).isEmpty());
-            assertFalse(((List<?>) actual.get("resourceNavigation")).isEmpty());
-            Map<?, ?> protocolAvailability = (Map<?, ?>) actual.get("protocolAvailability");
-            assertTrue((Boolean) protocolAvailability.get("resourceNavigation"));
-            assertFalse(protocolAvailability.containsKey("sampling"));
-            assertFalse(protocolAvailability.containsKey("roots"));
-            assertTrue(((Map<?, ?>) actual.get("fingerprints")).containsKey("descriptorCatalog"));
-            assertModelFirstSummary(actual);
-            assertModelContract(actual);
-            assertSurfaceSummary(actual);
-            assertFieldNamingContract(actual);
-            assertNextActionContract(actual);
-            assertCommonFlows(actual);
-            assertSecurityHints(actual);
-            assertLegacyPayloadFieldsAbsent(actual);
-            assertResourcePayloadContracts(actual);
-            assertCoreToolSchemas(actual);
+            return new ServerCapabilitiesHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
         }
     }
     
@@ -72,6 +77,22 @@ class ServerCapabilitiesHandlerTest {
         assertThat(capabilities.keySet(), is(Set.of("response_mode", "model_first_summary", "supportedResources", "supportedTools", "supportedStatementClasses", "model_contract",
                 "surface_summary", "field_naming_contract", "next_action_contract", "common_flows", "security_hints", "resources", "resourceTemplates", "tools", "prompts",
                 "completionTargets", "resourceNavigation", "protocolAvailability", "fingerprints")));
+    }
+    
+    private void assertProtocolAvailability(final Map<String, Object> capabilities) {
+        Map<?, ?> actual = (Map<?, ?>) capabilities.get("protocolAvailability");
+        assertThat(actual, is(Map.of(
+                "resources", true,
+                "resourceTemplates", true,
+                "tools", true,
+                "toolAnnotations", true,
+                "toolOutputSchemas", true,
+                "prompts", true,
+                "completions", true,
+                "resourceNavigation", true)));
+        for (String each : List.of("logging", "progress", "cancellation", "tasks", "sampling", "roots", "subscriptions", "listChanged")) {
+            assertFalse(actual.containsKey(each), "Unexpected optional MCP capability: " + each);
+        }
     }
     
     private void assertModelFirstSummary(final Map<String, Object> capabilities) {

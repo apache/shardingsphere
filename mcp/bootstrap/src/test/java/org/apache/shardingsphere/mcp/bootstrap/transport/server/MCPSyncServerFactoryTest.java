@@ -48,8 +48,9 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -62,11 +63,6 @@ class MCPSyncServerFactoryTest {
         assertNotNull(transportProvider.sessionFactory);
         assertThat(actual.getServerInfo().name(), is(MCPTransportConstants.SERVER_NAME));
         assertThat(actual.getServerInfo().version(), is("development"));
-        assertFalse(actual.getServerCapabilities().resources().subscribe());
-        assertFalse(actual.getServerCapabilities().resources().listChanged());
-        assertFalse(actual.getServerCapabilities().tools().listChanged());
-        assertFalse(actual.getServerCapabilities().prompts().listChanged());
-        assertNotNull(actual.getServerCapabilities().completions());
         assertThat(actual.listTools().stream().map(McpSchema.Tool::name).toList(), is(List.of("database_gateway_search_metadata")));
         assertThat(actual.listResources().stream().map(McpSchema.Resource::uri).toList(), is(List.of("shardingsphere://capabilities")));
         assertThat(actual.listResourceTemplates().stream().map(McpSchema.ResourceTemplate::uriTemplate).toList(),
@@ -83,6 +79,24 @@ class MCPSyncServerFactoryTest {
         assertThat(actual.listTools().size(), is(1));
         assertThat(actual.listResources().size(), is(1));
         assertThat(actual.listResourceTemplates().size(), is(1));
+        actual.closeGracefully();
+    }
+    
+    @Test
+    void assertCreateAdvertisesImplementedCapabilitiesAndSdkLoggingOnly() throws ReflectiveOperationException {
+        TestServerTransportProvider transportProvider = new TestServerTransportProvider();
+        McpSyncServer actual = createFactory().create(transportProvider);
+        McpSchema.ServerCapabilities actualCapabilities = actual.getServerCapabilities();
+        assertNull(actualCapabilities.experimental());
+        assertNotNull(actualCapabilities.logging());
+        assertNotNull(actualCapabilities.resources());
+        assertFalse(actualCapabilities.resources().subscribe());
+        assertFalse(actualCapabilities.resources().listChanged());
+        assertNotNull(actualCapabilities.tools());
+        assertFalse(actualCapabilities.tools().listChanged());
+        assertNotNull(actualCapabilities.prompts());
+        assertFalse(actualCapabilities.prompts().listChanged());
+        assertNotNull(actualCapabilities.completions());
         actual.closeGracefully();
     }
     

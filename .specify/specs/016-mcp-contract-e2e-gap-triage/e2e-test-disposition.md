@@ -20,7 +20,7 @@
 ## Scope
 
 This matrix covers every Java class currently under `test/e2e/mcp/src/test/java`.
-It classifies each class by release-evidence value before implementation tasks are generated.
+It classifies each class by current release-evidence value after package 016 implementation slices.
 
 Disposition keys:
 
@@ -30,12 +30,12 @@ Disposition keys:
 - **KEEP-GOV**: keep as governance or artifact validation until a better module owns it.
 - **REDUCE-CANDIDATE**: keep one canonical gate, but trim duplicated or brittle assertions.
 
-No class is marked for direct deletion in this draft.
+No class is marked for direct deletion in this matrix.
 Deletion requires a follow-up task that names the preserving lower-level test or artifact.
 
-Each section below is the preliminary `evidence_value`.
-Each row's uppercase token is the preliminary `disposition`.
-Before task generation, every REDUCE-CANDIDATE row must gain an explicit `preserved_by` target.
+Each section below is the current `evidence_value`.
+Each row's uppercase token is the current `disposition`.
+Every future REDUCE-CANDIDATE row must gain an explicit `preserved_by` target.
 
 ## Required Missing Tests
 
@@ -89,6 +89,13 @@ Before task generation, every REDUCE-CANDIDATE row must gain an explicit `preser
 - OAuth inactive, expired, wrong issuer, introspection failure, 401/403 challenge, and no-token-passthrough
   evidence remain tracked by 012 unless reassigned.
 - Helper-unit tests inside `test/e2e/mcp` are preserved as `KEEP-SUPPORT` until a narrower harness module exists.
+
+## Release Evidence Boundary
+
+- Product-path E2E release claims may cite `KEEP-E2E` rows that exercise product, protocol, distribution, or model-facing runtime behavior.
+- `KEEP-SUPPORT` rows are harness, fixture, or helper coverage only. They can support a release claim but do not satisfy product-path E2E evidence by themselves.
+- `KEEP-GOV` rows validate governance artifacts and should be cited only for governance or release-metadata claims.
+- Package 015 owns prompt/resource catalog clarity and canonical error channels; this matrix owns only E2E disposition and assertion stability.
 
 ## Environment and Configuration
 
@@ -166,11 +173,11 @@ Before task generation, every REDUCE-CANDIDATE row must gain an explicit `preser
 - `HttpTransportAccessTokenE2ETest`: KEEP-E2E. Bearer-token HTTP gate.
 - `HttpTransportApprovalSafetyE2ETest`: KEEP-E2E. Approval boundary evidence.
 - `HttpTransportContractE2ETest`: KEEP-E2E. Canonical HTTP contract gate.
-- `HttpTransportGoldenContractE2ETest`: REDUCE-CANDIDATE. Keep one canonical snapshot gate.
-  `preserved_by`: one canonical transport-visible snapshot, `MCPDescriptorCatalogValidator`,
+- `HttpTransportGoldenContractE2ETest`: KEEP-E2E. Canonical transport-visible capabilities snapshot gate after T053 reduction.
+  `preserved_by`: `capabilities.yaml`, structured HTTP contract assertions, `MCPDescriptorCatalogValidator`,
   and `MCPToolSpecificationFactoryTest#assertToolOutputSchemaExamplesMatchSchemas`.
 - `HttpTransportOAuthIntrospectionE2ETest`: KEEP-E2E. OAuth validation gate owned by 012.
-- `HttpTransportRecoveryE2ETest`: REDUCE-CANDIDATE. Prefer structured recovery fields.
+- `HttpTransportRecoveryE2ETest`: KEEP-E2E. Structured recovery-category HTTP behavior after T053 reduction.
   `preserved_by`: structured `error_code`, `recovery`, and `next_actions` assertions
   plus `MCPErrorConverterTest` for protocol error conversion.
 - `HttpTransportSecurityE2ETest`: KEEP-E2E. Token, origin, version, and remote security gate.
@@ -219,5 +226,5 @@ Before task generation, every REDUCE-CANDIDATE row must gain an explicit `preser
 - Do not delete a test until its preserving evidence is named.
 - Fixture-unit tests stay in the E2E module until a closer unit-test or harness-support module exists.
 - REDUCE-CANDIDATE tests stay until a canonical contract gate replaces duplicated assertions.
-- KEEP-SUPPORT classes must not be counted as product-path E2E evidence.
+- KEEP-SUPPORT classes and fixture-unit tests must not be counted as product-path E2E evidence.
 - KEEP-GOV classes should eventually move to a governance or artifact-validation module if one exists.

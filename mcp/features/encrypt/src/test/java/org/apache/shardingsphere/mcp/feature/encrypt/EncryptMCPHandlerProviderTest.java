@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class EncryptMCPHandlerProviderTest {
-    
+
     @Test
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new EncryptMCPHandlerProvider().getResourceHandlers();
@@ -41,16 +41,16 @@ class EncryptMCPHandlerProviderTest {
                 "shardingsphere://features/encrypt/databases/{database}/rules",
                 "shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules")));
     }
-    
+
     @Test
     void assertGetToolHandlers() {
         MCPToolDescriptor actual = new EncryptMCPHandlerProvider().getToolHandlers().iterator().next().getToolDescriptor();
         assertThat(actual.getName(), is("database_gateway_plan_encrypt_rule"));
-        assertFalse(actual.getAnnotations().getReadOnlyHint());
-        assertFalse(actual.getAnnotations().getDestructiveHint());
-        assertFalse(actual.getAnnotations().getIdempotentHint());
+        assertFalse(actual.getAnnotations().isReadOnlyHint());
+        assertFalse(actual.getAnnotations().isDestructiveHint());
+        assertFalse(actual.getAnnotations().isIdempotentHint());
     }
-    
+
     @Test
     void assertGetWorkflowDefinitions() {
         WorkflowRuntimeDefinition actual = new EncryptMCPHandlerProvider().getWorkflowDefinitions().iterator().next();

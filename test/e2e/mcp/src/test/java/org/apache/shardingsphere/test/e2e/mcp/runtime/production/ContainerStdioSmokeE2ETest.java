@@ -36,13 +36,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EnabledOnOs({OS.LINUX, OS.MAC, OS.WINDOWS})
 @EnabledIf("isEnabled")
 class ContainerStdioSmokeE2ETest {
-
+    
     private static final String IMAGE_PROPERTY = "mcp.e2e.container.image";
-
+    
     private static boolean isEnabled() {
         return !System.getProperty(IMAGE_PROPERTY, "").isBlank();
     }
-
+    
     @Test
     void assertLaunchContainerOverStdio() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = new DockerImageStdioInteractionClient(System.getProperty(IMAGE_PROPERTY))) {
@@ -54,12 +54,12 @@ class ContainerStdioSmokeE2ETest {
             assertThat(getItemNames(actualResult), hasItems("orders"));
         }
     }
-
+    
     private void assertSupportedTools(final List<Map<String, Object>> actualTools) {
         assertThat(actualTools.stream().map(each -> String.valueOf(each.get("name"))).toList(),
                 hasItems("database_gateway_search_metadata", "database_gateway_execute_query"));
     }
-
+    
     private List<String> getItemNames(final Map<String, Object> payload) {
         return MCPInteractionPayloads.castToList(payload.get("items")).stream().map(each -> String.valueOf(each.get("name"))).toList();
     }
