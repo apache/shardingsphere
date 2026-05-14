@@ -43,6 +43,7 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         result.setAccessToken(data.getAccessToken());
         result.setPort(data.getPort());
         result.setEndpointPath(data.getEndpointPath());
+        result.setAllowedOrigins(data.getAllowedOrigins());
         result.setAuthorizationServers(data.getAuthorizationServers());
         result.setScopesSupported(data.getScopesSupported());
         result.setProtectedResource(data.getProtectedResource());
@@ -71,7 +72,8 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         boolean allowRemoteAccess = yamlConfig.isAllowRemoteAccess();
         String accessToken = resolveAccessToken(yamlConfig.getAccessToken(), environment);
         return new HttpTransportConfiguration(yamlConfig.isEnabled(), bindHost, allowRemoteAccess, accessToken, resolvePort(yamlConfig.getPort()),
-                resolveEndpointPath(yamlConfig.getEndpointPath()), resolveTextList(yamlConfig.getAuthorizationServers(), "transport.http.authorizationServers", environment),
+                resolveEndpointPath(yamlConfig.getEndpointPath()), resolveTextList(yamlConfig.getAllowedOrigins(), "transport.http.allowedOrigins", environment),
+                resolveTextList(yamlConfig.getAuthorizationServers(), "transport.http.authorizationServers", environment),
                 resolveTextList(yamlConfig.getScopesSupported(), "transport.http.scopesSupported", environment),
                 Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(yamlConfig.getProtectedResource(), "transport.http.protectedResource", environment), "").trim(),
                 swapOAuthIntrospectionToObject(yamlConfig.getOauthIntrospection(), environment));

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadat
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -42,10 +43,12 @@ final class MCPToolElicitationHandler {
     
     private static final String PLANNING_WORKFLOW_ROLE = "plan";
     
+    private static final List<String> SENSITIVE_FIELD_NAME_MARKERS = List.of("password", "token", "secret", "credential", "key");
+    
     private final MCPToolController toolController;
     
     boolean shouldElicit(final McpSyncServerExchange exchange, final MCPToolDescriptor toolDescriptor, final Map<String, Object> payload) {
-        return isPlanningTool(toolDescriptor) && supportsFormElicitation(exchange) && hasClarificationQuestions(payload);
+        return isPlanningTool(toolDescriptor) && supportsFormElicitation(exchange) && hasFormSafeClarificationQuestions(payload);
     }
     
     MCPResponse handle(final McpSyncServerExchange exchange, final MCPToolDescriptor toolDescriptor, final Map<String, Object> arguments,
@@ -70,9 +73,32 @@ final class MCPToolElicitationHandler {
         return null != elicitation.form() || null == elicitation.url();
     }
     
-    private boolean hasClarificationQuestions(final Map<String, Object> payload) {
+    private boolean hasFormSafeClarificationQuestions(final Map<String, Object> payload) {
         Object clarificationQuestions = payload.get("clarification_questions");
-        return clarificationQuestions instanceof List<?> && !((List<?>) clarificationQuestions).isEmpty();
+        return clarificationQuestions instanceof List<?> && !((List<?>) clarificationQuestions).isEmpty() && !hasSensitiveClarificationQuestion((List<?>) clarificationQuestions);
+    }
+    
+    private boolean hasSensitiveClarificationQuestion(final List<?> clarificationQuestions) {
+        for (Object each : clarificationQuestions) {
+            if (each instanceof Map<?, ?> && isSensitiveClarificationQuestion((Map<?, ?>) each)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isSensitiveClarificationQuestion(final Map<?, ?> question) {
+        return Boolean.TRUE.equals(question.get("secret")) || "secret".equals(Objects.toString(question.get("input_type"), "").toLowerCase(Locale.ENGLISH)) || isSensitiveFieldName(question);
+    }
+    
+    private boolean isSensitiveFieldName(final Map<?, ?> question) {
+        String fieldName = Objects.toString(question.get("field"), "").toLowerCase(Locale.ENGLISH);
+        for (String each : SENSITIVE_FIELD_NAME_MARKERS) {
+            if (fieldName.contains(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private McpSchema.ElicitRequest createElicitRequest(final String toolName, final Map<String, Object> payload) {
@@ -109,12 +135,9 @@ final class MCPToolElicitationHandler {
     }
     
     private Map<String, Object> createElicitPropertySchema(final Map<?, ?> question) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         result.put("type", "boolean".equals(Objects.toString(question.get("input_type"), "")) ? "boolean" : "string");
         result.put("description", Objects.toString(question.get("display_message"), ""));
-        if (Boolean.TRUE.equals(question.get("secret"))) {
-            result.put("format", "password");
-        }
         return result;
     }
     

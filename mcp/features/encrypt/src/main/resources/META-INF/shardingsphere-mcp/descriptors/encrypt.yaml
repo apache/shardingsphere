@@ -318,7 +318,7 @@ tools:
           description: "Inputs still required before the plan can be completed."
         clarification_questions:
           type: array
-          description: "Structured questions for the model to ask the user, including field, input_type, secret flag, and display_message."
+          description: "Structured questions for missing workflow inputs. Secret-marked questions require out-of-band client or operator handling instead of MCP form elicitation."
         issues:
           type: array
           description: "Warnings, conflicts, and validation issues found during planning."

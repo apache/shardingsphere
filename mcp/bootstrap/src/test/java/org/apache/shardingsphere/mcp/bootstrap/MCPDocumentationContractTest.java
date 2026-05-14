@@ -79,6 +79,7 @@ class MCPDocumentationContractTest {
     private void assertDocumentationIncludesRuntimeSafety(final String content) {
         assertTrue(content.contains("transport.http.bindHost"));
         assertTrue(content.contains("transport.http.allowRemoteAccess"));
+        assertTrue(content.contains("transport.http.allowedOrigins"));
         assertTrue(content.contains("transport.http.accessToken"));
         assertTrue(content.contains("transport.http.oauthIntrospection.endpoint"));
         assertTrue(content.contains("transport.http.authorizationServers"));
@@ -87,6 +88,9 @@ class MCPDocumentationContractTest {
         assertTrue(content.contains("insufficient_scope"));
         assertTrue(content.contains("${ENV_NAME}"));
         assertTrue(content.contains("Authorization: Bearer <token>"));
+        assertTrue(content.contains("MCP form elicitation"));
+        assertTrue(content.contains("URL mode"));
+        assertTrue(content.contains("secret manager"));
         assertTrue(content.contains("SHARDINGSPHERE_MCP_CONFIG"));
         assertTrue(content.contains("configuration_required"));
     }

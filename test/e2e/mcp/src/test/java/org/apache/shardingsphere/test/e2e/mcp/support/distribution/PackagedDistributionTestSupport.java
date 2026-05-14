@@ -214,7 +214,9 @@ public final class PackagedDistributionTestSupport {
         HttpTransportConfiguration actualHttpTransport = new HttpTransportConfiguration(RuntimeTransport.HTTP == transport,
                 sourceConfig.getHttpTransport().getBindHost(), sourceConfig.getHttpTransport().isAllowRemoteAccess(),
                 sourceConfig.getHttpTransport().getAccessToken(), RuntimeTransport.HTTP == transport ? httpPort : sourceConfig.getHttpTransport().getPort(),
-                sourceConfig.getHttpTransport().getEndpointPath());
+                sourceConfig.getHttpTransport().getEndpointPath(), sourceConfig.getHttpTransport().getAllowedOrigins(),
+                sourceConfig.getHttpTransport().getAuthorizationServers(), sourceConfig.getHttpTransport().getScopesSupported(),
+                sourceConfig.getHttpTransport().getProtectedResource(), sourceConfig.getHttpTransport().getOauthIntrospection());
         StdioTransportConfiguration actualStdioTransport = new StdioTransportConfiguration(RuntimeTransport.STDIO == transport);
         return new MCPLaunchConfiguration(actualHttpTransport, actualStdioTransport, sourceConfig.getDatabases());
     }

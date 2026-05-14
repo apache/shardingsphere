@@ -177,14 +177,48 @@ class MCPToolSpecificationFactoryTest {
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT,
-                    Map.of("custom_properties.secret-key", "foo_secret", "requires_review", true)));
+                    Map.of("custom_properties.display-name", "foo_display", "requires_review", true)));
             CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest(toolName, Map.of()));
             assertThat(actual.structuredContent(), is(Map.of("status", "planned")));
             ArgumentCaptor<McpSchema.ElicitRequest> requestCaptor = ArgumentCaptor.forClass(McpSchema.ElicitRequest.class);
             verify(exchange).createElicitation(requestCaptor.capture());
             assertThat(requestCaptor.getValue().meta().get(MCPShardingSphereMetadataKeys.TOOL), is(toolName));
             assertThat(requestCaptor.getValue().meta().get(MCPShardingSphereMetadataKeys.PLAN_ID), is("plan-1"));
+            assertThat(requestCaptor.getValue().requestedSchema(), is(createExpectedElicitRequestedSchema()));
             mockedToolHandlerRegistry.verify(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq(toolName), eq(createElicitedArguments())));
+        }
+    }
+    
+    @Test
+    void assertCreateToolSpecificationsSkipElicitationWithSecretQuestion() {
+        assertCreateToolSpecificationsSkipUnsafeElicitation(createClarifyingQuestion("custom_properties.display-name", "string", true, "Provide display name."));
+    }
+    
+    @Test
+    void assertCreateToolSpecificationsSkipElicitationWithSecretInputType() {
+        assertCreateToolSpecificationsSkipUnsafeElicitation(createClarifyingQuestion("custom_properties.display-name", "secret", false, "Provide display name."));
+    }
+    
+    @Test
+    void assertCreateToolSpecificationsSkipElicitationWithSensitiveFieldName() {
+        assertCreateToolSpecificationsSkipUnsafeElicitation(createClarifyingQuestion("primary_algorithm_properties.access-token", "string", false, "Provide access token."));
+    }
+    
+    private void assertCreateToolSpecificationsSkipUnsafeElicitation(final Map<String, Object> question) {
+        try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
+            String toolName = "database_gateway_plan_encrypt_rule";
+            Map<String, Object> expectedPayload = createClarifyingPayload(question);
+            MCPResponse response = new MCPMapResponse(expectedPayload);
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createPlanningToolDescriptor(toolName)));
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq(toolName), eq(Map.of())))
+                    .thenReturn(Optional.of(response));
+            MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
+            when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
+            SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
+            McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of("custom_properties.display-name", "foo_display")));
+            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest(toolName, Map.of()));
+            assertThat(actual.structuredContent(), is(expectedPayload));
+            verify(exchange, never()).createElicitation(any());
         }
     }
     
@@ -283,15 +317,38 @@ class MCPToolSpecificationFactoryTest {
                 "plan_id", "plan-1",
                 "status", "clarifying",
                 "clarification_questions", List.of(
-                        Map.of("field", "custom_properties.secret-key", "input_type", "secret", "secret", true, "display_message", "Provide secret key."),
-                        Map.of("field", "requires_review", "input_type", "boolean", "secret", false, "display_message", "Require review?")));
+                        createClarifyingQuestion("custom_properties.display-name", "string", false, "Provide display name."),
+                        createClarifyingQuestion("requires_review", "boolean", false, "Require review?")));
+    }
+    
+    private Map<String, Object> createClarifyingPayload(final Map<String, Object> question) {
+        return Map.of(
+                "plan_id", "plan-1",
+                "status", "clarifying",
+                "clarification_questions", List.of(question));
+    }
+    
+    private Map<String, Object> createClarifyingQuestion(final String field, final String inputType, final boolean secret, final String displayMessage) {
+        return Map.of("field", field, "input_type", inputType, "secret", secret, "display_message", displayMessage);
     }
     
     private Map<String, Object> createElicitedArguments() {
         return Map.of(
                 "plan_id", "plan-1",
-                "custom_properties", Map.of("secret-key", "foo_secret"),
+                "custom_properties", Map.of("display-name", "foo_display"),
                 "intent", Map.of("requires_review", true));
+    }
+    
+    private Map<String, Object> createExpectedElicitRequestedSchema() {
+        Map<String, Object> properties = new LinkedHashMap<>(2, 1F);
+        properties.put("custom_properties.display-name", Map.of("type", "string", "description", "Provide display name."));
+        properties.put("requires_review", Map.of("type", "boolean", "description", "Require review?"));
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("type", "object");
+        result.put("properties", properties);
+        result.put("required", List.of("custom_properties.display-name", "requires_review"));
+        result.put("additionalProperties", false);
+        return result;
     }
     
     private MCPToolDescriptor createToolDescriptor(final String toolName) {

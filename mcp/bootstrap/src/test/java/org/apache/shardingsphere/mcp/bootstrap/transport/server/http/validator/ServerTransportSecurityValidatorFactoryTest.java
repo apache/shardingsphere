@@ -34,42 +34,69 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ServerTransportSecurityValidatorFactoryTest {
-    
+
     @Test
     void assertCreateWithoutOptionalRules() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        ServerTransportSecurityValidator actual = ServerTransportSecurityValidatorFactory.create(sessionManager, "0.0.0.0", "");
+        ServerTransportSecurityValidator actual = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1", "", List.of());
         assertDoesNotThrow(() -> actual.validateHeaders(Map.of()));
         verifyNoInteractions(sessionManager);
     }
-    
+
     @Test
     void assertCreateWithAccessTokenConstraintFirst() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1", "foo_token");
+        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1", "foo_token", List.of());
         ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class,
                 () -> validator.validateHeaders(Map.of("Origin", List.of("http://example.com:8080"), "Mcp-Session-Id", List.of("session-id"))));
         assertThat(ex.getStatusCode(), is(401));
         verifyNoInteractions(sessionManager);
     }
-    
+
     @Test
     void assertCreateWithLoopbackOriginConstraintSecond() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1", "");
+        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1", "", List.of());
         ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class,
                 () -> validator.validateHeaders(Map.of("Origin", List.of("http://example.com:8080"), "Mcp-Session-Id", List.of("session-id"))));
         assertThat(ex.getStatusCode(), is(403));
         verifyNoInteractions(sessionManager);
     }
-    
+
+    @Test
+    void assertCreateWithAllowedOriginConstraintSecond() {
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        ServerTransportSecurityValidator actual = ServerTransportSecurityValidatorFactory.create(sessionManager, "0.0.0.0", "", List.of("https://gateway.example.test"));
+        assertDoesNotThrow(() -> actual.validateHeaders(Map.of("Origin", List.of("https://gateway.example.test"))));
+        verifyNoInteractions(sessionManager);
+    }
+
+    @Test
+    void assertCreateWithAllowedOriginConstraintRejectsEmptyOrigin() {
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "0.0.0.0", "", List.of("https://gateway.example.test"));
+        ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class, () -> validator.validateHeaders(Map.of()));
+        assertThat(ex.getStatusCode(), is(403));
+        verifyNoInteractions(sessionManager);
+    }
+
+    @Test
+    void assertCreateWithAllowedOriginConstraintRejectsUnlistedOrigin() {
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "0.0.0.0", "", List.of("https://gateway.example.test"));
+        ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class,
+                () -> validator.validateHeaders(Map.of("Origin", List.of("https://evil.example.test"))));
+        assertThat(ex.getStatusCode(), is(403));
+        verifyNoInteractions(sessionManager);
+    }
+
     @Test
     void assertCreateWithProtocolVersionConstraintLast() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(sessionManager.hasSession("session-id")).thenReturn(true);
-        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "0.0.0.0", "");
+        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "0.0.0.0", "", List.of("https://gateway.example.test"));
         ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class,
-                () -> validator.validateHeaders(Map.of("Mcp-Session-Id", List.of("session-id"))));
+                () -> validator.validateHeaders(Map.of("Origin", List.of("https://gateway.example.test"), "Mcp-Session-Id", List.of("session-id"))));
         assertThat(ex.getStatusCode(), is(400));
     }
 }

@@ -49,11 +49,11 @@ Notes:
 - When HTTP is enabled, the default endpoint is `http://127.0.0.1:18088/mcp`.
 - Logs are written under `logs/`.
 - `conf/mcp.yaml` is now strict about supported field names: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.allowRemoteAccess`,
-  `transport.http.accessToken`, `transport.http.port`, `transport.http.endpointPath`, `transport.http.authorizationServers`, `transport.http.scopesSupported`,
-  `transport.http.protectedResource`, `transport.http.oauthIntrospection.endpoint`, `transport.http.oauthIntrospection.clientId`,
+  `transport.http.allowedOrigins`, `transport.http.accessToken`, `transport.http.port`, `transport.http.endpointPath`, `transport.http.authorizationServers`,
+  `transport.http.scopesSupported`, `transport.http.protectedResource`, `transport.http.oauthIntrospection.endpoint`, `transport.http.oauthIntrospection.clientId`,
   `transport.http.oauthIntrospection.clientSecret`, `transport.http.oauthIntrospection.expectedIssuer`, `transport.http.oauthIntrospection.cacheTtlMillis`,
   `transport.stdio.enabled`, and all runtime database fields must be declared with supported keys only.
-- `transport.http.accessToken`, `transport.http.oauthIntrospection` string fields, HTTP authorization metadata fields, and runtime database fields support simple `${ENV_NAME}` placeholders for deployment secrets such as JDBC credentials.
+- `transport.http.allowedOrigins`, `transport.http.accessToken`, `transport.http.oauthIntrospection` string fields, HTTP authorization metadata fields, and runtime database fields support simple `${ENV_NAME}` placeholders for deployment secrets such as JDBC credentials.
 - Exactly one transport must be enabled per process. The packaged sample configuration enables HTTP only.
 - `bin/start.sh` and `bin\start.bat` validate the config file, runtime libraries, and Java availability before startup, create `data/`, `logs/`, and `plugins/`, then start from the package root so relative runtime paths resolve consistently.
 - If startup succeeds, the process stays running in the foreground. If it exits immediately, inspect the terminal error and `logs/mcp.log` first.
@@ -338,6 +338,8 @@ Reference:
 - For local MCP client integration, keep `transport.http.enabled: false` and `transport.stdio.enabled: true`.
 - `transport.http.bindHost` controls which address the HTTP service listens on: `127.0.0.1`, `localhost`, and `::1` are local-only; `0.0.0.0` or a specific intranet IP exposes the matching network interface.
 - Non-loopback `bindHost` values require `transport.http.allowRemoteAccess: true`, otherwise startup fails; this field only declares remote-exposure intent.
+- Non-loopback `bindHost` values require non-empty `transport.http.allowedOrigins`; each value must be an exact HTTP or HTTPS origin such as `https://gateway.example.test` or `https://gateway.example.test:8443`.
+- Remote HTTP requests whose `Origin` header is missing, malformed, loopback-only, or not listed in `transport.http.allowedOrigins` fail with `403`.
 - When `transport.http.accessToken` is configured, configure valid HTTPS `transport.http.authorizationServers` values and make every HTTP request provide `Authorization: Bearer <token>`.
 - For OAuth resource-server validation, configure `transport.http.oauthIntrospection.endpoint`, `clientId`, and `clientSecret` instead of `transport.http.accessToken`; these two authorization modes are mutually exclusive.
 - Non-loopback `bindHost` values also require either a non-blank `transport.http.accessToken` or OAuth introspection, so remote HTTP is not exposed anonymously.
@@ -439,6 +441,10 @@ The `features/*/algorithms` resources expose the algorithm plugins visible from 
 - `schema` is optional. MCP auto-fills it when the logical database contains a single schema. If the schema cannot be resolved uniquely, MCP asks for it explicitly.
 - `delivery_mode` only affects how the client presents the workflow. It does not change the generated artifacts. The execution behavior is controlled by `execution_mode`.
 - Sensitive algorithm properties are masked in plan and apply responses and are never echoed back in clear text.
+- MCP form elicitation is only used for non-sensitive clarification questions.
+  If a question has `secret: true`, `input_type: "secret"`, or a field name containing password, token, key, secret, or credential,
+  keep the returned `plan_id`, collect the value through URL mode when available, a secret manager, a protected environment variable,
+  or an operator-controlled channel, and then retry the same planner.
 - Every `curl` example below assumes you have already completed MCP `initialize` and are reusing the same `SESSION_ID` plus its matching `PROTOCOL_VERSION`.
 
 ### Recommended call order
@@ -446,7 +452,8 @@ The `features/*/algorithms` resources expose the algorithm plugins visible from 
 If you want one encrypt or mask workflow to run end to end without ambiguity, use this order:
 
 1. Start with the feature-specific planner: `database_gateway_plan_encrypt_rule` for encrypt or `database_gateway_plan_mask_rule` for mask. Do not start from `apply`.
-2. If the response is `status = clarifying`, read `clarification_questions`, send values for the listed `field` entries, and call the same feature-specific `plan_*_rule` again with the same `plan_id`.
+2. If the response is `status = clarifying`, read `clarification_questions`, send non-sensitive values for the listed `field` entries,
+   collect sensitive values through the approved secret channels above, and call the same feature-specific `plan_*_rule` again with the same `plan_id`.
 3. If the response is `status = planned`, review `derived_column_plan`, `ddl_artifacts`, `distsql_artifacts`, and `index_plan`.
 4. Call `database_gateway_apply_workflow` with `execution_mode=preview` so MCP shows the artifacts and side-effect scope without changing runtime state.
 5. After user approval, call `database_gateway_apply_workflow` with `execution_mode=review-then-execute` and `approved_by_user=true`, or use `manual-only` when the artifacts should be exported.
@@ -491,7 +498,8 @@ In addition:
 ### What to do next for each status
 
 - `clarifying`
-  - more input is required, so read `clarification_questions`, provide each listed `field`, and call the same feature-specific `plan_*_rule` again with the same `plan_id`
+  - more input is required, so read `clarification_questions`, provide each non-sensitive listed `field`,
+    collect sensitive fields through an approved secret channel, and call the same feature-specific `plan_*_rule` again with the same `plan_id`
 - `planned`
   - the execution package is ready, so review the artifacts and continue with `database_gateway_apply_workflow`
 - `completed`
@@ -568,6 +576,8 @@ For encrypt `create` or `alter`, the recommended minimum input is:
 Natural language and structured overrides can be mixed. The following example plans a reversible encrypt workflow directly:
 
 ```bash
+AES_KEY_VALUE="${SHARDINGSPHERE_AES_KEY_VALUE}"
+
 curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
@@ -585,7 +595,7 @@ curl -sS http://127.0.0.1:18088/mcp \
         "column":"status",
         "natural_language_intent":"Encrypt status reversibly without equality lookup and without like lookup",
         "algorithm_type":"AES",
-        "primary_algorithm_properties":{"aes-key-value":"123456abc"}
+        "primary_algorithm_properties":{"aes-key-value":"'"${AES_KEY_VALUE}"'"}
       }
     }
   }'
@@ -643,17 +653,22 @@ Typical response snippet:
 }
 ```
 
+This secret-bearing question is returned as tool structured content only; it is not converted into MCP form elicitation.
+Keep the `plan_id`, obtain the key through URL mode when available, a secret manager, a protected environment variable, or an operator-controlled channel,
+then retry the planner.
+
 In real usage, store the returned `plan_id` first:
 
 ```bash
 PLAN_ID='plan-xxx'
+AES_KEY_VALUE="${SHARDINGSPHERE_AES_KEY_VALUE}"
 ```
 
 This means:
 
 - do not call `database_gateway_apply_workflow` yet
 - keep using the same `plan_id`
-- send the missing `aes-key-value` back to `database_gateway_plan_encrypt_rule`
+- provide the missing `aes-key-value` only after the client has obtained it through an approved secret channel
 
 Step 2: continue the same plan and provide the missing property
 
@@ -671,7 +686,7 @@ curl -sS http://127.0.0.1:18088/mcp \
       "name":"database_gateway_plan_encrypt_rule",
       "arguments":{
         "plan_id":"'"${PLAN_ID}"'",
-        "primary_algorithm_properties":{"aes-key-value":"123456abc"}
+        "primary_algorithm_properties":{"aes-key-value":"'"${AES_KEY_VALUE}"'"}
       }
     }
   }'
@@ -769,7 +784,9 @@ If natural language does not make the algorithm clear, or if a required property
 - `algorithm_recommendations`
 - `property_requirements`
 
-Continue with the same `plan_id` and send the missing fields back to `database_gateway_plan_encrypt_rule` instead of creating a new plan.
+Continue with the same `plan_id` and send missing non-sensitive fields back to `database_gateway_plan_encrypt_rule` instead of creating a new plan.
+For secret fields, obtain the value through URL mode when available, a secret manager, a protected environment variable,
+or an operator-controlled channel before retrying.
 
 #### Default derived-column conventions
 

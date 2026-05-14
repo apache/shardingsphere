@@ -49,11 +49,11 @@ bin\start.bat
 - 启用 HTTP 时，默认端点是 `http://127.0.0.1:18088/mcp`。
 - 日志会写到 `logs/` 目录。
 - `conf/mcp.yaml` 现在对支持字段名采用严格 schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.allowRemoteAccess`、
-  `transport.http.accessToken`、`transport.http.port`、`transport.http.endpointPath`、`transport.http.authorizationServers`、
-  `transport.http.scopesSupported`、`transport.http.protectedResource`、`transport.http.oauthIntrospection.endpoint`、
+  `transport.http.allowedOrigins`、`transport.http.accessToken`、`transport.http.port`、`transport.http.endpointPath`、
+  `transport.http.authorizationServers`、`transport.http.scopesSupported`、`transport.http.protectedResource`、`transport.http.oauthIntrospection.endpoint`、
   `transport.http.oauthIntrospection.clientId`、`transport.http.oauthIntrospection.clientSecret`、`transport.http.oauthIntrospection.expectedIssuer`、
   `transport.http.oauthIntrospection.cacheTtlMillis`、`transport.stdio.enabled`，以及每个 runtime database 的全部字段都只能使用受支持字段名。
-- `transport.http.accessToken`、`transport.http.oauthIntrospection` 字符串字段、HTTP authorization metadata 字段和 runtime database 字段支持简单的 `${ENV_NAME}` 占位，便于部署时注入 JDBC 凭证等敏感配置。
+- `transport.http.allowedOrigins`、`transport.http.accessToken`、`transport.http.oauthIntrospection` 字符串字段、HTTP authorization metadata 字段和 runtime database 字段支持简单的 `${ENV_NAME}` 占位，便于部署时注入 JDBC 凭证等敏感配置。
 - 每个进程必须且只能启用一种 transport。发行包内置示例配置默认只启用 HTTP。
 - `bin/start.sh` 和 `bin\start.bat` 启动前都会校验配置文件、运行时依赖和 Java 环境，并自动创建 `data/`、`logs/`、`plugins/` 目录，然后切到发行包根目录启动，确保相对路径可用。
 - 如果启动成功，进程会保持前台运行；如果立刻退出，优先查看终端报错和 `logs/mcp.log`。
@@ -338,6 +338,8 @@ bin\start.bat conf\mcp-stdio.yaml
 - 如果要给本地 MCP client 走 stdio，保留 `transport.http.enabled: false`，并把 `transport.stdio.enabled` 设为 `true`。
 - `transport.http.bindHost` 表示 HTTP 服务监听在哪个地址上：`127.0.0.1`、`localhost`、`::1` 只面向本机；`0.0.0.0` 或指定内网 IP 会面向对应网络接口。
 - 非 loopback `bindHost` 必须显式设置 `transport.http.allowRemoteAccess: true`，否则启动失败；该字段只表达远程暴露意图。
+- 非 loopback `bindHost` 必须配置非空 `transport.http.allowedOrigins`；每个值必须是精确 HTTP 或 HTTPS origin，例如 `https://gateway.example.test` 或 `https://gateway.example.test:8443`。
+- 远程 HTTP 请求的 `Origin` 头缺失、格式非法、仅为 loopback、或没有出现在 `transport.http.allowedOrigins` 中时，会返回 `403`。
 - 配置了 `transport.http.accessToken` 后，必须同时配置有效 HTTPS URI 形式的 `transport.http.authorizationServers`，所有 HTTP 请求都必须携带 `Authorization: Bearer <token>`。
 - 如果要按 OAuth resource server 验证 token，请配置 `transport.http.oauthIntrospection.endpoint`、`clientId` 和 `clientSecret`，不要再配置 `transport.http.accessToken`；这两种授权模式互斥。
 - 非 loopback `bindHost` 还必须配置非空的 `transport.http.accessToken` 或 OAuth introspection，避免 remote HTTP 以匿名方式暴露。
@@ -441,6 +443,9 @@ Workflow 同时补充了以下 feature resources：
 - `schema` 是可选的；如果 Proxy 逻辑库下只有一个 schema，MCP 会自动补齐；如果无法唯一定位，MCP 会明确返回 `请明确 schema。`。
 - `delivery_mode` 只影响客户端如何组织对话和展示步骤，不影响最终生成的 artifacts；真正影响执行行为的是 `execution_mode`。
 - 敏感算法属性在 `plan` 和 `apply` 的返回中都只会以脱敏形式展示，不会明文回显。
+- MCP form elicitation 只用于非敏感补问。
+  如果补问带有 `secret: true`、`input_type: "secret"`，或者字段名包含 password、token、key、secret、credential，
+  请保留返回的 `plan_id`，通过可用时的 URL mode、secret manager、受保护环境变量或运维控制通道取得该值，再用同一个 planner 继续。
 - 下面所有 `curl` 示例都默认你已经完成了 MCP `initialize`，并持有同一个 `SESSION_ID` 和对应的 `PROTOCOL_VERSION`。
 
 ### 推荐操作顺序
@@ -448,7 +453,8 @@ Workflow 同时补充了以下 feature resources：
 如果你想把一次加密或脱敏 workflow 稳定跑通，直接按下面顺序调用即可：
 
 1. 先调用对应 feature 的 planner：加密用 `database_gateway_plan_encrypt_rule`，脱敏用 `database_gateway_plan_mask_rule`，不要直接从 `apply` 开始。
-2. 如果返回 `status = clarifying`，读取 `clarification_questions`，按其中的 `field` 补齐参数，并带上同一个 `plan_id` 再次调用同一个 `plan_*_rule`。
+2. 如果返回 `status = clarifying`，读取 `clarification_questions`，按其中的 `field` 补齐非敏感参数；
+   敏感参数必须通过上面的安全通道取得，然后带上同一个 `plan_id` 再次调用同一个 `plan_*_rule`。
 3. 如果返回 `status = planned`，重点 review `derived_column_plan`、`ddl_artifacts`、`distsql_artifacts`、`index_plan`。
 4. 调用 `database_gateway_apply_workflow` 并显式设置 `execution_mode=preview`，先查看 artifacts 和副作用范围，不改变运行时状态。
 5. 用户确认后，再用 `execution_mode=review-then-execute` 和 `approved_by_user=true` 调用 `database_gateway_apply_workflow`，或者用 `manual-only` 导出人工执行包。
@@ -493,7 +499,8 @@ Workflow 同时补充了以下 feature resources：
 ### 看到不同状态时，下一步该做什么
 
 - `clarifying`
-  - 说明信息还不够。读取 `clarification_questions`，按其中的 `field` 补齐参数，并带上同一个 `plan_id` 继续调用对应的 `plan_*_rule`。
+  - 说明信息还不够。读取 `clarification_questions`，按其中的 `field` 补齐非敏感参数；
+    敏感参数通过安全通道取得后，再带上同一个 `plan_id` 继续调用对应的 `plan_*_rule`。
 - `planned`
   - 说明执行包已经生成好了。此时不要再补问，应该 review artifacts，然后进入 `database_gateway_apply_workflow`。
 - `completed`
@@ -570,6 +577,8 @@ Workflow 同时补充了以下 feature resources：
 可以直接给自然语言，也可以同时补充结构化参数。下面这个例子会直接规划一个可逆加密流程：
 
 ```bash
+AES_KEY_VALUE="${SHARDINGSPHERE_AES_KEY_VALUE}"
+
 curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
@@ -587,7 +596,7 @@ curl -sS http://127.0.0.1:18088/mcp \
         "column":"status",
         "natural_language_intent":"给 status 做可逆加密，不需要等值，不需要模糊",
         "algorithm_type":"AES",
-        "primary_algorithm_properties":{"aes-key-value":"123456abc"}
+        "primary_algorithm_properties":{"aes-key-value":"'"${AES_KEY_VALUE}"'"}
       }
     }
   }'
@@ -645,17 +654,21 @@ curl -sS http://127.0.0.1:18088/mcp \
 }
 ```
 
+这个带有 secret 的补问只会作为工具结构化内容返回，不会转换成 MCP form elicitation。
+请保留 `plan_id`，通过可用时的 URL mode、secret manager、受保护环境变量或运维控制通道取得密钥后，再继续调用 planner。
+
 实际操作时，可以先把上一步返回的 `plan_id` 暂存为 shell 变量：
 
 ```bash
 PLAN_ID='plan-xxx'
+AES_KEY_VALUE="${SHARDINGSPHERE_AES_KEY_VALUE}"
 ```
 
 这里的含义非常直接：
 
 - 当前不要 `apply`
 - 继续使用同一个 `plan_id`
-- 只需要把缺失的 `aes-key-value` 补回来即可
+- 只在客户端已经通过安全通道取得密钥后，再补齐缺失的 `aes-key-value`
 
 第 2 步：继续同一个 plan，补齐缺失属性
 
@@ -673,7 +686,7 @@ curl -sS http://127.0.0.1:18088/mcp \
       "name":"database_gateway_plan_encrypt_rule",
       "arguments":{
         "plan_id":"'"${PLAN_ID}"'",
-        "primary_algorithm_properties":{"aes-key-value":"123456abc"}
+        "primary_algorithm_properties":{"aes-key-value":"'"${AES_KEY_VALUE}"'"}
       }
     }
   }'
@@ -771,7 +784,8 @@ curl -sS http://127.0.0.1:18088/mcp \
 - `algorithm_recommendations`
 - `property_requirements`
 
-此时应带上同一个 `plan_id` 再次调用 `database_gateway_plan_encrypt_rule`，把缺失参数补齐，而不是重新开一个计划。
+此时应带上同一个 `plan_id` 再次调用 `database_gateway_plan_encrypt_rule`，把缺失的非敏感参数补齐，而不是重新开一个计划。
+对于敏感字段，必须先通过可用时的 URL mode、secret manager、受保护环境变量或运维控制通道取得值，再继续。
 
 #### 默认派生列规则
 

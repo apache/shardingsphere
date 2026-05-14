@@ -26,26 +26,21 @@ import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.ServerTransportSecurityValidatorFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.authorization.HttpBearerAuthorizationHandler;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.ServerTransportSecurityValidatorFactory;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -56,10 +51,6 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     private static final String SESSION_HEADER = HttpHeaders.MCP_SESSION_ID;
     
     private static final String PROTOCOL_HEADER = HttpHeaders.PROTOCOL_VERSION;
-    
-    private static final String ACCEPT_HEADER = HttpHeaders.ACCEPT;
-    
-    private static final String DEFAULT_ACCEPT = "application/json, text/event-stream";
     
     private final HttpServletStreamableServerTransportProvider delegate;
     
@@ -74,17 +65,18 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     private final AtomicBoolean closed;
     
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final HttpTransportConfiguration config) {
-        this(sessionManager, jsonMapper, config.getBindHost(), getDelegateAccessToken(config), config.getEndpointPath(), new HttpBearerAuthorizationHandler(config));
+        this(sessionManager, jsonMapper, config.getBindHost(), getDelegateAccessToken(config), config.getEndpointPath(), config.getAllowedOrigins(),
+                new HttpBearerAuthorizationHandler(config));
     }
     
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String accessToken, final String endpointPath) {
-        this(sessionManager, jsonMapper, bindHost, accessToken, endpointPath,
+        this(sessionManager, jsonMapper, bindHost, accessToken, endpointPath, List.of(),
                 new HttpBearerAuthorizationHandler(accessToken, endpointPath, List.of(), false));
     }
     
     private StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String accessToken,
-                                     final String endpointPath, final HttpBearerAuthorizationHandler authorizationHandler) {
-        delegate = createDelegate(sessionManager, jsonMapper, bindHost, accessToken, endpointPath);
+                                     final String endpointPath, final List<String> allowedOrigins, final HttpBearerAuthorizationHandler authorizationHandler) {
+        delegate = createDelegate(sessionManager, jsonMapper, bindHost, accessToken, endpointPath, allowedOrigins);
         this.sessionManager = sessionManager;
         this.authorizationHandler = authorizationHandler;
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
@@ -98,9 +90,10 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     }
     
     private static HttpServletStreamableServerTransportProvider createDelegate(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper,
-                                                                               final String bindHost, final String accessToken, final String endpointPath) {
+                                                                               final String bindHost, final String accessToken, final String endpointPath,
+                                                                               final List<String> allowedOrigins) {
         return HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath)
-                .securityValidator(ServerTransportSecurityValidatorFactory.create(sessionManager, bindHost, accessToken)).build();
+                .securityValidator(ServerTransportSecurityValidatorFactory.create(sessionManager, bindHost, accessToken, allowedOrigins)).build();
     }
     
     @Override
@@ -144,7 +137,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        serviceRequest(withDefaultAcceptHeader(request), response);
+        serviceRequest(request, response);
     }
     
     private void serviceWithApplicationClassLoader(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
@@ -159,7 +152,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        serviceRequest(withDefaultAcceptHeader(request), withInitializeProtocolHeader(response));
+        serviceRequest(request, withInitializeProtocolHeader(response));
     }
     
     private void serviceRequest(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
@@ -172,7 +165,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     @Override
     protected void doDelete(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "").trim();
-        serviceRequest(withDefaultAcceptHeader(request), response);
+        serviceRequest(request, response);
         if (200 == response.getStatus()) {
             sessionExecutionCoordinator.closeSession(sessionId);
         }
@@ -195,31 +188,6 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         } finally {
             super.destroy();
         }
-    }
-    
-    private HttpServletRequest withDefaultAcceptHeader(final HttpServletRequest request) {
-        if (!Objects.toString(request.getHeader(ACCEPT_HEADER), "").trim().isEmpty()) {
-            return request;
-        }
-        return new HttpServletRequestWrapper(request) {
-            
-            @Override
-            public String getHeader(final String name) {
-                return ACCEPT_HEADER.equalsIgnoreCase(name) ? DEFAULT_ACCEPT : super.getHeader(name);
-            }
-            
-            @Override
-            public Enumeration<String> getHeaders(final String name) {
-                return ACCEPT_HEADER.equalsIgnoreCase(name) ? Collections.enumeration(List.of(DEFAULT_ACCEPT)) : super.getHeaders(name);
-            }
-            
-            @Override
-            public Enumeration<String> getHeaderNames() {
-                Set<String> result = new LinkedHashSet<>(Collections.list(super.getHeaderNames()));
-                result.add(ACCEPT_HEADER);
-                return Collections.enumeration(result);
-            }
-        };
     }
     
     private HttpServletResponse withInitializeProtocolHeader(final HttpServletResponse response) {

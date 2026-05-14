@@ -33,9 +33,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlHttpTransportConfigurationSwapperTest {
-    
+
     private final YamlHttpTransportConfigurationSwapper swapper = new YamlHttpTransportConfigurationSwapper();
-    
+
     @Test
     void assertSwapToObject() {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("127.0.0.1", false, "", 18088, "/mcp"));
@@ -45,12 +45,13 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertThat(actual.getAccessToken(), is(""));
         assertThat(actual.getPort(), is(18088));
         assertThat(actual.getEndpointPath(), is("/mcp"));
+        assertThat(actual.getAllowedOrigins(), is(List.of()));
         assertThat(actual.getAuthorizationServers(), is(List.of()));
         assertThat(actual.getScopesSupported(), is(List.of()));
         assertThat(actual.getProtectedResource(), is(""));
         assertThat(actual.getOauthIntrospection().getEndpoint(), is(""));
     }
-    
+
     @Test
     void assertSwapToObjectWithOmittedEnabled() {
         YamlHttpTransportConfiguration yamlConfig = new YamlHttpTransportConfiguration();
@@ -60,27 +61,27 @@ class YamlHttpTransportConfigurationSwapperTest {
         HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig);
         assertFalse(actual.isEnabled());
     }
-    
+
     @Test
     void assertSwapToObjectWithMissingBindHost() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> swapper.swapToObject(createYamlConfig(null, false, "", 18088, "/mcp")));
         assertThat(actual.getMessage(), is("Property `transport.http.bindHost` is required."));
     }
-    
+
     @Test
     void assertSwapToObjectWithLocalhostBindHost() {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("localhost", false, "", 18088, "/mcp"));
         assertThat(actual.getBindHost(), is("localhost"));
     }
-    
+
     @Test
     void assertSwapToObjectWithRemoteBindHost() {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("0.0.0.0", false, "", 18088, "/mcp"));
         assertThat(actual.getBindHost(), is("0.0.0.0"));
         assertFalse(actual.isAllowRemoteAccess());
     }
-    
+
     @Test
     void assertSwapToObjectWithAllowedRemoteAccess() {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("0.0.0.0", true, "foo_token", 18088, "/mcp"));
@@ -88,14 +89,22 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertTrue(actual.isAllowRemoteAccess());
         assertThat(actual.getAccessToken(), is("foo_token"));
     }
-    
+
     @Test
     void assertSwapToObjectWithAccessTokenEnvironmentPlaceholder() {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("0.0.0.0", true, "${MCP_ACCESS_TOKEN}", 18088, "/mcp"),
                 Map.of("MCP_ACCESS_TOKEN", "foo_token"));
         assertThat(actual.getAccessToken(), is("foo_token"));
     }
-    
+
+    @Test
+    void assertSwapToObjectWithAllowedOrigins() {
+        YamlHttpTransportConfiguration yamlConfig = createYamlConfig("0.0.0.0", true, "foo_token", 18088, "/mcp");
+        yamlConfig.setAllowedOrigins(List.of(" https://gateway.example.test ", "", "${MCP_ALLOWED_ORIGIN}"));
+        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig, Map.of("MCP_ALLOWED_ORIGIN", "https://console.example.test"));
+        assertThat(actual.getAllowedOrigins(), is(List.of("https://gateway.example.test", "https://console.example.test")));
+    }
+
     @Test
     void assertSwapToObjectWithAuthorizationMetadata() {
         YamlHttpTransportConfiguration yamlConfig = createYamlConfig("127.0.0.1", false, "foo_token", 18088, "/mcp");
@@ -107,7 +116,7 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertThat(actual.getScopesSupported(), is(List.of("mcp.read", "mcp.write")));
         assertThat(actual.getProtectedResource(), is("https://gateway.example.test/mcp"));
     }
-    
+
     @Test
     void assertSwapToObjectWithOAuthIntrospection() {
         YamlHttpTransportConfiguration yamlConfig = createYamlConfig("0.0.0.0", true, "", 18088, "/mcp");
@@ -127,27 +136,27 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertThat(actual.getOauthIntrospection().getExpectedIssuer(), is("https://auth.example.test"));
         assertThat(actual.getOauthIntrospection().getCacheTtlMillis(), is(30000L));
     }
-    
+
     @Test
     void assertSwapToObjectWithMissingAccessTokenEnvironmentPlaceholder() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> swapper.swapToObject(createYamlConfig("0.0.0.0", true, "${MCP_ACCESS_TOKEN}", 18088, "/mcp"), Map.of()));
         assertThat(actual.getMessage(), is("Environment variable `MCP_ACCESS_TOKEN` referenced by property `transport.http.accessToken` is not set."));
     }
-    
+
     @Test
     void assertSwapToObjectWithAllowedRemoteAccessAndMissingAccessToken() {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("0.0.0.0", true, "", 18088, "/mcp"));
         assertTrue(actual.isAllowRemoteAccess());
         assertThat(actual.getAccessToken(), is(""));
     }
-    
+
     @Test
     void assertSwapToObjectWithAllowedRemoteAccessAndBlankAccessToken() {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("0.0.0.0", true, "   ", 18088, "/mcp"));
         assertThat(actual.getAccessToken(), is(""));
     }
-    
+
     @Test
     void assertSwapToObjectWithDisabledRemoteHttpWithoutAccessToken() {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig(false, "0.0.0.0", false, "", 18088, "/mcp"));
@@ -156,43 +165,44 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertFalse(actual.isAllowRemoteAccess());
         assertThat(actual.getAccessToken(), is(""));
     }
-    
+
     @Test
     void assertSwapToObjectWithNegativePort() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> swapper.swapToObject(createYamlConfig("127.0.0.1", false, "", -1, "/mcp")));
         assertThat(actual.getMessage(), is("Property `transport.http.port` cannot be negative."));
     }
-    
+
     @Test
     void assertSwapToObjectWithEndpointPathMissingLeadingSlash() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> swapper.swapToObject(createYamlConfig("127.0.0.1", false, "", 18088, "gateway")));
         assertThat(actual.getMessage(), is("Property `transport.http.endpointPath` must start with '/'."));
     }
-    
+
     @Test
     void assertSwapToObjectWithNullConfiguration() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null));
         assertThat(actual.getMessage(), is("Property `transport.http` is required."));
     }
-    
+
     @Test
     void assertSwapToYamlConfiguration() {
         YamlHttpTransportConfiguration actual = swapper.swapToYamlConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18088, "/mcp",
-                List.of("https://auth.example.test"), List.of("mcp.read"), "https://gateway.example.test/mcp"));
+                List.of("https://gateway.example.test"), List.of("https://auth.example.test"), List.of("mcp.read"), "https://gateway.example.test/mcp"));
         assertTrue(actual.isEnabled());
         assertThat(actual.getBindHost(), is("127.0.0.1"));
         assertFalse(actual.isAllowRemoteAccess());
         assertThat(actual.getAccessToken(), is("token"));
         assertThat(actual.getPort(), is(18088));
         assertThat(actual.getEndpointPath(), is("/mcp"));
+        assertThat(actual.getAllowedOrigins(), is(List.of("https://gateway.example.test")));
         assertThat(actual.getAuthorizationServers(), is(List.of("https://auth.example.test")));
         assertThat(actual.getScopesSupported(), is(List.of("mcp.read")));
         assertThat(actual.getProtectedResource(), is("https://gateway.example.test/mcp"));
         assertThat(actual.getOauthIntrospection().getEndpoint(), is(""));
     }
-    
+
     @Test
     void assertSwapToYamlConfigurationWithOAuthIntrospection() {
         HttpTransportConfiguration data = new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", List.of("https://auth.example.test"),
@@ -205,11 +215,11 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertThat(actual.getOauthIntrospection().getExpectedIssuer(), is("https://auth.example.test"));
         assertThat(actual.getOauthIntrospection().getCacheTtlMillis(), is(30000L));
     }
-    
+
     private YamlHttpTransportConfiguration createYamlConfig(final String bindHost, final boolean allowRemoteAccess, final String accessToken, final Integer port, final String endpointPath) {
         return createYamlConfig(true, bindHost, allowRemoteAccess, accessToken, port, endpointPath);
     }
-    
+
     private YamlHttpTransportConfiguration createYamlConfig(final boolean enabled, final String bindHost, final boolean allowRemoteAccess,
                                                             final String accessToken, final Integer port, final String endpointPath) {
         YamlHttpTransportConfiguration result = new YamlHttpTransportConfiguration();
@@ -221,7 +231,7 @@ class YamlHttpTransportConfigurationSwapperTest {
         result.setEndpointPath(endpointPath);
         return result;
     }
-    
+
     private YamlOAuthIntrospectionConfiguration createYamlOAuthIntrospectionConfiguration(final String endpoint, final String clientId, final String clientSecret,
                                                                                           final String expectedIssuer, final Long cacheTtlMillis) {
         YamlOAuthIntrospectionConfiguration result = new YamlOAuthIntrospectionConfiguration();

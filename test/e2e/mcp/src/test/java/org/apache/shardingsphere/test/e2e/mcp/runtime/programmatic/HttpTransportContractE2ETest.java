@@ -69,7 +69,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
     
     @Test
-    void assertAcceptInitializeWithoutAcceptHeader() throws IOException, InterruptedException {
+    void assertRejectInitializeWithoutAcceptHeader() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder(getEndpointUri())
@@ -78,9 +78,48 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                         "init-1", "initialize", MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"))))
                 .build();
         HttpResponse<String> actual = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        assertThat(actual.statusCode(), is(200));
-        assertTrue(actual.headers().firstValue("Content-Type").orElse("").startsWith("application/json"));
-        assertFalse(actual.headers().firstValue("MCP-Session-Id").orElse("").isEmpty());
+        assertThat(actual.statusCode(), is(400));
+        assertFalse(actual.headers().firstValue("MCP-Session-Id").isPresent());
+    }
+
+    @Test
+    void assertRejectInitializeWithUnsupportedAcceptHeader() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Accept", "application/json"),
+                MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
+        assertThat(actual.statusCode(), is(400));
+        assertFalse(actual.headers().firstValue("MCP-Session-Id").isPresent());
+    }
+
+    @Test
+    void assertRejectInitializeWithSseOnlyAcceptHeader() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Accept", "text/event-stream"),
+                MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
+        assertThat(actual.statusCode(), is(400));
+        assertFalse(actual.headers().firstValue("MCP-Session-Id").isPresent());
+    }
+
+    @Test
+    void assertRejectEventStreamWithoutAcceptHeader() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = openEventStream(httpClient, createSessionHeaders(sessionId));
+        assertThat(actual.statusCode(), is(400));
+    }
+
+    @Test
+    void assertRejectEventStreamWithUnsupportedAcceptHeader() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        Map<String, String> headers = new LinkedHashMap<>(createSessionHeaders(sessionId));
+        headers.put("Accept", "application/json");
+        HttpResponse<String> actual = openEventStream(httpClient, headers);
+        assertThat(actual.statusCode(), is(400));
     }
     
     @Test
