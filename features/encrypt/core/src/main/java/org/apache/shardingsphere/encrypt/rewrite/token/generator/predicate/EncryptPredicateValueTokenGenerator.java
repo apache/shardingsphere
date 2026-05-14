@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.encrypt.constant.EncryptConstants;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryptQueryAlgorithmException;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionValues;
@@ -111,8 +112,7 @@ public final class EncryptPredicateValueTokenGenerator implements CollectionSQLT
         String columnName = encryptCondition.getColumnSegment().getColumnBoundInfo().getOriginalColumn().getValue();
         EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
         String tableName = encryptCondition.getColumnSegment().getColumnBoundInfo().getOriginalTable().getValue();
-        if (encryptCondition instanceof EncryptBinaryCondition && ("LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator())
-                || "NOT LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator()))) {
+        if (encryptCondition instanceof EncryptBinaryCondition && EncryptConstants.LIKE_OPERATORS.contains(((EncryptBinaryCondition) encryptCondition).getOperator())) {
             return getLikeQueryEncryptedValues(schemaName, encryptCondition, originalValues, encryptColumn, tableName, columnName);
         }
         return encryptColumn.getAssistedQuery()

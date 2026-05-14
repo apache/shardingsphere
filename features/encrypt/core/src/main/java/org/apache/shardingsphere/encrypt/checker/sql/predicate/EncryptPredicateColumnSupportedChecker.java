@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.checker.sql.predicate;
 
 import org.apache.shardingsphere.encrypt.checker.cryptographic.JoinConditionsEncryptorChecker;
+import org.apache.shardingsphere.encrypt.constant.EncryptConstants;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryptQueryAlgorithmException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
@@ -82,8 +83,7 @@ public final class EncryptPredicateColumnSupportedChecker implements SupportedSQ
     
     private boolean isLikeColumnSegment(final Collection<ExpressionSegment> expressions, final ColumnSegment targetColumnSegment) {
         for (ExpressionSegment each : expressions) {
-            if (each instanceof BinaryOperationExpression
-                    && ("LIKE".equalsIgnoreCase(((BinaryOperationExpression) each).getOperator()) || "NOT LIKE".equalsIgnoreCase(((BinaryOperationExpression) each).getOperator()))
+            if (each instanceof BinaryOperationExpression && EncryptConstants.LIKE_OPERATORS.contains(((BinaryOperationExpression) each).getOperator())
                     && isSameColumnSegment(((BinaryOperationExpression) each).getLeft(), targetColumnSegment)) {
                 return true;
             }

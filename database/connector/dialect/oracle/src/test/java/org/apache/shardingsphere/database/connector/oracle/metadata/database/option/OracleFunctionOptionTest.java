@@ -34,6 +34,8 @@ class OracleFunctionOptionTest {
     
     @Test
     void assertGetUnparenthesizedFunctionNames() {
+        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CONNECT_BY_ISCYCLE"));
+        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CONNECT_BY_ISLEAF"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRENT_DATE"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRENT_TIME"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRENT_TIMESTAMP"));

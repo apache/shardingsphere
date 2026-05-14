@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.encrypt.constant.EncryptConstants;
 import org.apache.shardingsphere.encrypt.enums.EncryptDerivedColumnSuffix;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryptQueryAlgorithmException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -46,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -88,9 +90,10 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     private Collection<SQLToken> generateSQLTokens(final SQLStatement sqlStatement, final ExpressionSegment expression) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
-            Optional<EncryptTable> encryptTable = rule.findEncryptTable(each.getColumnBoundInfo().getOriginalTable().getValue());
-            if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(each.getColumnBoundInfo().getOriginalColumn().getValue())) {
-                EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(each.getColumnBoundInfo().getOriginalColumn().getValue());
+            ColumnSegmentBoundInfo columnBoundInfo = each.getColumnBoundInfo();
+            Optional<EncryptTable> encryptTable = rule.findEncryptTable(columnBoundInfo.getOriginalTable().getValue());
+            if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnBoundInfo.getOriginalColumn().getValue())) {
+                EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnBoundInfo.getOriginalColumn().getValue());
                 result.addAll(buildSubstitutableColumnNameTokens(encryptColumn, each, expression, sqlStatement.getDatabaseType(), encryptTable.get().getTable()));
             }
         }
@@ -128,8 +131,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     }
     
     private boolean isIncludeLike(final ExpressionSegment expression) {
-        return expression instanceof BinaryOperationExpression && ("LIKE".equalsIgnoreCase(((BinaryOperationExpression) expression).getOperator())
-                || "NOT LIKE".equalsIgnoreCase(((BinaryOperationExpression) expression).getOperator()));
+        return expression instanceof BinaryOperationExpression && EncryptConstants.LIKE_OPERATORS.contains(((BinaryOperationExpression) expression).getOperator());
     }
     
     private Collection<Projection> createColumnProjections(final String actualColumnName, final ColumnSegment columnSegment, final EncryptDerivedColumnSuffix derivedColumnSuffix,
