@@ -238,7 +238,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     private void removeSingleRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration toBeRemovedRuleItemConfig, final MetaDataContexts originalMetaDataContexts) {
         metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleItemConfig));
         metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabaseByUnloadSingleTable(database.getName(),
-                getReloadedMetaDataContexts(originalMetaDataContexts).getMetaData().getDatabase(database.getName()),
+                rebuildDatabaseSchemaIndex(database.getName(), getReloadedMetaDataContexts(originalMetaDataContexts)),
                 originalMetaDataContexts.getMetaData().getDatabase(database.getName()));
     }
     
