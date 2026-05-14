@@ -27,7 +27,8 @@
 Align ShardingSphere MCP descriptor input, validation, payload output, and SDK mapping with MCP Specification `2025-11-25` for official descriptor fields outside annotation semantics.
 
 Package 017 owns only `Annotations` and `ToolAnnotations`.
-This package owns broader descriptor fields such as `icons`, resource `size`, tool `execution`, and any `_meta` boundary cleanup needed for schema-exact output.
+This package owns broader descriptor fields such as resource `size`, `icons`, tool `execution`, and any `_meta` boundary cleanup needed for schema-exact output.
+MCP Java SDK `1.1.2` currently supports only a subset of those official fields, so this implementation slice only enables fixed `Resource.size`.
 
 ## Source Baseline
 
@@ -45,9 +46,9 @@ Official source pages used for this requirement package:
 
 Source-driven facts locked by this package:
 
-- `Resource` may expose official fields including `icons`, `mimeType`, annotations, and `size`.
-- `ResourceTemplate` may expose official fields including `icons`, `mimeType`, and annotations, but not `size`.
-- `Tool` may expose official fields including `icons`, `inputSchema`, `outputSchema`, `annotations`, and `execution`.
+- `Resource` may expose official fields including `icons`, `mimeType`, annotations, and `size`; SDK `1.1.2` exposes `size` but not `icons`.
+- `ResourceTemplate` may expose official fields including `icons`, `mimeType`, and annotations, but not `size`; SDK `1.1.2` does not expose `icons`.
+- `Tool` may expose official fields including `icons`, `inputSchema`, `outputSchema`, annotations, and `execution`; SDK `1.1.2` exposes neither `icons` nor `execution`.
 - `ToolExecution.taskSupport` is optional and defaults to `forbidden` when absent.
 - `_meta` is the official MCP extension metadata field. ShardingSphere descriptor-only metadata must not leak into official descriptor fields accidentally.
 - JSON Schemas without `$schema` default to JSON Schema 2020-12.
@@ -67,27 +68,26 @@ Source-driven facts locked by this package:
 
 A descriptor maintainer can use official MCP resource fields without raw YAML validation rejecting them as unknown.
 
-**Independent Test**: Load resource descriptors containing `icons` and `size`, and resource-template descriptors containing `icons`.
-Verify validation accepts valid fields, rejects malformed values, and preserves absent-field omission.
+**Independent Test**: Load fixed resource descriptors containing `size`.
+Verify validation accepts valid values, rejects malformed values, and preserves absent-field omission.
 
 **Acceptance Scenarios**:
 
 1. **Given** a fixed resource descriptor contains a valid `size`, **When** descriptor validation runs, **Then** validation succeeds and output preserves the value.
-2. **Given** a resource or resource-template descriptor contains valid `icons`, **When** MCP output is built, **Then** icons are emitted through the official MCP field.
-3. **Given** a resource descriptor omits `size` and `icons`, **When** output is built, **Then** no default value is emitted.
+2. **Given** a resource descriptor omits `size`, **When** output is built, **Then** no default value is emitted.
+3. **Given** a resource template descriptor contains `size`, **When** raw validation runs, **Then** validation fails because templates do not support `size`.
 
-### User Story 2 - Official Tool Descriptor Fields Are Accepted (Priority: P1)
+### User Story 2 - Official Tool Descriptor Fields Are Deferred by the SDK Boundary (Priority: P1)
 
-A descriptor maintainer can describe official MCP tool fields without using ShardingSphere-specific metadata as a workaround.
+A descriptor maintainer can see which official MCP tool fields are deferred because the current SDK does not expose them.
 
-**Independent Test**: Load tool descriptors containing `icons` and `execution.taskSupport`.
-Verify raw validation, catalog validation, payload output, and SDK mapping preserve official field semantics.
+**Independent Test**: Verify `icons` and `execution.taskSupport` remain documented as SDK limitations and are not emitted through metadata or annotations.
 
 **Acceptance Scenarios**:
 
-1. **Given** a tool descriptor contains `execution.taskSupport: optional`, **When** validation and SDK mapping run, **Then** the MCP tool exposes `taskSupport=optional`.
-2. **Given** a tool descriptor omits `execution`, **When** output is built, **Then** the official default remains absent or SDK-defaulted to `forbidden`.
-3. **Given** a tool descriptor contains an unknown `execution.taskSupport` value, **When** validation runs, **Then** validation fails before server startup.
+1. **Given** the local SDK is `1.1.2`, **When** tool descriptor support is inventoried, **Then** `icons` and `execution` are recorded as unsupported by the SDK boundary.
+2. **Given** a tool descriptor omits `execution`, **When** output is built, **Then** existing output remains unchanged.
+3. **Given** future SDK support is available, **When** this package is extended, **Then** `execution.taskSupport` must accept only `forbidden`, `optional`, or `required`.
 
 ### User Story 3 - Metadata Boundaries Are Schema-Exact (Priority: P2)
 
@@ -104,9 +104,9 @@ Verify official fields are not placed under internal metadata and internal metad
 
 ## Edge Cases
 
-- Empty official arrays such as `icons: []` should be rejected or omitted according to ShardingSphere descriptor policy, not silently emitted as noise.
-- Invalid icon URI schemes or invalid MIME types must not bypass validation if ShardingSphere decides to validate icon safety.
 - `size` must be non-negative when present.
+- Empty official arrays such as `icons: []` should be rejected or omitted according to ShardingSphere descriptor policy when SDK support is added.
+- Invalid icon URI schemes or invalid MIME types must not bypass validation if ShardingSphere decides to validate icon safety in a future SDK-supported slice.
 - `execution.taskSupport` accepts only `forbidden`, `optional`, or `required`.
 - Adding official fields must not change existing descriptors that omit those fields.
 
@@ -115,10 +115,10 @@ Verify official fields are not placed under internal metadata and internal metad
 ### Functional Requirements
 
 - **MDS-FR-001**: This package MUST stay on branch `001-shardingsphere-mcp` and MUST NOT use branch-changing commands or scripts.
-- **MDS-FR-002**: Raw YAML validation MUST allow official MCP descriptor fields selected by this package and reject malformed values.
-- **MDS-FR-003**: Resource descriptor models MUST preserve presence semantics for optional official fields such as `icons` and `size`.
-- **MDS-FR-004**: Tool descriptor models MUST preserve presence semantics for optional official fields such as `icons` and `execution`.
-- **MDS-FR-005**: Tool execution MUST support only MCP `taskSupport` values `forbidden`, `optional`, and `required`.
+- **MDS-FR-002**: Raw YAML validation MUST allow SDK-supported official MCP descriptor fields selected by this implementation slice and reject malformed values.
+- **MDS-FR-003**: Resource descriptor models MUST preserve presence semantics for optional `size`.
+- **MDS-FR-004**: Official fields unsupported by MCP Java SDK `1.1.2`, including `icons` and `Tool.execution`, MUST be documented as deferred instead of being emitted through metadata.
+- **MDS-FR-005**: Future tool execution support MUST support only MCP `taskSupport` values `forbidden`, `optional`, and `required`.
 - **MDS-FR-006**: SDK mapping MUST emit official descriptor fields through MCP SDK fields, not through annotations or ShardingSphere metadata.
 - **MDS-FR-007**: Descriptor catalog payloads MUST use official field names for official MCP data and must keep ShardingSphere-only metadata separate.
 - **MDS-FR-008**: Existing descriptor behavior MUST remain unchanged when descriptors omit the newly supported fields.
@@ -137,8 +137,9 @@ Verify official fields are not placed under internal metadata and internal metad
 
 - **SC-001**: Valid official MCP descriptor fields selected by this package are accepted by raw YAML validation.
 - **SC-002**: Invalid official descriptor field values fail before server startup.
-- **SC-003**: SDK mapping tests prove official resource and tool fields are emitted through MCP SDK schema objects.
+- **SC-003**: SDK mapping tests prove selected SDK-supported official fields are emitted through MCP SDK schema objects.
 - **SC-004**: Existing descriptors that omit these fields produce the same payloads and SDK objects as before.
+- **SC-005**: SDK-unsupported official fields are recorded as deferred and are not emitted through annotations or ShardingSphere-only metadata.
 
 ## Assumptions
 

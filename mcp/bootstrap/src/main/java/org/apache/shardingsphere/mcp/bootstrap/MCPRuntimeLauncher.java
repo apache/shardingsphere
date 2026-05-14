@@ -86,14 +86,16 @@ public final class MCPRuntimeLauncher {
                 result.add("OAuth protected resource metadata: http://" + config.getHttpTransport().getBindHost() + ":" + port
                         + OAuthProtectedResourceMetadataServlet.createEndpointWellKnownPath(config.getHttpTransport().getEndpointPath()));
             }
-            result.add("Official discovery: tools/list, resources/list, resources/templates/list, prompts/list, completion/complete");
-            result.add("Domain catalog resource: shardingsphere://capabilities");
+            result.add("Official list discovery: tools/list, resources/list, resources/templates/list, prompts/list");
+            result.add("Argument completion: completion/complete");
+            result.add("Optional domain catalog resource: shardingsphere://capabilities");
             return result;
         }
         result.add("STDIO transport: enabled");
         result.add("STDIO stdout: reserved for MCP protocol frames; send diagnostics to stderr or logs.");
-        result.add("Official discovery: tools/list, resources/list, resources/templates/list, prompts/list, completion/complete");
-        result.add("Domain catalog resource: shardingsphere://capabilities");
+        result.add("Official list discovery: tools/list, resources/list, resources/templates/list, prompts/list");
+        result.add("Argument completion: completion/complete");
+        result.add("Optional domain catalog resource: shardingsphere://capabilities");
         return result;
     }
     

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.tool;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -55,11 +57,9 @@ class MCPToolControllerTest {
     void assertHandleWithUnsupportedTool() {
         try (MockedStatic<ToolHandlerRegistry> mocked = mockStatic(ToolHandlerRegistry.class)) {
             mocked.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-1"), eq("unsupported_tool"), eq(Map.of()))).thenReturn(Optional.empty());
-            Map<String, Object> actual = createController().handle("session-1", "unsupported_tool", Map.of()).toPayload();
-            Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
-            assertThat(actual.get("error_code"), is("invalid_request"));
-            assertThat(actual.get("message"), is("Unsupported tool `unsupported_tool`."));
-            assertThat(actualRecovery.get("category"), is("unsupported_tool"));
+            UnsupportedToolException actual = assertThrows(UnsupportedToolException.class, () -> createController().handle("session-1", "unsupported_tool", Map.of()));
+            assertThat(actual.getToolName(), is("unsupported_tool"));
+            assertThat(actual.getMessage(), is("Unsupported tool `unsupported_tool`."));
         }
     }
     

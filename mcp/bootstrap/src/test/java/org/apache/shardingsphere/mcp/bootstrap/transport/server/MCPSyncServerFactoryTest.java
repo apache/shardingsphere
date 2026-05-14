@@ -38,6 +38,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.resource.MCPResourceSpe
 import org.apache.shardingsphere.mcp.bootstrap.transport.tool.MCPToolSpecificationFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 import reactor.core.publisher.Mono;
@@ -51,6 +52,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -83,6 +85,17 @@ class MCPSyncServerFactoryTest {
     }
     
     @Test
+    void assertCreateExposesOfficialDiscoveryDescriptors() throws ReflectiveOperationException {
+        TestServerTransportProvider transportProvider = new TestServerTransportProvider();
+        McpSyncServer actual = createFactory().create(transportProvider);
+        assertToolDiscoveryDescriptor(actual.listTools().get(0));
+        assertResourceDiscoveryDescriptor(actual.listResources().get(0));
+        assertResourceTemplateDiscoveryDescriptor(actual.listResourceTemplates().get(0));
+        assertPromptDiscoveryDescriptor(actual.listPrompts().get(0));
+        actual.closeGracefully();
+    }
+    
+    @Test
     void assertCreateAdvertisesImplementedCapabilitiesAndSdkLoggingOnly() throws ReflectiveOperationException {
         TestServerTransportProvider transportProvider = new TestServerTransportProvider();
         McpSyncServer actual = createFactory().create(transportProvider);
@@ -106,18 +119,16 @@ class MCPSyncServerFactoryTest {
         MCPPromptSpecificationFactory promptSpecificationFactory = mock(MCPPromptSpecificationFactory.class);
         MCPCompletionSpecificationFactory completionSpecificationFactory = mock(MCPCompletionSpecificationFactory.class);
         when(toolSpecificationFactory.createToolSpecifications()).thenReturn(List.of(new SyncToolSpecification(
-                McpSchema.Tool.builder().name("database_gateway_search_metadata").title("Search Metadata").description("Search metadata").inputSchema(
-                        new McpSchema.JsonSchema("object", Map.of(), List.of(), true, Map.of(), Map.of())).build(),
+                createToolDiscoveryDescriptor(),
                 (exchange, request) -> MCPTransportPayloadUtils.createCallToolResult(Map.of("status", "ok")))));
         when(resourceSpecificationFactory.createResourceSpecifications()).thenReturn(List.of(new SyncResourceSpecification(
-                McpSchema.Resource.builder().uri("shardingsphere://capabilities").name("capabilities").description("Capabilities").mimeType("application/json").build(),
+                createResourceDiscoveryDescriptor(),
                 (exchange, request) -> MCPTransportPayloadUtils.createReadResourceResult(request.uri(), Map.of("status", "ok")))));
         when(resourceSpecificationFactory.createResourceTemplateSpecifications()).thenReturn(List.of(new SyncResourceTemplateSpecification(
-                McpSchema.ResourceTemplate.builder().uriTemplate("shardingsphere://databases/{database}").name("{database}")
-                        .description("Database resource").mimeType("application/json").build(),
+                createResourceTemplateDiscoveryDescriptor(),
                 (exchange, request) -> MCPTransportPayloadUtils.createReadResourceResult(request.uri(), Map.of("status", "ok")))));
         when(promptSpecificationFactory.createPromptSpecifications()).thenReturn(List.of(new SyncPromptSpecification(
-                new McpSchema.Prompt("inspect_metadata", "Inspect Metadata", "Inspect metadata", List.of()),
+                createPromptDiscoveryDescriptor(),
                 (exchange, request) -> new McpSchema.GetPromptResult("Inspect metadata", List.of()))));
         when(completionSpecificationFactory.createCompletionSpecifications()).thenReturn(List.of(new SyncCompletionSpecification(new McpSchema.PromptReference("inspect_metadata"),
                 (exchange, request) -> new McpSchema.CompleteResult(new McpSchema.CompleteResult.CompleteCompletion(List.of(), 0, false)))));
@@ -130,6 +141,80 @@ class MCPSyncServerFactoryTest {
         setField(result, "promptSpecificationFactory", promptSpecificationFactory);
         setField(result, "completionSpecificationFactory", completionSpecificationFactory);
         return result;
+    }
+    
+    private McpSchema.Tool createToolDiscoveryDescriptor() {
+        return McpSchema.Tool.builder()
+                .name("database_gateway_search_metadata")
+                .title("Search Metadata")
+                .description("Search metadata")
+                .inputSchema(new McpSchema.JsonSchema("object", Map.of("query", Map.of("type", "string")), List.of("query"), false, Map.of(), Map.of()))
+                .outputSchema(Map.of("type", "object", "required", List.of("items")))
+                .annotations(new McpSchema.ToolAnnotations("Search Metadata", true, false, true, false, null))
+                .meta(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "metadata-discovery"))
+                .build();
+    }
+    
+    private McpSchema.Resource createResourceDiscoveryDescriptor() {
+        return McpSchema.Resource.builder()
+                .uri("shardingsphere://capabilities")
+                .name("capabilities")
+                .title("Capabilities")
+                .description("Capabilities")
+                .mimeType("application/json")
+                .size(128L)
+                .annotations(new McpSchema.Annotations(List.of(McpSchema.Role.ASSISTANT), 0.5D, null))
+                .meta(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "catalog-guidance"))
+                .build();
+    }
+    
+    private McpSchema.ResourceTemplate createResourceTemplateDiscoveryDescriptor() {
+        return McpSchema.ResourceTemplate.builder()
+                .uriTemplate("shardingsphere://databases/{database}")
+                .name("{database}")
+                .title("Database Resource")
+                .description("Database resource")
+                .mimeType("application/json")
+                .annotations(new McpSchema.Annotations(List.of(McpSchema.Role.ASSISTANT), 0.4D, null))
+                .meta(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "database-detail"))
+                .build();
+    }
+    
+    private McpSchema.Prompt createPromptDiscoveryDescriptor() {
+        return new McpSchema.Prompt("inspect_metadata", "Inspect Metadata", "Inspect metadata",
+                List.of(new McpSchema.PromptArgument("database", "Database", "Logical database", true)), Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "metadata-inspection"));
+    }
+    
+    private void assertToolDiscoveryDescriptor(final McpSchema.Tool actual) {
+        assertThat(actual.name(), is("database_gateway_search_metadata"));
+        assertThat(actual.title(), is("Search Metadata"));
+        assertThat(actual.description(), is("Search metadata"));
+        assertThat(actual.inputSchema().required(), is(List.of("query")));
+        assertThat(actual.outputSchema(), is(Map.of("type", "object", "required", List.of("items"))));
+        assertTrue(actual.annotations().readOnlyHint());
+        assertThat(actual.meta(), is(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "metadata-discovery")));
+    }
+    
+    private void assertResourceDiscoveryDescriptor(final McpSchema.Resource actual) {
+        assertThat(actual.uri(), is("shardingsphere://capabilities"));
+        assertThat(actual.title(), is("Capabilities"));
+        assertThat(actual.size(), is(128L));
+        assertThat(actual.annotations().priority(), is(0.5D));
+        assertThat(actual.meta(), is(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "catalog-guidance")));
+    }
+    
+    private void assertResourceTemplateDiscoveryDescriptor(final McpSchema.ResourceTemplate actual) {
+        assertThat(actual.uriTemplate(), is("shardingsphere://databases/{database}"));
+        assertThat(actual.title(), is("Database Resource"));
+        assertThat(actual.annotations().priority(), is(0.4D));
+        assertThat(actual.meta(), is(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "database-detail")));
+    }
+    
+    private void assertPromptDiscoveryDescriptor(final McpSchema.Prompt actual) {
+        assertThat(actual.name(), is("inspect_metadata"));
+        assertThat(actual.title(), is("Inspect Metadata"));
+        assertThat(actual.arguments().get(0).name(), is("database"));
+        assertThat(actual.meta(), is(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "metadata-inspection")));
     }
     
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {

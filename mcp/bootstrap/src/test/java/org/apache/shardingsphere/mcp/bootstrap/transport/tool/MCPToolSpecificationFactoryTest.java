@@ -26,6 +26,7 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
+import io.modelcontextprotocol.spec.McpError;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -50,6 +51,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -141,6 +143,27 @@ class MCPToolSpecificationFactoryTest {
             assertThat(actualPayload.get("error_code"), is("invalid_request"));
             assertThat(actualPayload.get("message"), is(""));
             assertTrue(actual.isError());
+        }
+    }
+    
+    @Test
+    void assertCreateToolSpecificationsHandleUnsupportedToolAsProtocolError() {
+        try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("database_gateway_search_metadata")));
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("database_gateway_search_metadata"), eq(Map.of())))
+                    .thenReturn(Optional.empty());
+            MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
+            when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
+            SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
+            McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
+            when(exchange.sessionId()).thenReturn("session-id");
+            McpError actual = assertThrows(McpError.class, () -> actualSpecification.callHandler().apply(exchange, new CallToolRequest("database_gateway_search_metadata", Map.of())));
+            assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+            assertThat(actual.getJsonRpcError().message(), is("Tool not found"));
+            @SuppressWarnings("unchecked")
+            Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
+            assertThat(actualData.get("error_code"), is("invalid_request"));
+            assertThat(actualData.get("message"), is("Unsupported tool `database_gateway_search_metadata`."));
         }
     }
     

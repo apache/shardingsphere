@@ -26,12 +26,8 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 
 /**
  * MCP transport payload utility methods.
@@ -65,7 +61,7 @@ public final class MCPTransportPayloadUtils {
     
     private static McpSchema.CallToolResult createCallToolResult(final Map<String, Object> payload, final boolean error) {
         CallToolResult.Builder result = CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(error);
-        ResourceLinks resourceLinks = createResourceLinks(payload);
+        MCPResourceLinkContract.ResourceLinks resourceLinks = MCPResourceLinkContract.createResourceLinks(payload, RESOURCE_LINK_LIMIT);
         for (McpSchema.ResourceLink each : resourceLinks.links()) {
             result.addContent(each);
         }
@@ -78,101 +74,6 @@ public final class MCPTransportPayloadUtils {
         return result.build();
     }
     
-    private static ResourceLinks createResourceLinks(final Map<String, Object> payload) {
-        List<ResourceLinkCandidate> candidates = new LinkedList<>();
-        collectResourceLinkCandidates(payload, "", candidates);
-        candidates.sort(MCPTransportPayloadUtils::compareResourceLinkCandidates);
-        Map<String, ResourceLinkCandidate> uniqueCandidates = new LinkedHashMap<>(candidates.size(), 1F);
-        for (ResourceLinkCandidate each : candidates) {
-            uniqueCandidates.putIfAbsent(each.uri(), each);
-        }
-        List<McpSchema.ResourceLink> links = new LinkedList<>();
-        for (ResourceLinkCandidate each : uniqueCandidates.values()) {
-            if (links.size() >= RESOURCE_LINK_LIMIT) {
-                break;
-            }
-            links.add(createResourceLink(each));
-        }
-        return new ResourceLinks(links, uniqueCandidates.size());
-    }
-    
-    private static void collectResourceLinkCandidates(final Object value, final String sourceField, final List<ResourceLinkCandidate> result) {
-        if (value instanceof Map<?, ?>) {
-            collectResourceLinksFromMap((Map<?, ?>) value, sourceField, result);
-        } else if (value instanceof Iterable<?>) {
-            for (Object each : (Iterable<?>) value) {
-                collectResourceLinkCandidates(each, sourceField, result);
-            }
-        }
-    }
-    
-    private static void collectResourceLinksFromMap(final Map<?, ?> value, final String sourceField, final List<ResourceLinkCandidate> result) {
-        if (isResourceHint(value)) {
-            String uri = Objects.toString(value.get("uri"), "");
-            result.add(new ResourceLinkCandidate(value, uri, resolveSourceField(value, sourceField), result.size()));
-        }
-        for (Entry<?, ?> entry : value.entrySet()) {
-            collectResourceLinkCandidates(entry.getValue(), Objects.toString(entry.getKey(), sourceField), result);
-        }
-    }
-    
-    private static String resolveSourceField(final Map<?, ?> value, final String sourceField) {
-        String result = Objects.toString(value.get("source_field"), "");
-        return result.isEmpty() ? sourceField : result;
-    }
-    
-    private static int compareResourceLinkCandidates(final ResourceLinkCandidate left, final ResourceLinkCandidate right) {
-        int result = Integer.compare(resolveResourceLinkPriority(left.sourceField()), resolveResourceLinkPriority(right.sourceField()));
-        return 0 == result ? Integer.compare(left.order(), right.order()) : result;
-    }
-    
-    private static int resolveResourceLinkPriority(final String sourceField) {
-        if ("resources_to_read".equals(sourceField)) {
-            return 0;
-        }
-        if ("resource".equals(sourceField)) {
-            return 1;
-        }
-        if ("parent_resource".equals(sourceField)) {
-            return 2;
-        }
-        if ("next_resources".equals(sourceField)) {
-            return 3;
-        }
-        return 4;
-    }
-    
-    private static boolean isResourceHint(final Map<?, ?> value) {
-        return value.containsKey("uri") && value.containsKey("resource_kind") && !Objects.toString(value.get("uri"), "").isBlank();
-    }
-    
-    private static McpSchema.ResourceLink createResourceLink(final ResourceLinkCandidate candidate) {
-        return McpSchema.ResourceLink.builder()
-                .name(resolveResourceLinkName(candidate.uri()))
-                .title(Objects.toString(candidate.hint().get("resource_kind"), "resource"))
-                .uri(candidate.uri())
-                .description(Objects.toString(candidate.hint().get("reason"), "Read this ShardingSphere MCP resource."))
-                .mimeType(JSON_CONTENT_TYPE)
-                .meta(createResourceLinkMeta(candidate))
-                .build();
-    }
-    
-    private static String resolveResourceLinkName(final String uri) {
-        int separatorIndex = uri.lastIndexOf('/');
-        if (separatorIndex < 0 || separatorIndex == uri.length() - 1) {
-            return uri;
-        }
-        return uri.substring(separatorIndex + 1);
-    }
-    
-    private static Map<String, Object> createResourceLinkMeta(final ResourceLinkCandidate candidate) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put(MCPShardingSphereMetadataKeys.RESOURCE_KIND, Objects.toString(candidate.hint().get("resource_kind"), ""));
-        result.put(MCPShardingSphereMetadataKeys.PURPOSE, Objects.toString(candidate.hint().get("purpose"), ""));
-        result.put(MCPShardingSphereMetadataKeys.SOURCE_FIELD, candidate.sourceField());
-        return result;
-    }
-    
     /**
      * Create MCP resource result for a structured payload.
      *
@@ -182,15 +83,5 @@ public final class MCPTransportPayloadUtils {
      */
     public static McpSchema.ReadResourceResult createReadResourceResult(final String uri, final Map<String, Object> payload) {
         return new McpSchema.ReadResourceResult(List.of(new McpSchema.TextResourceContents(uri, JSON_CONTENT_TYPE, JsonUtils.toJsonString(payload))));
-    }
-    
-    private record ResourceLinkCandidate(Map<?, ?> hint, String uri, String sourceField, int order) {
-    }
-    
-    private record ResourceLinks(List<McpSchema.ResourceLink> links, int totalCount) {
-
-        private int omittedCount() {
-            return Math.max(0, totalCount - links.size());
-        }
     }
 }

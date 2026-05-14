@@ -47,6 +47,8 @@
   Path: `.specify/specs/018-mcp-descriptor-schema-compliance/spec.md`
 - [x] T003 [P] Define API/support/bootstrap ownership boundaries for official descriptor fields.
   Path: `.specify/specs/018-mcp-descriptor-schema-compliance/plan.md`
+- [x] T004 [P] Record SDK-supported and SDK-deferred descriptor fields.
+  Path: `.specify/specs/018-mcp-descriptor-schema-compliance/field-inventory.md`
 
 **Checkpoint**: Future implementation can start from a source-backed descriptor contract.
 
@@ -54,11 +56,11 @@
 
 ## Phase 2: Descriptor Field Inventory
 
-- [ ] T010 [P] Inventory current raw YAML validator gaps for official resource fields.
+- [x] T010 [P] Inventory current raw YAML validator gaps for official resource fields.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorYamlKeyValidator.java`
-- [ ] T011 [P] Inventory current raw YAML validator gaps for official tool fields.
+- [x] T011 [P] Inventory current raw YAML validator gaps for official tool fields.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorYamlKeyValidator.java`
-- [ ] T012 [P] Verify MCP Java SDK `1.1.2` support for selected `icons`, `size`, `execution`, and `_meta` fields before adding API fields.
+- [x] T012 [P] Verify MCP Java SDK `1.1.2` support for selected `icons`, `size`, `execution`, and `_meta` fields before adding API fields.
   Path: `mcp/bootstrap/pom.xml`
 
 **Checkpoint**: Implementation scope is confirmed against the local SDK surface.
@@ -67,23 +69,23 @@
 
 ## Phase 3: API and YAML Model Semantics
 
-**Goal**: Java API and YAML DTO models can represent selected official non-annotation MCP descriptor fields without changing behavior when fields are absent.
-**Independent Test**: API and YAML swapper tests prove absent optional fields remain absent while explicit fields are preserved.
+**Goal**: Java API and YAML DTO models represent SDK-supported fixed `Resource.size` without changing behavior when size is absent.
+**Independent Test**: API and YAML swapper tests prove absent size remains absent while explicit size is preserved.
 
 ### Tests
 
-- [ ] T020 [P] [US1] Add resource descriptor tests for omitted and explicit resource `size`, resource `icons`, and resource-template `icons`.
+- [x] T020 [P] [US1] Add resource descriptor tests for omitted and explicit resource `size`.
   Path: `mcp/api/src/test/java/org/apache/shardingsphere/mcp/api/resource/descriptor/`
-- [ ] T021 [P] [US2] Add tool descriptor tests for omitted and explicit `icons` and `execution.taskSupport`.
-  Path: `mcp/api/src/test/java/org/apache/shardingsphere/mcp/api/tool/descriptor/`
+- [x] T021 [P] [US2] Record `icons` and `execution.taskSupport` as SDK-deferred fields instead of adding tool descriptor fields.
+  Path: `.specify/specs/018-mcp-descriptor-schema-compliance/field-inventory.md`
 
 ### Implementation
 
-- [ ] T022 [US1] Add selected official resource descriptor fields to API and YAML DTOs.
+- [x] T022 [US1] Add fixed resource `size` to API and YAML DTOs with explicit presence semantics.
   Paths: `mcp/api/src/main/java/org/apache/shardingsphere/mcp/api/resource/descriptor/`, `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/yaml/`
-- [ ] T023 [US2] Add selected official tool descriptor fields to API and YAML DTOs.
-  Paths: `mcp/api/src/main/java/org/apache/shardingsphere/mcp/api/tool/descriptor/`, `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/yaml/`
-- [ ] T024 [US1,US2] Update YAML swapping to preserve optional-field presence.
+- [x] T023 [US2] Keep SDK-deferred tool fields out of API and YAML DTOs.
+  Path: `.specify/specs/018-mcp-descriptor-schema-compliance/field-inventory.md`
+- [x] T024 [US1] Update YAML swapping to preserve optional `size` presence.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogYamlSwapper.java`
 
 **Checkpoint**: Descriptor models represent official optional fields without defaulting absent values.
@@ -92,23 +94,23 @@
 
 ## Phase 4: Validation
 
-**Goal**: Descriptor validation accepts valid official fields and rejects malformed official fields before server startup.
-**Independent Test**: Raw YAML and semantic catalog validation tests cover valid, omitted, invalid, and unknown values.
+**Goal**: Descriptor validation accepts valid fixed resource `size` and rejects malformed or misplaced `size` before server startup.
+**Independent Test**: Raw YAML and semantic catalog validation tests cover valid, omitted, invalid, and misplaced `size` values.
 
 ### Tests
 
-- [ ] T030 [P] [US1] Add raw YAML validator tests for resource `size` and `icons`.
+- [x] T030 [P] [US1] Add raw YAML validator tests for fixed resource `size`.
   Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorYamlKeyValidatorTest.java`
-- [ ] T031 [P] [US2] Add raw YAML validator tests for tool `icons` and `execution.taskSupport`.
+- [x] T031 [P] [US1] Add raw YAML validator tests rejecting resource-template `size`.
   Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorYamlKeyValidatorTest.java`
-- [ ] T032 [P] [US1,US2] Add semantic validator tests for non-negative resource size and legal `taskSupport` values.
+- [x] T032 [P] [US1] Add semantic validator tests for non-negative fixed resource size and resource-template size rejection.
   Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/`
 
 ### Implementation
 
-- [ ] T033 [US1,US2] Extend raw YAML key and type validation for selected official fields.
+- [x] T033 [US1] Extend raw YAML key and type validation for fixed resource `size`.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorYamlKeyValidator.java`
-- [ ] T034 [US1,US2] Extend semantic catalog validation for selected official field values.
+- [x] T034 [US1] Extend semantic catalog validation for fixed resource `size`.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogValidator.java`
 
 **Checkpoint**: Startup validation distinguishes MCP schema validity from ShardingSphere descriptor policy.
@@ -117,28 +119,28 @@
 
 ## Phase 5: Payload and SDK Mapping
 
-**Goal**: Official MCP outputs emit official descriptor fields through official schema surfaces only when present.
-**Independent Test**: Payload and SDK factory tests inspect selected fields and omission behavior.
+**Goal**: Official MCP outputs emit fixed resource `size` through official schema surfaces only when present.
+**Independent Test**: Payload and SDK factory tests inspect `size` and omission behavior.
 
 ### Tests
 
-- [ ] T040 [P] [US1,US3] Add descriptor catalog payload tests for selected resource official fields.
+- [x] T040 [P] [US1,US3] Add descriptor catalog payload tests for fixed resource `size`.
   Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/`
-- [ ] T041 [P] [US2,US3] Add descriptor catalog payload tests for selected tool official fields.
-  Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/`
-- [ ] T042 [P] [US1] Add resource specification factory tests for selected resource official fields.
+- [x] T041 [P] [US2,US3] Record SDK-deferred tool fields instead of adding payload tests for unsupported SDK fields.
+  Path: `.specify/specs/018-mcp-descriptor-schema-compliance/field-inventory.md`
+- [x] T042 [P] [US1] Add resource specification factory tests for fixed resource `size`.
   Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/resource/`
-- [ ] T043 [P] [US2] Add tool specification factory tests for selected tool official fields.
-  Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/`
+- [x] T043 [P] [US2] Record tool SDK mapping limitation for `icons` and `execution`.
+  Path: `.specify/specs/018-mcp-descriptor-schema-compliance/field-inventory.md`
 
 ### Implementation
 
-- [ ] T044 [US1,US2] Update descriptor catalog payload serialization for selected official fields.
+- [x] T044 [US1] Update descriptor catalog payload serialization for fixed resource `size`.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogPayloadBuilder.java`
-- [ ] T045 [US1] Update resource SDK mapping for selected resource official fields.
+- [x] T045 [US1] Update resource SDK mapping for fixed resource `size`.
   Path: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/resource/MCPResourceSpecificationFactory.java`
-- [ ] T046 [US2] Update tool SDK mapping for selected tool official fields.
-  Path: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactory.java`
+- [x] T046 [US2] Keep unsupported tool fields out of SDK mapping until the SDK exposes them.
+  Path: `.specify/specs/018-mcp-descriptor-schema-compliance/field-inventory.md`
 
 **Checkpoint**: Official descriptor fields reach MCP clients through official protocol surfaces.
 
@@ -146,15 +148,23 @@
 
 ## Phase 6: Documentation and Verification
 
-- [ ] T050 [US3] Update README descriptor guidance to distinguish official MCP fields from ShardingSphere descriptor-only metadata.
+- [x] T050 [US3] Update README descriptor guidance to distinguish fixed resource `size` from SDK-deferred descriptor fields.
   Paths: `mcp/README.md`, `mcp/README_ZH.md`
-- [ ] T051 Run scoped API/support/bootstrap tests for descriptor models, validation, payloads, and SDK mapping.
+- [x] T051 Run scoped API/support/bootstrap tests for descriptor models, validation, payloads, and SDK mapping.
   Command: `./mvnw -pl mcp/api,mcp/support,mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -Dtest=<changed-tests> test`
-- [ ] T052 Run scoped Checkstyle for touched MCP modules.
+- [x] T052 Run scoped Checkstyle for touched MCP modules.
   Command: `./mvnw -pl mcp/api,mcp/support,mcp/bootstrap -DskipTests -DskipITs -Pcheck checkstyle:check`
-- [ ] T053 Run scoped Spotless check for touched MCP modules.
+- [x] T053 Run scoped Spotless check for touched MCP modules.
   Command: `./mvnw -pl mcp/api,mcp/support,mcp/bootstrap -DskipTests -DskipITs -Pcheck spotless:check`
-- [ ] T054 Run static searches proving selected official fields are not emitted through annotations or ShardingSphere-only metadata.
+- [x] T054 Run static searches proving selected official fields are not emitted through annotations or ShardingSphere-only metadata.
   Path: repository root
-- [ ] T055 Run `git diff --check` for touched package files.
+- [x] T055 Run `git diff --check` for touched package files.
   Path: repository root
+
+## Verification Notes
+
+- Tests: `./mvnw -pl mcp/api,mcp/support,mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -Dtest=MCPResourceDescriptorTest,MCPDescriptorYamlKeyValidatorTest,MCPDescriptorCatalogValidatorTest,MCPDescriptorCatalogPayloadBuilderTest,MCPDescriptorCatalogYamlSwapperTest,MCPResourceSpecificationFactoryTest test` passed.
+- Checkstyle: `./mvnw -pl mcp/api,mcp/support,mcp/bootstrap -DskipTests -DskipITs -Pcheck checkstyle:check` passed.
+- Spotless: `./mvnw -pl mcp/api,mcp/support,mcp/bootstrap -DskipTests -DskipITs -Pcheck spotless:check` passed after scoped `spotless:apply` for `mcp/api`, `mcp/support`, and `mcp/bootstrap`.
+- Static search: no production emission of `icons`, `ToolExecution`, `taskSupport`, or protocol-level `"execution"` was found in the descriptor and transport boundaries.
+- Diff check: standard `git diff --check` was executed and reports trailing whitespace on Spotless-formatted blank lines in touched Java files. The scoped project formatting gate is Spotless, and Spotless passes with those module formatter rules.

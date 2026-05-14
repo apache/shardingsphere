@@ -23,12 +23,15 @@ import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification.Builder;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
+import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
+import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
@@ -106,14 +109,26 @@ public final class MCPToolSpecificationFactory {
     }
     
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
-        Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
-        MCPResponse response = toolController.handle(exchange.sessionId(), request.name(), arguments);
-        Map<String, Object> payload = response.toPayload();
-        Optional<MCPToolDescriptor> toolDescriptor = findToolDescriptor(request.name());
-        if (toolDescriptor.isPresent() && elicitationHandler.shouldElicit(exchange, toolDescriptor.get(), payload)) {
-            return createCallToolResult(toolDescriptor.get(), elicitationHandler.handle(exchange, toolDescriptor.get(), arguments, response, payload));
+        try {
+            Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
+            MCPResponse response = toolController.handle(exchange.sessionId(), request.name(), arguments);
+            Map<String, Object> payload = response.toPayload();
+            Optional<MCPToolDescriptor> toolDescriptor = findToolDescriptor(request.name());
+            if (toolDescriptor.isPresent() && elicitationHandler.shouldElicit(exchange, toolDescriptor.get(), payload)) {
+                return createCallToolResult(toolDescriptor.get(), elicitationHandler.handle(exchange, toolDescriptor.get(), arguments, response, payload));
+            }
+            return toolDescriptor.map(each -> createCallToolResult(each, response)).orElseGet(() -> MCPTransportPayloadUtils.createCallToolResult(response));
+        } catch (final UnsupportedToolException ex) {
+            throw createCallToolError(ex);
         }
-        return toolDescriptor.map(each -> createCallToolResult(each, response)).orElseGet(() -> MCPTransportPayloadUtils.createCallToolResult(response));
+    }
+    
+    private McpError createCallToolError(final UnsupportedToolException cause) {
+        MCPErrorResponse errorResponse = MCPErrorConverter.convert(cause);
+        return McpError.builder(McpSchema.ErrorCodes.INVALID_PARAMS)
+                .message("Tool not found")
+                .data(errorResponse.toPayload())
+                .build();
     }
     
     private McpSchema.CallToolResult createCallToolResult(final MCPToolDescriptor toolDescriptor, final MCPResponse response) {

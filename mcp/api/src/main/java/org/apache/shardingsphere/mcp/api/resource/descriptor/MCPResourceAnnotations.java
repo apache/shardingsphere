@@ -27,24 +27,24 @@ import java.util.List;
  */
 @Getter
 public final class MCPResourceAnnotations {
-
+    
     public static final MCPResourceAnnotations EMPTY = new MCPResourceAnnotations(Collections.emptyList(), 0D, false, null);
-
+    
     private final List<String> audience;
-
+    
     private final double priority;
-
+    
     private final boolean priorityPresent;
-
+    
     private final String lastModified;
-
+    
     public MCPResourceAnnotations(final List<String> audience, final double priority, final boolean priorityPresent, final String lastModified) {
         this.audience = null == audience ? Collections.emptyList() : audience;
         this.priority = priority;
         this.priorityPresent = priorityPresent;
         this.lastModified = lastModified;
     }
-
+    
     /**
      * Judge whether annotations are empty.
      *

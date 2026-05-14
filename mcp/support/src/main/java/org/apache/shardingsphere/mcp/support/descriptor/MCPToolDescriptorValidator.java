@@ -15,25 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.descriptor.yaml;
+package org.apache.shardingsphere.mcp.support.descriptor;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 
 /**
- * YAML MCP tool annotations.
+ * MCP tool descriptor validator.
  */
-@Getter
-@Setter
-public final class YamlMCPToolAnnotations {
+@SingletonSPI
+public interface MCPToolDescriptorValidator extends ShardingSphereSPI {
     
-    private String title;
+    /**
+     * Judge whether this validator supports the tool descriptor.
+     *
+     * @param toolDescriptor tool descriptor
+     * @return whether this validator supports the tool descriptor
+     */
+    boolean supports(MCPToolDescriptor toolDescriptor);
     
-    private boolean readOnlyHint;
-    
-    private boolean destructiveHint = true;
-    
-    private boolean idempotentHint;
-    
-    private boolean openWorldHint = true;
+    /**
+     * Validate the tool descriptor.
+     *
+     * @param toolDescriptor tool descriptor
+     */
+    void validate(MCPToolDescriptor toolDescriptor);
 }

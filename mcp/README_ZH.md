@@ -211,9 +211,12 @@ Descriptor annotations 遵循 MCP `2025-11-25` schema，并且属于开发者维
 
 - Resource annotations 是可选的。需要时只能使用 `audience`、`priority` 和 `lastModified`；没有字段需要表达时应省略整个 `annotations` map。
 - Resource `audience` 只能使用 MCP role `user` 或 `assistant`；`priority` 必须是有限数值并处于 `0.0` 到 `1.0`；`lastModified` 必须包含 ISO 8601 UTC 标记或 offset。
+- 固定 resource descriptor 可以在已知 raw content size 时声明官方 MCP `size`；resource template 不能声明 `size`。
 - Tool annotations 使用 MCP `ToolAnnotations`。MCP 的有效默认值是 `readOnlyHint=false`、`destructiveHint=true`、`idempotentHint=false` 和 `openWorldHint=true`。
 - ShardingSphere public tool descriptor 仍然必须在 YAML 中显式声明这四个 boolean hints，这样 primitive defaults 生效前，reviewer 能直接看到安全决策。
 - Tool annotations 只作为客户端提示，不替代运行时校验、SQL 安全检查、用户审批或服务端授权。
+- MCP `icons` 和 `Tool.execution` 是官方 `2025-11-25` descriptor 字段，但 MCP Java SDK `1.1.2` 尚未在 `Resource`、`ResourceTemplate` 或 `Tool` 中暴露 `icons`，也尚未在 `Tool` 中暴露 `execution`；
+  在 SDK 边界支持前，它们属于后续范围。
 
 ### 读取 `shardingsphere://databases/orders/schemas/public/sequences`
 

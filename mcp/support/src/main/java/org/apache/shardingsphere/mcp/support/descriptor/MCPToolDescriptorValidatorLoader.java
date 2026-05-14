@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.descriptor.yaml;
+package org.apache.shardingsphere.mcp.support.descriptor;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
-/**
- * YAML MCP tool annotations.
- */
-@Getter
-@Setter
-public final class YamlMCPToolAnnotations {
+import java.util.Collection;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+final class MCPToolDescriptorValidatorLoader {
     
-    private String title;
-    
-    private boolean readOnlyHint;
-    
-    private boolean destructiveHint = true;
-    
-    private boolean idempotentHint;
-    
-    private boolean openWorldHint = true;
+    static Collection<MCPToolDescriptorValidator> load() {
+        return ShardingSphereServiceLoader.getServiceInstances(MCPToolDescriptorValidator.class);
+    }
 }

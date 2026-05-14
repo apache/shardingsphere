@@ -35,6 +35,7 @@ class MCPResourceDescriptorTest {
                 Collections.emptyMap());
         assertThat(actual.getUriTemplate(), is("shardingsphere://databases"));
         assertFalse(actual.isTemplated());
+        assertFalse(actual.isSizePresent());
     }
     
     @Test
@@ -43,6 +44,14 @@ class MCPResourceDescriptorTest {
                 "Read one database.", "application/json", MCPResourceAnnotations.EMPTY, Collections.emptyMap());
         assertThat(actual.getUriTemplate(), is("shardingsphere://databases/{database}"));
         assertTrue(actual.isTemplated());
+    }
+    
+    @Test
+    void assertGetSize() {
+        MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://databases", "databases", "Databases", "List databases.", "application/json", 128L, true,
+                MCPResourceAnnotations.EMPTY, Collections.emptyMap());
+        assertTrue(actual.isSizePresent());
+        assertThat(actual.getSize(), is(128L));
     }
     
     @Test

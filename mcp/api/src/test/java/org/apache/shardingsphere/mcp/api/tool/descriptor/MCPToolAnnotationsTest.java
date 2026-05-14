@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPToolAnnotationsTest {
-
+    
     @Test
     void assertEmptyUsesMCPDefaults() {
         MCPToolAnnotations actual = MCPToolAnnotations.EMPTY;
@@ -33,7 +33,7 @@ class MCPToolAnnotationsTest {
         assertFalse(actual.isIdempotentHint());
         assertTrue(actual.isOpenWorldHint());
     }
-
+    
     @Test
     void assertDeclaredDefaultsAreNotEmpty() {
         MCPToolAnnotations actual = new MCPToolAnnotations(null, false, true, false, true);

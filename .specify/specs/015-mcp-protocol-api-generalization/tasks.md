@@ -69,22 +69,22 @@
 
 ## Phase 2: Foundational Protocol and Domain Boundary
 
-- [ ] T010 [US1] Define the ShardingSphere catalog metadata naming and labeling policy for `shardingsphere://capabilities`.
+- [X] T010 [US1] Define the ShardingSphere catalog metadata naming and labeling policy for `shardingsphere://capabilities`.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/`
-- [ ] T011 [US3] Define a typed protocol error path for unsupported tools and resources.
+- [X] T011 [US3] Define a typed protocol error path for unsupported tools and resources.
   Paths: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/`,
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/resource/`,
   `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/`
-- [ ] T012 [US2] Define a completion provider contract that maps reference type, reference, and argument name to candidate providers.
+- [X] T012 [US2] Define a completion provider contract that maps reference type, reference, and argument name to candidate providers.
   The default location is `mcp/support`; use `mcp/api` only if a later design proves the signature can stay on pure API DTOs without descriptor or support-context dependency.
   Feature modules must not depend on `shardingsphere-mcp-core` for completion providers.
   Paths: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/`,
   `mcp/api/src/main/java/org/apache/shardingsphere/mcp/api/`
-- [ ] T013 [US4] Define the domain payload field policy for `response_mode`, `next_actions`, `recovery`, resource hints, and application pagination.
+- [X] T013 [US4] Define the domain payload field policy for `response_mode`, `next_actions`, `recovery`, resource hints, and application pagination.
   Paths: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/protocol/`, `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/descriptors/`
-- [ ] T014 [US4] Define an explicit ResourceLink provider or contract to replace recursive arbitrary map scanning.
+- [X] T014 [US4] Define an explicit ResourceLink provider or contract to replace recursive arbitrary map scanning.
   Path: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/`
-- [ ] T015 [US2] Define a feature-owned validation extension point for tool-specific descriptor or output-shape checks.
+- [X] T015 [US2] Define a feature-owned validation extension point for tool-specific descriptor or output-shape checks.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/`
 
 **Checkpoint**: Protocol/domain ownership, error semantics, completion dispatch, and ResourceLink generation have typed homes before behavior changes.
@@ -98,18 +98,18 @@
 
 ### Tests for User Story 1
 
-- [ ] T020 [P] [US1] Add bootstrap or integration tests proving `tools/list`, `resources/list`, `resources/templates/list`, and `prompts/list` are sufficient for official discovery.
+- [X] T020 [P] [US1] Add bootstrap or integration tests proving `tools/list`, `resources/list`, `resources/templates/list`, and `prompts/list` are sufficient for official discovery.
   Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/`
-- [ ] T021 [P] [US1] Add catalog snapshot tests proving custom catalog sections are labeled as ShardingSphere metadata, not protocol fields.
+- [X] T021 [P] [US1] Add catalog snapshot tests proving custom catalog sections are labeled as ShardingSphere metadata, not protocol fields.
   Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/`
 
 ### Implementation for User Story 1
 
-- [ ] T022 [US1] Rename or relabel `protocol_fields` and related catalog sections so they are ShardingSphere catalog metadata.
+- [X] T022 [US1] Rename or relabel `protocol_fields` and related catalog sections so they are ShardingSphere catalog metadata.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPModelFirstContractPayloadBuilder.java`
-- [ ] T023 [US1] Update capability catalog payload construction to make official MCP list methods authoritative and catalog guidance optional.
+- [X] T023 [US1] Update capability catalog payload construction to make official MCP list methods authoritative and catalog guidance optional.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogPayloadBuilder.java`
-- [ ] T024 [US1] Update server instructions so they recommend catalog guidance without implying protocol discovery depends on it.
+- [X] T024 [US1] Update server instructions so they recommend catalog guidance without implying protocol discovery depends on it.
   Path: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/MCPTransportConstants.java`
 
 **Checkpoint**: The custom catalog remains useful but no longer looks like the MCP discovery protocol.

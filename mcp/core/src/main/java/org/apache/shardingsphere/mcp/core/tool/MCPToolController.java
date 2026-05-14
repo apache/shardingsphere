@@ -59,6 +59,8 @@ public final class MCPToolController {
             try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
                 return ToolHandlerRegistry.dispatch(requestScope, sessionId, toolName, arguments).orElseThrow(() -> new UnsupportedToolException(toolName));
             }
+        } catch (final UnsupportedToolException ex) {
+            throw ex;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

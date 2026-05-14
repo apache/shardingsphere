@@ -25,6 +25,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPModelFirstContractPayloadBuilderTest {
@@ -34,9 +35,11 @@ class MCPModelFirstContractPayloadBuilderTest {
     @Test
     void assertCreateModelFirstSummary() {
         Map<String, Object> actual = builder.createModelFirstSummary();
-        assertThat(castToMap(actual.get("official_discovery_methods")).get("tools"), is("tools/list"));
-        assertThat(actual.get("catalog_resource_role"), is("shardingsphere://capabilities is a ShardingSphere domain catalog resource, not the MCP protocol discovery source."));
-        assertThat(actual.get("safe_first_resource"), is("shardingsphere://capabilities"));
+        assertThat(castToMap(actual.get("official_discovery_methods")), is(createOfficialDiscoveryMethods()));
+        assertThat(actual.get("argument_completion_method"), is("completion/complete"));
+        assertThat(actual.get("catalog_resource_role"), is("shardingsphere://capabilities is an optional ShardingSphere domain catalog resource, not the MCP protocol discovery source."));
+        assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
+        assertFalse(actual.containsKey("safe_first_resource"));
         assertThat(castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting")).get("execute_requires"), is("approved_by_user=true"));
         Map<?, ?> actualWorkflowRule = castToMap(actual.get("workflow_rule"));
         assertThat(actualWorkflowRule.get("planning_tools"), is(List.of("database_gateway_plan_encrypt_rule")));
@@ -47,8 +50,10 @@ class MCPModelFirstContractPayloadBuilderTest {
     @Test
     void assertCreateModelContract() {
         Map<String, Object> actual = builder.createModelContract();
-        assertTrue(String.valueOf(actual.get("public_surface_source")).contains("tools/list"));
-        assertThat(castToMap(actual.get("official_discovery_methods")).get("resources"), is("resources/list"));
+        assertThat(actual.get("public_surface_source"), is("Official MCP list methods: tools/list, resources/list, resources/templates/list, prompts/list."));
+        assertThat(castToMap(actual.get("official_discovery_methods")), is(createOfficialDiscoveryMethods()));
+        assertThat(actual.get("argument_completion_method"), is("completion/complete"));
+        assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
         assertThat(actual.get("side_effect_rule"), is("Preview before side effects and continue only after explicit user approval with approved_by_user=true."));
     }
@@ -94,5 +99,9 @@ class MCPModelFirstContractPayloadBuilderTest {
     
     private Map<?, ?> castToMap(final Object value) {
         return (Map<?, ?>) value;
+    }
+    
+    private Map<String, Object> createOfficialDiscoveryMethods() {
+        return Map.of("tools", "tools/list", "resources", "resources/list", "resource_templates", "resources/templates/list", "prompts", "prompts/list");
     }
 }

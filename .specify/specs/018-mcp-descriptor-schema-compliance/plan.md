@@ -23,7 +23,7 @@
 
 ## Summary
 
-Align non-annotation MCP descriptor fields with MCP Specification `2025-11-25` while keeping ShardingSphere descriptor-only metadata behind explicit boundaries.
+Align SDK-supported non-annotation MCP descriptor fields with MCP Specification `2025-11-25` while keeping ShardingSphere descriptor-only metadata behind explicit boundaries.
 The implementation must not reopen package 017 and must not change behavior for descriptors that omit the newly supported fields.
 
 ## Technical Context
@@ -62,6 +62,7 @@ The implementation must not reopen package 017 and must not change behavior for 
 |-- spec.md
 |-- plan.md
 |-- tasks.md
+|-- field-inventory.md
 `-- checklists/
     `-- requirements.md
 ```
@@ -81,22 +82,24 @@ mcp/*/src/test/java/
 ## Adjacent Package Ownership
 
 - Package 017 owns `Annotations` and `ToolAnnotations` only.
-- Package 018 owns official non-annotation descriptor fields such as `icons`, resource `size`, tool `execution`, and `_meta` boundary cleanup.
+- Package 018 owns official non-annotation descriptor fields such as resource `size`, `icons`, tool `execution`, and `_meta` boundary cleanup.
+- MCP Java SDK `1.1.2` supports fixed `Resource.size` but does not expose `icons` on `Resource`, `ResourceTemplate`, or `Tool`, and does not expose `Tool.execution`.
 - Existing 013 through 016 packages own broader protocol field standardization and E2E gap triage. If this package discovers output-schema or transport drift, cross-link instead of expanding scope.
 
 ## Implementation Strategy
 
 1. Reconfirm MCP `2025-11-25` source facts for selected descriptor fields and MCP Java SDK support.
 2. Inventory current YAML validator rejections and current SDK/payload omissions.
-3. Add API/YAML DTO fields only where the MCP schema and SDK boundary require them.
-4. Add raw and semantic validation at the YAML descriptor boundary.
-5. Update payload and SDK mapping to emit official fields through official surfaces.
-6. Keep descriptors that omit these fields behaviorally unchanged.
-7. Add focused tests for valid, omitted, and invalid field cases.
+3. Implement fixed `Resource.size`, because it is supported by both MCP schema and MCP Java SDK `1.1.2`.
+4. Record `icons` and `Tool.execution` as deferred SDK limitations.
+5. Add raw and semantic validation at the YAML descriptor boundary.
+6. Update payload and SDK mapping to emit `Resource.size` through official surfaces.
+7. Keep descriptors that omit `size` behaviorally unchanged.
+8. Add focused tests for valid, omitted, and invalid `size` cases.
 
 ## Complexity Tracking
 
 - **SDK surface may lag the protocol**: If MCP Java SDK `1.1.2` lacks a field, document the limitation and avoid fake protocol output.
 - **`meta` versus `_meta` naming ambiguity**: Treat this as a boundary decision, not a string replacement. Existing descriptor metadata behavior must be protected by tests before any rename.
-- **Icon validation scope**: Basic shape validation is required. Security validation for icon URI schemes may be added only if it stays small and source-backed.
+- **Icon validation scope**: Icon shape validation is deferred until the SDK exposes official icon fields. Security validation for icon URI schemes may be added only if it stays small and source-backed.
 - **Non-annotation behavior must not leak into package 017**: Keep tasks, tests, and docs isolated under this package.

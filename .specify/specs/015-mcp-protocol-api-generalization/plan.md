@@ -72,7 +72,7 @@ Official MCP `2025-11-25` baseline:
 Local findings that drive implementation:
 
 - `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogPayloadBuilder.java` emits custom catalog sections.
-- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPModelFirstContractPayloadBuilder.java` labels custom catalog sections as `protocol_fields`.
+- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPModelFirstContractPayloadBuilder.java` owns model-facing catalog guidance and must keep official list discovery separate from optional catalog metadata.
 - `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/completion/MCPCompletionService.java` hardcodes completion argument and feature routing.
 - `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogValidator.java` hardcodes tool-specific validation branches.
 - `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/resource/MCPResourceController.java` converts resource failures into successful resource payloads.

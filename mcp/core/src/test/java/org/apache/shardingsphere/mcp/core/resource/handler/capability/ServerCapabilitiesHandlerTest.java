@@ -97,9 +97,11 @@ class ServerCapabilitiesHandlerTest {
     
     private void assertModelFirstSummary(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("model_first_summary");
-        assertThat(((Map<?, ?>) actual.get("official_discovery_methods")).get("tools"), is("tools/list"));
-        assertTrue(String.valueOf(actual.get("catalog_resource_role")).contains("domain catalog resource"));
-        assertThat(actual.get("safe_first_resource"), is("shardingsphere://capabilities"));
+        assertThat(actual.get("official_discovery_methods"), is(createOfficialDiscoveryMethods()));
+        assertThat(actual.get("argument_completion_method"), is("completion/complete"));
+        assertThat(actual.get("catalog_resource_role"), is("shardingsphere://capabilities is an optional ShardingSphere domain catalog resource, not the MCP protocol discovery source."));
+        assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
+        assertFalse(actual.containsKey("safe_first_resource"));
         Map<?, ?> metadataRule = (Map<?, ?>) actual.get("metadata_rule");
         assertThat(metadataRule.get("first_resource"), is("shardingsphere://databases"));
         assertThat(metadataRule.get("search_tool"), is("database_gateway_search_metadata"));
@@ -117,9 +119,11 @@ class ServerCapabilitiesHandlerTest {
     
     private void assertModelContract(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("model_contract");
-        assertTrue(String.valueOf(actual.get("public_surface_source")).contains("tools/list"));
-        assertThat(((Map<?, ?>) actual.get("official_discovery_methods")).get("resources"), is("resources/list"));
-        assertThat(actual.get("safe_first_resource"), is("shardingsphere://capabilities"));
+        assertThat(actual.get("public_surface_source"), is("Official MCP list methods: tools/list, resources/list, resources/templates/list, prompts/list."));
+        assertThat(actual.get("official_discovery_methods"), is(createOfficialDiscoveryMethods()));
+        assertThat(actual.get("argument_completion_method"), is("completion/complete"));
+        assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
+        assertFalse(actual.containsKey("safe_first_resource"));
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
         assertTrue(((Map<?, ?>) actual.get("sql_tool_selection")).containsKey("side_effecting"));
         assertTrue(actual.containsKey("workflow_session_rule"));
@@ -129,16 +133,18 @@ class ServerCapabilitiesHandlerTest {
     
     private void assertSurfaceSummary(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("surface_summary");
-        assertThat(((Map<?, ?>) actual.get("first_protocol_methods")).get("resources"), is("resources/list"));
-        assertThat(actual.get("catalog_resource"), is("shardingsphere://capabilities"));
+        assertThat(actual.get("official_discovery_methods"), is(createOfficialDiscoveryMethods()));
+        assertThat(actual.get("argument_completion_method"), is("completion/complete"));
+        assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
         assertThat(actual.get("metadata_search_tool"), is("database_gateway_search_metadata"));
         assertThat(actual.get("side_effect_sql_tool"), is("database_gateway_execute_update"));
     }
     
     private void assertFieldNamingContract(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("field_naming_contract");
-        assertTrue(((List<?>) actual.get("protocol_methods")).contains("resources/templates/list"));
-        assertTrue(((List<?>) actual.get("catalog_fields")).contains("resourceTemplates"));
+        assertThat(actual.get("official_discovery_methods"), is(List.of("tools/list", "resources/list", "resources/templates/list", "prompts/list")));
+        assertThat(actual.get("argument_completion_method"), is("completion/complete"));
+        assertThat(actual.get("catalog_fields"), is(List.of("supportedResources", "supportedTools", "resourceTemplates", "completionTargets", "resourceNavigation", "protocolAvailability")));
         assertThat(actual.get("payload_fields"), is("ShardingSphere-owned structured payload fields use snake_case."));
         assertTrue(String.valueOf(actual.get("alias_rule")).contains("Do not assume"));
     }
@@ -305,5 +311,9 @@ class ServerCapabilitiesHandlerTest {
     
     private Map<?, ?> findPromptArgument(final Map<?, ?> prompt, final String argumentName) {
         return ((List<?>) prompt.get("arguments")).stream().map(each -> (Map<?, ?>) each).filter(each -> argumentName.equals(each.get("name"))).findFirst().orElseThrow();
+    }
+    
+    private Map<String, Object> createOfficialDiscoveryMethods() {
+        return Map.of("tools", "tools/list", "resources", "resources/list", "resource_templates", "resources/templates/list", "prompts", "prompts/list");
     }
 }

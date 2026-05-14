@@ -35,10 +35,12 @@
 - [x] Source references recorded for `Resource`, `ResourceTemplate`, `Tool`, `ToolExecution`, `Icon`, and `_meta`.
 - [x] Package 017 annotation source facts are treated as completed and out of scope.
 - [x] MCP Java SDK support is called out as an implementation gate.
+- [x] MCP Java SDK `1.1.2` support is inventoried in `field-inventory.md`.
 
 ## Requirement Quality
 
 - [x] Official MCP descriptor fields and ShardingSphere descriptor-only metadata are separated.
+- [x] SDK-supported `Resource.size` is separated from SDK-deferred `icons` and `Tool.execution`.
 - [x] API/support/bootstrap module boundaries are explicit.
 - [x] Optional-field omission behavior is required.
 - [x] Stricter descriptor validation is documented as ShardingSphere policy.
@@ -46,8 +48,8 @@
 
 ## Acceptance Coverage
 
-- [x] Acceptance scenarios cover valid resource official fields.
-- [x] Acceptance scenarios cover valid tool official fields.
+- [x] Acceptance scenarios cover valid fixed resource `size`.
+- [x] Acceptance scenarios cover SDK-deferred tool official fields.
 - [x] Acceptance scenarios cover omitted-field behavior.
 - [x] Acceptance scenarios cover invalid `taskSupport`.
 - [x] Acceptance scenarios cover metadata boundary isolation.
@@ -61,6 +63,7 @@
 
 ## Open Items
 
-- [ ] Implementation has not started for package 018.
-- [ ] MCP Java SDK `1.1.2` field support must be verified before API changes.
-- [ ] Current raw YAML validator gaps must be inventoried before edits.
+- [x] Conservative `Resource.size` implementation slice is complete.
+- [x] MCP Java SDK `1.1.2` field support was verified before API changes.
+- [x] Current raw YAML validator gaps were inventoried before edits.
+- [x] `icons` and `Tool.execution` remain deferred until the MCP Java SDK boundary exposes them.

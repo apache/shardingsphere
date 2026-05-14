@@ -27,14 +27,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPResourceAnnotationsTest {
-
+    
     @Test
     void assertEmpty() {
         MCPResourceAnnotations actual = MCPResourceAnnotations.EMPTY;
         assertTrue(actual.isEmpty());
         assertFalse(actual.isPriorityPresent());
     }
-
+    
     @Test
     void assertPriorityZeroIsPresent() {
         MCPResourceAnnotations actual = new MCPResourceAnnotations(List.of(), 0D, true, null);

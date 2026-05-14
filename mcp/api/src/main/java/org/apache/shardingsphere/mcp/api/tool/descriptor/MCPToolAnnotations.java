@@ -25,26 +25,26 @@ import lombok.Getter;
  */
 @Getter
 public final class MCPToolAnnotations {
-
+    
     public static final MCPToolAnnotations EMPTY = new MCPToolAnnotations(null, false, true, false, true, false);
-
+    
     private final String title;
-
+    
     private final boolean readOnlyHint;
-
+    
     private final boolean destructiveHint;
-
+    
     private final boolean idempotentHint;
-
+    
     private final boolean openWorldHint;
-
+    
     @Getter(AccessLevel.NONE)
     private final boolean declared;
-
+    
     public MCPToolAnnotations(final String title, final boolean readOnlyHint, final boolean destructiveHint, final boolean idempotentHint, final boolean openWorldHint) {
         this(title, readOnlyHint, destructiveHint, idempotentHint, openWorldHint, true);
     }
-
+    
     private MCPToolAnnotations(final String title, final boolean readOnlyHint, final boolean destructiveHint, final boolean idempotentHint, final boolean openWorldHint, final boolean declared) {
         this.title = title;
         this.readOnlyHint = readOnlyHint;
@@ -53,7 +53,7 @@ public final class MCPToolAnnotations {
         this.openWorldHint = openWorldHint;
         this.declared = declared;
     }
-
+    
     /**
      * Judge whether annotations are empty.
      *

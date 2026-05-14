@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,9 +43,24 @@ public final class YamlMCPResourceDescriptor {
     
     private String mimeType;
     
+    private long size;
+    
+    @Setter(AccessLevel.NONE)
+    private boolean sizePresent;
+    
     private YamlMCPResourceAnnotations annotations;
     
     private Map<String, Object> meta = new LinkedHashMap<>();
     
     private YamlMCPResourceExtensionDescriptor extension;
+    
+    /**
+     * Set size and mark it as explicitly declared.
+     *
+     * @param size size
+     */
+    public void setSize(final long size) {
+        this.size = size;
+        sizePresent = true;
+    }
 }

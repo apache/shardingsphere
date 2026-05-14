@@ -211,6 +211,7 @@ Descriptor annotations follow the MCP `2025-11-25` schema and are developer-main
 
 - Resource annotations are optional. When present, they may only use `audience`, `priority`, and `lastModified`; omit the whole `annotations` map when no field is needed.
 - Resource `audience` values must be MCP roles `user` or `assistant`; `priority` must be finite and between `0.0` and `1.0`; `lastModified` must include an ISO 8601 UTC marker or offset.
+- Fixed resource descriptors may declare official MCP `size` when the raw content size is known. Resource templates must not declare `size`.
 - Tool annotations use MCP `ToolAnnotations`. MCP defines effective defaults of `readOnlyHint=false`, `destructiveHint=true`, `idempotentHint=false`, and `openWorldHint=true`.
 - ShardingSphere public tool descriptors must still declare all four tool boolean hints explicitly in YAML, so reviewers can see the safety decision before primitive defaults are applied.
 - Tool annotations are client hints only. They do not replace runtime validation, SQL safety checks, user approval, or server-side authorization.
@@ -225,6 +226,7 @@ ShardingSphere MCP targets MCP protocol revision `2025-11-25`. The public protoc
 - The MCP Java SDK advertises `logging` and accepts `logging/setLevel`; ShardingSphere MCP does not emit ShardingSphere product log messages
   through `notifications/message`. Operational logs stay in stderr or `logs/mcp.log`.
 - `progress`, `notifications/cancelled`, and task-augmented requests are future scope for ShardingSphere MCP. Clients should use structured workflow tool responses and workflow resources for status.
+- MCP `icons` and `Tool.execution` are official `2025-11-25` descriptor fields, but MCP Java SDK `1.1.2` does not expose `icons` in `Resource`, `ResourceTemplate`, or `Tool`, and does not expose `execution` in `Tool`; they remain future scope until the SDK boundary supports them.
 - `roots` and `sampling` are client capabilities. ShardingSphere MCP does not require roots and does not send `sampling/createMessage` requests.
 - Elicitation is client-negotiated and used only for non-sensitive workflow clarification. Secret-bearing fields remain out-of-band as described in the workflow security notes.
 

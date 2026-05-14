@@ -65,7 +65,20 @@ class MCPResourceSpecificationFactoryTest {
             assertThat(actual.get(0).resource().title(), is("Server Capability Catalog"));
             assertThat(actual.get(0).resource().description(), is("Read the model-facing capability catalog."));
             assertThat(actual.get(0).resource().mimeType(), is("application/json"));
+            assertNull(actual.get(0).resource().size());
             assertNotNull(actual.get(0).readHandler());
+        }
+    }
+    
+    @Test
+    void assertCreateResourceSpecificationsMapSize() {
+        MCPResourceDescriptor sizedDescriptor = new MCPResourceDescriptor("shardingsphere://sized", "sized", "Sized Resource",
+                "Read a sized resource.", "application/json", 128L, true, MCPResourceAnnotations.EMPTY, Collections.emptyMap());
+        try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
+            mockedResourceHandlerRegistry.when(ResourceHandlerRegistry::getSupportedResourceDescriptors).thenReturn(List.of(createResourceDescriptor(), sizedDescriptor));
+            List<SyncResourceSpecification> actual = new MCPResourceSpecificationFactory(mock(MCPRuntimeContext.class)).createResourceSpecifications();
+            assertNull(actual.get(0).resource().size());
+            assertThat(actual.get(1).resource().size(), is(128L));
         }
     }
     

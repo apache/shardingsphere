@@ -125,8 +125,9 @@ class MCPRuntimeLauncherTest {
                 "Runtime databases: 1",
                 "HTTP endpoint: http://127.0.0.1:19090/mcp",
                 "HTTP bearer token: not configured",
-                "Official discovery: tools/list, resources/list, resources/templates/list, prompts/list, completion/complete",
-                "Domain catalog resource: shardingsphere://capabilities")));
+                "Official list discovery: tools/list, resources/list, resources/templates/list, prompts/list",
+                "Argument completion: completion/complete",
+                "Optional domain catalog resource: shardingsphere://capabilities")));
     }
     
     @Test
@@ -151,8 +152,9 @@ class MCPRuntimeLauncherTest {
                 "Runtime databases: 1",
                 "STDIO transport: enabled",
                 "STDIO stdout: reserved for MCP protocol frames; send diagnostics to stderr or logs.",
-                "Official discovery: tools/list, resources/list, resources/templates/list, prompts/list, completion/complete",
-                "Domain catalog resource: shardingsphere://capabilities")));
+                "Official list discovery: tools/list, resources/list, resources/templates/list, prompts/list",
+                "Argument completion: completion/complete",
+                "Optional domain catalog resource: shardingsphere://capabilities")));
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled) {

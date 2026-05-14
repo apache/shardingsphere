@@ -66,6 +66,21 @@ class MCPTransportPayloadUtilsTest {
     }
     
     @Test
+    void assertCreateCallToolResultWithItemResourceLinks() {
+        Map<String, Object> payload = Map.of("items", List.of(Map.of(
+                "resource", MCPResourceHintUtils.create("shardingsphere://databases/logic_db/tables/t_order", "table", "inspect_detail", "Read table.", "resource"),
+                "parent_resource", MCPResourceHintUtils.create("shardingsphere://databases/logic_db", "logical-database", "inspect_parent", "Read database.", "parent_resource"),
+                "next_resources", List.of(MCPResourceHintUtils.create(
+                        "shardingsphere://databases/logic_db/tables/t_order/columns", "column-list", "inspect_children", "Read columns.", "next_resources")))));
+        io.modelcontextprotocol.spec.McpSchema.CallToolResult actual = MCPTransportPayloadUtils.createCallToolResult(payload);
+        assertThat(actual.content().size(), is(4));
+        assertThat(((ResourceLink) actual.content().get(1)).uri(), is("shardingsphere://databases/logic_db/tables/t_order"));
+        assertThat(((ResourceLink) actual.content().get(2)).uri(), is("shardingsphere://databases/logic_db"));
+        assertThat(((ResourceLink) actual.content().get(3)).uri(), is("shardingsphere://databases/logic_db/tables/t_order/columns"));
+        assertThat(((Map<?, ?>) actual.content().get(1).meta()).get(MCPShardingSphereMetadataKeys.SOURCE_FIELD), is("resource"));
+    }
+    
+    @Test
     void assertCreateCallToolResultWithBoundedPrioritizedResourceLinks() {
         Map<String, Object> payload = Map.of(
                 "next_resources", createResourceHints("shardingsphere://databases/next_", "next_resources", 30),
@@ -86,6 +101,14 @@ class MCPTransportPayloadUtilsTest {
     @Test
     void assertCreateCallToolResultWithoutRawUriLink() {
         io.modelcontextprotocol.spec.McpSchema.CallToolResult actual = MCPTransportPayloadUtils.createCallToolResult(Map.of("resource_uri", "shardingsphere://databases/logic_db"));
+        assertThat(actual.content().size(), is(1));
+    }
+    
+    @Test
+    void assertCreateCallToolResultWithoutArbitraryNestedResourceHint() {
+        Map<String, Object> payload = Map.of("debug", Map.of("resource", MCPResourceHintUtils.create(
+                "shardingsphere://databases/logic_db", "logical-database", "inspect_detail", "Read logical database.", "resource")));
+        io.modelcontextprotocol.spec.McpSchema.CallToolResult actual = MCPTransportPayloadUtils.createCallToolResult(payload);
         assertThat(actual.content().size(), is(1));
     }
     

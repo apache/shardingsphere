@@ -42,8 +42,10 @@ Draft MCP changes, including `server/discover`, stateless requests, and `Mcp-Met
 
 Current evidence:
 
-- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPModelFirstContractPayloadBuilder.java` labels `shardingsphere://capabilities` as `public_surface_source`.
-- The same builder exposes `protocol_fields` containing ShardingSphere catalog fields such as `supportedResources`, `completionTargets`, `resourceNavigation`, and `protocolAvailability`.
+- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPModelFirstContractPayloadBuilder.java` labels `shardingsphere://capabilities`
+  with `catalog_resource_role` as a ShardingSphere domain catalog resource, not the MCP protocol discovery source.
+- The same builder labels `public_surface_source` as official MCP initialization and list methods.
+- Custom catalog sections remain ShardingSphere catalog guidance and are not required for official MCP discovery.
 - `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogPayloadBuilder.java` emits these sections as a custom catalog payload.
 
 Disposition:
@@ -52,24 +54,46 @@ Disposition:
 - Relabel it as ShardingSphere catalog guidance.
 - Make official MCP initialization and list methods authoritative for protocol discovery.
 
+Phase 2 status:
+
+- Completed as the T010 boundary policy. Follow-up snapshot breadth remains in US1 tasks T020-T024.
+
+Phase 3 implementation recorded on 2026-05-15:
+
+- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPModelFirstContractPayloadBuilder.java`
+  keeps `tools/list`, `resources/list`, `resources/templates/list`, and `prompts/list` as official list discovery methods.
+- `completion/complete` is labeled separately as the argument completion method instead of a list discovery method.
+- `shardingsphere://capabilities` is labeled as `optional_catalog_resource`; the misleading `safe_first_resource` catalog key was removed from new catalog contracts.
+- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/MCPTransportConstants.java`
+  and `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/MCPRuntimeLauncher.java`
+  describe official list discovery, argument completion, and optional catalog guidance as separate user-facing concepts.
+- Regression coverage:
+  `MCPSyncServerFactoryTest.assertCreateExposesOfficialDiscoveryDescriptors`,
+  `MCPModelFirstContractPayloadBuilderTest.assertCreateModelFirstSummary`,
+  `MCPModelFirstContractPayloadBuilderTest.assertCreateModelContract`,
+  and `MCPDescriptorCatalogPayloadBuilderTest.assertBuildCatalogMetadataContractPayload`.
+
 ### 2. Completion Routing Is Not Provider-Driven
 
 Current evidence:
 
-- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/completion/MCPCompletionService.java` routes by hardcoded argument names.
-  These include `database`, `schema`, `table`, `column`, `index`, `sequence`, and `plan_id`.
-- The same service routes encrypt and mask algorithms with `descriptor.getReference().contains("encrypt")`.
-- `mcp/api/src/main/java/org/apache/shardingsphere/mcp/api/MCPHandlerProvider.java` exposes resource and tool handlers only.
+- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/completion/MCPCompletionProvider.java` defines the provider SPI.
+- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/completion/MCPCompletionService.java` dispatches completion requests through loaded providers.
+- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/completion/provider/MetadataCompletionProvider.java`
+  and `WorkflowPlanIdCompletionProvider.java` own metadata and workflow completion.
 - `mcp/features/encrypt` and `mcp/features/mask` depend on `mcp-support`, not `mcp-core`.
 
 Disposition:
 
-- Define the completion provider SPI or descriptor contract in `mcp/support` for this package.
-- Use `mcp/api` only if a later design proves the provider signature can stay on pure API DTOs without descriptor or support-context dependency.
+- Keep the completion provider SPI in `mcp/support`.
 - Keep metadata and workflow runtime providers in `mcp/core`.
-- Let feature-owned algorithm providers live with feature modules or be declared through feature descriptors.
-- Do not add `shardingsphere-mcp-core` as a feature-module dependency for completion providers.
-- Remove feature-name containment checks from generic completion dispatch.
+- Let feature-owned algorithm providers live with feature modules or be declared through feature descriptors in later US2 tasks.
+- Continue to prevent `shardingsphere-mcp-core` dependencies from feature modules.
+- Remove remaining feature-name containment checks in Phase 4 implementation tasks T034-T038.
+
+Phase 2 status:
+
+- Completed as the T012 contract boundary. Provider breadth and hardcoded routing cleanup remain in US2 tasks T030-T038.
 
 ### 3. Protocol Error Semantics Need An SDK Behavior Preflight
 
@@ -101,6 +125,17 @@ Preflight result recorded on 2026-05-14:
 - The tests assert JSON-RPC version and request ID preservation, `error.code` and `error.message` presence, normal `result` absence, resource `contents` absence, and no tool `isError` wrapper.
 - Verification command:
   `./mvnw -pl mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dtest=MCPToolUnknownWireBehaviorTest,MCPResourceUnknownWireBehaviorTest -Dsurefire.failIfNoSpecifiedTests=false test`
+
+Phase 2 implementation recorded on 2026-05-14:
+
+- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/MCPToolController.java` now lets `UnsupportedToolException` escape as a typed protocol-boundary exception.
+- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactory.java`
+  maps that typed exception to JSON-RPC `INVALID_PARAMS` with ShardingSphere recovery data.
+- Supported business failures still return `CallToolResult.isError(true)`.
+- Regression coverage:
+  `MCPToolControllerTest.assertHandleWithUnsupportedTool`,
+  `MCPToolSpecificationFactoryTest.assertCreateToolSpecificationsHandleUnsupportedToolAsProtocolError`,
+  and `MCPToolSpecificationFactoryTest.assertCreateToolSpecificationsHandleErrorResponse`.
 
 ## Adjacent Package Owner Map
 
@@ -143,6 +178,11 @@ Disposition:
 - Use MCP `cursor` and `nextCursor` only for official MCP list methods or any future protocol-list adapter.
 - Reconsider a breaking rename only if the user explicitly requests a public API cleanup window.
 
+Phase 2 status:
+
+- Completed as the T013 domain policy.
+- Implementation tasks T052-T055 own schema wording and README updates so the field names are retained without being presented as MCP protocol pagination.
+
 ### 5. ResourceLink Emission Uses An Implicit Payload Protocol
 
 Current evidence:
@@ -157,6 +197,15 @@ Disposition:
 - Replace recursive arbitrary map scanning with an explicit ResourceLink provider or resource-link contract.
 - Preserve documented ordering and link limit with focused transport tests.
 
+Phase 2 implementation recorded on 2026-05-14:
+
+- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/MCPResourceLinkContract.java`
+  defines the explicit extraction contract for `resources_to_read`, `resource`, `parent_resource`, and `next_resources`
+  at root payload, `recovery`, and `items[]` boundaries.
+- Arbitrary nested maps are no longer scanned for `uri` and `resource_kind`.
+- `MCPTransportPayloadUtilsTest.assertCreateCallToolResultWithItemResourceLinks` preserves intended item resource links.
+- `MCPTransportPayloadUtilsTest.assertCreateCallToolResultWithoutArbitraryNestedResourceHint` prevents accidental links from unrelated nested payloads.
+
 ### 6. Generic Descriptor Validation Contains Public Tool Branches
 
 Current evidence:
@@ -170,6 +219,14 @@ Disposition:
 - Keep generic descriptor validation generic.
 - Move tool-specific output-shape checks into descriptor schemas, descriptor fixtures, or feature-owned validators.
 - Keep side-effect and approval invariants as generic policy checks where possible.
+
+Phase 2 implementation recorded on 2026-05-14:
+
+- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPToolDescriptorValidator.java`
+  defines the feature-owned descriptor validation SPI.
+- `MCPDescriptorCatalogValidator` loads and invokes validators after generic output schema checks.
+- Existing built-in checks remain for compatibility; removal of hardcoded public tool branches is deferred to Phase 4 tasks T037-T038.
+- `MCPDescriptorCatalogValidatorTest.assertValidateRejectsFeatureOwnedToolDescriptor` proves a feature-owned validator can reject tool output shape.
 
 ### 7. Feature Planner Inputs Leak Cross-Feature Semantics
 

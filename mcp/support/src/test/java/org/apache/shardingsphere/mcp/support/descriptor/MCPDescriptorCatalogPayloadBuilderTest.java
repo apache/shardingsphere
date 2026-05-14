@@ -31,7 +31,28 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class MCPDescriptorCatalogPayloadBuilderTest {
-
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertBuildCatalogMetadataContractPayload() {
+        List<MCPResourceDescriptor> resourceDescriptors = List.of(
+                createResourceDescriptor("shardingsphere://capabilities", MCPResourceAnnotations.EMPTY),
+                createResourceDescriptor("shardingsphere://databases", MCPResourceAnnotations.EMPTY));
+        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(createCatalog(resourceDescriptors, List.of(createToolDescriptor(MCPToolAnnotations.EMPTY))),
+                List.of("shardingsphere://capabilities"), List.of("database_gateway_test_tool"), List.of("SelectStatement"));
+        Map<String, Object> actualModelFirstSummary = (Map<String, Object>) payload.get("model_first_summary");
+        assertThat((Map<String, Object>) actualModelFirstSummary.get("official_discovery_methods"), is(createOfficialDiscoveryMethods()));
+        assertThat(actualModelFirstSummary.get("argument_completion_method"), is("completion/complete"));
+        assertThat(actualModelFirstSummary.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
+        assertFalse(actualModelFirstSummary.containsKey("safe_first_resource"));
+        Map<String, Object> actualFieldNamingContract = (Map<String, Object>) payload.get("field_naming_contract");
+        assertThat((List<String>) actualFieldNamingContract.get("official_discovery_methods"), is(createOfficialDiscoveryMethodNames()));
+        assertThat(actualFieldNamingContract.get("argument_completion_method"), is("completion/complete"));
+        assertThat((List<String>) actualFieldNamingContract.get("catalog_fields"), is(List.of(
+                "supportedResources", "supportedTools", "resourceTemplates", "completionTargets", "resourceNavigation", "protocolAvailability")));
+        assertFalse(payload.containsKey("protocol_fields"));
+    }
+    
     @Test
     @SuppressWarnings("unchecked")
     void assertBuildResourceAnnotationsPayload() {
@@ -43,7 +64,19 @@ class MCPDescriptorCatalogPayloadBuilderTest {
         assertFalse(actualResources.get(0).containsKey("annotations"));
         assertThat((Map<String, Object>) actualResources.get(1).get("annotations"), is(Map.of("audience", List.of("assistant"), "priority", 0D)));
     }
-
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertBuildResourceSizePayload() {
+        MCPResourceDescriptor absentSizeResource = createResourceDescriptor("shardingsphere://absent-size", MCPResourceAnnotations.EMPTY);
+        MCPResourceDescriptor sizedResource = new MCPResourceDescriptor("shardingsphere://sized", "test-resource", "Test Resource", "Read a test resource.", "application/json", 128L, true,
+                MCPResourceAnnotations.EMPTY, Map.of());
+        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(createCatalog(List.of(absentSizeResource, sizedResource), List.of()), List.of(), List.of(), List.of());
+        List<Map<String, Object>> actualResources = (List<Map<String, Object>>) payload.get("resources");
+        assertFalse(actualResources.get(0).containsKey("size"));
+        assertThat(actualResources.get(1).get("size"), is(128L));
+    }
+    
     @Test
     @SuppressWarnings("unchecked")
     void assertBuildToolAnnotationsPayload() {
@@ -56,16 +89,24 @@ class MCPDescriptorCatalogPayloadBuilderTest {
                 "idempotentHint", false,
                 "openWorldHint", true)));
     }
-
+    
     private MCPDescriptorCatalog createCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPToolDescriptor> toolDescriptors) {
         return new MCPDescriptorCatalog(resourceDescriptors, List.of(), List.of(), toolDescriptors, List.of(), List.of(), List.of(), List.of(), List.of());
     }
-
+    
     private MCPResourceDescriptor createResourceDescriptor(final String uri, final MCPResourceAnnotations annotations) {
         return new MCPResourceDescriptor(uri, "test-resource", "Test Resource", "Read a test resource.", "application/json", annotations, Map.of());
     }
-
+    
     private MCPToolDescriptor createToolDescriptor(final MCPToolAnnotations annotations) {
         return new MCPToolDescriptor("database_gateway_test_tool", "Test Tool", "Run a test tool.", Map.of(), Map.of(), annotations, Map.of());
+    }
+    
+    private Map<String, Object> createOfficialDiscoveryMethods() {
+        return Map.of("tools", "tools/list", "resources", "resources/list", "resource_templates", "resources/templates/list", "prompts", "prompts/list");
+    }
+    
+    private List<String> createOfficialDiscoveryMethodNames() {
+        return List.of("tools/list", "resources/list", "resources/templates/list", "prompts/list");
     }
 }

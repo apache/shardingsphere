@@ -27,17 +27,17 @@ import java.util.List;
  */
 @Getter
 public final class YamlMCPResourceAnnotations {
-
+    
     @Setter
     private List<String> audience;
-
+    
     private double priority;
-
+    
     private boolean priorityPresent;
-
+    
     @Setter
     private String lastModified;
-
+    
     /**
      * Set priority and mark it as explicitly declared.
      *
