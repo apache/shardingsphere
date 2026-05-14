@@ -21,9 +21,7 @@ import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceTemplateDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
@@ -99,9 +97,9 @@ final class MCPDescriptorCatalogPayloadBuilder {
         return String.valueOf(createFingerprints(resources, resourceTemplates, tools, prompts, completionTargets, resourceNavigation).get("descriptorCatalog"));
     }
     
-    private Map<String, Object> toResourcePayload(final MCPFixedResourceDescriptor descriptor) {
+    private Map<String, Object> toResourcePayload(final MCPResourceDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        result.put("uri", descriptor.getUri());
+        result.put("uri", descriptor.getUriTemplate());
         result.put("name", descriptor.getName());
         result.put("title", descriptor.getTitle());
         result.put("description", descriptor.getDescription());
@@ -117,7 +115,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         return result;
     }
     
-    private Map<String, Object> toResourceTemplatePayload(final MCPResourceTemplateDescriptor descriptor) {
+    private Map<String, Object> toResourceTemplatePayload(final MCPResourceDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("uriTemplate", descriptor.getUriTemplate());
         result.put("name", descriptor.getName());
@@ -137,7 +135,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
     
     private Map<String, Object> createResourceMeta(final MCPResourceDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(descriptor.getMeta());
-        MCPResourceExtensionDescriptor extension = findResourceExtension(MCPResourceDescriptorUtils.getUriOrTemplate(descriptor));
+        MCPResourceExtensionDescriptor extension = findResourceExtension(descriptor.getUriTemplate());
         if (null == extension) {
             return result;
         }
@@ -281,7 +279,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
     }
     
     private String resolveReferenceType(final String reference) {
-        if (catalog.getAllResourceDescriptors().stream().anyMatch(each -> MCPResourceDescriptorUtils.getUriOrTemplate(each).equals(reference))) {
+        if (catalog.getAllResourceDescriptors().stream().anyMatch(each -> each.getUriTemplate().equals(reference))) {
             return reference.contains("{") ? "resource_template" : "resource";
         }
         if (catalog.getToolDescriptors().stream().anyMatch(each -> each.getName().equals(reference))) {

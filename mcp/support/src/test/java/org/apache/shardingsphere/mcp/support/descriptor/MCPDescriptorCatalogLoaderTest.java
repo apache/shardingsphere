@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceTemplateDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
 
@@ -98,11 +97,11 @@ class MCPDescriptorCatalogLoaderTest {
     }
     
     private MCPResourceDescriptor findResource(final MCPDescriptorCatalog catalog, final String uriTemplate) {
-        return catalog.getAllResourceDescriptors().stream().filter(each -> uriTemplate.equals(MCPResourceDescriptorUtils.getUriOrTemplate(each))).findFirst().orElseThrow();
+        return catalog.getAllResourceDescriptors().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst().orElseThrow();
     }
     
-    private MCPResourceTemplateDescriptor createResourceTemplateDescriptor() {
-        return new MCPResourceTemplateDescriptor("shardingsphere://databases/{database}", "logical-database-detail", "Logical Database Detail",
+    private MCPResourceDescriptor createResourceTemplateDescriptor() {
+        return new MCPResourceDescriptor("shardingsphere://databases/{database}", "logical-database-detail", "Logical Database Detail",
                 "Read one logical database detail.", Collections.emptyList(), "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());
     }
     

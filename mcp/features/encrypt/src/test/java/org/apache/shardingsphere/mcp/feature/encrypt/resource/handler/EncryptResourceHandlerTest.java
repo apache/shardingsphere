@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleIns
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceDescriptorUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -42,7 +41,7 @@ class EncryptResourceHandlerTest {
     
     @Test
     void assertGetEncryptAlgorithmsUri() {
-        assertThat(MCPResourceDescriptorUtils.getUriOrTemplate(new EncryptAlgorithmsHandler().getResourceDescriptor()), is("shardingsphere://features/encrypt/algorithms"));
+        assertThat(new EncryptAlgorithmsHandler().getResourceDescriptor().getUriTemplate(), is("shardingsphere://features/encrypt/algorithms"));
     }
     
     @Test
@@ -61,7 +60,7 @@ class EncryptResourceHandlerTest {
     
     @Test
     void assertGetEncryptRulesUriTemplate() {
-        assertThat(MCPResourceDescriptorUtils.getUriOrTemplate(new EncryptRulesHandler().getResourceDescriptor()), is("shardingsphere://features/encrypt/databases/{database}/rules"));
+        assertThat(new EncryptRulesHandler().getResourceDescriptor().getUriTemplate(), is("shardingsphere://features/encrypt/databases/{database}/rules"));
     }
     
     @Test
@@ -79,7 +78,7 @@ class EncryptResourceHandlerTest {
     @Test
     void assertGetEncryptRuleUriTemplate() {
         EncryptRuleHandler actual = new EncryptRuleHandler();
-        String actualUriTemplate = MCPResourceDescriptorUtils.getUriOrTemplate(actual.getResourceDescriptor());
+        String actualUriTemplate = actual.getResourceDescriptor().getUriTemplate();
         assertThat(actualUriTemplate, is("shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules"));
         assertThat(MCPDescriptorRegistry.getRequiredResourceExtensionDescriptor(actualUriTemplate).getResourceKind(), is("list"));
     }

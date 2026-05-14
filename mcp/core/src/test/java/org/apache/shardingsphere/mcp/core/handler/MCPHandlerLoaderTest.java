@@ -21,10 +21,9 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceDescriptorUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -62,7 +61,7 @@ class MCPHandlerLoaderTest {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(provider));
             Collection<MCPResourceHandler<?>> actual = MCPHandlerLoader.loadResourceHandlers();
-            assertThat(actual.stream().map(each -> MCPResourceDescriptorUtils.getUriOrTemplate(each.getResourceDescriptor())).toList(), is(List.of("shardingsphere://foo")));
+            assertThat(actual.stream().map(each -> each.getResourceDescriptor().getUriTemplate()).toList(), is(List.of("shardingsphere://foo")));
         }
     }
     
@@ -119,7 +118,7 @@ class MCPHandlerLoaderTest {
     
     private static MCPResourceHandler<?> createResourceHandler(final String uriTemplate) {
         MCPResourceHandler<?> result = mock(MCPResourceHandler.class);
-        when(result.getResourceDescriptor()).thenReturn(new MCPFixedResourceDescriptor(uriTemplate, "foo", "Foo", "Read the fixture foo resource.", Collections.emptyList(),
+        when(result.getResourceDescriptor()).thenReturn(new MCPResourceDescriptor(uriTemplate, "foo", "Foo", "Read the fixture foo resource.", Collections.emptyList(),
                 "application/json", MCPAnnotations.EMPTY, Collections.emptyMap()));
         return result;
     }

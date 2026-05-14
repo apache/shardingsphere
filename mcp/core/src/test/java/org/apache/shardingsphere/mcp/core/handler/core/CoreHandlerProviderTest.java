@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.core.handler.core;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceDescriptorUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -43,7 +42,7 @@ class CoreHandlerProviderTest {
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new CoreHandlerProvider().getResourceHandlers();
         assertThat(actual.size(), is(20));
-        List<String> actualUris = actual.stream().map(each -> MCPResourceDescriptorUtils.getUriOrTemplate(each.getResourceDescriptor())).toList();
+        List<String> actualUris = actual.stream().map(each -> each.getResourceDescriptor().getUriTemplate()).toList();
         assertTrue(actualUris.contains("shardingsphere://capabilities"));
         assertTrue(actualUris.contains("shardingsphere://runtime"));
         assertTrue(actualUris.contains("shardingsphere://workflows/{plan_id}"));

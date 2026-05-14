@@ -20,9 +20,7 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceTemplateDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 
 import java.util.Collection;
@@ -48,21 +46,21 @@ public final class MCPDescriptorRegistry {
     private static final Map<String, MCPToolDescriptor> TOOL_DESCRIPTORS = createToolDescriptors();
     
     private static final Map<String, MCPPromptDescriptor> PROMPT_DESCRIPTORS = createPromptDescriptors();
-
+    
     private static final Map<String, MCPCompletionTargetDescriptor> COMPLETION_TARGET_DESCRIPTORS = createCompletionTargetDescriptors();
-
+    
     private static final Map<String, Collection<MCPResourceNavigationDescriptor>> RESOURCE_NAVIGATION_DESCRIPTORS_BY_FROM = createResourceNavigationDescriptors();
-
+    
     private static final Map<String, MCPPromptTemplateBinding> PROMPT_TEMPLATE_BINDINGS = createPromptTemplateBindings();
     
     private static final Map<String, MCPToolRuntimeDescriptor> TOOL_RUNTIME_DESCRIPTORS = createToolRuntimeDescriptors();
     
     private static Map<String, MCPResourceDescriptor> createResourceDescriptors() {
         Map<String, MCPResourceDescriptor> result = new LinkedHashMap<>(CATALOG.getResourceDescriptors().size() + CATALOG.getResourceTemplateDescriptors().size(), 1F);
-        for (MCPFixedResourceDescriptor each : CATALOG.getResourceDescriptors()) {
-            result.put(each.getUri(), each);
+        for (MCPResourceDescriptor each : CATALOG.getResourceDescriptors()) {
+            result.put(each.getUriTemplate(), each);
         }
-        for (MCPResourceTemplateDescriptor each : CATALOG.getResourceTemplateDescriptors()) {
+        for (MCPResourceDescriptor each : CATALOG.getResourceTemplateDescriptors()) {
             result.put(each.getUriTemplate(), each);
         }
         return result;
@@ -83,17 +81,17 @@ public final class MCPDescriptorRegistry {
         return CATALOG.getPromptDescriptors().stream()
                 .collect(Collectors.toMap(MCPPromptDescriptor::getName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getPromptDescriptors().size(), 1F)));
     }
-
+    
     private static Map<String, MCPCompletionTargetDescriptor> createCompletionTargetDescriptors() {
         return CATALOG.getCompletionTargetDescriptors().stream()
                 .collect(Collectors.toMap(MCPDescriptorRegistry::createCompletionTargetDescriptorKey, each -> each, (a, b) -> b,
                         () -> new LinkedHashMap<>(CATALOG.getCompletionTargetDescriptors().size(), 1F)));
     }
-
+    
     private static String createCompletionTargetDescriptorKey(final MCPCompletionTargetDescriptor descriptor) {
         return descriptor.getReferenceType() + ":" + descriptor.getReference();
     }
-
+    
     private static Map<String, Collection<MCPResourceNavigationDescriptor>> createResourceNavigationDescriptors() {
         Map<String, Collection<MCPResourceNavigationDescriptor>> result = new LinkedHashMap<>(CATALOG.getResourceNavigationDescriptors().size(), 1F);
         for (MCPResourceNavigationDescriptor each : CATALOG.getResourceNavigationDescriptors()) {
@@ -101,7 +99,7 @@ public final class MCPDescriptorRegistry {
         }
         return result;
     }
-
+    
     private static Map<String, MCPPromptTemplateBinding> createPromptTemplateBindings() {
         return CATALOG.getPromptTemplateBindings().stream()
                 .collect(Collectors.toMap(MCPPromptTemplateBinding::getPromptName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getPromptTemplateBindings().size(), 1F)));
@@ -190,7 +188,7 @@ public final class MCPDescriptorRegistry {
     public static Collection<MCPResourceNavigationDescriptor> getResourceNavigationDescriptors() {
         return RESOURCE_NAVIGATION_DESCRIPTORS_BY_FROM.values().stream().flatMap(Collection::stream).toList();
     }
-
+    
     /**
      * Get resource navigation descriptors by source.
      *

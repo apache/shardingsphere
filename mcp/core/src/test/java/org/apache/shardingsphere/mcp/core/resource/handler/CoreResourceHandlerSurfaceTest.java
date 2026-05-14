@@ -37,7 +37,6 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMe
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.support.database.response.MCPDatabaseCapabilityResponse;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceDescriptorUtils;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.junit.jupiter.api.Test;
@@ -65,7 +64,7 @@ class CoreResourceHandlerSurfaceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertGetResourceDescriptor(final HandlerCase handlerCase) {
-        assertThat(MCPResourceDescriptorUtils.getUriOrTemplate(handlerCase.getHandler().getResourceDescriptor()), is(handlerCase.getExpectedUriOrTemplate()));
+        assertThat(handlerCase.getHandler().getResourceDescriptor().getUriTemplate(), is(handlerCase.getExpectedUriOrTemplate()));
         assertFalse(handlerCase.getHandler().getResourceDescriptor().getDescription().isBlank());
     }
     

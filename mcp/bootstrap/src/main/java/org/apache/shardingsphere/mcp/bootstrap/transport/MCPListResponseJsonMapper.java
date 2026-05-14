@@ -22,14 +22,11 @@ import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceTemplateDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceDescriptorUtils;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -148,8 +145,8 @@ public final class MCPListResponseJsonMapper implements McpJsonMapper {
     private static Map<String, Map<String, Object>> createResourceExtraFields() {
         Map<String, Map<String, Object>> result = new LinkedHashMap<>();
         for (MCPResourceDescriptor each : ResourceHandlerRegistry.getSupportedResourceDescriptors()) {
-            if (each instanceof MCPFixedResourceDescriptor) {
-                putExtraFields(result, MCPResourceDescriptorUtils.getUriOrTemplate(each), each.getIcons());
+            if (!each.isTemplated()) {
+                putExtraFields(result, each.getUriTemplate(), each.getIcons());
             }
         }
         return result;
@@ -158,8 +155,8 @@ public final class MCPListResponseJsonMapper implements McpJsonMapper {
     private static Map<String, Map<String, Object>> createResourceTemplateExtraFields() {
         Map<String, Map<String, Object>> result = new LinkedHashMap<>();
         for (MCPResourceDescriptor each : ResourceHandlerRegistry.getSupportedResourceDescriptors()) {
-            if (each instanceof MCPResourceTemplateDescriptor) {
-                putExtraFields(result, MCPResourceDescriptorUtils.getUriOrTemplate(each), each.getIcons());
+            if (each.isTemplated()) {
+                putExtraFields(result, each.getUriTemplate(), each.getIcons());
             }
         }
         return result;

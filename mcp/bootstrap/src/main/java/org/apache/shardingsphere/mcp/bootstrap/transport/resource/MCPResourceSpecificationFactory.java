@@ -24,9 +24,7 @@ import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
 import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceTemplateDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
@@ -61,7 +59,7 @@ public final class MCPResourceSpecificationFactory {
      */
     public List<SyncResourceSpecification> createResourceSpecifications() {
         return resourceDescriptors.stream()
-                .filter(MCPFixedResourceDescriptor.class::isInstance).map(MCPFixedResourceDescriptor.class::cast)
+                .filter(each -> !each.isTemplated())
                 .map(each -> new SyncResourceSpecification(createResource(each), this::handleReadResource)).collect(Collectors.toList());
     }
     
@@ -72,14 +70,14 @@ public final class MCPResourceSpecificationFactory {
      */
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
         return resourceDescriptors.stream()
-                .filter(MCPResourceTemplateDescriptor.class::isInstance).map(MCPResourceTemplateDescriptor.class::cast)
+                .filter(MCPResourceDescriptor::isTemplated)
                 .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource))
                 .collect(Collectors.toList());
     }
     
-    private McpSchema.Resource createResource(final MCPFixedResourceDescriptor descriptor) {
+    private McpSchema.Resource createResource(final MCPResourceDescriptor descriptor) {
         McpSchema.Resource.Builder result = McpSchema.Resource.builder()
-                .uri(descriptor.getUri())
+                .uri(descriptor.getUriTemplate())
                 .name(descriptor.getName())
                 .title(descriptor.getTitle())
                 .description(descriptor.getDescription())
@@ -91,7 +89,7 @@ public final class MCPResourceSpecificationFactory {
         return result.build();
     }
     
-    private McpSchema.ResourceTemplate createResourceTemplate(final MCPResourceTemplateDescriptor descriptor) {
+    private McpSchema.ResourceTemplate createResourceTemplate(final MCPResourceDescriptor descriptor) {
         McpSchema.ResourceTemplate.Builder result = McpSchema.ResourceTemplate.builder()
                 .uriTemplate(descriptor.getUriTemplate())
                 .name(descriptor.getName())

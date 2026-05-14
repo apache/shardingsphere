@@ -20,9 +20,7 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceTemplateDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
@@ -72,21 +70,21 @@ final class MCPDescriptorCatalogValidator {
     
     private static void validateResourceDescriptors(final MCPDescriptorCatalog catalog) {
         Map<String, MCPResourceDescriptor> registered = new LinkedHashMap<>(catalog.getResourceDescriptors().size() + catalog.getResourceTemplateDescriptors().size(), 1F);
-        for (MCPFixedResourceDescriptor each : catalog.getResourceDescriptors()) {
-            checkNotBlank(each.getUri(), "Resource URI");
-            checkState(!each.getUri().contains("{"), String.format("Fixed resource `%s` must not contain template variables.", each.getUri()));
+        for (MCPResourceDescriptor each : catalog.getResourceDescriptors()) {
+            checkNotBlank(each.getUriTemplate(), "Resource URI");
+            checkState(!each.isTemplated(), String.format("Fixed resource `%s` must not contain template variables.", each.getUriTemplate()));
             validateResourceDescriptor(each, registered);
         }
-        for (MCPResourceTemplateDescriptor each : catalog.getResourceTemplateDescriptors()) {
+        for (MCPResourceDescriptor each : catalog.getResourceTemplateDescriptors()) {
             checkNotBlank(each.getUriTemplate(), "Resource template URI template");
-            checkState(each.getUriTemplate().contains("{"), String.format("Resource template `%s` must contain template variables.", each.getUriTemplate()));
+            checkState(each.isTemplated(), String.format("Resource template `%s` must contain template variables.", each.getUriTemplate()));
             validateResourceDescriptor(each, registered);
             validateResourceVariables(each, findResourceExtension(catalog, each.getUriTemplate()));
         }
     }
     
     private static void validateResourceDescriptor(final MCPResourceDescriptor descriptor, final Map<String, MCPResourceDescriptor> registered) {
-        String uriOrTemplate = MCPResourceDescriptorUtils.getUriOrTemplate(descriptor);
+        String uriOrTemplate = descriptor.getUriTemplate();
         checkNotBlank(descriptor.getName(), String.format("Resource name for `%s`", uriOrTemplate));
         checkNotBlank(descriptor.getTitle(), String.format("Resource title for `%s`", uriOrTemplate));
         checkDescription(descriptor.getDescription(), String.format("Resource description for `%s`", uriOrTemplate));
@@ -101,14 +99,14 @@ final class MCPDescriptorCatalogValidator {
     }
     
     private static void validateResourceMeta(final MCPResourceDescriptor descriptor) {
-        String uriOrTemplate = MCPResourceDescriptorUtils.getUriOrTemplate(descriptor);
+        String uriOrTemplate = descriptor.getUriTemplate();
         for (String each : RESERVED_RESOURCE_META_FIELDS) {
             checkState(!descriptor.getMeta().containsKey(each), String.format("Resource `%s` must not expose un-namespaced metadata `%s`.", uriOrTemplate, each));
         }
         validateMetaKeys(String.format("Resource `%s`", uriOrTemplate), descriptor.getMeta());
     }
     
-    private static void validateResourceVariables(final MCPResourceTemplateDescriptor descriptor, final MCPResourceExtensionDescriptor extension) {
+    private static void validateResourceVariables(final MCPResourceDescriptor descriptor, final MCPResourceExtensionDescriptor extension) {
         List<String> templateVariables = MCPUriTemplateUtils.extractVariableNames(descriptor.getUriTemplate());
         Set<String> registeredTemplateVariables = new HashSet<>();
         for (String each : templateVariables) {
@@ -383,7 +381,7 @@ final class MCPDescriptorCatalogValidator {
     private static void validateCompletionTargetDescriptors(final Collection<MCPCompletionTargetDescriptor> descriptors, final Collection<MCPPromptDescriptor> prompts,
                                                             final Collection<MCPResourceDescriptor> resources) {
         Set<String> promptNames = prompts.stream().map(MCPPromptDescriptor::getName).collect(Collectors.toSet());
-        Set<String> resourceUris = resources.stream().map(MCPResourceDescriptorUtils::getUriOrTemplate).collect(Collectors.toSet());
+        Set<String> resourceUris = resources.stream().map(MCPResourceDescriptor::getUriTemplate).collect(Collectors.toSet());
         Map<String, MCPCompletionTargetDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         for (MCPCompletionTargetDescriptor each : descriptors) {
             checkNotBlank(each.getReferenceType(), "Completion reference type");
@@ -444,7 +442,7 @@ final class MCPDescriptorCatalogValidator {
     
     private static Set<String> createPublicIdentifiers(final MCPDescriptorCatalog catalog) {
         Set<String> result = new HashSet<>();
-        catalog.getAllResourceDescriptors().stream().map(MCPResourceDescriptorUtils::getUriOrTemplate).forEach(result::add);
+        catalog.getAllResourceDescriptors().stream().map(MCPResourceDescriptor::getUriTemplate).forEach(result::add);
         catalog.getToolDescriptors().stream().map(MCPToolDescriptor::getName).forEach(result::add);
         catalog.getPromptDescriptors().stream().map(MCPPromptDescriptor::getName).forEach(result::add);
         return result;

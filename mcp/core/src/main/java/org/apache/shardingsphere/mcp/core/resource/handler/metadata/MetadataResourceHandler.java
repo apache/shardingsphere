@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceDescriptorUtils;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceExtensionDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
@@ -69,7 +68,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         List<?> items = metadataLoader.apply(databaseContext, uriVariables);
         MCPResourceDescriptor descriptor = getResourceDescriptor();
-        MCPResourceExtensionDescriptor extension = MCPDescriptorRegistry.getRequiredResourceExtensionDescriptor(MCPResourceDescriptorUtils.getUriOrTemplate(descriptor));
+        MCPResourceExtensionDescriptor extension = MCPDescriptorRegistry.getRequiredResourceExtensionDescriptor(descriptor.getUriTemplate());
         Map<String, Object> navigationPayload = createNavigationPayload(descriptor, uriVariables);
         if (isDetailResource(extension)) {
             if (items.isEmpty()) {
@@ -219,7 +218,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     
     private Map<String, Object> createNavigationPayload(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        String uriOrTemplate = MCPResourceDescriptorUtils.getUriOrTemplate(descriptor);
+        String uriOrTemplate = descriptor.getUriTemplate();
         Optional<String> selfUri = MCPUriTemplateUtils.expandIfComplete(uriOrTemplate, uriVariables);
         selfUri.ifPresent(uri -> result.put("self_uri", uri));
         String parentUri = createParentUri(selfUri);

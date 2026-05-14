@@ -19,9 +19,7 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceTemplateDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 
 import java.util.Collection;
@@ -34,9 +32,9 @@ import java.util.LinkedList;
 @Getter
 public final class MCPDescriptorCatalog {
     
-    private final Collection<MCPFixedResourceDescriptor> resourceDescriptors;
+    private final Collection<MCPResourceDescriptor> resourceDescriptors;
     
-    private final Collection<MCPResourceTemplateDescriptor> resourceTemplateDescriptors;
+    private final Collection<MCPResourceDescriptor> resourceTemplateDescriptors;
     
     private final Collection<MCPResourceExtensionDescriptor> resourceExtensionDescriptors;
     
@@ -52,7 +50,7 @@ public final class MCPDescriptorCatalog {
     
     private final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors;
     
-    public MCPDescriptorCatalog(final Collection<MCPFixedResourceDescriptor> resourceDescriptors, final Collection<MCPResourceTemplateDescriptor> resourceTemplateDescriptors,
+    public MCPDescriptorCatalog(final Collection<MCPResourceDescriptor> resourceDescriptors, final Collection<MCPResourceDescriptor> resourceTemplateDescriptors,
                                 final Collection<MCPResourceExtensionDescriptor> resourceExtensionDescriptors, final Collection<MCPToolDescriptor> toolDescriptors,
                                 final Collection<MCPPromptDescriptor> promptDescriptors, final Collection<MCPPromptTemplateBinding> promptTemplateBindings,
                                 final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors, final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors,

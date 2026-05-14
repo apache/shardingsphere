@@ -25,26 +25,30 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPResourceDescriptorTest {
     
     @Test
-    void assertGetUriForFixedResource() {
-        MCPFixedResourceDescriptor actual = new MCPFixedResourceDescriptor("shardingsphere://databases", "databases", "Databases", "List databases.", Collections.emptyList(),
+    void assertGetUriTemplateForFixedResource() {
+        MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://databases", "databases", "Databases", "List databases.", Collections.emptyList(),
                 "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());
-        assertThat(actual.getUri(), is("shardingsphere://databases"));
+        assertThat(actual.getUriTemplate(), is("shardingsphere://databases"));
+        assertFalse(actual.isTemplated());
     }
     
     @Test
     void assertGetUriTemplateForResourceTemplate() {
-        MCPResourceTemplateDescriptor actual = new MCPResourceTemplateDescriptor("shardingsphere://databases/{database}", "database", "Database", "Read one database.", Collections.emptyList(),
+        MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://databases/{database}", "database", "Database", "Read one database.", Collections.emptyList(),
                 "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());
         assertThat(actual.getUriTemplate(), is("shardingsphere://databases/{database}"));
+        assertTrue(actual.isTemplated());
     }
     
     @Test
     void assertMetaIsKeptAsMetadataOnly() {
-        MCPResourceDescriptor actual = new MCPFixedResourceDescriptor("shardingsphere://features/encrypt/algorithms", "encrypt-algorithms", "Encrypt Algorithms",
+        MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://features/encrypt/algorithms", "encrypt-algorithms", "Encrypt Algorithms",
                 "List encrypt algorithms.", Collections.emptyList(), "application/json", MCPAnnotations.EMPTY, Map.of("org.apache.shardingsphere/runtime-visibility", "ShardingSphere-Proxy"));
         assertThat(actual.getMeta(), is(Map.of("org.apache.shardingsphere/runtime-visibility", "ShardingSphere-Proxy")));
     }

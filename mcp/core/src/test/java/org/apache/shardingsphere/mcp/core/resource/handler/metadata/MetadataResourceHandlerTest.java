@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceDescriptorUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -38,7 +37,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertGetResourceDescriptor() {
         MetadataResourceHandler actual = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> List.of());
-        assertThat(MCPResourceDescriptorUtils.getUriOrTemplate(actual.getResourceDescriptor()), is("shardingsphere://databases"));
+        assertThat(actual.getResourceDescriptor().getUriTemplate(), is("shardingsphere://databases"));
         assertThat(actual.getResourceDescriptor().getTitle(), is("Logical Databases"));
     }
     

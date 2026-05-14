@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.api.resource.descriptor;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 
@@ -26,54 +28,32 @@ import java.util.Map;
 /**
  * MCP resource descriptor.
  */
-public interface MCPResourceDescriptor {
+@RequiredArgsConstructor
+@Getter
+public final class MCPResourceDescriptor {
+    
+    private final String uriTemplate;
+    
+    private final String name;
+    
+    private final String title;
+    
+    private final String description;
+    
+    private final List<MCPIcon> icons;
+    
+    private final String mimeType;
+    
+    private final MCPAnnotations annotations;
+    
+    private final Map<String, Object> meta;
     
     /**
-     * Get resource name.
+     * Judge whether the resource is a URI template.
      *
-     * @return resource name
+     * @return true if the resource is a URI template
      */
-    String getName();
-    
-    /**
-     * Get resource title.
-     *
-     * @return resource title
-     */
-    String getTitle();
-    
-    /**
-     * Get resource description.
-     *
-     * @return resource description
-     */
-    String getDescription();
-    
-    /**
-     * Get resource icons.
-     *
-     * @return resource icons
-     */
-    List<MCPIcon> getIcons();
-    
-    /**
-     * Get resource MIME type.
-     *
-     * @return resource MIME type
-     */
-    String getMimeType();
-    
-    /**
-     * Get resource annotations.
-     *
-     * @return resource annotations
-     */
-    MCPAnnotations getAnnotations();
-    
-    /**
-     * Get resource metadata.
-     *
-     * @return resource metadata
-     */
-    Map<String, Object> getMeta();
+    public boolean isTemplated() {
+        return null != uriTemplate && uriTemplate.contains("{");
+    }
 }

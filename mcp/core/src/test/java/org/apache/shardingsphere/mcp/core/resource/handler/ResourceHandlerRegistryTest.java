@@ -23,9 +23,7 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPFixedResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceTemplateDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.junit.jupiter.api.Test;
@@ -144,11 +142,8 @@ class ResourceHandlerRegistryTest {
     }
     
     private static MCPResourceDescriptor createResourceDescriptor(final String uriOrTemplate, final String name, final String title) {
-        return null != uriOrTemplate && uriOrTemplate.contains("{")
-                ? new MCPResourceTemplateDescriptor(uriOrTemplate, name, title, String.format("Read the %s fixture resource.", name), Collections.emptyList(), "application/json", MCPAnnotations.EMPTY,
-                        Collections.emptyMap())
-                : new MCPFixedResourceDescriptor(uriOrTemplate, name, title, String.format("Read the %s fixture resource.", name), Collections.emptyList(), "application/json", MCPAnnotations.EMPTY,
-                        Collections.emptyMap());
+        return new MCPResourceDescriptor(uriOrTemplate, name, title, String.format("Read the %s fixture resource.", name), Collections.emptyList(), "application/json", MCPAnnotations.EMPTY,
+                Collections.emptyMap());
     }
     
     private static MCPHandlerProvider createHandlerProvider(final Collection<MCPResourceHandler<?>> resourceHandlers) {
