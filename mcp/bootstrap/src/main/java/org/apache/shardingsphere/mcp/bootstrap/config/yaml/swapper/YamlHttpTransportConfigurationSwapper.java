@@ -20,8 +20,12 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlOAuthIntrospectionConfiguration;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
@@ -39,6 +43,20 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         result.setAccessToken(data.getAccessToken());
         result.setPort(data.getPort());
         result.setEndpointPath(data.getEndpointPath());
+        result.setAuthorizationServers(data.getAuthorizationServers());
+        result.setScopesSupported(data.getScopesSupported());
+        result.setProtectedResource(data.getProtectedResource());
+        result.setOauthIntrospection(swapOAuthIntrospectionToYamlConfiguration(data.getOauthIntrospection()));
+        return result;
+    }
+    
+    private YamlOAuthIntrospectionConfiguration swapOAuthIntrospectionToYamlConfiguration(final OAuthIntrospectionConfiguration data) {
+        YamlOAuthIntrospectionConfiguration result = new YamlOAuthIntrospectionConfiguration();
+        result.setEndpoint(data.getEndpoint());
+        result.setClientId(data.getClientId());
+        result.setClientSecret(data.getClientSecret());
+        result.setExpectedIssuer(data.getExpectedIssuer());
+        result.setCacheTtlMillis(data.getCacheTtlMillis());
         return result;
     }
     
@@ -52,7 +70,22 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         String bindHost = resolveBindHost(yamlConfig.getBindHost());
         boolean allowRemoteAccess = yamlConfig.isAllowRemoteAccess();
         String accessToken = resolveAccessToken(yamlConfig.getAccessToken(), environment);
-        return new HttpTransportConfiguration(yamlConfig.isEnabled(), bindHost, allowRemoteAccess, accessToken, resolvePort(yamlConfig.getPort()), resolveEndpointPath(yamlConfig.getEndpointPath()));
+        return new HttpTransportConfiguration(yamlConfig.isEnabled(), bindHost, allowRemoteAccess, accessToken, resolvePort(yamlConfig.getPort()),
+                resolveEndpointPath(yamlConfig.getEndpointPath()), resolveTextList(yamlConfig.getAuthorizationServers(), "transport.http.authorizationServers", environment),
+                resolveTextList(yamlConfig.getScopesSupported(), "transport.http.scopesSupported", environment),
+                Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(yamlConfig.getProtectedResource(), "transport.http.protectedResource", environment), "").trim(),
+                swapOAuthIntrospectionToObject(yamlConfig.getOauthIntrospection(), environment));
+    }
+    
+    private OAuthIntrospectionConfiguration swapOAuthIntrospectionToObject(final YamlOAuthIntrospectionConfiguration yamlConfig, final Map<String, String> environment) {
+        if (null == yamlConfig) {
+            return new OAuthIntrospectionConfiguration();
+        }
+        return new OAuthIntrospectionConfiguration(resolveOptionalText(yamlConfig.getEndpoint(), "transport.http.oauthIntrospection.endpoint", environment),
+                resolveOptionalText(yamlConfig.getClientId(), "transport.http.oauthIntrospection.clientId", environment),
+                resolveOptionalText(yamlConfig.getClientSecret(), "transport.http.oauthIntrospection.clientSecret", environment),
+                resolveOptionalText(yamlConfig.getExpectedIssuer(), "transport.http.oauthIntrospection.expectedIssuer", environment),
+                null == yamlConfig.getCacheTtlMillis() ? 0L : yamlConfig.getCacheTtlMillis());
     }
     
     private String resolveBindHost(final String bindHost) {
@@ -67,6 +100,19 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     
     private String resolveAccessToken(final String accessToken, final Map<String, String> environment) {
         return Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(accessToken, "transport.http.accessToken", environment), "").trim();
+    }
+    
+    private String resolveOptionalText(final String value, final String propertyName, final Map<String, String> environment) {
+        return Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(value, propertyName, environment), "").trim();
+    }
+    
+    private Collection<String> resolveTextList(final Collection<String> values, final String propertyName, final Map<String, String> environment) {
+        if (null == values) {
+            return Collections.emptyList();
+        }
+        return values.stream()
+                .map(each -> Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(each, propertyName, environment), "").trim())
+                .filter(each -> !each.isEmpty()).toList();
     }
     
     private int resolvePort(final Integer port) {

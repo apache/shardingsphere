@@ -25,7 +25,7 @@ import java.util.Map;
  * MCP interaction client.
  */
 public interface MCPInteractionClient extends AutoCloseable {
-
+    
     /**
      * Open.
      *
@@ -33,7 +33,7 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @throws InterruptedException interrupted exception
      */
     void open() throws IOException, InterruptedException;
-
+    
     /**
      * Call.
      *
@@ -44,7 +44,7 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @throws InterruptedException interrupted exception
      */
     Map<String, Object> call(String actionName, Map<String, Object> arguments) throws IOException, InterruptedException;
-
+    
     /**
      * List tools.
      *
@@ -56,7 +56,7 @@ public interface MCPInteractionClient extends AutoCloseable {
     default List<Map<String, Object>> listTools() throws IOException, InterruptedException {
         throw new UnsupportedOperationException("tools/list is not supported.");
     }
-
+    
     /**
      * List resources.
      *
@@ -68,7 +68,7 @@ public interface MCPInteractionClient extends AutoCloseable {
     default Map<String, Object> listResources() throws IOException, InterruptedException {
         throw new UnsupportedOperationException("resources/list is not supported.");
     }
-
+    
     /**
      * List resource templates.
      *
@@ -80,7 +80,7 @@ public interface MCPInteractionClient extends AutoCloseable {
     default Map<String, Object> listResourceTemplates() throws IOException, InterruptedException {
         throw new UnsupportedOperationException("resources/templates/list is not supported.");
     }
-
+    
     /**
      * List prompts.
      *
@@ -92,7 +92,7 @@ public interface MCPInteractionClient extends AutoCloseable {
     default Map<String, Object> listPrompts() throws IOException, InterruptedException {
         throw new UnsupportedOperationException("prompts/list is not supported.");
     }
-
+    
     /**
      * Get prompt.
      *
@@ -106,7 +106,7 @@ public interface MCPInteractionClient extends AutoCloseable {
     default Map<String, Object> getPrompt(final String promptName, final Map<String, Object> arguments) throws IOException, InterruptedException {
         throw new UnsupportedOperationException("prompts/get is not supported.");
     }
-
+    
     /**
      * Complete one argument.
      *
@@ -123,7 +123,7 @@ public interface MCPInteractionClient extends AutoCloseable {
                                          final Map<String, String> contextArguments) throws IOException, InterruptedException {
         throw new UnsupportedOperationException("completion/complete is not supported.");
     }
-
+    
     /**
      * Read resource.
      *
@@ -134,7 +134,7 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @throws UnsupportedOperationException unsupported operation exception
      */
     Map<String, Object> readResource(String resourceUri) throws IOException, InterruptedException;
-
+    
     /**
      * Send raw JSON-RPC request.
      *
@@ -149,7 +149,7 @@ public interface MCPInteractionClient extends AutoCloseable {
     default Map<String, Object> sendRawRequest(final String requestId, final String method, final Map<String, Object> params) throws IOException, InterruptedException {
         throw new UnsupportedOperationException("Raw JSON-RPC request is not supported.");
     }
-
+    
     @Override
     void close() throws IOException, InterruptedException;
 }

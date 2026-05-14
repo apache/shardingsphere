@@ -76,6 +76,8 @@ class ServerCapabilitiesHandlerTest {
     
     private void assertModelFirstSummary(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("model_first_summary");
+        assertThat(((Map<?, ?>) actual.get("official_discovery_methods")).get("tools"), is("tools/list"));
+        assertTrue(String.valueOf(actual.get("catalog_resource_role")).contains("domain catalog resource"));
         assertThat(actual.get("safe_first_resource"), is("shardingsphere://capabilities"));
         Map<?, ?> metadataRule = (Map<?, ?>) actual.get("metadata_rule");
         assertThat(metadataRule.get("first_resource"), is("shardingsphere://databases"));
@@ -94,7 +96,8 @@ class ServerCapabilitiesHandlerTest {
     
     private void assertModelContract(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("model_contract");
-        assertThat(actual.get("public_surface_source"), is("shardingsphere://capabilities"));
+        assertTrue(String.valueOf(actual.get("public_surface_source")).contains("tools/list"));
+        assertThat(((Map<?, ?>) actual.get("official_discovery_methods")).get("resources"), is("resources/list"));
         assertThat(actual.get("safe_first_resource"), is("shardingsphere://capabilities"));
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
         assertTrue(((Map<?, ?>) actual.get("sql_tool_selection")).containsKey("side_effecting"));
@@ -105,14 +108,16 @@ class ServerCapabilitiesHandlerTest {
     
     private void assertSurfaceSummary(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("surface_summary");
-        assertThat(actual.get("first_resource"), is("shardingsphere://capabilities"));
+        assertThat(((Map<?, ?>) actual.get("first_protocol_methods")).get("resources"), is("resources/list"));
+        assertThat(actual.get("catalog_resource"), is("shardingsphere://capabilities"));
         assertThat(actual.get("metadata_search_tool"), is("database_gateway_search_metadata"));
         assertThat(actual.get("side_effect_sql_tool"), is("database_gateway_execute_update"));
     }
     
     private void assertFieldNamingContract(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("field_naming_contract");
-        assertTrue(((List<?>) actual.get("protocol_fields")).contains("resourceTemplates"));
+        assertTrue(((List<?>) actual.get("protocol_methods")).contains("resources/templates/list"));
+        assertTrue(((List<?>) actual.get("catalog_fields")).contains("resourceTemplates"));
         assertThat(actual.get("payload_fields"), is("ShardingSphere-owned structured payload fields use snake_case."));
         assertTrue(String.valueOf(actual.get("alias_rule")).contains("Do not assume"));
     }
@@ -134,7 +139,7 @@ class ServerCapabilitiesHandlerTest {
         Collection<?> supportedTools = (Collection<?>) capabilities.get("supportedTools");
         Collection<?> supportedResources = (Collection<?>) capabilities.get("supportedResources");
         Map<?, ?> inspectMetadata = findByKey((List<?>) capabilities.get("common_flows"), "flow_id", "inspect_metadata");
-        assertTrue(((List<?>) inspectMetadata.get("steps")).containsAll(List.of("read_resource shardingsphere://capabilities", "call_tool database_gateway_search_metadata")));
+        assertTrue(((List<?>) inspectMetadata.get("steps")).containsAll(List.of("resources/list", "resources/templates/list", "call_tool database_gateway_search_metadata")));
         assertReferencedFlowEntries(inspectMetadata, supportedTools, supportedResources);
         Map<?, ?> sideEffectingSql = findByKey((List<?>) capabilities.get("common_flows"), "flow_id", "side_effecting_sql");
         assertTrue(((List<?>) sideEffectingSql.get("steps")).contains("call_tool database_gateway_execute_update execution_mode=preview"));

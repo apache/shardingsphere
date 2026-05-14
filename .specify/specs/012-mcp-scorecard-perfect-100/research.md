@@ -48,3 +48,24 @@
 - Decision: This package does not change the project's existing PR gate.
 - Rationale: Live LLM, Docker, MySQL, STDIO, and distribution lanes are score evidence, not new default PR requirements.
 - Alternatives considered: Make every lane a default PR gate; rejected because the user explicitly forbids adding PR-gate scope.
+
+## Decision 6: Make Official MCP Specification the Protocol Source of Truth
+
+- Decision: Use MCP Specification `2025-11-25` as the authoritative source for protocol semantics.
+- Rationale: The user requires all implementation to use MCP standards and forbids project-specific protocol invention.
+- Sources: `https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle`, `https://modelcontextprotocol.io/specification/2025-11-25/basic/transports`,
+  `https://modelcontextprotocol.io/specification/2025-11-25/server/tools`, `https://modelcontextprotocol.io/specification/2025-11-25/server/resources`,
+  `https://modelcontextprotocol.io/specification/2025-11-25/server/prompts`, and `https://modelcontextprotocol.io/specification/2025-11-25/server/utilities/completion`.
+- Alternatives considered: Treat existing `shardingsphere://capabilities` payloads as protocol discovery; rejected because domain resources cannot replace official MCP discovery methods.
+
+## Decision 7: Verify SDK Usage Against Detected Version
+
+- Decision: Treat MCP Java SDK documentation as implementation guidance only after checking compatibility with SDK `1.1.2` or local dependency source.
+- Rationale: Current online SDK docs can describe newer versions, while this branch uses `mcp-core` and `mcp-json-jackson2` version `1.1.2`.
+- Alternatives considered: Follow the latest SDK snippets directly; rejected because source-driven-development requires version-aware implementation.
+
+## Decision 8: Reopen Perfect-100 Status Under the Standard-First Gate
+
+- Decision: Previous 100-point score evidence remains historical until it is mapped to official MCP standard evidence.
+- Rationale: A perfect score must prove official MCP conformance, not only local ShardingSphere contract success.
+- Alternatives considered: Leave the 2026-05-11 closed status unchanged; rejected because the user added a stricter MCP-standard-only requirement.

@@ -341,6 +341,169 @@ MCP_SCORE_TESTS=$MCP_SCORE_TESTS,ServerCapabilitiesHandlerTest,ToolHandlerRegist
 
 - Result: both commands exited `0`; `mcp/api`, `mcp/support`, and `mcp/core` were Checkstyle and Spotless clean.
 
+### EV-026
+
+- Dimension: Source-driven official MCP standard baseline.
+- Status: `current`.
+- Evidence artifact: `source-driven-mcp-standard-map.md`.
+- Source references:
+  `https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle`,
+  `https://modelcontextprotocol.io/specification/2025-11-25/basic/transports`,
+  `https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization`,
+  `https://modelcontextprotocol.io/specification/2025-11-25/server/tools`,
+  `https://modelcontextprotocol.io/specification/2025-11-25/server/resources`,
+  `https://modelcontextprotocol.io/specification/2025-11-25/server/prompts`,
+  `https://modelcontextprotocol.io/specification/2025-11-25/server/utilities/completion`,
+  `https://modelcontextprotocol.io/specification/2025-11-25/server/utilities/pagination`,
+  and `https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices`.
+- Result: The active 2026-05-13 gate is defined, but implementation conformance evidence is not yet complete.
+
+### EV-027
+
+- Dimension: Official MCP protocol matrix.
+- Status: `current`.
+- Evidence artifacts:
+  `protocol-evidence-matrix.md`, `source-driven-mcp-standard-map.md`,
+  `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPModelFirstContractPayloadBuilder.java`,
+  `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/descriptors/core.yaml`,
+  and `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/protocol/error/MCPBasicRecoveryPayloadFactory.java`.
+- Result: Official MCP discovery methods (`tools/list`, `resources/list`, `resources/templates/list`, `prompts/list`, and `completion/complete`)
+  are documented as protocol sources of truth. `shardingsphere://capabilities` is explicitly classified as a ShardingSphere domain catalog resource,
+  not as protocol discovery.
+
+### EV-028
+
+- Dimension: Official MCP HTTP security and authorization.
+- Status: `current`.
+- Evidence files:
+  `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/HttpTransportConfiguration.java`,
+  `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/HttpBearerAuthorizationHandler.java`,
+  `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthProtectedResourceMetadataServlet.java`,
+  `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/MCPLaunchConfigurationTest.java`,
+  `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/HttpBearerAuthorizationHandlerTest.java`,
+  `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthProtectedResourceMetadataServletTest.java`,
+  and `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportAccessTokenE2ETest.java`.
+- Result: Streamable HTTP bearer failures emit `WWW-Authenticate` with `resource_metadata`, protected resource metadata is served from the official
+  well-known path, authorization server URLs must be syntactically valid HTTPS URIs when auth is enabled, malformed bearer syntax is rejected, and prior
+  origin/local-binding tests remain part of the protocol matrix. Token passthrough remains absent; the configured bearer token is accepted only for MCP
+  HTTP request authentication for this protected resource.
+
+### EV-029
+
+- Dimension: Official MCP E2E surface.
+- Status: `current`.
+- Evidence command:
+
+```bash
+./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
+  -Dtest=HttpTransportGoldenContractE2ETest,ProductionH2CapabilityDiscoveryE2ETest,ProductionH2AiNativeInteractionE2ETest \
+  test -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+- Result: exit `0`; `HttpTransportGoldenContractE2ETest` ran `4` tests, `ProductionH2CapabilityDiscoveryE2ETest` ran `8` tests,
+  and `ProductionH2AiNativeInteractionE2ETest` ran `1` test with no failures or skips. The `-am` dependency chain completed successfully across
+  `340` reactor modules in `34.280 s`.
+- Scope: official tools, resources, resource templates, prompts, completion, golden contract drift, and H2 production interaction remain covered;
+  historical STDIO, MySQL, packaged runtime, and live LLM evidence stays linked through `EV-015` through `EV-020`.
+
+### EV-030
+
+- Dimension: mcp-builder evaluation quality.
+- Status: `current`.
+- Evidence artifact:
+  `test/e2e/mcp/src/test/resources/llm/evaluation/mcp-builder-evaluation.xml`.
+- Evidence test:
+  `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/MCPBuilderEvaluationArtifactTest.java`.
+- Result: The XML artifact contains `10` read-only, independent, stable Q/A pairs across protocol discovery, metadata, read-only SQL, workflow,
+  encrypt, mask, and authorization categories. The artifact test passed in `EV-032`.
+
+### EV-031
+
+- Dimension: Final standard-first style gates.
+- Status: `current`.
+- Evidence command:
+
+```bash
+./mvnw -pl mcp/bootstrap,mcp/core,mcp/support,test/e2e/mcp -Pcheck -DskipTests -DskipITs checkstyle:check spotless:check
+```
+
+- Result: exit `0`; `mcp/support`, `mcp/core`, `mcp/bootstrap`, and `test/e2e/mcp` all reported `0 Checkstyle violations` and Spotless clean.
+
+### EV-032
+
+- Dimension: Final standard-first focused verification.
+- Status: `current`.
+- Evidence command:
+
+```bash
+./mvnw -pl mcp/bootstrap,mcp/core,mcp/support,test/e2e/mcp -DskipITs -Dspotless.skip=true \
+  -Dtest=MCPLaunchConfigurationTest,YamlHttpTransportConfigurationSwapperTest,HttpBearerAuthorizationHandlerTest,OAuthProtectedResourceMetadataServletTest,StreamableHttpMCPServletTest,MCPRuntimeLauncherTest,MCPDocumentationContractTest,ServerCapabilitiesHandlerTest,MCPModelFirstContractPayloadBuilderTest,MCPBuilderEvaluationArtifactTest,ProductionH2RuntimeSmokeE2ETest,HttpTransportAccessTokenE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+- Result: exit `0`; `mcp/support` ran `5` tests, `mcp/core` ran `1` test, `mcp/bootstrap` ran `69` tests,
+  and `test/e2e/mcp` ran `8` tests with no failures or skips.
+- Note: `ProductionH2RuntimeSmokeE2ETest` is an abstract base; concrete production H2 coverage is recorded in `EV-029`.
+
+### EV-033
+
+- Dimension: Complete OAuth resource-server token validation.
+- Status: `current`.
+- Evidence files:
+  `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/OAuthIntrospectionConfiguration.java`,
+  `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/HttpTransportConfiguration.java`,
+  `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/config/YamlOAuthIntrospectionConfiguration.java`,
+  `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlHttpTransportConfigurationSwapper.java`,
+  `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/HttpOAuthTokenIntrospector.java`,
+  `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthTokenValidator.java`,
+  `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthTokenValidationResult.java`,
+  `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthTokenIntrospector.java`,
+  `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/HttpBearerAuthorizationHandler.java`,
+  and `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/StreamableHttpMCPServlet.java`.
+- Evidence command:
+
+```bash
+./mvnw -pl mcp/bootstrap -DskipITs -Dspotless.skip=true \
+  -Dtest=MCPLaunchConfigurationTest,YamlHttpTransportConfigurationSwapperTest,HttpBearerAuthorizationHandlerTest,OAuthTokenValidatorTest,HttpOAuthTokenIntrospectorTest,StreamableHttpMCPServletTest,MCPDocumentationContractTest \
+  test -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
+```
+
+- Result: exit `0`; `80` bootstrap tests ran with no failures or skips.
+- Scope: config mutual exclusion, OAuth introspection YAML placeholders, fail-closed malformed introspection JSON, active/inactive/issuer/audience/time/scope validation,
+  RFC 6750 challenge behavior, SDK duplicate static-token bypass in OAuth mode, documentation contract, and static bearer/no-auth compatibility.
+
+### EV-034
+
+- Dimension: Complete OAuth E2E validation.
+- Status: `current`.
+- Evidence files:
+  `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportOAuthIntrospectionE2ETest.java`
+  and `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportAccessTokenE2ETest.java`.
+- Evidence command:
+
+```bash
+./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
+  -Dtest=HttpTransportOAuthIntrospectionE2ETest,HttpTransportAccessTokenE2ETest \
+  test -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
+```
+
+- Result: exit `0`; `HttpTransportOAuthIntrospectionE2ETest` ran `3` tests and `HttpTransportAccessTokenE2ETest` ran `7` tests with no failures or skips.
+  The `-am` dependency chain completed successfully across `340` reactor modules in `31.980 s`.
+- Scope: local fake RFC 7662 introspection endpoint, valid OAuth initialization, wrong-resource `401 invalid_token`, follow-up session request `403 insufficient_scope`,
+  and unchanged deployment-level static bearer E2E behavior.
+
+### EV-035
+
+- Dimension: Final complete OAuth style gates.
+- Status: `current`.
+- Evidence command:
+
+```bash
+./mvnw -pl mcp/bootstrap,mcp/core,mcp/support,test/e2e/mcp -Pcheck -DskipTests -DskipITs checkstyle:check spotless:check -B -ntp
+```
+
+- Result: exit `0`; `mcp/support`, `mcp/core`, `mcp/bootstrap`, and `test/e2e/mcp` all reported `0 Checkstyle violations` and Spotless clean.
+
 ## Open Risks
 
-None for this checkpoint.
+- No open risks remain for the scoped 2026-05-13 standard-first gate or the 2026-05-14 complete OAuth validation gate.

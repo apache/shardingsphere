@@ -18,7 +18,9 @@ resources:
   - uri: shardingsphere://capabilities
     name: server-capability-catalog
     title: ShardingSphere MCP Capability Catalog
-    description: "Generated model-facing catalog for ShardingSphere MCP resources, resource templates, tools, prompts, completions, workflow relationships, side-effect notes, and navigation hints."
+    description: >
+      Generated ShardingSphere domain catalog for resources, resource templates, tools, prompts, completions, workflow relationships,
+      side-effect notes, and navigation hints. Use official MCP discovery methods for protocol surface discovery.
     mimeType: application/json
     annotations:
       audience:
@@ -27,7 +29,7 @@ resources:
     extension:
       resourceKind: capability-catalog
       useBefore:
-        - choosing tools
+        - inspecting ShardingSphere catalog metadata
         - planning multi-step workflows
   - uri: shardingsphere://runtime
     name: runtime-status

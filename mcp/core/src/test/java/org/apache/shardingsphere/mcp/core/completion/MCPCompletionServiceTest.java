@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MCPCompletionServiceTest {
-
+    
     @Test
     void assertCompleteDatabaseValues() {
         MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext())).complete("session-1",
@@ -59,7 +59,7 @@ class MCPCompletionServiceTest {
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.RETURNED_CANDIDATE_COUNT), is(1));
     }
-
+    
     @Test
     void assertCompleteTableValuesWithMissingContextDiagnostic() {
         MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext())).complete("session-1",
@@ -71,7 +71,7 @@ class MCPCompletionServiceTest {
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
         assertThat(actualNextAction.get("resource_uri"), is("shardingsphere://databases"));
     }
-
+    
     @Test
     void assertCompletePlanIdsWithRecentPlanFirst() {
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
@@ -84,7 +84,7 @@ class MCPCompletionServiceTest {
         assertThat(actual.getValues(), is(List.of("plan-new", "plan-old")));
         assertThat(((Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.VALUE_DETAILS)).get(0)).get("rankingReason"), is("recent-plan-first-for-plan_id"));
     }
-
+    
     @Test
     void assertCompleteCapsMaxValues() {
         MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext()), List.of(new SizedCompletionProvider())).complete("session-1",
@@ -93,7 +93,7 @@ class MCPCompletionServiceTest {
         assertThat(actual.getTotal(), is(101));
         assertTrue(actual.isHasMore());
     }
-
+    
     @Test
     void assertCompleteReplacesEmptyContextWithInferredContext() {
         MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext()), List.of(new InferredContextCompletionProvider())).complete("session-1",
@@ -102,11 +102,11 @@ class MCPCompletionServiceTest {
         assertThat(((Map<?, ?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.CONTEXT_ARGUMENTS)).get("schema"), is("public"));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
     }
-
+    
     private MCPCompletionTargetDescriptor createDescriptor(final String referenceType, final String reference, final String argument, final int maxValues) {
         return new MCPCompletionTargetDescriptor(referenceType, reference, List.of(argument), maxValues, Map.of());
     }
-
+    
     private MCPRuntimeContext createRuntimeContext(final WorkflowSessionContext workflowSessionContext) {
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         when(databaseCapabilityProvider.getDatabaseProfiles()).thenReturn(List.of(
@@ -118,7 +118,7 @@ class MCPCompletionServiceTest {
         when(result.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
         return result;
     }
-
+    
     private WorkflowContextSnapshot createSnapshot(final String planId, final String status, final Instant updateTime) {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId(planId);
@@ -126,42 +126,42 @@ class MCPCompletionServiceTest {
         result.setUpdateTime(updateTime);
         return result;
     }
-
+    
     private static final class SizedCompletionProvider implements MCPCompletionProvider<MCPWorkflowHandlerContext> {
-
+        
         @Override
         public Class<MCPWorkflowHandlerContext> getContextType() {
             return MCPWorkflowHandlerContext.class;
         }
-
+        
         @Override
         public boolean supports(final MCPCompletionRequestContext requestContext) {
             return "value".equals(requestContext.getArgumentName());
         }
-
+        
         @Override
         public MCPCompletionProviderResult complete(final MCPWorkflowHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
             return new MCPCompletionProviderResult(createCandidates());
         }
-
+        
         private List<MCPCompletionCandidate> createCandidates() {
             return IntStream.rangeClosed(1, 101)
                     .mapToObj(each -> new MCPCompletionCandidate(String.format("value-%03d", each), "value", "test-provider")).toList();
         }
     }
-
+    
     private static final class InferredContextCompletionProvider implements MCPCompletionProvider<MCPWorkflowHandlerContext> {
-
+        
         @Override
         public Class<MCPWorkflowHandlerContext> getContextType() {
             return MCPWorkflowHandlerContext.class;
         }
-
+        
         @Override
         public boolean supports(final MCPCompletionRequestContext requestContext) {
             return "table".equals(requestContext.getArgumentName());
         }
-
+        
         @Override
         public MCPCompletionProviderResult complete(final MCPWorkflowHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
             return new MCPCompletionProviderResult(List.of(new MCPCompletionCandidate("t_order", "logical table", "test-provider")), Map.of("schema", "public"));

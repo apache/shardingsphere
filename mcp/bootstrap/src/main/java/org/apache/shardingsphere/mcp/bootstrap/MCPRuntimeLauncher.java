@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.authorization.OAuthProtectedResourceMetadataServlet;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -81,12 +82,18 @@ public final class MCPRuntimeLauncher {
             int port = server instanceof StreamableHttpMCPServer ? ((StreamableHttpMCPServer) server).getLocalPort() : config.getHttpTransport().getPort();
             result.add("HTTP endpoint: http://" + config.getHttpTransport().getBindHost() + ":" + port + config.getHttpTransport().getEndpointPath());
             result.add("HTTP bearer token: " + (Objects.toString(config.getHttpTransport().getAccessToken(), "").isBlank() ? "not configured" : "required"));
-            result.add("First resource to read: shardingsphere://capabilities");
+            if (config.getHttpTransport().isProtectedResourceMetadataEnabled()) {
+                result.add("OAuth protected resource metadata: http://" + config.getHttpTransport().getBindHost() + ":" + port
+                        + OAuthProtectedResourceMetadataServlet.createEndpointWellKnownPath(config.getHttpTransport().getEndpointPath()));
+            }
+            result.add("Official discovery: tools/list, resources/list, resources/templates/list, prompts/list, completion/complete");
+            result.add("Domain catalog resource: shardingsphere://capabilities");
             return result;
         }
         result.add("STDIO transport: enabled");
         result.add("STDIO stdout: reserved for MCP protocol frames; send diagnostics to stderr or logs.");
-        result.add("First resource to read: shardingsphere://capabilities");
+        result.add("Official discovery: tools/list, resources/list, resources/templates/list, prompts/list, completion/complete");
+        result.add("Domain catalog resource: shardingsphere://capabilities");
         return result;
     }
     

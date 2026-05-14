@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlOAuthIntrospectionConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,6 +45,10 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertThat(actual.getAccessToken(), is(""));
         assertThat(actual.getPort(), is(18088));
         assertThat(actual.getEndpointPath(), is("/mcp"));
+        assertThat(actual.getAuthorizationServers(), is(List.of()));
+        assertThat(actual.getScopesSupported(), is(List.of()));
+        assertThat(actual.getProtectedResource(), is(""));
+        assertThat(actual.getOauthIntrospection().getEndpoint(), is(""));
     }
     
     @Test
@@ -87,6 +94,38 @@ class YamlHttpTransportConfigurationSwapperTest {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("0.0.0.0", true, "${MCP_ACCESS_TOKEN}", 18088, "/mcp"),
                 Map.of("MCP_ACCESS_TOKEN", "foo_token"));
         assertThat(actual.getAccessToken(), is("foo_token"));
+    }
+    
+    @Test
+    void assertSwapToObjectWithAuthorizationMetadata() {
+        YamlHttpTransportConfiguration yamlConfig = createYamlConfig("127.0.0.1", false, "foo_token", 18088, "/mcp");
+        yamlConfig.setAuthorizationServers(List.of(" https://auth.example.test ", ""));
+        yamlConfig.setScopesSupported(List.of("mcp.read", "mcp.write"));
+        yamlConfig.setProtectedResource("${MCP_RESOURCE}");
+        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig, Map.of("MCP_RESOURCE", "https://gateway.example.test/mcp"));
+        assertThat(actual.getAuthorizationServers(), is(List.of("https://auth.example.test")));
+        assertThat(actual.getScopesSupported(), is(List.of("mcp.read", "mcp.write")));
+        assertThat(actual.getProtectedResource(), is("https://gateway.example.test/mcp"));
+    }
+    
+    @Test
+    void assertSwapToObjectWithOAuthIntrospection() {
+        YamlHttpTransportConfiguration yamlConfig = createYamlConfig("0.0.0.0", true, "", 18088, "/mcp");
+        yamlConfig.setAuthorizationServers(List.of("https://auth.example.test"));
+        yamlConfig.setScopesSupported(List.of("mcp.read"));
+        yamlConfig.setOauthIntrospection(createYamlOAuthIntrospectionConfiguration("${MCP_INTROSPECTION_ENDPOINT}", "${MCP_CLIENT_ID}", "${MCP_CLIENT_SECRET}",
+                "${MCP_EXPECTED_ISSUER}", 30000L));
+        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig, Map.of(
+                "MCP_INTROSPECTION_ENDPOINT", "https://auth.example.test/introspect",
+                "MCP_CLIENT_ID", "foo_client",
+                "MCP_CLIENT_SECRET", "foo_secret",
+                "MCP_EXPECTED_ISSUER", "https://auth.example.test"));
+        assertTrue(actual.getOauthIntrospection().isEnabled());
+        assertThat(actual.getOauthIntrospection().getEndpoint(), is("https://auth.example.test/introspect"));
+        assertThat(actual.getOauthIntrospection().getClientId(), is("foo_client"));
+        assertThat(actual.getOauthIntrospection().getClientSecret(), is("foo_secret"));
+        assertThat(actual.getOauthIntrospection().getExpectedIssuer(), is("https://auth.example.test"));
+        assertThat(actual.getOauthIntrospection().getCacheTtlMillis(), is(30000L));
     }
     
     @Test
@@ -140,13 +179,31 @@ class YamlHttpTransportConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        YamlHttpTransportConfiguration actual = swapper.swapToYamlConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp"));
+        YamlHttpTransportConfiguration actual = swapper.swapToYamlConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18088, "/mcp",
+                List.of("https://auth.example.test"), List.of("mcp.read"), "https://gateway.example.test/mcp"));
         assertTrue(actual.isEnabled());
         assertThat(actual.getBindHost(), is("127.0.0.1"));
         assertFalse(actual.isAllowRemoteAccess());
-        assertThat(actual.getAccessToken(), is(""));
+        assertThat(actual.getAccessToken(), is("token"));
         assertThat(actual.getPort(), is(18088));
         assertThat(actual.getEndpointPath(), is("/mcp"));
+        assertThat(actual.getAuthorizationServers(), is(List.of("https://auth.example.test")));
+        assertThat(actual.getScopesSupported(), is(List.of("mcp.read")));
+        assertThat(actual.getProtectedResource(), is("https://gateway.example.test/mcp"));
+        assertThat(actual.getOauthIntrospection().getEndpoint(), is(""));
+    }
+    
+    @Test
+    void assertSwapToYamlConfigurationWithOAuthIntrospection() {
+        HttpTransportConfiguration data = new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", List.of("https://auth.example.test"),
+                List.of("mcp.read"), "https://gateway.example.test/mcp",
+                new OAuthIntrospectionConfiguration("https://auth.example.test/introspect", "foo_client", "foo_secret", "https://auth.example.test", 30000L));
+        YamlHttpTransportConfiguration actual = swapper.swapToYamlConfiguration(data);
+        assertThat(actual.getOauthIntrospection().getEndpoint(), is("https://auth.example.test/introspect"));
+        assertThat(actual.getOauthIntrospection().getClientId(), is("foo_client"));
+        assertThat(actual.getOauthIntrospection().getClientSecret(), is("foo_secret"));
+        assertThat(actual.getOauthIntrospection().getExpectedIssuer(), is("https://auth.example.test"));
+        assertThat(actual.getOauthIntrospection().getCacheTtlMillis(), is(30000L));
     }
     
     private YamlHttpTransportConfiguration createYamlConfig(final String bindHost, final boolean allowRemoteAccess, final String accessToken, final Integer port, final String endpointPath) {
@@ -162,6 +219,17 @@ class YamlHttpTransportConfigurationSwapperTest {
         result.setAccessToken(accessToken);
         result.setPort(port);
         result.setEndpointPath(endpointPath);
+        return result;
+    }
+    
+    private YamlOAuthIntrospectionConfiguration createYamlOAuthIntrospectionConfiguration(final String endpoint, final String clientId, final String clientSecret,
+                                                                                          final String expectedIssuer, final Long cacheTtlMillis) {
+        YamlOAuthIntrospectionConfiguration result = new YamlOAuthIntrospectionConfiguration();
+        result.setEndpoint(endpoint);
+        result.setClientId(clientId);
+        result.setClientSecret(clientSecret);
+        result.setExpectedIssuer(expectedIssuer);
+        result.setCacheTtlMillis(cacheTtlMillis);
         return result;
     }
 }

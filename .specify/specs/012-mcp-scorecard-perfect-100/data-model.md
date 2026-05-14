@@ -84,6 +84,22 @@ Validation rules:
 - A dimension can reach `met` only if every required gate has passing evidence.
 - Failed evidence keeps the dimension open.
 
+## Standard Source Mapping
+
+Represents an official MCP source requirement that controls one or more score dimensions.
+
+- `source_url`: Official MCP specification, security guide, or verified SDK documentation URL.
+- `protocol_area`: Lifecycle, transport, authorization, tool, resource, prompt, completion, pagination, error handling, or security.
+- `implementation_scope`: Production module, E2E module, distribution runtime, or documentation surface that must obey this source.
+- `evidence_records`: Evidence IDs proving that the implementation follows the source.
+- `sdk_version_constraint`: Detected SDK version when the mapping depends on Java SDK APIs.
+
+Validation rules:
+
+- A standard source mapping MUST use official MCP sources or verified local SDK `1.1.2` source.
+- A mapping MUST NOT be satisfied by ShardingSphere-only convention.
+- Missing mapping evidence keeps related active standard-first dimensions below `100/100`.
+
 ## Open Risk
 
 Represents a missing or deferred proof point.

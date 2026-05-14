@@ -59,7 +59,94 @@ class MCPLaunchConfigurationTest {
     @Test
     void assertValidateWhenRemoteHttpAccessTokenIsMissing() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, createLaunchConfiguration(true, false, "0.0.0.0", true, "")::validate);
-        assertThat(actual.getMessage(), is("Property `transport.http.accessToken` must not be blank when remote HTTP access is enabled."));
+        assertThat(actual.getMessage(), is("HTTP authorization must be configured when remote HTTP access is enabled."));
+    }
+    
+    @Test
+    void assertValidateWhenHttpAuthorizationServersAreMissing() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, createLaunchConfiguration(true, false, "127.0.0.1", false, "token")::validate);
+        assertThat(actual.getMessage(), is("Property `transport.http.authorizationServers` must not be empty when HTTP authorization is enabled."));
+    }
+    
+    @Test
+    void assertValidateWhenHttpAuthorizationServerIsNotHttps() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new MCPLaunchConfiguration(
+                        new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "/mcp", Collections.singleton("http://auth.example.test"), Collections.emptyList(), ""),
+                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+        assertThat(actual.getMessage(), is("Property `transport.http.authorizationServers` must use valid HTTPS URLs when HTTP authorization is enabled."));
+    }
+    
+    @Test
+    void assertValidateWhenHttpAuthorizationServerIsMalformed() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new MCPLaunchConfiguration(
+                        new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "/mcp", Collections.singleton("https://"), Collections.emptyList(), ""),
+                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+        assertThat(actual.getMessage(), is("Property `transport.http.authorizationServers` must use valid HTTPS URLs when HTTP authorization is enabled."));
+    }
+    
+    @Test
+    void assertValidateWhenHttpAuthorizationServerHasFragment() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new MCPLaunchConfiguration(
+                        new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "/mcp", Collections.singleton("https://auth.example.test#fragment"),
+                                Collections.emptyList(), ""),
+                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+        assertThat(actual.getMessage(), is("Property `transport.http.authorizationServers` must use valid HTTPS URLs when HTTP authorization is enabled."));
+    }
+    
+    @Test
+    void assertValidateWhenHttpAuthorizationMetadataIsConfigured() {
+        assertDoesNotThrow(() -> new MCPLaunchConfiguration(
+                new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "/mcp", Collections.singleton("https://auth.example.test"), Collections.singleton("mcp.read"), ""),
+                new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+    }
+    
+    @Test
+    void assertValidateWhenRemoteHttpOAuthIntrospectionIsConfigured() {
+        assertDoesNotThrow(() -> new MCPLaunchConfiguration(
+                new HttpTransportConfiguration(true, "0.0.0.0", true, "", 0, "/mcp", Collections.singleton("https://auth.example.test"), Collections.singleton("mcp.read"), "",
+                        createOAuthIntrospectionConfiguration("https://auth.example.test/introspect", "foo_client", "foo_secret", "", 30000L)),
+                new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+    }
+    
+    @Test
+    void assertValidateWhenLocalOAuthIntrospectionEndpointUsesLoopbackHttp() {
+        assertDoesNotThrow(() -> new MCPLaunchConfiguration(
+                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp", Collections.singleton("https://auth.example.test"), Collections.singleton("mcp.read"), "",
+                        createOAuthIntrospectionConfiguration("http://127.0.0.1:19090/introspect", "foo_client", "foo_secret", "https://auth.example.test", 0L)),
+                new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+    }
+    
+    @Test
+    void assertValidateWhenAccessTokenAndOAuthIntrospectionAreBothConfigured() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new MCPLaunchConfiguration(
+                        new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "/mcp", Collections.singleton("https://auth.example.test"),
+                                Collections.emptyList(), "", createOAuthIntrospectionConfiguration("https://auth.example.test/introspect", "foo_client", "foo_secret", "", 0L)),
+                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+        assertThat(actual.getMessage(), is("Properties `transport.http.accessToken` and `transport.http.oauthIntrospection.endpoint` cannot both be configured."));
+    }
+    
+    @Test
+    void assertValidateWhenOAuthIntrospectionIsInvalid() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new MCPLaunchConfiguration(
+                        new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp", Collections.singleton("https://auth.example.test"),
+                                Collections.emptyList(), "", createOAuthIntrospectionConfiguration("http://auth.example.test/introspect", "foo_client", "foo_secret", "", 0L)),
+                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+        assertThat(actual.getMessage(), is("Property `transport.http.oauthIntrospection` must include a valid endpoint, clientId, clientSecret, and non-negative cacheTtlMillis."));
+    }
+    
+    @Test
+    void assertValidateWhenOAuthIntrospectionExpectedIssuerIsInvalid() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new MCPLaunchConfiguration(
+                        new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp", Collections.singleton("https://auth.example.test"),
+                                Collections.emptyList(), "", createOAuthIntrospectionConfiguration("https://auth.example.test/introspect", "foo_client", "foo_secret", "http://auth.example.test", 0L)),
+                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+        assertThat(actual.getMessage(), is("Property `transport.http.oauthIntrospection` must include a valid endpoint, clientId, clientSecret, and non-negative cacheTtlMillis."));
     }
     
     @Test
@@ -75,5 +162,10 @@ class MCPLaunchConfigurationTest {
                                                              final String bindHost, final boolean allowRemoteAccess, final String accessToken) {
         return new MCPLaunchConfiguration(new HttpTransportConfiguration(httpEnabled, bindHost, allowRemoteAccess, accessToken, 0, "/mcp"),
                 new StdioTransportConfiguration(stdioEnabled), Collections.emptyMap());
+    }
+    
+    private OAuthIntrospectionConfiguration createOAuthIntrospectionConfiguration(final String endpoint, final String clientId, final String clientSecret,
+                                                                                  final String expectedIssuer, final long cacheTtlMillis) {
+        return new OAuthIntrospectionConfiguration(endpoint, clientId, clientSecret, expectedIssuer, cacheTtlMillis);
     }
 }

@@ -46,24 +46,24 @@ import java.util.stream.Stream;
  * MCP completion service.
  */
 public final class MCPCompletionService {
-
+    
     private static final int DEFAULT_MAX_VALUES = 50;
-
+    
     private static final int MAX_VALUES_LIMIT = 100;
-
+    
     private final MCPRuntimeContext runtimeContext;
-
+    
     private final Collection<MCPCompletionProvider<?>> completionProviders;
-
+    
     public MCPCompletionService(final MCPRuntimeContext runtimeContext) {
         this(runtimeContext, MCPCompletionProviderLoader.load());
     }
-
+    
     MCPCompletionService(final MCPRuntimeContext runtimeContext, final Collection<MCPCompletionProvider<?>> completionProviders) {
         this.runtimeContext = runtimeContext;
         this.completionProviders = completionProviders;
     }
-
+    
     /**
      * Complete one MCP argument.
      *
@@ -93,7 +93,7 @@ public final class MCPCompletionService {
         return new MCPCompletionResult(returnedCandidates.stream().map(MCPCompletionCandidate::getValue).toList(), filteredCandidates.size(), filteredCandidates.size() > returnedCandidates.size(),
                 meta);
     }
-
+    
     private void mergeInferredContextArguments(final Map<String, String> contextArguments, final Map<String, Object> inferredContextArguments) {
         for (Entry<String, Object> entry : inferredContextArguments.entrySet()) {
             if (Objects.toString(contextArguments.get(entry.getKey()), "").isEmpty()) {
@@ -101,7 +101,7 @@ public final class MCPCompletionService {
             }
         }
     }
-
+    
     private Comparator<MCPCompletionCandidate> createCandidateComparator(final String prefix, final String argumentName) {
         String normalizedPrefix = prefix.toLowerCase(Locale.ENGLISH);
         return Comparator.comparingInt((MCPCompletionCandidate each) -> getExactMatchRank(each, normalizedPrefix))
@@ -109,23 +109,23 @@ public final class MCPCompletionService {
                 .thenComparing(each -> each.getValue().toLowerCase(Locale.ENGLISH))
                 .thenComparing(MCPCompletionCandidate::getValue);
     }
-
+    
     private int getExactMatchRank(final MCPCompletionCandidate candidate, final String normalizedPrefix) {
         return candidate.getValue().toLowerCase(Locale.ENGLISH).equals(normalizedPrefix) ? 0 : 1;
     }
-
+    
     private int comparePlanUpdateTime(final MCPCompletionCandidate left, final MCPCompletionCandidate right, final String argumentName) {
         return "plan_id".equals(argumentName) ? Comparator.nullsLast(Comparator.<Instant>reverseOrder()).compare(left.getUpdateTime(), right.getUpdateTime()) : 0;
     }
-
+    
     private boolean matchesPrefix(final String value, final String prefix) {
         return value.toLowerCase(Locale.ENGLISH).startsWith(prefix.toLowerCase(Locale.ENGLISH));
     }
-
+    
     private boolean matchesContains(final String value, final String prefix) {
         return value.toLowerCase(Locale.ENGLISH).contains(prefix.toLowerCase(Locale.ENGLISH));
     }
-
+    
     private MCPCompletionProviderResult completeCandidates(final String sessionId, final MCPCompletionTargetDescriptor descriptor, final String argumentName,
                                                            final Map<String, String> contextArguments) {
         MCPCompletionRequestContext requestContext = new MCPCompletionRequestContext(sessionId, descriptor, argumentName, contextArguments);
@@ -138,12 +138,12 @@ public final class MCPCompletionService {
         }
         return MCPCompletionProviderResult.empty();
     }
-
+    
     private <T extends MCPHandlerContext> MCPCompletionProviderResult completeCandidates(final MCPRequestScope requestScope, final MCPCompletionProvider<T> provider,
                                                                                          final MCPCompletionRequestContext requestContext) {
         return provider.complete(MCPHandlerContexts.resolve(requestScope, provider.getContextType(), provider.getClass()), requestContext);
     }
-
+    
     private Map<String, Object> createMeta(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix, final String matchStrategy,
                                            final Map<String, String> contextArguments, final Map<String, Object> inferredContextArguments, final List<MCPCompletionCandidate> candidates,
                                            final List<MCPCompletionCandidate> filteredCandidates, final List<MCPCompletionCandidate> returnedCandidates) {
@@ -176,14 +176,14 @@ public final class MCPCompletionService {
         result.put(MCPShardingSphereMetadataKeys.VALUE_DETAILS, returnedCandidates.stream().map(this::createValueDetail).toList());
         return result;
     }
-
+    
     private void putInferredContext(final Map<String, Object> target, final Map<String, Object> inferredContextArguments) {
         if (!inferredContextArguments.isEmpty()) {
             target.put(MCPShardingSphereMetadataKeys.INFERRED_CONTEXT_ARGUMENTS, inferredContextArguments);
             target.put(MCPShardingSphereMetadataKeys.ARGUMENT_PROVENANCE, createArgumentProvenance(inferredContextArguments));
         }
     }
-
+    
     private Map<String, Object> createArgumentProvenance(final Map<String, Object> inferredContextArguments) {
         Map<String, Object> result = new LinkedHashMap<>(inferredContextArguments.size(), 1F);
         for (String each : inferredContextArguments.keySet()) {
@@ -191,7 +191,7 @@ public final class MCPCompletionService {
         }
         return result;
     }
-
+    
     private List<Map<String, Object>> createNextActions(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix,
                                                         final Map<String, String> contextArguments, final String diagnostic, final List<String> missingContextArguments) {
         if ("missing_context".equals(diagnostic)) {
@@ -211,7 +211,7 @@ public final class MCPCompletionService {
         }
         return List.of();
     }
-
+    
     private Map<String, Object> createRecovery(final String argumentName, final String prefix, final Map<String, String> contextArguments,
                                                final String diagnostic, final List<String> missingContextArguments) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
@@ -232,7 +232,7 @@ public final class MCPCompletionService {
         }
         return result;
     }
-
+    
     private String createNearestResourceUri(final String argumentName, final Map<String, String> contextArguments) {
         String database = Objects.toString(contextArguments.get("database"), "");
         String schema = Objects.toString(contextArguments.get("schema"), "");
@@ -257,17 +257,17 @@ public final class MCPCompletionService {
         }
         return "";
     }
-
+    
     private String encode(final String value) {
         return MCPUriTemplateUtils.encodePathSegment(value);
     }
-
+    
     private Map<String, Object> createCompletionAction(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String argumentPrefix,
                                                        final Map<String, String> contextArguments, final List<String> missingContextArguments, final String reason) {
         return MCPNextActionUtils.completeArgument(descriptor.getReferenceType(), descriptor.getReference(), argumentName, argumentPrefix, contextArguments, missingContextArguments,
                 descriptor.getReferenceType(), descriptor.getReference(), contextArguments, reason);
     }
-
+    
     private List<String> createMissingContextArguments(final String argumentName, final Map<String, String> contextArguments) {
         if ("schema".equals(argumentName)) {
             return createMissingArguments(contextArguments, "database");
@@ -280,11 +280,11 @@ public final class MCPCompletionService {
         }
         return List.of();
     }
-
+    
     private List<String> createMissingArguments(final Map<String, String> contextArguments, final String... requiredArguments) {
         return Stream.of(requiredArguments).filter(each -> Objects.toString(contextArguments.get(each), "").isEmpty()).toList();
     }
-
+    
     private String createDiagnostic(final List<MCPCompletionCandidate> candidates, final List<MCPCompletionCandidate> filteredCandidates,
                                     final List<String> missingContextArguments) {
         if (!missingContextArguments.isEmpty()) {
@@ -295,7 +295,7 @@ public final class MCPCompletionService {
         }
         return filteredCandidates.isEmpty() ? "prefix_filtered_all_candidates" : "ok";
     }
-
+    
     private Map<String, Object> createValueDetail(final MCPCompletionCandidate candidate) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("value", candidate.getValue());

@@ -80,6 +80,11 @@ class MCPDocumentationContractTest {
         assertTrue(content.contains("transport.http.bindHost"));
         assertTrue(content.contains("transport.http.allowRemoteAccess"));
         assertTrue(content.contains("transport.http.accessToken"));
+        assertTrue(content.contains("transport.http.oauthIntrospection.endpoint"));
+        assertTrue(content.contains("transport.http.authorizationServers"));
+        assertTrue(content.contains("WWW-Authenticate"));
+        assertTrue(content.contains("invalid_token"));
+        assertTrue(content.contains("insufficient_scope"));
         assertTrue(content.contains("${ENV_NAME}"));
         assertTrue(content.contains("Authorization: Bearer <token>"));
         assertTrue(content.contains("SHARDINGSPHERE_MCP_CONFIG"));

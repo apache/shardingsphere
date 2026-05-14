@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<mcp_builder_evaluation version="2026-05-13"
+                        standard_reference="MCP 2025-11-25"
+                        operation_mode="read_only"
+                        requires_external_model="false">
+  <qa_pair id="q01" category="protocol_discovery" read_only="true">
+    <question>A new MCP client has no ShardingSphere-specific URI cached. Which official MCP method should it call first to enumerate callable server tools?</question>
+    <expected_answer>tools/list</expected_answer>
+    <verification>Exact MCP method name.</verification>
+  </qa_pair>
+  <qa_pair id="q02" category="protocol_discovery" read_only="true">
+    <question>The client needs templated resource URIs for database, schema, table, column, index, and sequence details. Which official MCP method exposes those templates?</question>
+    <expected_answer>resources/templates/list</expected_answer>
+    <verification>Exact MCP method name.</verification>
+  </qa_pair>
+  <qa_pair id="q03" category="metadata" read_only="true">
+    <question>Before choosing a logical database for a metadata inspection workflow, which ShardingSphere resource provides the logical database list?</question>
+    <expected_answer>shardingsphere://databases</expected_answer>
+    <verification>Exact resource URI.</verification>
+  </qa_pair>
+  <qa_pair id="q04" category="read_only_sql" read_only="true">
+    <question>An operator asks for a safe SELECT or EXPLAIN ANALYZE against a configured runtime database. Which tool is the read-only SQL entry point?</question>
+    <expected_answer>database_gateway_execute_query</expected_answer>
+    <verification>Exact tool name.</verification>
+  </qa_pair>
+  <qa_pair id="q05" category="read_only_sql" read_only="true">
+    <question>A client must prepare an UPDATE without mutating the database. Which execution_mode should be used before requesting user approval?</question>
+    <expected_answer>preview</expected_answer>
+    <verification>Exact execution_mode value.</verification>
+  </qa_pair>
+  <qa_pair id="q06" category="workflow" read_only="true">
+    <question>After creating a feature workflow plan, which tool previews or executes that plan while preserving the explicit approval gate?</question>
+    <expected_answer>database_gateway_apply_workflow</expected_answer>
+    <verification>Exact tool name.</verification>
+  </qa_pair>
+  <qa_pair id="q07" category="workflow" read_only="true">
+    <question>After a workflow has been applied in a controlled test path, which tool validates the workflow outcome against the current runtime metadata?</question>
+    <expected_answer>database_gateway_validate_workflow</expected_answer>
+    <verification>Exact tool name.</verification>
+  </qa_pair>
+  <qa_pair id="q08" category="encrypt" read_only="true">
+    <question>Which planning tool produces an encryption-rule workflow plan without directly applying it to the runtime database?</question>
+    <expected_answer>database_gateway_plan_encrypt_rule</expected_answer>
+    <verification>Exact tool name.</verification>
+  </qa_pair>
+  <qa_pair id="q09" category="mask" read_only="true">
+    <question>Which planning tool produces a mask-rule workflow plan without directly applying it to the runtime database?</question>
+    <expected_answer>database_gateway_plan_mask_rule</expected_answer>
+    <verification>Exact tool name.</verification>
+  </qa_pair>
+  <qa_pair id="q10" category="authorization" read_only="true">
+    <question>When Streamable HTTP rejects a request with 401, which WWW-Authenticate challenge parameter points clients to OAuth protected resource metadata?</question>
+    <expected_answer>resource_metadata</expected_answer>
+    <verification>Exact WWW-Authenticate parameter name.</verification>
+  </qa_pair>
+</mcp_builder_evaluation>

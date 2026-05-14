@@ -48,8 +48,12 @@ bin\start.bat
 - 发行包运行时会读取 `conf/mcp.yaml` 和 `conf/logback.xml`。
 - 启用 HTTP 时，默认端点是 `http://127.0.0.1:18088/mcp`。
 - 日志会写到 `logs/` 目录。
-- `conf/mcp.yaml` 现在对支持字段名采用严格 schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.allowRemoteAccess`、`transport.http.accessToken`、`transport.http.port`、`transport.http.endpointPath`、`transport.stdio.enabled`，以及每个 runtime database 的全部字段都只能使用受支持字段名。
-- `transport.http.accessToken` 和 runtime database 字段支持简单的 `${ENV_NAME}` 占位，便于部署时注入 JDBC 凭证等敏感配置。
+- `conf/mcp.yaml` 现在对支持字段名采用严格 schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.allowRemoteAccess`、
+  `transport.http.accessToken`、`transport.http.port`、`transport.http.endpointPath`、`transport.http.authorizationServers`、
+  `transport.http.scopesSupported`、`transport.http.protectedResource`、`transport.http.oauthIntrospection.endpoint`、
+  `transport.http.oauthIntrospection.clientId`、`transport.http.oauthIntrospection.clientSecret`、`transport.http.oauthIntrospection.expectedIssuer`、
+  `transport.http.oauthIntrospection.cacheTtlMillis`、`transport.stdio.enabled`，以及每个 runtime database 的全部字段都只能使用受支持字段名。
+- `transport.http.accessToken`、`transport.http.oauthIntrospection` 字符串字段、HTTP authorization metadata 字段和 runtime database 字段支持简单的 `${ENV_NAME}` 占位，便于部署时注入 JDBC 凭证等敏感配置。
 - 每个进程必须且只能启用一种 transport。发行包内置示例配置默认只启用 HTTP。
 - `bin/start.sh` 和 `bin\start.bat` 启动前都会校验配置文件、运行时依赖和 Java 环境，并自动创建 `data/`、`logs/`、`plugins/` 目录，然后切到发行包根目录启动，确保相对路径可用。
 - 如果启动成功，进程会保持前台运行；如果立刻退出，优先查看终端报错和 `logs/mcp.log`。
@@ -308,11 +312,12 @@ bin\start.bat conf\mcp-stdio.yaml
   }
   ```
 
-- 启动时会向 stderr 输出简短提示：配置文件路径、日志路径、runtime database 数量、当前 transport、token 状态，
-  以及第一个应该读取的 resource。
-- Client 应先读取 `shardingsphere://capabilities`，再跟随 `resourceNavigation`、`next_resources` 和 `next_actions`，
-  不要猜测隐藏 tool 或参数。
-- 如果 HTTP 返回 `401`，检查 `transport.http.accessToken`，并发送 `Authorization: Bearer <token>`。
+- 启动时会向 stderr 输出简短提示：配置文件路径、日志路径、runtime database 数量、当前 transport、token 状态、
+  官方 MCP discovery 方法，以及 ShardingSphere 领域目录 resource。
+- Client 应先使用官方 MCP discovery 方法（`tools/list`、`resources/list`、`resources/templates/list`、`prompts/list`、
+  `completion/complete`），再按需读取 `shardingsphere://capabilities` 作为领域目录。
+- 如果 HTTP 返回 `401`，检查 `WWW-Authenticate`，在存在 `resource_metadata` 时读取 OAuth protected resource metadata，
+  并发送 `Authorization: Bearer <token>`。
 - 如果启动提示 runtime database 缺失或数量为 0，修正 `runtimeDatabases`；MCP resources 暴露的是 ShardingSphere 逻辑库，
   不是物理存储单元。
 - 如果 `shardingsphere://runtime` 返回 `server_status=configuration_required`，先配置至少一个 `runtimeDatabases` 条目，再做 metadata discovery 或 SQL execution。
@@ -333,9 +338,13 @@ bin\start.bat conf\mcp-stdio.yaml
 - 如果要给本地 MCP client 走 stdio，保留 `transport.http.enabled: false`，并把 `transport.stdio.enabled` 设为 `true`。
 - `transport.http.bindHost` 表示 HTTP 服务监听在哪个地址上：`127.0.0.1`、`localhost`、`::1` 只面向本机；`0.0.0.0` 或指定内网 IP 会面向对应网络接口。
 - 非 loopback `bindHost` 必须显式设置 `transport.http.allowRemoteAccess: true`，否则启动失败；该字段只表达远程暴露意图。
-- 配置了 `transport.http.accessToken` 后，所有 HTTP 请求都必须携带 `Authorization: Bearer <token>`。
-- 非 loopback `bindHost` 还必须配置非空的 `transport.http.accessToken`，避免 remote HTTP 以匿名方式暴露。
-- 内建 `accessToken` 是部署级共享密钥，不是登录态 token，也不是按用户划分的凭证。
+- 配置了 `transport.http.accessToken` 后，必须同时配置有效 HTTPS URI 形式的 `transport.http.authorizationServers`，所有 HTTP 请求都必须携带 `Authorization: Bearer <token>`。
+- 如果要按 OAuth resource server 验证 token，请配置 `transport.http.oauthIntrospection.endpoint`、`clientId` 和 `clientSecret`，不要再配置 `transport.http.accessToken`；这两种授权模式互斥。
+- 非 loopback `bindHost` 还必须配置非空的 `transport.http.accessToken` 或 OAuth introspection，避免 remote HTTP 以匿名方式暴露。
+- 启用授权的 HTTP endpoint 会在 `/.well-known/oauth-protected-resource{endpointPath}` 暴露 OAuth protected resource metadata，并通过 `WWW-Authenticate` 告知 client。
+- 内建 `accessToken` 是面向当前受保护 MCP resource 的运维侧预配置 bearer token，不是登录态 token，也不是按用户划分的凭证。
+- OAuth introspection 使用 RFC 7662 form POST 和 HTTP Basic client authentication，endpoint 必须是 HTTPS；仅本机测试 fixture 允许 loopback HTTP。运行时会校验 active 状态、issuer、受保护 resource audience、expiration、存在时的 not-before 时间以及必需 scope。
+- OAuth 失败会返回 RFC 6750 challenge：无效或无法验证的 token 返回 `401` 和 `error="invalid_token"`，active 但缺少必需 scope 的 token 返回 `403` 和 `error="insufficient_scope"`。
 - 即使启用了内建 `accessToken`，对外暴露场景仍建议放在受信网络、上游网关或反向代理后面。
 - 如果要使用自定义配置文件启动，Unix-like 系统可以执行 `bin/start.sh /path/to/mcp.yaml`，Windows 可以执行 `bin\start.bat path\to\mcp.yaml`。
 - 如果要调整 JVM 参数，可以使用 `JAVA_OPTS`，例如 Unix-like 系统执行 `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`，Windows 执行 `set "JAVA_OPTS=-Xms256m -Xmx256m" && bin\start.bat`。

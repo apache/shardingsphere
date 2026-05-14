@@ -23,7 +23,7 @@ User context:
 - query: {{query}}
 
 Model path:
-1. Read shardingsphere://capabilities before choosing tools when the visible surface is uncertain.
+1. Use official MCP discovery methods before choosing tools when the visible surface is uncertain.
 2. Read shardingsphere://databases when database is empty, or shardingsphere://databases/{{database}} when database is known.
 3. Use database_gateway_search_metadata when query is non-empty or the exact object kind is uncertain.
 4. Prefer detail resources after resolving database, schema, table, column, index, sequence, or view names.

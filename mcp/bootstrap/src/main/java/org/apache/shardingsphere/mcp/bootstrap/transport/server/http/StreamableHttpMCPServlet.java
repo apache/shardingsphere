@@ -29,8 +29,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.ServerTransportSecurityValidatorFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.authorization.HttpBearerAuthorizationHandler;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import reactor.core.publisher.Mono;
@@ -63,19 +65,36 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final MCPSessionManager sessionManager;
     
+    private final HttpBearerAuthorizationHandler authorizationHandler;
+    
     private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
     
     private final Map<String, String> sessionProtocolVersions;
     
     private final AtomicBoolean closed;
     
+    StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final HttpTransportConfiguration config) {
+        this(sessionManager, jsonMapper, config.getBindHost(), getDelegateAccessToken(config), config.getEndpointPath(), new HttpBearerAuthorizationHandler(config));
+    }
+    
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String accessToken, final String endpointPath) {
+        this(sessionManager, jsonMapper, bindHost, accessToken, endpointPath,
+                new HttpBearerAuthorizationHandler(accessToken, endpointPath, List.of(), false));
+    }
+    
+    private StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String accessToken,
+                                     final String endpointPath, final HttpBearerAuthorizationHandler authorizationHandler) {
         delegate = createDelegate(sessionManager, jsonMapper, bindHost, accessToken, endpointPath);
         this.sessionManager = sessionManager;
+        this.authorizationHandler = authorizationHandler;
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         sessionProtocolVersions = new ConcurrentHashMap<>();
         sessionManager.addSessionCloseListener(sessionProtocolVersions::remove);
         closed = new AtomicBoolean();
+    }
+    
+    private static String getDelegateAccessToken(final HttpTransportConfiguration config) {
+        return config.getOauthIntrospection().isEnabled() ? "" : config.getAccessToken();
     }
     
     private static HttpServletStreamableServerTransportProvider createDelegate(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper,
@@ -145,7 +164,9 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private void serviceRequest(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         setUtf8Encoding(request, response);
-        serviceWithApplicationClassLoader(request, response);
+        if (authorizationHandler.authorize(request, response)) {
+            serviceWithApplicationClassLoader(request, response);
+        }
     }
     
     @Override

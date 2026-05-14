@@ -26,6 +26,7 @@ Canonical Speckit files:
 - `.specify/specs/012-mcp-scorecard-perfect-100/spec.md`
 - `.specify/specs/012-mcp-scorecard-perfect-100/plan.md`
 - `.specify/specs/012-mcp-scorecard-perfect-100/scorecard.md`
+- `.specify/specs/012-mcp-scorecard-perfect-100/source-driven-mcp-standard-map.md`
 - `.specify/specs/012-mcp-scorecard-perfect-100/tasks.md`
 - `.specify/specs/012-mcp-scorecard-perfect-100/checklists/requirements.md`
 
@@ -33,6 +34,20 @@ Canonical Speckit files:
 
 Every MCP production and MCP E2E score dimension must reach **100/100**.
 The feature is not complete if only the average reaches 100.
+
+2026-05-13 update:
+
+- All MCP implementation behavior must follow official MCP standards.
+- ShardingSphere-specific fields may be application payload only; they cannot replace official MCP discovery, transport, authorization, pagination, or error semantics.
+- Source-driven-development evidence is required before changing protocol, SDK, security, or E2E behavior.
+- The earlier 2026-05-11 perfect-score checkpoint is historical; the 2026-05-13 scoped official-standard gate is closed by current evidence.
+
+2026-05-14 update:
+
+- The user expanded HTTP authorization from scoped deployment-level bearer-token matching to complete OAuth token validation.
+- The complete OAuth gate is reopened until MCP HTTP bearer tokens are validated as OAuth resource-server tokens with active, issuer, audience/resource, time-window, and scope checks.
+- The implementation direction is introspection-first through official MCP Authorization, RFC 6750, RFC 7662, RFC 8707, and RFC 8414.
+- The previous 2026-05-13 12/12 standard-first result remains historical scoped evidence, but it cannot close the new complete OAuth validation gate.
 
 Latest baseline:
 
@@ -59,6 +74,13 @@ Latest baseline:
 - Do not change the project's existing PR gate.
 - Treat the listed dimensions as locked for this checkpoint unless the user explicitly changes them.
 - Keep historical Speckit package `011-mcp-llm-product-quality-100` as historical context only.
+- Use MCP Specification `2025-11-25` as the protocol source of truth.
+- Verify MCP Java SDK usage against detected SDK `1.1.2` or local dependency source.
+- Do not treat `shardingsphere://capabilities` or similar resources as official MCP protocol discovery.
+- Do not mark standard-first dimensions `100/100` while official MCP evidence is missing.
+  The 2026-05-13 scoped standard-first dimensions were marked `100/100` because `EV-026` through `EV-032` were current.
+- Do not mark the 2026-05-14 complete OAuth validation gate complete until OAuth introspection, resource/audience, issuer, time-window, scope, 401/403 challenge,
+  fail-closed, and no-token-passthrough evidence exists.
 
 ## Required Score Model
 
@@ -99,6 +121,30 @@ E2E dimensions must each reach 100:
 - Compatibility
 - Test quality
 
+Active standard-first dimensions must also each reach 100:
+
+- MCP protocol standard conformity
+- Tool and resource model quality
+- Functional completeness
+- Implementation elegance
+- Architecture cleanliness
+- Code cleanliness
+- Security and risk control
+- Error recovery and diagnostics
+- Test coverage
+- E2E realism and LLM evaluation
+- Operations and distribution maturity
+- Documentation and governance
+
+Active complete OAuth validation dimensions currently reopened:
+
+- MCP protocol standard conformity: `90/100`
+- Functional completeness: `88/100`
+- Security and risk control: `70/100`
+- Test coverage: `85/100`
+- Operations and distribution maturity: `85/100`
+- Documentation and governance: `85/100`
+
 ## Completion Rule
 
 Completion requires:
@@ -108,6 +154,10 @@ Completion requires:
 - Every claimed 100 dimension has command, artifact, or contract evidence.
 - Relevant scoped Maven tests, Checkstyle, and Spotless gates pass for touched Java modules.
 - The current git branch remains unchanged.
+- Official MCP source mapping is current.
+- All protocol behavior is backed by MCP Specification or verified SDK `1.1.2` evidence.
+- mcp-builder evaluation XML exists with ten read-only, independent, complex, realistic, verifiable, and stable questions.
+- Complete OAuth token validation is implemented and verified when HTTP authorization is enabled.
 
 ## Current Implementation Evidence
 
@@ -134,5 +184,18 @@ Additional opt-in runtime evidence:
 - Live LLM smoke plus usability: exit `0`, `5` tests, `0` skipped, total `32:12 min`, run ID `ra001-final-20260512015143`.
 - Live LLM scorecards: core and extended suites both `100/100`, with `invalidCallRate=0`, `approvalViolationRate=0`, and `harnessRecoveryRate=0`.
 
-Remaining 100-point blockers are tracked in the canonical evidence ledger; performance-budget, safety-boundary,
-protocol-conformance, historical revalidation, and decoupling gaps still keep related dimensions below 100.
+Current standard-first closure evidence:
+
+- Protocol evidence against official MCP sources: closed by `EV-026` and `EV-027`.
+- Streamable HTTP security and authorization behavior: closed by `EV-028`.
+- Official resource template, prompt, completion, and golden-contract coverage: closed by `EV-029`.
+- mcp-builder XML evaluation evidence: closed by `EV-030`.
+- Scoped tests and style gates: closed by `EV-031` and `EV-032`.
+- Current branch remains `001-shardingsphere-mcp`; branch-changing Speckit scripts remain forbidden.
+
+Current complete OAuth validation status:
+
+- Reopened on 2026-05-14.
+- Phase 6 tasks `T080` through `T088` are open.
+- Active complete OAuth validation dimensions at 100: `0/6`.
+- Overall status is reopened until implementation and verification evidence is recorded.

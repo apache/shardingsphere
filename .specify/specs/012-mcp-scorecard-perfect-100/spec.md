@@ -19,8 +19,9 @@
 
 **Feature Branch**: `001-shardingsphere-mcp`
 **Created**: 2026-05-11
-**Status**: Draft
-**Input**: User requests a Speckit requirement package for the latest MCP and MCP E2E review, with every scored item required to reach 100/100, and no git branch switch during the work.
+**Status**: Implemented for the scoped standard-first gate; reopened on 2026-05-13 and closed after `EV-026` through `EV-032`; reopened on 2026-05-14 for complete OAuth token validation.
+**Input**: User requests a Speckit requirement package for the latest MCP and MCP E2E review.
+Every scored item must reach 100/100, the branch must not change, and all implementation behavior must align to official MCP standards without project-specific protocol invention.
 
 ## Goal
 
@@ -49,6 +50,21 @@ The latest independent review on 2026-05-11 scored:
 
 These averages are diagnostic only. Delivery is complete only when every listed dimension reaches 100/100 with evidence.
 
+## Source-Driven Standard Baseline
+
+The 2026-05-13 update adds a stricter rule: MCP protocol behavior is governed by the official MCP Specification first, then the detected MCP Java SDK behavior.
+ShardingSphere-specific fields may exist only as domain payloads inside standard MCP tools, resources, prompts, or completion results.
+They MUST NOT be treated as new protocol methods, discovery channels, pagination conventions, authorization flows, or error semantics.
+
+Detected implementation stack for this requirement package:
+
+- `mcp/pom.xml`: MCP subchain builds with Java 21.
+- `mcp/bootstrap/pom.xml`: MCP Java SDK `1.1.2` through `mcp-core` and `mcp-json-jackson2`, plus embedded Tomcat `11.0.18`.
+- `pom.xml`: repository dependency management provides Jackson `2.16.1`; root default Java remains 8 outside the MCP subchain.
+- `test/e2e/mcp/pom.xml`: MCP E2E builds with Java 21 and keeps live LLM groups disabled by default.
+
+Authoritative protocol sources are recorded in `source-driven-mcp-standard-map.md`.
+
 ## Hard Constraints
 
 - No task may run `git switch`, `git checkout`, branch creation scripts, or branch-changing Speckit commands.
@@ -57,6 +73,9 @@ These averages are diagnostic only. Delivery is complete only when every listed 
   Adding, removing, or renaming a dimension requires an explicit user request.
 - No score may be marked 100 based on prose-only reasoning.
 - Each 100 score requires automated command output, artifact evidence, or a reviewed contract snapshot.
+- No score may be marked 100 when the implementation relies on non-standard MCP protocol behavior, self-invented protocol fields, or a ShardingSphere-only discovery path as if it were MCP standard.
+- Source-driven-development evidence is mandatory before any MCP protocol, transport, authorization, tool, resource, prompt, completion, pagination, or error-handling implementation change.
+- `mcp-builder` quality gates apply to tool discoverability, concise schemas, structured output, annotations, actionable errors, pagination, security, and repeatable evaluations.
 - Waivers and exception records are not allowed for scoring or completion.
   If evidence is missing, the dimension remains below 100.
 - Existing historical Speckit package `011-mcp-llm-product-quality-100` remains historical evidence and is not reused as the current score decision.
@@ -135,6 +154,28 @@ An implementer can convert the scorecard into small, reviewable work items witho
 - If a gap cannot be automated, the score remains below 100 until manual evidence is documented.
 - If a branch-changing Speckit command is the normal path, this package uses manual Speckit files instead.
 
+---
+
+### User Story 5 - Reviewer Rejects Non-Standard MCP Behavior (Priority: P1)
+
+A reviewer can trace every MCP-facing behavior to the official MCP specification or a verified MCP Java SDK API and can reject any implementation that invents protocol semantics.
+
+**Why this priority**: The user explicitly requires implementation through MCP standards only, without special ShardingSphere protocol behavior.
+
+**Independent Test**: Review `source-driven-mcp-standard-map.md`, `scorecard.md`, and implementation evidence.
+Every protocol behavior must cite an official source, and every ShardingSphere-specific field must be documented as domain payload only.
+
+**Acceptance Scenarios**:
+
+1. **Given** a feature exposes capabilities, **When** the reviewer inspects the contract,
+   **Then** official MCP discovery methods such as `tools/list`, `resources/list`, `prompts/list`, or `completion/complete` are the protocol source of truth.
+2. **Given** a tool returns ShardingSphere-specific metadata, **When** the reviewer inspects the response,
+   **Then** the data is carried through standard `content`, `structuredContent`, `outputSchema`, or resource content semantics.
+3. **Given** pagination is needed, **When** the reviewer inspects list behavior,
+   **Then** MCP list operations use opaque `cursor` input and `nextCursor` output rather than page-number or project-specific protocol pagination.
+4. **Given** HTTP authentication is enabled, **When** the reviewer inspects the implementation,
+   **Then** it follows MCP authorization and security requirements instead of static-token-only protocol semantics.
+
 ## Requirements
 
 ### Functional Requirements
@@ -161,6 +202,27 @@ An implementer can convert the scorecard into small, reviewable work items witho
 - **MSP-FR-015**: Architecture and decoupling score improvements MUST reduce concrete coupling, class size, static state, or hardcoded extension boundaries.
 - **MSP-FR-016**: Stability and performance score improvements MUST use bounded waits, repeatable environments, measured command output, or documented resource budgets.
 - **MSP-FR-017**: The repo-visible handoff under `specs/008-mcp-scorecard-perfect-100/` MUST summarize this Speckit package for reviewers who do not inspect `.specify/`.
+- **MSP-FR-018**: MCP protocol behavior MUST be implemented from official MCP sources only:
+  lifecycle negotiation, transports, authorization, tools, resources, prompts, completion, pagination, JSON-RPC errors, and security guidance.
+- **MSP-FR-019**: MCP Java SDK usage MUST be verified against the detected SDK version or local dependency source before implementation.
+  Newer SDK documentation may guide intent but cannot override version-specific APIs.
+- **MSP-FR-020**: ShardingSphere-specific contract fields MUST be classified as application payload.
+  They MUST NOT introduce new MCP protocol methods, reserved capability names, reserved protocol prefixes, or alternate discovery flows.
+- **MSP-FR-021**: Tool contracts MUST use standard MCP `inputSchema`.
+  Where structured output exists, they MUST use `outputSchema` and `structuredContent` with text fallback when the official spec recommends compatibility output.
+- **MSP-FR-022**: Resources, resource templates, prompts, and completions MUST use official MCP request and response shapes.
+  This includes `resources/list`, `resources/read`, `resources/templates/list`, `prompts/list`, `prompts/get`, and `completion/complete`.
+- **MSP-FR-023**: List pagination for official MCP list methods MUST use opaque `cursor` request parameters and `nextCursor` response fields.
+  Project payload pagination may exist only inside clearly documented tool results.
+- **MSP-FR-024**: Remote HTTP security and authorization MUST follow MCP Streamable HTTP, MCP authorization, and MCP security best-practice requirements.
+  No security or protocol score can reach 100 until this is proven.
+- **MSP-FR-025**: The E2E suite MUST include at least one mcp-builder-style evaluation artifact.
+  It must contain ten read-only, independent, complex, realistic, verifiable, and stable questions before model-use scores can close under the standard-first gate.
+- **MSP-FR-026**: Complete OAuth token validation MUST validate MCP HTTP bearer tokens as OAuth resource-server tokens, not as static shared secrets.
+- **MSP-FR-027**: Complete OAuth token validation MUST verify active state, issuer, protected resource or audience, expiration, not-before time, and required scopes before dispatching any protected MCP request.
+- **MSP-FR-028**: Complete OAuth token validation MUST fail closed when introspection is unavailable, malformed, unauthorized, or inconclusive.
+- **MSP-FR-029**: Complete OAuth token validation MUST return standard `WWW-Authenticate: Bearer` challenges with `invalid_token` for invalid tokens and `insufficient_scope` for active tokens that lack required scopes.
+- **MSP-FR-030**: Complete OAuth token validation MUST keep tokens inside the MCP transport boundary and MUST NOT pass client bearer tokens to downstream ShardingSphere services, tools, SQL execution, logs, or LLM artifacts.
 
 ### Key Entities
 
@@ -180,6 +242,11 @@ An implementer can convert the scorecard into small, reviewable work items witho
 - **MSP-SC-004**: `tasks.md` contains at least one actionable task for every dimension whose baseline score is below 100.
 - **MSP-SC-005**: The requirements checklist has no failed item before implementation planning begins.
 - **MSP-SC-006**: Final completion cannot be claimed while any score dimension remains below 100.
+- **MSP-SC-007**: Final completion cannot be claimed while any active standard-first dimension lacks an official MCP source citation.
+- **MSP-SC-008**: Final completion cannot be claimed while any protocol behavior is implemented only by ShardingSphere-specific convention.
+- **MSP-SC-009**: Final completion cannot be claimed until `source-driven-mcp-standard-map.md` is current with the detected SDK and official MCP specification version.
+- **MSP-SC-010**: Final completion cannot be claimed until E2E evidence proves the official MCP protocol surface, not just ShardingSphere helper contracts.
+- **MSP-SC-011**: Final completion cannot be claimed until all active standard-first score dimensions in `scorecard.md` are also `100/100`.
 
 ## Assumptions
 
@@ -187,3 +254,5 @@ An implementer can convert the scorecard into small, reviewable work items witho
 - Historical 100-point packages remain useful evidence but do not override the latest baseline.
 - Live LLM E2E can remain outside the existing PR gate while still being mandatory manual or opt-in evidence for a perfect score.
 - H2 evidence is required for fast deterministic coverage; MySQL, STDIO, packaged distribution, and live LLM evidence are required where a dimension depends on real runtime behavior.
+- The official MCP Specification version used for this checkpoint is `2025-11-25`.
+- Existing project capability resources may remain useful as model-facing domain data, but they do not replace official MCP discovery or protocol semantics.

@@ -43,8 +43,9 @@ final class MCPBasicRecoveryPayloadFactory {
         result.put("tool_name", toolName);
         result.put("supported_tools", ToolHandlerRegistry.getSupportedTools());
         result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
-                "shardingsphere://capabilities", "capability", "Discover supported MCP tools before choosing another tool."));
-        result.put("next_actions", List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read current MCP capabilities before choosing another tool.")));
+                "shardingsphere://capabilities", "capability", "Read ShardingSphere catalog details after checking tools/list."));
+        result.put("next_actions", List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities",
+                "Read the ShardingSphere domain catalog only when tools/list does not provide enough context.")));
         result.put("ask_user_when_uncertain", false);
         return result;
     }
@@ -55,8 +56,9 @@ final class MCPBasicRecoveryPayloadFactory {
         result.put("resource", MCPResourceHintUtils.create(resourceUri, "resource", "inspect_detail", "Unsupported resource URI requested.", "recovery"));
         result.put("matching_resource_templates", ResourceHandlerRegistry.getSupportedResources());
         result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
-                "shardingsphere://capabilities", "capability", "Discover supported resources and templates before choosing another resource."));
-        result.put("next_actions", List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read current MCP capabilities before choosing another resource.")));
+                "shardingsphere://capabilities", "capability", "Read ShardingSphere catalog details after checking resources/list and resources/templates/list."));
+        result.put("next_actions", List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities",
+                "Read the ShardingSphere domain catalog only when official resource discovery does not provide enough context.")));
         result.put("ask_user_when_uncertain", false);
         return result;
     }

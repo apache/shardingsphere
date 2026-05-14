@@ -34,6 +34,8 @@ class MCPModelFirstContractPayloadBuilderTest {
     @Test
     void assertCreateModelFirstSummary() {
         Map<String, Object> actual = builder.createModelFirstSummary();
+        assertThat(castToMap(actual.get("official_discovery_methods")).get("tools"), is("tools/list"));
+        assertThat(actual.get("catalog_resource_role"), is("shardingsphere://capabilities is a ShardingSphere domain catalog resource, not the MCP protocol discovery source."));
         assertThat(actual.get("safe_first_resource"), is("shardingsphere://capabilities"));
         assertThat(castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting")).get("execute_requires"), is("approved_by_user=true"));
         Map<?, ?> actualWorkflowRule = castToMap(actual.get("workflow_rule"));
@@ -45,7 +47,8 @@ class MCPModelFirstContractPayloadBuilderTest {
     @Test
     void assertCreateModelContract() {
         Map<String, Object> actual = builder.createModelContract();
-        assertThat(actual.get("public_surface_source"), is("shardingsphere://capabilities"));
+        assertTrue(String.valueOf(actual.get("public_surface_source")).contains("tools/list"));
+        assertThat(castToMap(actual.get("official_discovery_methods")).get("resources"), is("resources/list"));
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
         assertThat(actual.get("side_effect_rule"), is("Preview before side effects and continue only after explicit user approval with approved_by_user=true."));
     }
@@ -63,6 +66,8 @@ class MCPModelFirstContractPayloadBuilderTest {
     @Test
     void assertCreateCommonFlows() {
         List<Map<String, Object>> actual = builder.createCommonFlows();
+        Map<?, ?> actualInspectMetadata = findByKey(actual, "flow_id", "inspect_metadata");
+        assertTrue(((Collection<?>) actualInspectMetadata.get("steps")).contains("resources/list"));
         Map<?, ?> actualSideEffectingSql = findByKey(actual, "flow_id", "side_effecting_sql");
         assertThat(actualSideEffectingSql.get("referenced_tools"), is(List.of("database_gateway_execute_update")));
         assertTrue(((Collection<?>) actualSideEffectingSql.get("steps")).contains("call_tool database_gateway_execute_update execution_mode=preview"));
@@ -72,7 +77,7 @@ class MCPModelFirstContractPayloadBuilderTest {
     void assertCreateSecurityHints() {
         Map<String, Object> actual = builder.createSecurityHints();
         assertThat(actual.get("remote_access"), is("Prefer loopback access unless the operator explicitly configures remote exposure."));
-        assertThat(actual.get("http_access_token"), is("HTTP transport may require an Authorization bearer token; capabilities never exposes secrets."));
+        assertTrue(String.valueOf(actual.get("http_access_token")).contains("OAuth protected resource metadata"));
         Map<?, ?> actualClientSafetyPolicy = castToMap(actual.get("client_safety_policy"));
         assertThat(actualClientSafetyPolicy.get("identity_scope"), is("mcp_session"));
         assertThat(castToMap(actualClientSafetyPolicy.get("tool_call_limit")).get("scope"), is("session"));

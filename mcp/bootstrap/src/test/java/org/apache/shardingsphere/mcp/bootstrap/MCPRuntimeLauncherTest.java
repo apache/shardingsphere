@@ -37,6 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -124,7 +125,19 @@ class MCPRuntimeLauncherTest {
                 "Runtime databases: 1",
                 "HTTP endpoint: http://127.0.0.1:19090/mcp",
                 "HTTP bearer token: not configured",
-                "First resource to read: shardingsphere://capabilities")));
+                "Official discovery: tools/list, resources/list, resources/templates/list, prompts/list, completion/complete",
+                "Domain catalog resource: shardingsphere://capabilities")));
+    }
+    
+    @Test
+    void assertCreateHttpStartupHintsWithProtectedResourceMetadata() {
+        StreamableHttpMCPServer server = mock(StreamableHttpMCPServer.class);
+        when(server.getLocalPort()).thenReturn(19090);
+        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18080, "/mcp",
+                List.of("https://auth.example.test"), List.of("mcp.read"), ""), new StdioTransportConfiguration(false),
+                Map.of("logic_db", mock(RuntimeDatabaseConfiguration.class)));
+        List<String> actual = new MCPRuntimeLauncher().createStartupHints(launchConfig, server, "custom.yaml");
+        assertTrue(actual.contains("OAuth protected resource metadata: http://127.0.0.1:19090/.well-known/oauth-protected-resource/mcp"));
     }
     
     @Test
@@ -138,7 +151,8 @@ class MCPRuntimeLauncherTest {
                 "Runtime databases: 1",
                 "STDIO transport: enabled",
                 "STDIO stdout: reserved for MCP protocol frames; send diagnostics to stderr or logs.",
-                "First resource to read: shardingsphere://capabilities")));
+                "Official discovery: tools/list, resources/list, resources/templates/list, prompts/list, completion/complete",
+                "Domain catalog resource: shardingsphere://capabilities")));
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled) {

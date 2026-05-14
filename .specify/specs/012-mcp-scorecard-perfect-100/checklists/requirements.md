@@ -38,6 +38,9 @@
 - [x] Edge cases are identified.
 - [x] Scope is clearly bounded to MCP production modules, distribution evidence, and MCP E2E.
 - [x] Dependencies and assumptions are identified.
+- [x] Official MCP sources are identified before implementation requirements are closed.
+- [x] The specification rejects ShardingSphere-specific protocol invention.
+- [x] SDK usage is version-aware for MCP Java SDK `1.1.2`.
 
 ## Feature Readiness
 
@@ -45,9 +48,11 @@
 - [x] User scenarios cover production score closure, E2E score closure, reviewer validation, and implementation backlog.
 - [x] Feature meets the measurable outcomes needed before future implementation work starts.
 - [x] Branch-switching Speckit commands are explicitly forbidden.
+- [x] Source-driven MCP standard gates are recorded and closed with current evidence.
 
 ## Notes
 
-- This package does not claim current implementation completion.
+- This package claims current scoped standard-first implementation completion only where backed by `EV-026` through `EV-032`.
 - The target is every dimension at `100/100`.
 - Future score updates require evidence in `scorecard.md`.
+- The 2026-05-11 closed score remains historical context; the 2026-05-13 official-standard gate is current and closed for the scoped modules.

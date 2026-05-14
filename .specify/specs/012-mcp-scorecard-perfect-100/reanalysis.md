@@ -22,6 +22,13 @@
 This document resolves the follow-up analysis before implementation.
 It classifies every below-100 dimension by the real work needed to reach 100.
 
+Current status note:
+
+- The analysis below records the pre-implementation gap model.
+- The current completion decision is in `scorecard.md` and `evidence-ledger.md`.
+- The 2026-05-13 standard-first gate is closed by `EV-026` through `EV-032`.
+- The 2026-05-14 complete OAuth token validation requirement reopens HTTP authorization, security, functional completeness, tests, operations, and documentation.
+
 Rules:
 
 - Dimensions are locked for this checkpoint.
@@ -33,8 +40,8 @@ Rules:
 
 ## Executive Conclusion
 
-The requirements are clear enough to implement.
-No additional user confirmation is needed before starting work.
+The original scoped requirements were clear enough to implement.
+The complete OAuth token validation requirement is also clear enough to analyze and plan, but it must not be implemented as a one-step patch.
 
 The remaining work is not one large rewrite.
 It is a sequence of evidence-backed closures:
@@ -44,6 +51,40 @@ It is a sequence of evidence-backed closures:
 3. Close evidence-only gaps without code changes.
 4. Close high-impact code and E2E stability gaps in small slices.
 5. Re-score only after each dimension has passing evidence.
+6. Reopen the HTTP authorization gate for complete OAuth token validation and close it only with token-validation implementation evidence.
+
+## Latest Reanalysis After Complete OAuth Token Validation Request
+
+### RA-009 Complete OAuth Resource-Server Token Validation
+
+- Blocking dimensions: active MCP protocol standard conformity, functional completeness, security and risk control, test coverage, operations and distribution maturity, documentation and governance.
+- Current state: `HttpBearerAuthorizationHandler` only compares `Authorization: Bearer <token>` against `transport.http.accessToken`; protected resource metadata is present, but token validation is not complete OAuth resource-server validation.
+- Source-driven contract:
+  - MCP Authorization defines a protected MCP server as an OAuth resource server and requires servers to validate that tokens were issued for their use.
+  - RFC 6750 defines bearer-header usage and `WWW-Authenticate` error behavior.
+  - RFC 7662 defines token introspection and the `active`, `scope`, `aud`, `iss`, `exp`, and `nbf` response fields the resource server can use.
+  - RFC 8707 explains why resource indicators bind access tokens to a protected resource.
+- Recommended implementation path: introspection-first. It supports opaque tokens and JWTs, keeps JWT/JWKS parsing out of the MCP bootstrap runtime, and gives the MCP server a standard way to validate active status and metadata.
+- Required code shape:
+  - A small authorization package boundary for extracting bearer tokens, calling introspection, validating introspection response fields, creating RFC 6750 challenges, and caching only successful active decisions within a bounded TTL.
+  - Configuration values for introspection endpoint, issuer, protected resource, required scopes, client credentials or bearer credential for the introspection call, and cache TTL.
+  - `StreamableHttpMCPServlet` must authorize before delegating and must not pass static `accessToken` to the delegate validator in OAuth mode.
+- Required tests:
+  - Missing bearer: `401` with `WWW-Authenticate`.
+  - Malformed bearer: `401`.
+  - Inactive token: `401 invalid_token`.
+  - Expired token: `401 invalid_token`.
+  - Not-yet-valid token: `401 invalid_token`.
+  - Wrong issuer: `401 invalid_token`.
+  - Wrong audience/resource: `401 invalid_token`.
+  - Missing required scope: `403 insufficient_scope`.
+  - Introspection endpoint timeout/error/malformed JSON: fail closed with `401`.
+  - Valid token: request reaches MCP delegate.
+- Reanalysis decision: do not write production OAuth validation code until the configuration contract and test matrix above are accepted by implementation tasks.
+  No branch switch is needed.
+- Implementation closure: completed on 2026-05-14 through `EV-033` to `EV-035`. The accepted path is introspection-first with mutual exclusion between
+  deployment-level `accessToken` and `oauthIntrospection`, fail-closed token validation, RFC 6750 challenge behavior, and E2E coverage using a local fake
+  introspection endpoint. No new reanalysis blocker remains for this gate.
 
 ## Latest Reanalysis After Default-Lane Closure
 

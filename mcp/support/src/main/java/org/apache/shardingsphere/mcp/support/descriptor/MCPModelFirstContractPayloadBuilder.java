@@ -31,6 +31,8 @@ final class MCPModelFirstContractPayloadBuilder {
     
     private static final String PLANNING_TOOL_NAME_PREFIX = "database_gateway_plan_";
     
+    private static final String OFFICIAL_DISCOVERY_SOURCE = "Official MCP discovery methods: tools/list, resources/list, resources/templates/list, prompts/list, completion/complete.";
+    
     private final MCPDescriptorCatalog catalog;
     
     MCPModelFirstContractPayloadBuilder(final MCPDescriptorCatalog catalog) {
@@ -38,7 +40,9 @@ final class MCPModelFirstContractPayloadBuilder {
     }
     
     Map<String, Object> createModelFirstSummary() {
-        Map<String, Object> result = new LinkedHashMap<>(7, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        result.put("official_discovery_methods", createOfficialDiscoveryMethods());
+        result.put("catalog_resource_role", "shardingsphere://capabilities is a ShardingSphere domain catalog resource, not the MCP protocol discovery source.");
         result.put("safe_first_resource", "shardingsphere://capabilities");
         result.put("metadata_rule", createMetadataRule());
         result.put("sql_tool_selection", createSqlToolSelection());
@@ -50,8 +54,9 @@ final class MCPModelFirstContractPayloadBuilder {
     }
     
     Map<String, Object> createModelContract() {
-        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
-        result.put("public_surface_source", "shardingsphere://capabilities");
+        Map<String, Object> result = new LinkedHashMap<>(10, 1F);
+        result.put("public_surface_source", OFFICIAL_DISCOVERY_SOURCE);
+        result.put("official_discovery_methods", createOfficialDiscoveryMethods());
         result.put("safe_first_resource", "shardingsphere://capabilities");
         result.put("metadata_first_resource", "shardingsphere://databases");
         result.put("sql_tool_selection", Map.of(
@@ -66,8 +71,9 @@ final class MCPModelFirstContractPayloadBuilder {
     }
     
     Map<String, Object> createSurfaceSummary() {
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        result.put("first_resource", "shardingsphere://capabilities");
+        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        result.put("first_protocol_methods", createOfficialDiscoveryMethods());
+        result.put("catalog_resource", "shardingsphere://capabilities");
         result.put("metadata_resource", "shardingsphere://databases");
         result.put("metadata_search_tool", "database_gateway_search_metadata");
         result.put("read_only_sql_tool", "database_gateway_execute_query");
@@ -80,7 +86,8 @@ final class MCPModelFirstContractPayloadBuilder {
     
     Map<String, Object> createFieldNamingContract() {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
-        result.put("protocol_fields", List.of("supportedResources", "supportedTools", "resourceTemplates", "completionTargets", "resourceNavigation", "protocolAvailability"));
+        result.put("protocol_methods", List.of("tools/list", "resources/list", "resources/templates/list", "prompts/list", "completion/complete"));
+        result.put("catalog_fields", List.of("supportedResources", "supportedTools", "resourceTemplates", "completionTargets", "resourceNavigation", "protocolAvailability"));
         result.put("payload_fields", "ShardingSphere-owned structured payload fields use snake_case.");
         result.put("descriptor_fields", "Descriptor-derived MCP schema fields keep the protocol or JSON Schema field names required by MCP clients.");
         result.put("alias_rule", "Do not assume camelCase and snake_case variants are aliases unless the same descriptor explicitly documents both.");
@@ -106,9 +113,10 @@ final class MCPModelFirstContractPayloadBuilder {
     
     List<Map<String, Object>> createCommonFlows() {
         return List.of(
-                createCommonFlow("inspect_metadata", List.of("read_resource shardingsphere://capabilities", "read_resource shardingsphere://databases",
-                        "call_tool database_gateway_search_metadata", "read_resource returned resource.uri"), "Stop when the requested metadata detail resource is read.",
-                        List.of("database_gateway_search_metadata"), List.of("shardingsphere://capabilities", "shardingsphere://databases")),
+                createCommonFlow("inspect_metadata", List.of("resources/list", "resources/templates/list", "read_resource shardingsphere://databases",
+                        "call_tool database_gateway_search_metadata", "read_resource returned resource.uri"),
+                        "Stop when the requested metadata detail resource is read.",
+                        List.of("database_gateway_search_metadata"), List.of("shardingsphere://databases")),
                 createCommonFlow("read_only_sql", List.of("read_resource shardingsphere://databases/{database}/capabilities", "call_tool database_gateway_execute_query"),
                         "Use one SELECT or EXPLAIN ANALYZE statement and stop after the result is reported.",
                         List.of("database_gateway_execute_query"), List.of("shardingsphere://databases/{database}/capabilities")),
@@ -119,16 +127,27 @@ final class MCPModelFirstContractPayloadBuilder {
                         "ask_user approved_by_user", "call_tool database_gateway_apply_workflow review-then-execute approved_by_user=true", "call_tool database_gateway_validate_workflow"),
                         "Reuse the same current-session plan_id and stop after validation succeeds.",
                         List.of("database_gateway_apply_workflow", "database_gateway_validate_workflow"), List.of()),
-                createCommonFlow("recover_from_error", List.of("follow recovery.next_actions", "read_resource shardingsphere://capabilities when suggested", "ask_user only when uncertain"),
+                createCommonFlow("recover_from_error", List.of("follow recovery.next_actions", "prefer official discovery methods when surface information is needed",
+                        "read_resource shardingsphere://capabilities only when the server suggests the catalog resource", "ask_user only when uncertain"),
                         "Do not invent replacement calls while structured recovery actions are present.", List.of(), List.of("shardingsphere://capabilities")));
     }
     
     Map<String, Object> createSecurityHints() {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("http_access_token", "HTTP transport may require an Authorization bearer token; capabilities never exposes secrets.");
+        result.put("http_access_token", "HTTP transport bearer challenges use OAuth protected resource metadata; capabilities never exposes secrets.");
         result.put("remote_access", "Prefer loopback access unless the operator explicitly configures remote exposure.");
         result.put("stdio_stdout", "STDIO transport must keep MCP protocol frames on stdout and send logs to stderr or files.");
         result.put("client_safety_policy", MCPClientSafetyPolicy.createModelFacingPayload());
+        return result;
+    }
+    
+    private Map<String, Object> createOfficialDiscoveryMethods() {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("tools", "tools/list");
+        result.put("resources", "resources/list");
+        result.put("resource_templates", "resources/templates/list");
+        result.put("prompts", "prompts/list");
+        result.put("completions", "completion/complete");
         return result;
     }
     

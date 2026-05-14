@@ -21,33 +21,20 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 /**
- * YAML HTTP transport configuration.
+ * YAML OAuth introspection configuration.
  */
 @Getter
 @Setter
-public final class YamlHttpTransportConfiguration implements YamlConfiguration {
+public final class YamlOAuthIntrospectionConfiguration implements YamlConfiguration {
     
-    private boolean enabled;
+    private String endpoint;
     
-    private String bindHost;
+    private String clientId;
     
-    private boolean allowRemoteAccess;
+    private String clientSecret;
     
-    private String accessToken;
+    private String expectedIssuer;
     
-    private Integer port;
-    
-    private String endpointPath;
-    
-    private Collection<String> authorizationServers = new LinkedList<>();
-    
-    private Collection<String> scopesSupported = new LinkedList<>();
-    
-    private String protectedResource;
-    
-    private YamlOAuthIntrospectionConfiguration oauthIntrospection = new YamlOAuthIntrospectionConfiguration();
+    private Long cacheTtlMillis;
 }

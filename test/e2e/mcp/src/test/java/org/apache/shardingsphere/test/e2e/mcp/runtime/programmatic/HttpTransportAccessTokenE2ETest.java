@@ -24,12 +24,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -38,13 +42,15 @@ class HttpTransportAccessTokenE2ETest extends AbstractHttpProgrammaticRuntimeE2E
     
     private static final String ACCESS_TOKEN = "test-access-token";
     
+    private static final String AUTHORIZATION_SERVER = "https://auth.example.test";
+    
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();
     }
     
     @Override
     protected HttpTransportConfiguration createHttpTransportConfiguration(final boolean enabled) {
-        return new HttpTransportConfiguration(enabled, "127.0.0.1", false, ACCESS_TOKEN, 0, getHttpEndpointPath());
+        return new HttpTransportConfiguration(enabled, "127.0.0.1", false, ACCESS_TOKEN, 0, getHttpEndpointPath(), List.of(AUTHORIZATION_SERVER), List.of("mcp.read"), "");
     }
     
     @Test
@@ -62,6 +68,7 @@ class HttpTransportAccessTokenE2ETest extends AbstractHttpProgrammaticRuntimeE2E
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse<String> actual = sendInitializeRequest(httpClient);
         assertThat(actual.statusCode(), is(401));
+        assertProtectedResourceMetadataChallenge(actual);
     }
     
     @Test
@@ -70,6 +77,20 @@ class HttpTransportAccessTokenE2ETest extends AbstractHttpProgrammaticRuntimeE2E
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Authorization", createAuthorizationHeaderValue("wrong-token")), createInitializeRequestParams());
         assertThat(actual.statusCode(), is(401));
+        assertProtectedResourceMetadataChallenge(actual);
+    }
+    
+    @Test
+    void assertReadProtectedResourceMetadata() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> actual = httpClient.send(HttpRequest.newBuilder(getProtectedResourceMetadataUri()).GET().build(), HttpResponse.BodyHandlers.ofString());
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> actualBody = parseJsonBody(actual.body());
+        assertThat(actualBody.get("resource"), is(getEndpointUri().toString()));
+        assertThat(actualBody.get("authorization_servers"), is(List.of(AUTHORIZATION_SERVER)));
+        assertThat(actualBody.get("scopes_supported"), is(List.of("mcp.read")));
+        assertThat(actualBody.get("bearer_methods_supported"), is(List.of("header")));
     }
     
     @Test
@@ -79,6 +100,7 @@ class HttpTransportAccessTokenE2ETest extends AbstractHttpProgrammaticRuntimeE2E
         initializeSessionWithAccessToken(httpClient, ACCESS_TOKEN);
         HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, Map.of("MCP-Session-Id", "missing-session", "MCP-Protocol-Version", getProtocolVersion()));
         assertThat(actual.statusCode(), is(401));
+        assertProtectedResourceMetadataChallenge(actual);
     }
     
     @Test
@@ -89,6 +111,7 @@ class HttpTransportAccessTokenE2ETest extends AbstractHttpProgrammaticRuntimeE2E
         Map<String, String> headers = createAuthorizedSessionHeaders(sessionId, "wrong-token");
         HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, headers);
         assertThat(actual.statusCode(), is(401));
+        assertProtectedResourceMetadataChallenge(actual);
     }
     
     @Test
@@ -110,6 +133,14 @@ class HttpTransportAccessTokenE2ETest extends AbstractHttpProgrammaticRuntimeE2E
         Map<String, String> result = new LinkedHashMap<>(createSessionHeaders(sessionId));
         result.put("Authorization", createAuthorizationHeaderValue(accessToken));
         return result;
+    }
+    
+    private void assertProtectedResourceMetadataChallenge(final HttpResponse<String> actual) throws IOException {
+        assertThat(actual.headers().firstValue("WWW-Authenticate").orElse(""), containsString("resource_metadata=\"" + getProtectedResourceMetadataUri() + "\""));
+    }
+    
+    private URI getProtectedResourceMetadataUri() throws IOException {
+        return getEndpointUri().resolve("/.well-known/oauth-protected-resource" + getHttpEndpointPath());
     }
     
     private Map<String, Object> createInitializeRequestParams() {

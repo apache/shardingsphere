@@ -303,7 +303,7 @@ inspectMetadataPrompt:
   messages:
     - role: user
       contentType: text
-      textSha256: 6e262bbbb37152b6ac9d37dfdba7c3ed52e3f6713fb6e78be3bdad4af9c582d3
+      textSha256: 46c516e34c28ceda71e28eb81d7a02efc9532e1cb70adb0fc3eaa5c8e3d69a67
 missingContextCompletion:
   completion:
     values: []

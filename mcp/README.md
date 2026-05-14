@@ -48,8 +48,12 @@ Notes:
 - The packaged runtime reads `conf/mcp.yaml` and `conf/logback.xml`.
 - When HTTP is enabled, the default endpoint is `http://127.0.0.1:18088/mcp`.
 - Logs are written under `logs/`.
-- `conf/mcp.yaml` is now strict about supported field names: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.allowRemoteAccess`, `transport.http.accessToken`, `transport.http.port`, `transport.http.endpointPath`, `transport.stdio.enabled`, and all runtime database fields must be declared with supported keys only.
-- `transport.http.accessToken` and runtime database fields support simple `${ENV_NAME}` placeholders for deployment secrets such as JDBC credentials.
+- `conf/mcp.yaml` is now strict about supported field names: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.allowRemoteAccess`,
+  `transport.http.accessToken`, `transport.http.port`, `transport.http.endpointPath`, `transport.http.authorizationServers`, `transport.http.scopesSupported`,
+  `transport.http.protectedResource`, `transport.http.oauthIntrospection.endpoint`, `transport.http.oauthIntrospection.clientId`,
+  `transport.http.oauthIntrospection.clientSecret`, `transport.http.oauthIntrospection.expectedIssuer`, `transport.http.oauthIntrospection.cacheTtlMillis`,
+  `transport.stdio.enabled`, and all runtime database fields must be declared with supported keys only.
+- `transport.http.accessToken`, `transport.http.oauthIntrospection` string fields, HTTP authorization metadata fields, and runtime database fields support simple `${ENV_NAME}` placeholders for deployment secrets such as JDBC credentials.
 - Exactly one transport must be enabled per process. The packaged sample configuration enables HTTP only.
 - `bin/start.sh` and `bin\start.bat` validate the config file, runtime libraries, and Java availability before startup, create `data/`, `logs/`, and `plugins/`, then start from the package root so relative runtime paths resolve consistently.
 - If startup succeeds, the process stays running in the foreground. If it exits immediately, inspect the terminal error and `logs/mcp.log` first.
@@ -309,10 +313,11 @@ Reference:
   ```
 
 - Startup prints concise hints to stderr: configuration path, log path, runtime database count, active transport, token state,
-  and the first resource to read.
-- Configure clients to read `shardingsphere://capabilities` first, then follow `resourceNavigation`, `next_resources`,
-  and `next_actions` instead of guessing hidden tools or arguments.
-- For HTTP `401`, check `transport.http.accessToken` and send `Authorization: Bearer <token>`.
+  official MCP discovery methods, and the ShardingSphere domain catalog resource.
+- Configure clients to use official MCP discovery methods first (`tools/list`, `resources/list`, `resources/templates/list`, `prompts/list`,
+  `completion/complete`), then read `shardingsphere://capabilities` as a domain catalog when needed.
+- For HTTP `401`, check `WWW-Authenticate`, read the advertised OAuth protected resource metadata when present,
+  and send `Authorization: Bearer <token>`.
 - If startup reports zero or missing runtime databases, fix `runtimeDatabases`; MCP resources expose ShardingSphere logical databases,
   not physical storage units.
 - If `shardingsphere://runtime` reports `server_status=configuration_required`, configure at least one `runtimeDatabases` entry before metadata discovery or SQL execution.
@@ -333,9 +338,13 @@ Reference:
 - For local MCP client integration, keep `transport.http.enabled: false` and `transport.stdio.enabled: true`.
 - `transport.http.bindHost` controls which address the HTTP service listens on: `127.0.0.1`, `localhost`, and `::1` are local-only; `0.0.0.0` or a specific intranet IP exposes the matching network interface.
 - Non-loopback `bindHost` values require `transport.http.allowRemoteAccess: true`, otherwise startup fails; this field only declares remote-exposure intent.
-- When `transport.http.accessToken` is configured, every HTTP request must provide `Authorization: Bearer <token>`.
-- Non-loopback `bindHost` values also require a non-blank `transport.http.accessToken`, so remote HTTP is not exposed anonymously.
-- The built-in access token is a deployment-level shared secret, not a login or per-user credential.
+- When `transport.http.accessToken` is configured, configure valid HTTPS `transport.http.authorizationServers` values and make every HTTP request provide `Authorization: Bearer <token>`.
+- For OAuth resource-server validation, configure `transport.http.oauthIntrospection.endpoint`, `clientId`, and `clientSecret` instead of `transport.http.accessToken`; these two authorization modes are mutually exclusive.
+- Non-loopback `bindHost` values also require either a non-blank `transport.http.accessToken` or OAuth introspection, so remote HTTP is not exposed anonymously.
+- Authorized HTTP endpoints expose OAuth protected resource metadata at `/.well-known/oauth-protected-resource{endpointPath}` and advertise it through `WWW-Authenticate`.
+- The built-in access token is an operator-provisioned bearer token for this protected MCP resource, not a login or per-user credential.
+- OAuth introspection uses RFC 7662 form POST with HTTP Basic client authentication, requires HTTPS endpoints except loopback HTTP for local test fixtures, and validates active state, issuer, protected resource audience, expiration, not-before time when present, and required scopes.
+- OAuth failures return RFC 6750 challenges: `401` with `error="invalid_token"` for invalid or unverifiable tokens and `403` with `error="insufficient_scope"` for active tokens missing required scopes.
 - Even with the built-in access token enabled, keep externally exposed endpoints behind a trusted network, gateway, or reverse proxy.
 - To start with a custom configuration file, run `bin/start.sh /path/to/mcp.yaml` on Unix-like systems or `bin\start.bat path\to\mcp.yaml` on Windows.
 - To tune the JVM for local experiments, use `JAVA_OPTS`, for example `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh` on Unix-like systems or `set "JAVA_OPTS=-Xms256m -Xmx256m" && bin\start.bat` on Windows.

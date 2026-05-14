@@ -22,23 +22,26 @@
 1. `spec.md`
 2. `scorecard.md`
 3. `evidence-ledger.md`
-4. `reanalysis.md`
-5. `tasks.md`
-6. `plan.md`
-7. `research.md`
-8. `data-model.md`
-9. `checklists/requirements.md`
+4. `source-driven-mcp-standard-map.md`
+5. `protocol-evidence-matrix.md`
+6. `reanalysis.md`
+7. `tasks.md`
+8. `plan.md`
+9. `research.md`
+10. `data-model.md`
+11. `checklists/requirements.md`
 
 ## Current Gate
 
-This package is a requirement and planning artifact.
-It does not claim that the current implementation is 100/100.
+This package is now both the requirement artifact and the current evidence ledger for the scoped standard-first implementation.
+It claims `100/100` only for dimensions backed by the evidence records in `scorecard.md` and `evidence-ledger.md`.
 
 Current baseline:
 
 - MCP production modules: `87.5/100`.
 - MCP E2E module: `86.3/100`.
 - Required target: every dimension `100/100`.
+- Active 2026-05-13 standard-first gate: closed by `EV-026` through `EV-032`.
 
 ## Local Validation
 
@@ -48,6 +51,8 @@ Run these read-only checks after editing this package:
 git status --short --branch
 find .specify/specs/012-mcp-scorecard-perfect-100 specs/008-mcp-scorecard-perfect-100 -type f | sort
 rg -n "git switch|git checkout|branch-changing|100/100|Target" .specify/specs/012-mcp-scorecard-perfect-100 specs/008-mcp-scorecard-perfect-100
+STANDARD_PATTERN="source-driven|official MCP|modelcontextprotocol|non-standard|protocol invention|cursor|nextCursor|structuredContent|outputSchema"
+rg -n "$STANDARD_PATTERN" .specify/specs/012-mcp-scorecard-perfect-100 specs/008-mcp-scorecard-perfect-100
 ```
 
 Expected result:
@@ -55,6 +60,7 @@ Expected result:
 - The branch remains `001-shardingsphere-mcp`.
 - The new Speckit package and repo-visible handoff files exist.
 - Branch-changing commands appear only as forbidden constraints.
+- Official MCP standard requirements are visible in the canonical package and repo-visible handoff.
 
 ## Future Implementation Verification
 
@@ -117,5 +123,17 @@ Final perfect-score slice:
 - MCP API/support/core Checkstyle with dependencies: exit `0`, `0 Checkstyle violations`.
 - MCP API/support/core Spotless with dependencies: exit `0`, all clean.
 
-This evidence closes the current performance-budget, safety-boundary, protocol-conformance,
+This evidence closes the 2026-05-11 performance-budget, safety-boundary, protocol-conformance,
 historical revalidation, and decoupling gaps.
+
+Standard-first slice:
+
+- Protocol matrix and source map: current in `EV-026` and `EV-027`.
+- HTTP authorization and protected-resource metadata: current in `EV-028`.
+- Golden contract plus production H2 official-discovery E2E: exit `0`, `13` concrete tests across `HttpTransportGoldenContractE2ETest`,
+  `ProductionH2CapabilityDiscoveryE2ETest`, and `ProductionH2AiNativeInteractionE2ETest`.
+- mcp-builder evaluation artifact: `10` read-only Q/A pairs, verified by `MCPBuilderEvaluationArtifactTest`.
+- Scoped standard-first tests: exit `0`, `81` tests across support, core, bootstrap, and MCP E2E.
+- Scoped standard-first Checkstyle and Spotless: exit `0`, all four touched modules clean.
+
+This closes the 2026-05-13 standard-first gate for the scoped modules and artifacts.
