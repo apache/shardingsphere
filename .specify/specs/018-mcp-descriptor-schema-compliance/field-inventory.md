@@ -26,7 +26,7 @@
   - MCP schema: supported optional official field.
   - SDK `1.1.2`: supported by `McpSchema.Resource.size()`.
   - ShardingSphere status: implemented for fixed resources only.
-  - Descriptor policy: must be an integer and non-negative when present.
+  - Descriptor policy: must be an integer within Java `long` range and non-negative when present.
 - `Resource.icons`
   - MCP schema: supported optional official field.
   - SDK `1.1.2`: not exposed by `McpSchema.Resource`.

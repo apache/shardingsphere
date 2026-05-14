@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
@@ -58,6 +59,10 @@ final class MCPDescriptorYamlKeyValidator {
     private static final Collection<String> COMPLETION_TARGET_KEYS = Set.of("referenceType", "reference", "arguments", "maxValues", "meta");
     
     private static final Collection<String> RESOURCE_NAVIGATION_KEYS = Set.of("from", "to", "requiredArguments", "carriedArguments", "description");
+    
+    private static final BigInteger LONG_MIN = BigInteger.valueOf(Long.MIN_VALUE);
+    
+    private static final BigInteger LONG_MAX = BigInteger.valueOf(Long.MAX_VALUE);
     
     static void validate(final String resourceName, final byte[] yamlBytes) {
         String yamlContent = new String(yamlBytes, StandardCharsets.UTF_8);
@@ -152,9 +157,20 @@ final class MCPDescriptorYamlKeyValidator {
     private static void validateFixedResourceFields(final String resourceName, final String path, final Map<?, ?> resource) {
         if (resource.containsKey("size")) {
             Object value = resource.get("size");
-            checkState(value instanceof Number && !(value instanceof Float) && !(value instanceof Double),
-                    String.format("MCP descriptor resource `%s` expects integer at `%s.size`.", resourceName, path));
+            checkState(isLongInteger(value), String.format("MCP descriptor resource `%s` expects integer within Java long range at `%s.size`.", resourceName, path));
         }
+    }
+    
+    private static boolean isLongInteger(final Object value) {
+        return value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Long || isLongRangeBigInteger(value);
+    }
+    
+    private static boolean isLongRangeBigInteger(final Object value) {
+        return value instanceof BigInteger bigInteger && isLongRange(bigInteger);
+    }
+    
+    private static boolean isLongRange(final BigInteger value) {
+        return value.compareTo(LONG_MIN) >= 0 && value.compareTo(LONG_MAX) <= 0;
     }
     
     private static void validateToolAnnotations(final String resourceName, final String path, final Object annotations) {

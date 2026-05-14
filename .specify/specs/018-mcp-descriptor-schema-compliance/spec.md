@@ -104,7 +104,7 @@ Verify official fields are not placed under internal metadata and internal metad
 
 ## Edge Cases
 
-- `size` must be non-negative when present.
+- `size` must be an integer within Java `long` range and non-negative when present.
 - Empty official arrays such as `icons: []` should be rejected or omitted according to ShardingSphere descriptor policy when SDK support is added.
 - Invalid icon URI schemes or invalid MIME types must not bypass validation if ShardingSphere decides to validate icon safety in a future SDK-supported slice.
 - `execution.taskSupport` accepts only `forbidden`, `optional`, or `required`.
