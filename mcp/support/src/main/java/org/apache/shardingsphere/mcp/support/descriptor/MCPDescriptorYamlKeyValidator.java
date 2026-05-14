@@ -31,11 +31,9 @@ final class MCPDescriptorYamlKeyValidator {
     
     private static final Collection<String> ROOT_KEYS = Set.of("resources", "resourceTemplates", "tools", "prompts", "completionTargets", "resourceNavigation");
     
-    private static final Collection<String> RESOURCE_KEYS = Set.of("uri", "name", "title", "description", "icons", "mimeType", "annotations", "meta", "extension");
+    private static final Collection<String> RESOURCE_KEYS = Set.of("uri", "name", "title", "description", "mimeType", "annotations", "meta", "extension");
     
-    private static final Collection<String> RESOURCE_TEMPLATE_KEYS = Set.of("uriTemplate", "name", "title", "description", "icons", "mimeType", "annotations", "meta", "extension");
-    
-    private static final Collection<String> ICON_KEYS = Set.of("src", "mimeType", "sizes", "theme");
+    private static final Collection<String> RESOURCE_TEMPLATE_KEYS = Set.of("uriTemplate", "name", "title", "description", "mimeType", "annotations", "meta", "extension");
     
     private static final Collection<String> RESOURCE_EXTENSION_KEYS = Set.of("uriVariables", "resourceKind", "objectScope", "feature", "relatedTools", "relatedResources", "useBefore");
     
@@ -43,13 +41,13 @@ final class MCPDescriptorYamlKeyValidator {
     
     private static final Collection<String> RESOURCE_ANNOTATION_KEYS = Set.of("audience", "priority", "lastModified");
     
-    private static final Collection<String> TOOL_KEYS = Set.of("name", "title", "description", "icons", "inputSchema", "outputSchema", "annotations", "runtime", "meta");
+    private static final Collection<String> TOOL_KEYS = Set.of("name", "title", "description", "inputSchema", "outputSchema", "annotations", "runtime", "meta");
     
     private static final Collection<String> TOOL_ANNOTATION_KEYS = Set.of("title", "readOnlyHint", "destructiveHint", "idempotentHint", "openWorldHint");
     
     private static final Collection<String> TOOL_RUNTIME_KEYS = Set.of("workflowRole", "requiresUserApproval", "sideEffectScope");
     
-    private static final Collection<String> PROMPT_KEYS = Set.of("name", "title", "description", "icons", "arguments", "binding", "meta");
+    private static final Collection<String> PROMPT_KEYS = Set.of("name", "title", "description", "arguments", "binding", "meta");
     
     private static final Collection<String> PROMPT_ARGUMENT_KEYS = Set.of("name", "title", "description", "required");
     
@@ -79,7 +77,6 @@ final class MCPDescriptorYamlKeyValidator {
         for (Object each : asList(resourceName, "$.resources", resources)) {
             Map<?, ?> resource = asMap(resourceName, "$.resources[" + index + "]", each);
             validateKeys(resourceName, "$.resources[" + index + "]", resource, RESOURCE_KEYS);
-            validateIcons(resourceName, "$.resources[" + index + "].icons", resource.get("icons"));
             validateOptionalMap(resourceName, "$.resources[" + index + "].annotations", resource.get("annotations"), RESOURCE_ANNOTATION_KEYS);
             validateResourceExtension(resourceName, "$.resources[" + index + "].extension", resource.get("extension"));
             index++;
@@ -91,7 +88,6 @@ final class MCPDescriptorYamlKeyValidator {
         for (Object each : asList(resourceName, "$.resourceTemplates", resourceTemplates)) {
             Map<?, ?> resourceTemplate = asMap(resourceName, "$.resourceTemplates[" + index + "]", each);
             validateKeys(resourceName, "$.resourceTemplates[" + index + "]", resourceTemplate, RESOURCE_TEMPLATE_KEYS);
-            validateIcons(resourceName, "$.resourceTemplates[" + index + "].icons", resourceTemplate.get("icons"));
             validateOptionalMap(resourceName, "$.resourceTemplates[" + index + "].annotations", resourceTemplate.get("annotations"), RESOURCE_ANNOTATION_KEYS);
             validateResourceExtension(resourceName, "$.resourceTemplates[" + index + "].extension", resourceTemplate.get("extension"));
             index++;
@@ -115,20 +111,11 @@ final class MCPDescriptorYamlKeyValidator {
         }
     }
     
-    private static void validateIcons(final String resourceName, final String path, final Object icons) {
-        int index = 0;
-        for (Object each : asList(resourceName, path, icons)) {
-            validateKeys(resourceName, path + "[" + index + "]", asMap(resourceName, path + "[" + index + "]", each), ICON_KEYS);
-            index++;
-        }
-    }
-    
     private static void validateTools(final String resourceName, final Object tools) {
         int index = 0;
         for (Object each : asList(resourceName, "$.tools", tools)) {
             Map<?, ?> tool = asMap(resourceName, "$.tools[" + index + "]", each);
             validateKeys(resourceName, "$.tools[" + index + "]", tool, TOOL_KEYS);
-            validateIcons(resourceName, "$.tools[" + index + "].icons", tool.get("icons"));
             validateOptionalMap(resourceName, "$.tools[" + index + "].annotations", tool.get("annotations"), TOOL_ANNOTATION_KEYS);
             validateOptionalMap(resourceName, "$.tools[" + index + "].runtime", tool.get("runtime"), TOOL_RUNTIME_KEYS);
             index++;
@@ -140,7 +127,6 @@ final class MCPDescriptorYamlKeyValidator {
         for (Object each : asList(resourceName, "$.prompts", prompts)) {
             Map<?, ?> prompt = asMap(resourceName, "$.prompts[" + index + "]", each);
             validateKeys(resourceName, "$.prompts[" + index + "]", prompt, PROMPT_KEYS);
-            validateIcons(resourceName, "$.prompts[" + index + "].icons", prompt.get("icons"));
             validatePromptArguments(resourceName, "$.prompts[" + index + "].arguments", prompt.get("arguments"));
             validateOptionalMap(resourceName, "$.prompts[" + index + "].binding", prompt.get("binding"), PROMPT_BINDING_KEYS);
             index++;

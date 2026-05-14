@@ -90,24 +90,11 @@ class PackagedDistributionPluginDiscoveryE2ETest {
         for (String each : REMOVED_FEATURE_TOOL_NAMES) {
             assertFalse(actualToolNames.contains(each));
         }
-        Map<String, Object> actualFixtureTool = tools.stream().filter(each -> "fixture_ping".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
-        assertDescriptorIcon(actualFixtureTool, "https://example.invalid/fixture-ping.png");
     }
     
     private void assertDiscoveredResources(final Map<String, Object> payload) {
         List<Map<String, Object>> actualResources = MCPInteractionPayloads.castToList(payload.get("resources"));
-        Map<String, Object> actualFixtureResource = actualResources.stream().filter(each -> FIXTURE_RESOURCE_URI.equals(each.get("uri"))).findFirst().orElseThrow(IllegalStateException::new);
-        assertDescriptorIcon(actualFixtureResource, "https://example.invalid/test-fixture-status.png");
-    }
-    
-    private void assertDescriptorIcon(final Map<String, Object> descriptor, final String expectedSource) {
-        List<Map<String, Object>> actualIcons = MCPInteractionPayloads.castToList(descriptor.get("icons"));
-        assertThat(actualIcons.size(), is(1));
-        Map<String, Object> actualIcon = actualIcons.get(0);
-        assertThat(actualIcon.get("src"), is(expectedSource));
-        assertThat(actualIcon.get("mimeType"), is("image/png"));
-        assertThat(actualIcon.get("sizes"), is(List.of("64x64")));
-        assertThat(actualIcon.get("theme"), is("light"));
+        assertTrue(actualResources.stream().anyMatch(each -> FIXTURE_RESOURCE_URI.equals(each.get("uri"))));
     }
     
     private void assertSearchMetadataTool(final Map<String, Object> payload) {

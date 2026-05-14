@@ -47,12 +47,4 @@ public final class MCPTransportJsonMapperFactory {
         return new JacksonMcpJsonMapper(objectMapper);
     }
     
-    /**
-     * Create MCP JSON mapper that preserves list response descriptor fields unsupported by the current SDK records.
-     *
-     * @return MCP list response JSON mapper
-     */
-    public static McpJsonMapper createListResponseMapper() {
-        return MCPListResponseJsonMapper.create(create());
-    }
 }

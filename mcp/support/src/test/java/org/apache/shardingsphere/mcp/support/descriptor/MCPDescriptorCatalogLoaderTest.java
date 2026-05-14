@@ -50,7 +50,6 @@ class MCPDescriptorCatalogLoaderTest {
         assertOutputProperties(actual, "database_gateway_validate_workflow", Set.of("response_mode", "plan_id", "status", "recovery_guidance", "next_actions", "sections", "mismatches"));
         assertPlanningToolAnnotations(actual);
         assertResourceDescriptor(actual);
-        assertOfficialOptionalFields(actual);
         assertNoBannedPublicAliasFields(actual);
         assertNoResponseFormatOptions(actual);
         assertNoToolExecutionPayload(actual);
@@ -113,7 +112,7 @@ class MCPDescriptorCatalogLoaderTest {
     
     private MCPResourceDescriptor createResourceTemplateDescriptor() {
         return new MCPResourceDescriptor("shardingsphere://databases/{database}", "logical-database-detail", "Logical Database Detail",
-                "Read one logical database detail.", Collections.emptyList(), "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());
+                "Read one logical database detail.", "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());
     }
     
     private MCPResourceExtensionDescriptor createResourceExtensionDescriptor() {
@@ -123,7 +122,7 @@ class MCPDescriptorCatalogLoaderTest {
     }
     
     private MCPPromptDescriptor createPromptDescriptor() {
-        return new MCPPromptDescriptor(List.of(), "inspect_metadata", "Inspect Metadata", "Inspect metadata.",
+        return new MCPPromptDescriptor("inspect_metadata", "Inspect Metadata", "Inspect metadata.",
                 List.of(
                         new MCPPromptArgumentDescriptor("database", "Database", "Database.", false),
                         new MCPPromptArgumentDescriptor("schema", "Schema", "Schema.", false),
@@ -153,11 +152,6 @@ class MCPDescriptorCatalogLoaderTest {
         MCPResourceDescriptor actual = findResource(catalog, "shardingsphere://workflows/{plan_id}");
         assertTrue(actual.getMeta().isEmpty());
         assertThat(findResourceExtension(catalog, "shardingsphere://workflow/test-resource").getResourceKind(), is("detail"));
-    }
-    
-    private void assertOfficialOptionalFields(final MCPDescriptorCatalog catalog) {
-        MCPResourceDescriptor resource = findResource(catalog, "shardingsphere://workflow/test-resource");
-        assertThat(resource.getIcons().get(0).getSizes(), is(List.of("64x64")));
     }
     
     private void assertNoBannedPublicAliasFields(final MCPDescriptorCatalog catalog) {

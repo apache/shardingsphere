@@ -20,9 +20,7 @@ package org.apache.shardingsphere.mcp.api.resource.descriptor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
-import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,8 +37,6 @@ public final class MCPResourceDescriptor {
     private final String title;
     
     private final String description;
-    
-    private final List<MCPIcon> icons;
     
     private final String mimeType;
     

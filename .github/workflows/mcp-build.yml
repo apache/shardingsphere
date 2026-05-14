@@ -86,6 +86,8 @@ jobs:
         run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
       - name: Package JDK 21 Subchain Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
+      - name: Test MCP Registry Metadata Script
+        run: python3 .github/workflows/resources/scripts/test-prepare-mcp-server-json.py
       - name: Run MCP Distribution Smoke
         shell: bash
         run: |
@@ -113,18 +115,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          server = json.loads(Path("mcp/server.json").read_text())
-          assert "SNAPSHOT" not in server["version"]
-          assert {package["transport"]["type"] for package in server["packages"]} == {"stdio", "streamable-http"}
-          for package in server["packages"]:
-            assert "SNAPSHOT" not in package["identifier"]
-            assert "SNAPSHOT" not in package["version"]
-            assert package["identifier"].startswith("ghcr.io/apache/shardingsphere-mcp:")
-            assert package["version"] == server["version"]
-          PY
+          python3 .github/workflows/resources/scripts/prepare-mcp-server-json.py --validate-only
       - name: Login Container Registry
         uses: docker/login-action@v3
         with:

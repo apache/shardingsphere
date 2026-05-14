@@ -57,7 +57,7 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
     private Path baseDirectory;
     
     public StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPRuntimeContext runtimeContext) {
-        this(config, runtimeContext, MCPTransportJsonMapperFactory.createListResponseMapper());
+        this(config, runtimeContext, MCPTransportJsonMapperFactory.create());
     }
     
     private StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {

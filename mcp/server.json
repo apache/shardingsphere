@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.apache/shardingsphere-mcp",
   "title": "Apache ShardingSphere MCP",
-  "description": "Standalone MCP runtime for Apache ShardingSphere metadata-first discovery, preview-before-execute SQL, and encrypt/mask rule workflows",
+  "description": "Apache ShardingSphere MCP runtime for metadata discovery, SQL preview, and encrypt/mask workflows",
   "websiteUrl": "https://github.com/apache/shardingsphere/tree/master/mcp",
   "repository": {
     "url": "https://github.com/apache/shardingsphere",
@@ -41,7 +41,8 @@
       "identifier": "ghcr.io/apache/shardingsphere-mcp:5.5.4-SNAPSHOT",
       "version": "5.5.4-SNAPSHOT",
       "transport": {
-        "type": "streamable-http"
+        "type": "streamable-http",
+        "url": "http://127.0.0.1:18088/mcp"
       },
       "environmentVariables": [
         {

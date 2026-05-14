@@ -20,9 +20,7 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -37,8 +35,6 @@ public final class YamlMCPToolDescriptor {
     private String title;
     
     private String description;
-    
-    private Collection<YamlMCPIcon> icons = new LinkedList<>();
     
     private Map<String, Object> inputSchema = new LinkedHashMap<>();
     

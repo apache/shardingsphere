@@ -230,7 +230,7 @@ class ToolHandlerRegistryTest {
         MCPToolHandler<MCPHandlerContext> unsupportedHandler = mock(MCPToolHandler.class);
         when(unsupportedHandler.getContextType()).thenReturn(MCPHandlerContext.class);
         when(unsupportedHandler.getToolDescriptor()).thenReturn(
-                new MCPToolDescriptor(List.of(), "unsupported", "Unsupported", "Unsupported tool.", Map.of("type", "object", "properties", Map.of(), "required", List.of(),
+                new MCPToolDescriptor("unsupported", "Unsupported", "Unsupported tool.", Map.of("type", "object", "properties", Map.of(), "required", List.of(),
                         "additionalProperties", false), Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap()));
         actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(unsupportedHandler)));
         assertThat(actual.getMessage(), is(String.format("Unsupported handler context type `%s` for `%s`.", MCPHandlerContext.class.getName(), unsupportedHandler.getClass().getName())));

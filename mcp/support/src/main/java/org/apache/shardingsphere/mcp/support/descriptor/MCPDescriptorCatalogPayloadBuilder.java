@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.support.descriptor;
 
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
-import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
@@ -103,7 +102,6 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("name", descriptor.getName());
         result.put("title", descriptor.getTitle());
         result.put("description", descriptor.getDescription());
-        putIfNotEmpty(result, "icons", descriptor.getIcons().stream().map(this::toIconPayload).toList());
         result.put("mimeType", descriptor.getMimeType());
         if (!descriptor.getAnnotations().isEmpty()) {
             result.put("annotations", toResourceAnnotationsPayload(descriptor.getAnnotations()));
@@ -121,7 +119,6 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("name", descriptor.getName());
         result.put("title", descriptor.getTitle());
         result.put("description", descriptor.getDescription());
-        putIfNotEmpty(result, "icons", descriptor.getIcons().stream().map(this::toIconPayload).toList());
         result.put("mimeType", descriptor.getMimeType());
         if (!descriptor.getAnnotations().isEmpty()) {
             result.put("annotations", toResourceAnnotationsPayload(descriptor.getAnnotations()));
@@ -170,7 +167,6 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("name", descriptor.getName());
         result.put("title", descriptor.getTitle());
         result.put("description", descriptor.getDescription());
-        putIfNotEmpty(result, "icons", descriptor.getIcons().stream().map(this::toIconPayload).toList());
         result.put("inputSchema", descriptor.getInputSchema());
         result.put("outputSchema", descriptor.getOutputSchema());
         if (!descriptor.getAnnotations().isEmpty()) {
@@ -187,7 +183,6 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("name", descriptor.getName());
         result.put("title", descriptor.getTitle());
         result.put("description", descriptor.getDescription());
-        putIfNotEmpty(result, "icons", descriptor.getIcons().stream().map(this::toIconPayload).toList());
         result.put("arguments", descriptor.getArguments().stream().map(this::toPromptArgumentPayload).toList());
         if (!descriptor.getMeta().isEmpty()) {
             result.put("meta", descriptor.getMeta());
@@ -205,15 +200,6 @@ final class MCPDescriptorCatalogPayloadBuilder {
         if (!completionHint.isEmpty()) {
             result.put("completion", completionHint);
         }
-        return result;
-    }
-    
-    private Map<String, Object> toIconPayload(final MCPIcon icon) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        putIfPresent(result, "src", icon.getSrc());
-        putIfPresent(result, "mimeType", icon.getMimeType());
-        putIfNotEmpty(result, "sizes", icon.getSizes());
-        putIfPresent(result, "theme", icon.getTheme());
         return result;
     }
     

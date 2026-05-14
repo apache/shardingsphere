@@ -380,13 +380,13 @@ class MCPToolSpecificationFactoryTest {
         properties.put("query", Map.of("type", "string", "description", "Search query."));
         properties.put("object_types", Map.of("type", "array", "description", "Optional object-type filter.",
                 "items", Map.of("type", "string", "description", "Object type.", "enum", List.of("TABLE", "VIEW"))));
-        return new MCPToolDescriptor(List.of(), toolName, "Search Metadata", "Search database metadata.", createInputSchema(properties, List.of("query")),
+        return new MCPToolDescriptor(toolName, "Search Metadata", "Search database metadata.", createInputSchema(properties, List.of("query")),
                 Map.of("type", "object"), new MCPToolAnnotations("Search Metadata", true, false, true, true),
                 Map.of(MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS, List.of("shardingsphere://databases")));
     }
     
     private MCPToolDescriptor createStrictToolDescriptor(final String toolName) {
-        return new MCPToolDescriptor(List.of(), toolName, "Search Metadata", "Search database metadata.", createInputSchema(Map.of(), List.of()),
+        return new MCPToolDescriptor(toolName, "Search Metadata", "Search database metadata.", createInputSchema(Map.of(), List.of()),
                 Map.of("type", "object", "properties", Map.of("status", Map.of("type", "string")), "required", List.of("status")),
                 new MCPToolAnnotations("Search Metadata", true, false, true, true), Collections.emptyMap());
     }
@@ -396,7 +396,7 @@ class MCPToolSpecificationFactoryTest {
         properties.put("custom_properties", Map.of("type", "object", "description", "Custom properties.", "additionalProperties", true));
         properties.put("intent", Map.of("type", "object", "description", "Intent.", "properties",
                 Map.of("requires_review", Map.of("type", "boolean", "description", "Requires review.")), "required", List.of(), "additionalProperties", false));
-        return new MCPToolDescriptor(List.of(), toolName, "Plan Custom Rule", "Plan a custom rule.", createInputSchema(properties, List.of()),
+        return new MCPToolDescriptor(toolName, "Plan Custom Rule", "Plan a custom rule.", createInputSchema(properties, List.of()),
                 Map.of("type", "object"), new MCPToolAnnotations("Plan Custom Rule", false, false, true, true), Collections.emptyMap());
     }
     

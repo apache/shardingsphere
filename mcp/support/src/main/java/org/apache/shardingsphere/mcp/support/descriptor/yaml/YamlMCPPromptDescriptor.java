@@ -38,8 +38,6 @@ public final class YamlMCPPromptDescriptor {
     
     private String description;
     
-    private Collection<YamlMCPIcon> icons = new LinkedList<>();
-    
     private Collection<YamlMCPPromptArgumentDescriptor> arguments = new LinkedList<>();
     
     private YamlMCPPromptBindingDescriptor binding;

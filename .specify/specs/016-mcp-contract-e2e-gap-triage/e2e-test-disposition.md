@@ -76,6 +76,8 @@ Before task generation, every REDUCE-CANDIDATE row must gain an explicit `preser
   target `.github/workflows/resources/scripts/prepare-mcp-server-json.py`,
   `.github/workflows/jdk21-subchain-ci.yml`, and `.github/workflows/mcp-build.yml`.
   Use packaged distribution smoke only when runtime startup or plugin discovery behavior is involved.
+  Status: implemented by T050/T051 on 2026-05-14; script-level coverage and workflow validation now cover schema URL,
+  version and identifier rewrite, stdio and Streamable HTTP package transports, OCI metadata, and release-only SNAPSHOT rejection.
 
 ## Resolved Precision Decisions
 

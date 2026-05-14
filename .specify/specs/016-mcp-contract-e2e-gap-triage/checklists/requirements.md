@@ -77,3 +77,4 @@
 - [x] T022/T026 remote HTTP origin allowlist evidence recorded in `tasks.md`.
 - [x] T020/T023/T024 secret-safe elicitation evidence recorded in `tasks.md`.
 - [x] T040/T041/T042/T043/T044/T045 runtime lifecycle, URI, completion, and session-isolation evidence recorded in `tasks.md`.
+- [x] T050/T051 MCP Registry metadata release-gate evidence recorded in `tasks.md`.

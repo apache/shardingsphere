@@ -180,9 +180,9 @@
 
 ### Tests and Release Gates
 
-- [ ] T050 [P] [US3] Add script-level coverage for `server.json` release version and package identifier rewrite behavior.
+- [x] T050 [P] [US3] Add script-level coverage for `server.json` release version and package identifier rewrite behavior.
   Path: `.github/workflows/resources/scripts/prepare-mcp-server-json.py`
-- [ ] T051 [P] [US3] Add release-gate validation for official registry schema, package transports, OCI metadata, and snapshot rejection.
+- [x] T051 [P] [US3] Add release-gate validation for official registry schema, package transports, OCI metadata, and snapshot rejection.
   Paths: `.github/workflows/jdk21-subchain-ci.yml`, `.github/workflows/mcp-build.yml`, `mcp/server.json`
 - [ ] T052 [P] [US5] Add capability-scope tests or snapshots proving unimplemented optional MCP capabilities are not advertised.
   Paths: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/MCPSyncServerFactoryTest.java`,
@@ -336,3 +336,33 @@ They touch one transport behavior, have clear existing contradictory evidence, a
   - `git -c core.whitespace=-blank-at-eol diff --check`
     exited `0`; the adjusted whitespace check matches the repository's Spotless blank-line convention.
 - Residual risks: package 015 remains owner for deeper completion provider dispatch/API generalization; package 013 remains owner for global enum casing policy.
+
+### 2026-05-14: T050/T051 MCP Registry Metadata Release Gate
+
+- Source: official MCP Registry metadata stays on schema `https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json`,
+  while the protocol baseline remains MCP Specification `2025-11-25`.
+- Code: `prepare-mcp-server-json.py` now separates release metadata preparation from validation. It validates the official schema URL,
+  server name, description length, release version hygiene, OCI identifier tag alignment, stdio and Streamable HTTP package transports,
+  required environment variables, and release-only SNAPSHOT rejection.
+- Code: `mcp/server.json` now keeps its description within the official schema length limit and declares the packaged Streamable HTTP endpoint URL.
+- CI: `jdk21-subchain-ci.yml` path filters include both metadata scripts, runs the script-level test, and validates development metadata with `--allow-snapshot`.
+- Release gate: `mcp-build.yml` runs the script-level test, rewrites release metadata, and validates publication metadata without `--allow-snapshot`.
+- Verification:
+  - `PYTHONDONTWRITEBYTECODE=1 python3 .github/workflows/resources/scripts/test-prepare-mcp-server-json.py`
+    exited `0`; 5 script-level tests ran with 0 failures and 0 errors.
+  - `PYTHONDONTWRITEBYTECODE=1 python3 .github/workflows/resources/scripts/prepare-mcp-server-json.py --validate-only --allow-snapshot`
+    exited `0`; source `mcp/server.json` passed development metadata validation.
+  - `PYTHONDONTWRITEBYTECODE=1 python3 .github/workflows/resources/scripts/prepare-mcp-server-json.py --path <tmp>/server.json --version 5.5.4 --identifier ghcr.io/apache/shardingsphere-mcp:5.5.4`
+    exited `0`; release rewrite succeeded.
+  - `PYTHONDONTWRITEBYTECODE=1 python3 .github/workflows/resources/scripts/prepare-mcp-server-json.py --path <tmp>/server.json --validate-only`
+    exited `0`; rewritten release metadata passed publication validation.
+  - `prepare-mcp-server-json.py --path <tmp>/server.json --version 5.5.4-SNAPSHOT --identifier ghcr.io/apache/shardingsphere-mcp:5.5.4-SNAPSHOT`
+    exited `1` as expected; release SNAPSHOT metadata was rejected before publication.
+  - `./mvnw -pl mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dtest=MCPDocumentationContractTest -Dsurefire.failIfNoSpecifiedTests=false test -B -ntp`
+    exited `0`; `MCPDocumentationContractTest` ran 3 tests with 0 failures and 0 errors.
+  - `git diff --check -- <T050/T051 files>`
+    exited `0`; no whitespace errors in the T050/T051 slice.
+  - `python3 -m py_compile .github/workflows/resources/scripts/prepare-mcp-server-json.py .github/workflows/resources/scripts/test-prepare-mcp-server-json.py`
+    exited `0`; Python syntax compilation passed.
+- Residual risks: full external MCP Registry package-existence validation still occurs during `mcp-publisher publish`;
+  the local gate intentionally validates the schema-backed metadata shape and ShardingSphere release invariants without calling the live registry.

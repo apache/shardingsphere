@@ -39,7 +39,7 @@ class MCPToolDescriptorTest {
                 "properties", expectedProperties,
                 "required", List.of("query"),
                 "additionalProperties", false);
-        MCPToolDescriptor actual = new MCPToolDescriptor(List.of(), "foo_tool", "Foo Tool", "Foo tool.", inputSchema, Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
+        MCPToolDescriptor actual = new MCPToolDescriptor("foo_tool", "Foo Tool", "Foo tool.", inputSchema, Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
         assertThat(actual.getInputSchema(), is(inputSchema));
     }
 }

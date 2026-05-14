@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.api.prompt.descriptor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 
 import java.util.List;
 import java.util.Map;
@@ -28,8 +27,6 @@ import java.util.Map;
  */
 @Getter
 public final class MCPPromptDescriptor {
-    
-    private final List<MCPIcon> icons;
     
     private final String name;
     
@@ -41,9 +38,7 @@ public final class MCPPromptDescriptor {
     
     private final Map<String, Object> meta;
     
-    public MCPPromptDescriptor(final List<MCPIcon> icons, final String name, final String title, final String description,
-                               final List<MCPPromptArgumentDescriptor> arguments, final Map<String, Object> meta) {
-        this.icons = icons;
+    public MCPPromptDescriptor(final String name, final String title, final String description, final List<MCPPromptArgumentDescriptor> arguments, final Map<String, Object> meta) {
         this.name = name;
         this.title = title;
         this.description = description;

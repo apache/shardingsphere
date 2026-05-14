@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.mcp.api.tool.descriptor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,8 +26,6 @@ import java.util.Map;
  */
 @Getter
 public final class MCPToolDescriptor {
-    
-    private final List<MCPIcon> icons;
     
     private final String name;
     
@@ -45,9 +41,8 @@ public final class MCPToolDescriptor {
     
     private final Map<String, Object> meta;
     
-    public MCPToolDescriptor(final List<MCPIcon> icons, final String name, final String title, final String description, final Map<String, Object> inputSchema,
+    public MCPToolDescriptor(final String name, final String title, final String description, final Map<String, Object> inputSchema,
                              final Map<String, Object> outputSchema, final MCPToolAnnotations annotations, final Map<String, Object> meta) {
-        this.icons = icons;
         this.name = name;
         this.title = title;
         this.description = description;

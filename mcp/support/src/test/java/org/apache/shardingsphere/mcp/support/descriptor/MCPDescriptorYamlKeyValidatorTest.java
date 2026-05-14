@@ -36,12 +36,6 @@ class MCPDescriptorYamlKeyValidatorTest {
                     name: workflow-plan
                     title: Workflow Plan
                     description: Workflow plan.
-                    icons:
-                      - src: https://example.invalid/workflow.png
-                        mimeType: image/png
-                        sizes:
-                          - 64x64
-                        theme: dark
                     mimeType: application/json
                     annotations:
                       audience:
@@ -60,10 +54,6 @@ class MCPDescriptorYamlKeyValidatorTest {
                   - name: database_gateway_search_metadata
                     title: Search Metadata
                     description: Search metadata.
-                    icons:
-                      - src: data:image/png;base64,AA==
-                        sizes:
-                          - any
                     inputSchema:
                       type: object
                       properties:
@@ -87,8 +77,6 @@ class MCPDescriptorYamlKeyValidatorTest {
                   - name: inspect_metadata
                     title: Inspect Metadata
                     description: Inspect metadata.
-                    icons:
-                      - src: https://example.invalid/prompt.png
                     binding:
                       templateResource: META-INF/shardingsphere-mcp/prompts/inspect-metadata.md
                     arguments:
@@ -136,17 +124,6 @@ class MCPDescriptorYamlKeyValidatorTest {
                     annotations:
                       returnDirect: false
                 """, "$.tools[0].annotations.returnDirect");
-    }
-    
-    @Test
-    void assertValidateUnknownIconKey() {
-        assertUnknownKey("""
-                resources:
-                  - uri: shardingsphere://capabilities
-                    icons:
-                      - src: https://example.invalid/icon.png
-                        unknown: true
-                """, "$.resources[0].icons[0].unknown");
     }
     
     @Test

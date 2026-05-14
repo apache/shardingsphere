@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
@@ -43,8 +42,6 @@ final class MCPDescriptorCatalogValidator {
     private static final Collection<String> BANNED_NEXT_ACTION_FIELDS = List.of("action_kind", "target_tool", "target_resource", "required_arguments");
     
     private static final Collection<String> RESERVED_RESOURCE_META_FIELDS = List.of("resourceKind", "kind", "objectScope", "feature", "relatedTools", "relatedResources", "useBefore");
-    
-    private static final Collection<String> ICON_THEMES = List.of("light", "dark");
     
     private static final Collection<String> MODEL_CRITICAL_HINT_FIELDS = List.of(
             "next_actions", "resources_to_read", "resource", "parent_resource", "next_resources", "manual_artifact_summary", "manual_follow_up", "empty_state", "ambiguity_state",
@@ -88,7 +85,6 @@ final class MCPDescriptorCatalogValidator {
         checkNotBlank(descriptor.getName(), String.format("Resource name for `%s`", uriOrTemplate));
         checkNotBlank(descriptor.getTitle(), String.format("Resource title for `%s`", uriOrTemplate));
         checkDescription(descriptor.getDescription(), String.format("Resource description for `%s`", uriOrTemplate));
-        validateIcons(String.format("Resource `%s`", uriOrTemplate), descriptor.getIcons());
         checkNotBlank(descriptor.getMimeType(), String.format("Resource MIME type for `%s`", uriOrTemplate));
         checkState(null == registered.putIfAbsent(uriOrTemplate, descriptor), String.format("Duplicate MCP resource descriptor `%s`.", uriOrTemplate));
         validateResourceMeta(descriptor);
@@ -138,7 +134,6 @@ final class MCPDescriptorCatalogValidator {
             checkNotBlank(each.getName(), "Tool name");
             checkNotBlank(each.getTitle(), String.format("Tool title for `%s`", each.getName()));
             checkDescription(each.getDescription(), String.format("Tool description for `%s`", each.getName()));
-            validateIcons(String.format("Tool `%s`", each.getName()), each.getIcons());
             checkState(null == registered.putIfAbsent(each.getName(), each), String.format("Duplicate MCP tool descriptor `%s`.", each.getName()));
             validateMetaKeys(String.format("Tool `%s`", each.getName()), each.getMeta());
             validateToolInputSchema(each);
@@ -350,7 +345,6 @@ final class MCPDescriptorCatalogValidator {
             checkNotBlank(each.getName(), "Prompt name");
             checkNotBlank(each.getTitle(), String.format("Prompt title for `%s`", each.getName()));
             checkDescription(each.getDescription(), String.format("Prompt description for `%s`", each.getName()));
-            validateIcons(String.format("Prompt `%s`", each.getName()), each.getIcons());
             MCPPromptTemplateBinding binding = bindings.get(each.getName());
             checkState(null != binding, String.format("Prompt `%s` must declare an internal template binding.", each.getName()));
             checkNotBlank(binding.getTemplateResource(), String.format("Prompt template resource for `%s`", each.getName()));
@@ -541,22 +535,6 @@ final class MCPDescriptorCatalogValidator {
                 String.format("Prompt `%s` must declare %s in meta.", descriptor.getName(), MCPShardingSphereMetadataKeys.STOP_CONDITIONS));
         checkState(isNonEmptyCollection(descriptor.getMeta().get(MCPShardingSphereMetadataKeys.ASK_USER_CONDITIONS)),
                 String.format("Prompt `%s` must declare %s in meta.", descriptor.getName(), MCPShardingSphereMetadataKeys.ASK_USER_CONDITIONS));
-    }
-    
-    private static void validateIcons(final String owner, final Collection<MCPIcon> icons) {
-        for (MCPIcon each : icons) {
-            checkNotBlank(each.getSrc(), owner + " icon src");
-            checkState(each.getSrc().startsWith("https://") || each.getSrc().startsWith("data:"), owner + " icon src must use https or data URI.");
-            if (null != each.getMimeType() && !each.getMimeType().isBlank()) {
-                checkState(each.getMimeType().startsWith("image/"), owner + " icon mimeType must be an image MIME type.");
-            }
-            for (String size : each.getSizes()) {
-                checkState(null != size && ("any".equals(size) || size.matches("[1-9][0-9]*x[1-9][0-9]*")), owner + " icon sizes must contain `any` or WIDTHxHEIGHT values.");
-            }
-            if (null != each.getTheme() && !each.getTheme().isBlank()) {
-                checkState(ICON_THEMES.contains(each.getTheme()), owner + " icon theme must be light or dark.");
-            }
-        }
     }
     
     private static void validateMetaKeys(final String owner, final Map<String, Object> meta) {

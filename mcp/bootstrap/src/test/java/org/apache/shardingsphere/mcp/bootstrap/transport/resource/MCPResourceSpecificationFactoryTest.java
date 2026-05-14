@@ -115,11 +115,11 @@ class MCPResourceSpecificationFactoryTest {
     
     private MCPResourceDescriptor createResourceDescriptor() {
         return new MCPResourceDescriptor("shardingsphere://capabilities", "server-capability-catalog", "Server Capability Catalog",
-                "Read the model-facing capability catalog.", Collections.emptyList(), "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());
+                "Read the model-facing capability catalog.", "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());
     }
     
     private MCPResourceDescriptor createResourceTemplateDescriptor() {
         return new MCPResourceDescriptor("shardingsphere://databases/{database}", "logical-database-detail", "Logical Database Detail",
-                "Read one logical database detail.", Collections.emptyList(), "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());
+                "Read one logical database detail.", "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());
     }
 }

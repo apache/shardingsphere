@@ -251,16 +251,22 @@ Official source URLs:
 
 - **MCE-P1-008 Registry manifest schema**
   - Source: MCP Registry publishes server metadata through `server.json`; the official schema URL is dated `2025-12-11`.
-  - Current evidence:
-    `mcp/server.json:2` already points at
-    `https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json`.
-  - Current evidence:
-    `.github/workflows/resources/scripts/prepare-mcp-server-json.py:40-45`
-    rewrites version and identifier fields, but does not validate against the official schema.
-  - Current evidence:
-    `.github/workflows/jdk21-subchain-ci.yml:137-159` and `.github/workflows/mcp-build.yml:105-127`
-    validate selected metadata fields, but not full schema conformance or publication metadata.
-  - Target: release-gate schema validation in both workflows, plus script-level coverage for rewrite behavior.
+  - Closure evidence:
+    `mcp/server.json` points at the official `2025-12-11` schema, keeps the public description within the schema length limit,
+    and declares the packaged Streamable HTTP endpoint URL.
+  - Closure evidence:
+    `.github/workflows/resources/scripts/prepare-mcp-server-json.py` validates the official schema URL, server name,
+    description length, release version hygiene, OCI identifier tag alignment, stdio and Streamable HTTP package transports,
+    required package environment variables, and release-only SNAPSHOT rejection.
+  - Closure evidence:
+    `.github/workflows/resources/scripts/test-prepare-mcp-server-json.py` covers release version rewrite,
+    package identifier/version rewrite, development SNAPSHOT validation, release SNAPSHOT rejection, missing HTTP URL rejection,
+    and package-version mismatch rejection.
+  - Closure evidence:
+    `.github/workflows/jdk21-subchain-ci.yml` runs the script-level test and development metadata validation with `--allow-snapshot`.
+    `.github/workflows/mcp-build.yml` runs the same script-level test and validates rewritten release metadata without `--allow-snapshot`.
+  - Target: closed for local schema-backed metadata validation and release-gate hygiene.
+    The live MCP Registry still owns external package-existence and ownership checks during `mcp-publisher publish`.
 
 - **MCE-P2-001 Optional MCP capabilities**
   - Source: MCP optional capability docs for logging, progress, cancellation, roots, sampling, subscriptions, and resource list changes.

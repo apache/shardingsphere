@@ -19,12 +19,6 @@ resources:
     name: workflow_test_resource
     title: Workflow Test Resource
     description: "Workflow descriptor resource used by descriptor catalog loader tests."
-    icons:
-      - src: https://example.invalid/workflow-test-resource.png
-        mimeType: image/png
-        sizes:
-          - 64x64
-        theme: light
     mimeType: application/json
     extension:
       resourceKind: detail
@@ -33,11 +27,6 @@ tools:
   - name: database_gateway_plan_encrypt_rule
     title: Plan Encrypt Rule
     description: "Plan a test encrypt workflow descriptor without executing changes."
-    icons:
-      - src: https://example.invalid/plan-encrypt-rule.png
-        mimeType: image/png
-        sizes:
-          - any
     inputSchema:
       type: object
       properties:

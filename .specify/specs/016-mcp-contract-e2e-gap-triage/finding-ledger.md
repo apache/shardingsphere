@@ -218,6 +218,10 @@ Owner states:
     `mcp/README.md`.
   - Evidence gate: registry schema `2025-12-11`, package transport mapping,
     release version hygiene, and OCI publication metadata are validated.
+  - Closure evidence on 2026-05-14:
+    T050/T051 added script-level coverage and release-gate validation for schema URL, description length,
+    stdio and Streamable HTTP package transports, OCI identifier/version alignment, required package environment variables,
+    and release-only SNAPSHOT rejection. `mcp/server.json` now includes a schema-compliant description and packaged Streamable HTTP URL.
 
 - **MCE-P2-001 Optional MCP capabilities**
   - Owner: 016, new-owner.
