@@ -42,16 +42,16 @@ import java.util.stream.Collectors;
  * MCP resource specification factory.
  */
 public final class MCPResourceSpecificationFactory {
-
+    
     private final List<MCPResourceDescriptor> resourceDescriptors;
-
+    
     private final MCPResourceController controller;
-
+    
     public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         resourceDescriptors = ResourceHandlerRegistry.getSupportedResourceDescriptors();
         controller = new MCPResourceController(runtimeContext);
     }
-
+    
     /**
      * Create MCP resource specifications.
      *
@@ -62,7 +62,7 @@ public final class MCPResourceSpecificationFactory {
                 .filter(each -> !each.isTemplated())
                 .map(each -> new SyncResourceSpecification(createResource(each), this::handleReadResource)).collect(Collectors.toList());
     }
-
+    
     /**
      * Create MCP resource template specifications.
      *
@@ -74,7 +74,7 @@ public final class MCPResourceSpecificationFactory {
                 .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource))
                 .collect(Collectors.toList());
     }
-
+    
     private McpSchema.Resource createResource(final MCPResourceDescriptor descriptor) {
         McpSchema.Resource.Builder result = McpSchema.Resource.builder()
                 .uri(descriptor.getUriTemplate())
@@ -88,7 +88,7 @@ public final class MCPResourceSpecificationFactory {
         }
         return result.build();
     }
-
+    
     private McpSchema.ResourceTemplate createResourceTemplate(final MCPResourceDescriptor descriptor) {
         McpSchema.ResourceTemplate.Builder result = McpSchema.ResourceTemplate.builder()
                 .uriTemplate(descriptor.getUriTemplate())
@@ -102,24 +102,24 @@ public final class MCPResourceSpecificationFactory {
         }
         return result.build();
     }
-
+    
     private void appendResourceAnnotations(final McpSchema.Resource.Builder builder, final MCPResourceAnnotations annotations) {
         if (!annotations.isEmpty()) {
             builder.annotations(createAnnotations(annotations));
         }
     }
-
+    
     private void appendResourceTemplateAnnotations(final McpSchema.ResourceTemplate.Builder builder, final MCPResourceAnnotations annotations) {
         if (!annotations.isEmpty()) {
             builder.annotations(createAnnotations(annotations));
         }
     }
-
+    
     private McpSchema.Annotations createAnnotations(final MCPResourceAnnotations annotations) {
         List<McpSchema.Role> audience = annotations.getAudience().stream().map(each -> McpSchema.Role.valueOf(each.toUpperCase(Locale.ENGLISH))).toList();
         return new McpSchema.Annotations(audience, annotations.isPriorityPresent() ? annotations.getPriority() : null, annotations.getLastModified());
     }
-
+    
     private McpSchema.ReadResourceResult handleReadResource(final McpSyncServerExchange exchange, final McpSchema.ReadResourceRequest request) {
         try {
             return MCPTransportPayloadUtils.createReadResourceResult(request.uri(), controller.handle(request.uri()).toPayload());
@@ -127,7 +127,7 @@ public final class MCPResourceSpecificationFactory {
             throw createReadResourceError(ex);
         }
     }
-
+    
     private McpError createReadResourceError(final RuntimeException cause) {
         MCPErrorResponse errorResponse = MCPErrorConverter.convert(cause);
         return McpError.builder(getJsonRpcErrorCode(cause, errorResponse))
@@ -135,14 +135,14 @@ public final class MCPResourceSpecificationFactory {
                 .data(errorResponse.toPayload())
                 .build();
     }
-
+    
     private int getJsonRpcErrorCode(final RuntimeException cause, final MCPErrorResponse errorResponse) {
         if (cause instanceof UnsupportedResourceUriException) {
             return McpSchema.ErrorCodes.RESOURCE_NOT_FOUND;
         }
         return "invalid_request".equals(errorResponse.getErrorCode()) ? McpSchema.ErrorCodes.INVALID_PARAMS : McpSchema.ErrorCodes.INTERNAL_ERROR;
     }
-
+    
     private String getJsonRpcErrorMessage(final RuntimeException cause, final MCPErrorResponse errorResponse) {
         return cause instanceof UnsupportedResourceUriException ? "Resource not found" : String.valueOf(errorResponse.toPayload().getOrDefault("message", "Resource read failed."));
     }

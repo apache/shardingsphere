@@ -52,7 +52,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPResourceSpecificationFactoryTest {
-
+    
     @Test
     void assertCreateResourceSpecifications() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
@@ -68,7 +68,7 @@ class MCPResourceSpecificationFactoryTest {
             assertNotNull(actual.get(0).readHandler());
         }
     }
-
+    
     @Test
     void assertCreateResourceSpecificationsMapAnnotationPriorityPresence() {
         MCPResourceAnnotations priorityZeroAnnotations = new MCPResourceAnnotations(List.of("assistant"), 0D, true, null);
@@ -81,7 +81,7 @@ class MCPResourceSpecificationFactoryTest {
             assertThat(actual.get(1).resource().annotations().priority(), is(0D));
         }
     }
-
+    
     @Test
     void assertCreateResourceSpecificationsHandleReadResource() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
@@ -95,7 +95,7 @@ class MCPResourceSpecificationFactoryTest {
             assertThat(((TextResourceContents) actual.contents().get(0)).text(), is("{\"status\":\"ok\"}"));
         }
     }
-
+    
     @Test
     void assertCreateResourceSpecificationsHandleReadResourceError() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
@@ -110,7 +110,7 @@ class MCPResourceSpecificationFactoryTest {
             assertThat(actual.getJsonRpcError().message(), is("Resource not found"));
         }
     }
-
+    
     @Test
     void assertCreateResourceTemplateSpecifications() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
@@ -126,12 +126,12 @@ class MCPResourceSpecificationFactoryTest {
             assertNotNull(actual.get(0).readHandler());
         }
     }
-
+    
     private MCPResourceDescriptor createResourceDescriptor() {
         return new MCPResourceDescriptor("shardingsphere://capabilities", "server-capability-catalog", "Server Capability Catalog",
                 "Read the model-facing capability catalog.", "application/json", MCPResourceAnnotations.EMPTY, Collections.emptyMap());
     }
-
+    
     private MCPResourceDescriptor createResourceTemplateDescriptor() {
         return new MCPResourceDescriptor("shardingsphere://databases/{database}", "logical-database-detail", "Logical Database Detail",
                 "Read one logical database detail.", "application/json", MCPResourceAnnotations.EMPTY, Collections.emptyMap());

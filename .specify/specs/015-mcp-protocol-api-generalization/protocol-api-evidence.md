@@ -91,11 +91,25 @@ Disposition:
 - Keep SDK-native protocol error codes unless the preflight proves a ShardingSphere-owned adapter gap.
 - Keep supported tool business failures as `CallToolResult.isError(true)` with actionable structured content.
 
+Preflight result recorded on 2026-05-14:
+
+- `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/AbstractMCPWireBehaviorTest.java` sends raw JSON-RPC frames over Streamable HTTP and SDK STDIO transport.
+- `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/resource/MCPResourceUnknownWireBehaviorTest.java`
+  verifies `resources/read` with `unsupported://resource` returns a JSON-RPC error for both transports.
+- `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolUnknownWireBehaviorTest.java`
+  verifies `tools/call` with `unsupported_tool` returns a JSON-RPC error for both transports.
+- The tests assert JSON-RPC version and request ID preservation, `error.code` and `error.message` presence, normal `result` absence, resource `contents` absence, and no tool `isError` wrapper.
+- Verification command:
+  `./mvnw -pl mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dtest=MCPToolUnknownWireBehaviorTest,MCPResourceUnknownWireBehaviorTest -Dsurefire.failIfNoSpecifiedTests=false test`
+
 ## Adjacent Package Owner Map
 
-- 013 MCP Protocol Field Standardization owns descriptor shape, YAML field names, official descriptor metadata placement, ResourceLink metadata naming, and internal naming for completion or navigation descriptor fields.
-- 014 MCP Standard and E2E Hardening owns accepted public tool naming, tool annotations, output schema runtime validation, E2E packaging/distribution checks, default metadata pagination size, and pagination boundary tests.
-- 015 MCP Protocol API Generalization owns discovery versus ShardingSphere catalog labeling, provider-driven completion dispatch, protocol error versus business error channels, application pagination labeling, explicit ResourceLink generation contracts, and feature planner API cleanup.
+- 013 MCP Protocol Field Standardization owns descriptor shape, YAML field names, official descriptor metadata placement, ResourceLink metadata naming,
+  and internal naming for completion or navigation descriptor fields.
+- 014 MCP Standard and E2E Hardening owns accepted public tool naming, tool annotations, output schema runtime validation, E2E packaging/distribution checks,
+  default metadata pagination size, and pagination boundary tests.
+- 015 MCP Protocol API Generalization owns discovery versus ShardingSphere catalog labeling, provider-driven completion dispatch, protocol error versus business error channels,
+  application pagination labeling, explicit ResourceLink generation contracts, and feature planner API cleanup.
 
 015 implementation must reference 013 or 014 when touching their owned areas and record why any additional work is necessary.
 

@@ -45,19 +45,19 @@
 
 ## Phase 1: Setup and Evidence Lock
 
-- [ ] T001 Confirm current branch remains `001-shardingsphere-mcp` without running branch-changing commands.
+- [X] T001 Confirm current branch remains `001-shardingsphere-mcp` without running branch-changing commands.
   Path: repository root
-- [ ] T002 [P] Record the official MCP `2025-11-25` source references used for protocol error, discovery, tool, resource, prompt, and pagination semantics.
+- [X] T002 [P] Record the official MCP `2025-11-25` source references used for protocol error, discovery, tool, resource, prompt, and pagination semantics.
   Path: `.specify/specs/015-mcp-protocol-api-generalization/plan.md`
-- [ ] T003 [P] Add an implementation evidence ledger for current non-general APIs and their target disposition.
+- [X] T003 [P] Add an implementation evidence ledger for current non-general APIs and their target disposition.
   Path: `.specify/specs/015-mcp-protocol-api-generalization/protocol-api-evidence.md`
-- [ ] T004 [P] Confirm overlapping requirements in protocol field standardization and E2E hardening packages to avoid duplicate implementation work.
+- [X] T004 [P] Confirm overlapping requirements in protocol field standardization and E2E hardening packages to avoid duplicate implementation work.
   Record the owner map: 013 owns descriptor shape and metadata naming, 014 owns accepted E2E/outputSchema/pagination hardening,
   016 owns E2E disposition and release-evidence boundaries, and 015 owns protocol/domain separation and API generalization gaps.
   The 016 handoff keeps prompt/resource catalog clarity and canonical error channels as implementation work in this package.
   Paths: `.specify/specs/013-mcp-protocol-field-standardization/`, `.specify/specs/014-mcp-standard-and-e2e-hardening/`,
   `.specify/specs/016-mcp-contract-e2e-gap-triage/`
-- [ ] T005 [P] Verify MCP Java SDK `1.1.2` wire behavior for completely unknown tools and resources before changing ShardingSphere error mapping.
+- [X] T005 [P] Verify MCP Java SDK `1.1.2` wire behavior for completely unknown tools and resources before changing ShardingSphere error mapping.
   Transport coverage: both Streamable HTTP and STDIO raw wire responses.
   Assertions: JSON-RPC error is present, normal `result` is absent, resource contents are absent, and tool failures are not wrapped as `CallToolResult.isError`.
   Paths: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/`,
