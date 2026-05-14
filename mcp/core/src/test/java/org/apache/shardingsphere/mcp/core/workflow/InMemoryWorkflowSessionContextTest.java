@@ -48,14 +48,23 @@ class InMemoryWorkflowSessionContextTest {
     
     @Test
     void assertGetOrCreateReturnsStoredSnapshot() {
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
+        snapshot.setSessionId("session-1");
         snapshot.setStatus("planned");
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
         workflowSessionContext.save(snapshot);
         WorkflowContextSnapshot actualSnapshot = workflowSessionContext.getOrCreate("session-1", "plan-1");
         assertThat(actualSnapshot.getPlanId(), is("plan-1"));
         assertThat(actualSnapshot.getStatus(), is("planned"));
+    }
+    
+    @Test
+    void assertGetOrCreateRejectsOtherSessionSnapshot() {
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        workflowSessionContext.save(createSnapshot("plan-1", "session-1"));
+        Exception actualException = assertThrows(MCPInvalidRequestException.class, () -> workflowSessionContext.getOrCreate("session-2", "plan-1"));
+        assertThat(actualException.getMessage(), is("Unknown or unavailable plan_id `plan-1`. Call the planning tool again in the current MCP session."));
     }
     
     @Test
@@ -86,6 +95,14 @@ class InMemoryWorkflowSessionContextTest {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
         Exception actualException = assertThrows(MCPInvalidRequestException.class, () -> workflowSessionContext.getRequired("missing"));
         assertThat(actualException.getMessage(), is("Unknown or unavailable plan_id `missing`. Call the planning tool again in the current MCP session."));
+    }
+    
+    @Test
+    void assertResolveRejectsOtherSessionSnapshot() {
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        workflowSessionContext.save(createSnapshot("plan-1", "session-1"));
+        Exception actualException = assertThrows(MCPInvalidRequestException.class, () -> WorkflowSessionSnapshotResolver.getRequired(workflowSessionContext, "session-2", "plan-1"));
+        assertThat(actualException.getMessage(), is("Unknown or unavailable plan_id `plan-1`. Call the planning tool again in the current MCP session."));
     }
     
     @Test

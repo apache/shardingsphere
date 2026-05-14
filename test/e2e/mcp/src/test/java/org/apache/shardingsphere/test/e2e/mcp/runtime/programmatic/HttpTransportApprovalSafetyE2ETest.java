@@ -137,6 +137,20 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         assertModelFacingPayloadContract(approvedPayload);
     }
     
+    @Test
+    void assertRejectWorkflowApprovalFromOtherSession() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String ownerSessionId = initializeSession(httpClient);
+        String otherSessionId = initializeSession(httpClient);
+        String planId = createMaskRulePlan(httpClient, ownerSessionId);
+        Map<String, Object> actual = callApplyWorkflow(httpClient, otherSessionId, planId,
+                Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl"), "approved_by_user", true));
+        assertThat(String.valueOf(actual.get("error_code")), is("invalid_request"));
+        assertThat(String.valueOf(castToMap(actual.get("recovery")).get("recovery_category")), is("stale_workflow"));
+        assertModelFacingPayloadContract(actual);
+    }
+    
     private Map<String, Object> callApplyWorkflow(final HttpClient httpClient, final String sessionId, final String planId,
                                                   final Map<String, Object> arguments) throws IOException, InterruptedException {
         Map<String, Object> actualArguments = new LinkedHashMap<>(arguments.size() + 1, 1F);

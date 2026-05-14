@@ -49,7 +49,9 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     protected final String initializeSession(final HttpClient httpClient) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendInitializeRequest(httpClient);
         assertThat(actual.statusCode(), is(200));
-        return actual.headers().firstValue("MCP-Session-Id").orElseThrow();
+        String result = actual.headers().firstValue("MCP-Session-Id").orElseThrow();
+        assertThat(sendInitializedNotification(httpClient, result).statusCode(), is(202));
+        return result;
     }
     
     protected final HttpResponse<String> sendInitializeRequest(final HttpClient httpClient) throws IOException, InterruptedException {
@@ -63,6 +65,11 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     protected final HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> headers,
                                                                final Map<String, Object> initializeRequestParams) throws IOException, InterruptedException {
         return sendJsonRpcRequest(httpClient, headers, "init-1", "initialize", initializeRequestParams);
+    }
+    
+    protected final HttpResponse<String> sendInitializedNotification(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId),
+                MCPHttpTransportTestSupport.createJsonRpcNotificationBody("notifications/initialized", Map.of()));
     }
     
     protected final HttpResponse<String> sendToolCallRequest(final HttpClient httpClient, final String sessionId,

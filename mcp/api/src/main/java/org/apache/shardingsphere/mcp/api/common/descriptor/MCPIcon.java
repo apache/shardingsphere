@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.api.common.descriptor;
 
 import lombok.Getter;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,7 +38,7 @@ public final class MCPIcon {
     public MCPIcon(final String src, final String mimeType, final List<String> sizes, final String theme) {
         this.src = src;
         this.mimeType = mimeType;
-        this.sizes = null == sizes ? Collections.emptyList() : sizes;
+        this.sizes = sizes;
         this.theme = theme;
     }
 }

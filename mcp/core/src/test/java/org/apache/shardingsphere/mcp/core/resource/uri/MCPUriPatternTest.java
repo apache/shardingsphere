@@ -72,9 +72,21 @@ class MCPUriPatternTest {
     @Test
     void assertParseWithEncodedVariables() {
         Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}")
-                .parse("shardingsphere://databases/logic_db/schemas/public/tables/orders%3Farchive");
+                .parse("shardingsphere://databases/logic_db/schemas/public/tables/orders%20archive%2F2026+raw%3F");
         assertTrue(actual.isPresent());
-        assertThat(actual.orElseThrow().getValue("table"), is("orders?archive"));
+        assertThat(actual.orElseThrow().getValue("table"), is("orders archive/2026+raw?"));
+    }
+    
+    @Test
+    void assertParseWithMalformedPercentEncoding() {
+        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://databases/{database}").parse("shardingsphere://databases/logic%ZZdb");
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    void assertParseWithUnexpandedTemplateVariable() {
+        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://databases/{database}").parse("shardingsphere://databases/{database}");
+        assertFalse(actual.isPresent());
     }
     
     @Test

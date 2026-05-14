@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,6 +39,6 @@ public final class MCPToolRuntimeDescriptor {
         this.toolName = toolName;
         this.workflowRole = workflowRole;
         this.requiresUserApproval = requiresUserApproval;
-        this.sideEffectScope = null == sideEffectScope ? Collections.emptyList() : sideEffectScope;
+        this.sideEffectScope = sideEffectScope;
     }
 }

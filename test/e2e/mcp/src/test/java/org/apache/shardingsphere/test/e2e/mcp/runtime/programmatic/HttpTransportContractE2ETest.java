@@ -66,6 +66,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         Map<String, Object> actualResult = castToMap(actualPayload.get("result"));
         assertThat(String.valueOf(actualPayload.get("jsonrpc")), is("2.0"));
         assertThat(String.valueOf(actualResult.get("protocolVersion")), is(getProtocolVersion()));
+        assertThat(sendInitializedNotification(httpClient, actualSessionId).statusCode(), is(202));
     }
     
     @Test

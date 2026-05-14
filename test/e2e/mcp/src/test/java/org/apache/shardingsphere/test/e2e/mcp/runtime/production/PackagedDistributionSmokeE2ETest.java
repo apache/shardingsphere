@@ -68,7 +68,7 @@ class PackagedDistributionSmokeE2ETest {
                 MCPInteractionClient interactionClient = runtime.openInteractionClient()) {
             assertOfficialPackagedRuntime(distribution.home(), RuntimeTransport.HTTP, interactionClient);
             List<String> actualSearchItems = getItemNames(interactionClient.call("database_gateway_search_metadata",
-                    Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE", "VIEW"))));
+                    Map.of("database", "orders", "query", "order", "object_types", List.of("table", "view"))));
             assertThat(actualSearchItems, hasItems("orders", "order_items", "active_orders"));
             Map<String, Object> actualResult = interactionClient.call("database_gateway_execute_query",
                     Map.of("database", "orders", "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
@@ -83,7 +83,7 @@ class PackagedDistributionSmokeE2ETest {
             interactionClient.open();
             assertOfficialPackagedRuntime(distribution.home(), RuntimeTransport.STDIO, interactionClient);
             List<String> actualSearchItems = getItemNames(interactionClient.call("database_gateway_search_metadata",
-                    Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE"))));
+                    Map.of("database", "orders", "query", "order", "object_types", List.of("table"))));
             assertThat(actualSearchItems, hasItems("orders", "order_items"));
             Map<String, Object> actualResult = interactionClient.call("database_gateway_execute_query",
                     Map.of("database", "orders", "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));

@@ -76,7 +76,7 @@ class PackagedDistributionPluginDiscoveryE2ETest {
             interactionClient.open();
             assertDiscoveredTools(interactionClient.listTools());
             assertDiscoveredResources(interactionClient.listResources());
-            assertSearchMetadataTool(interactionClient.call("database_gateway_search_metadata", Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE"))));
+            assertSearchMetadataTool(interactionClient.call("database_gateway_search_metadata", Map.of("database", "orders", "query", "order", "object_types", List.of("table"))));
             assertFixtureTool(interactionClient.call("fixture_ping", Map.of("message", "hello")));
             assertFixtureResource(interactionClient.readResource(FIXTURE_RESOURCE_URI));
             assertCapabilities(interactionClient.readResource("shardingsphere://capabilities"));

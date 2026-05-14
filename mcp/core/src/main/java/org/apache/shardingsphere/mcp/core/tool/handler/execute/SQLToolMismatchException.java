@@ -55,6 +55,6 @@ public final class SQLToolMismatchException extends MCPUnsupportedException {
         this.sourceTool = sourceTool;
         this.targetTool = targetTool;
         this.classificationResult = classificationResult;
-        this.suggestedArguments = null == suggestedArguments ? Collections.emptyMap() : Collections.unmodifiableMap(new LinkedHashMap<>(suggestedArguments));
+        this.suggestedArguments = Collections.unmodifiableMap(new LinkedHashMap<>(suggestedArguments));
     }
 }

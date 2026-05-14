@@ -435,10 +435,23 @@ completionTargets:
       - database
     maxValues: 50
   - referenceType: resource
+    reference: shardingsphere://databases/{database}/schemas/{schema}
+    arguments:
+      - database
+      - schema
+    maxValues: 50
+  - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables
     arguments:
       - database
       - schema
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
+    arguments:
+      - database
+      - schema
+      - table
     maxValues: 50
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
@@ -448,6 +461,14 @@ completionTargets:
       - table
     maxValues: 50
   - referenceType: resource
+    reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}
+    arguments:
+      - database
+      - schema
+      - table
+      - column
+    maxValues: 50
+  - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
     arguments:
       - database
@@ -455,10 +476,25 @@ completionTargets:
       - table
     maxValues: 50
   - referenceType: resource
+    reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}
+    arguments:
+      - database
+      - schema
+      - table
+      - index
+    maxValues: 50
+  - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/sequences
     arguments:
       - database
       - schema
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}
+    arguments:
+      - database
+      - schema
+      - sequence
     maxValues: 50
 resourceNavigation:
   - from: shardingsphere://capabilities

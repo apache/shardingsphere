@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,8 +41,8 @@ public final class MCPResourceNavigationDescriptor {
                                            final List<String> carriedArguments, final String description) {
         this.from = from;
         this.to = to;
-        this.requiredArguments = null == requiredArguments ? Collections.emptyList() : requiredArguments;
-        this.carriedArguments = null == carriedArguments ? Collections.emptyList() : carriedArguments;
+        this.requiredArguments = requiredArguments;
+        this.carriedArguments = carriedArguments;
         this.description = description;
     }
 }

@@ -57,7 +57,7 @@ public final class InMemoryWorkflowSessionContext implements WorkflowSessionCont
     public WorkflowContextSnapshot getOrCreate(final String sessionId, final String planId) {
         String actualPlanId = null == planId ? "" : planId.trim();
         if (!actualPlanId.isEmpty()) {
-            return getRequired(actualPlanId);
+            return WorkflowSessionSnapshotResolver.getRequired(this, sessionId, actualPlanId);
         }
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId(createPlanId());

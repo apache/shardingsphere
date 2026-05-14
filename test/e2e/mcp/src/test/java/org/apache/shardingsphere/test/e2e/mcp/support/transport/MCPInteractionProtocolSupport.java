@@ -79,6 +79,17 @@ public final class MCPInteractionProtocolSupport {
     }
     
     /**
+     * Create a JSON-RPC notification body.
+     *
+     * @param method notification method
+     * @param params notification parameters
+     * @return JSON notification body
+     */
+    public static String createJsonRpcNotificationBody(final String method, final Map<String, Object> params) {
+        return JsonUtils.toJsonString(createJsonRpcNotification(method, params));
+    }
+    
+    /**
      * Create a JSON-RPC request body.
      *
      * @param requestId request identifier

@@ -46,6 +46,14 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     private static final String TABLE_RULES_RESOURCE_URI = "shardingsphere://features/mask/databases/%s/tables/%s/rules";
     
     @Test
+    void assertCompleteMaskAlgorithmThroughProxy() throws Exception {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> actual = interactionClient.complete(Map.of("type", "ref/prompt", "name", PLAN_TOOL_NAME), "algorithm_type", "KEEP", Map.of());
+            assertThat(getStringList(getMap(actual.get("completion")).get("values")), hasItem("KEEP_FIRST_N_LAST_M"));
+        }
+    }
+    
+    @Test
     void assertPlanApplyAndValidateMaskCreateAlterWorkflowThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualCreatePlanResponse = interactionClient.call(PLAN_TOOL_NAME,

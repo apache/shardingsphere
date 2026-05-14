@@ -155,6 +155,9 @@ Owner states:
     `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportContractE2ETest.java`.
   - Evidence gate: HTTP and STDIO initialize flows include required initialized notification behavior,
     or a sourced HTTP exception is documented.
+  - Closure evidence on 2026-05-14:
+    T040/T044 updated HTTP programmatic and interaction-client helpers to send `notifications/initialized` after successful initialize and assert HTTP `202`;
+    `HttpTransportContractE2ETest` now proves initialized notification behavior on the HTTP contract path, while the existing STDIO client already sends it.
 
 - **MCE-P1-005 Positive completion coverage**
   - Owner: 015 and 016, split-owner.
@@ -167,6 +170,10 @@ Owner states:
     `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/HttpProductionProxyEncryptWorkflowE2ETest.java`;
     `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/HttpProductionProxyMaskWorkflowE2ETest.java`.
   - Evidence gate: 015 owns provider dispatch; 016 tracks positive E2E coverage for metadata, algorithms, and workflow plans.
+  - Closure evidence on 2026-05-14:
+    T042 added positive HTTP E2E coverage for prompt and resource-reference completion across database, schema, table, column, index, sequence, algorithms,
+    and current-session workflow `plan_id`; descriptor validation now rejects prompt completion targets that name undeclared prompt arguments.
+    Package 015 remains owner for broader completion dispatch/API generalization.
 
 - **MCE-P1-006 Resource URI encoding boundaries**
   - Owner: 016, new-owner.
@@ -179,6 +186,10 @@ Owner states:
     `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/MetadataDiscoveryE2ETest.java`.
   - Evidence gate: implementation has unit evidence; 016 still needs product E2E evidence for encoded spaces,
     slashes, reserved characters, malformed encoding, and missing variables.
+  - Closure evidence on 2026-05-14:
+    T041 added strict UTF-8 path-segment decoding, malformed percent-encoding rejection, raw template-marker rejection,
+    support/core unit coverage, and `MetadataDiscoveryE2ETest` product E2E coverage for encoded spaces, encoded slashes, reserved characters,
+    malformed encoding, and unexpanded resource-template variables.
 
 - **MCE-P1-007 Session and transaction isolation**
   - Owner: 016, new-owner.
@@ -190,6 +201,10 @@ Owner states:
     `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/workflow`;
     `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/workflow`.
   - Evidence gate: two-client session, workflow completion, transaction cleanup, and DELETE behavior are isolated.
+  - Closure evidence on 2026-05-14:
+    T043/T045 added two-client E2E for DELETE session isolation, transaction isolation, DELETE rollback cleanup, workflow approval rejection,
+    and current-session plan-id completion. The new workflow approval E2E exposed a cross-session plan reuse defect; `WorkflowSessionSnapshotResolver`
+    now enforces session ownership before continuing, validating, or applying a plan.
 
 - **MCE-P1-008 Registry manifest schema**
   - Owner: 014 and 016, split-owner.

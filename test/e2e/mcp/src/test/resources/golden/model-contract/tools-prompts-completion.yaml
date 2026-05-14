@@ -256,6 +256,10 @@ prompts:
         required: false
       - name: algorithm_type
         required: false
+      - name: assisted_query_algorithm_type
+        required: false
+      - name: like_query_algorithm_type
+        required: false
       - name: plan_id
         required: false
   - name: database_gateway_plan_mask_rule

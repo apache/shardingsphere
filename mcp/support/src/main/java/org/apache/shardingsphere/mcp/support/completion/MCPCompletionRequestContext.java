@@ -43,6 +43,6 @@ public final class MCPCompletionRequestContext {
         this.sessionId = sessionId;
         this.descriptor = descriptor;
         this.argumentName = argumentName;
-        this.contextArguments = null == contextArguments ? Map.of() : Collections.unmodifiableMap(new LinkedHashMap<>(contextArguments));
+        this.contextArguments = Collections.unmodifiableMap(new LinkedHashMap<>(contextArguments));
     }
 }

@@ -47,6 +47,14 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     private static final String TABLE_RULES_RESOURCE_URI = "shardingsphere://features/encrypt/databases/%s/tables/%s/rules";
     
     @Test
+    void assertCompleteEncryptAlgorithmThroughProxy() throws Exception {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> actual = interactionClient.complete(Map.of("type", "ref/prompt", "name", PLAN_TOOL_NAME), "algorithm_type", "AE", Map.of());
+            assertThat(getStringList(getMap(actual.get("completion")).get("values")), hasItem("AES"));
+        }
+    }
+    
+    @Test
     void assertPlanApplyAndValidateEncryptWorkflowThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> clarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,

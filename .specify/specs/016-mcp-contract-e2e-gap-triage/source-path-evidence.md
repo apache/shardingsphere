@@ -169,47 +169,85 @@ Official source URLs:
   - Current evidence:
     `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/transport/client/AbstractProcessMCPStdioInteractionClient.java:117`
     sends `notifications/initialized`.
-  - Current evidence:
-    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/transport/client/MCPHttpInteractionClient.java:49-70`
-    and `AbstractHttpProgrammaticRuntimeE2ETest.java:49-52` initialize HTTP sessions without the notification.
-  - Target: HTTP helper lifecycle contract, HTTP E2E contract, and a sourced exception note if the SDK transport handles it internally.
+  - Closure evidence:
+    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/transport/MCPInteractionProtocolSupport.java:88`
+    and `MCPHttpTransportTestSupport.java:95` serialize JSON-RPC notifications for HTTP helpers.
+  - Closure evidence:
+    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/transport/client/MCPHttpInteractionClient.java:70`
+    and `MCPHttpInteractionClient.java:115-122` send `notifications/initialized` and require HTTP `202` after initialize.
+  - Closure evidence:
+    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/AbstractHttpProgrammaticRuntimeE2ETest.java:53`
+    and `AbstractHttpProgrammaticRuntimeE2ETest.java:70-73` apply the same initialized notification to programmatic HTTP E2E setup.
+  - Closure evidence:
+    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportContractE2ETest.java:56-69`
+    proves the HTTP contract path returns a session, protocol version, and accepts the initialized notification.
+  - Target: closed for HTTP and STDIO lifecycle evidence.
 
 - **MCE-P1-005 Positive completion coverage**
   - Source: MCP completion returns successful suggestions for supported argument, prompt, and resource-reference targets.
   - Current evidence:
     `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/completion/MCPCompletionSpecificationFactoryTest.java:49-154`
     covers positive unit-level providers and negative cases.
-  - Current evidence:
-    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/ProductionH2RuntimeSmokeE2ETest.java:97-100`
-    has one H2 schema completion smoke.
-  - Target E2E: metadata table, column, index, and sequence completion in `HttpTransportContractE2ETest`
-    or `MetadataDiscoveryE2ETest`; algorithm completion in encrypt and mask workflow E2E; plan-id completion in workflow approval E2E.
+  - Closure evidence:
+    `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/descriptors/core.yaml:438-498`
+    declares resource-reference completion targets for schema, table, column, index, and sequence detail templates.
+  - Closure evidence:
+    `mcp/support/src/main/resources/META-INF/shardingsphere-mcp/descriptors/support.yaml:126-137`
+    keeps prompt completion targets limited to declared prompt arguments for `inspect_metadata` and `safe_sql_execution`.
+  - Closure evidence:
+    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml:99-106`
+    declares encrypt prompt arguments that were already used by encrypt completion targets.
+  - Closure evidence:
+    `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogValidator.java:398-421`
+    rejects prompt completion targets that name undeclared prompt arguments.
+  - Closure evidence:
+    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportCompletionE2ETest.java:45-95`
+    covers metadata, algorithm, and current-session workflow `plan_id` completion through the HTTP product path.
+  - Closure evidence:
+    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/HttpProductionProxyEncryptWorkflowE2ETest.java:52`
+    and `HttpProductionProxyMaskWorkflowE2ETest.java:51-52` cover production Proxy algorithm completion using standard prompt references.
+  - Target: closed for 016 positive E2E coverage; package 015 remains owner for broader completion dispatch/API generalization.
 
 - **MCE-P1-006 Resource URI encoding boundaries**
   - Source: MCP resources use URI templates, and resource-not-found should be surfaced as protocol errors.
   - Current evidence:
     `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/resource/MCPUriTemplateUtils.java:83-90`
     percent-encodes URI variables.
-  - Current evidence:
-    `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/resource/uri/MCPUriPattern.java:127-140`
-    decodes URI variables.
-  - Current evidence:
-    `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/resource/uri/MCPUriPatternTest.java:73-78`
-    and `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/tool/handler/metadata/SearchMetadataToolServiceTest.java:196-203`
-    already cover encoded value parsing at unit scope.
-  - Target E2E: `MetadataDiscoveryE2ETest` product-level encoded spaces, encoded slashes,
-    reserved characters, malformed encoding, missing variables, and unsupported resources.
+  - Closure evidence:
+    `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/resource/MCPUriTemplateUtils.java:103-130`
+    decodes UTF-8 path segments, preserves literal `+`, and rejects malformed percent-encoding.
+  - Closure evidence:
+    `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/resource/uri/MCPUriPattern.java:134-146`
+    rejects raw template markers and resource URIs with invalid path-segment encoding.
+  - Closure evidence:
+    `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/resource/MCPUriTemplateUtilsTest.java:58-72`
+    and `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/resource/uri/MCPUriPatternTest.java`
+    cover encoded spaces, encoded slashes, reserved characters, literal plus signs, malformed encoding, and unexpanded template variables at unit scope.
+  - Closure evidence:
+    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/MetadataDiscoveryE2ETest.java:190-218`
+    covers encoded resource URIs, malformed encoding, and unexpanded template variables through the HTTP product path.
+  - Target: closed for resource URI encoding product evidence.
 
 - **MCE-P1-007 Session and transaction isolation**
   - Source: Streamable HTTP sessions and DELETE lifecycle behavior.
-  - Current evidence:
-    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportSessionLifecycleE2ETest.java:39-79`
-    covers delete and missing-session behavior.
-  - Current evidence:
-    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/ExecuteQueryTransactionE2ETest.java:87-98`
-    covers cross-database transaction switching in one session.
-  - Target: two-client HTTP isolation, transaction cleanup after DELETE, workflow approval cleanup,
-    and completion-plan isolation across sessions.
+  - Closure evidence:
+    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportSessionLifecycleE2ETest.java:82-99`
+    covers DELETE isolation across two HTTP sessions.
+  - Closure evidence:
+    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/ExecuteQueryTransactionE2ETest.java:101-124`
+    covers transaction isolation across sessions and rollback cleanup after session DELETE.
+  - Closure evidence:
+    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportApprovalSafetyE2ETest.java:141-155`
+    rejects workflow approval from a different session.
+  - Closure evidence:
+    `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportCompletionE2ETest.java:77-95`
+    verifies `plan_id` completion returns only current-session plans.
+  - Closure evidence:
+    `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/workflow/WorkflowSessionSnapshotResolver.java:32-50`,
+    `InMemoryWorkflowSessionContext.java:60`,
+    `WorkflowExecutionToolHandler.java:74`, and `WorkflowValidationToolHandler.java:60`
+    enforce session-owned workflow snapshots before continuing, applying, or validating a plan.
+  - Target: closed for two-client session, workflow completion, transaction cleanup, and DELETE behavior evidence.
 
 - **MCE-P1-008 Registry manifest schema**
   - Source: MCP Registry publishes server metadata through `server.json`; the official schema URL is dated `2025-12-11`.

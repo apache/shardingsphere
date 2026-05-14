@@ -43,7 +43,7 @@ class ProductionH2AiNativeInteractionE2ETest extends ProductionH2RuntimeSmokeE2E
             assertAiNativeCapabilities(interactionClient.readResource("shardingsphere://capabilities"));
             assertAiNativeDiscovery(interactionClient);
             Map<String, Object> searchMetadataPayload = interactionClient.call("database_gateway_search_metadata",
-                    Map.of("database", "logic_db", "schema", "public", "query", "orders", "object_types", List.of("TABLE")));
+                    Map.of("database", "logic_db", "schema", "public", "query", "orders", "object_types", List.of("table")));
             Map<String, Object> tableHit = MCPPayloadAssertions.findItem(searchMetadataPayload, "name", "orders");
             String tableResourceUri = String.valueOf(getMap(tableHit.get("resource")).get("uri"));
             assertThat(tableResourceUri, is("shardingsphere://databases/logic_db/schemas/public/tables/orders"));

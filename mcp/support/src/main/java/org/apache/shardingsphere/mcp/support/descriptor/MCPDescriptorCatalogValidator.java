@@ -380,7 +380,9 @@ final class MCPDescriptorCatalogValidator {
     
     private static void validateCompletionTargetDescriptors(final Collection<MCPCompletionTargetDescriptor> descriptors, final Collection<MCPPromptDescriptor> prompts,
                                                             final Collection<MCPResourceDescriptor> resources) {
-        Set<String> promptNames = prompts.stream().map(MCPPromptDescriptor::getName).collect(Collectors.toSet());
+        Map<String, Set<String>> promptArguments = prompts.stream().collect(Collectors.toMap(MCPPromptDescriptor::getName,
+                each -> each.getArguments().stream().map(MCPPromptArgumentDescriptor::getName).collect(Collectors.toSet())));
+        Set<String> promptNames = promptArguments.keySet();
         Set<String> resourceUris = resources.stream().map(MCPResourceDescriptor::getUriTemplate).collect(Collectors.toSet());
         Map<String, MCPCompletionTargetDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         for (MCPCompletionTargetDescriptor each : descriptors) {
@@ -393,6 +395,7 @@ final class MCPDescriptorCatalogValidator {
             validateMetaKeys(String.format("Completion target `%s:%s`", each.getReferenceType(), each.getReference()), each.getMeta());
             validateCompletionArguments(each);
             validateCompletionReference(each, promptNames, resourceUris);
+            validatePromptCompletionArguments(each, promptArguments);
             checkState(null == registered.putIfAbsent(each.getReferenceType() + ":" + each.getReference(), each),
                     String.format("Duplicate MCP completion target `%s:%s`.", each.getReferenceType(), each.getReference()));
         }
@@ -403,6 +406,17 @@ final class MCPDescriptorCatalogValidator {
         for (String each : descriptor.getArguments()) {
             checkNotBlank(each, String.format("Completion argument for `%s:%s`", descriptor.getReferenceType(), descriptor.getReference()));
             checkState(registered.add(each), String.format("Duplicate MCP completion argument `%s` for `%s:%s`.", each, descriptor.getReferenceType(), descriptor.getReference()));
+        }
+    }
+    
+    private static void validatePromptCompletionArguments(final MCPCompletionTargetDescriptor descriptor, final Map<String, Set<String>> promptArguments) {
+        if (!"prompt".equals(descriptor.getReferenceType())) {
+            return;
+        }
+        Set<String> argumentNames = promptArguments.getOrDefault(descriptor.getReference(), Set.of());
+        for (String each : descriptor.getArguments()) {
+            checkState(argumentNames.contains(each),
+                    String.format("Completion target `prompt:%s` argument `%s` is not declared by prompt `%s`.", descriptor.getReference(), each, descriptor.getReference()));
         }
     }
     

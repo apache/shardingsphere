@@ -101,7 +101,7 @@ class ProductionH2MetadataResourceE2ETest extends ProductionH2RuntimeSmokeE2ETes
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             MCPPayloadAssertions.assertSingleItemValue(interactionClient.call("database_gateway_search_metadata",
-                    Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("SEQUENCE"))), "name", "order_seq");
+                    Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("sequence"))), "name", "order_seq");
         }
     }
     
@@ -111,7 +111,7 @@ class ProductionH2MetadataResourceE2ETest extends ProductionH2RuntimeSmokeE2ETes
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             MCPPayloadAssertions.assertItemValues(interactionClient.call("database_gateway_search_metadata",
-                    Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("TABLE", "VIEW"))), "name",
+                    Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("table", "view"))), "name",
                     List.of("order_items", "orders", "active_orders"));
         }
     }
@@ -123,9 +123,9 @@ class ProductionH2MetadataResourceE2ETest extends ProductionH2RuntimeSmokeE2ETes
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.call("database_gateway_search_metadata",
                     Map.of("database", "logic_db", "schema", "public", "query", "order",
-                            "object_types", List.of("TABLE", "VIEW", "INDEX", "MATERIALIZED_VIEW", "SEQUENCE")));
+                            "object_types", List.of("table", "view", "index", "materialized_view", "sequence")));
             assertThat(String.valueOf(actual.get("error_code")), is("invalid_request"));
-            assertThat(String.valueOf(actual.get("message")), is("Unsupported object_types value `MATERIALIZED_VIEW`."));
+            assertThat(String.valueOf(actual.get("message")), is("object_types[3] must be one of [database, schema, table, view, column, index, sequence]."));
         }
     }
 }

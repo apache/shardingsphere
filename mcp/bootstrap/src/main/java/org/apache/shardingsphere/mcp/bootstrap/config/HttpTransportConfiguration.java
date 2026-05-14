@@ -97,7 +97,7 @@ public final class HttpTransportConfiguration {
         this.authorizationServers = createTextList(authorizationServers);
         this.scopesSupported = createTextList(scopesSupported);
         this.protectedResource = Objects.toString(protectedResource, "").trim();
-        this.oauthIntrospection = null == oauthIntrospection ? new OAuthIntrospectionConfiguration() : oauthIntrospection;
+        this.oauthIntrospection = oauthIntrospection;
     }
     
     /**

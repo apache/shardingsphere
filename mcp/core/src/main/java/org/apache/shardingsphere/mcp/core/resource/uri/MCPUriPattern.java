@@ -20,9 +20,8 @@ package org.apache.shardingsphere.mcp.core.resource.uri;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -130,14 +129,22 @@ public final class MCPUriPattern {
             return Optional.empty();
         }
         Map<String, String> variables = new LinkedHashMap<>(variableNames.size(), 1F);
-        try {
-            for (int i = 0; i < variableNames.size(); i++) {
-                variables.put(variableNames.get(i), URLDecoder.decode(matcher.group(i + 1), StandardCharsets.UTF_8));
+        for (int i = 0; i < variableNames.size(); i++) {
+            String encodedValue = matcher.group(i + 1);
+            if (containsRawTemplateMarker(encodedValue)) {
+                return Optional.empty();
             }
-        } catch (final IllegalArgumentException ignored) {
-            return Optional.empty();
+            Optional<String> decodedValue = MCPUriTemplateUtils.decodePathSegment(encodedValue);
+            if (decodedValue.isEmpty()) {
+                return Optional.empty();
+            }
+            variables.put(variableNames.get(i), decodedValue.get());
         }
         return Optional.of(new MCPUriVariables(variables));
+    }
+    
+    private boolean containsRawTemplateMarker(final String encodedValue) {
+        return encodedValue.contains("{") || encodedValue.contains("}");
     }
     
     /**

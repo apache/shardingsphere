@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mcp.support.descriptor;
 
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
@@ -70,6 +72,15 @@ class MCPDescriptorCatalogLoaderTest {
         assertThat(exception.getMessage(), is("Completion target `resource:shardingsphere://databases/{database}` maxValues must not exceed 100."));
     }
     
+    @Test
+    void assertValidateRejectsUndeclaredPromptCompletionArgument() {
+        MCPDescriptorCatalog actual = new MCPDescriptorCatalog(List.of(), List.of(createResourceTemplateDescriptor()), List.of(createResourceExtensionDescriptor()), List.of(),
+                List.of(createPromptDescriptor()), List.of(new MCPPromptTemplateBinding("inspect_metadata", "META-INF/shardingsphere-mcp/prompts/inspect-metadata.md")),
+                List.of(new MCPCompletionTargetDescriptor("prompt", "inspect_metadata", List.of("table"), 50, Map.of())), List.of(), List.of());
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> MCPDescriptorCatalogValidator.validate(actual));
+        assertThat(exception.getMessage(), is("Completion target `prompt:inspect_metadata` argument `table` is not declared by prompt `inspect_metadata`."));
+    }
+    
     private void assertOutputProperties(final MCPDescriptorCatalog catalog, final String toolName, final Set<String> expectedProperties) {
         Map<?, ?> actualProperties = (Map<?, ?>) findTool(catalog, toolName).getOutputSchema().get("properties");
         for (String each : expectedProperties) {
@@ -109,6 +120,16 @@ class MCPDescriptorCatalogLoaderTest {
         return new MCPResourceExtensionDescriptor("shardingsphere://databases/{database}",
                 List.of(new MCPUriVariableDescriptor("database", "Database", "Logical database name.", true, "database")),
                 "detail", "database", "", List.of(), List.of(), List.of());
+    }
+    
+    private MCPPromptDescriptor createPromptDescriptor() {
+        return new MCPPromptDescriptor(List.of(), "inspect_metadata", "Inspect Metadata", "Inspect metadata.",
+                List.of(
+                        new MCPPromptArgumentDescriptor("database", "Database", "Database.", false),
+                        new MCPPromptArgumentDescriptor("schema", "Schema", "Schema.", false),
+                        new MCPPromptArgumentDescriptor("query", "Query", "Query.", false)),
+                Map.of(MCPShardingSphereMetadataKeys.STOP_CONDITIONS, List.of("Stop after metadata is resolved."),
+                        MCPShardingSphereMetadataKeys.ASK_USER_CONDITIONS, List.of("Ask when metadata is ambiguous.")));
     }
     
     private MCPResourceExtensionDescriptor findResourceExtension(final MCPDescriptorCatalog catalog, final String uriTemplate) {

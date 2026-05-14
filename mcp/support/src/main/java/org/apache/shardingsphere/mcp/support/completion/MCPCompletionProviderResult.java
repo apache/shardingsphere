@@ -40,8 +40,8 @@ public final class MCPCompletionProviderResult {
     }
     
     public MCPCompletionProviderResult(final Collection<MCPCompletionCandidate> candidates, final Map<String, Object> inferredContextArguments) {
-        this.candidates = null == candidates ? List.of() : List.copyOf(candidates);
-        this.inferredContextArguments = null == inferredContextArguments ? Map.of() : Collections.unmodifiableMap(new LinkedHashMap<>(inferredContextArguments));
+        this.candidates = List.copyOf(candidates);
+        this.inferredContextArguments = Collections.unmodifiableMap(new LinkedHashMap<>(inferredContextArguments));
     }
     
     /**

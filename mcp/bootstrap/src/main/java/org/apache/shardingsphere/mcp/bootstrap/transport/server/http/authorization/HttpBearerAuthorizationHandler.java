@@ -62,9 +62,7 @@ public final class HttpBearerAuthorizationHandler {
                                    final boolean protectedResourceMetadataEnabled, final OAuthTokenValidator oauthTokenValidator) {
         this.accessToken = Objects.toString(accessToken, "").trim();
         this.endpointPath = endpointPath;
-        this.scopesSupported = null == scopesSupported
-                ? List.of()
-                : scopesSupported.stream().map(each -> Objects.toString(each, "").trim()).filter(each -> !each.isEmpty()).toList();
+        this.scopesSupported = scopesSupported.stream().map(each -> Objects.toString(each, "").trim()).filter(each -> !each.isEmpty()).toList();
         this.protectedResourceMetadataEnabled = protectedResourceMetadataEnabled;
         this.oauthTokenValidator = oauthTokenValidator;
     }

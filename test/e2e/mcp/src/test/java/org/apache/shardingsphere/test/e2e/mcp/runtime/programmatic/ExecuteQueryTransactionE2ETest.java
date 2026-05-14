@@ -97,6 +97,37 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(String.valueOf(payload.get("error_code")), is("transaction_state_error"));
     }
     
+    @Test
+    void assertTransactionsAreSessionScoped() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String firstSessionId = initializeSession(httpClient);
+        String secondSessionId = initializeSession(httpClient);
+        assertTransactionMessage(httpClient, firstSessionId, "logic_db", "BEGIN", "Transaction started.");
+        assertTransactionMessage(httpClient, secondSessionId, "analytics_db", "BEGIN", "Transaction started.");
+        assertTransactionMessage(httpClient, firstSessionId, "logic_db", "ROLLBACK", "Transaction rolled back.");
+        assertTransactionMessage(httpClient, secondSessionId, "analytics_db", "ROLLBACK", "Transaction rolled back.");
+    }
+    
+    @Test
+    void assertDeleteRollsBackTransaction() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        assertTransactionMessage(httpClient, sessionId, "logic_db", "BEGIN", "Transaction started.");
+        HttpResponse<String> update = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
+                createExecuteSQLArguments("logic_db", "public", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
+        assertThat(update.statusCode(), is(200));
+        assertThat(String.valueOf(getStructuredContent(update.body()).get("affected_rows")), is("1"));
+        assertThat(sendDeleteRequest(httpClient, createSessionHeaders(sessionId)).statusCode(), is(200));
+        String newSessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, newSessionId, "database_gateway_execute_query",
+                createExecuteQueryArguments("logic_db", "public", "SELECT status FROM orders WHERE order_id = 1"));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        assertThat(String.valueOf(((List<?>) ((List<?>) payload.get("rows")).get(0)).get(0)), is("NEW"));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertPreviewSideEffectStatementCases")
     void assertPreviewSideEffectStatement(final String name, final String sql, final String expectedStatementClass,
@@ -182,6 +213,13 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     
     private Map<String, Object> createExecuteSQLArguments(final String databaseName, final String schemaName, final String sql) {
         return Map.of("database", databaseName, "schema", schemaName, "sql", sql, "execution_mode", "execute", "approved_by_user", true);
+    }
+    
+    private void assertTransactionMessage(final HttpClient httpClient, final String sessionId, final String databaseName, final String sql,
+                                          final String expectedMessage) throws IOException, InterruptedException {
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", createExecuteSQLArguments(databaseName, "public", sql));
+        assertThat(actual.statusCode(), is(200));
+        assertThat(String.valueOf(getStructuredContent(actual.body()).get("message")), is(expectedMessage));
     }
     
     private Map<String, Object> createExecuteQueryArguments(final String databaseName, final String schemaName, final String sql) {

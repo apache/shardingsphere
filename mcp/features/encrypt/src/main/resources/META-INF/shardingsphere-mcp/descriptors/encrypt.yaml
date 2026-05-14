@@ -96,6 +96,14 @@ prompts:
         title: Encrypt Algorithm
         description: "Optional primary encrypt algorithm type visible from ShardingSphere-Proxy."
         required: false
+      - name: assisted_query_algorithm_type
+        title: Assisted Query Algorithm
+        description: "Optional assisted query encrypt algorithm type visible from ShardingSphere-Proxy."
+        required: false
+      - name: like_query_algorithm_type
+        title: LIKE Query Algorithm
+        description: "Optional LIKE query encrypt algorithm type visible from ShardingSphere-Proxy."
+        required: false
       - name: plan_id
         title: Workflow Plan ID
         description: "Optional current-session workflow plan identifier used to continue an encrypt plan."

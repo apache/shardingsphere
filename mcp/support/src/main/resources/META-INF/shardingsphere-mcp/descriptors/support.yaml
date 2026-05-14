@@ -127,18 +127,12 @@ completionTargets:
     arguments:
       - database
       - schema
-      - table
-      - column
-      - index
-      - sequence
     maxValues: 50
   - referenceType: prompt
     reference: safe_sql_execution
     arguments:
       - database
       - schema
-      - table
-      - column
     maxValues: 50
   - referenceType: prompt
     reference: recover_workflow

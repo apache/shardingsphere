@@ -77,4 +77,18 @@ class HttpTransportSessionLifecycleE2ETest extends AbstractHttpProgrammaticRunti
         assertThat(firstDelete.statusCode(), is(200));
         assertThat(secondDelete.statusCode(), is(404));
     }
+    
+    @Test
+    void assertDeleteKeepsOtherSession() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String firstSessionId = initializeSession(httpClient);
+        String secondSessionId = initializeSession(httpClient);
+        HttpResponse<String> deleteResponse = sendDeleteRequest(httpClient, createSessionHeaders(firstSessionId));
+        HttpResponse<String> firstSessionResponse = sendCapabilitiesRequest(httpClient, createSessionHeaders(firstSessionId));
+        HttpResponse<String> secondSessionResponse = sendCapabilitiesRequest(httpClient, createSessionHeaders(secondSessionId));
+        assertThat(deleteResponse.statusCode(), is(200));
+        assertThat(firstSessionResponse.statusCode(), is(404));
+        assertThat(secondSessionResponse.statusCode(), is(200));
+    }
 }

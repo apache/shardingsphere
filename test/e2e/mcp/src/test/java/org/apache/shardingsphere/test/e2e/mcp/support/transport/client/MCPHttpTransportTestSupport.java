@@ -84,4 +84,15 @@ public final class MCPHttpTransportTestSupport {
     public static String createJsonRpcRequestBody(final String requestId, final String method, final Map<String, Object> params) {
         return MCPInteractionProtocolSupport.createJsonRpcRequestBody(requestId, method, params);
     }
+    
+    /**
+     * Create a JSON-RPC notification body.
+     *
+     * @param method notification method
+     * @param params notification parameters
+     * @return JSON notification body
+     */
+    public static String createJsonRpcNotificationBody(final String method, final Map<String, Object> params) {
+        return MCPInteractionProtocolSupport.createJsonRpcNotificationBody(method, params);
+    }
 }

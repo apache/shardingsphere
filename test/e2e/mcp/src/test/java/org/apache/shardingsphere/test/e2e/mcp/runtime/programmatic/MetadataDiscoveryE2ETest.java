@@ -51,7 +51,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata",
-                Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("TABLE", "VIEW")));
+                Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("table", "view")));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualPayload = getStructuredContent(actual.body());
         List<Map<String, Object>> actualItems = getItems(actualPayload);
@@ -80,10 +80,10 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
     private static Stream<Arguments> assertSearchMetadataObjectTypeCases() {
         return Stream.of(
-                Arguments.of("database objects", createSearchArguments("", "", "logic", List.of("DATABASE")), List.of("logic_db")),
-                Arguments.of("schema objects", createSearchArguments("logic_db", "", "public", List.of("SCHEMA")), List.of("public")),
-                Arguments.of("column objects", createSearchArguments("logic_db", "", "status", List.of("COLUMN")), List.of("status", "status")),
-                Arguments.of("index objects", createSearchArguments("logic_db", "", "status", List.of("INDEX")), List.of("idx_orders_status")));
+                Arguments.of("database objects", createSearchArguments("", "", "logic", List.of("database")), List.of("logic_db")),
+                Arguments.of("schema objects", createSearchArguments("logic_db", "", "public", List.of("schema")), List.of("public")),
+                Arguments.of("column objects", createSearchArguments("logic_db", "", "status", List.of("column")), List.of("status", "status")),
+                Arguments.of("index objects", createSearchArguments("logic_db", "", "status", List.of("index")), List.of("idx_orders_status")));
     }
     
     @Test
@@ -101,7 +101,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        Map<String, Object> firstPageArguments = createSearchArguments("logic_db", "public", "order", List.of("TABLE", "VIEW"));
+        Map<String, Object> firstPageArguments = createSearchArguments("logic_db", "public", "order", List.of("table", "view"));
         firstPageArguments.put("page_size", 2);
         HttpResponse<String> firstPage = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", firstPageArguments);
         assertThat(firstPage.statusCode(), is(200));
@@ -109,7 +109,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(getItemNames(firstPagePayload), is(List.of("order_items", "orders")));
         assertTrue((boolean) firstPagePayload.get("has_more"));
         assertThat(String.valueOf(firstPagePayload.get("next_page_token")), is("2"));
-        Map<String, Object> secondPageArguments = createSearchArguments("logic_db", "public", "order", List.of("TABLE", "VIEW"));
+        Map<String, Object> secondPageArguments = createSearchArguments("logic_db", "public", "order", List.of("table", "view"));
         secondPageArguments.put("page_size", 2);
         secondPageArguments.put("page_token", "2");
         HttpResponse<String> secondPage = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", secondPageArguments);
@@ -125,7 +125,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        Map<String, Object> arguments = createSearchArguments("logic_db", "public", "order", List.of("TABLE", "VIEW"));
+        Map<String, Object> arguments = createSearchArguments("logic_db", "public", "order", List.of("table", "view"));
         arguments.put("page_token", "99");
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", arguments);
         assertThat(actual.statusCode(), is(200));
@@ -149,7 +149,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        Map<String, Object> arguments = createSearchArguments("logic_db", "public", "order", List.of("TABLE", "VIEW"));
+        Map<String, Object> arguments = createSearchArguments("logic_db", "public", "order", List.of("table", "view"));
         arguments.put("page_token", "invalid");
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", arguments);
         assertThat(actual.statusCode(), is(200));
@@ -165,11 +165,11 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata",
                 Map.of("database", "logic_db", "schema", "public", "query", "order",
-                        "object_types", List.of("TABLE", "VIEW", "INDEX", "MATERIALIZED_VIEW", "SEQUENCE")));
+                        "object_types", List.of("table", "view", "index", "materialized_view", "sequence")));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualPayload = getStructuredContent(actual.body());
         assertThat(String.valueOf(actualPayload.get("error_code")), is("invalid_request"));
-        assertThat(String.valueOf(actualPayload.get("message")), is("Unsupported object_types value `MATERIALIZED_VIEW`."));
+        assertThat(String.valueOf(actualPayload.get("message")), is("object_types[3] must be one of [database, schema, table, view, column, index, sequence]."));
     }
     
     @Test
@@ -184,6 +184,49 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(actualItems.size(), is(1));
         assertThat(String.valueOf(actualItems.get(0).get("table")), is("facts"));
         assertTrue(String.valueOf(actualItems.get(0).get("index")).startsWith("PRIMARY_KEY_"));
+    }
+    
+    @Test
+    void assertReadResourceUriWithEncodedSegments() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> databaseResource = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic%5Fdb");
+        assertThat(databaseResource.statusCode(), is(200));
+        assertThat(String.valueOf(castToMap(getFirstResourcePayload(databaseResource.body()).get("item")).get("database")), is("logic_db"));
+        HttpResponse<String> tableResource = sendResourceReadRequest(httpClient, sessionId,
+                "shardingsphere://databases/logic_db/schemas/public/tables/orders%20archive%2F2026");
+        assertThat(tableResource.statusCode(), is(200));
+        Map<String, Object> tablePayload = getFirstResourcePayload(tableResource.body());
+        assertFalse((Boolean) tablePayload.get("found"));
+        assertThat(String.valueOf(tablePayload.get("self_uri")),
+                is("shardingsphere://databases/logic_db/schemas/public/tables/orders%20archive%2F2026"));
+        assertThat(String.valueOf(castToMap(tablePayload.get("recovery")).get("requested_token")), is("orders archive/2026"));
+    }
+    
+    @Test
+    void assertRejectMalformedResourceUriEncoding() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic%ZZdb");
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getFirstResourcePayload(actual.body());
+        assertThat(String.valueOf(payload.get("error_code")), is("json_rpc_error"));
+        assertThat(String.valueOf(payload.get("message")), is("Resource not found"));
+    }
+    
+    @Test
+    void assertRejectUnexpandedResourceUriTemplate() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId,
+                "shardingsphere://databases/logic_db/schemas/public/tables/{table}");
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getFirstResourcePayload(actual.body());
+        assertThat(String.valueOf(payload.get("error_code")), is("json_rpc_error"));
+        assertThat(String.valueOf(payload.get("message")), is("Resource not found"));
     }
     
     private List<String> getItemNames(final Map<String, Object> payload) {

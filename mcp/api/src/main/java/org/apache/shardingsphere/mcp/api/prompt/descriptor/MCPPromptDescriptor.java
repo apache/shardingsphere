@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.api.prompt.descriptor;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.api.common.descriptor.MCPIcon;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -44,11 +43,11 @@ public final class MCPPromptDescriptor {
     
     public MCPPromptDescriptor(final List<MCPIcon> icons, final String name, final String title, final String description,
                                final List<MCPPromptArgumentDescriptor> arguments, final Map<String, Object> meta) {
-        this.icons = null == icons ? Collections.emptyList() : icons;
+        this.icons = icons;
         this.name = name;
         this.title = title;
         this.description = description;
-        this.arguments = null == arguments ? Collections.emptyList() : arguments;
-        this.meta = null == meta ? Collections.emptyMap() : meta;
+        this.arguments = arguments;
+        this.meta = meta;
     }
 }

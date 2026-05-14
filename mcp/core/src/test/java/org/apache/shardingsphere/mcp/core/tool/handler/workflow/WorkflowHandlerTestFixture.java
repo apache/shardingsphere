@@ -64,6 +64,7 @@ final class WorkflowHandlerTestFixture {
     static WorkflowContextSnapshot createSnapshotWithoutWorkflowKind() {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId("plan-1");
+        result.setSessionId("session-1");
         return result;
     }
     

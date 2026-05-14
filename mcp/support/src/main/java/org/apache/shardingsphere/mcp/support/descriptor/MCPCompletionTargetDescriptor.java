@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +41,8 @@ public final class MCPCompletionTargetDescriptor {
     public MCPCompletionTargetDescriptor(final String referenceType, final String reference, final List<String> arguments, final int maxValues, final Map<String, Object> meta) {
         this.referenceType = referenceType;
         this.reference = reference;
-        this.arguments = null == arguments ? Collections.emptyList() : arguments;
+        this.arguments = arguments;
         this.maxValues = maxValues;
-        this.meta = null == meta ? Collections.emptyMap() : meta;
+        this.meta = meta;
     }
 }

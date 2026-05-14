@@ -144,27 +144,27 @@
 
 ### Tests for Runtime Evidence
 
-- [ ] T040 [P] [US1] Add HTTP initialized-notification evidence or a sourced exception for Streamable HTTP helper behavior.
+- [x] T040 [P] [US1] Add HTTP initialized-notification evidence or a sourced exception for Streamable HTTP helper behavior.
   Paths: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/transport/client/MCPHttpInteractionClient.java`,
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportContractE2ETest.java`
-- [ ] T041 [P] [US2] Add product E2E coverage for resource URI encoded spaces, encoded slashes, malformed encoding, and missing variables.
+- [x] T041 [P] [US2] Add product E2E coverage for resource URI encoded spaces, encoded slashes, malformed encoding, and missing variables.
   Path: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/MetadataDiscoveryE2ETest.java`
-- [ ] T042 [P] [US3] Add positive completion E2E for metadata table, column, index, sequence, algorithms, and workflow plan IDs.
+- [x] T042 [P] [US3] Add positive completion E2E for metadata table, column, index, sequence, algorithms, and workflow plan IDs.
   Paths: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportContractE2ETest.java`,
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/MetadataDiscoveryE2ETest.java`,
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/HttpProductionProxyEncryptWorkflowE2ETest.java`,
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/HttpProductionProxyMaskWorkflowE2ETest.java`
-- [ ] T043 [P] [US3] Add two-client isolation tests for session delete, transaction cleanup, workflow approval, and completion-plan scope.
+- [x] T043 [P] [US3] Add two-client isolation tests for session delete, transaction cleanup, workflow approval, and completion-plan scope.
   Paths: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportSessionLifecycleE2ETest.java`,
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/ExecuteQueryTransactionE2ETest.java`
 
 ### Implementation for Runtime Evidence
 
-- [ ] T044 [US1] Update HTTP helpers to send initialized notification, or document the sourced SDK exception in E2E and README.
+- [x] T044 [US1] Update HTTP helpers to send initialized notification, or document the sourced SDK exception in E2E and README.
   Paths: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/transport/client/MCPHttpInteractionClient.java`,
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/AbstractHttpProgrammaticRuntimeE2ETest.java`,
   `mcp/README.md`
-- [ ] T045 [US3] Fix session or workflow state cleanup only if new two-client E2E evidence exposes a defect.
+- [x] T045 [US3] Fix session or workflow state cleanup only if new two-client E2E evidence exposes a defect.
   Paths: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/session`,
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/workflow`,
   `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/workflow`
@@ -208,18 +208,18 @@
 
 ## Phase 6: Verification and Handoff
 
-- [ ] T060 Run scoped unit tests for every touched MCP module.
+- [x] T060 Run scoped unit tests for every touched MCP module.
   Command: `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=<ClassName> -Dsurefire.failIfNoSpecifiedTests=false test`
-- [ ] T061 Run scoped E2E tests for every touched product-path class.
+- [x] T061 Run scoped E2E tests for every touched product-path class.
   Command: `./mvnw -pl test/e2e/mcp -DskipITs -Dspotless.skip=true -Dtest=<ClassName> -Dsurefire.failIfNoSpecifiedTests=false test`
-- [ ] T062 Run Checkstyle or Spotless gates for touched modules.
+- [x] T062 Run Checkstyle or Spotless gates for touched modules.
   Commands: `./mvnw -pl <module> -am -Pcheck checkstyle:check`,
   `./mvnw spotless:apply -Pcheck -pl <module>`
-- [ ] T063 Update 016 evidence after each completed implementation slice.
+- [x] T063 Update 016 evidence after each completed implementation slice.
   Paths: `.specify/specs/016-mcp-contract-e2e-gap-triage/finding-ledger.md`,
   `.specify/specs/016-mcp-contract-e2e-gap-triage/source-path-evidence.md`,
   `.specify/specs/016-mcp-contract-e2e-gap-triage/checklists/requirements.md`
-- [ ] T064 Record commands, exit codes, residual risks, and adjacent owner updates before claiming closure.
+- [x] T064 Record commands, exit codes, residual risks, and adjacent owner updates before claiming closure.
   Path: `.specify/specs/016-mcp-contract-e2e-gap-triage/tasks.md`
 
 **Final Checkpoint**: Every implemented task has passing evidence, no branch switch occurred, and no unrelated dirty files were reverted.
@@ -299,3 +299,40 @@ They touch one transport behavior, have clear existing contradictory evidence, a
   - `rg` scans for password-format elicitation, sample cleartext docs secrets, and local `final` variables in changed files found no remaining unsafe matches.
   - `git branch --show-current`
     exited `0` and returned `001-shardingsphere-mcp`.
+
+### 2026-05-14: T040/T041/T042/T043/T044/T045 Runtime Evidence Closure
+
+- Source: MCP lifecycle, resources, completion, and Streamable HTTP session behavior are locked to official MCP Specification `2025-11-25`.
+- Code: HTTP programmatic and interaction-client helpers now send `notifications/initialized` after successful initialize and assert HTTP `202`.
+- Code: URI parsing now decodes UTF-8 path segments with malformed-encoding rejection, preserves literal `+`, and rejects raw unexpanded template markers.
+- Code: completion descriptors now use standard prompt references only for declared prompt arguments and resource references for resource-template variables.
+- Code: workflow plan lookup now rejects plan IDs owned by another MCP session before validate/apply/continue paths run.
+- Tests: added product E2E for encoded URI segments, malformed URI encoding, unexpanded resource templates, metadata/resource/prompt completion, algorithm completion, plan-id completion,
+  session DELETE isolation, transaction session isolation, DELETE rollback cleanup, and cross-session workflow approval rejection.
+- Golden contracts: updated capability and tools/prompts/completion snapshots to reflect declared encrypt prompt arguments and resource-template completion targets.
+- Verification:
+  - `./mvnw -pl mcp/support -am -DskipITs -Dspotless.skip=true -Dtest=MCPDescriptorCatalogLoaderTest -Dsurefire.failIfNoSpecifiedTests=false test`
+    exited `1` before the descriptor validator fixture was corrected; rerun evidence below exited `0`.
+  - `./mvnw -pl mcp/support,mcp/core -am -DskipITs -Dspotless.skip=true -Dtest=MCPUriTemplateUtilsTest,MCPUriPatternTest,InMemoryWorkflowSessionContextTest,WorkflowExecutionToolHandlerTest,WorkflowValidationToolHandlerTest,MCPDescriptorCatalogLoaderTest -Dsurefire.failIfNoSpecifiedTests=false test`
+    exited `0`; 42 focused support/core tests ran with 0 failures, 0 errors, and 0 skipped.
+  - `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dtest=MetadataDiscoveryE2ETest,HttpTransportCompletionE2ETest,HttpTransportSessionLifecycleE2ETest,ExecuteQueryTransactionE2ETest,HttpTransportApprovalSafetyE2ETest -Dsurefire.failIfNoSpecifiedTests=false test`
+    exited `1` before the cross-session workflow plan defect was fixed; rerun exited `0`.
+  - `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dtest=MetadataDiscoveryE2ETest,HttpTransportCompletionE2ETest,HttpTransportSessionLifecycleE2ETest,ExecuteQueryTransactionE2ETest,HttpTransportApprovalSafetyE2ETest -Dsurefire.failIfNoSpecifiedTests=false test`
+    exited `0`; the runtime-evidence E2E slice passed after session-owned workflow plan resolution was added.
+  - `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dtest=HttpProductionProxyEncryptWorkflowE2ETest,HttpProductionProxyMaskWorkflowE2ETest -Dsurefire.failIfNoSpecifiedTests=false test`
+    exited `0`; 18 production Proxy workflow E2E tests ran with 0 failures, 0 errors, and 0 skipped.
+  - `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dtest=HttpTransportGoldenContractE2ETest,HttpTransportContractE2ETest -Dsurefire.failIfNoSpecifiedTests=false test`
+    exited `1` before golden snapshots were updated, then exited `0` after updating `capabilities.yaml` and `tools-prompts-completion.yaml`.
+  - `./mvnw -pl mcp/support,mcp/core,mcp/features/encrypt,test/e2e/mcp spotless:apply -Pcheck`
+    exited `0`; Spotless restored the repository's expected Java blank-line formatting after whitespace review.
+  - `./mvnw -pl mcp/support,mcp/core,mcp/features/encrypt,test/e2e/mcp -DskipTests checkstyle:check -Pcheck`
+    exited `1` before Javadoc and variable-distance cleanup, then exited `0` with 0 Checkstyle violations.
+  - `./mvnw -pl mcp/support,mcp/core,mcp/features/encrypt,test/e2e/mcp -DskipTests spotless:check -Pcheck`
+    exited `0`; all touched Java and POM files matched Spotless formatting.
+  - `./mvnw -pl mcp/support,mcp/core -am -DskipITs -Dspotless.skip=true -Dtest=MCPUriTemplateUtilsTest,MCPUriPatternTest,InMemoryWorkflowSessionContextTest,WorkflowExecutionToolHandlerTest,WorkflowValidationToolHandlerTest,MCPDescriptorCatalogLoaderTest -Dsurefire.failIfNoSpecifiedTests=false test`
+    exited `0` after the final Checkstyle cleanup.
+  - `./mvnw -pl mcp/support -am -DskipITs -Dspotless.skip=true -Dtest=MCPUriTemplateUtilsTest -Dsurefire.failIfNoSpecifiedTests=false test`
+    exited `0` after the final readability cleanup.
+  - `git -c core.whitespace=-blank-at-eol diff --check`
+    exited `0`; the adjusted whitespace check matches the repository's Spotless blank-line convention.
+- Residual risks: package 015 remains owner for deeper completion provider dispatch/API generalization; package 013 remains owner for global enum casing policy.

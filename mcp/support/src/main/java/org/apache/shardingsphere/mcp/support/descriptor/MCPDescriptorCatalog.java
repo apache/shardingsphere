@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescript
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -55,15 +54,15 @@ public final class MCPDescriptorCatalog {
                                 final Collection<MCPPromptDescriptor> promptDescriptors, final Collection<MCPPromptTemplateBinding> promptTemplateBindings,
                                 final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors, final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors,
                                 final Collection<MCPToolRuntimeDescriptor> toolRuntimeDescriptors) {
-        this.resourceDescriptors = null == resourceDescriptors ? Collections.emptyList() : resourceDescriptors;
-        this.resourceTemplateDescriptors = null == resourceTemplateDescriptors ? Collections.emptyList() : resourceTemplateDescriptors;
-        this.resourceExtensionDescriptors = null == resourceExtensionDescriptors ? Collections.emptyList() : resourceExtensionDescriptors;
-        this.toolDescriptors = null == toolDescriptors ? Collections.emptyList() : toolDescriptors;
-        this.promptDescriptors = null == promptDescriptors ? Collections.emptyList() : promptDescriptors;
-        this.promptTemplateBindings = null == promptTemplateBindings ? Collections.emptyList() : promptTemplateBindings;
-        this.completionTargetDescriptors = null == completionTargetDescriptors ? Collections.emptyList() : completionTargetDescriptors;
-        this.resourceNavigationDescriptors = null == resourceNavigationDescriptors ? Collections.emptyList() : resourceNavigationDescriptors;
-        this.toolRuntimeDescriptors = null == toolRuntimeDescriptors ? Collections.emptyList() : toolRuntimeDescriptors;
+        this.resourceDescriptors = resourceDescriptors;
+        this.resourceTemplateDescriptors = resourceTemplateDescriptors;
+        this.resourceExtensionDescriptors = resourceExtensionDescriptors;
+        this.toolDescriptors = toolDescriptors;
+        this.promptDescriptors = promptDescriptors;
+        this.promptTemplateBindings = promptTemplateBindings;
+        this.completionTargetDescriptors = completionTargetDescriptors;
+        this.resourceNavigationDescriptors = resourceNavigationDescriptors;
+        this.toolRuntimeDescriptors = toolRuntimeDescriptors;
     }
     
     /**

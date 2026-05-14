@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,12 +46,12 @@ public final class MCPResourceExtensionDescriptor {
     public MCPResourceExtensionDescriptor(final String uriOrTemplate, final List<MCPUriVariableDescriptor> uriVariables, final String resourceKind, final String objectScope,
                                           final String feature, final List<String> relatedTools, final List<String> relatedResources, final List<String> useBefore) {
         this.uriOrTemplate = uriOrTemplate;
-        this.uriVariables = null == uriVariables ? Collections.emptyList() : uriVariables;
+        this.uriVariables = uriVariables;
         this.resourceKind = resourceKind;
         this.objectScope = objectScope;
         this.feature = feature;
-        this.relatedTools = null == relatedTools ? Collections.emptyList() : relatedTools;
-        this.relatedResources = null == relatedResources ? Collections.emptyList() : relatedResources;
-        this.useBefore = null == useBefore ? Collections.emptyList() : useBefore;
+        this.relatedTools = relatedTools;
+        this.relatedResources = relatedResources;
+        this.useBefore = useBefore;
     }
 }

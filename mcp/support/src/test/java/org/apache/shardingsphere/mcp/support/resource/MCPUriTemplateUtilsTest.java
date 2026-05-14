@@ -52,4 +52,22 @@ class MCPUriTemplateUtilsTest {
     void assertEncodePathSegment() {
         assertThat(MCPUriTemplateUtils.encodePathSegment("订单 / archive?"), is("%E8%AE%A2%E5%8D%95%20%2F%20archive%3F"));
     }
+    
+    @Test
+    void assertDecodePathSegment() {
+        Optional<String> actual = MCPUriTemplateUtils.decodePathSegment("%E8%AE%A2%E5%8D%95%20%2F%20archive%3F");
+        assertThat(actual, is(Optional.of("订单 / archive?")));
+    }
+    
+    @Test
+    void assertDecodePathSegmentKeepsPlusLiteral() {
+        Optional<String> actual = MCPUriTemplateUtils.decodePathSegment("logic+db");
+        assertThat(actual, is(Optional.of("logic+db")));
+    }
+    
+    @Test
+    void assertDecodePathSegmentWithMalformedPercentEncoding() {
+        Optional<String> actual = MCPUriTemplateUtils.decodePathSegment("logic%ZZdb");
+        assertThat(actual, is(Optional.empty()));
+    }
 }
