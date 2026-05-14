@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.api.resource.descriptor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
 
 import java.util.Map;
 
@@ -40,7 +39,7 @@ public final class MCPResourceDescriptor {
     
     private final String mimeType;
     
-    private final MCPAnnotations annotations;
+    private final MCPResourceAnnotations annotations;
     
     private final Map<String, Object> meta;
     

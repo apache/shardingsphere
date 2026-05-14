@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.descriptor.yaml;
+package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 /**
- * YAML MCP annotations.
+ * Docker image STDIO MCP interaction client.
  */
-@Getter
-@Setter
-public final class YamlMCPAnnotations {
-    
-    private List<String> audience;
-    
-    private Double priority;
-    
-    private String lastModified;
+@RequiredArgsConstructor
+public final class DockerImageStdioInteractionClient extends AbstractProcessMCPStdioInteractionClient {
+
+    private final String imageName;
+
+    @Override
+    protected ProcessBuilder createProcessBuilder() {
+        return new ProcessBuilder("docker", "run", "--rm", "-i", "-e", "SHARDINGSPHERE_MCP_TRANSPORT=stdio", imageName);
+    }
+
+    @Override
+    protected String getClientName() {
+        return "mcp-e2e-container-stdio";
+    }
 }

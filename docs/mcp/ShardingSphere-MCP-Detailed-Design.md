@@ -462,10 +462,11 @@ stateDiagram-v2
 
 ### 11.1 配置文件
 - distribution 建议提供：
-  - `conf/mcp.yaml`
+  - `conf/mcp-http.yaml`
+  - `conf/mcp-stdio.yaml`
   - `conf/logback.xml`
 
-### 11.2 `mcp.yaml` 分层
+### 11.2 `mcp-http.yaml` 分层
 - 建议包含以下一级段：
   - `transport`
   - `runtimeDatabases`
@@ -480,7 +481,7 @@ stateDiagram-v2
 - `stdio.enabled`
 - 所有 transport 字段都必须显式声明，不保留隐式默认值或省略时兜底
 - HTTP transport 固定使用 MCP `2025-11-25` 协议基线，不作为外部配置项暴露
-- distribution 默认配置同时启用 HTTP 与 STDIO；STDIO 仍主要用于本地测试与进程内联调，不作为额外交互式文本 Shell
+- distribution 提供 HTTP 与 STDIO 两份显式配置模板；STDIO 仍主要用于本地测试与进程内联调，不作为额外交互式文本 Shell
 
 #### `runtimeDatabases`
 - canonical logical database mapping

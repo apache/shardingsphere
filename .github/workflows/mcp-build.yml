@@ -86,8 +86,6 @@ jobs:
         run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
       - name: Package JDK 21 Subchain Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
-      - name: Test MCP Registry Metadata Script
-        run: python3 .github/workflows/resources/scripts/test-prepare-mcp-server-json.py
       - name: Run MCP Distribution Smoke
         shell: bash
         run: |
@@ -108,14 +106,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 .github/workflows/resources/scripts/prepare-mcp-server-json.py \
+          DISTRIBUTION_HOME=$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | head -n 1)
+          if [[ -z "${DISTRIBUTION_HOME}" ]]; then
+            echo "Packaged MCP distribution was not found." 1>&2
+            exit 1
+          fi
+          java -cp "${DISTRIBUTION_HOME}/lib/*" org.apache.shardingsphere.mcp.bootstrap.registry.MCPRegistryMetadataCommand \
             --version "${{ steps.release-version.outputs.version }}" \
             --identifier "${{ steps.release-version.outputs.identifier }}"
       - name: Validate MCP Registry Metadata
         shell: bash
         run: |
           set -euo pipefail
-          python3 .github/workflows/resources/scripts/prepare-mcp-server-json.py --validate-only
+          DISTRIBUTION_HOME=$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | head -n 1)
+          if [[ -z "${DISTRIBUTION_HOME}" ]]; then
+            echo "Packaged MCP distribution was not found." 1>&2
+            exit 1
+          fi
+          java -cp "${DISTRIBUTION_HOME}/lib/*" org.apache.shardingsphere.mcp.bootstrap.registry.MCPRegistryMetadataCommand --validate-only
       - name: Login Container Registry
         uses: docker/login-action@v3
         with:

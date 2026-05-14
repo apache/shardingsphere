@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.api.resource.descriptor;
 
-import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -32,7 +31,7 @@ class MCPResourceDescriptorTest {
     
     @Test
     void assertGetUriTemplateForFixedResource() {
-        MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://databases", "databases", "Databases", "List databases.", "application/json", MCPAnnotations.EMPTY,
+        MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://databases", "databases", "Databases", "List databases.", "application/json", MCPResourceAnnotations.EMPTY,
                 Collections.emptyMap());
         assertThat(actual.getUriTemplate(), is("shardingsphere://databases"));
         assertFalse(actual.isTemplated());
@@ -40,8 +39,8 @@ class MCPResourceDescriptorTest {
     
     @Test
     void assertGetUriTemplateForResourceTemplate() {
-        MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://databases/{database}", "database", "Database", "Read one database.", "application/json", MCPAnnotations.EMPTY,
-                Collections.emptyMap());
+        MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://databases/{database}", "database", "Database",
+                "Read one database.", "application/json", MCPResourceAnnotations.EMPTY, Collections.emptyMap());
         assertThat(actual.getUriTemplate(), is("shardingsphere://databases/{database}"));
         assertTrue(actual.isTemplated());
     }
@@ -49,7 +48,7 @@ class MCPResourceDescriptorTest {
     @Test
     void assertMetaIsKeptAsMetadataOnly() {
         MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://features/encrypt/algorithms", "encrypt-algorithms", "Encrypt Algorithms",
-                "List encrypt algorithms.", "application/json", MCPAnnotations.EMPTY, Map.of("org.apache.shardingsphere/runtime-visibility", "ShardingSphere-Proxy"));
+                "List encrypt algorithms.", "application/json", MCPResourceAnnotations.EMPTY, Map.of("org.apache.shardingsphere/runtime-visibility", "ShardingSphere-Proxy"));
         assertThat(actual.getMeta(), is(Map.of("org.apache.shardingsphere/runtime-visibility", "ShardingSphere-Proxy")));
     }
 }

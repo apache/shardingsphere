@@ -28,13 +28,13 @@ import java.util.stream.Stream;
 
 final class MCPDescriptorCatalogYamlLoader {
     
-    private static final String DESCRIPTOR_DIRECTORY = "META-INF/shardingsphere-mcp/descriptors";
+    private static final String MCP_DESCRIPTOR_DIRECTORY = "META-INF/shardingsphere-mcp/mcp-descriptors";
     
     private MCPDescriptorCatalogYamlLoader() {
     }
     
     static Collection<YamlMCPDescriptorCatalog> load() {
-        try (Stream<String> resources = ClasspathResourceDirectoryReader.read(DESCRIPTOR_DIRECTORY)) {
+        try (Stream<String> resources = ClasspathResourceDirectoryReader.read(MCP_DESCRIPTOR_DIRECTORY)) {
             return resources.filter(each -> each.endsWith(".yaml") || each.endsWith(".yml")).sorted().map(MCPDescriptorCatalogYamlLoader::loadYamlCatalog).toList();
         }
     }

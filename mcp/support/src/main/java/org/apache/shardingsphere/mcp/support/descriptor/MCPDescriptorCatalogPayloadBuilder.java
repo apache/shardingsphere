@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
@@ -277,7 +277,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         return "unknown";
     }
     
-    private Map<String, Object> toResourceAnnotationsPayload(final MCPAnnotations annotations) {
+    private Map<String, Object> toResourceAnnotationsPayload(final MCPResourceAnnotations annotations) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         if (!annotations.getAudience().isEmpty()) {
             result.put("audience", annotations.getAudience());

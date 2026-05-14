@@ -19,7 +19,7 @@ set -eu
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 APP_HOME=$(cd "${SCRIPT_DIR}/.." && pwd)
-CONF_FILE=${1:-"${APP_HOME}/conf/mcp.yaml"}
+CONF_FILE=${1:-"${APP_HOME}/conf/mcp-http.yaml"}
 LIB_DIR="${APP_HOME}/lib"
 PLUGINS_DIR="${APP_HOME}/plugins"
 DATA_DIR="${APP_HOME}/data"

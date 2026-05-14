@@ -207,7 +207,7 @@ public final class PackagedDistributionTestSupport {
     }
     
     private static Path resolveConfigFile(final Path workingHome, final RuntimeTransport transport) {
-        return RuntimeTransport.HTTP == transport ? workingHome.resolve("conf/mcp.yaml") : workingHome.resolve("conf/mcp-stdio.yaml");
+        return RuntimeTransport.HTTP == transport ? workingHome.resolve("conf/mcp-http.yaml") : workingHome.resolve("conf/mcp-stdio.yaml");
     }
     
     private static MCPLaunchConfiguration createRuntimeConfiguration(final MCPLaunchConfiguration sourceConfig, final RuntimeTransport transport, final int httpPort) {

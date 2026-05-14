@@ -43,7 +43,7 @@ class MCPBootstrapTest {
     
     @Test
     void assertMainCloseServerWhenShutdownHookRuns() throws IOException {
-        assertMain(new String[0], "conf/mcp.yaml", false);
+        assertMain(new String[0], "conf/mcp-http.yaml", false);
     }
     
     @Test
@@ -58,7 +58,7 @@ class MCPBootstrapTest {
     
     @Test
     void assertMainUseDefaultConfigurationPathForBlankArgument() throws IOException {
-        assertMain(new String[]{"   "}, "conf/mcp.yaml", false);
+        assertMain(new String[]{"   "}, "conf/mcp-http.yaml", false);
     }
     
     private void assertMain(final String[] args, final String expectedConfigPath, final boolean runShutdownHookTwice) throws IOException {

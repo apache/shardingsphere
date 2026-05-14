@@ -45,10 +45,10 @@ bin\start.bat
 Notes:
 
 - `bin/start.sh` and `bin\start.bat` run in the foreground. Keep this terminal open and use a second terminal for the `curl` commands below.
-- The packaged runtime reads `conf/mcp.yaml` and `conf/logback.xml`.
+- The packaged runtime defaults to `conf/mcp-http.yaml`, also ships `conf/mcp-stdio.yaml`, and reads `conf/logback.xml` for logging.
 - When HTTP is enabled, the default endpoint is `http://127.0.0.1:18088/mcp`.
 - Logs are written under `logs/`.
-- `conf/mcp.yaml` is now strict about supported field names: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.allowRemoteAccess`,
+- `conf/mcp-http.yaml` is now strict about supported field names: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.allowRemoteAccess`,
   `transport.http.allowedOrigins`, `transport.http.accessToken`, `transport.http.port`, `transport.http.endpointPath`, `transport.http.authorizationServers`,
   `transport.http.scopesSupported`, `transport.http.protectedResource`, `transport.http.oauthIntrospection.endpoint`, `transport.http.oauthIntrospection.clientId`,
   `transport.http.oauthIntrospection.clientSecret`, `transport.http.oauthIntrospection.expectedIssuer`, `transport.http.oauthIntrospection.cacheTtlMillis`,
@@ -186,7 +186,7 @@ Expected result:
 
 ### Descriptor-Driven Discovery
 
-MCP tools, resources, prompts, and completions publish model-facing metadata from YAML descriptors under `META-INF/shardingsphere-mcp/descriptors`.
+MCP tools, resources, prompts, and completions publish model-facing metadata from YAML descriptors under `META-INF/shardingsphere-mcp/mcp-descriptors`.
 The same descriptor source is used by `resources/list`, `resources/templates/list`, `tools/list`, `prompts/list`, `completion/complete`, and the aggregate `shardingsphere://capabilities` resource.
 
 Descriptors must describe what the model should use the surface for, not just repeat the URI or tool name:
@@ -327,7 +327,7 @@ Reference:
 
 ## Runtime Notes
 
-- The packaged `conf/mcp.yaml` now ships with a demo multi-database JDBC `runtimeDatabases` block so the distribution can prove logical-database discovery and real query execution on the first run.
+- The packaged `conf/mcp-http.yaml` now ships with a demo multi-database JDBC `runtimeDatabases` block so the distribution can prove logical-database discovery and real query execution on the first run.
 - For real deployments, replace the `runtimeDatabases` block with your own logical database mapping and JDBC connection properties. Each logical database entry must declare its own required runtime fields; schema discovery now comes from JDBC metadata, and legacy `runtime.*` aliases are no longer supported.
 - `driverClassName` is optional for JDBC 4 drivers that auto-register through `DriverManager`. Keep it only when your target driver requires an explicit override.
 - The packaged distribution keeps the official MCP baseline jars, including encrypt and mask, under `lib/`.
@@ -348,7 +348,7 @@ Reference:
 - OAuth introspection uses RFC 7662 form POST with HTTP Basic client authentication, requires HTTPS endpoints except loopback HTTP for local test fixtures, and validates active state, issuer, protected resource audience, expiration, not-before time when present, and required scopes.
 - OAuth failures return RFC 6750 challenges: `401` with `error="invalid_token"` for invalid or unverifiable tokens and `403` with `error="insufficient_scope"` for active tokens missing required scopes.
 - Even with the built-in access token enabled, keep externally exposed endpoints behind a trusted network, gateway, or reverse proxy.
-- To start with a custom configuration file, run `bin/start.sh /path/to/mcp.yaml` on Unix-like systems or `bin\start.bat path\to\mcp.yaml` on Windows.
+- To start with a custom configuration file, run `bin/start.sh /path/to/mcp-http.yaml` on Unix-like systems or `bin\start.bat path\to\mcp-http.yaml` on Windows.
 - To tune the JVM for local experiments, use `JAVA_OPTS`, for example `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh` on Unix-like systems or `set "JAVA_OPTS=-Xms256m -Xmx256m" && bin\start.bat` on Windows.
 
 ## Feature SPI Layout
@@ -376,7 +376,7 @@ If you want to add another feature beyond encrypt and mask, keep the implementat
 
 - Create `mcp/features/<feature>` and depend on `mcp/api`, `mcp/support` for database metadata, execution, or workflow handlers, `mcp/core` only when service-level handler context is needed, plus the required domain modules only; do not depend on `mcp/bootstrap`
 - If this is a new feature module, wire it into both the build and the runtime classpath: add it under `mcp/features/pom.xml`, then either add it to `distribution/mcp/pom.xml` when it should ship in the official packaged runtime or place the built jar under `plugins/` before startup when it should stay optional
-- For each public tool, implement `MCPToolHandler<T extends MCPHandlerContext>` with the required context type and add its canonical descriptor under `META-INF/shardingsphere-mcp/descriptors`
+- For each public tool, implement `MCPToolHandler<T extends MCPHandlerContext>` with the required context type and add its canonical descriptor under `META-INF/shardingsphere-mcp/mcp-descriptors`
 - For each public resource, implement `MCPResourceHandler<T extends MCPHandlerContext>` with the required context type and return a descriptor that resolves to the same canonical YAML metadata
 - Use `MCPServiceHandlerContext` for service-level handlers, `MCPDatabaseHandlerContext` for database metadata or execution handlers, and `MCPWorkflowHandlerContext` for workflow handlers
 - Implement one `MCPHandlerProvider` that returns the feature-owned handlers through `getToolHandlers()` and `getResourceHandlers()`
@@ -1168,8 +1168,8 @@ docker run --rm -p 18088:18088 \
 ```bash
 docker run --rm -i \
   -e SHARDINGSPHERE_MCP_TRANSPORT=stdio \
-  -e SHARDINGSPHERE_MCP_CONFIG=/opt/shardingsphere-mcp/conf/custom-mcp.yaml \
-  -v /path/to/mcp-stdio.yaml:/opt/shardingsphere-mcp/conf/custom-mcp.yaml:ro \
+  -e SHARDINGSPHERE_MCP_CONFIG=/opt/shardingsphere-mcp/conf/custom-mcp-stdio.yaml \
+  -v /path/to/mcp-stdio.yaml:/opt/shardingsphere-mcp/conf/custom-mcp-stdio.yaml:ro \
   -v /path/to/plugins:/opt/shardingsphere-mcp/plugins:ro \
   ghcr.io/apache/shardingsphere-mcp:5.5.4
 ```

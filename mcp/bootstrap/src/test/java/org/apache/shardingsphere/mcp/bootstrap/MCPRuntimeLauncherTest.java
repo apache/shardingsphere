@@ -146,7 +146,7 @@ class MCPRuntimeLauncherTest {
         List<String> actual = new MCPRuntimeLauncher().createStartupHints(createLaunchConfiguration(false), server, "");
         assertThat(actual, is(List.of(
                 "ShardingSphere MCP runtime started.",
-                "Configuration: conf/mcp.yaml",
+                "Configuration: conf/mcp-http.yaml",
                 "Logs: logs/mcp.log",
                 "Runtime databases: 1",
                 "STDIO transport: enabled",

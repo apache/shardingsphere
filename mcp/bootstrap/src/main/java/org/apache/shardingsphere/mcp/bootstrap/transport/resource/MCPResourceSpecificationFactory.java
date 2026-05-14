@@ -22,7 +22,7 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpec
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
@@ -103,19 +103,19 @@ public final class MCPResourceSpecificationFactory {
         return result.build();
     }
     
-    private void appendResourceAnnotations(final McpSchema.Resource.Builder builder, final MCPAnnotations annotations) {
+    private void appendResourceAnnotations(final McpSchema.Resource.Builder builder, final MCPResourceAnnotations annotations) {
         if (!annotations.isEmpty()) {
             builder.annotations(createAnnotations(annotations));
         }
     }
     
-    private void appendResourceTemplateAnnotations(final McpSchema.ResourceTemplate.Builder builder, final MCPAnnotations annotations) {
+    private void appendResourceTemplateAnnotations(final McpSchema.ResourceTemplate.Builder builder, final MCPResourceAnnotations annotations) {
         if (!annotations.isEmpty()) {
             builder.annotations(createAnnotations(annotations));
         }
     }
     
-    private McpSchema.Annotations createAnnotations(final MCPAnnotations annotations) {
+    private McpSchema.Annotations createAnnotations(final MCPResourceAnnotations annotations) {
         List<McpSchema.Role> audience = annotations.getAudience().stream().map(each -> McpSchema.Role.valueOf(each.toUpperCase(Locale.ENGLISH))).toList();
         return new McpSchema.Annotations(audience, annotations.getPriority(), annotations.getLastModified());
     }

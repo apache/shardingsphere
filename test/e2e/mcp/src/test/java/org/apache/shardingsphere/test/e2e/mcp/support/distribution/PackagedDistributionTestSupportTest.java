@@ -190,7 +190,7 @@ class PackagedDistributionTestSupportTest {
         Files.createDirectories(target.resolve("plugins"));
         Files.writeString(target.resolve("bin/start.sh"), "#!/bin/sh\nexit 0\n");
         Files.writeString(target.resolve("bin/start.bat"), "@echo off\r\nexit /b 0\r\n");
-        Files.writeString(target.resolve("conf/mcp.yaml"), HTTP_CONFIGURATION);
+        Files.writeString(target.resolve("conf/mcp-http.yaml"), HTTP_CONFIGURATION);
         Files.writeString(target.resolve("conf/mcp-stdio.yaml"), STDIO_CONFIGURATION);
         return target;
     }

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPAnnotations;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPPromptArgumentDescriptor;
@@ -105,8 +105,8 @@ final class MCPDescriptorCatalogYamlSwapper {
         return result;
     }
     
-    private static MCPAnnotations swapResourceAnnotations(final YamlMCPAnnotations yamlAnnotations) {
-        return null == yamlAnnotations ? MCPAnnotations.EMPTY : new MCPAnnotations(yamlAnnotations.getAudience(), yamlAnnotations.getPriority(), yamlAnnotations.getLastModified());
+    private static MCPResourceAnnotations swapResourceAnnotations(final YamlMCPResourceAnnotations yamlAnnotations) {
+        return null == yamlAnnotations ? MCPResourceAnnotations.EMPTY : new MCPResourceAnnotations(yamlAnnotations.getAudience(), yamlAnnotations.getPriority(), yamlAnnotations.getLastModified());
     }
     
     private static Collection<MCPToolDescriptor> swapToolDescriptors(final Collection<YamlMCPToolDescriptor> yamlDescriptors) {

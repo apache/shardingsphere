@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPBootstrap {
     
-    private static final String DEFAULT_CONFIG_PATH = "conf/mcp.yaml";
+    private static final String DEFAULT_CONFIG_PATH = "conf/mcp-http.yaml";
     
     /**
      * Main entrance.

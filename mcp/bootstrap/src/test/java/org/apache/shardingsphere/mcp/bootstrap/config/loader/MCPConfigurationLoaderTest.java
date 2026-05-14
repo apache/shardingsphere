@@ -76,7 +76,7 @@ class MCPConfigurationLoaderTest {
     
     @Test
     void assertLoadWithExistingConfigurationFile() throws IOException {
-        Path configFile = createConfigFile(tempDir, "mcp.yaml", RUNTIME_DATABASE_CONFIGURATION_YAML);
+        Path configFile = createConfigFile(tempDir, "mcp-http.yaml", RUNTIME_DATABASE_CONFIGURATION_YAML);
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         assertFalse(actual.getHttpTransport().isEnabled());
         assertTrue(actual.getStdioTransport().isEnabled());
@@ -103,8 +103,8 @@ class MCPConfigurationLoaderTest {
     void assertLoadWithConfigurationFileInParentDirectory() throws IOException {
         Path searchBaseDirectory = Files.createTempDirectory(Path.of("").toAbsolutePath().resolve("..").normalize(), "mcp-config-loader-");
         try {
-            createConfigFile(searchBaseDirectory, "conf/mcp.yaml", HTTP_CONFIGURATION_YAML);
-            String actualConfigPath = searchBaseDirectory.getFileName().resolve("conf").resolve("mcp.yaml").toString();
+            createConfigFile(searchBaseDirectory, "conf/mcp-http.yaml", HTTP_CONFIGURATION_YAML);
+            String actualConfigPath = searchBaseDirectory.getFileName().resolve("conf").resolve("mcp-http.yaml").toString();
             MCPLaunchConfiguration actual = MCPConfigurationLoader.load(actualConfigPath);
             assertTrue(actual.getHttpTransport().isEnabled());
             assertFalse(actual.getStdioTransport().isEnabled());

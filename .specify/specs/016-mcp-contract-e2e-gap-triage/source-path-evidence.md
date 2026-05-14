@@ -61,8 +61,8 @@ Official source URLs:
     `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/MCPDocumentationContractTest.java:79-95`
     pins README coverage for MCP form elicitation, URL mode, and secret manager guidance.
   - Closure evidence:
-    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml`
-    and `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`
+    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-encrypt.yaml`
+    and `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-mask.yaml`
     document that secret-marked workflow questions require out-of-band client or operator handling instead of MCP form elicitation.
   - Target: closed for the form-elicitation safety slice. Future URL-mode implementation remains blocked on an SDK surface that exposes URL-mode request fields.
 
@@ -189,13 +189,13 @@ Official source URLs:
     `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/completion/MCPCompletionSpecificationFactoryTest.java:49-154`
     covers positive unit-level providers and negative cases.
   - Closure evidence:
-    `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/descriptors/core.yaml:438-498`
+    `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-core.yaml:438-498`
     declares resource-reference completion targets for schema, table, column, index, and sequence detail templates.
   - Closure evidence:
-    `mcp/support/src/main/resources/META-INF/shardingsphere-mcp/descriptors/support.yaml:126-137`
+    `mcp/support/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-support.yaml:126-137`
     keeps prompt completion targets limited to declared prompt arguments for `inspect_metadata` and `safe_sql_execution`.
   - Closure evidence:
-    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml:99-106`
+    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-encrypt.yaml:99-106`
     declares encrypt prompt arguments that were already used by encrypt completion targets.
   - Closure evidence:
     `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogValidator.java:398-421`
@@ -255,18 +255,26 @@ Official source URLs:
     `mcp/server.json` points at the official `2025-12-11` schema, keeps the public description within the schema length limit,
     and declares the packaged Streamable HTTP endpoint URL.
   - Closure evidence:
-    `.github/workflows/resources/scripts/prepare-mcp-server-json.py` validates the official schema URL, server name,
+    `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/registry/MCPRegistryMetadataCommand.java`
+    validates the official schema URL, server name,
     description length, release version hygiene, OCI identifier tag alignment, stdio and Streamable HTTP package transports,
     required package environment variables, and release-only SNAPSHOT rejection.
   - Closure evidence:
-    `.github/workflows/resources/scripts/test-prepare-mcp-server-json.py` covers release version rewrite,
+    `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/registry/MCPRegistryMetadataCommandTest.java`
+    covers release version rewrite,
     package identifier/version rewrite, development SNAPSHOT validation, release SNAPSHOT rejection, missing HTTP URL rejection,
     and package-version mismatch rejection.
   - Closure evidence:
-    `.github/workflows/jdk21-subchain-ci.yml` runs the script-level test and development metadata validation with `--allow-snapshot`.
-    `.github/workflows/mcp-build.yml` runs the same script-level test and validates rewritten release metadata without `--allow-snapshot`.
+    `.github/workflows/jdk21-subchain-ci.yml` runs the Java command test through Maven, validates development metadata with `--allow-snapshot`,
+    and runs the Java Docker STDIO smoke when a local image is built.
+    `.github/workflows/mcp-build.yml` rewrites and validates release metadata with the Java command and no `--allow-snapshot`.
   - Target: closed for local schema-backed metadata validation and release-gate hygiene.
     The live MCP Registry still owns external package-existence and ownership checks during `mcp-publisher publish`.
+  - Reanalysis note on 2026-05-14:
+    official schema evidence confirms packaged `streamable-http` is valid under `packages`, while remote public servers use `remotes`.
+  - Closure evidence:
+    T051A tightened package-shape cardinality in `MCPRegistryMetadataCommand` and `MCPRegistryMetadataCommandTest`;
+    duplicate `stdio`, duplicate `streamable-http`, and extra package entries now fail explicitly while the valid two-package OCI metadata still passes.
 
 - **MCE-P2-001 Optional MCP capabilities**
   - Source: MCP optional capability docs for logging, progress, cancellation, roots, sampling, subscriptions, and resource list changes.
@@ -316,7 +324,9 @@ Official source URLs:
     `HttpProductionProxyMaskWorkflowE2ETest`, and workflow approval E2E.
 
 - Registry manifest:
-  - Script: `.github/workflows/resources/scripts/prepare-mcp-server-json.py` rewrite coverage.
+  - Command: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/registry/MCPRegistryMetadataCommand.java`
+    rewrite coverage.
+  - Test: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/registry/MCPRegistryMetadataCommandTest.java`.
   - Release gate: `.github/workflows/jdk21-subchain-ci.yml` and `.github/workflows/mcp-build.yml`.
   - Runtime distribution smoke only when package startup or plugin discovery evidence is needed.
 

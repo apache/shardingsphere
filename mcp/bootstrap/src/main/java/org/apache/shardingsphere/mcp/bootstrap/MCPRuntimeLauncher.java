@@ -75,7 +75,7 @@ public final class MCPRuntimeLauncher {
     List<String> createStartupHints(final MCPLaunchConfiguration config, final MCPRuntimeServer server, final String configPath) {
         List<String> result = new LinkedList<>();
         result.add("ShardingSphere MCP runtime started.");
-        result.add("Configuration: " + (Objects.toString(configPath, "").isBlank() ? "conf/mcp.yaml" : configPath));
+        result.add("Configuration: " + (Objects.toString(configPath, "").isBlank() ? "conf/mcp-http.yaml" : configPath));
         result.add("Logs: logs/mcp.log");
         result.add("Runtime databases: " + config.getDatabases().size());
         if (config.getHttpTransport().isEnabled()) {

@@ -55,8 +55,8 @@ Owner states:
   - Affected paths:
     `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolElicitationHandler.java`;
     `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactoryTest.java`;
-    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml`;
-    `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`.
+    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-encrypt.yaml`;
+    `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-mask.yaml`.
   - Evidence gate: no form-mode request asks for passwords, API keys, access tokens, or payment credentials.
     Sensitive collection uses URL mode, OAuth, environment, or explicit out-of-band configuration.
     Implemented by T020/T024 on 2026-05-14: form elicitation now runs only for non-sensitive clarification questions;
@@ -122,10 +122,10 @@ Owner states:
     `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactory.java`;
     `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogValidator.java`;
     `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactoryTest.java`;
-    `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/descriptors/core.yaml`;
-    `mcp/support/src/main/resources/META-INF/shardingsphere-mcp/descriptors/support.yaml`;
-    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml`;
-    `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`.
+    `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-core.yaml`;
+    `mcp/support/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-support.yaml`;
+    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-encrypt.yaml`;
+    `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-mask.yaml`.
   - Evidence gate: 014 records validation evidence or removes non-conforming schemas.
     Cross-linked by T035 on 2026-05-14: package 016 does not expand output-schema behavior; package 014 remains the strictness and descriptor conformance owner.
 
@@ -133,10 +133,10 @@ Owner states:
   - Owner: 013, tracked-only.
   - Source: descriptor schema and ShardingSphere public contract consistency.
   - Affected paths:
-    `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/descriptors/core.yaml`;
-    `mcp/support/src/main/resources/META-INF/shardingsphere-mcp/descriptors/support.yaml`;
-    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml`;
-    `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`;
+    `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-core.yaml`;
+    `mcp/support/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-support.yaml`;
+    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-encrypt.yaml`;
+    `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-mask.yaml`;
     `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/request/MCPToolArguments.java`;
     `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/tool/request/MCPToolArgumentsTest.java`;
     `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/tool/handler/ToolHandlerRegistryTest.java`;
@@ -211,7 +211,8 @@ Owner states:
   - Source: official MCP Registry `server.json` documentation and release scripts.
   - Affected paths:
     `mcp/server.json`;
-    `.github/workflows/resources/scripts/prepare-mcp-server-json.py`;
+    `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/registry/MCPRegistryMetadataCommand.java`;
+    `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/registry/MCPRegistryMetadataCommandTest.java`;
     `.github/workflows/jdk21-subchain-ci.yml`;
     `.github/workflows/mcp-build.yml`;
     `distribution/mcp/Dockerfile`;
@@ -219,9 +220,13 @@ Owner states:
   - Evidence gate: registry schema `2025-12-11`, package transport mapping,
     release version hygiene, and OCI publication metadata are validated.
   - Closure evidence on 2026-05-14:
-    T050/T051 added script-level coverage and release-gate validation for schema URL, description length,
+    T050/T051 replaced the Python metadata scripts with a Java command, Java command tests, and release-gate validation for schema URL,
+    description length,
     stdio and Streamable HTTP package transports, OCI identifier/version alignment, required package environment variables,
     and release-only SNAPSHOT rejection. `mcp/server.json` now includes a schema-compliant description and packaged Streamable HTTP URL.
+  - Closure evidence on 2026-05-14:
+    T051A rejects duplicate package entries and requires exactly one `stdio` plus exactly one `streamable-http` OCI package,
+    without changing the official schema split between packaged transports and remote `remotes` entries.
 
 - **MCE-P2-001 Optional MCP capabilities**
   - Owner: 016, new-owner.
@@ -237,10 +242,10 @@ Owner states:
   - Source: ShardingSphere MCP product scope.
   - Affected paths:
     `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogPayloadBuilder.java`;
-    `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/descriptors/core.yaml`;
-    `mcp/support/src/main/resources/META-INF/shardingsphere-mcp/descriptors/support.yaml`;
-    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml`;
-    `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`;
+    `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-core.yaml`;
+    `mcp/support/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-support.yaml`;
+    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-encrypt.yaml`;
+    `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-mask.yaml`;
     `mcp/README.md`.
   - Evidence gate: sharding, readwrite-splitting, shadow, traffic, database discovery, mode governance,
     and observability are marked supported, unsupported, or future scope.
@@ -249,10 +254,10 @@ Owner states:
   - Owner: 015, tracked-only.
   - Source: MCP prompts and resources `2025-11-25`.
   - Affected paths:
-    `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/descriptors/core.yaml`;
-    `mcp/support/src/main/resources/META-INF/shardingsphere-mcp/descriptors/support.yaml`;
-    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml`;
-    `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`;
+    `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-core.yaml`;
+    `mcp/support/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-support.yaml`;
+    `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-encrypt.yaml`;
+    `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-mask.yaml`;
     `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogPayloadBuilder.java`;
     `mcp/README.md`.
   - Evidence gate: official MCP objects and ShardingSphere guidance are labeled separately.

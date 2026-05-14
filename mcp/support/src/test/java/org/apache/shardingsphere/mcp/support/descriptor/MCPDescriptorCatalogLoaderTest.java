@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
@@ -112,7 +112,7 @@ class MCPDescriptorCatalogLoaderTest {
     
     private MCPResourceDescriptor createResourceTemplateDescriptor() {
         return new MCPResourceDescriptor("shardingsphere://databases/{database}", "logical-database-detail", "Logical Database Detail",
-                "Read one logical database detail.", "application/json", MCPAnnotations.EMPTY, Collections.emptyMap());
+                "Read one logical database detail.", "application/json", MCPResourceAnnotations.EMPTY, Collections.emptyMap());
     }
     
     private MCPResourceExtensionDescriptor createResourceExtensionDescriptor() {

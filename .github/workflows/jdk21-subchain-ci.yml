@@ -32,9 +32,6 @@ on:
       - '.github/workflows/mcp-llm-e2e.yml'
       - '.github/workflows/mcp-llm-usability-e2e.yml'
       - '.github/workflows/mcp-build.yml'
-      - '.github/workflows/resources/scripts/mcp-stdio-smoke.py'
-      - '.github/workflows/resources/scripts/prepare-mcp-server-json.py'
-      - '.github/workflows/resources/scripts/test-prepare-mcp-server-json.py'
   workflow_dispatch:
 
 concurrency:
@@ -133,8 +130,8 @@ jobs:
           java-version: '21'
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
           cache-suffix: 'mcp'
-      - name: Test MCP Registry Metadata Script
-        run: python3 .github/workflows/resources/scripts/test-prepare-mcp-server-json.py
+      - name: Test MCP Registry Metadata Command
+        run: ./mvnw -pl mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dtest=MCPRegistryMetadataCommandTest -Dsurefire.failIfNoSpecifiedTests=false test -B -ntp
       - name: Package MCP Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
       - name: Validate MCP Registry Metadata
@@ -146,8 +143,9 @@ jobs:
             echo "Packaged MCP distribution was not found." 1>&2
             exit 1
           fi
+          test -f "${DISTRIBUTION_HOME}/conf/mcp-http.yaml"
           test -f "${DISTRIBUTION_HOME}/conf/mcp-stdio.yaml"
-          python3 .github/workflows/resources/scripts/prepare-mcp-server-json.py --validate-only --allow-snapshot
+          java -cp "${DISTRIBUTION_HOME}/lib/*" org.apache.shardingsphere.mcp.bootstrap.registry.MCPRegistryMetadataCommand --validate-only --allow-snapshot
           grep -q '^ARG MCP_SERVER_NAME=io.github.apache/shardingsphere-mcp$' distribution/mcp/Dockerfile
           grep -q 'io.modelcontextprotocol.server.name="${MCP_SERVER_NAME}"' distribution/mcp/Dockerfile
       - name: Install MCP E2E Test Dependencies
@@ -188,4 +186,10 @@ jobs:
       - name: Build MCP Docker Image
         run: docker build -f distribution/mcp/Dockerfile -t shardingsphere-mcp-ci:local distribution/mcp/target
       - name: Run MCP STDIO Container Smoke
-        run: python3 .github/workflows/resources/scripts/mcp-stdio-smoke.py shardingsphere-mcp-ci:local
+        run: >
+          ./mvnw -pl test/e2e/mcp -am test
+          -DskipITs -Dspotless.skip=true
+          -Dtest=ContainerStdioSmokeE2ETest
+          -Dsurefire.failIfNoSpecifiedTests=false
+          -Dmcp.e2e.container.image=shardingsphere-mcp-ci:local
+          -B -ntp

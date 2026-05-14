@@ -88,8 +88,8 @@
 
 - [x] T024 [US1] Remove or bypass form-mode elicitation for secret-bearing workflow questions and document approved secret channels.
   Paths: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolElicitationHandler.java`,
-  `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml`,
-  `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`,
+  `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-encrypt.yaml`,
+  `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-mask.yaml`,
   `mcp/README.md`
 - [x] T025 [US1] Replace default `Accept` header injection with MCP-baseline-compliant negotiation behavior.
   Path: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/StreamableHttpMCPServlet.java`
@@ -180,10 +180,21 @@
 
 ### Tests and Release Gates
 
-- [x] T050 [P] [US3] Add script-level coverage for `server.json` release version and package identifier rewrite behavior.
-  Path: `.github/workflows/resources/scripts/prepare-mcp-server-json.py`
+- [x] T050 [P] [US3] Add Java command coverage for `server.json` release version and package identifier rewrite behavior.
+  Paths: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/registry/MCPRegistryMetadataCommand.java`,
+  `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/registry/MCPRegistryMetadataCommandTest.java`
 - [x] T051 [P] [US3] Add release-gate validation for official registry schema, package transports, OCI metadata, and snapshot rejection.
   Paths: `.github/workflows/jdk21-subchain-ci.yml`, `.github/workflows/mcp-build.yml`, `mcp/server.json`
+- [x] T051A [P] [US3] Tighten MCP Registry package-shape validation so `packages` contains exactly one `stdio` OCI package
+  and exactly one `streamable-http` OCI package.
+  Paths: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/registry/MCPRegistryMetadataCommand.java`,
+  `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/registry/MCPRegistryMetadataCommandTest.java`
+  Acceptance:
+  - Current two-package OCI metadata remains valid, including packaged `streamable-http` under `packages`.
+  - Duplicate `stdio` packages are rejected.
+  - Duplicate `streamable-http` packages are rejected.
+  - More than two package entries are rejected even when the transport type set is `stdio` plus `streamable-http`.
+  - No JSON Schema validator dependency is introduced; live package existence and ownership checks remain owned by `mcp-publisher publish`.
 - [ ] T052 [P] [US5] Add capability-scope tests or snapshots proving unimplemented optional MCP capabilities are not advertised.
   Paths: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/MCPSyncServerFactoryTest.java`,
   `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/resource/handler/capability/ServerCapabilitiesHandlerTest.java`
@@ -341,28 +352,44 @@ They touch one transport behavior, have clear existing contradictory evidence, a
 
 - Source: official MCP Registry metadata stays on schema `https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json`,
   while the protocol baseline remains MCP Specification `2025-11-25`.
-- Code: `prepare-mcp-server-json.py` now separates release metadata preparation from validation. It validates the official schema URL,
+- Code: `MCPRegistryMetadataCommand` now owns the release metadata preparation and validation boundary in Java. It validates the official schema URL,
   server name, description length, release version hygiene, OCI identifier tag alignment, stdio and Streamable HTTP package transports,
   required environment variables, and release-only SNAPSHOT rejection.
 - Code: `mcp/server.json` now keeps its description within the official schema length limit and declares the packaged Streamable HTTP endpoint URL.
-- CI: `jdk21-subchain-ci.yml` path filters include both metadata scripts, runs the script-level test, and validates development metadata with `--allow-snapshot`.
-- Release gate: `mcp-build.yml` runs the script-level test, rewrites release metadata, and validates publication metadata without `--allow-snapshot`.
+- Code: T051A tightened the Java release gate so `server.json` must contain exactly one `stdio` OCI package and exactly one
+  `streamable-http` OCI package; duplicate or extra package entries fail before publication.
+- CI: `jdk21-subchain-ci.yml` runs `MCPRegistryMetadataCommandTest` through Maven and validates development metadata with `--allow-snapshot`
+  using the packaged distribution classpath.
+- Release gate: `mcp-build.yml` rewrites release metadata and validates publication metadata without `--allow-snapshot`
+  using the packaged distribution classpath.
+- E2E: `ContainerStdioSmokeE2ETest` replaces the deleted Python STDIO smoke with a Java opt-in Docker image smoke that verifies initialization protocol,
+  tool discovery, capability resources, and metadata search over the published image.
+- Cleanup: deleted the legacy registry metadata script, its script-level test, and the legacy STDIO smoke script;
+  no MCP workflow path depends on Python scripts after this slice.
 - Verification:
-  - `PYTHONDONTWRITEBYTECODE=1 python3 .github/workflows/resources/scripts/test-prepare-mcp-server-json.py`
-    exited `0`; 5 script-level tests ran with 0 failures and 0 errors.
-  - `PYTHONDONTWRITEBYTECODE=1 python3 .github/workflows/resources/scripts/prepare-mcp-server-json.py --validate-only --allow-snapshot`
-    exited `0`; source `mcp/server.json` passed development metadata validation.
-  - `PYTHONDONTWRITEBYTECODE=1 python3 .github/workflows/resources/scripts/prepare-mcp-server-json.py --path <tmp>/server.json --version 5.5.4 --identifier ghcr.io/apache/shardingsphere-mcp:5.5.4`
-    exited `0`; release rewrite succeeded.
-  - `PYTHONDONTWRITEBYTECODE=1 python3 .github/workflows/resources/scripts/prepare-mcp-server-json.py --path <tmp>/server.json --validate-only`
-    exited `0`; rewritten release metadata passed publication validation.
-  - `prepare-mcp-server-json.py --path <tmp>/server.json --version 5.5.4-SNAPSHOT --identifier ghcr.io/apache/shardingsphere-mcp:5.5.4-SNAPSHOT`
-    exited `1` as expected; release SNAPSHOT metadata was rejected before publication.
-  - `./mvnw -pl mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dtest=MCPDocumentationContractTest -Dsurefire.failIfNoSpecifiedTests=false test -B -ntp`
-    exited `0`; `MCPDocumentationContractTest` ran 3 tests with 0 failures and 0 errors.
+  - `./mvnw -pl mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dtest=MCPRegistryMetadataCommandTest -Dsurefire.failIfNoSpecifiedTests=false test -B -ntp`
+    exited `0`; `MCPRegistryMetadataCommandTest` ran 11 tests with 0 failures and 0 errors after T051A.
+  - `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dtest=ContainerStdioSmokeE2ETest,AbstractProcessMCPStdioInteractionClientTest -Dsurefire.failIfNoSpecifiedTests=false test -B -ntp`
+    exited `0`; the Java STDIO client and opt-in container smoke compiled and the non-container support coverage passed locally.
+  - `docker build -f distribution/mcp/Dockerfile -t shardingsphere-mcp-ci:local distribution/mcp/target`
+    exited `0`; the packaged MCP distribution image built successfully.
+  - `./mvnw -pl test/e2e/mcp -am test -DskipITs -Dspotless.skip=true -Dtest=ContainerStdioSmokeE2ETest -Dsurefire.failIfNoSpecifiedTests=false -Dmcp.e2e.container.image=shardingsphere-mcp-ci:local -B -ntp`
+    exited `0`; `ContainerStdioSmokeE2ETest` ran against the local Docker image and verified STDIO initialization, tools, resource capabilities, and metadata search.
+  - `./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp`
+    exited `0`; the MCP distribution assembled successfully with the Java command on the runtime classpath.
+  - `java -cp "${DISTRIBUTION_HOME}/lib/*" org.apache.shardingsphere.mcp.bootstrap.registry.MCPRegistryMetadataCommand --validate-only --allow-snapshot`
+    exited `0`; source `mcp/server.json` validated through the packaged distribution classpath.
+  - `java -cp "${DISTRIBUTION_HOME}/lib/*" org.apache.shardingsphere.mcp.bootstrap.registry.MCPRegistryMetadataCommand --path <tmp>/server.json --version 5.5.4 --identifier ghcr.io/apache/shardingsphere-mcp:5.5.4`
+    exited `0`; release metadata rewrote through the packaged distribution classpath.
+  - `java -cp "${DISTRIBUTION_HOME}/lib/*" org.apache.shardingsphere.mcp.bootstrap.registry.MCPRegistryMetadataCommand --path <tmp>/server.json --validate-only`
+    exited `0`; rewritten release metadata validated through the packaged distribution classpath.
+  - `java -cp "${DISTRIBUTION_HOME}/lib/*" org.apache.shardingsphere.mcp.bootstrap.registry.MCPRegistryMetadataCommand --path <tmp>/server.json --version 5.5.4-SNAPSHOT --identifier ghcr.io/apache/shardingsphere-mcp:5.5.4-SNAPSHOT`
+    exits `1` as expected; release SNAPSHOT metadata is rejected before publication.
+  - `./mvnw -pl mcp/bootstrap,test/e2e/mcp -am -DskipITs -DskipTests -Dspotless.skip=true checkstyle:check -Pcheck -B -ntp`
+    exited `0`; touched Java modules passed scoped Checkstyle.
   - `git diff --check -- <T050/T051 files>`
     exited `0`; no whitespace errors in the T050/T051 slice.
-  - `python3 -m py_compile .github/workflows/resources/scripts/prepare-mcp-server-json.py .github/workflows/resources/scripts/test-prepare-mcp-server-json.py`
-    exited `0`; Python syntax compilation passed.
+  - Python-remnant `rg` scan over MCP workflows, modules, E2E, and package-016 Speckit text exited `1`;
+    no target text still references the deleted Python scripts.
 - Residual risks: full external MCP Registry package-existence validation still occurs during `mcp-publisher publish`;
   the local gate intentionally validates the schema-backed metadata shape and ShardingSphere release invariants without calling the live registry.

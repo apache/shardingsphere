@@ -22,7 +22,7 @@ set "SCRIPT_DIR=%~dp0"
 for %%i in ("%SCRIPT_DIR%..") do set "APP_HOME=%%~fi"
 
 if "%~1"=="" (
-    set "CONF_FILE=%APP_HOME%\conf\mcp.yaml"
+    set "CONF_FILE=%APP_HOME%\conf\mcp-http.yaml"
 ) else (
     set "CONF_FILE=%~1"
 )

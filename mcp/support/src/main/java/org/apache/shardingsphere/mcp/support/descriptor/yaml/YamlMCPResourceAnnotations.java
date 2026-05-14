@@ -20,31 +20,18 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
- * YAML MCP resource descriptor.
+ * YAML MCP resource annotations.
  */
 @Getter
 @Setter
-public final class YamlMCPResourceDescriptor {
+public final class YamlMCPResourceAnnotations {
     
-    private String uri;
+    private List<String> audience;
     
-    private String uriTemplate;
+    private Double priority;
     
-    private String name;
-    
-    private String title;
-    
-    private String description;
-    
-    private String mimeType;
-    
-    private YamlMCPResourceAnnotations annotations;
-    
-    private Map<String, Object> meta = new LinkedHashMap<>();
-    
-    private YamlMCPResourceExtensionDescriptor extension;
+    private String lastModified;
 }

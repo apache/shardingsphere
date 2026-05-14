@@ -55,14 +55,15 @@ The catalog should describe resources, resource templates, tools, workflows, out
 Planned placement:
 
 ```text
-mcp/api/src/main/resources/META-INF/shardingsphere-mcp/descriptors/
+mcp/core/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/
+mcp/support/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/
 ```
 
 Feature modules may own feature-local descriptor files under their own resources:
 
 ```text
-mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/
-mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/
+mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/
+mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/
 ```
 
 The runtime should load and validate these descriptors through the same service-loader-friendly path used by handlers.

@@ -31,7 +31,7 @@ fi
 
 case "${SHARDINGSPHERE_MCP_TRANSPORT:-http}" in
   http)
-    exec "${START_SCRIPT}" "${APP_HOME}/conf/mcp.yaml"
+    exec "${START_SCRIPT}" "${APP_HOME}/conf/mcp-http.yaml"
     ;;
   stdio)
     exec "${START_SCRIPT}" "${APP_HOME}/conf/mcp-stdio.yaml"

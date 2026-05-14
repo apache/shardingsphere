@@ -135,7 +135,7 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
             return;
         }
         prepareRuntimeFixtureIfNeeded();
-        configFile = createConfigurationFile("mcp.yaml", getRuntimeDatabases());
+        configFile = createConfigurationFile("mcp-http.yaml", getRuntimeDatabases());
         if (RuntimeTransport.HTTP == getTransport()) {
             httpServer = createStartedHttpServer(configFile);
         }

@@ -282,7 +282,8 @@ shardingsphere
 
 #### 9.1.2 Runtime Assets
 - 默认配置模板：
-  - `distribution/mcp/src/main/resources/conf/mcp.yaml`
+  - `distribution/mcp/src/main/resources/conf/mcp-http.yaml`
+  - `distribution/mcp/src/main/resources/conf/mcp-stdio.yaml`
 - 默认容器入口：
   - `distribution/mcp/Dockerfile`
 - 默认本地启动脚本：
@@ -615,12 +616,12 @@ flowchart TB
 - 特点：
   - 适合 IDE / 本地 Agent 的进程内联调
   - 不作为生产主模型
-  - distribution 默认仍启用 STDIO，但定位保持为本地集成辅助入口，而不是额外的交互式文本 Shell
+  - distribution 提供独立 STDIO 配置模板，但定位保持为本地集成辅助入口，而不是额外的交互式文本 Shell
 
 ### 16.2.1 默认发行包启动面
-- distribution 默认同时启用 HTTP 与 STDIO。
-- 默认 `conf/mcp.yaml` 内置一段 demo JDBC runtime，用于首次启动时验证非空 metadata 和真实 `execute_query` 行为。
-- `conf/mcp.yaml` 采用 strict schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.port`、`transport.http.endpointPath`、`transport.stdio.enabled` 以及每个 runtime database 的全部字段都必须显式声明。
+- distribution 默认启动使用 HTTP 配置，STDIO 通过 `conf/mcp-stdio.yaml` 或 `SHARDINGSPHERE_MCP_TRANSPORT=stdio` 显式选择。
+- 默认 `conf/mcp-http.yaml` 内置一段 demo JDBC runtime，用于首次启动时验证非空 metadata 和真实 `execute_query` 行为。
+- `conf/mcp-http.yaml` 采用 strict schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.port`、`transport.http.endpointPath`、`transport.stdio.enabled` 以及每个 runtime database 的全部字段都必须显式声明。
 - 真实部署需要替换 `runtimeDatabases` 段为目标逻辑库与 JDBC 连接属性；schema 范围与默认 schema 由 JDBC metadata 自动发现，如需额外 JDBC 驱动，可放入发行包根目录下的 `ext-lib/`。
 
 ### 16.3 推荐集群拓扑
@@ -716,7 +717,7 @@ apache-shardingsphere-mcp-<version>/
 - 当前 V1 打包模板直接暴露三类配置：
   - 服务配置
   - transport 配置
-- 更细粒度的暴露/治理配置保留为后续演进项，不在当前 `mcp.yaml` 模板中展开。
+- 更细粒度的暴露/治理配置保留为后续演进项，不在当前 `mcp-http.yaml` 模板中展开。
 
 ### 18.4 容器化要求
 - V1 应提供：

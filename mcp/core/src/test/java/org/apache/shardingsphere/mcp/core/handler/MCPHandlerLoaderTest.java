@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.handler;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.common.descriptor.MCPAnnotations;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -118,7 +118,7 @@ class MCPHandlerLoaderTest {
     
     private static MCPResourceHandler<?> createResourceHandler(final String uriTemplate) {
         MCPResourceHandler<?> result = mock(MCPResourceHandler.class);
-        when(result.getResourceDescriptor()).thenReturn(new MCPResourceDescriptor(uriTemplate, "foo", "Foo", "Read the fixture foo resource.", "application/json", MCPAnnotations.EMPTY,
+        when(result.getResourceDescriptor()).thenReturn(new MCPResourceDescriptor(uriTemplate, "foo", "Foo", "Read the fixture foo resource.", "application/json", MCPResourceAnnotations.EMPTY,
                 Collections.emptyMap()));
         return result;
     }

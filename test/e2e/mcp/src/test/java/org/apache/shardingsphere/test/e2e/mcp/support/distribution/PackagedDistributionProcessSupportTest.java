@@ -39,7 +39,7 @@ class PackagedDistributionProcessSupportTest {
     @Test
     void assertCreateProcessBuilderUsesDistributionHomeAndConfigFile() {
         Path distributionHome = Path.of("/tmp/mcp-dist");
-        Path configFile = distributionHome.resolve("conf/mcp.yaml");
+        Path configFile = distributionHome.resolve("conf/mcp-http.yaml");
         ProcessBuilder actual = PackagedDistributionProcessSupport.createProcessBuilder(distributionHome, configFile);
         assertThat(actual.command(), is(PackagedDistributionProcessSupport.createCommand(distributionHome, configFile, System.getProperty("os.name", ""))));
         assertThat(actual.directory(), is(distributionHome.toFile()));
@@ -48,7 +48,7 @@ class PackagedDistributionProcessSupportTest {
     @Test
     void assertCreateCommandForUnix() {
         Path distributionHome = Path.of("/tmp/mcp-dist");
-        Path configFile = distributionHome.resolve("conf/mcp.yaml");
+        Path configFile = distributionHome.resolve("conf/mcp-http.yaml");
         List<String> actual = PackagedDistributionProcessSupport.createCommand(distributionHome, configFile, "Linux");
         assertThat(actual, is(List.of(distributionHome.resolve("bin/start.sh").toString(), configFile.toString())));
     }
@@ -56,7 +56,7 @@ class PackagedDistributionProcessSupportTest {
     @Test
     void assertCreateCommandForWindows() {
         Path distributionHome = Path.of("/tmp/mcp-dist");
-        Path configFile = distributionHome.resolve("conf/mcp.yaml");
+        Path configFile = distributionHome.resolve("conf/mcp-http.yaml");
         List<String> actual = PackagedDistributionProcessSupport.createCommand(distributionHome, configFile, "Windows 11");
         assertThat(actual, is(List.of("cmd", "/c", distributionHome.resolve("bin/start.bat").toString(), configFile.toString())));
     }
@@ -78,7 +78,7 @@ class PackagedDistributionProcessSupportTest {
     @Test
     void assertPrepareRuntimeLayoutCreatesRuntimeDirectories() throws IOException {
         Path distributionHome = tempDir.resolve("distribution");
-        Path configFile = distributionHome.resolve("conf/mcp.yaml");
+        Path configFile = distributionHome.resolve("conf/mcp-http.yaml");
         Files.createDirectories(distributionHome.resolve("conf"));
         Files.createDirectories(distributionHome.resolve("lib"));
         Files.writeString(configFile, "runtimeDatabases: {}\n");
@@ -91,7 +91,7 @@ class PackagedDistributionProcessSupportTest {
     @Test
     void assertPrepareRuntimeLayoutFailsWithMissingConfigFile() throws IOException {
         Path distributionHome = tempDir.resolve("distribution");
-        Path configFile = distributionHome.resolve("conf/mcp.yaml");
+        Path configFile = distributionHome.resolve("conf/mcp-http.yaml");
         Files.createDirectories(distributionHome.resolve("lib"));
         IOException actual = assertThrows(IOException.class, () -> PackagedDistributionProcessSupport.prepareRuntimeLayout(distributionHome, configFile));
         assertThat(actual.getMessage(), is("MCP configuration file `" + configFile + "` does not exist."));
@@ -100,7 +100,7 @@ class PackagedDistributionProcessSupportTest {
     @Test
     void assertPrepareRuntimeLayoutFailsWithMissingRuntimeLibraries() throws IOException {
         Path distributionHome = tempDir.resolve("distribution");
-        Path configFile = distributionHome.resolve("conf/mcp.yaml");
+        Path configFile = distributionHome.resolve("conf/mcp-http.yaml");
         Files.createDirectories(distributionHome.resolve("conf"));
         Files.writeString(configFile, "runtimeDatabases: {}\n");
         IOException actual = assertThrows(IOException.class, () -> PackagedDistributionProcessSupport.prepareRuntimeLayout(distributionHome, configFile));
