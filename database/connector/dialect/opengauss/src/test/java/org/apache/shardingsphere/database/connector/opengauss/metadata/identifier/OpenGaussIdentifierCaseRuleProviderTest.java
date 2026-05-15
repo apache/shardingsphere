@@ -48,9 +48,14 @@ class OpenGaussIdentifierCaseRuleProviderTest {
     
     @Test
     void assertProvide() {
-        IdentifierCaseRule actual = provider.provide(new IdentifierCaseRuleProviderContext(databaseType, null)).orElseThrow(AssertionError::new).getRule(IdentifierScope.TABLE);
-        assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertTrue(actual.matches("foo", "FOO", QuoteCharacter.NONE));
-        assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));
+        IdentifierCaseRuleProviderContext context = new IdentifierCaseRuleProviderContext(databaseType, null);
+        IdentifierCaseRule tableRule = provider.provide(context).orElseThrow(AssertionError::new).getRule(IdentifierScope.TABLE);
+        assertThat(tableRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
+        assertTrue(tableRule.matches("foo", "FOO", QuoteCharacter.NONE));
+        assertFalse(tableRule.matches("Foo", "foo", QuoteCharacter.NONE));
+        IdentifierCaseRule schemaRule = provider.provide(context).orElseThrow(AssertionError::new).getRule(IdentifierScope.SCHEMA);
+        assertThat(schemaRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
+        assertTrue(schemaRule.matches("UPPER_SCHEMA", "upper_schema", QuoteCharacter.NONE));
+        assertFalse(schemaRule.matches("UPPER_SCHEMA", "upper_schema", QuoteCharacter.QUOTE));
     }
 }

@@ -417,8 +417,8 @@ class DatabaseIdentifierContextFactoryTest {
     private static Stream<Arguments> createWithSupportedDatabaseSchemaLookupArguments() {
         return Stream.of(
                 createNormalizedLookupArguments("mysql schema", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_schema", "`"),
-                createLowerCaseLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
-                createLowerCaseLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createInsensitiveQuotedExactLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
+                createInsensitiveQuotedExactLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
                 createUpperCaseLookupArguments("oracle schema", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_schema", "\""))
                 .flatMap(each -> each);
     }
@@ -474,8 +474,8 @@ class DatabaseIdentifierContextFactoryTest {
     private static Stream<Arguments> createWithMixedStoredCaseSchemaLookupArguments() {
         return Stream.of(
                 createNormalizedMixedLookupArguments("mysql schema", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_schema", "`"),
-                createLowerCaseMixedLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
-                createLowerCaseMixedLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createInsensitiveQuotedExactMixedLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
+                createInsensitiveQuotedExactMixedLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
                 createUpperCaseMixedLookupArguments("oracle schema", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_schema", "\""))
                 .flatMap(each -> each);
     }
