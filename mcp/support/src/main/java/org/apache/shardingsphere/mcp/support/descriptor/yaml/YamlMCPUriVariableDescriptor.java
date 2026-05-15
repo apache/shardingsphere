@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * YAML MCP URI variable descriptor.
  */
@@ -27,13 +29,17 @@ import lombok.Setter;
 @Setter
 public final class YamlMCPUriVariableDescriptor {
     
+    @NotBlank(message = "is required")
     private String name;
     
+    @NotBlank(message = "is required")
     private String title;
     
+    @NotBlank(message = "is required")
     private String description;
     
     private boolean required;
     
+    @NotBlank(message = "is required")
     private String scope;
 }

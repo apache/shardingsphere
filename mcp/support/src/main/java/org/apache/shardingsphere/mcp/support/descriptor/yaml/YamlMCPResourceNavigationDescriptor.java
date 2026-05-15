@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -30,13 +31,16 @@ import java.util.LinkedList;
 @Setter
 public final class YamlMCPResourceNavigationDescriptor {
     
+    @NotBlank(message = "is required")
     private String from;
     
+    @NotBlank(message = "is required")
     private String to;
     
     private Collection<String> requiredArguments = new LinkedList<>();
     
     private Collection<String> carriedArguments = new LinkedList<>();
     
+    @NotBlank(message = "is required")
     private String description;
 }

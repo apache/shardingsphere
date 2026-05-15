@@ -29,6 +29,8 @@ public final class MaskFeatureDefinition {
     
     public static final String PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
     
+    public static final String PLAN_PROMPT_NAME = "plan_mask_rule";
+    
     public static final WorkflowKind WORKFLOW_KIND = WorkflowKind.valueOf("mask.rule");
     
     public static final String ALGORITHMS_RESOURCE_URI = "shardingsphere://features/mask/algorithms";

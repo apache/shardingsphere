@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -30,7 +31,7 @@ import java.util.LinkedList;
 @Setter
 public final class YamlMCPResourceExtensionDescriptor {
     
-    private Collection<YamlMCPUriVariableDescriptor> uriVariables = new LinkedList<>();
+    private Collection<@Valid YamlMCPUriVariableDescriptor> uriVariables = new LinkedList<>();
     
     private String resourceKind;
     

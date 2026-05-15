@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration
 import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlOAuthIntrospectionConfiguration;
+import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -68,6 +69,7 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     
     HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig, final Map<String, String> environment) {
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Property `transport.http` is required."));
+        MCPYamlConfigurationValidator.validate(yamlConfig, "MCP HTTP transport configuration");
         String bindHost = resolveBindHost(yamlConfig.getBindHost());
         boolean allowRemoteAccess = yamlConfig.isAllowRemoteAccess();
         String accessToken = resolveAccessToken(yamlConfig.getAccessToken(), environment);

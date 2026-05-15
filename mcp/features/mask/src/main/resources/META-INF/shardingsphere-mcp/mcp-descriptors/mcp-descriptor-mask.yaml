@@ -70,7 +70,7 @@ resourceTemplates:
         - database_gateway_plan_mask_rule
         - database_gateway_validate_workflow
 prompts:
-  - name: database_gateway_plan_mask_rule
+  - name: plan_mask_rule
     title: Plan Mask Rule
     description: "Guide the model to plan a ShardingSphere mask rule by reading logical metadata, mask algorithms, and existing mask rules before calling database_gateway_plan_mask_rule."
     binding:
@@ -117,7 +117,7 @@ prompts:
 
 completionTargets:
   - referenceType: prompt
-    reference: database_gateway_plan_mask_rule
+    reference: plan_mask_rule
     arguments:
       - database
       - schema
@@ -204,17 +204,8 @@ tools:
           description: "User request in natural language, used together with structured_intent_evidence to clarify masking behavior."
         structured_intent_evidence:
           type: object
-          description: "Structured intent extracted from the user request. Mask planning primarily uses field_semantics; other fields are kept explicit for cross-feature consistency."
+          description: "Mask-specific structured intent extracted from the user request."
           properties:
-            requires_decrypt:
-              type: boolean
-              description: "Whether plaintext recovery is required; mask planning treats this as evidence to ask for clarification."
-            requires_equality_filter:
-              type: boolean
-              description: "Whether equality predicates are relevant; mask planning treats this as evidence to ask for clarification."
-            requires_like_query:
-              type: boolean
-              description: "Whether LIKE predicates are relevant; mask planning treats this as evidence to ask for clarification."
             field_semantics:
               type: string
               description: "Domain meaning such as phone number, email, ID card, or other sensitive field category."

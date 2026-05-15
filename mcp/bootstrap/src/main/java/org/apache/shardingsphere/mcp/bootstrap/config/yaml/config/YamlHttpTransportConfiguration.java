@@ -21,6 +21,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -33,14 +37,18 @@ public final class YamlHttpTransportConfiguration implements YamlConfiguration {
     
     private boolean enabled;
     
+    @NotBlank(message = "is required")
     private String bindHost;
     
     private boolean allowRemoteAccess;
     
     private String accessToken;
     
+    @NotNull(message = "is required")
+    @PositiveOrZero(message = "must be zero or positive")
     private Integer port;
     
+    @NotBlank(message = "is required")
     private String endpointPath;
     
     private Collection<String> allowedOrigins = new LinkedList<>();
@@ -51,5 +59,6 @@ public final class YamlHttpTransportConfiguration implements YamlConfiguration {
     
     private String protectedResource;
     
+    @Valid
     private YamlOAuthIntrospectionConfiguration oauthIntrospection = new YamlOAuthIntrospectionConfiguration();
 }

@@ -196,7 +196,8 @@ public final class MCPCompletionService {
                                                         final String guidanceResourceUri) {
         if ("missing_context".equals(diagnostic)) {
             return guidanceResourceUri.isEmpty()
-                    ? List.of(createCompletionAction(descriptor, missingContextArguments.get(0), "", contextArguments, missingContextArguments, "Complete or provide the missing context argument before retrying this completion."))
+                    ? List.of(createCompletionAction(descriptor, missingContextArguments.get(0), "", contextArguments, missingContextArguments,
+                            "Complete or provide the missing context argument before retrying this completion."))
                     : List.of(MCPNextActionUtils.readResource(guidanceResourceUri, "Read the nearest metadata resource before retrying this completion."));
         }
         if ("prefix_filtered_all_candidates".equals(diagnostic)) {

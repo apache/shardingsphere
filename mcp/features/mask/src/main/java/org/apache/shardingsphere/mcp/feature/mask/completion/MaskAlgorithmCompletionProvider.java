@@ -47,7 +47,7 @@ public final class MaskAlgorithmCompletionProvider implements MCPCompletionProvi
     
     private boolean isMaskReference(final MCPCompletionRequestContext requestContext) {
         String reference = requestContext.getDescriptor().getReference();
-        return MaskFeatureDefinition.PLAN_TOOL_NAME.equals(reference) || MaskFeatureDefinition.ALGORITHMS_RESOURCE_URI.equals(reference);
+        return MaskFeatureDefinition.PLAN_PROMPT_NAME.equals(reference) || MaskFeatureDefinition.ALGORITHMS_RESOURCE_URI.equals(reference);
     }
     
     @Override

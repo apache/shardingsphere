@@ -66,7 +66,7 @@ class YamlHttpTransportConfigurationSwapperTest {
     void assertSwapToObjectWithMissingBindHost() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> swapper.swapToObject(createYamlConfig(null, false, "", 18088, "/mcp")));
-        assertThat(actual.getMessage(), is("Property `transport.http.bindHost` is required."));
+        assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `bindHost` is required."));
     }
     
     @Test
@@ -170,7 +170,7 @@ class YamlHttpTransportConfigurationSwapperTest {
     void assertSwapToObjectWithNegativePort() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> swapper.swapToObject(createYamlConfig("127.0.0.1", false, "", -1, "/mcp")));
-        assertThat(actual.getMessage(), is("Property `transport.http.port` cannot be negative."));
+        assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `port` must be zero or positive."));
     }
     
     @Test

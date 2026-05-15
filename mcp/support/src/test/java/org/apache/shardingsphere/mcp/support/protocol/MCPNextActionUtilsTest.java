@@ -90,6 +90,14 @@ class MCPNextActionUtilsTest {
     }
     
     @Test
+    void assertCompleteArgumentNormalizesReferenceTypes() {
+        Map<String, Object> actual = MCPNextActionUtils.completeArgument("prompt", "inspect_metadata", "schema", "pub", Map.of("database", "logic_db"),
+                List.of("table"), "resource", "shardingsphere://databases/{database}/schemas/{schema}", Map.of("database", "logic_db"), "Complete schema.");
+        assertThat(actual.get("reference_type"), is("ref/prompt"));
+        assertThat(actual.get("resume_target_type"), is("ref/resource"));
+    }
+    
+    @Test
     void assertCompleteArgumentWithoutResumeTarget() {
         Map<String, Object> actual = MCPNextActionUtils.completeArgument("ref/resource", "shardingsphere://databases/{database}", "database", "", Map.of(), List.of(), "", "", Map.of(),
                 "Complete database.");

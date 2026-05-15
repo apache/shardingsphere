@@ -17,16 +17,21 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.descriptor;
 
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,6 +40,32 @@ class MaskToolDescriptorValidatorTest {
     @Test
     void assertSupports() {
         assertTrue(new MaskToolDescriptorValidator().supports(MCPDescriptorRegistry.getRequiredToolDescriptor(MaskFeatureDefinition.PLAN_TOOL_NAME)));
+    }
+    
+    @Test
+    void assertPromptUsesGuidanceName() {
+        MCPPromptDescriptor actual = findPrompt(MaskFeatureDefinition.PLAN_PROMPT_NAME);
+        assertThat((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.RELATED_TOOLS),
+                is(List.of(MaskFeatureDefinition.PLAN_TOOL_NAME, "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
+        assertFalse(MCPDescriptorRegistry.getPromptDescriptors().stream().anyMatch(each -> MaskFeatureDefinition.PLAN_TOOL_NAME.equals(each.getName())));
+    }
+    
+    @Test
+    void assertCompletionTargetUsesPromptName() {
+        assertTrue(MCPDescriptorRegistry.getCompletionTargetDescriptors().stream().anyMatch(this::isMaskPlanningPromptCompletionTarget));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertStructuredIntentEvidenceIsMaskSpecific() {
+        MCPToolDescriptor descriptor = MCPDescriptorRegistry.getRequiredToolDescriptor(MaskFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> properties = (Map<String, Object>) descriptor.getInputSchema().get("properties");
+        Map<String, Object> structuredIntentEvidence = (Map<String, Object>) properties.get("structured_intent_evidence");
+        Map<String, Object> actualProperties = (Map<String, Object>) structuredIntentEvidence.get("properties");
+        assertTrue(actualProperties.containsKey("field_semantics"));
+        assertFalse(actualProperties.containsKey("requires_decrypt"));
+        assertFalse(actualProperties.containsKey("requires_equality_filter"));
+        assertFalse(actualProperties.containsKey("requires_like_query"));
     }
     
     @Test
@@ -48,5 +79,13 @@ class MaskToolDescriptorValidatorTest {
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new MaskToolDescriptorValidator().validate(new MCPToolDescriptor(
                 descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), outputSchema, descriptor.getAnnotations(), descriptor.getMeta())));
         assertThat(actual.getMessage(), is("Tool `database_gateway_plan_mask_rule` outputSchema must declare `resources_to_read`."));
+    }
+    
+    private MCPPromptDescriptor findPrompt(final String promptName) {
+        return MCPDescriptorRegistry.getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private boolean isMaskPlanningPromptCompletionTarget(final MCPCompletionTargetDescriptor descriptor) {
+        return "prompt".equals(descriptor.getReferenceType()) && MaskFeatureDefinition.PLAN_PROMPT_NAME.equals(descriptor.getReference());
     }
 }

@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * YAML runtime database configuration.
  */
@@ -28,13 +31,18 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlRuntimeDatabaseConfiguration implements YamlConfiguration {
     
+    @NotBlank(message = "is required")
     private String databaseType;
     
+    @NotBlank(message = "is required")
     private String jdbcUrl;
     
+    @NotNull(message = "is required. Use an empty string when no value is needed")
     private String username;
     
+    @NotNull(message = "is required. Use an empty string when no value is needed")
     private String password;
     
+    @NotNull(message = "is required. Use an empty string when no value is needed")
     private String driverClassName;
 }

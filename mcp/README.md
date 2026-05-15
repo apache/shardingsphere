@@ -200,8 +200,9 @@ Descriptors must describe what the model should use the surface for, not just re
   and workflow plans to apply or validation tools.
 - `shardingsphere://runtime` exposes a small runtime status readout, and `shardingsphere://workflows/{plan_id}` lets clients read back a workflow plan by ID.
 - `fingerprints` records deterministic hashes for descriptor, prompt, navigation, and model-facing schema surfaces so test artifacts can prove which MCP surface a model used.
-- Item-list responses always include `items`, `count`, and `has_more`. Resource reads also include `self_uri`,
-  and include typed `parent_resource`, typed `next_resources`, or `next_page_token` when applicable.
+- Item-list responses always include `items`, `count`, and `has_more`. The fields `has_more`, `next_page_token`, and `continuation_mode`
+  are ShardingSphere application pagination fields inside structured payloads; they are not MCP list-method `cursor` or `nextCursor`.
+  Resource reads also include `self_uri`, and include typed `parent_resource` or typed `next_resources` when applicable.
 - Workflow tool responses include `missing_required_inputs`, `clarification_questions`, `resources_to_read`, `next_actions`, and `requires_user_approval`
   so a model can continue the workflow without guessing or relying on legacy recommendation fields.
 - Recoverable error payloads keep the original `error_code` and `message`, and add `recovery` hints for missing arguments,

@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * MCP items response.
+ * ShardingSphere application items response.
+ *
+ * <p>Payload pagination fields are application-level fields, not MCP list cursor fields.</p>
  */
 public final class MCPItemsResponse implements MCPResponse {
     

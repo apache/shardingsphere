@@ -73,6 +73,15 @@ class MCPCompletionServiceTest {
     }
     
     @Test
+    void assertCompleteMissingContextUsesProtocolReferenceType() {
+        MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext()), List.of(new MissingContextCompletionProvider())).complete("session-1",
+                createDescriptor("prompt", "inspect_metadata", "table", 50), "table", "order", new LinkedHashMap<>());
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
+        assertThat(actualNextAction.get("reference_type"), is("ref/prompt"));
+        assertThat(actualNextAction.get("resume_target_type"), is("ref/prompt"));
+    }
+    
+    @Test
     void assertCompletePlanIdsWithRecentPlanFirst() {
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
         when(workflowSessionContext.list("session-1")).thenReturn(List.of(
@@ -165,6 +174,24 @@ class MCPCompletionServiceTest {
         @Override
         public MCPCompletionProviderResult complete(final MCPWorkflowHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
             return new MCPCompletionProviderResult(List.of(new MCPCompletionCandidate("t_order", "logical table", "test-provider")), Map.of("schema", "public"));
+        }
+    }
+    
+    private static final class MissingContextCompletionProvider implements MCPCompletionProvider<MCPWorkflowHandlerContext> {
+        
+        @Override
+        public Class<MCPWorkflowHandlerContext> getContextType() {
+            return MCPWorkflowHandlerContext.class;
+        }
+        
+        @Override
+        public boolean supports(final MCPCompletionRequestContext requestContext) {
+            return "table".equals(requestContext.getArgumentName());
+        }
+        
+        @Override
+        public MCPCompletionProviderResult complete(final MCPWorkflowHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
+            return new MCPCompletionProviderResult(List.of(), Map.of(), List.of("database"), "");
         }
     }
 }

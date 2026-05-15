@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 /**
@@ -30,6 +32,8 @@ import java.util.Map;
 @Setter
 public final class YamlMCPLaunchConfiguration implements YamlConfiguration {
     
+    @NotNull(message = "is required")
+    @Valid
     private YamlMCPTransportConfiguration transport;
     
     private Map<String, Map<String, Object>> runtimeDatabases;

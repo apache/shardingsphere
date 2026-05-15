@@ -101,9 +101,12 @@ Current evidence:
 
 - MCP Java SDK `1.1.2` provides `io.modelcontextprotocol.spec.McpError`, JSON-RPC error records, and SDK-side handlers.
   The SDK covers unknown tools, unknown resources, invalid prompts, and invalid completion references.
-- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/MCPToolController.java` catches all exceptions and converts them into `MCPErrorResponse`.
-- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/resource/MCPResourceController.java` catches all exceptions and wraps them as successful resource content with `response_kind=error`.
-- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/resource/MCPResourceSpecificationFactory.java` always maps controller payloads into `ReadResourceResult`.
+- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/MCPToolController.java` lets `UnsupportedToolException` escape as a protocol-boundary exception.
+- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/resource/MCPResourceController.java` lets `UnsupportedResourceUriException` and handler exceptions escape to the bootstrap adapter.
+- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/resource/MCPResourceSpecificationFactory.java`
+  maps unsupported resource URIs to JSON-RPC `RESOURCE_NOT_FOUND`.
+- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactory.java`
+  maps unsupported tools to JSON-RPC `INVALID_PARAMS` and keeps supported business failures as `CallToolResult.isError(true)`.
 
 Disposition:
 
@@ -137,6 +140,14 @@ Phase 2 implementation recorded on 2026-05-14:
   `MCPToolSpecificationFactoryTest.assertCreateToolSpecificationsHandleUnsupportedToolAsProtocolError`,
   and `MCPToolSpecificationFactoryTest.assertCreateToolSpecificationsHandleErrorResponse`.
 
+Phase 5 implementation recorded on 2026-05-15:
+
+- `MCPResourceSpecificationFactoryTest.assertCreateResourceSpecificationsHandleReadResourceError` covers matched resource handler misses as JSON-RPC `RESOURCE_NOT_FOUND`.
+- `MCPToolSpecificationFactoryTest.assertCreateToolSpecificationsRejectInvalidInputSchema` covers supported tool business-invalid input as `isError: true`
+  with actionable structured recovery details.
+- Existing SDK no-match wire tests keep Streamable HTTP and STDIO coverage for unknown resource and unknown tool calls.
+- No additional E2E test is required because the matched-template and controller-direct boundaries are fully covered by unit tests.
+
 ## Adjacent Package Owner Map
 
 - 013 MCP Protocol Field Standardization owns descriptor shape, YAML field names, official descriptor metadata placement, ResourceLink metadata naming,
@@ -153,7 +164,7 @@ Phase 2 implementation recorded on 2026-05-14:
 Current evidence:
 
 - `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/protocol/response/MCPItemsResponse.java` emits `has_more`, `next_page_token`, and `continuation_mode`.
-- `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/descriptors/core.yaml` documents application pagination fields for the metadata search tool.
+- `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-core.yaml` documents application pagination fields for the metadata search tool.
   These include `page_size`, `page_token`, `next_page_token`, `has_more`, and `continuation_mode`.
 - Official MCP list pagination uses `cursor` and `nextCursor` for protocol list methods.
 
@@ -183,9 +194,18 @@ Phase 2 status:
 - Completed as the T013 domain policy.
 - Implementation tasks T052-T055 own schema wording and README updates so the field names are retained without being presented as MCP protocol pagination.
 
+Phase 6 implementation recorded on 2026-05-15:
+
+- `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-core.yaml`
+  labels `next_page_token`, `has_more`, and `continuation_mode` as ShardingSphere application pagination, not MCP `cursor` or `nextCursor`.
+- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/protocol/response/MCPItemsResponse.java`
+  documents that payload pagination fields are application-level fields.
+- `mcp/README.md` and `mcp/README_ZH.md` explain that these structured payload fields are not MCP list-method pagination fields.
+- `CoreToolDescriptorValidatorTest.assertSearchMetadataDocumentsApplicationPagination` locks the descriptor wording.
+
 ### 5. ResourceLink Emission Uses An Implicit Payload Protocol
 
-Current evidence:
+Original evidence:
 
 - `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/MCPTransportPayloadUtils.java` recursively scans arbitrary payload maps.
 - Any map containing `uri` and `resource_kind` can become a `ResourceLink`.
@@ -205,6 +225,7 @@ Phase 2 implementation recorded on 2026-05-14:
 - Arbitrary nested maps are no longer scanned for `uri` and `resource_kind`.
 - `MCPTransportPayloadUtilsTest.assertCreateCallToolResultWithItemResourceLinks` preserves intended item resource links.
 - `MCPTransportPayloadUtilsTest.assertCreateCallToolResultWithoutArbitraryNestedResourceHint` prevents accidental links from unrelated nested payloads.
+- `MCPTransportPayloadUtilsTest.assertCreateCallToolResultWithBoundedPrioritizedResourceLinks` covers explicit ordering and link limit behavior.
 
 ### 6. Generic Descriptor Validation Contains Public Tool Branches
 
@@ -261,15 +282,59 @@ Phase 4 implementation recorded on 2026-05-15:
 
 ### 7. Feature Planner Inputs Leak Cross-Feature Semantics
 
-Current evidence:
+Original evidence:
 
-- `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml` exposes mask planner fields with encryption-oriented names.
+- `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-mask.yaml` exposed mask planner fields with encryption-oriented names.
   These include `requires_decrypt`, `requires_equality_filter`, and `requires_like_query`.
 
 Disposition:
 
 - Rename or remove encryption-specific mask planner input fields.
 - Preserve genuinely feature-neutral fields only when their names and descriptions are valid for both features.
+
+Phase 7 implementation recorded on 2026-05-15:
+
+- `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-mask.yaml`
+  keeps `structured_intent_evidence.field_semantics` and removes encryption-oriented `requires_decrypt`, `requires_equality_filter`, and `requires_like_query` from the mask planner schema.
+- `mcp/features/mask/src/main/java/org/apache/shardingsphere/mcp/feature/mask/tool/handler/PlanMaskRuleToolHandler.java`
+  already consumes only mask-specific `field_semantics` from structured intent evidence, so no runtime behavior change is required.
+- Encrypt and mask prompt names are now user-facing guidance names, `plan_encrypt_rule` and `plan_mask_rule`, while public tool names remain execution tool names.
+- Completion targets were updated to the renamed prompt references, and feature algorithm completion providers follow the prompt/resource references.
+- `MaskToolDescriptorValidatorTest.assertStructuredIntentEvidenceIsMaskSpecific`,
+  `EncryptToolDescriptorValidatorTest.assertPromptUsesGuidanceName`, and `MaskToolDescriptorValidatorTest.assertPromptUsesGuidanceName`
+  lock the descriptor boundary.
+
+### 8. Verification Closed On 2026-05-15
+
+- Scoped Java tests passed:
+  `./mvnw -pl mcp/support,mcp/core,mcp/bootstrap,mcp/features/encrypt,mcp/features/mask -am -DskipITs -Dspotless.skip=true`
+  `-Dtest=MCPDescriptorCatalogLoaderTest,CoreToolDescriptorValidatorTest,MCPToolSpecificationFactoryTest,MCPResourceSpecificationFactoryTest,`
+  `MCPToolUnknownWireBehaviorTest,MCPResourceUnknownWireBehaviorTest,MCPTransportPayloadUtilsTest,EncryptAlgorithmCompletionProviderTest,`
+  `MaskAlgorithmCompletionProviderTest,EncryptToolDescriptorValidatorTest,MaskToolDescriptorValidatorTest,MCPPromptSpecificationFactoryTest`
+  `-Dsurefire.failIfNoSpecifiedTests=false test`.
+- Scoped Spotless and Checkstyle passed:
+  `./mvnw -pl mcp/support,mcp/core,mcp/bootstrap,mcp/features/encrypt,mcp/features/mask -DskipTests -DskipITs -Pcheck`
+  `spotless:apply spotless:check checkstyle:check`.
+- Post-format completion smoke passed:
+  `./mvnw -pl mcp/core -am -DskipITs -Dspotless.skip=true -Dtest=MCPCompletionServiceTest -Dsurefire.failIfNoSpecifiedTests=false test`.
+- Residual search confirmed no renamed prompt completion reference still points at `database_gateway_plan_encrypt_rule`
+  or `database_gateway_plan_mask_rule`; remaining tool-name matches are public tool descriptors.
+
+### 9. Completion Next Action Reference Types Closed On 2026-05-15
+
+- `MCPNextActionUtils.completeArgument` now emits official model-facing completion reference types, `ref/prompt` and `ref/resource`,
+  when callers pass descriptor-internal `prompt` or `resource` reference types.
+- Descriptor YAML continues to use internal `referenceType: prompt` and `referenceType: resource`; bootstrap remains responsible for mapping descriptors to SDK
+  `PromptReference` and `ResourceReference`.
+- Regression coverage:
+  `MCPNextActionUtilsTest.assertCompleteArgumentNormalizesReferenceTypes`,
+  `MCPCompletionServiceTest.assertCompleteMissingContextUsesProtocolReferenceType`, and
+  `MCPErrorConverterTest.assertConvertWorkflowStateWithRecovery`.
+- Scoped Java tests passed:
+  `./mvnw -pl mcp/support,mcp/core -am -DskipITs -Dspotless.skip=true`
+  `-Dtest=MCPNextActionUtilsTest,MCPCompletionServiceTest,MCPErrorConverterTest -Dsurefire.failIfNoSpecifiedTests=false test`.
+- Scoped Spotless and Checkstyle passed:
+  `./mvnw -pl mcp/support,mcp/core -DskipTests -DskipITs -Pcheck spotless:apply spotless:check checkstyle:check`.
 
 ## Accepted User Decisions
 

@@ -20,6 +20,9 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -32,15 +35,21 @@ import java.util.Map;
 @Setter
 public final class YamlMCPPromptDescriptor {
     
+    @NotBlank(message = "is required")
     private String name;
     
+    @NotBlank(message = "is required")
     private String title;
     
+    @NotBlank(message = "is required")
     private String description;
     
-    private Collection<YamlMCPPromptArgumentDescriptor> arguments = new LinkedList<>();
+    private Collection<@Valid YamlMCPPromptArgumentDescriptor> arguments = new LinkedList<>();
     
+    @NotNull(message = "is required")
+    @Valid
     private YamlMCPPromptBindingDescriptor binding;
     
+    @NotNull(message = "is required")
     private Map<String, Object> meta = new LinkedHashMap<>();
 }

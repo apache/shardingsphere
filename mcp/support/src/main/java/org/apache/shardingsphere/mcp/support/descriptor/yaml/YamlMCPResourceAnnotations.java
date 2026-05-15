@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -29,7 +31,8 @@ import java.util.List;
 public final class YamlMCPResourceAnnotations {
     
     @Setter
-    private List<String> audience;
+    @Size(min = 1, message = "must not be empty")
+    private List<@NotBlank(message = "is required") String> audience;
     
     private double priority;
     

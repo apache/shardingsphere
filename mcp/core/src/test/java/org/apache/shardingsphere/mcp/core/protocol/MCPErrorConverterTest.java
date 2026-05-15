@@ -405,7 +405,10 @@ class MCPErrorConverterTest {
         assertFalse(actualRecovery.containsKey("suggested_next_tools"));
         assertThat(actualRecovery.get("completion_first"), is(Map.of("argument", "plan_id", "scope", "current MCP session")));
         assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://capabilities"));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("type"), is("completion"));
+        Map<?, ?> actualCompletionAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
+        assertThat(actualCompletionAction.get("type"), is("completion"));
+        assertThat(actualCompletionAction.get("reference_type"), is("ref/resource"));
+        assertThat(actualCompletionAction.get("resume_target_type"), is("ref/resource"));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1)).get("type"), is("resource_read"));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1)).get("depends_on"), is(List.of(1)));
     }

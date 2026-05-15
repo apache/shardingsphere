@@ -79,7 +79,7 @@ Local findings that drive implementation:
 - `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/MCPToolController.java` converts unsupported tool exceptions into normal response payloads before transport mapping.
 - `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/protocol/response/MCPItemsResponse.java` uses application pagination fields.
 - `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/MCPTransportPayloadUtils.java` recursively scans payload maps to emit ResourceLinks.
-- `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml` contains encryption-oriented mask planner evidence fields.
+- `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-mask.yaml` contains encryption-oriented mask planner evidence fields.
 
 ## Project Structure
 

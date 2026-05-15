@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
+import javax.validation.constraints.PositiveOrZero;
+
 /**
  * YAML OAuth introspection configuration.
  */
@@ -36,5 +38,6 @@ public final class YamlOAuthIntrospectionConfiguration implements YamlConfigurat
     
     private String expectedIssuer;
     
+    @PositiveOrZero(message = "must be zero or positive")
     private Long cacheTtlMillis;
 }

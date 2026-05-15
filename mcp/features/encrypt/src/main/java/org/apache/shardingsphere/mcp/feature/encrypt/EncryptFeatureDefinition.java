@@ -29,6 +29,8 @@ public final class EncryptFeatureDefinition {
     
     public static final String PLAN_TOOL_NAME = "database_gateway_plan_encrypt_rule";
     
+    public static final String PLAN_PROMPT_NAME = "plan_encrypt_rule";
+    
     public static final WorkflowKind WORKFLOW_KIND = WorkflowKind.valueOf("encrypt.rule");
     
     public static final String ALGORITHMS_RESOURCE_URI = "shardingsphere://features/encrypt/algorithms";

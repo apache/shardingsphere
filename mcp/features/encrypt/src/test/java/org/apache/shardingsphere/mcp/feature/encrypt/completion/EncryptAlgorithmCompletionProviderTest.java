@@ -45,7 +45,7 @@ class EncryptAlgorithmCompletionProviderTest {
     
     @Test
     void assertSupports() {
-        assertTrue(new EncryptAlgorithmCompletionProvider().supports(createRequestContext(EncryptFeatureDefinition.PLAN_TOOL_NAME, "algorithm_type")));
+        assertTrue(new EncryptAlgorithmCompletionProvider().supports(createRequestContext(EncryptFeatureDefinition.PLAN_PROMPT_NAME, "algorithm_type")));
     }
     
     @Test
@@ -55,7 +55,7 @@ class EncryptAlgorithmCompletionProviderTest {
     
     @Test
     void assertSupportsWithForeignReference() {
-        assertFalse(new EncryptAlgorithmCompletionProvider().supports(createRequestContext("database_gateway_plan_mask_rule", "algorithm_type")));
+        assertFalse(new EncryptAlgorithmCompletionProvider().supports(createRequestContext("plan_mask_rule", "algorithm_type")));
     }
     
     @Test
@@ -67,7 +67,7 @@ class EncryptAlgorithmCompletionProviderTest {
         MCPDatabaseHandlerContext handlerContext = mock(MCPDatabaseHandlerContext.class);
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         MCPCompletionProviderResult actual = new EncryptAlgorithmCompletionProvider().complete(handlerContext,
-                createRequestContext(EncryptFeatureDefinition.PLAN_TOOL_NAME, "algorithm_type"));
+                createRequestContext(EncryptFeatureDefinition.PLAN_PROMPT_NAME, "algorithm_type"));
         List<MCPCompletionCandidate> actualCandidates = List.copyOf(actual.getCandidates());
         assertThat(actualCandidates.size(), is(1));
         assertThat(actualCandidates.get(0).getValue(), is("AES"));

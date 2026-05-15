@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
 
 import java.util.Map;
 
@@ -47,6 +48,7 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
     
     RuntimeDatabaseConfiguration swapToObject(final YamlRuntimeDatabaseConfiguration yamlConfig, final Map<String, String> environment) {
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Runtime database configuration cannot be null."));
+        MCPYamlConfigurationValidator.validate(yamlConfig, "MCP runtime database configuration");
         return new RuntimeDatabaseConfiguration(resolveRequiredText(yamlConfig.getDatabaseType(), "databaseType", environment), resolveRequiredText(yamlConfig.getJdbcUrl(), "jdbcUrl", environment),
                 resolveExplicitText(yamlConfig.getUsername(), "username", environment), resolveExplicitText(yamlConfig.getPassword(), "password", environment),
                 resolveExplicitText(yamlConfig.getDriverClassName(), "driverClassName", environment));

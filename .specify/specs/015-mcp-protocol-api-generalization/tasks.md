@@ -161,28 +161,28 @@
 
 ### Tests for User Story 3
 
-- [ ] T040 [P] [US3] Add wire-level resource read tests that separate SDK no-match protocol errors from ShardingSphere matched-template handler misses.
+- [X] T040 [P] [US3] Add wire-level resource read tests that separate SDK no-match protocol errors from ShardingSphere matched-template handler misses.
   Transport coverage: both Streamable HTTP and STDIO raw wire responses for SDK no-match.
   Assertions: unsupported no-match resource returns JSON-RPC error, no normal `result`, and no successful resource contents.
   Matched-template handler miss coverage: unit test first; add E2E only if unit tests cannot fully cover the internal boundary or affected transport mapping.
   Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/resource/`
-- [ ] T041 [P] [US3] Add wire-level tool call tests that separate SDK unknown-tool protocol errors from ShardingSphere controller-direct unsupported dispatch.
+- [X] T041 [P] [US3] Add wire-level tool call tests that separate SDK unknown-tool protocol errors from ShardingSphere controller-direct unsupported dispatch.
   Transport coverage: both Streamable HTTP and STDIO raw wire responses for SDK unknown-tool.
   Assertions: unsupported unknown tool returns JSON-RPC error, no normal `result`, and no `CallToolResult.isError` wrapper.
   Controller-direct unsupported dispatch coverage: unit test first; add E2E only if unit tests cannot fully cover the internal boundary or affected transport mapping.
   Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/`
-- [ ] T042 [P] [US3] Add supported tool business failure tests proving `isError: true` and actionable structured content.
+- [X] T042 [P] [US3] Add supported tool business failure tests proving `isError: true` and actionable structured content.
   Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/`
 
 ### Implementation for User Story 3
 
-- [ ] T043 [US3] Change resource dispatch so unsupported resource URIs surface as protocol errors.
+- [X] T043 [US3] Change resource dispatch so unsupported resource URIs surface as protocol errors.
   Path: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/resource/MCPResourceController.java`
-- [ ] T044 [US3] Change tool dispatch so unsupported tool names surface as protocol errors.
+- [X] T044 [US3] Change tool dispatch so unsupported tool names surface as protocol errors.
   Path: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/MCPToolController.java`
-- [ ] T045 [US3] Update bootstrap transport mapping to emit JSON-RPC protocol errors where required by MCP.
+- [X] T045 [US3] Update bootstrap transport mapping to emit JSON-RPC protocol errors where required by MCP.
   Path: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/`
-- [ ] T046 [US3] Keep supported business execution failures mapped to `CallToolResult.isError(true)`.
+- [X] T046 [US3] Keep supported business execution failures mapped to `CallToolResult.isError(true)`.
   Path: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactory.java`
 
 **Checkpoint**: Clients can distinguish protocol failure from model-correctable tool execution failure.
@@ -196,21 +196,21 @@
 
 ### Tests for User Story 4
 
-- [ ] T050 [P] [US4] Add tests or snapshots proving application pagination fields are documented as domain payload fields.
+- [X] T050 [P] [US4] Add tests or snapshots proving application pagination fields are documented as domain payload fields.
   Paths: `mcp/support/src/test/java/`, `mcp/core/src/test/java/`, `mcp/README.md`, `mcp/README_ZH.md`
-- [ ] T051 [P] [US4] Add ResourceLink provider tests with explicit ordering and limits.
+- [X] T051 [P] [US4] Add ResourceLink provider tests with explicit ordering and limits.
   Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/`
 
 ### Implementation for User Story 4
 
-- [ ] T052 [US4] Update payload schema descriptions that mention `next_page_token`, `has_more`, or `continuation_mode` to call them application pagination.
+- [X] T052 [US4] Update payload schema descriptions that mention `next_page_token`, `has_more`, or `continuation_mode` to call them application pagination.
   Descriptions must state that these fields are not MCP list `cursor` or `nextCursor`.
-  Path: `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/descriptors/core.yaml`
-- [ ] T053 [US4] Update shared payload response helpers to keep business fields domain-scoped in names and documentation.
+  Path: `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-core.yaml`
+- [X] T053 [US4] Update shared payload response helpers to keep business fields domain-scoped in names and documentation.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/protocol/`
-- [ ] T054 [US4] Replace recursive ResourceLink scanning with the explicit ResourceLink provider or contract.
+- [X] T054 [US4] Replace recursive ResourceLink scanning with the explicit ResourceLink provider or contract.
   Path: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/MCPTransportPayloadUtils.java`
-- [ ] T055 [US4] Update README documentation for custom catalog, business payload fields, and application pagination.
+- [X] T055 [US4] Update README documentation for custom catalog, business payload fields, and application pagination.
   Paths: `mcp/README.md`, `mcp/README_ZH.md`
 
 **Checkpoint**: Custom business payloads remain useful without being confused with MCP protocol structures.
@@ -224,19 +224,24 @@
 
 ### Tests for User Story 5
 
-- [ ] T060 [P] [US5] Add descriptor tests proving mask planner input fields are mask-specific or feature-neutral.
-  Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/`
-- [ ] T061 [P] [US5] Add prompt descriptor tests proving prompt names are user-facing and related tools are linked through metadata.
-  Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/`
+- [X] T060 [P] [US5] Add descriptor tests proving mask planner input fields are mask-specific or feature-neutral.
+  Path: `mcp/features/mask/src/test/java/org/apache/shardingsphere/mcp/feature/mask/descriptor/`
+- [X] T061 [P] [US5] Add prompt descriptor tests proving prompt names are user-facing and related tools are linked through metadata.
+  Paths: `mcp/features/encrypt/src/test/java/org/apache/shardingsphere/mcp/feature/encrypt/descriptor/`,
+  `mcp/features/mask/src/test/java/org/apache/shardingsphere/mcp/feature/mask/descriptor/`
 
 ### Implementation for User Story 5
 
-- [ ] T062 [US5] Remove or rename encryption-specific intent fields from mask planner descriptors and handlers.
-  Paths: `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`, `mcp/features/mask/src/main/java/`
-- [ ] T063 [US5] Rename feature prompt descriptors to user-facing guidance names while preserving related-tool metadata.
-  Paths: `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml`, `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`
-- [ ] T064 [US5] Update prompt rendering and completion references affected by prompt renames.
-  Paths: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/`, `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/completion/`
+- [X] T062 [US5] Remove or rename encryption-specific intent fields from mask planner descriptors and handlers.
+  Paths: `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-mask.yaml`, `mcp/features/mask/src/main/java/`
+- [X] T063 [US5] Rename feature prompt descriptors to user-facing guidance names while preserving related-tool metadata.
+  Paths: `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-encrypt.yaml`,
+  `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-mask.yaml`
+- [X] T064 [US5] Update prompt rendering and completion references affected by prompt renames.
+  Paths: `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-encrypt.yaml`,
+  `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-mask.yaml`,
+  `mcp/features/encrypt/src/main/java/org/apache/shardingsphere/mcp/feature/encrypt/completion/`,
+  `mcp/features/mask/src/main/java/org/apache/shardingsphere/mcp/feature/mask/completion/`
 
 **Checkpoint**: Feature planner APIs no longer leak unrelated feature semantics.
 
@@ -244,13 +249,22 @@
 
 ## Phase 8: Verification and Documentation
 
-- [ ] T070 Run module-scoped tests for touched MCP modules.
-  Command: `./mvnw -pl mcp -am -DskipITs -Dspotless.skip=true test`
-- [ ] T071 Run scoped Checkstyle or `-Pcheck` validation for touched MCP modules.
-  Command: `./mvnw -pl mcp -am -Pcheck -DskipITs checkstyle:check`
-- [ ] T072 Run descriptor-focused tests for changed descriptor and YAML behavior.
-  Command: `./mvnw -pl mcp/support,mcp/core,mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dtest='*Descriptor*,*Completion*,*SpecificationFactory*' -Dsurefire.failIfNoSpecifiedTests=false test`
-- [ ] T073 Update Speckit evidence and checklist after implementation.
+- [X] T070 Run module-scoped tests for touched MCP modules.
+  Command:
+  `./mvnw -pl mcp/support,mcp/core,mcp/bootstrap,mcp/features/encrypt,mcp/features/mask -am -DskipITs -Dspotless.skip=true`
+  `-Dtest=MCPDescriptorCatalogLoaderTest,CoreToolDescriptorValidatorTest,MCPToolSpecificationFactoryTest,MCPResourceSpecificationFactoryTest,`
+  `MCPToolUnknownWireBehaviorTest,MCPResourceUnknownWireBehaviorTest,MCPTransportPayloadUtilsTest,EncryptAlgorithmCompletionProviderTest,`
+  `MaskAlgorithmCompletionProviderTest,EncryptToolDescriptorValidatorTest,MaskToolDescriptorValidatorTest,MCPPromptSpecificationFactoryTest`
+  `-Dsurefire.failIfNoSpecifiedTests=false test`
+- [X] T071 Run scoped Checkstyle or `-Pcheck` validation for touched MCP modules.
+  Command:
+  `./mvnw -pl mcp/support,mcp/core,mcp/bootstrap,mcp/features/encrypt,mcp/features/mask -DskipTests -DskipITs -Pcheck`
+  `spotless:apply spotless:check checkstyle:check`
+- [X] T072 Run descriptor-focused tests for changed descriptor and YAML behavior.
+  Command: included in T070 scoped test command via `CoreToolDescriptorValidatorTest`,
+  `EncryptToolDescriptorValidatorTest`, `MaskToolDescriptorValidatorTest`,
+  `MCPDescriptorCatalogLoaderTest`, `MCPPromptSpecificationFactoryTest`, and completion provider tests.
+- [X] T073 Update Speckit evidence and checklist after implementation.
   Paths: `.specify/specs/015-mcp-protocol-api-generalization/`, `mcp/README.md`, `mcp/README_ZH.md`
 
 ## Dependencies and Execution Order

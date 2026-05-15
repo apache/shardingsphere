@@ -50,7 +50,7 @@ public final class EncryptAlgorithmCompletionProvider implements MCPCompletionPr
     
     private boolean isEncryptReference(final MCPCompletionRequestContext requestContext) {
         String reference = requestContext.getDescriptor().getReference();
-        return EncryptFeatureDefinition.PLAN_TOOL_NAME.equals(reference) || EncryptFeatureDefinition.ALGORITHMS_RESOURCE_URI.equals(reference);
+        return EncryptFeatureDefinition.PLAN_PROMPT_NAME.equals(reference) || EncryptFeatureDefinition.ALGORITHMS_RESOURCE_URI.equals(reference);
     }
     
     @Override

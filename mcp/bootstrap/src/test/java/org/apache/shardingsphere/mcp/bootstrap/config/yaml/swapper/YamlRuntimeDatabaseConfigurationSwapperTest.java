@@ -66,7 +66,7 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
         yamlConfig.setDatabaseType(null);
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        assertThat(actual.getMessage(), is("Runtime database property `databaseType` is required."));
+        assertThat(actual.getMessage(), is("MCP runtime database configuration property `databaseType` is required."));
     }
     
     @Test
@@ -74,7 +74,7 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
         yamlConfig.setUsername(null);
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        assertThat(actual.getMessage(), is("Runtime database property `username` is required. Use an empty string when no value is needed."));
+        assertThat(actual.getMessage(), is("MCP runtime database configuration property `username` is required. Use an empty string when no value is needed."));
     }
     
     @Test

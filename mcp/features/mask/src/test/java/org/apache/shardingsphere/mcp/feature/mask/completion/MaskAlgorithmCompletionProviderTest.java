@@ -45,7 +45,7 @@ class MaskAlgorithmCompletionProviderTest {
     
     @Test
     void assertSupports() {
-        assertTrue(new MaskAlgorithmCompletionProvider().supports(createRequestContext(MaskFeatureDefinition.PLAN_TOOL_NAME, "algorithm_type")));
+        assertTrue(new MaskAlgorithmCompletionProvider().supports(createRequestContext(MaskFeatureDefinition.PLAN_PROMPT_NAME, "algorithm_type")));
     }
     
     @Test
@@ -55,7 +55,7 @@ class MaskAlgorithmCompletionProviderTest {
     
     @Test
     void assertSupportsWithForeignReference() {
-        assertFalse(new MaskAlgorithmCompletionProvider().supports(createRequestContext("database_gateway_plan_encrypt_rule", "algorithm_type")));
+        assertFalse(new MaskAlgorithmCompletionProvider().supports(createRequestContext("plan_encrypt_rule", "algorithm_type")));
     }
     
     @Test
@@ -67,7 +67,7 @@ class MaskAlgorithmCompletionProviderTest {
         MCPDatabaseHandlerContext handlerContext = mock(MCPDatabaseHandlerContext.class);
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         MCPCompletionProviderResult actual = new MaskAlgorithmCompletionProvider().complete(handlerContext,
-                createRequestContext(MaskFeatureDefinition.PLAN_TOOL_NAME, "algorithm_type"));
+                createRequestContext(MaskFeatureDefinition.PLAN_PROMPT_NAME, "algorithm_type"));
         List<MCPCompletionCandidate> actualCandidates = List.copyOf(actual.getCandidates());
         assertThat(actualCandidates.size(), is(1));
         assertThat(actualCandidates.get(0).getValue(), is("MASK_FROM_X_TO_Y"));

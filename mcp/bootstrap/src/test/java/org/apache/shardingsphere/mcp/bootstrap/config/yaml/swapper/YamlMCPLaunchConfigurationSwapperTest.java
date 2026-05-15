@@ -77,7 +77,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
     @Test
     void assertSwapToObjectWithEmptyContent() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal("", YamlMCPLaunchConfiguration.class)));
-        assertThat(actual.getMessage(), is("Property `transport` is required."));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `transport` is required."));
     }
     
     @Test
@@ -89,7 +89,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    username: ''\n"
                 + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n", YamlMCPLaunchConfiguration.class)));
-        assertThat(actual.getMessage(), is("Property `transport` is required."));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `transport` is required."));
     }
     
     @Test

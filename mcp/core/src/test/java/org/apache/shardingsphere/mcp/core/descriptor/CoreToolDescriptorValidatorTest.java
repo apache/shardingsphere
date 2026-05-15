@@ -37,6 +37,17 @@ class CoreToolDescriptorValidatorTest {
     }
     
     @Test
+    void assertSearchMetadataDocumentsApplicationPagination() {
+        MCPToolDescriptor descriptor = MCPDescriptorRegistry.getRequiredToolDescriptor("database_gateway_search_metadata");
+        assertThat(findOutputProperty(descriptor, "next_page_token").get("description"),
+                is("ShardingSphere application pagination token for the next tool result page; not an MCP list cursor or nextCursor."));
+        assertThat(findOutputProperty(descriptor, "has_more").get("description"),
+                is("Whether another ShardingSphere application page or continuation action is available; not MCP list pagination."));
+        assertThat(findOutputProperty(descriptor, "continuation_mode").get("description"),
+                is("ShardingSphere application continuation mode for this result: none or pagination for database_gateway_search_metadata; not MCP cursor or nextCursor semantics."));
+    }
+    
+    @Test
     @SuppressWarnings("unchecked")
     void assertValidateRejectsMissingSearchMetadataItemField() {
         MCPToolDescriptor descriptor = MCPDescriptorRegistry.getRequiredToolDescriptor("database_gateway_search_metadata");
@@ -66,5 +77,9 @@ class CoreToolDescriptorValidatorTest {
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new CoreToolDescriptorValidator().validate(new MCPToolDescriptor(
                 descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), inputSchema, descriptor.getOutputSchema(), descriptor.getAnnotations(), descriptor.getMeta())));
         assertThat(actual.getMessage(), is("Tool `database_gateway_execute_update` must declare execution_mode."));
+    }
+    
+    private Map<?, ?> findOutputProperty(final MCPToolDescriptor toolDescriptor, final String fieldName) {
+        return (Map<?, ?>) ((Map<?, ?>) toolDescriptor.getOutputSchema().get("properties")).get(fieldName);
     }
 }

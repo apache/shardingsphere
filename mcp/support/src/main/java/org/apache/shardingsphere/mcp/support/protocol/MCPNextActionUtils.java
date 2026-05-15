@@ -100,14 +100,14 @@ public final class MCPNextActionUtils {
                                                        final Map<String, ?> contextArguments, final Collection<String> missingContextArguments, final String resumeTargetType,
                                                        final String resumeTarget, final Map<String, ?> resumeArguments, final String reason) {
         Map<String, Object> result = createBaseAction("completion", "Complete " + argumentName, reason, false);
-        result.put("reference_type", referenceType);
+        result.put("reference_type", toCompletionReferenceType(referenceType));
         result.put("reference", reference);
         result.put("argument_name", argumentName);
         result.put("argument_prefix", argumentPrefix);
         result.put("context_arguments", contextArguments);
         result.put("missing_context_arguments", missingContextArguments);
         if (!resumeTargetType.isEmpty()) {
-            result.put("resume_target_type", resumeTargetType);
+            result.put("resume_target_type", toCompletionReferenceType(resumeTargetType));
         }
         if (!resumeTarget.isEmpty()) {
             result.put("resume_target", resumeTarget);
@@ -116,6 +116,16 @@ public final class MCPNextActionUtils {
             result.put("resume_arguments", resumeArguments);
         }
         return result;
+    }
+    
+    private static String toCompletionReferenceType(final String referenceType) {
+        if ("prompt".equals(referenceType)) {
+            return "ref/prompt";
+        }
+        if ("resource".equals(referenceType)) {
+            return "ref/resource";
+        }
+        return referenceType;
     }
     
     /**

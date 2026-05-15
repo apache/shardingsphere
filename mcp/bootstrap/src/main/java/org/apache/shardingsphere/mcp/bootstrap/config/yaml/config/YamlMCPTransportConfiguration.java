@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 /**
  * YAML MCP transport configuration.
  */
@@ -28,7 +31,11 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlMCPTransportConfiguration implements YamlConfiguration {
     
+    @NotNull(message = "is required")
+    @Valid
     private YamlHttpTransportConfiguration http;
     
+    @NotNull(message = "is required")
+    @Valid
     private YamlStdioTransportConfiguration stdio;
 }

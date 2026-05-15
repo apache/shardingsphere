@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * YAML MCP tool annotations.
  */
@@ -29,11 +31,15 @@ public final class YamlMCPToolAnnotations {
     
     private String title;
     
-    private boolean readOnlyHint;
+    @NotNull(message = "is required")
+    private Boolean readOnlyHint;
     
-    private boolean destructiveHint = true;
+    @NotNull(message = "is required")
+    private Boolean destructiveHint;
     
-    private boolean idempotentHint;
+    @NotNull(message = "is required")
+    private Boolean idempotentHint;
     
-    private boolean openWorldHint = true;
+    @NotNull(message = "is required")
+    private Boolean openWorldHint;
 }

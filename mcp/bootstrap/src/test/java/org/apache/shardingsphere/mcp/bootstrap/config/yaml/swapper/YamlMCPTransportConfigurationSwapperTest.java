@@ -43,7 +43,7 @@ class YamlMCPTransportConfigurationSwapperTest {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig();
         yamlConfig.getTransport().setHttp(null);
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        assertThat(actual.getMessage(), is("Property `transport.http` is required."));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http` is required."));
     }
     
     @Test
@@ -51,7 +51,7 @@ class YamlMCPTransportConfigurationSwapperTest {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig();
         yamlConfig.getTransport().setStdio(null);
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        assertThat(actual.getMessage(), is("Property `transport.stdio` is required."));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `transport.stdio` is required."));
     }
     
     @Test

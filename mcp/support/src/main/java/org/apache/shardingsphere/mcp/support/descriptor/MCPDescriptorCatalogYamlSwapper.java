@@ -35,6 +35,7 @@ import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolAnnotati
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolRuntimeDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPUriVariableDescriptor;
+import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -58,6 +59,7 @@ final class MCPDescriptorCatalogYamlSwapper {
         Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors = new LinkedList<>();
         Collection<MCPToolRuntimeDescriptor> toolRuntimeDescriptors = new LinkedList<>();
         for (YamlMCPDescriptorCatalog each : yamlCatalogs) {
+            MCPYamlConfigurationValidator.validate(each, "MCP descriptor catalog");
             swapFixedResourceDescriptors(each.getResources(), resourceDescriptors, resourceExtensionDescriptors);
             swapResourceTemplateDescriptors(each.getResourceTemplates(), resourceTemplateDescriptors, resourceExtensionDescriptors);
             toolDescriptors.addAll(swapToolDescriptors(each.getTools()));
@@ -157,8 +159,8 @@ final class MCPDescriptorCatalogYamlSwapper {
         if (null == yamlAnnotations) {
             throw new IllegalStateException(String.format("Tool `%s` must declare MCP annotations.", toolName));
         }
-        return new MCPToolAnnotations(yamlAnnotations.getTitle(), yamlAnnotations.isReadOnlyHint(), yamlAnnotations.isDestructiveHint(), yamlAnnotations.isIdempotentHint(),
-                yamlAnnotations.isOpenWorldHint());
+        return new MCPToolAnnotations(yamlAnnotations.getTitle(), Boolean.TRUE.equals(yamlAnnotations.getReadOnlyHint()), Boolean.TRUE.equals(yamlAnnotations.getDestructiveHint()),
+                Boolean.TRUE.equals(yamlAnnotations.getIdempotentHint()), Boolean.TRUE.equals(yamlAnnotations.getOpenWorldHint()));
     }
     
     private static Collection<MCPToolRuntimeDescriptor> swapToolRuntimeDescriptors(final Collection<YamlMCPToolDescriptor> yamlDescriptors) {

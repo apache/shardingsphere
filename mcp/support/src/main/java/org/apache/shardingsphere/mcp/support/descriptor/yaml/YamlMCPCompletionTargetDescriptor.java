@@ -20,6 +20,10 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -32,13 +36,18 @@ import java.util.Map;
 @Setter
 public final class YamlMCPCompletionTargetDescriptor {
     
+    @NotBlank(message = "is required")
     private String referenceType;
     
+    @NotBlank(message = "is required")
     private String reference;
     
+    @NotEmpty(message = "is required")
     private Collection<String> arguments = new LinkedList<>();
     
+    @PositiveOrZero(message = "must be zero or positive")
     private int maxValues;
     
+    @NotNull(message = "is required")
     private Map<String, Object> meta = new LinkedHashMap<>();
 }

@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -31,15 +32,15 @@ import java.util.LinkedList;
 @Setter
 public final class YamlMCPDescriptorCatalog implements YamlConfiguration {
     
-    private Collection<YamlMCPResourceDescriptor> resources = new LinkedList<>();
+    private Collection<@Valid YamlMCPResourceDescriptor> resources = new LinkedList<>();
     
-    private Collection<YamlMCPResourceDescriptor> resourceTemplates = new LinkedList<>();
+    private Collection<@Valid YamlMCPResourceDescriptor> resourceTemplates = new LinkedList<>();
     
-    private Collection<YamlMCPToolDescriptor> tools = new LinkedList<>();
+    private Collection<@Valid YamlMCPToolDescriptor> tools = new LinkedList<>();
     
-    private Collection<YamlMCPPromptDescriptor> prompts = new LinkedList<>();
+    private Collection<@Valid YamlMCPPromptDescriptor> prompts = new LinkedList<>();
     
-    private Collection<YamlMCPCompletionTargetDescriptor> completionTargets = new LinkedList<>();
+    private Collection<@Valid YamlMCPCompletionTargetDescriptor> completionTargets = new LinkedList<>();
     
-    private Collection<YamlMCPResourceNavigationDescriptor> resourceNavigation = new LinkedList<>();
+    private Collection<@Valid YamlMCPResourceNavigationDescriptor> resourceNavigation = new LinkedList<>();
 }

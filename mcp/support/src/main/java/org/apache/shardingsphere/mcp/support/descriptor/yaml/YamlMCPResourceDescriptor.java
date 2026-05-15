@@ -21,6 +21,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -35,12 +38,16 @@ public final class YamlMCPResourceDescriptor {
     
     private String uriTemplate;
     
+    @NotBlank(message = "is required")
     private String name;
     
+    @NotBlank(message = "is required")
     private String title;
     
+    @NotBlank(message = "is required")
     private String description;
     
+    @NotBlank(message = "is required")
     private String mimeType;
     
     private long size;
@@ -48,10 +55,13 @@ public final class YamlMCPResourceDescriptor {
     @Setter(AccessLevel.NONE)
     private boolean sizePresent;
     
+    @Valid
     private YamlMCPResourceAnnotations annotations;
     
+    @NotNull(message = "is required")
     private Map<String, Object> meta = new LinkedHashMap<>();
     
+    @Valid
     private YamlMCPResourceExtensionDescriptor extension;
     
     /**

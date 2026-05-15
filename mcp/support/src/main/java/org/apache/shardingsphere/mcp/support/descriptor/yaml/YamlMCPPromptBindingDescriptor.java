@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * YAML MCP prompt binding descriptor.
  */
@@ -27,5 +29,6 @@ import lombok.Setter;
 @Setter
 public final class YamlMCPPromptBindingDescriptor {
     
+    @NotBlank(message = "is required")
     private String templateResource;
 }
