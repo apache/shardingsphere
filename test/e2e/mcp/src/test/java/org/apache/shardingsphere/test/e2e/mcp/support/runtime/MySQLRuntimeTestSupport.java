@@ -72,7 +72,7 @@ public final class MySQLRuntimeTestSupport {
                 .withEnv("MYSQL_USER", USERNAME)
                 .withEnv("MYSQL_PASSWORD", PASSWORD)
                 .withExposedPorts(3306)
-                .waitingFor(Wait.forLogMessage(".*ready for connections.*\\n", 2))
+                .waitingFor(Wait.forListeningPort())
                 .withStartupTimeout(Duration.ofMinutes(2));
     }
     

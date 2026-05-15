@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 
@@ -42,16 +43,12 @@ public final class MCPYamlConfigurationValidator {
      *
      * @param yamlConfig YAML configuration
      * @param configName configuration name
-     * @throws IllegalArgumentException when YAML configuration is null or violates constraints
      */
     public static void validate(final Object yamlConfig, final String configName) {
-        if (null == yamlConfig) {
-            throw new IllegalArgumentException(String.format("%s cannot be null.", configName));
-        }
+        ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException(String.format("%s cannot be null.", configName)));
         Set<ConstraintViolation<Object>> violations = VALIDATOR.validate(yamlConfig);
-        if (!violations.isEmpty()) {
-            throw new IllegalArgumentException(violations.stream().map(each -> formatViolation(configName, each)).sorted().collect(Collectors.joining("; ")));
-        }
+        ShardingSpherePreconditions.checkMustEmpty(violations, () -> new IllegalArgumentException(violations.stream()
+                .map(each -> formatViolation(configName, each)).sorted().collect(Collectors.joining("; "))));
     }
     
     private static String formatViolation(final String configName, final ConstraintViolation<Object> violation) {

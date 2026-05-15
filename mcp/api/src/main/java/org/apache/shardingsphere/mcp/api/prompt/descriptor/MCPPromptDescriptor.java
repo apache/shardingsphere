@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.api.prompt.descriptor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.Map;
 /**
  * MCP prompt descriptor.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPPromptDescriptor {
     
@@ -37,12 +39,4 @@ public final class MCPPromptDescriptor {
     private final List<MCPPromptArgumentDescriptor> arguments;
     
     private final Map<String, Object> meta;
-    
-    public MCPPromptDescriptor(final String name, final String title, final String description, final List<MCPPromptArgumentDescriptor> arguments, final Map<String, Object> meta) {
-        this.name = name;
-        this.title = title;
-        this.description = description;
-        this.arguments = arguments;
-        this.meta = meta;
-    }
 }

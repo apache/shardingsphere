@@ -22,23 +22,23 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * YAML MCP resource annotations.
  */
 @Getter
+@Setter
 public final class YamlMCPResourceAnnotations {
     
-    @Setter
     @Size(min = 1, message = "must not be empty")
-    private List<@NotBlank(message = "is required") String> audience;
+    private List<@NotBlank(message = "is required") String> audience = new LinkedList<>();
     
     private double priority;
     
     private boolean priorityPresent;
     
-    @Setter
     private String lastModified;
     
     /**

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.api.resource.descriptor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.List;
 /**
  * MCP resource annotations.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPResourceAnnotations {
     
@@ -37,13 +39,6 @@ public final class MCPResourceAnnotations {
     private final boolean priorityPresent;
     
     private final String lastModified;
-    
-    public MCPResourceAnnotations(final List<String> audience, final double priority, final boolean priorityPresent, final String lastModified) {
-        this.audience = null == audience ? Collections.emptyList() : audience;
-        this.priority = priority;
-        this.priorityPresent = priorityPresent;
-        this.lastModified = lastModified;
-    }
     
     /**
      * Judge whether annotations are empty.
