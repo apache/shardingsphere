@@ -54,7 +54,9 @@ public final class WorkflowPlanIdCompletionProvider implements MCPCompletionProv
     
     private List<MCPCompletionCandidate> completePlanIds(final MCPWorkflowHandlerContext handlerContext, final String sessionId) {
         return handlerContext.getWorkflowSessionContext().list(sessionId).stream().filter(this::isCompletionEligiblePlan)
-                .map(each -> new MCPCompletionCandidate(each.getPlanId(), String.format("%s %s", each.getWorkflowKind(), each.getStatus()), "workflow-session", each.getUpdateTime())).toList();
+                .map(each -> new MCPCompletionCandidate(each.getPlanId(), String.format("%s %s", each.getWorkflowKind(), each.getStatus()), "workflow-session", each.getUpdateTime(),
+                        "recent-plan-first-for-plan_id"))
+                .toList();
     }
     
     private boolean isCompletionEligiblePlan(final WorkflowContextSnapshot snapshot) {

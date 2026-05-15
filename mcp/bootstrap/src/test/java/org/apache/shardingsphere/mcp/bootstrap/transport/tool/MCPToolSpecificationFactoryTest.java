@@ -93,16 +93,15 @@ class MCPToolSpecificationFactoryTest {
     @Test
     void assertCreateToolSpecificationsMapAnnotationPresence() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
-            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(
-                    createToolDescriptor("fixture_empty_annotations", MCPToolAnnotations.EMPTY),
-                    createToolDescriptor("fixture_declared_defaults", new MCPToolAnnotations(null, false, true, false, true))));
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor(
+                    "fixture_declared_defaults", new MCPToolAnnotations(null, false, true, false, true))));
             MCPToolSpecificationFactory actualFactory = new MCPToolSpecificationFactory(mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS));
             List<SyncToolSpecification> actual = actualFactory.createToolSpecifications();
-            assertNull(actual.get(0).tool().annotations());
-            assertFalse(actual.get(1).tool().annotations().readOnlyHint());
-            assertTrue(actual.get(1).tool().annotations().destructiveHint());
-            assertFalse(actual.get(1).tool().annotations().idempotentHint());
-            assertTrue(actual.get(1).tool().annotations().openWorldHint());
+            assertNotNull(actual.get(0).tool().annotations());
+            assertFalse(actual.get(0).tool().annotations().readOnlyHint());
+            assertTrue(actual.get(0).tool().annotations().destructiveHint());
+            assertFalse(actual.get(0).tool().annotations().idempotentHint());
+            assertTrue(actual.get(0).tool().annotations().openWorldHint());
         }
     }
     

@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class MaskMCPHandlerProviderTest {
-
+    
     @Test
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new MaskMCPHandlerProvider().getResourceHandlers();
@@ -41,7 +41,7 @@ class MaskMCPHandlerProviderTest {
                 "shardingsphere://features/mask/databases/{database}/rules",
                 "shardingsphere://features/mask/databases/{database}/tables/{table}/rules")));
     }
-
+    
     @Test
     void assertGetToolHandlers() {
         MCPToolDescriptor actual = new MaskMCPHandlerProvider().getToolHandlers().iterator().next().getToolDescriptor();
@@ -50,7 +50,7 @@ class MaskMCPHandlerProviderTest {
         assertFalse(actual.getAnnotations().isDestructiveHint());
         assertFalse(actual.getAnnotations().isIdempotentHint());
     }
-
+    
     @Test
     void assertGetWorkflowDefinitions() {
         WorkflowRuntimeDefinition actual = new MaskMCPHandlerProvider().getWorkflowDefinitions().iterator().next();

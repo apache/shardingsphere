@@ -20,24 +20,15 @@ package org.apache.shardingsphere.mcp.api.tool.descriptor;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPToolAnnotationsTest {
     
     @Test
-    void assertEmptyUsesMCPDefaults() {
-        MCPToolAnnotations actual = MCPToolAnnotations.EMPTY;
-        assertTrue(actual.isEmpty());
-        assertFalse(actual.isReadOnlyHint());
-        assertTrue(actual.isDestructiveHint());
-        assertFalse(actual.isIdempotentHint());
-        assertTrue(actual.isOpenWorldHint());
-    }
-    
-    @Test
-    void assertDeclaredDefaultsAreNotEmpty() {
+    void assertDeclaredDefaults() {
         MCPToolAnnotations actual = new MCPToolAnnotations(null, false, true, false, true);
-        assertFalse(actual.isEmpty());
+        assertNull(actual.getTitle());
         assertFalse(actual.isReadOnlyHint());
         assertTrue(actual.isDestructiveHint());
         assertFalse(actual.isIdempotentHint());

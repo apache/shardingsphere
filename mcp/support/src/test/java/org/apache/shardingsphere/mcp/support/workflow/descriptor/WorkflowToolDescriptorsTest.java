@@ -20,11 +20,13 @@ package org.apache.shardingsphere.mcp.support.workflow.descriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowToolDescriptorsTest {
@@ -68,6 +70,19 @@ class WorkflowToolDescriptorsTest {
         assertThat(getInputFieldNames(actual), is(List.of("plan_id")));
         assertTrue(getRequiredInputNames(actual).contains("plan_id"));
         assertTrue(actual.getAnnotations().isReadOnlyHint());
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertWorkflowValidatorRejectsMissingOutputField() {
+        MCPToolDescriptor descriptor = WorkflowToolDescriptors.createExecution();
+        Map<String, Object> outputSchema = new LinkedHashMap<>(descriptor.getOutputSchema());
+        Map<String, Object> properties = new LinkedHashMap<>((Map<String, Object>) outputSchema.get("properties"));
+        properties.remove("manual_artifact_summary");
+        outputSchema.put("properties", properties);
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new WorkflowToolDescriptorValidator().validate(new MCPToolDescriptor(
+                descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), outputSchema, descriptor.getAnnotations(), descriptor.getMeta())));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_apply_workflow` outputSchema must declare `manual_artifact_summary`."));
     }
     
     private List<String> getInputFieldNames(final MCPToolDescriptor descriptor) {

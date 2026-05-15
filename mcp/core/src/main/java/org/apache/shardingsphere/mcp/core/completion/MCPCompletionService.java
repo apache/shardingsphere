@@ -29,18 +29,17 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescr
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
-import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 /**
  * MCP completion service.
@@ -82,14 +81,15 @@ public final class MCPCompletionService {
         mergeInferredContextArguments(actualContextArguments, inferredContextArguments);
         List<MCPCompletionCandidate> candidates = List.copyOf(providerResult.getCandidates());
         int maxValues = Math.min(MAX_VALUES_LIMIT, 0 == descriptor.getMaxValues() ? DEFAULT_MAX_VALUES : descriptor.getMaxValues());
-        List<MCPCompletionCandidate> filteredCandidates = candidates.stream().filter(each -> matchesPrefix(each.getValue(), prefix)).sorted(createCandidateComparator(prefix, argumentName)).toList();
+        List<MCPCompletionCandidate> filteredCandidates = candidates.stream().filter(each -> matchesPrefix(each.getValue(), prefix)).sorted(createCandidateComparator(prefix)).toList();
         String matchStrategy = "prefix";
         if (filteredCandidates.isEmpty() && !prefix.isEmpty()) {
-            filteredCandidates = candidates.stream().filter(each -> matchesContains(each.getValue(), prefix)).sorted(createCandidateComparator(prefix, argumentName)).toList();
+            filteredCandidates = candidates.stream().filter(each -> matchesContains(each.getValue(), prefix)).sorted(createCandidateComparator(prefix)).toList();
             matchStrategy = "contains_fallback";
         }
         List<MCPCompletionCandidate> returnedCandidates = filteredCandidates.stream().limit(maxValues).toList();
-        Map<String, Object> meta = createMeta(descriptor, argumentName, prefix, matchStrategy, actualContextArguments, inferredContextArguments, candidates, filteredCandidates, returnedCandidates);
+        Map<String, Object> meta = createMeta(descriptor, argumentName, prefix, matchStrategy, actualContextArguments, inferredContextArguments, providerResult.getMissingContextArguments(),
+                providerResult.getGuidanceResourceUri(), candidates, filteredCandidates, returnedCandidates);
         return new MCPCompletionResult(returnedCandidates.stream().map(MCPCompletionCandidate::getValue).toList(), filteredCandidates.size(), filteredCandidates.size() > returnedCandidates.size(),
                 meta);
     }
@@ -102,10 +102,10 @@ public final class MCPCompletionService {
         }
     }
     
-    private Comparator<MCPCompletionCandidate> createCandidateComparator(final String prefix, final String argumentName) {
+    private Comparator<MCPCompletionCandidate> createCandidateComparator(final String prefix) {
         String normalizedPrefix = prefix.toLowerCase(Locale.ENGLISH);
         return Comparator.comparingInt((MCPCompletionCandidate each) -> getExactMatchRank(each, normalizedPrefix))
-                .thenComparing((left, right) -> comparePlanUpdateTime(left, right, argumentName))
+                .thenComparing(this::compareUpdateTime)
                 .thenComparing(each -> each.getValue().toLowerCase(Locale.ENGLISH))
                 .thenComparing(MCPCompletionCandidate::getValue);
     }
@@ -114,8 +114,8 @@ public final class MCPCompletionService {
         return candidate.getValue().toLowerCase(Locale.ENGLISH).equals(normalizedPrefix) ? 0 : 1;
     }
     
-    private int comparePlanUpdateTime(final MCPCompletionCandidate left, final MCPCompletionCandidate right, final String argumentName) {
-        return "plan_id".equals(argumentName) ? Comparator.nullsLast(Comparator.<Instant>reverseOrder()).compare(left.getUpdateTime(), right.getUpdateTime()) : 0;
+    private int compareUpdateTime(final MCPCompletionCandidate left, final MCPCompletionCandidate right) {
+        return Comparator.nullsLast(Comparator.<Instant>reverseOrder()).compare(left.getUpdateTime(), right.getUpdateTime());
     }
     
     private boolean matchesPrefix(final String value, final String prefix) {
@@ -145,8 +145,9 @@ public final class MCPCompletionService {
     }
     
     private Map<String, Object> createMeta(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix, final String matchStrategy,
-                                           final Map<String, String> contextArguments, final Map<String, Object> inferredContextArguments, final List<MCPCompletionCandidate> candidates,
-                                           final List<MCPCompletionCandidate> filteredCandidates, final List<MCPCompletionCandidate> returnedCandidates) {
+                                           final Map<String, String> contextArguments, final Map<String, Object> inferredContextArguments, final List<String> missingContextArguments,
+                                           final String guidanceResourceUri, final List<MCPCompletionCandidate> candidates, final List<MCPCompletionCandidate> filteredCandidates,
+                                           final List<MCPCompletionCandidate> returnedCandidates) {
         Map<String, Object> result = new LinkedHashMap<>(14, 1F);
         result.put(MCPShardingSphereMetadataKeys.RESPONSE_MODE, MCPResponseMode.LIST);
         result.put(MCPShardingSphereMetadataKeys.REFERENCE_TYPE, descriptor.getReferenceType());
@@ -160,19 +161,17 @@ public final class MCPCompletionService {
         result.put(MCPShardingSphereMetadataKeys.RETURNED_CANDIDATE_COUNT, returnedCandidates.size());
         result.put(MCPShardingSphereMetadataKeys.CONTINUATION_MODE, filteredCandidates.size() > returnedCandidates.size() ? "pagination" : "none");
         putInferredContext(result, inferredContextArguments);
-        List<String> missingContextArguments = createMissingContextArguments(argumentName, contextArguments);
         result.put(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS, missingContextArguments);
         String diagnostic = createDiagnostic(candidates, filteredCandidates, missingContextArguments);
         result.put(MCPShardingSphereMetadataKeys.DIAGNOSTIC, diagnostic);
         if (!"ok".equals(diagnostic)) {
-            result.put(MCPShardingSphereMetadataKeys.RECOVERY, createRecovery(argumentName, prefix, contextArguments, diagnostic, missingContextArguments));
+            result.put(MCPShardingSphereMetadataKeys.RECOVERY, createRecovery(prefix, diagnostic, missingContextArguments, guidanceResourceUri));
         }
-        List<Map<String, Object>> nextActions = createNextActions(descriptor, argumentName, prefix, contextArguments, diagnostic, missingContextArguments);
+        List<Map<String, Object>> nextActions = createNextActions(descriptor, argumentName, prefix, contextArguments, diagnostic, missingContextArguments, guidanceResourceUri);
         if (!nextActions.isEmpty()) {
             result.put(MCPShardingSphereMetadataKeys.NEXT_ACTIONS, nextActions);
         }
-        result.put(MCPShardingSphereMetadataKeys.RANKING_POLICY, List.of("exact-prefix-match", "contains-fallback-when-prefix-has-no-match", "recent-plan-first-for-plan_id",
-                "case-insensitive-lexical"));
+        result.put(MCPShardingSphereMetadataKeys.RANKING_POLICY, createRankingPolicy(candidates));
         result.put(MCPShardingSphereMetadataKeys.VALUE_DETAILS, returnedCandidates.stream().map(this::createValueDetail).toList());
         return result;
     }
@@ -193,27 +192,24 @@ public final class MCPCompletionService {
     }
     
     private List<Map<String, Object>> createNextActions(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix,
-                                                        final Map<String, String> contextArguments, final String diagnostic, final List<String> missingContextArguments) {
+                                                        final Map<String, String> contextArguments, final String diagnostic, final List<String> missingContextArguments,
+                                                        final String guidanceResourceUri) {
         if ("missing_context".equals(diagnostic)) {
-            String resourceUri = createNearestResourceUri(missingContextArguments.get(0), contextArguments);
-            return !resourceUri.isEmpty()
-                    ? List.of(MCPNextActionUtils.readResource(resourceUri, "Read the nearest metadata resource before retrying this completion."))
-                    : List.of(createCompletionAction(descriptor, missingContextArguments.get(0), "", contextArguments, missingContextArguments,
-                            "Complete or provide the missing context argument before retrying this completion."));
+            return guidanceResourceUri.isEmpty()
+                    ? List.of(createCompletionAction(descriptor, missingContextArguments.get(0), "", contextArguments, missingContextArguments, "Complete or provide the missing context argument before retrying this completion."))
+                    : List.of(MCPNextActionUtils.readResource(guidanceResourceUri, "Read the nearest metadata resource before retrying this completion."));
         }
         if ("prefix_filtered_all_candidates".equals(diagnostic)) {
             return List.of(createCompletionAction(descriptor, argumentName, prefix, contextArguments, List.of(), "Retry completion with a shorter or empty prefix."));
         }
         if ("no_candidates".equals(diagnostic)) {
-            String resourceUri = createNearestResourceUri(argumentName, contextArguments);
-            return List.of(MCPNextActionUtils.readResource(resourceUri.isEmpty() ? "shardingsphere://capabilities" : resourceUri,
+            return List.of(MCPNextActionUtils.readResource(guidanceResourceUri.isEmpty() ? "shardingsphere://capabilities" : guidanceResourceUri,
                     "Read the nearest metadata resource before choosing another argument source."));
         }
         return List.of();
     }
     
-    private Map<String, Object> createRecovery(final String argumentName, final String prefix, final Map<String, String> contextArguments,
-                                               final String diagnostic, final List<String> missingContextArguments) {
+    private Map<String, Object> createRecovery(final String prefix, final String diagnostic, final List<String> missingContextArguments, final String guidanceResourceUri) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         String recoveryCategory = "missing_context".equals(diagnostic) ? "missing_context" : "empty_scope";
         result.put("response_mode", MCPResponseMode.RECOVERY);
@@ -226,63 +222,16 @@ public final class MCPCompletionService {
         if (!missingContextArguments.isEmpty()) {
             result.put("missing_fields", missingContextArguments);
         }
-        String resourceUri = createNearestResourceUri(missingContextArguments.isEmpty() ? argumentName : missingContextArguments.get(0), contextArguments);
-        if (!resourceUri.isEmpty()) {
-            result.put("parent_resource_uri", resourceUri);
+        if (!guidanceResourceUri.isEmpty()) {
+            result.put("parent_resource_uri", guidanceResourceUri);
         }
         return result;
-    }
-    
-    private String createNearestResourceUri(final String argumentName, final Map<String, String> contextArguments) {
-        String database = Objects.toString(contextArguments.get("database"), "");
-        String schema = Objects.toString(contextArguments.get("schema"), "");
-        if ("database".equals(argumentName)) {
-            return "shardingsphere://databases";
-        }
-        if ("schema".equals(argumentName) && !database.isEmpty()) {
-            return String.format("shardingsphere://databases/%s/schemas", encode(database));
-        }
-        if ("table".equals(argumentName) && !database.isEmpty() && !schema.isEmpty()) {
-            return String.format("shardingsphere://databases/%s/schemas/%s/tables", encode(database), encode(schema));
-        }
-        if ("sequence".equals(argumentName) && !database.isEmpty() && !schema.isEmpty()) {
-            return String.format("shardingsphere://databases/%s/schemas/%s/sequences", encode(database), encode(schema));
-        }
-        String table = Objects.toString(contextArguments.get("table"), "");
-        if ("column".equals(argumentName) && !database.isEmpty() && !schema.isEmpty() && !table.isEmpty()) {
-            return String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", encode(database), encode(schema), encode(table));
-        }
-        if ("index".equals(argumentName) && !database.isEmpty() && !schema.isEmpty() && !table.isEmpty()) {
-            return String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", encode(database), encode(schema), encode(table));
-        }
-        return "";
-    }
-    
-    private String encode(final String value) {
-        return MCPUriTemplateUtils.encodePathSegment(value);
     }
     
     private Map<String, Object> createCompletionAction(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String argumentPrefix,
                                                        final Map<String, String> contextArguments, final List<String> missingContextArguments, final String reason) {
         return MCPNextActionUtils.completeArgument(descriptor.getReferenceType(), descriptor.getReference(), argumentName, argumentPrefix, contextArguments, missingContextArguments,
                 descriptor.getReferenceType(), descriptor.getReference(), contextArguments, reason);
-    }
-    
-    private List<String> createMissingContextArguments(final String argumentName, final Map<String, String> contextArguments) {
-        if ("schema".equals(argumentName)) {
-            return createMissingArguments(contextArguments, "database");
-        }
-        if ("table".equals(argumentName) || "sequence".equals(argumentName)) {
-            return createMissingArguments(contextArguments, "database", "schema");
-        }
-        if ("column".equals(argumentName) || "index".equals(argumentName)) {
-            return createMissingArguments(contextArguments, "database", "schema", "table");
-        }
-        return List.of();
-    }
-    
-    private List<String> createMissingArguments(final Map<String, String> contextArguments, final String... requiredArguments) {
-        return Stream.of(requiredArguments).filter(each -> Objects.toString(contextArguments.get(each), "").isEmpty()).toList();
     }
     
     private String createDiagnostic(final List<MCPCompletionCandidate> candidates, final List<MCPCompletionCandidate> filteredCandidates,
@@ -303,10 +252,26 @@ public final class MCPCompletionService {
         result.put("source", candidate.getSource());
         if (null != candidate.getUpdateTime()) {
             result.put("updateTime", candidate.getUpdateTime().toString());
-            result.put("rankingReason", "recent-plan-first-for-plan_id");
-        } else {
-            result.put("rankingReason", "exact-prefix-match-then-lexical");
         }
+        result.put("rankingReason", createRankingReason(candidate));
+        return result;
+    }
+    
+    private String createRankingReason(final MCPCompletionCandidate candidate) {
+        if (!candidate.getRankingReason().isEmpty()) {
+            return candidate.getRankingReason();
+        }
+        return null == candidate.getUpdateTime() ? "exact-prefix-match-then-lexical" : "provider-update-time-first-when-available";
+    }
+    
+    private List<String> createRankingPolicy(final List<MCPCompletionCandidate> candidates) {
+        List<String> result = new LinkedList<>();
+        result.add("exact-prefix-match");
+        result.add("contains-fallback-when-prefix-has-no-match");
+        if (candidates.stream().anyMatch(each -> null != each.getUpdateTime())) {
+            result.add("provider-update-time-first-when-available");
+        }
+        result.add("case-insensitive-lexical");
         return result;
     }
 }

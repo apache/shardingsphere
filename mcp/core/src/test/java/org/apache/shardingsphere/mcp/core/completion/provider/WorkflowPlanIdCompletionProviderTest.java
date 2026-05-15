@@ -59,6 +59,7 @@ class WorkflowPlanIdCompletionProviderTest {
         List<MCPCompletionCandidate> actualCandidates = List.copyOf(actual.getCandidates());
         assertThat(actualCandidates.size(), is(1));
         assertThat(actualCandidates.get(0).getValue(), is("plan-ready"));
+        assertThat(actualCandidates.get(0).getRankingReason(), is("recent-plan-first-for-plan_id"));
     }
     
     private MCPCompletionRequestContext createRequestContext() {

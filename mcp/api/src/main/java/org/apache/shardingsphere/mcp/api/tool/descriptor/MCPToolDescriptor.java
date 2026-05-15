@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.api.tool.descriptor;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Map;
 
@@ -43,6 +44,7 @@ public final class MCPToolDescriptor {
     
     public MCPToolDescriptor(final String name, final String title, final String description, final Map<String, Object> inputSchema,
                              final Map<String, Object> outputSchema, final MCPToolAnnotations annotations, final Map<String, Object> meta) {
+        ShardingSpherePreconditions.checkNotNull(annotations, () -> new IllegalArgumentException(String.format("Tool `%s` MCP annotations are required.", name)));
         this.name = name;
         this.title = title;
         this.description = description;

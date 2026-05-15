@@ -36,7 +36,7 @@ public final class PluginFixturePingToolHandler implements MCPToolHandler<MCPSer
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("fixture_ping", "Fixture Ping", "Return a fixture ping response for packaged plugin discovery.",
             Map.of("type", "object", "properties", Map.of("message", Map.of("type", "string", "description", "Fixture message.")), "required", List.of("message"), "additionalProperties", false),
-            Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
+            Collections.emptyMap(), new MCPToolAnnotations("Fixture Ping", true, false, true, true), Collections.emptyMap());
     
     @Override
     public Class<MCPServiceHandlerContext> getContextType() {

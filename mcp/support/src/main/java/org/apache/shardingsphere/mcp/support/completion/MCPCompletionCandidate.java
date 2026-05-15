@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.completion;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * MCP completion candidate.
@@ -35,14 +36,21 @@ public final class MCPCompletionCandidate {
     
     private final Instant updateTime;
     
+    private final String rankingReason;
+    
     public MCPCompletionCandidate(final String value, final String label, final String source) {
-        this(value, label, source, null);
+        this(value, label, source, null, "");
     }
     
     public MCPCompletionCandidate(final String value, final String label, final String source, final Instant updateTime) {
+        this(value, label, source, updateTime, "");
+    }
+    
+    public MCPCompletionCandidate(final String value, final String label, final String source, final Instant updateTime, final String rankingReason) {
         this.value = value;
         this.label = label;
         this.source = source;
         this.updateTime = updateTime;
+        this.rankingReason = Objects.toString(rankingReason, "");
     }
 }

@@ -172,9 +172,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("description", descriptor.getDescription());
         result.put("inputSchema", descriptor.getInputSchema());
         result.put("outputSchema", descriptor.getOutputSchema());
-        if (!descriptor.getAnnotations().isEmpty()) {
-            result.put("annotations", toToolAnnotationsPayload(descriptor.getAnnotations()));
-        }
+        result.put("annotations", toToolAnnotationsPayload(descriptor.getAnnotations()));
         if (!descriptor.getMeta().isEmpty()) {
             result.put("meta", descriptor.getMeta());
         }

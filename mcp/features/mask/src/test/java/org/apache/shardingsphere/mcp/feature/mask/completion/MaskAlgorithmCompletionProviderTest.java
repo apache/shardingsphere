@@ -49,6 +49,11 @@ class MaskAlgorithmCompletionProviderTest {
     }
     
     @Test
+    void assertSupportsWithAlgorithmResource() {
+        assertTrue(new MaskAlgorithmCompletionProvider().supports(createRequestContext(MaskFeatureDefinition.ALGORITHMS_RESOURCE_URI, "algorithm_type")));
+    }
+    
+    @Test
     void assertSupportsWithForeignReference() {
         assertFalse(new MaskAlgorithmCompletionProvider().supports(createRequestContext("database_gateway_plan_encrypt_rule", "algorithm_type")));
     }

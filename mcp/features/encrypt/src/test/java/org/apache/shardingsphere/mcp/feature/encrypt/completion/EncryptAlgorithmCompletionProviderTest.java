@@ -49,6 +49,11 @@ class EncryptAlgorithmCompletionProviderTest {
     }
     
     @Test
+    void assertSupportsWithAlgorithmResource() {
+        assertTrue(new EncryptAlgorithmCompletionProvider().supports(createRequestContext(EncryptFeatureDefinition.ALGORITHMS_RESOURCE_URI, "like_query_algorithm_type")));
+    }
+    
+    @Test
     void assertSupportsWithForeignReference() {
         assertFalse(new EncryptAlgorithmCompletionProvider().supports(createRequestContext("database_gateway_plan_mask_rule", "algorithm_type")));
     }

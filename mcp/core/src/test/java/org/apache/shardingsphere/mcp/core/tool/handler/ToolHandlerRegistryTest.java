@@ -227,11 +227,14 @@ class ToolHandlerRegistryTest {
         MCPToolHandler<?> blankNameHandler = createToolHandler("   ");
         actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(blankNameHandler)));
         assertThat(actual.getMessage(), is(String.format("Tool name is required for `%s`.", blankNameHandler.getClass().getName())));
+        MCPToolHandler<?> missingAnnotationsHandler = createToolHandler("missing_annotations", null);
+        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(missingAnnotationsHandler)));
+        assertThat(actual.getMessage(), is(String.format("Tool `missing_annotations` MCP annotations are required for `%s`.", missingAnnotationsHandler.getClass().getName())));
         MCPToolHandler<MCPHandlerContext> unsupportedHandler = mock(MCPToolHandler.class);
         when(unsupportedHandler.getContextType()).thenReturn(MCPHandlerContext.class);
         when(unsupportedHandler.getToolDescriptor()).thenReturn(
                 new MCPToolDescriptor("unsupported", "Unsupported", "Unsupported tool.", Map.of("type", "object", "properties", Map.of(), "required", List.of(),
-                        "additionalProperties", false), Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap()));
+                        "additionalProperties", false), Collections.emptyMap(), new MCPToolAnnotations("Unsupported", true, false, true, true), Collections.emptyMap()));
         actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(unsupportedHandler)));
         assertThat(actual.getMessage(), is(String.format("Unsupported handler context type `%s` for `%s`.", MCPHandlerContext.class.getName(), unsupportedHandler.getClass().getName())));
     }
@@ -246,8 +249,13 @@ class ToolHandlerRegistryTest {
     }
     
     private static MCPToolHandler<?> createToolHandler(final String toolName) {
+        return createToolHandler(toolName, new MCPToolAnnotations("Fixture Tool", true, false, true, true));
+    }
+    
+    private static MCPToolHandler<?> createToolHandler(final String toolName, final MCPToolAnnotations annotations) {
         MCPToolDescriptor descriptor = mock(MCPToolDescriptor.class);
         when(descriptor.getName()).thenReturn(toolName);
+        when(descriptor.getAnnotations()).thenReturn(annotations);
         MCPToolHandler<MCPServiceHandlerContext> result = mock(MCPToolHandler.class);
         when(result.getContextType()).thenReturn(MCPServiceHandlerContext.class);
         when(result.getToolDescriptor()).thenReturn(descriptor);

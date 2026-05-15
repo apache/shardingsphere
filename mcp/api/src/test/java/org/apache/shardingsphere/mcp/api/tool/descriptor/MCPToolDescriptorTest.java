@@ -25,6 +25,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MCPToolDescriptorTest {
     
@@ -39,7 +40,15 @@ class MCPToolDescriptorTest {
                 "properties", expectedProperties,
                 "required", List.of("query"),
                 "additionalProperties", false);
-        MCPToolDescriptor actual = new MCPToolDescriptor("foo_tool", "Foo Tool", "Foo tool.", inputSchema, Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
+        MCPToolDescriptor actual = new MCPToolDescriptor("foo_tool", "Foo Tool", "Foo tool.", inputSchema, Collections.emptyMap(),
+                new MCPToolAnnotations("Foo Tool", true, false, true, true), Collections.emptyMap());
         assertThat(actual.getInputSchema(), is(inputSchema));
+    }
+    
+    @Test
+    void assertNewRequiresAnnotations() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new MCPToolDescriptor("foo_tool", "Foo Tool", "Foo tool.", Map.of(), Collections.emptyMap(), null, Collections.emptyMap()));
+        assertThat(actual.getMessage(), is("Tool `foo_tool` MCP annotations are required."));
     }
 }

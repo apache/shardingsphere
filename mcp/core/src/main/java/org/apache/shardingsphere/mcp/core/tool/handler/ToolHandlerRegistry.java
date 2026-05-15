@@ -68,6 +68,8 @@ public final class ToolHandlerRegistry {
             String toolName = descriptor.getName();
             ShardingSpherePreconditions.checkState(null != toolName && !toolName.isBlank(),
                     () -> new IllegalArgumentException(String.format("Tool name is required for `%s`.", each.getClass().getName())));
+            ShardingSpherePreconditions.checkState(null != descriptor.getAnnotations(),
+                    () -> new IllegalArgumentException(String.format("Tool `%s` MCP annotations are required for `%s`.", toolName, each.getClass().getName())));
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
             MCPToolHandler<?> previousHandler = result.putIfAbsent(toolName, each);
             ShardingSpherePreconditions.checkState(null == previousHandler, () -> new IllegalArgumentException(

@@ -123,31 +123,31 @@
 
 ### Tests for User Story 2
 
-- [ ] T030 [P] [US2] Add tests for metadata completion providers covering database, schema, table, column, index, and sequence.
+- [X] T030 [P] [US2] Add tests for metadata completion providers covering database, schema, table, column, index, and sequence.
   Path: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/completion/`
-- [ ] T031 [P] [US2] Add tests for workflow plan ID completion through a provider.
+- [X] T031 [P] [US2] Add tests for workflow plan ID completion through a provider.
   Path: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/completion/`
-- [ ] T032 [P] [US2] Add tests for encrypt and mask algorithm completion without string containment routing.
+- [X] T032 [P] [US2] Add tests for encrypt and mask algorithm completion without string containment routing.
   Verify feature modules do not add a dependency on `shardingsphere-mcp-core`.
   Paths: `mcp/features/encrypt/src/test/java/`, `mcp/features/mask/src/test/java/`,
   `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/completion/`
-- [ ] T033 [P] [US2] Add descriptor validator tests proving generic validation no longer hardcodes public tool names.
+- [X] T033 [P] [US2] Add descriptor validator tests proving generic validation no longer hardcodes public tool names.
   Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/`
 
 ### Implementation for User Story 2
 
-- [ ] T034 [US2] Extract metadata completion logic into provider classes.
+- [X] T034 [US2] Extract metadata completion logic into provider classes.
   Path: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/completion/`
-- [ ] T035 [US2] Extract workflow plan ID completion logic into a provider.
+- [X] T035 [US2] Extract workflow plan ID completion logic into a provider.
   Path: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/completion/`
-- [ ] T036 [US2] Extract algorithm completion logic into descriptor or feature-aware providers.
+- [X] T036 [US2] Extract algorithm completion logic into descriptor or feature-aware providers.
   Feature providers must not require `mcp/features/*` to depend on `shardingsphere-mcp-core`.
   Paths: `mcp/api/src/main/java/org/apache/shardingsphere/mcp/api/`,
   `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/`,
   `mcp/features/encrypt/src/main/java/`, `mcp/features/mask/src/main/java/`
-- [ ] T037 [US2] Remove hardcoded tool-specific required field branches from the generic descriptor validator.
+- [X] T037 [US2] Remove hardcoded tool-specific required field branches from the generic descriptor validator.
   Path: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogValidator.java`
-- [ ] T038 [US2] Move tool-specific output-shape checks into descriptor schema tests or feature-owned validators.
+- [X] T038 [US2] Move tool-specific output-shape checks into descriptor schema tests or feature-owned validators.
   Paths: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/`, `mcp/features/*/src/test/java/`
 
 **Checkpoint**: Adding a new feature completion target or tool output contract does not require editing generic protocol-layer branches.

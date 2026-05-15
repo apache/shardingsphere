@@ -85,9 +85,7 @@ public final class MCPToolSpecificationFactory {
         if (!toolDescriptor.getOutputSchema().isEmpty()) {
             result.outputSchema(toolDescriptor.getOutputSchema());
         }
-        if (!toolDescriptor.getAnnotations().isEmpty()) {
-            result.annotations(createToolAnnotations(toolDescriptor.getAnnotations()));
-        }
+        result.annotations(createToolAnnotations(toolDescriptor.getAnnotations()));
         if (!toolDescriptor.getMeta().isEmpty()) {
             result.meta(toolDescriptor.getMeta());
         }

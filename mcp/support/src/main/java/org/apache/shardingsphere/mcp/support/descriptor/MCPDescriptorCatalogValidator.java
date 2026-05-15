@@ -181,7 +181,6 @@ final class MCPDescriptorCatalogValidator {
             validateToolOutputSchema(each, descriptorValidators);
             validateToolAnnotations(each);
             validateDestructiveToolDescriptor(each, runtimes.get(each.getName()));
-            validateExecuteUpdateDescriptor(each);
             validatePlanningExecutionMode(each);
         }
     }
@@ -201,8 +200,6 @@ final class MCPDescriptorCatalogValidator {
         validateNoBannedPublicAliasFields(descriptor, outputSchema);
         validateOutputExamples(descriptor, outputSchema);
         validateOutputExampleContractValues(descriptor, outputSchema);
-        validateRequiredOutputFields(descriptor, (Map<?, ?>) properties);
-        validateSearchMetadataOutputItems(descriptor, (Map<?, ?>) properties);
         validateModelCriticalOutputHints(descriptor, (Map<?, ?>) properties);
         validateToolDescriptorExtensions(descriptor, descriptorValidators);
     }
@@ -277,40 +274,6 @@ final class MCPDescriptorCatalogValidator {
         }
     }
     
-    private static void validateRequiredOutputFields(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
-        for (String each : createRequiredOutputFields(descriptor.getName())) {
-            checkState(properties.containsKey(each), String.format("Tool `%s` outputSchema must declare `%s`.", descriptor.getName(), each));
-            Object property = properties.get(each);
-            checkState(property instanceof Map, String.format("Tool `%s` outputSchema property `%s` must be an object.", descriptor.getName(), each));
-            Object description = ((Map<?, ?>) property).get("description");
-            checkDescription(null == description ? "" : description.toString(), String.format("Tool output field `%s.%s` description", descriptor.getName(), each));
-        }
-    }
-    
-    private static Collection<String> createRequiredOutputFields(final String toolName) {
-        if ("database_gateway_search_metadata".equals(toolName)) {
-            return List.of("response_mode", "items", "count", "next_page_token", "has_more", "continuation_mode", "search_context", "total_match_count");
-        }
-        if ("database_gateway_execute_query".equals(toolName)) {
-            return List.of("response_mode", "result_kind", "statement_class", "statement_type", "status", "returned_row_count",
-                    "applied_max_rows", "applied_timeout_ms", "truncated", "next_actions");
-        }
-        if ("database_gateway_execute_update".equals(toolName)) {
-            return List.of("response_mode", "result_kind", "statement_class", "statement_type", "status", "returned_row_count",
-                    "applied_max_rows", "applied_timeout_ms", "suggested_arguments", "next_actions");
-        }
-        if ("database_gateway_apply_workflow".equals(toolName)) {
-            return List.of("response_mode", "plan_id", "status", "execution_mode", "next_actions", "requires_user_approval", "manual_artifact_summary");
-        }
-        if ("database_gateway_validate_workflow".equals(toolName)) {
-            return List.of("response_mode", "plan_id", "status", "overall_status", "issues", "next_actions");
-        }
-        if ("database_gateway_plan_encrypt_rule".equals(toolName) || "database_gateway_plan_mask_rule".equals(toolName)) {
-            return List.of("response_mode", "plan_id", "workflow_kind", "status", "missing_required_inputs", "resources_to_read", "next_actions");
-        }
-        return List.of();
-    }
-    
     private static void validateModelCriticalOutputHints(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
         for (Entry<?, ?> entry : properties.entrySet()) {
             String fieldName = String.valueOf(entry.getKey());
@@ -359,31 +322,6 @@ final class MCPDescriptorCatalogValidator {
             checkState(field instanceof Map, String.format("Tool `%s` next_actions item field `%s` must be an object.", descriptor.getName(), each));
             Object description = ((Map<?, ?>) field).get("description");
             checkDescription(null == description ? "" : description.toString(), String.format("Tool next_actions item field `%s.%s` description", descriptor.getName(), each));
-        }
-    }
-    
-    private static void validateSearchMetadataOutputItems(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
-        if (!"database_gateway_search_metadata".equals(descriptor.getName())) {
-            return;
-        }
-        Object items = properties.get("items");
-        checkState(items instanceof Map, "Tool `database_gateway_search_metadata` outputSchema property `items` must be an object.");
-        Object itemSchema = ((Map<?, ?>) items).get("items");
-        checkState(itemSchema instanceof Map, "Tool `database_gateway_search_metadata` outputSchema property `items.items` must be an object.");
-        Object itemProperties = ((Map<?, ?>) itemSchema).get("properties");
-        checkState(itemProperties instanceof Map && !((Map<?, ?>) itemProperties).isEmpty(),
-                "Tool `database_gateway_search_metadata` outputSchema property `items.items.properties` must declare properties.");
-        validateSearchMetadataItemFields((Map<?, ?>) itemProperties);
-    }
-    
-    private static void validateSearchMetadataItemFields(final Map<?, ?> properties) {
-        for (String each : List.of("database", "schema", "objectType", "table", "view", "name", "resource", "parent_resource", "next_resources", "derivation_status",
-                "match_kind", "matched_fields", "matched_value")) {
-            checkState(properties.containsKey(each), String.format("Tool `database_gateway_search_metadata` outputSchema item must declare `%s`.", each));
-            Object property = properties.get(each);
-            checkState(property instanceof Map, String.format("Tool `database_gateway_search_metadata` outputSchema item property `%s` must be an object.", each));
-            Object description = ((Map<?, ?>) property).get("description");
-            checkDescription(null == description ? "" : description.toString(), String.format("Tool output item field `database_gateway_search_metadata.%s` description", each));
         }
     }
     
@@ -493,7 +431,7 @@ final class MCPDescriptorCatalogValidator {
     
     private static void validateToolAnnotations(final MCPToolDescriptor descriptor) {
         MCPToolAnnotations annotations = descriptor.getAnnotations();
-        checkState(!annotations.isEmpty(), String.format("Tool `%s` must declare MCP annotations.", descriptor.getName()));
+        checkState(null != annotations, String.format("Tool `%s` must declare MCP annotations.", descriptor.getName()));
         checkState(!annotations.isReadOnlyHint() || !annotations.isDestructiveHint(), String.format("Tool `%s` annotations cannot be both read-only and destructive.", descriptor.getName()));
     }
     
@@ -539,20 +477,8 @@ final class MCPDescriptorCatalogValidator {
                 String.format("Destructive tool `%s` must declare sideEffectScope in internal runtime.", descriptor.getName()));
     }
     
-    private static void validateExecuteUpdateDescriptor(final MCPToolDescriptor descriptor) {
-        if (!"database_gateway_execute_update".equals(descriptor.getName())) {
-            return;
-        }
-        Map<?, ?> executionMode = findToolInputProperty(descriptor, "execution_mode").orElseThrow(
-                () -> new IllegalStateException("Tool `database_gateway_execute_update` must declare execution_mode."));
-        checkState(isRequiredToolInput(descriptor, "execution_mode"), "Tool `database_gateway_execute_update` execution_mode must be required.");
-        Object executionModes = executionMode.get("enum");
-        checkState(executionModes instanceof Collection && ((Collection<?>) executionModes).containsAll(List.of("execute", "preview")),
-                "Tool `database_gateway_execute_update` execution_mode must allow execute and preview.");
-    }
-    
     private static void validatePlanningExecutionMode(final MCPToolDescriptor descriptor) {
-        if ("database_gateway_apply_workflow".equals(descriptor.getName()) || "database_gateway_execute_update".equals(descriptor.getName())) {
+        if (descriptor.getAnnotations().isDestructiveHint()) {
             return;
         }
         Optional<Map<?, ?>> executionMode = findToolInputProperty(descriptor, "execution_mode");

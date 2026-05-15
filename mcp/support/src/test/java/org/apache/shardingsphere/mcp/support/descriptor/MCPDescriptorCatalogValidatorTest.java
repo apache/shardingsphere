@@ -83,11 +83,6 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     @Test
-    void assertValidateRejectsEmptyToolAnnotations() {
-        assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(MCPToolAnnotations.EMPTY))), "Tool `database_gateway_test_tool` must declare MCP annotations.");
-    }
-    
-    @Test
     void assertValidateRejectsContradictoryToolAnnotations() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(new MCPToolAnnotations("Test Tool", true, true, true, true)))),
                 "Tool `database_gateway_test_tool` annotations cannot be both read-only and destructive.");
@@ -98,6 +93,12 @@ class MCPDescriptorCatalogValidatorTest {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
                 "database_gateway_extension_test_tool", new MCPToolAnnotations("Extension Tool", true, false, true, true), createOutputSchema()))),
                 "Tool `database_gateway_extension_test_tool` outputSchema must declare `extension_marker`.");
+    }
+    
+    @Test
+    void assertValidateDoesNotHardcodeCoreToolDescriptor() {
+        assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createCatalog(List.of(), List.of(createToolDescriptor(
+                "database_gateway_search_metadata", new MCPToolAnnotations("Search Metadata", true, false, true, true), createOutputSchema())))));
     }
     
     private void assertValidationError(final MCPDescriptorCatalog catalog, final String expectedMessage) {

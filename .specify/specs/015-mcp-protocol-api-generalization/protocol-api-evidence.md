@@ -228,6 +228,37 @@ Phase 2 implementation recorded on 2026-05-14:
 - Existing built-in checks remain for compatibility; removal of hardcoded public tool branches is deferred to Phase 4 tasks T037-T038.
 - `MCPDescriptorCatalogValidatorTest.assertValidateRejectsFeatureOwnedToolDescriptor` proves a feature-owned validator can reject tool output shape.
 
+Phase 4 implementation recorded on 2026-05-15:
+
+- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogValidator.java`
+  keeps generic schema and policy validation, and no longer owns public tool output-field branches.
+- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/descriptor/CoreToolDescriptorValidator.java`
+  owns core tool output-shape checks for metadata search, query execution, and update execution.
+- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/workflow/descriptor/WorkflowToolDescriptorValidator.java`
+  owns workflow apply and validate output-shape checks.
+- `mcp/features/encrypt/src/main/java/org/apache/shardingsphere/mcp/feature/encrypt/descriptor/EncryptToolDescriptorValidator.java`
+  and `mcp/features/mask/src/main/java/org/apache/shardingsphere/mcp/feature/mask/descriptor/MaskToolDescriptorValidator.java`
+  own planner output-shape checks in their feature modules.
+- Provider-driven completion now carries missing context arguments, guidance resource URIs, and provider-owned ranking hints through
+  `MCPCompletionProviderResult` and `MCPCompletionCandidate`.
+- Verification:
+  `./mvnw -pl mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask -am -DskipITs -Dspotless.skip=true`
+  `-Dtest=MetadataCompletionProviderTest,WorkflowPlanIdCompletionProviderTest,MCPCompletionServiceTest,`
+  `MCPDescriptorCatalogValidatorTest,WorkflowToolDescriptorsTest,CoreToolDescriptorValidatorTest,`
+  `EncryptAlgorithmCompletionProviderTest,MaskAlgorithmCompletionProviderTest,EncryptToolDescriptorValidatorTest,`
+  `MaskToolDescriptorValidatorTest -Dsurefire.failIfNoSpecifiedTests=false test`
+  passed on 2026-05-15.
+- Additional verification after API annotation-contract changes were present in the working tree:
+  `./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap -am -DskipITs -Dspotless.skip=true`
+  `-Dtest=MCPToolAnnotationsTest,MCPToolDescriptorTest,MCPDescriptorCatalogValidatorTest,MCPDescriptorCatalogLoaderTest,`
+  `MCPDescriptorCatalogPayloadBuilderTest,WorkflowToolDescriptorsTest,MetadataCompletionProviderTest,WorkflowPlanIdCompletionProviderTest,`
+  `MCPCompletionServiceTest,CoreToolDescriptorValidatorTest,EncryptAlgorithmCompletionProviderTest,MaskAlgorithmCompletionProviderTest,`
+  `EncryptToolDescriptorValidatorTest,MaskToolDescriptorValidatorTest,MCPToolSpecificationFactoryTest`
+  `-Dsurefire.failIfNoSpecifiedTests=false test` passed on 2026-05-15.
+- Formatting and static style gate passed on 2026-05-15:
+  `./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap -DskipTests -DskipITs -Pcheck`
+  `spotless:apply spotless:check checkstyle:check`.
+
 ### 7. Feature Planner Inputs Leak Cross-Feature Semantics
 
 Current evidence:

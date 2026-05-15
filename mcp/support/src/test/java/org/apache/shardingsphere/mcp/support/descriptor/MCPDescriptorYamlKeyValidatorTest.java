@@ -146,6 +146,14 @@ class MCPDescriptorYamlKeyValidatorTest {
     }
     
     @Test
+    void assertValidateRejectsMissingToolAnnotations() {
+        assertValidationError("""
+                tools:
+                  - name: database_gateway_search_metadata
+                """, "MCP descriptor resource `test.yaml` must declare `$.tools[0].annotations`.");
+    }
+    
+    @Test
     void assertValidateRejectsEmptyToolAnnotations() {
         assertValidationError("""
                 tools:

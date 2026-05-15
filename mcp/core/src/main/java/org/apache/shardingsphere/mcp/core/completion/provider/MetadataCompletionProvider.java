@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMet
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Metadata completion provider.
@@ -58,7 +60,10 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         Map<String, String> contextArguments = new LinkedHashMap<>(requestContext.getContextArguments());
         Map<String, Object> inferredContextArguments = applySingleSchemaDefault(handlerContext, requestContext.getArgumentName(), contextArguments);
         mergeInferredContextArguments(contextArguments, inferredContextArguments);
-        return new MCPCompletionProviderResult(completeMetadata(handlerContext, requestContext.getArgumentName(), contextArguments), inferredContextArguments);
+        List<String> missingContextArguments = createMissingContextArguments(requestContext.getArgumentName(), contextArguments);
+        String guidanceResourceUri = createNearestResourceUri(missingContextArguments.isEmpty() ? requestContext.getArgumentName() : missingContextArguments.get(0), contextArguments);
+        return new MCPCompletionProviderResult(completeMetadata(handlerContext, requestContext.getArgumentName(), contextArguments), inferredContextArguments, missingContextArguments,
+                guidanceResourceUri);
     }
     
     private Map<String, Object> applySingleSchemaDefault(final MCPDatabaseHandlerContext handlerContext, final String argumentName, final Map<String, String> contextArguments) {
@@ -163,5 +168,51 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
     
     private String getSchema(final Map<String, String> contextArguments) {
         return Objects.toString(contextArguments.get("schema"), "");
+    }
+    
+    private List<String> createMissingContextArguments(final String argumentName, final Map<String, String> contextArguments) {
+        if ("schema".equals(argumentName)) {
+            return createMissingArguments(contextArguments, "database");
+        }
+        if ("table".equals(argumentName) || "sequence".equals(argumentName)) {
+            return createMissingArguments(contextArguments, "database", "schema");
+        }
+        if ("column".equals(argumentName) || "index".equals(argumentName)) {
+            return createMissingArguments(contextArguments, "database", "schema", "table");
+        }
+        return List.of();
+    }
+    
+    private List<String> createMissingArguments(final Map<String, String> contextArguments, final String... requiredArguments) {
+        return Stream.of(requiredArguments).filter(each -> Objects.toString(contextArguments.get(each), "").isEmpty()).toList();
+    }
+    
+    private String createNearestResourceUri(final String argumentName, final Map<String, String> contextArguments) {
+        String database = Objects.toString(contextArguments.get("database"), "");
+        String schema = Objects.toString(contextArguments.get("schema"), "");
+        if ("database".equals(argumentName)) {
+            return "shardingsphere://databases";
+        }
+        if ("schema".equals(argumentName) && !database.isEmpty()) {
+            return String.format("shardingsphere://databases/%s/schemas", encode(database));
+        }
+        if ("table".equals(argumentName) && !database.isEmpty() && !schema.isEmpty()) {
+            return String.format("shardingsphere://databases/%s/schemas/%s/tables", encode(database), encode(schema));
+        }
+        if ("sequence".equals(argumentName) && !database.isEmpty() && !schema.isEmpty()) {
+            return String.format("shardingsphere://databases/%s/schemas/%s/sequences", encode(database), encode(schema));
+        }
+        String table = Objects.toString(contextArguments.get("table"), "");
+        if ("column".equals(argumentName) && !database.isEmpty() && !schema.isEmpty() && !table.isEmpty()) {
+            return String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", encode(database), encode(schema), encode(table));
+        }
+        if ("index".equals(argumentName) && !database.isEmpty() && !schema.isEmpty() && !table.isEmpty()) {
+            return String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", encode(database), encode(schema), encode(table));
+        }
+        return "";
+    }
+    
+    private String encode(final String value) {
+        return MCPUriTemplateUtils.encodePathSegment(value);
     }
 }

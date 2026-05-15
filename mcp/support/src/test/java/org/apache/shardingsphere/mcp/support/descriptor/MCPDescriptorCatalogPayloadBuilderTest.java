@@ -38,7 +38,8 @@ class MCPDescriptorCatalogPayloadBuilderTest {
         List<MCPResourceDescriptor> resourceDescriptors = List.of(
                 createResourceDescriptor("shardingsphere://capabilities", MCPResourceAnnotations.EMPTY),
                 createResourceDescriptor("shardingsphere://databases", MCPResourceAnnotations.EMPTY));
-        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(createCatalog(resourceDescriptors, List.of(createToolDescriptor(MCPToolAnnotations.EMPTY))),
+        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(
+                createCatalog(resourceDescriptors, List.of(createToolDescriptor(new MCPToolAnnotations(null, false, true, false, true)))),
                 List.of("shardingsphere://capabilities"), List.of("database_gateway_test_tool"), List.of("SelectStatement"));
         Map<String, Object> actualModelFirstSummary = (Map<String, Object>) payload.get("model_first_summary");
         assertThat((Map<String, Object>) actualModelFirstSummary.get("official_discovery_methods"), is(createOfficialDiscoveryMethods()));

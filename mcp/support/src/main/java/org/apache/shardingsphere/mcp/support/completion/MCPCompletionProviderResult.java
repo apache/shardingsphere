@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * MCP completion provider result.
@@ -35,13 +36,24 @@ public final class MCPCompletionProviderResult {
     
     private final Map<String, Object> inferredContextArguments;
     
+    private final List<String> missingContextArguments;
+    
+    private final String guidanceResourceUri;
+    
     public MCPCompletionProviderResult(final Collection<MCPCompletionCandidate> candidates) {
         this(candidates, Map.of());
     }
     
     public MCPCompletionProviderResult(final Collection<MCPCompletionCandidate> candidates, final Map<String, Object> inferredContextArguments) {
+        this(candidates, inferredContextArguments, List.of(), "");
+    }
+    
+    public MCPCompletionProviderResult(final Collection<MCPCompletionCandidate> candidates, final Map<String, Object> inferredContextArguments,
+                                       final Collection<String> missingContextArguments, final String guidanceResourceUri) {
         this.candidates = List.copyOf(candidates);
         this.inferredContextArguments = Collections.unmodifiableMap(new LinkedHashMap<>(inferredContextArguments));
+        this.missingContextArguments = List.copyOf(missingContextArguments);
+        this.guidanceResourceUri = Objects.toString(guidanceResourceUri, "");
     }
     
     /**
