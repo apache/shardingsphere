@@ -36,6 +36,8 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     
     private static final String PLAN_TOOL_NAME = "database_gateway_plan_encrypt_rule";
     
+    private static final String PLAN_PROMPT_NAME = "plan_encrypt_rule";
+    
     private static final String APPLY_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
     
     private static final String VALIDATE_TOOL_NAME = WorkflowToolDescriptors.VALIDATE_TOOL_NAME;
@@ -49,7 +51,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     @Test
     void assertCompleteEncryptAlgorithmThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.complete(Map.of("type", "ref/prompt", "name", PLAN_TOOL_NAME), "algorithm_type", "AE", Map.of());
+            Map<String, Object> actual = interactionClient.complete(Map.of("type", "ref/prompt", "name", PLAN_PROMPT_NAME), "algorithm_type", "AE", Map.of());
             assertThat(getStringList(getMap(actual.get("completion")).get("values")), hasItem("AES"));
         }
     }

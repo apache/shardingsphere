@@ -37,6 +37,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EnabledIf("isEnabled")
 class HttpTransportCompletionE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
+    private static final String PLAN_MASK_PROMPT_NAME = "plan_mask_rule";
+    
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();
     }
@@ -68,7 +70,7 @@ class HttpTransportCompletionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        List<String> actual = completeValues(httpClient, sessionId, Map.of("type", "ref/prompt", "name", "database_gateway_plan_mask_rule"),
+        List<String> actual = completeValues(httpClient, sessionId, Map.of("type", "ref/prompt", "name", PLAN_MASK_PROMPT_NAME),
                 "algorithm_type", "KEEP", Map.of());
         assertTrue(actual.contains("KEEP_FIRST_N_LAST_M"));
     }

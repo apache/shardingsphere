@@ -77,11 +77,11 @@ abstract class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParamete
         assertFalse(((List<?>) capabilities.get("common_flows")).isEmpty());
         Map<String, Object> modelFirstSummary = getMap(capabilities.get("model_first_summary"));
         assertThat(getMap(modelFirstSummary.get("official_discovery_methods")).get("tools"), is("tools/list"));
-        assertThat(modelFirstSummary.get("safe_first_resource"), is("shardingsphere://capabilities"));
+        assertThat(modelFirstSummary.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
         assertThat(getMap(getMap(modelFirstSummary.get("sql_tool_selection")).get("read_only")).get("tool"), is("database_gateway_execute_query"));
         assertThat(getMap(getMap(modelFirstSummary.get("workflow_rule")).get("preview_tool")).get("tool"), is("database_gateway_apply_workflow"));
         Map<String, Object> surfaceSummary = getMap(capabilities.get("surface_summary"));
-        assertThat(getMap(surfaceSummary.get("first_protocol_methods")).get("resources"), is("resources/list"));
+        assertThat(getMap(surfaceSummary.get("official_discovery_methods")).get("resources"), is("resources/list"));
         assertThat(surfaceSummary.get("read_only_sql_tool"), is("database_gateway_execute_query"));
         assertThat(surfaceSummary.get("side_effect_sql_tool"), is("database_gateway_execute_update"));
     }

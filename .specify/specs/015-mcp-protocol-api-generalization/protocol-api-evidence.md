@@ -317,6 +317,23 @@ Phase 7 implementation recorded on 2026-05-15:
   `spotless:apply spotless:check checkstyle:check`.
 - Post-format completion smoke passed:
   `./mvnw -pl mcp/core -am -DskipITs -Dspotless.skip=true -Dtest=MCPCompletionServiceTest -Dsurefire.failIfNoSpecifiedTests=false test`.
+- YAML boundary validation follow-up passed:
+  `./mvnw -pl mcp/bootstrap -am -DskipITs -Dspotless.skip=true`
+  `-Dtest=YamlMCPLaunchConfigurationSwapperTest,YamlHttpTransportConfigurationSwapperTest,`
+  `YamlRuntimeDatabaseConfigurationSwapperTest,YamlMCPTransportConfigurationSwapperTest`
+  `-Dsurefire.failIfNoSpecifiedTests=false test`.
+- Final MCP focused Java regression passed:
+  `./mvnw -pl mcp/support,mcp/core,mcp/bootstrap,mcp/features/encrypt,mcp/features/mask -am -DskipITs -Dspotless.skip=true`
+  `-Dtest=MCPDescriptorCatalogYamlSwapperTest,MCPYamlConfigurationValidatorTest,MCPNextActionUtilsTest,`
+  `MCPCompletionServiceTest,MCPErrorConverterTest,CoreToolDescriptorValidatorTest,YamlMCPLaunchConfigurationSwapperTest,`
+  `YamlHttpTransportConfigurationSwapperTest,YamlRuntimeDatabaseConfigurationSwapperTest,YamlMCPTransportConfigurationSwapperTest,`
+  `EncryptAlgorithmCompletionProviderTest,EncryptToolDescriptorValidatorTest,MaskAlgorithmCompletionProviderTest,MaskToolDescriptorValidatorTest`
+  `-Dsurefire.failIfNoSpecifiedTests=false test`.
+- Final scoped Spotless and Checkstyle gates passed:
+  `./mvnw -pl mcp/support,mcp/core,mcp/bootstrap,mcp/features/encrypt,mcp/features/mask -DskipTests -DskipITs -Pcheck`
+  `spotless:check checkstyle:check`.
+- Parent MCP POM Spotless gate passed:
+  `./mvnw -pl mcp -DskipTests -DskipITs -Pcheck spotless:check`.
 - Residual search confirmed no renamed prompt completion reference still points at `database_gateway_plan_encrypt_rule`
   or `database_gateway_plan_mask_rule`; remaining tool-name matches are public tool descriptors.
 

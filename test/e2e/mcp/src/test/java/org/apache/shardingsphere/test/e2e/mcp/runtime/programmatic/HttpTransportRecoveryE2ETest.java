@@ -173,7 +173,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     private Map<String, Object> createCompletionReference(final Map<String, Object> action) {
         String referenceType = Objects.toString(action.get("reference_type"), "");
         String reference = Objects.toString(action.get("reference"), "");
-        return "resource".equals(referenceType) ? Map.of("type", "ref/resource", "uri", reference) : Map.of("type", "ref/prompt", "name", reference);
+        return "ref/resource".equals(referenceType) ? Map.of("type", referenceType, "uri", reference) : Map.of("type", referenceType, "name", reference);
     }
     
     private Map<String, Object> getResultPayload(final HttpResponse<String> response) {
