@@ -30,6 +30,8 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMe
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,10 +62,10 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         Map<String, String> contextArguments = new LinkedHashMap<>(requestContext.getContextArguments());
         Map<String, Object> inferredContextArguments = applySingleSchemaDefault(handlerContext, requestContext.getArgumentName(), contextArguments);
         mergeInferredContextArguments(contextArguments, inferredContextArguments);
-        List<String> missingContextArguments = createMissingContextArguments(requestContext.getArgumentName(), contextArguments);
-        String guidanceResourceUri = createNearestResourceUri(missingContextArguments.isEmpty() ? requestContext.getArgumentName() : missingContextArguments.get(0), contextArguments);
-        return new MCPCompletionProviderResult(completeMetadata(handlerContext, requestContext.getArgumentName(), contextArguments), inferredContextArguments, missingContextArguments,
-                guidanceResourceUri);
+        Collection<String> missingContextArguments = createMissingContextArguments(requestContext.getArgumentName(), contextArguments);
+        String guidanceResourceUri = createNearestResourceUri(missingContextArguments.isEmpty() ? requestContext.getArgumentName() : new ArrayList<>(missingContextArguments).get(0), contextArguments);
+        return new MCPCompletionProviderResult(
+                completeMetadata(handlerContext, requestContext.getArgumentName(), contextArguments), inferredContextArguments, missingContextArguments, guidanceResourceUri);
     }
     
     private Map<String, Object> applySingleSchemaDefault(final MCPDatabaseHandlerContext handlerContext, final String argumentName, final Map<String, String> contextArguments) {
@@ -89,7 +91,7 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         return "table".equals(argumentName) || "column".equals(argumentName) || "index".equals(argumentName) || "sequence".equals(argumentName);
     }
     
-    private List<MCPCompletionCandidate> completeMetadata(final MCPDatabaseHandlerContext handlerContext, final String argumentName, final Map<String, String> contextArguments) {
+    private Collection<MCPCompletionCandidate> completeMetadata(final MCPDatabaseHandlerContext handlerContext, final String argumentName, final Map<String, String> contextArguments) {
         if ("database".equals(argumentName)) {
             return completeDatabases(handlerContext);
         }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.completion;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +27,7 @@ import java.util.Map;
 /**
  * MCP completion provider result.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Getter
 public final class MCPCompletionProviderResult {
     
