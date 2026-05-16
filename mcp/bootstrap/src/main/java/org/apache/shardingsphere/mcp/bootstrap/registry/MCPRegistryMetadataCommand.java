@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.bootstrap.registry;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.net.URI;
@@ -34,6 +36,7 @@ import java.util.regex.Pattern;
 /**
  * MCP Registry metadata command.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPRegistryMetadataCommand {
     
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
@@ -49,9 +52,6 @@ public final class MCPRegistryMetadataCommand {
     private static final Set<String> SUPPORTED_TRANSPORTS = Set.of("stdio", "streamable-http");
     
     private static final String PACKAGE_SHAPE_ERROR_MESSAGE = "server.json packages must contain exactly one stdio OCI package and one streamable-http OCI package.";
-    
-    private MCPRegistryMetadataCommand() {
-    }
     
     /**
      * Main entrance.
