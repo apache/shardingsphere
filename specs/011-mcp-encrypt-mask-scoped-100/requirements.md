@@ -42,6 +42,9 @@ Raise every scoped MCP encrypt/mask score dimension to **100/100** without switc
 - Only cover MCP protocol revision `2025-11-25`.
 - Only score encrypt and mask functional completeness.
 - Prefer readable, elegant, minimal code over broad abstraction.
+- Use Docker/Testcontainers for local opt-in lanes when Docker, network, and local resources are available.
+- LLM score evidence must use Docker-owned Ollama with `qwen3:1.7b`; external LLM endpoints are debug-only.
+- Use Codex CLI for cross-model second opinion after confirming the exact read-only command.
 
 ## Active Scores
 
@@ -64,6 +67,11 @@ Raise every scoped MCP encrypt/mask score dimension to **100/100** without switc
 4. Harden AI usability, safety, code quality, and public-API tests.
 5. Add documentation, operations, performance, and E2E evidence.
 6. Update scores to 100 only after verification passes and branch remains unchanged.
+
+## Verification Lanes
+
+- Default lane: branch/status, Spec Kit checks, scoped MCP unit tests, Checkstyle, Spotless, Jacoco for touched production classes, and H2/HTTP MCP E2E.
+- Opt-in lane: Docker/Testcontainers-backed MySQL, Proxy encrypt/mask workflow, Docker image STDIO, packaged distribution, and Docker-owned Ollama LLM evaluation.
 
 ## Completion Rule
 

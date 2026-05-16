@@ -116,7 +116,7 @@ final class MCPDescriptorCatalogYamlSwapper {
         Collection<MCPToolDescriptor> result = new LinkedList<>();
         for (YamlMCPToolDescriptor each : emptyIfNull(yamlDescriptors)) {
             result.add(new MCPToolDescriptor(each.getName(), each.getTitle(), each.getDescription(), emptyMapIfNull(each.getInputSchema()), emptyMapIfNull(each.getOutputSchema()),
-                    swapToolAnnotations(each.getName(), each.getAnnotations()), emptyMapIfNull(each.getMeta())));
+                    swapToolAnnotations(each.getAnnotations()), emptyMapIfNull(each.getMeta())));
         }
         return result;
     }
@@ -155,10 +155,7 @@ final class MCPDescriptorCatalogYamlSwapper {
         return result;
     }
     
-    private static MCPToolAnnotations swapToolAnnotations(final String toolName, final YamlMCPToolAnnotations yamlAnnotations) {
-        if (null == yamlAnnotations) {
-            throw new IllegalStateException(String.format("Tool `%s` must declare MCP annotations.", toolName));
-        }
+    private static MCPToolAnnotations swapToolAnnotations(final YamlMCPToolAnnotations yamlAnnotations) {
         return new MCPToolAnnotations(yamlAnnotations.getTitle(), Boolean.TRUE.equals(yamlAnnotations.getReadOnlyHint()), Boolean.TRUE.equals(yamlAnnotations.getDestructiveHint()),
                 Boolean.TRUE.equals(yamlAnnotations.getIdempotentHint()), Boolean.TRUE.equals(yamlAnnotations.getOpenWorldHint()));
     }

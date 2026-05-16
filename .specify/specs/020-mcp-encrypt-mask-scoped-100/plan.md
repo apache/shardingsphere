@@ -100,8 +100,31 @@ Required before final score closure:
 
 - Scoped unit tests for touched MCP modules.
 - Focused tests for protocol, descriptor, workflow, safety, and recovery changes.
+- Public methods and reachable branches in touched production classes are covered through public APIs and varied inputs.
+- No private method is invoked by reflection, and no production method is made public only for tests.
 - Default MCP E2E lane.
 - Checkstyle and Spotless for touched modules.
 - Jacoco when a coverage score depends on branch or method coverage.
-- Distribution and opt-in runtime lanes recorded when infrastructure is available.
+- Distribution and opt-in runtime lanes recorded separately when infrastructure is available.
 - Final branch check showing `001-shardingsphere-mcp`.
+
+## Confirmed Implementation Decisions
+
+- Start with Phase 1, Phase 2, and Phase 7 tasks: scope baseline, protocol evidence, and code/test cleanliness.
+- Modify README, README_ZH, docs, and Speckit files as needed for scope and evidence alignment.
+- Review direct static and constructor mocking case by case; migrate only when readability or leak risk warrants it.
+- Use public APIs and varied inputs to reach public-method and branch coverage for touched production classes.
+- Do not reflectively test private methods, and do not widen production visibility only for tests.
+- Treat opt-in lanes as environment-dependent verification paths, not default-lane blockers.
+- Run a fresh-context doubt-driven review before the next implementation round.
+- Use Codex CLI for cross-model second opinion after the exact read-only invocation is confirmed.
+
+## Lane Definitions
+
+- **Default lane**: branch/status checks, Spec Kit/document checks, scoped MCP unit tests, Checkstyle, Spotless, Jacoco for touched production classes,
+  and default H2/HTTP MCP E2E that does not require external services or credentials.
+- **Opt-in lane**: MySQL E2E, Proxy encrypt/mask workflow E2E, Docker image STDIO, packaged distribution smoke, and LLM evaluation.
+  These lanes are local when Docker/Testcontainers can start required containers and pull required images/models.
+- **LLM opt-in note**: score-closing LLM evidence must use a Docker-owned Ollama container with `qwen3:1.7b`.
+  The support layer must not silently reuse an external OpenAI-compatible endpoint for score evidence.
+  External endpoints may remain available only as an explicit debug mode outside score closure.

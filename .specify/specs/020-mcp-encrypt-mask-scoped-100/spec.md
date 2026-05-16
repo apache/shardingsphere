@@ -127,7 +127,10 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - Older Speckit files claim 100/100 under broader or different scoring rules; this package treats them as historical evidence only.
 - SDK `1.1.2` cannot expose some optional protocol descriptor fields; those fields remain non-goals for this checkpoint.
 - Existing code may still contain compatibility support for other protocol revisions; this package only requires tests and documentation for `2025-11-25`.
-- LLM evaluation credentials or external runtime may be unavailable; default-lane closure must not depend on secrets, while opt-in evidence must be recorded when available.
+- LLM score evidence must not depend on external model credentials or an operator-managed model endpoint.
+- External LLM endpoints are allowed only as an explicit debug mode and cannot close scorecard evidence.
+- Docker/Testcontainers can provide the local opt-in runtime for MySQL, Proxy workflow, Docker image STDIO, and Ollama-backed LLM lanes.
+- LLM opt-in must start a Docker-owned Ollama runtime and may pull `ollama/ollama:latest` and `qwen3:1.7b` online when local caches are empty.
 - Performance optimizations must not reduce readability or introduce broad abstractions.
 
 ## Requirements
@@ -147,6 +150,15 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - **FR-011**: Every score increase MUST be backed by command output, source-backed evidence, artifact evidence, or an explicit non-goal decision.
 - **FR-012**: Documentation MUST align README, Speckit scorecard, descriptor behavior, and validator rules for the scoped target.
 - **FR-013**: Performance and reliability closure MUST include budgets for descriptor loading, workflow planning, metadata/resource operations, default E2E, and distribution smoke.
+- **FR-014**: For touched production classes, public methods and reachable branches MUST be covered through public APIs and varied inputs.
+- **FR-015**: Tests MUST NOT invoke private methods by reflection, and production methods MUST NOT be made public only for tests.
+- **FR-016**: Direct static or constructor mocking MUST be reviewed case by case; migrate only when it improves readability or reduces leak risk.
+- **FR-017**: Opt-in verification lanes MUST be documented separately from default required lanes and must not block default-lane closure when external infrastructure is unavailable.
+- **FR-018**: Opt-in lanes SHOULD run locally through Docker/Testcontainers when Docker, network, and machine resources are available.
+- **FR-019**: Cross-model second opinion MUST use Codex CLI when invoked, after confirming the exact read-only command.
+- **FR-020**: LLM score evidence MUST use a Docker-owned Ollama runtime started by the E2E support layer.
+- **FR-021**: LLM score evidence MUST NOT require `MCP_LLM_BASE_URL`, `MCP_LLM_API_KEY`, or a pre-running external model service.
+- **FR-022**: External LLM endpoints MAY remain available only through an explicit debug mode and MUST NOT count as score-closing evidence.
 
 ### Key Entities
 
@@ -154,6 +166,7 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - **Closing Evidence**: A command result, source map, test artifact, E2E artifact, Jacoco report, style gate, or explicit non-goal decision.
 - **Workflow Capability**: An encrypt or mask capability spanning resources, prompts, completions, tools, approval, validation, and recovery.
 - **Evidence Lane**: A verification route such as unit tests, default H2/HTTP E2E, Proxy/MySQL opt-in E2E, STDIO, distribution smoke, LLM evaluation, or performance budget.
+- **Docker-Owned LLM Runtime**: An Ollama container started and owned by the E2E support layer for the duration of the LLM lane.
 
 ## Success Criteria
 
@@ -166,6 +179,7 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - **SC-005**: The mcp-builder evaluation artifact contains ten read-only, independent, complex, realistic, verifiable, and stable questions.
 - **SC-006**: README and Speckit documents state the narrowed protocol and feature scope without presenting non-goals as future blockers.
 - **SC-007**: `git branch --show-current` reports `001-shardingsphere-mcp` at final verification.
+- **SC-008**: LLM smoke and usability score evidence records Docker-owned Ollama runtime usage rather than external endpoint reuse.
 
 ## Assumptions
 
@@ -173,3 +187,6 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - Existing MCP Java SDK dependency remains `1.1.2`.
 - Official MCP revision `2025-11-25` is the only protocol revision requiring coverage in this package.
 - Encrypt drop remains out of V1 scope unless the user explicitly changes the product boundary.
+- The user approved the recommended execution order on 2026-05-16.
+- The user authorized a fresh-context doubt-driven review before the next implementation round.
+- The user selected Codex CLI for cross-model second opinion.

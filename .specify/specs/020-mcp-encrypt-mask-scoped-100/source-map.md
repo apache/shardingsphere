@@ -51,8 +51,16 @@
 - Spec Kit constitution: `.specify/memory/constitution.md`
 - Spec Kit templates: `.specify/templates/spec-template.md`, `.specify/templates/tasks-template.md`
 
+## LLM Docker Runtime Sources
+
+- LLM E2E configuration: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/config/LLME2EConfiguration.java`
+- Dockerized Ollama support: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/OllamaLLMRuntimeSupport.java`
+- LLM smoke E2E entry: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/smoke/LLMSmokeE2ETest.java`
+- LLM usability E2E entry: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/LLMUsabilitySuiteE2ETest.java`
+
 ## Non-Goal Evidence
 
 - MCP icons and `Tool.execution` are official fields, but this checkpoint does not require them because the project does not need them and SDK `1.1.2` is fixed.
 - Compatibility with protocol revisions other than `2025-11-25` is not part of the coverage target.
 - Non-encrypt/mask ShardingSphere MCP features are not part of functional completeness scoring.
+- External LLM endpoints are debug-only and are not valid score-closing evidence for this package.

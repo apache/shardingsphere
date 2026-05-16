@@ -33,6 +33,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class MCPDescriptorCatalogYamlSwapperTest {
     
     @Test
+    void assertSwapWithMissingToolAnnotations() {
+        YamlMCPDescriptorCatalog yamlCatalog = new YamlMCPDescriptorCatalog();
+        yamlCatalog.setTools(List.of(createYamlToolDescriptor()));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPDescriptorCatalogYamlSwapper.swap(List.of(yamlCatalog)));
+        assertThat(actual.getMessage(), is("MCP descriptor catalog property `tools[0].annotations` is required."));
+    }
+    
+    @Test
     void assertSwapWithInvalidToolAnnotations() {
         YamlMCPToolAnnotations yamlAnnotations = new YamlMCPToolAnnotations();
         yamlAnnotations.setReadOnlyHint(true);

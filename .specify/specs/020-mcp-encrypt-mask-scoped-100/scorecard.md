@@ -59,7 +59,7 @@ Valid evidence:
 
 - Scoped Maven command with exit code.
 - Checkstyle, Spotless, or Jacoco report.
-- E2E or LLM evaluation artifact.
+- E2E or LLM evaluation artifact. LLM score evidence must record Docker-owned Ollama runtime usage.
 - Source map to official MCP `2025-11-25` documentation or local SDK `1.1.2` behavior.
 - Explicit non-goal decision captured in `spec.md`, `scorecard.md`, and README.
 
