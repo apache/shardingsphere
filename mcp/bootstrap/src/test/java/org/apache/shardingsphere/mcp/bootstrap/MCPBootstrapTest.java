@@ -71,7 +71,7 @@ class MCPBootstrapTest {
                 MockedStatic<MCPConfigurationLoader> mockedConfigurationLoader = mockStatic(MCPConfigurationLoader.class);
                 MockedStatic<Runtime> mockedRuntime = mockStatic(Runtime.class);
                 MockedConstruction<MCPRuntimeLauncher> mockedConstruction = mockConstruction(MCPRuntimeLauncher.class,
-                        (mock, context) -> when(mock.launch(launchConfig, expectedConfigPath)).thenReturn(runtimeServer))) {
+                        (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeServer))) {
             mockedRuntime.when(Runtime::getRuntime).thenReturn(runtime);
             mockedConfigurationLoader.when(() -> MCPConfigurationLoader.load(expectedConfigPath)).thenReturn(launchConfig);
             doAnswer(invocation -> {
@@ -80,7 +80,7 @@ class MCPBootstrapTest {
             }).when(runtime).addShutdownHook(any(Thread.class));
             MCPBootstrap.main(args);
             MCPRuntimeLauncher actualLauncher = mockedConstruction.constructed().get(0);
-            verify(actualLauncher).launch(launchConfig, expectedConfigPath);
+            verify(actualLauncher).launch(launchConfig);
             Thread actualShutdownHook = shutdownHook.get();
             actualShutdownHook.run();
             if (runShutdownHookTwice) {
@@ -93,8 +93,8 @@ class MCPBootstrapTest {
     
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean stdioEnabled) {
         return new MCPLaunchConfiguration(
-                new HttpTransportConfiguration(!stdioEnabled, "127.0.0.1", false, "", 18080, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
-                        new OAuthIntrospectionConfiguration()),
+                new HttpTransportConfiguration(!stdioEnabled, 
+                        "127.0.0.1", false, "", 18080, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "", new OAuthIntrospectionConfiguration()),
                 new StdioTransportConfiguration(stdioEnabled), Collections.emptyMap());
     }
 }
