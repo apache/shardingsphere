@@ -41,10 +41,6 @@ public final class MCPRuntimeContext {
     
     private final String activeTransport;
     
-    public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider) {
-        this(sessionManager, databaseCapabilityProvider, new InMemoryWorkflowSessionContext(), UNKNOWN_TRANSPORT);
-    }
-    
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final String activeTransport) {
         this(sessionManager, databaseCapabilityProvider, new InMemoryWorkflowSessionContext(), activeTransport);
     }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
-import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpSyncServer;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
@@ -57,12 +56,8 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
     private Path baseDirectory;
     
     public StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPRuntimeContext runtimeContext) {
-        this(config, runtimeContext, MCPTransportJsonMapperFactory.create());
-    }
-    
-    private StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
-        this(config, new MCPSyncServerFactory(runtimeContext, jsonMapper),
-                new StreamableHttpMCPServlet(runtimeContext.getSessionManager(), jsonMapper, config));
+        this(config, new MCPSyncServerFactory(runtimeContext, MCPTransportJsonMapperFactory.create()),
+                new StreamableHttpMCPServlet(runtimeContext.getSessionManager(), MCPTransportJsonMapperFactory.create(), config));
     }
     
     StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPSyncServerFactory syncServerFactory, final StreamableHttpMCPServlet transportServlet) {
