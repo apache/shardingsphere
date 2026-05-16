@@ -52,7 +52,7 @@ class MCPCompletionServiceTest {
     @Test
     void assertCompleteDatabaseValues() {
         MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext())).complete("session-1",
-                createDescriptor("prompt", "inspect_metadata", "database", 1), "database", "", new LinkedHashMap<>());
+                createDescriptor("inspect_metadata", "database", 1), "database", "", new LinkedHashMap<>());
         assertThat(actual.getValues(), is(List.of("logic_db")));
         assertThat(actual.getTotal(), is(2));
         assertTrue(actual.isHasMore());
@@ -63,7 +63,7 @@ class MCPCompletionServiceTest {
     @Test
     void assertCompleteTableValuesWithMissingContextDiagnostic() {
         MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext())).complete("session-1",
-                createDescriptor("prompt", "inspect_metadata", "table", 50), "table", "order", new LinkedHashMap<>());
+                createDescriptor("inspect_metadata", "table", 50), "table", "order", new LinkedHashMap<>());
         assertThat(actual.getValues(), is(List.of()));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("missing_context"));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS), is(List.of("database", "schema")));
@@ -75,7 +75,7 @@ class MCPCompletionServiceTest {
     @Test
     void assertCompleteMissingContextUsesProtocolReferenceType() {
         MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext()), List.of(new MissingContextCompletionProvider())).complete("session-1",
-                createDescriptor("prompt", "inspect_metadata", "table", 50), "table", "order", new LinkedHashMap<>());
+                createDescriptor("inspect_metadata", "table", 50), "table", "order", new LinkedHashMap<>());
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
         assertThat(actualNextAction.get("reference_type"), is("ref/prompt"));
         assertThat(actualNextAction.get("resume_target_type"), is("ref/prompt"));
@@ -89,7 +89,7 @@ class MCPCompletionServiceTest {
                 createSnapshot("plan-new", WorkflowLifecycle.STATUS_PLANNED, Instant.parse("2026-05-04T12:00:00Z")),
                 createSnapshot("plan-clarifying", WorkflowLifecycle.STATUS_CLARIFYING, Instant.parse("2026-05-04T13:00:00Z"))));
         MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(workflowSessionContext)).complete("session-1",
-                createDescriptor("prompt", "recover_workflow", "plan_id", 50), "plan_id", "plan-", new LinkedHashMap<>());
+                createDescriptor("recover_workflow", "plan_id", 50), "plan_id", "plan-", new LinkedHashMap<>());
         assertThat(actual.getValues(), is(List.of("plan-new", "plan-old")));
         assertThat(((Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.VALUE_DETAILS)).get(0)).get("rankingReason"), is("recent-plan-first-for-plan_id"));
     }
@@ -97,7 +97,7 @@ class MCPCompletionServiceTest {
     @Test
     void assertCompleteCapsMaxValues() {
         MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext()), List.of(new SizedCompletionProvider())).complete("session-1",
-                createDescriptor("prompt", "foo_prompt", "value", 101), "value", "value-", new LinkedHashMap<>());
+                createDescriptor("foo_prompt", "value", 101), "value", "value-", new LinkedHashMap<>());
         assertThat(actual.getValues().size(), is(100));
         assertThat(actual.getTotal(), is(101));
         assertTrue(actual.isHasMore());
@@ -106,14 +106,14 @@ class MCPCompletionServiceTest {
     @Test
     void assertCompleteReplacesEmptyContextWithInferredContext() {
         MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext()), List.of(new InferredContextCompletionProvider())).complete("session-1",
-                createDescriptor("prompt", "inspect_metadata", "table", 50), "table", "t_", new LinkedHashMap<>(Map.of("database", "logic_db", "schema", "")));
+                createDescriptor("inspect_metadata", "table", 50), "table", "t_", new LinkedHashMap<>(Map.of("database", "logic_db", "schema", "")));
         assertThat(actual.getValues(), is(List.of("t_order")));
         assertThat(((Map<?, ?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.CONTEXT_ARGUMENTS)).get("schema"), is("public"));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
     }
     
-    private MCPCompletionTargetDescriptor createDescriptor(final String referenceType, final String reference, final String argument, final int maxValues) {
-        return new MCPCompletionTargetDescriptor(referenceType, reference, List.of(argument), maxValues, Map.of());
+    private MCPCompletionTargetDescriptor createDescriptor(final String reference, final String argument, final int maxValues) {
+        return new MCPCompletionTargetDescriptor("prompt", reference, List.of(argument), maxValues, Map.of());
     }
     
     private MCPRuntimeContext createRuntimeContext(final WorkflowSessionContext workflowSessionContext) {
@@ -173,7 +173,7 @@ class MCPCompletionServiceTest {
         
         @Override
         public MCPCompletionProviderResult complete(final MCPWorkflowHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
-            return new MCPCompletionProviderResult(List.of(new MCPCompletionCandidate("t_order", "logical table", "test-provider")), Map.of("schema", "public"));
+            return new MCPCompletionProviderResult(List.of(new MCPCompletionCandidate("t_order", "logical table", "test-provider")), Map.of("schema", "public"), List.of(), "");
         }
     }
     

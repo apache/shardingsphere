@@ -40,11 +40,7 @@ public final class MCPCompletionProviderResult {
     private final String guidanceResourceUri;
     
     public MCPCompletionProviderResult(final Collection<MCPCompletionCandidate> candidates) {
-        this(candidates, Map.of());
-    }
-    
-    public MCPCompletionProviderResult(final Collection<MCPCompletionCandidate> candidates, final Map<String, Object> inferredContextArguments) {
-        this(candidates, inferredContextArguments, List.of(), "");
+        this(candidates, Map.of(), List.of(), "");
     }
     
     /**

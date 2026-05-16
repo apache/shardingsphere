@@ -61,7 +61,7 @@ public final class EncryptAlgorithmCompletionProvider implements MCPCompletionPr
     
     private MCPCompletionCandidate createAlgorithmCandidate(final Map<String, Object> row) {
         String value = Objects.toString(row.get("type"), "").trim();
-        String label = Objects.toString(row.containsKey("description") ? row.get("description") : "algorithm", "algorithm");
+        String label = Objects.toString(row.getOrDefault("description", "algorithm"), "algorithm");
         return new MCPCompletionCandidate(value, label, "encrypt-algorithm");
     }
 }
