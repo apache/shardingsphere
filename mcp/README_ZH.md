@@ -1208,29 +1208,23 @@ docker run --rm -i \
 - 本地复现这条 LLM smoke：
 
 ```bash
-docker run -d --rm --name ollama-mcp-llm-e2e -p 11434:11434 ollama/ollama:latest
-docker exec ollama-mcp-llm-e2e ollama pull qwen3:1.7b
-MCP_LLM_E2E_ENABLED=true \
-MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
-MCP_LLM_MODEL=qwen3:1.7b \
-MCP_LLM_API_KEY=ollama \
-./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
+./mvnw -pl test/e2e/mcp -Pllm-e2e test -DskipITs -Dspotless.skip=true \
   -Dtest=LLMSmokeE2ETest \
   -Dsurefire.failIfNoSpecifiedTests=true
 ```
 
-- LLM usability 这条 lane 可以复用同一个 Ollama 进程：
+- Score-closing LLM lane 会启动测试自己拥有的 `ollama/ollama:0.23.1` 容器，并在本地缓存为空时拉取 `qwen3:1.7b`。
+
+- 本地复现 LLM usability lane：
 
 ```bash
-MCP_LLM_E2E_ENABLED=true \
-MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
-MCP_LLM_MODEL=qwen3:1.7b \
-MCP_LLM_API_KEY=ollama \
-./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
+./mvnw -pl test/e2e/mcp -Pllm-e2e test -DskipITs -Dspotless.skip=true \
   -Dtest=LLMUsabilitySuiteE2ETest \
   -Dsurefire.failIfNoSpecifiedTests=true
 ```
 
+- 仅本地调试时，可以用 `-Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:11434/v1`
+  连接已经运行的 OpenAI-compatible endpoint。External debug endpoint 不能作为 score-closing evidence。
 - LLM smoke 的 artifact 会落到 `test/e2e/mcp/target/llm-e2e/`。
 - 对应的 GitHub Actions 入口是 `.github/workflows/mcp-llm-e2e.yml`，第一轮按 `workflow_dispatch` 和 nightly schedule 交付，不进 PR gate。
 - `mcp/api`：public tool / resource handler 契约、共享 descriptor、协议 response 与 MCP 协议异常

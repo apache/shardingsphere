@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -28,7 +30,9 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LLME2EArtifactWriterTest {
     
@@ -41,15 +45,27 @@ class LLME2EArtifactWriterTest {
                 "openai-compatible", "qwen3:1.7b", Map.of("descriptorCatalog", "abc123"),
                 "{\"api_key\":\"secret-value\"}", List.of("{\"token\":\"raw-secret\"}"), List.of(),
                 List.of("Authorization: Bearer runtime-secret"), LLME2EAssertionReport.failure("boom", "failed"));
-        new LLME2EArtifactWriter().write(tempDir, artifactBundle);
-        final String runContext = Files.readString(tempDir.resolve("run-context.json"));
+        new LLME2EArtifactWriter().write(tempDir, artifactBundle, Map.of(
+                "runtimeMode", "docker",
+                "dockerOwned", true,
+                "imageName", "ollama/ollama:0.23.1"));
+        final Map<String, Object> runContext = JsonUtils.fromJsonString(Files.readString(tempDir.resolve("run-context.json")), new TypeReference<>() {
+        });
         final String rawModelOutput = Files.readString(tempDir.resolve("raw-model-output.txt"));
         final String runtimeLog = Files.readString(tempDir.resolve("mcp-runtime.log"));
         final String finalAnswer = Files.readString(tempDir.resolve("final-answer.json"));
-        assertThat(runContext, containsString("qwen3:1.7b"));
-        assertThat(runContext, containsString("abc123"));
+        assertThat(runContext.get("modelName"), is("qwen3:1.7b"));
+        assertThat(castToMap(runContext.get("capabilityFingerprints")).get("descriptorCatalog"), is("abc123"));
+        assertThat(castToMap(runContext.get("runtime")).get("runtimeMode"), is("docker"));
+        assertTrue((boolean) castToMap(runContext.get("runtime")).get("dockerOwned"));
+        assertThat(castToMap(runContext.get("runtime")).get("imageName"), is("ollama/ollama:0.23.1"));
         assertThat(rawModelOutput, not(containsString("raw-secret")));
         assertThat(runtimeLog, not(containsString("runtime-secret")));
         assertThat(finalAnswer, not(containsString("secret-value")));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> castToMap(final Object value) {
+        return (Map<String, Object>) value;
     }
 }

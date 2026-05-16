@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
+import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration.RuntimeMode;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Fixture;
@@ -90,7 +91,7 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     @Test
     void assertUsabilityBaseline() throws IOException, InterruptedException {
-        LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration());
+        LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration(), getRequiredLLMRuntimeEvidence());
         conversationExecutor.assertModelReady();
         prepareRuntimeFixture();
         suiteRunner.assertCoreSuite(SUITE_ID + "/core",
@@ -116,10 +117,22 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     private static LLME2EConfiguration getRequiredLLMConfiguration() {
+        return getRequiredLLMRuntime().getConfiguration();
+    }
+    
+    private static Map<String, Object> getRequiredLLMRuntimeEvidence() {
+        OllamaLLMRuntimeSupport.ModelRuntime runtime = getRequiredLLMRuntime();
+        return Map.of(
+                "runtimeMode", runtime.getRuntimeMode().getValue(),
+                "dockerOwned", RuntimeMode.DOCKER == runtime.getRuntimeMode(),
+                "imageName", runtime.getImageName());
+    }
+    
+    private static OllamaLLMRuntimeSupport.ModelRuntime getRequiredLLMRuntime() {
         if (null == llmRuntime) {
             throw new IllegalStateException("LLM runtime was not initialized.");
         }
-        return llmRuntime.getConfiguration();
+        return llmRuntime;
     }
     
     @Override

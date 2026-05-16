@@ -56,6 +56,8 @@ public final class LLME2EConfiguration {
     
     private final String runId;
     
+    private final RuntimeMode runtimeMode;
+    
     /**
      * Load LLM E2E configuration.
      *
@@ -71,7 +73,8 @@ public final class LLME2EConfiguration {
                 readInteger("mcp.llm.request-timeout-seconds", "MCP_LLM_REQUEST_TIMEOUT_SECONDS", 240),
                 readInteger("mcp.llm.max-turns", "MCP_LLM_MAX_TURNS", 10),
                 Paths.get(readString("mcp.llm.artifact-root", "MCP_LLM_ARTIFACT_ROOT", "target/llm-e2e")),
-                readString("mcp.llm.run-id", "MCP_LLM_RUN_ID", createDefaultRunId()));
+                readString("mcp.llm.run-id", "MCP_LLM_RUN_ID", createDefaultRunId()),
+                RuntimeMode.from(readString("mcp.llm.runtime-mode", "MCP_LLM_RUNTIME_MODE", RuntimeMode.DOCKER.getValue())));
     }
     
     /**
@@ -94,7 +97,7 @@ public final class LLME2EConfiguration {
      * @return copied configuration
      */
     public LLME2EConfiguration withBaseUrl(final String baseUrl) {
-        return new LLME2EConfiguration(normalizeBaseUrl(baseUrl), modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId);
+        return new LLME2EConfiguration(normalizeBaseUrl(baseUrl), modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId, runtimeMode);
     }
     
     /**
@@ -105,7 +108,7 @@ public final class LLME2EConfiguration {
      * @return copied configuration
      */
     public LLME2EConfiguration withReadinessTimeouts(final int readyTimeoutSeconds, final int requestTimeoutSeconds) {
-        return new LLME2EConfiguration(baseUrl, modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId);
+        return new LLME2EConfiguration(baseUrl, modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId, runtimeMode);
     }
     
     /**
@@ -150,5 +153,28 @@ public final class LLME2EConfiguration {
     
     private static String createDefaultRunId() {
         return RUN_ID_FORMATTER.format(LocalDateTime.now()) + "-" + UUID.randomUUID().toString().substring(0, 8);
+    }
+    
+    /**
+     * LLM runtime mode.
+     */
+    @RequiredArgsConstructor
+    @Getter
+    public enum RuntimeMode {
+        
+        DOCKER("docker"),
+        
+        EXTERNAL_DEBUG("external-debug");
+        
+        private final String value;
+        
+        private static RuntimeMode from(final String value) {
+            for (RuntimeMode each : values()) {
+                if (each.value.equals(value)) {
+                    return each;
+                }
+            }
+            throw new IllegalStateException(String.format("Unsupported MCP LLM runtime mode `%s`.", value));
+        }
     }
 }

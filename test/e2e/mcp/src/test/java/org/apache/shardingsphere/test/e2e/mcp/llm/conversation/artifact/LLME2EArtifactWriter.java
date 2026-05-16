@@ -30,8 +30,7 @@ import java.util.regex.Pattern;
  */
 public final class LLME2EArtifactWriter {
     
-    private static final Pattern JSON_SECRET_FIELD_PATTERN = Pattern.compile(
-            "(?i)(\"(?:api[_-]?key|token|password|authorization|secret)\"\\s*:\\s*\")([^\"]+)(\")");
+    private static final Pattern JSON_SECRET_FIELD_PATTERN = Pattern.compile("(?i)(\"(?:api[_-]?key|token|password|authorization|secret)\"\\s*:\\s*\")([^\"]+)(\")");
     
     private static final Pattern BEARER_TOKEN_PATTERN = Pattern.compile("(?i)(Bearer\\s+)[A-Za-z0-9._~+/=-]+");
     
@@ -40,11 +39,12 @@ public final class LLME2EArtifactWriter {
      *
      * @param artifactDirectory artifact directory
      * @param artifactBundle artifact bundle
+     * @param runtimeEvidence runtime evidence
      * @throws IOException IO exception
      */
-    public void write(final Path artifactDirectory, final LLME2EArtifactBundle artifactBundle) throws IOException {
+    public void write(final Path artifactDirectory, final LLME2EArtifactBundle artifactBundle, final Map<String, Object> runtimeEvidence) throws IOException {
         Files.createDirectories(artifactDirectory);
-        Files.writeString(artifactDirectory.resolve("run-context.json"), redact(JsonUtils.toJsonString(createRunContext(artifactBundle))));
+        Files.writeString(artifactDirectory.resolve("run-context.json"), redact(JsonUtils.toJsonString(createRunContext(artifactBundle, runtimeEvidence))));
         Files.writeString(artifactDirectory.resolve("system-prompt.md"), redact(artifactBundle.getSystemPrompt()));
         Files.writeString(artifactDirectory.resolve("user-prompt.md"), redact(artifactBundle.getUserPrompt()));
         Files.writeString(artifactDirectory.resolve("raw-model-output.txt"), redact(String.join(System.lineSeparator() + System.lineSeparator(), artifactBundle.getRawModelOutputs())));
@@ -56,11 +56,12 @@ public final class LLME2EArtifactWriter {
         }
     }
     
-    private Map<String, Object> createRunContext(final LLME2EArtifactBundle artifactBundle) {
+    private Map<String, Object> createRunContext(final LLME2EArtifactBundle artifactBundle, final Map<String, Object> runtimeEvidence) {
         return Map.of(
                 "scenarioId", artifactBundle.getScenarioId(),
                 "modelProvider", artifactBundle.getModelProvider(),
                 "modelName", artifactBundle.getModelName(),
+                "runtime", runtimeEvidence,
                 "capabilityFingerprints", artifactBundle.getCapabilityFingerprints(),
                 "failureType", artifactBundle.getAssertionReport().getFailureType());
     }

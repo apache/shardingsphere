@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.suite.smoke;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
+import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration.RuntimeMode;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory;
@@ -101,7 +102,7 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         prepareRuntimeFixture();
         LLME2EScenario scenario = scenarioFactory.createMinimalSmokeScenario(testCase.scenarioId(), "logic_db",
                 getRequiredRuntimeFixture().schemaName(), "orders", COUNT_ORDERS_SQL, getRequiredRuntimeFixture().totalOrders());
-        LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration());
+        LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration(), getRequiredLLMRuntimeEvidence());
         LLMConversationExecutor.ConversationResult actualResult = conversationExecutor.runConversation(
                 scenario.getScenarioId(), scenario, createInteractionClient());
         LLME2EAssertionReport assertionReport = actualResult.artifactBundle().getAssertionReport();
@@ -146,10 +147,22 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     private static LLME2EConfiguration getRequiredLLMConfiguration() {
+        return getRequiredLLMRuntime().getConfiguration();
+    }
+    
+    private static Map<String, Object> getRequiredLLMRuntimeEvidence() {
+        OllamaLLMRuntimeSupport.ModelRuntime runtime = getRequiredLLMRuntime();
+        return Map.of(
+                "runtimeMode", runtime.getRuntimeMode().getValue(),
+                "dockerOwned", RuntimeMode.DOCKER == runtime.getRuntimeMode(),
+                "imageName", runtime.getImageName());
+    }
+    
+    private static OllamaLLMRuntimeSupport.ModelRuntime getRequiredLLMRuntime() {
         if (null == llmRuntime) {
             throw new IllegalStateException("LLM runtime was not initialized.");
         }
-        return llmRuntime.getConfiguration();
+        return llmRuntime;
     }
     
     private record SmokeTestCase(String scenarioId, RuntimeTransport transport, Backend backend) {

@@ -197,17 +197,19 @@
   Path: `.specify/specs/020-mcp-encrypt-mask-scoped-100/e2e-evidence.md`
 - [ ] T085 [US5] Document Docker/Testcontainers prerequisites for local opt-in MySQL, Proxy, STDIO, distribution, and Ollama LLM lanes.
   Path: `.specify/specs/020-mcp-encrypt-mask-scoped-100/e2e-evidence.md`
-- [ ] T086 [US5] Change LLM E2E runtime support so score-closing LLM lanes always start Docker-owned Ollama.
+- [x] T086 [US5] Change LLM E2E runtime support so score-closing LLM lanes always start Docker-owned Ollama.
   Path: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/OllamaLLMRuntimeSupport.java`
-- [ ] T087 [US5] Keep external OpenAI-compatible endpoints only behind an explicit debug mode that cannot close score evidence.
+- [x] T087 [US5] Keep external OpenAI-compatible endpoints only behind an explicit debug mode that cannot close score evidence.
   Paths: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/config/LLME2EConfiguration.java`,
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/OllamaLLMRuntimeSupport.java`
-- [ ] T088 [US5] Add tests proving the default LLM lane is Docker-owned and external endpoint reuse is debug-only.
-  Path: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/OllamaLLMRuntimeSupportTest.java`
-- [ ] T089 [US5] Update LLM docs so local reproduction uses the Maven `llm-e2e` profile,
+- [x] T088 [US5] Add tests proving the default LLM lane is Docker-owned and external endpoint reuse is debug-only.
+  Paths: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/OllamaLLMRuntimeSupportTest.java`,
+  `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/conversation/artifact/LLME2EArtifactWriterTest.java`
+- [x] T089 [US5] Update LLM docs so local reproduction uses the Maven `llm-e2e` profile,
   does not use stale `MCP_LLM_E2E_ENABLED`, and does not ask users to pre-run or configure an external LLM endpoint for score evidence.
-  Paths: `mcp/README.md`, `mcp/README_ZH.md`, `.specify/specs/020-mcp-encrypt-mask-scoped-100/llm-docker-runtime-analysis.md`
-- [ ] T090 [US5] Pin score-closing LLM runtime to `ollama/ollama:0.23.1` and record resolved image digest in evidence.
+  Paths: `mcp/README.md`, `mcp/README_ZH.md`, `.github/workflows/mcp-llm-e2e.yml`,
+  `.github/workflows/mcp-llm-usability-e2e.yml`, `.specify/specs/020-mcp-encrypt-mask-scoped-100/llm-docker-runtime-analysis.md`
+- [x] T090 [US5] Pin score-closing LLM runtime to `ollama/ollama:0.23.1` and record resolved image digest in evidence.
   Paths: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/OllamaLLMRuntimeSupport.java`,
   `.specify/specs/020-mcp-encrypt-mask-scoped-100/e2e-evidence.md`
 

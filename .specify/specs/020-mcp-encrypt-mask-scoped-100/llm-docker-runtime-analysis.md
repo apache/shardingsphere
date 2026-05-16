@@ -27,23 +27,23 @@ Score-closing LLM evidence must use online Docker full package mode:
 - The container may pull `ollama/ollama:0.23.1` and `qwen3:1.7b` online when local caches are empty.
 - External OpenAI-compatible endpoints may remain available only as explicit debug mode and cannot close score evidence.
 
-## Current State
+## Baseline Before T086 Through T090
 
-The implementation is close to Docker full package mode but is not strict enough.
+Before this implementation, the LLM E2E support was close to Docker full package mode but was not strict enough.
 
 - `LLMSmokeE2ETest` and `LLMUsabilitySuiteE2ETest` call `OllamaLLMRuntimeSupport.prepare(LLME2EConfiguration.load())`.
 - `OllamaLLMRuntimeSupport` can start an Ollama container and pull `qwen3:1.7b` inside the container.
-- It currently uses `ollama/ollama:latest`, which is not stable enough for score-closing evidence.
+- It used a floating Ollama image tag, which was not stable enough for score-closing evidence.
 - `LLME2EConfiguration` allows `MCP_LLM_BASE_URL`, `MCP_LLM_MODEL`, and `MCP_LLM_API_KEY` overrides.
-- `OllamaLLMRuntimeSupport.prepare()` first probes the configured endpoint.
-  If the endpoint is ready, it returns an external runtime instead of starting Docker.
-- `mcp/README.md` and `mcp/README_ZH.md` still document manual `ollama/ollama:latest` startup and `MCP_LLM_E2E_ENABLED`.
-  The current E2E gate is the Maven `llm-e2e` profile or `mcp.e2e.llm.enabled`, so those README steps are stale.
+- `OllamaLLMRuntimeSupport.prepare()` first probed the configured endpoint.
+  If the endpoint was ready, it returned an external runtime instead of starting Docker.
+- `mcp/README.md` and `mcp/README_ZH.md` documented manual Ollama startup and the obsolete LLM enable environment flag.
+  The E2E gate is the Maven `llm-e2e` profile or `mcp.e2e.llm.enabled`, so those README steps were stale.
 
 ## Gap
 
-The current behavior can produce valid LLM E2E results from an operator-managed model service.
-That is useful for debugging, but it is not valid score-closing evidence under this package.
+The baseline behavior could produce valid LLM E2E results from an operator-managed model service.
+That remains useful for debugging, but it is not valid score-closing evidence under this package.
 
 ## Required Implementation
 
@@ -55,6 +55,15 @@ That is useful for debugging, but it is not valid score-closing evidence under t
 5. Expose enough runtime metadata for tests and evidence to distinguish Docker-owned from external debug runtime.
 6. Pin the score-closing image to `ollama/ollama:0.23.1` and record the resolved image digest in evidence.
 7. Update README and README_ZH so LLM score reproduction uses the test-owned Docker path, `-Pllm-e2e`, and no score-closing external endpoint variables.
+
+## Implementation Status
+
+- Default runtime mode is `docker`.
+- Docker mode starts or reuses test-owned Ollama and does not treat a ready external endpoint as score evidence.
+- External endpoint probing is available only with explicit `external-debug` runtime mode.
+- Score-closing image is pinned to `ollama/ollama:0.23.1`.
+- Score-closing model is fixed to `qwen3:1.7b`.
+- README, README_ZH, and E2E evidence now describe the Maven `llm-e2e` profile path and the debug-only external endpoint path separately.
 
 ## Test Plan
 

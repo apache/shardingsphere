@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client;
 
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
+import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration.RuntimeMode;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -82,7 +83,7 @@ class LLMChatModelClientTest {
     
     private LLME2EConfiguration createConfiguration(final int readyTimeoutSeconds) {
         return new LLME2EConfiguration("http://127.0.0.1:11434/v1", "openai-compatible", "qwen3:1.7b", "ollama", readyTimeoutSeconds, 30, 10,
-                Path.of("target/llm-e2e"), "run-id");
+                Path.of("target/llm-e2e"), "run-id", RuntimeMode.DOCKER);
     }
     
     @SuppressWarnings("unchecked")

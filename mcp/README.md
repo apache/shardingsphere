@@ -1235,29 +1235,24 @@ Notes:
 - Local reproduction for the LLM smoke lane:
 
 ```bash
-docker run -d --rm --name ollama-mcp-llm-e2e -p 11434:11434 ollama/ollama:latest
-docker exec ollama-mcp-llm-e2e ollama pull qwen3:1.7b
-MCP_LLM_E2E_ENABLED=true \
-MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
-MCP_LLM_MODEL=qwen3:1.7b \
-MCP_LLM_API_KEY=ollama \
-./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
+./mvnw -pl test/e2e/mcp -Pllm-e2e test -DskipITs -Dspotless.skip=true \
   -Dtest=LLMSmokeE2ETest \
   -Dsurefire.failIfNoSpecifiedTests=true
 ```
 
-- Local reproduction for the LLM usability lane uses the same Ollama process:
+- The score-closing LLM lane starts a Docker-owned `ollama/ollama:0.23.1` container and pulls `qwen3:1.7b` when the local cache is empty.
+
+- Local reproduction for the LLM usability lane:
 
 ```bash
-MCP_LLM_E2E_ENABLED=true \
-MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
-MCP_LLM_MODEL=qwen3:1.7b \
-MCP_LLM_API_KEY=ollama \
-./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
+./mvnw -pl test/e2e/mcp -Pllm-e2e test -DskipITs -Dspotless.skip=true \
   -Dtest=LLMUsabilitySuiteE2ETest \
   -Dsurefire.failIfNoSpecifiedTests=true
 ```
 
+- For local debugging only, an already running OpenAI-compatible endpoint can be used with
+  `-Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:11434/v1`.
+  External debug endpoints are not valid score-closing evidence.
 - The LLM smoke artifacts are written under `test/e2e/mcp/target/llm-e2e/`.
 - The dedicated GitHub Actions entry point is `.github/workflows/mcp-llm-e2e.yml`, delivered as `workflow_dispatch` plus nightly schedule instead of a PR gate.
 - `mcp/api`: public tool / resource handler contracts, shared descriptors, protocol responses, and MCP protocol exceptions

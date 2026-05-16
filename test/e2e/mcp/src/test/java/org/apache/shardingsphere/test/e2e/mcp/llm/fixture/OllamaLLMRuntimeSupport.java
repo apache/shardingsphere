@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
+import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration.RuntimeMode;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatModelClient;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.testcontainers.containers.Container;
@@ -39,11 +40,13 @@ import java.time.Duration;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OllamaLLMRuntimeSupport {
     
-    private static final String OLLAMA_IMAGE = "ollama/ollama:latest";
+    private static final String OLLAMA_IMAGE = "ollama/ollama:0.23.1";
     
     private static final String REQUIRED_PROVIDER = "openai-compatible";
     
     private static final String REQUIRED_MODEL = "qwen3:1.7b";
+    
+    private static final String OLLAMA_API_KEY = "ollama";
     
     private static final int OLLAMA_PORT = 11434;
     
@@ -57,22 +60,39 @@ public final class OllamaLLMRuntimeSupport {
      * @throws InterruptedException interrupted exception
      */
     public static synchronized ModelRuntime prepare(final LLME2EConfiguration config) throws InterruptedException {
+        validateSupportedProvider(config);
+        if (RuntimeMode.EXTERNAL_DEBUG == config.getRuntimeMode()) {
+            return prepareExternalDebugRuntime(config);
+        }
         validateRequiredModel(config);
         if (null != sharedContainerRuntime && sharedContainerRuntime.isReusable()) {
             return sharedContainerRuntime;
-        }
-        if (isModelReady(config)) {
-            return ModelRuntime.external(config);
         }
         requireDockerAvailable();
         final GenericContainer<?> container = createContainer();
         container.start();
         pullModel(container, config.getModelName());
-        final LLME2EConfiguration actualConfig = config.withBaseUrl(String.format("http://%s:%d/v1", container.getHost(), container.getMappedPort(OLLAMA_PORT)));
+        final LLME2EConfiguration actualConfig = createDockerRuntimeConfiguration(config, container);
         new LLMChatModelClient(actualConfig, HttpClient.newHttpClient()).waitUntilReady();
         sharedContainerRuntime = ModelRuntime.container(actualConfig, container);
         registerShutdownHook(sharedContainerRuntime);
         return sharedContainerRuntime;
+    }
+    
+    /**
+     * Get score-closing Ollama image.
+     *
+     * @return score-closing Ollama image
+     */
+    static String getScoreClosingImage() {
+        return OLLAMA_IMAGE;
+    }
+    
+    private static ModelRuntime prepareExternalDebugRuntime(final LLME2EConfiguration config) throws InterruptedException {
+        if (!isModelReady(config)) {
+            throw new IllegalStateException("MCP LLM external-debug mode requires a ready OpenAI-compatible endpoint.");
+        }
+        return ModelRuntime.externalDebug(config);
     }
     
     private static void requireDockerAvailable() {
@@ -82,9 +102,15 @@ public final class OllamaLLMRuntimeSupport {
         }
     }
     
+    private static void validateSupportedProvider(final LLME2EConfiguration config) {
+        if (!REQUIRED_PROVIDER.equals(config.getModelProvider())) {
+            throw new IllegalStateException("MCP LLM E2E requires provider openai-compatible.");
+        }
+    }
+    
     private static void validateRequiredModel(final LLME2EConfiguration config) {
-        if (!REQUIRED_PROVIDER.equals(config.getModelProvider()) || !REQUIRED_MODEL.equals(config.getModelName())) {
-            throw new IllegalStateException("MCP LLM E2E requires provider openai-compatible and model qwen3:1.7b.");
+        if (!REQUIRED_MODEL.equals(config.getModelName())) {
+            throw new IllegalStateException("MCP LLM Docker score mode requires model qwen3:1.7b.");
         }
     }
     
@@ -95,6 +121,13 @@ public final class OllamaLLMRuntimeSupport {
         } catch (final IllegalStateException ignored) {
             return false;
         }
+    }
+    
+    private static LLME2EConfiguration createDockerRuntimeConfiguration(final LLME2EConfiguration config, final GenericContainer<?> container) {
+        return new LLME2EConfiguration(
+                String.format("http://%s:%d/v1", container.getHost(), container.getMappedPort(OLLAMA_PORT)),
+                config.getModelProvider(), config.getModelName(), OLLAMA_API_KEY, config.getReadyTimeoutSeconds(), config.getRequestTimeoutSeconds(),
+                config.getMaxTurns(), config.getArtifactRoot(), config.getRunId(), config.getRuntimeMode());
     }
     
     private static GenericContainer<?> createContainer() {
@@ -133,12 +166,16 @@ public final class OllamaLLMRuntimeSupport {
         
         private final GenericContainer<?> container;
         
-        private static ModelRuntime external(final LLME2EConfiguration config) {
-            return new ModelRuntime(config, null);
+        private final RuntimeMode runtimeMode;
+        
+        private final String imageName;
+        
+        private static ModelRuntime externalDebug(final LLME2EConfiguration config) {
+            return new ModelRuntime(config, null, RuntimeMode.EXTERNAL_DEBUG, "");
         }
         
         private static ModelRuntime container(final LLME2EConfiguration config, final GenericContainer<?> container) {
-            return new ModelRuntime(config, container);
+            return new ModelRuntime(config, container, RuntimeMode.DOCKER, OLLAMA_IMAGE);
         }
         
         @Override

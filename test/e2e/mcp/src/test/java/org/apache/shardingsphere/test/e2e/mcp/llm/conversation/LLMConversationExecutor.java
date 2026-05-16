@@ -19,16 +19,17 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactBundle;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactWriter;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatModelClient;
-import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.nio.file.Path;
+import java.util.Map;
 
 /**
  * Execute one LLM conversation scenario and persist the generated artifacts.
@@ -38,6 +39,8 @@ public final class LLMConversationExecutor {
     
     @Getter
     private final LLME2EConfiguration configuration;
+    
+    private final Map<String, Object> runtimeEvidence;
     
     private final LLME2EArtifactWriter artifactWriter = new LLME2EArtifactWriter();
     
@@ -56,7 +59,7 @@ public final class LLMConversationExecutor {
                 configuration.getMaxTurns(), new LLMChatModelClient(configuration, HttpClient.newHttpClient()), interactionClient,
                 configuration.getModelProvider(), configuration.getModelName()).run(scenario);
         Path artifactDirectory = configuration.createArtifactDirectory(scenarioId);
-        artifactWriter.write(artifactDirectory, artifactBundle);
+        artifactWriter.write(artifactDirectory, artifactBundle, runtimeEvidence);
         return new ConversationResult(artifactBundle, artifactDirectory);
     }
     
