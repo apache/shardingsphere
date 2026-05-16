@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
@@ -35,17 +36,19 @@ import java.util.Objects;
 /**
  * MCP runtime launcher.
  */
+@RequiredArgsConstructor
 public final class MCPRuntimeLauncher {
+    
+    private final String configPath; 
     
     /**
      * Launch.
      *
      * @param config launch configuration
-     * @param configPath configuration path
      * @return MCP runtime server
      * @throws IOException when the active server startup fails
      */
-    public MCPRuntimeServer launch(final MCPLaunchConfiguration config, final String configPath) throws IOException {
+    public MCPRuntimeServer launch(final MCPLaunchConfiguration config) throws IOException {
         ShardingSpherePreconditions.checkNotNull(config, () -> new IllegalArgumentException("MCP launch configuration cannot be null."));
         config.validate();
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(config.getDatabases()), new MCPDatabaseCapabilityProvider(config.getDatabases()),
@@ -53,7 +56,7 @@ public final class MCPRuntimeLauncher {
         MCPRuntimeServer result = config.getHttpTransport().isEnabled() ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioMCPServer(runtimeContext);
         try {
             result.start();
-            printStartupHints(createStartupHints(config, result, configPath));
+            printStartupHints(createStartupHints(config, result));
         } catch (final IOException ex) {
             result.stop();
             throw new IOException(String.format("Failed to start %s server.", config.getHttpTransport().isEnabled() ? "HTTP" : "STDIO"), ex);
@@ -61,7 +64,7 @@ public final class MCPRuntimeLauncher {
         return result;
     }
     
-    List<String> createStartupHints(final MCPLaunchConfiguration config, final MCPRuntimeServer server, final String configPath) {
+    List<String> createStartupHints(final MCPLaunchConfiguration config, final MCPRuntimeServer server) {
         List<String> result = new LinkedList<>();
         result.add("ShardingSphere MCP runtime started.");
         result.add("Configuration: " + configPath);

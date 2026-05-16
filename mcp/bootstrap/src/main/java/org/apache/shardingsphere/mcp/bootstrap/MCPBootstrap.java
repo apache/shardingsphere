@@ -45,7 +45,7 @@ public final class MCPBootstrap {
         // CHECKSTYLE:ON
         String configPath = getConfigurationPath(args);
         MCPLaunchConfiguration launchConfig = MCPConfigurationLoader.load(configPath);
-        AtomicReference<MCPRuntimeServer> runtimeServerReference = new AtomicReference<>(new MCPRuntimeLauncher().launch(launchConfig, configPath));
+        AtomicReference<MCPRuntimeServer> runtimeServerReference = new AtomicReference<>(new MCPRuntimeLauncher(configPath).launch(launchConfig));
         Runtime.getRuntime().addShutdownHook(new Thread(() -> closeRuntimeServer(runtimeServerReference), "shardingsphere-mcp-shutdown"));
     }
     
