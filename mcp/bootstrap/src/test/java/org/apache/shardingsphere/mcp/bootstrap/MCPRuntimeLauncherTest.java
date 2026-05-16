@@ -51,8 +51,8 @@ class MCPRuntimeLauncherTest {
     @Test
     void assertLaunchWithHttpTransport() throws IOException {
         try (
-                MockedConstruction<MCPSessionManager> mockedSessionManager = mockConstruction(MCPSessionManager.class);
-                MockedConstruction<MCPDatabaseCapabilityProvider> mockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
+                MockedConstruction<MCPSessionManager> ignoredMockedSessionManager = mockConstruction(MCPSessionManager.class);
+                MockedConstruction<MCPDatabaseCapabilityProvider> ignoredMockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
                 MockedConstruction<StreamableHttpMCPServer> mockedHttpServer = mockConstruction(StreamableHttpMCPServer.class);
                 MockedConstruction<StdioMCPServer> mockedStdioServer = mockConstruction(StdioMCPServer.class)) {
             MCPRuntimeServer actual = new MCPRuntimeLauncher().launch(createLaunchConfiguration(true), "conf/mcp-http.yaml");
@@ -66,8 +66,8 @@ class MCPRuntimeLauncherTest {
     @Test
     void assertLaunchWithStdioTransport() throws IOException {
         try (
-                MockedConstruction<MCPSessionManager> mockedSessionManager = mockConstruction(MCPSessionManager.class);
-                MockedConstruction<MCPDatabaseCapabilityProvider> mockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
+                MockedConstruction<MCPSessionManager> ignoredMockedSessionManager = mockConstruction(MCPSessionManager.class);
+                MockedConstruction<MCPDatabaseCapabilityProvider> ignoredMockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
                 MockedConstruction<StreamableHttpMCPServer> mockedHttpServer = mockConstruction(StreamableHttpMCPServer.class);
                 MockedConstruction<StdioMCPServer> mockedStdioServer = mockConstruction(StdioMCPServer.class)) {
             MCPRuntimeServer actual = new MCPRuntimeLauncher().launch(createLaunchConfiguration(false), "conf/mcp-http.yaml");
@@ -98,8 +98,8 @@ class MCPRuntimeLauncherTest {
     void assertLaunchWithHttpStartFailure() {
         IOException startFailure = new IOException("mocked http failure");
         try (
-                MockedConstruction<MCPSessionManager> mockedSessionManager = mockConstruction(MCPSessionManager.class);
-                MockedConstruction<MCPDatabaseCapabilityProvider> mockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
+                MockedConstruction<MCPSessionManager> ignoredMockedSessionManager = mockConstruction(MCPSessionManager.class);
+                MockedConstruction<MCPDatabaseCapabilityProvider> ignoredMockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
                 MockedConstruction<StreamableHttpMCPServer> mockedHttpServer = mockConstruction(StreamableHttpMCPServer.class, (mock, context) -> doThrow(startFailure).when(mock).start())) {
             IOException actual = assertThrows(IOException.class, () -> new MCPRuntimeLauncher().launch(createLaunchConfiguration(true), "conf/mcp-http.yaml"));
             assertThat(actual.getMessage(), is("Failed to start HTTP server."));
@@ -112,8 +112,8 @@ class MCPRuntimeLauncherTest {
     void assertLaunchWithStdioStartFailure() {
         IOException startFailure = new IOException("mocked stdio failure");
         try (
-                MockedConstruction<MCPSessionManager> mockedSessionManager = mockConstruction(MCPSessionManager.class);
-                MockedConstruction<MCPDatabaseCapabilityProvider> mockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
+                MockedConstruction<MCPSessionManager> ignoredMockedSessionManager = mockConstruction(MCPSessionManager.class);
+                MockedConstruction<MCPDatabaseCapabilityProvider> ignoredMockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
                 MockedConstruction<StdioMCPServer> mockedStdioServer = mockConstruction(StdioMCPServer.class, (mock, context) -> doThrow(startFailure).when(mock).start())) {
             IOException actual = assertThrows(IOException.class, () -> new MCPRuntimeLauncher().launch(createLaunchConfiguration(false), "conf/mcp-http.yaml"));
             assertThat(actual.getMessage(), is("Failed to start STDIO server."));
