@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyReq
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
@@ -89,7 +90,7 @@ public final class WorkflowGuidancePayloadBuilder {
         List<Map<String, Object>> nextActions = new LinkedList<>();
         if (WorkflowLifecycle.STATUS_COMPLETED.equals(status)) {
             nextActions.add(createToolAction(VALIDATE_WORKFLOW, "Validate the runtime state after workflow artifacts are applied or exported.",
-                    Map.of("plan_id", Objects.toString(payload.get("plan_id"), "")), false));
+                    Map.of(WorkflowFieldNames.PLAN_ID, Objects.toString(payload.get(WorkflowFieldNames.PLAN_ID), "")), false));
         }
         if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status)) {
             nextActions.add(createUserAction("Confirm the manual artifacts were executed outside MCP before validation.", true, List.of("manual_artifacts_executed")));
@@ -128,7 +129,7 @@ public final class WorkflowGuidancePayloadBuilder {
         String planningTool = resolvePlanningTool(snapshot);
         return planningTool.isEmpty()
                 ? List.of(createUserAction("Confirm the workflow kind before re-planning with the existing plan_id.", false, List.of("workflow_kind", "mismatches")))
-                : List.of(createToolAction(planningTool, "Re-plan with corrected metadata or algorithm choices.", Map.of("plan_id", snapshot.getPlanId()), false));
+                : List.of(createToolAction(planningTool, "Re-plan with corrected metadata or algorithm choices.", Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId()), false));
     }
     
     private static boolean isManualOnlyWorkflow(final WorkflowContextSnapshot snapshot) {
@@ -198,8 +199,8 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static void addMissingInputsFromIssue(final Collection<String> result, final WorkflowContextSnapshot snapshot, final WorkflowIssue issue) {
-        if (WorkflowIssueCode.DATABASE_REQUIRED.equals(issue.getCode()) && !result.contains("database")) {
-            result.add("database");
+        if (WorkflowIssueCode.DATABASE_REQUIRED.equals(issue.getCode()) && !result.contains(WorkflowFieldNames.DATABASE)) {
+            result.add(WorkflowFieldNames.DATABASE);
         }
         Object missingProperties = issue.getDetails().get("missing_properties");
         if (missingProperties instanceof Collection) {
@@ -225,17 +226,17 @@ public final class WorkflowGuidancePayloadBuilder {
                 return String.format("%s.%s", resolveAlgorithmPropertiesArgument(each.getAlgorithmRole()), propertyKey);
             }
         }
-        return String.format("primary_algorithm_properties.%s", propertyKey);
+        return String.format("%s.%s", WorkflowFieldNames.PRIMARY_ALGORITHM_PROPERTIES, propertyKey);
     }
     
     private static String resolveAlgorithmPropertiesArgument(final String algorithmRole) {
         if ("assisted_query".equals(algorithmRole)) {
-            return "assisted_query_algorithm_properties";
+            return WorkflowFieldNames.ASSISTED_QUERY_ALGORITHM_PROPERTIES;
         }
         if ("like_query".equals(algorithmRole)) {
-            return "like_query_algorithm_properties";
+            return WorkflowFieldNames.LIKE_QUERY_ALGORITHM_PROPERTIES;
         }
-        return "primary_algorithm_properties";
+        return WorkflowFieldNames.PRIMARY_ALGORITHM_PROPERTIES;
     }
     
     private static String resolveAlgorithmPropertyKey(final String fieldName) {
@@ -304,7 +305,7 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         if (WorkflowLifecycle.STATUS_PLANNED.equals(snapshot.getStatus())) {
             return List.of(createToolAction(APPLY_WORKFLOW, "Preview workflow artifacts before asking the user to approve execution.",
-                    Map.of("plan_id", snapshot.getPlanId(), "execution_mode", EXECUTION_MODE_PREVIEW), false));
+                    Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId(), WorkflowFieldNames.EXECUTION_MODE, EXECUTION_MODE_PREVIEW), false));
         }
         if (WorkflowLifecycle.STATUS_FAILED.equals(snapshot.getStatus())) {
             return createRecoveryPlanningActions(snapshot);
@@ -316,7 +317,7 @@ public final class WorkflowGuidancePayloadBuilder {
         String planningTool = resolvePlanningTool(snapshot);
         return planningTool.isEmpty()
                 ? List.of(createUserAction("Confirm the workflow kind, then call the matching planning tool with the existing plan_id.", false, List.of("workflow_kind", "issues")))
-                : List.of(createToolAction(planningTool, "Re-plan after resolving the reported issues.", Map.of("plan_id", snapshot.getPlanId()), false));
+                : List.of(createToolAction(planningTool, "Re-plan after resolving the reported issues.", Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId()), false));
     }
     
     private static Map<String, Object> createToolAction(final String targetTool, final String reason, final Map<String, Object> requiredArguments, final boolean requiresUserApproval) {

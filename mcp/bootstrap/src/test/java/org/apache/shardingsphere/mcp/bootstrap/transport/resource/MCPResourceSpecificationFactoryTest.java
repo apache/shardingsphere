@@ -25,6 +25,7 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -65,26 +67,13 @@ class MCPResourceSpecificationFactoryTest {
             assertThat(actual.get(0).resource().title(), is("Server Capability Catalog"));
             assertThat(actual.get(0).resource().description(), is("Read the model-facing capability catalog."));
             assertThat(actual.get(0).resource().mimeType(), is("application/json"));
-            assertNull(actual.get(0).resource().size());
             assertNotNull(actual.get(0).readHandler());
         }
     }
     
     @Test
-    void assertCreateResourceSpecificationsMapSize() {
-        MCPResourceDescriptor sizedDescriptor = new MCPResourceDescriptor("shardingsphere://sized", "sized", "Sized Resource",
-                "Read a sized resource.", "application/json", 128L, true, MCPResourceAnnotations.EMPTY, Collections.emptyMap());
-        try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
-            mockedResourceHandlerRegistry.when(ResourceHandlerRegistry::getSupportedResourceDescriptors).thenReturn(List.of(createResourceDescriptor(), sizedDescriptor));
-            List<SyncResourceSpecification> actual = new MCPResourceSpecificationFactory(mock(MCPRuntimeContext.class)).createResourceSpecifications();
-            assertNull(actual.get(0).resource().size());
-            assertThat(actual.get(1).resource().size(), is(128L));
-        }
-    }
-    
-    @Test
-    void assertCreateResourceSpecificationsMapAnnotationPriorityPresence() {
-        MCPResourceAnnotations priorityZeroAnnotations = new MCPResourceAnnotations(List.of("assistant"), 0D, true, null);
+    void assertCreateResourceSpecificationsMapAnnotationPriority() {
+        MCPResourceAnnotations priorityZeroAnnotations = new MCPResourceAnnotations(List.of("assistant"), 0D, null);
         MCPResourceDescriptor priorityZeroDescriptor = new MCPResourceDescriptor("shardingsphere://priority-zero", "priority-zero", "Priority Zero",
                 "Read a priority zero resource.", "application/json", priorityZeroAnnotations, Collections.emptyMap());
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
@@ -121,6 +110,22 @@ class MCPResourceSpecificationFactoryTest {
                     () -> actualSpecification.readHandler().apply(mock(McpSyncServerExchange.class), new ReadResourceRequest("shardingsphere://capabilities")));
             assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.RESOURCE_NOT_FOUND));
             assertThat(actual.getJsonRpcError().message(), is("Resource not found"));
+        }
+    }
+    
+    @Test
+    void assertCreateResourceSpecificationsHandleUnsupportedResourcePayload() {
+        try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
+            mockedResourceHandlerRegistry.when(ResourceHandlerRegistry::getSupportedResourceDescriptors).thenReturn(List.of(createResourceDescriptor()));
+            mockedResourceHandlerRegistry.when(() -> ResourceHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://capabilities")))
+                    .thenThrow(new MCPUnsupportedException("Sequence resources are not supported for the current database."));
+            MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
+            when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
+            SyncResourceSpecification actualSpecification = new MCPResourceSpecificationFactory(runtimeContext).createResourceSpecifications().get(0);
+            ReadResourceResult actual = actualSpecification.readHandler().apply(mock(McpSyncServerExchange.class), new ReadResourceRequest("shardingsphere://capabilities"));
+            String actualText = ((TextResourceContents) actual.contents().get(0)).text();
+            assertThat(actualText, containsString("\"error_code\":\"unsupported\""));
+            assertThat(actualText, containsString("\"message\":\"Sequence resources are not supported for the current database.\""));
         }
     }
     

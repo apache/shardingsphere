@@ -93,17 +93,8 @@ final class MCPDescriptorCatalogValidator {
         checkDescription(descriptor.getDescription(), String.format("Resource description for `%s`", uriOrTemplate));
         checkNotBlank(descriptor.getMimeType(), String.format("Resource MIME type for `%s`", uriOrTemplate));
         checkState(null == registered.putIfAbsent(uriOrTemplate, descriptor), String.format("Duplicate MCP resource descriptor `%s`.", uriOrTemplate));
-        validateResourceSize(descriptor);
         validateResourceAnnotations(descriptor);
         validateResourceMeta(descriptor);
-    }
-    
-    private static void validateResourceSize(final MCPResourceDescriptor descriptor) {
-        if (!descriptor.isSizePresent()) {
-            return;
-        }
-        checkState(!descriptor.isTemplated(), String.format("Resource template `%s` must not declare size.", descriptor.getUriTemplate()));
-        checkState(descriptor.getSize() >= 0L, String.format("Resource `%s` size must be non-negative.", descriptor.getUriTemplate()));
     }
     
     private static void validateResourceAnnotations(final MCPResourceDescriptor descriptor) {
@@ -111,7 +102,7 @@ final class MCPDescriptorCatalogValidator {
         for (String each : annotations.getAudience()) {
             checkState(MCP_ROLES.contains(each), String.format("Resource `%s` annotations audience `%s` is not an MCP role.", descriptor.getUriTemplate(), each));
         }
-        if (annotations.isPriorityPresent()) {
+        if (null != annotations.getPriority()) {
             checkState(Double.isFinite(annotations.getPriority()), String.format("Resource `%s` annotations priority must be finite.", descriptor.getUriTemplate()));
             checkState(annotations.getPriority() >= 0D && annotations.getPriority() <= 1D,
                     String.format("Resource `%s` annotations priority must be between 0.0 and 1.0.", descriptor.getUriTemplate()));

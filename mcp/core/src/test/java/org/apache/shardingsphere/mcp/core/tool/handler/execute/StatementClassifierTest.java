@@ -62,6 +62,8 @@ class StatementClassifierTest {
                         "SELECT * FROM foo_orders /* source; */", "foo_orders", ""),
                 Arguments.of("trim trailing semicolon query with comment", "SELECT * FROM foo_orders; -- trailing;", SupportedMCPStatement.QUERY, "SELECT",
                         "SELECT * FROM foo_orders", "foo_orders", ""),
+                Arguments.of("query from values target omitted", "SELECT * FROM (VALUES (1)) foo_result", SupportedMCPStatement.QUERY, "SELECT",
+                        "SELECT * FROM (VALUES (1)) foo_result", "", ""),
                 Arguments.of("with query", "WITH foo_result AS (SELECT * FROM foo_orders) SELECT * FROM foo_result", SupportedMCPStatement.QUERY, "SELECT",
                         "WITH foo_result AS (SELECT * FROM foo_orders) SELECT * FROM foo_result", "foo_orders", ""),
                 Arguments.of("with recursive query", "WITH RECURSIVE foo_result AS (SELECT * FROM foo_orders) SELECT * FROM foo_result", SupportedMCPStatement.QUERY, "SELECT",

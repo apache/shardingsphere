@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
@@ -57,12 +58,12 @@ public final class WorkflowIntentResolverSupport {
         }
         String naturalLanguageIntent = getNaturalLanguageIntent(request);
         if (containsAny(naturalLanguageIntent, "drop", "delete", "remove", "删除", "移除", "去掉")) {
-            return recordInferredValue(clarifiedIntent, "operation_type", WorkflowLifecycle.OPERATION_DROP);
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.OPERATION_TYPE, WorkflowLifecycle.OPERATION_DROP);
         }
         if (containsAny(naturalLanguageIntent, "alter", "modify", "update", "修改", "更新", "调整", "变更")) {
-            return recordInferredValue(clarifiedIntent, "operation_type", "alter");
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.OPERATION_TYPE, "alter");
         }
-        return recordInferredValue(clarifiedIntent, "operation_type", "create");
+        return recordInferredValue(clarifiedIntent, WorkflowFieldNames.OPERATION_TYPE, "create");
     }
     
     /**
@@ -91,37 +92,37 @@ public final class WorkflowIntentResolverSupport {
         String columnName = request.getColumn().toLowerCase(Locale.ENGLISH);
         if (containsAny(naturalLanguageIntent, "phone number", "phone", "mobile", "tel", "手机号", "手机", "电话号码", "电话")
                 || containsAny(columnName, "phone", "mobile", "tel")) {
-            return recordInferredValue(clarifiedIntent, "field_semantics", "phone");
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "phone");
         }
         if (containsAny(naturalLanguageIntent, "identity card", "id card", "身份证", "证件") || columnName.contains("id_card")) {
-            return recordInferredValue(clarifiedIntent, "field_semantics", "id_card");
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "id_card");
         }
         if (containsAny(naturalLanguageIntent, "email", "邮箱", "邮件") || columnName.contains("email")) {
-            return recordInferredValue(clarifiedIntent, "field_semantics", "email");
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "email");
         }
         if (containsAny(naturalLanguageIntent, "bank card", "银行卡", "银行卡号", "卡号")
                 || containsAny(columnName, "bank_card", "card_no", "card_number")) {
-            return recordInferredValue(clarifiedIntent, "field_semantics", "bank_card");
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "bank_card");
         }
         if (containsAny(naturalLanguageIntent, "passport", "护照") || columnName.contains("passport")) {
-            return recordInferredValue(clarifiedIntent, "field_semantics", "passport");
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "passport");
         }
         if (containsAny(naturalLanguageIntent, "license plate", "车牌", "车牌号")
                 || containsAny(columnName, "license_plate", "plate_no", "plate_number")) {
-            return recordInferredValue(clarifiedIntent, "field_semantics", "license_plate");
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "license_plate");
         }
         if (containsAny(naturalLanguageIntent, "birth date", "birthday", "出生日期", "生日")
                 || containsAny(columnName, "birth_date", "birthday", "date_of_birth")) {
-            return recordInferredValue(clarifiedIntent, "field_semantics", "birth_date");
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "birth_date");
         }
         if (containsAny(naturalLanguageIntent, "address", "地址", "住址") || containsAny(columnName, "address", "addr")) {
-            return recordInferredValue(clarifiedIntent, "field_semantics", "address");
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "address");
         }
         if (containsAny(naturalLanguageIntent, "real name", "full name", "姓名", "名字")
                 || containsAny(columnName, "real_name", "full_name", "name")) {
-            return recordInferredValue(clarifiedIntent, "field_semantics", "name");
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "name");
         }
-        return recordInferredValue(clarifiedIntent, "field_semantics", columnName);
+        return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, columnName);
     }
     
     static String resolveExecutionMode(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
@@ -133,7 +134,7 @@ public final class WorkflowIntentResolverSupport {
         return containsAny(naturalLanguageIntent, "manual", "manual-only", "manual only", "manual execution", "manual artifacts",
                 "export", "outside mcp", "without applying", "do not apply", "no runtime side effects", "side effects out of mcp",
                 "手动", "手工", "人工", "导出", "不要执行", "不执行", "不要应用", "不应用", "不产生副作用")
-                        ? recordInferredValue(clarifiedIntent, "execution_mode", EXECUTION_MODE_MANUAL_ONLY)
+                        ? recordInferredValue(clarifiedIntent, WorkflowFieldNames.EXECUTION_MODE, EXECUTION_MODE_MANUAL_ONLY)
                         : "";
     }
     

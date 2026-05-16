@@ -22,8 +22,9 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpec
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
@@ -82,9 +83,6 @@ public final class MCPResourceSpecificationFactory {
                 .title(descriptor.getTitle())
                 .description(descriptor.getDescription())
                 .mimeType(descriptor.getMimeType());
-        if (descriptor.isSizePresent()) {
-            result.size(descriptor.getSize());
-        }
         appendResourceAnnotations(result, descriptor.getAnnotations());
         if (!descriptor.getMeta().isEmpty()) {
             result.meta(descriptor.getMeta());
@@ -120,12 +118,14 @@ public final class MCPResourceSpecificationFactory {
     
     private McpSchema.Annotations createAnnotations(final MCPResourceAnnotations annotations) {
         List<McpSchema.Role> audience = annotations.getAudience().stream().map(each -> McpSchema.Role.valueOf(each.toUpperCase(Locale.ENGLISH))).toList();
-        return new McpSchema.Annotations(audience, annotations.isPriorityPresent() ? annotations.getPriority() : null, annotations.getLastModified());
+        return new McpSchema.Annotations(audience, annotations.getPriority(), annotations.getLastModified());
     }
     
     private McpSchema.ReadResourceResult handleReadResource(final McpSyncServerExchange exchange, final McpSchema.ReadResourceRequest request) {
         try {
             return MCPTransportPayloadUtils.createReadResourceResult(request.uri(), controller.handle(request.uri()).toPayload());
+        } catch (final MCPUnsupportedException ex) {
+            return MCPTransportPayloadUtils.createReadResourceResult(request.uri(), MCPErrorConverter.convert(ex).toPayload());
         } catch (final ShardingSphereMCPException | RuntimeDatabaseConnectionException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException ex) {
             throw createReadResourceError(ex);
         }

@@ -35,50 +35,31 @@ class MCPDescriptorCatalogValidatorTest {
     
     @Test
     void assertValidateResourceAnnotations() {
-        MCPDescriptorCatalog actual = createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of("assistant"), 0D, true, "2026-05-13T00:00:00Z"))), List.of());
+        MCPDescriptorCatalog actual = createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of("assistant"), 0D, "2026-05-13T00:00:00Z"))), List.of());
         assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(actual));
-    }
-    
-    @Test
-    void assertValidateResourceSize() {
-        MCPDescriptorCatalog actual = createCatalog(List.of(createSizedResourceDescriptor(128L, true)), List.of());
-        assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(actual));
-    }
-    
-    @Test
-    void assertValidateRejectsNegativeResourceSize() {
-        assertValidationError(createCatalog(List.of(createSizedResourceDescriptor(-1L, true)), List.of()), "Resource `shardingsphere://capabilities` size must be non-negative.");
-    }
-    
-    @Test
-    void assertValidateRejectsResourceTemplateSize() {
-        MCPResourceDescriptor resourceTemplate = new MCPResourceDescriptor("shardingsphere://databases/{database}", "logical-database-detail", "Logical Database Detail",
-                "Read one logical database detail.", "application/json", 128L, true, MCPResourceAnnotations.EMPTY, Map.of());
-        assertValidationError(new MCPDescriptorCatalog(List.of(), List.of(resourceTemplate), List.of(createResourceExtensionDescriptor()), List.of(), List.of(), List.of(), List.of(), List.of(),
-                List.of()), "Resource template `shardingsphere://databases/{database}` must not declare size.");
     }
     
     @Test
     void assertValidateRejectsInvalidResourceAudience() {
-        assertValidationError(createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of("model"), 0D, false, null))), List.of()),
+        assertValidationError(createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of("model"), null, null))), List.of()),
                 "Resource `shardingsphere://capabilities` annotations audience `model` is not an MCP role.");
     }
     
     @Test
     void assertValidateRejectsInvalidResourcePriorityRange() {
-        assertValidationError(createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of(), 1.1D, true, null))), List.of()),
+        assertValidationError(createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of(), 1.1D, null))), List.of()),
                 "Resource `shardingsphere://capabilities` annotations priority must be between 0.0 and 1.0.");
     }
     
     @Test
     void assertValidateRejectsInvalidResourcePriorityValue() {
-        assertValidationError(createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of(), Double.NaN, true, null))), List.of()),
+        assertValidationError(createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of(), Double.NaN, null))), List.of()),
                 "Resource `shardingsphere://capabilities` annotations priority must be finite.");
     }
     
     @Test
     void assertValidateRejectsInvalidResourceLastModified() {
-        assertValidationError(createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of(), 0D, false, "2026-05-13T00:00:00"))), List.of()),
+        assertValidationError(createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of(), null, "2026-05-13T00:00:00"))), List.of()),
                 "Resource `shardingsphere://capabilities` annotations lastModified must be an ISO 8601 timestamp with an explicit offset or UTC marker.");
     }
     
@@ -107,22 +88,17 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     private MCPDescriptorCatalog createCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPToolDescriptor> toolDescriptors) {
-        return new MCPDescriptorCatalog(resourceDescriptors, List.of(), List.of(), toolDescriptors, List.of(), List.of(), List.of(), List.of(), List.of());
+        return createCatalog(resourceDescriptors, List.of(), toolDescriptors);
+    }
+    
+    private MCPDescriptorCatalog createCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPResourceDescriptor> resourceTemplateDescriptors,
+                                               final List<MCPToolDescriptor> toolDescriptors) {
+        return new MCPDescriptorCatalog(resourceDescriptors, resourceTemplateDescriptors, List.of(), toolDescriptors, List.of(), List.of(), List.of(), List.of(), List.of());
     }
     
     private MCPResourceDescriptor createResourceDescriptor(final MCPResourceAnnotations annotations) {
         return new MCPResourceDescriptor("shardingsphere://capabilities", "server-capability-catalog", "Server Capability Catalog",
                 "Read the model-facing capability catalog.", "application/json", annotations, Map.of());
-    }
-    
-    private MCPResourceDescriptor createSizedResourceDescriptor(final long size, final boolean sizePresent) {
-        return new MCPResourceDescriptor("shardingsphere://capabilities", "server-capability-catalog", "Server Capability Catalog",
-                "Read the model-facing capability catalog.", "application/json", size, sizePresent, MCPResourceAnnotations.EMPTY, Map.of());
-    }
-    
-    private MCPResourceExtensionDescriptor createResourceExtensionDescriptor() {
-        return new MCPResourceExtensionDescriptor("shardingsphere://databases/{database}", List.of(
-                new MCPUriVariableDescriptor("database", "Database", "Logical database name.", true, "database")), "detail", "database", "", List.of(), List.of(), List.of());
     }
     
     private MCPToolDescriptor createToolDescriptor(final MCPToolAnnotations annotations) {

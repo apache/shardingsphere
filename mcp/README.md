@@ -212,7 +212,6 @@ Descriptor annotations follow the MCP `2025-11-25` schema and are developer-main
 
 - Resource annotations are optional. When present, they may only use `audience`, `priority`, and `lastModified`; omit the whole `annotations` map when no field is needed.
 - Resource `audience` values must be MCP roles `user` or `assistant`; `priority` must be finite and between `0.0` and `1.0`; `lastModified` must include an ISO 8601 UTC marker or offset.
-- Fixed resource descriptors may declare official MCP `size` when the raw content size is known. `size` must be a non-negative integer within Java `long` range. Resource templates must not declare `size`.
 - Tool annotations use MCP `ToolAnnotations`. MCP defines effective defaults of `readOnlyHint=false`, `destructiveHint=true`, `idempotentHint=false`, and `openWorldHint=true`.
 - ShardingSphere public tool descriptors must still declare all four tool boolean hints explicitly in YAML, so reviewers can see the safety decision before primitive defaults are applied.
 - Tool annotations are client hints only. They do not replace runtime validation, SQL safety checks, user approval, or server-side authorization.

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptRuleDistSQLPlanningServiceTest {
@@ -55,6 +57,23 @@ class EncryptRuleDistSQLPlanningServiceTest {
         assertTrue(actual.getSql().contains("NAME=email"));
         assertTrue(actual.getSql().contains("NAME=phone"));
         assertTrue(actual.getSql().contains("CIPHER=phone_cipher"));
+    }
+    
+    @Test
+    void assertPlanEncryptRuleEscapesAlgorithmLiterals() {
+        EncryptWorkflowRequest request = createRequest("create", false, false);
+        request.setAlgorithmType("AES'X");
+        request.getPrimaryAlgorithmProperties().put("aes-key-value", "s'1");
+        RuleArtifact actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of());
+        assertTrue(actual.getSql().contains("TYPE(NAME='aes''x', PROPERTIES('aes-key-value'='s''1'))"));
+    }
+    
+    @Test
+    void assertPlanEncryptRuleRejectsUnsafeColumn() {
+        EncryptWorkflowRequest request = createRequest("create", false, false);
+        request.setColumn("phone;drop");
+        MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class, () -> service.planEncryptRule(request, createDerivedColumnPlan(), List.of()));
+        assertThat(actualException.getMessage(), is("column `phone;drop` contains unsupported characters. Only unquoted SQL identifiers are supported in V1."));
     }
     
     @Test

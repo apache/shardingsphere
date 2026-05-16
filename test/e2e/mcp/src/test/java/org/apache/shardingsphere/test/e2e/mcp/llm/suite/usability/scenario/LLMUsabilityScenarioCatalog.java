@@ -184,7 +184,8 @@ public final class LLMUsabilityScenarioCatalog {
                     List.of(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG, "extended", "multi-database"),
                     new LLME2EScenario("extended-database-disambiguation-" + runtimeKind, SYSTEM_PROMPT,
                             "Before any metadata search or SQL, read exact database list resource `shardingsphere://databases`, choose the live transactional database instead of the "
-                                    + "analytics snapshot, locate `" + tableName + "`, and verify `" + query + "`." + toolContext,
+                                    + "analytics snapshot, locate `" + tableName + "` by calling database_gateway_search_metadata with `database`, `schema`, `query`, and "
+                                    + "`object_types` set to `[\"table\"]` only, and verify `" + query + "`. Use tool inputSchema fields only when retrying a tool call." + toolContext,
                             createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                             List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_search_metadata", "database_gateway_execute_query"),
                             List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_search_metadata", "database_gateway_execute_query")),

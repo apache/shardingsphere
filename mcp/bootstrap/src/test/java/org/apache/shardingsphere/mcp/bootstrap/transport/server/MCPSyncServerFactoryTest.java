@@ -162,7 +162,6 @@ class MCPSyncServerFactoryTest {
                 .title("Capabilities")
                 .description("Capabilities")
                 .mimeType("application/json")
-                .size(128L)
                 .annotations(new McpSchema.Annotations(List.of(McpSchema.Role.ASSISTANT), 0.5D, null))
                 .meta(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "catalog-guidance"))
                 .build();
@@ -198,7 +197,6 @@ class MCPSyncServerFactoryTest {
     private void assertResourceDiscoveryDescriptor(final McpSchema.Resource actual) {
         assertThat(actual.uri(), is("shardingsphere://capabilities"));
         assertThat(actual.title(), is("Capabilities"));
-        assertThat(actual.size(), is(128L));
         assertThat(actual.annotations().priority(), is(0.5D));
         assertThat(actual.meta(), is(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "catalog-guidance")));
     }

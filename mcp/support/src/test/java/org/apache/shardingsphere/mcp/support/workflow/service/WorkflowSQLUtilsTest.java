@@ -84,6 +84,12 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertCreateAlgorithmFragmentEscapesLiterals() {
+        String actualFragment = WorkflowSQLUtils.createAlgorithmFragment("AES'X", Map.of("a'b", "v'1"));
+        assertThat(actualFragment, is("TYPE(NAME='aes''x', PROPERTIES('a''b'='v''1'))"));
+    }
+    
+    @Test
     void assertCreateAlgorithmFragmentReturnsEmptyForBlankType() {
         String actualFragment = WorkflowSQLUtils.createAlgorithmFragment(" ", Map.of("aes-key-value", "123456"));
         assertThat(actualFragment, is(""));

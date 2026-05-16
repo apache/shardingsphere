@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPDescriptorCatalog;
-import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolAnnotations;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolDescriptor;
 import org.junit.jupiter.api.Test;
@@ -30,31 +28,9 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPDescriptorCatalogYamlSwapperTest {
-    
-    @Test
-    void assertSwapResourceSize() {
-        YamlMCPResourceDescriptor yamlResource = createYamlResourceDescriptor();
-        yamlResource.setSize(128L);
-        YamlMCPDescriptorCatalog yamlCatalog = new YamlMCPDescriptorCatalog();
-        yamlCatalog.setResources(List.of(yamlResource));
-        MCPDescriptorCatalog actual = MCPDescriptorCatalogYamlSwapper.swap(List.of(yamlCatalog));
-        MCPResourceDescriptor actualResource = actual.getResourceDescriptors().iterator().next();
-        assertTrue(actualResource.isSizePresent());
-        assertThat(actualResource.getSize(), is(128L));
-    }
-    
-    @Test
-    void assertSwapAbsentResourceSize() {
-        YamlMCPDescriptorCatalog yamlCatalog = new YamlMCPDescriptorCatalog();
-        yamlCatalog.setResources(List.of(createYamlResourceDescriptor()));
-        MCPDescriptorCatalog actual = MCPDescriptorCatalogYamlSwapper.swap(List.of(yamlCatalog));
-        assertFalse(actual.getResourceDescriptors().iterator().next().isSizePresent());
-    }
     
     @Test
     void assertSwapWithInvalidToolAnnotations() {
@@ -68,16 +44,6 @@ class MCPDescriptorCatalogYamlSwapperTest {
         yamlCatalog.setTools(List.of(yamlTool));
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPDescriptorCatalogYamlSwapper.swap(List.of(yamlCatalog)));
         assertThat(actual.getMessage(), is("MCP descriptor catalog property `tools[0].annotations.openWorldHint` is required."));
-    }
-    
-    private YamlMCPResourceDescriptor createYamlResourceDescriptor() {
-        YamlMCPResourceDescriptor result = new YamlMCPResourceDescriptor();
-        result.setUri("shardingsphere://capabilities");
-        result.setName("server-capability-catalog");
-        result.setTitle("Server Capability Catalog");
-        result.setDescription("Read the model-facing capability catalog.");
-        result.setMimeType("application/json");
-        return result;
     }
     
     private YamlMCPToolDescriptor createYamlToolDescriptor() {

@@ -142,7 +142,8 @@ class ResourceHandlerRegistryTest {
     }
     
     private static MCPResourceDescriptor createResourceDescriptor(final String uriOrTemplate, final String name, final String title) {
-        return new MCPResourceDescriptor(uriOrTemplate, name, title, String.format("Read the %s fixture resource.", name), "application/json", MCPResourceAnnotations.EMPTY, Collections.emptyMap());
+        return new MCPResourceDescriptor(uriOrTemplate, name, title, String.format("Read the %s fixture resource.", name), "application/json", MCPResourceAnnotations.EMPTY,
+                Collections.emptyMap());
     }
     
     private static MCPHandlerProvider createHandlerProvider(final Collection<MCPResourceHandler<?>> resourceHandlers) {

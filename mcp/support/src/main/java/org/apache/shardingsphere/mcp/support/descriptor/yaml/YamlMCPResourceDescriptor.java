@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,11 +49,6 @@ public final class YamlMCPResourceDescriptor {
     @NotBlank(message = "is required")
     private String mimeType;
     
-    private long size;
-    
-    @Setter(AccessLevel.NONE)
-    private boolean sizePresent;
-    
     @Valid
     private YamlMCPResourceAnnotations annotations;
     
@@ -63,14 +57,4 @@ public final class YamlMCPResourceDescriptor {
     
     @Valid
     private YamlMCPResourceExtensionDescriptor extension;
-    
-    /**
-     * Set size and mark it as explicitly declared.
-     *
-     * @param size size
-     */
-    public void setSize(final long size) {
-        this.size = size;
-        sizePresent = true;
-    }
 }

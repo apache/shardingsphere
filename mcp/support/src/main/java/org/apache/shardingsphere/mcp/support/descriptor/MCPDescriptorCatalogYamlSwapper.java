@@ -75,7 +75,7 @@ final class MCPDescriptorCatalogYamlSwapper {
     private static void swapFixedResourceDescriptors(final Collection<YamlMCPResourceDescriptor> yamlDescriptors, final Collection<MCPResourceDescriptor> resources,
                                                      final Collection<MCPResourceExtensionDescriptor> resourceExtensions) {
         for (YamlMCPResourceDescriptor each : emptyIfNull(yamlDescriptors)) {
-            resources.add(new MCPResourceDescriptor(each.getUri(), each.getName(), each.getTitle(), each.getDescription(), each.getMimeType(), each.getSize(), each.isSizePresent(),
+            resources.add(new MCPResourceDescriptor(each.getUri(), each.getName(), each.getTitle(), each.getDescription(), each.getMimeType(),
                     swapResourceAnnotations(each.getAnnotations()), emptyMapIfNull(each.getMeta())));
             resourceExtensions.add(swapResourceExtension(each.getUri(), each.getExtension()));
         }
@@ -109,7 +109,7 @@ final class MCPDescriptorCatalogYamlSwapper {
     
     private static MCPResourceAnnotations swapResourceAnnotations(final YamlMCPResourceAnnotations yamlAnnotations) {
         return null == yamlAnnotations ? MCPResourceAnnotations.EMPTY
-                : new MCPResourceAnnotations(yamlAnnotations.getAudience(), yamlAnnotations.getPriority(), yamlAnnotations.isPriorityPresent(), yamlAnnotations.getLastModified());
+                : new MCPResourceAnnotations(yamlAnnotations.getAudience(), yamlAnnotations.getPriority(), yamlAnnotations.getLastModified());
     }
     
     private static Collection<MCPToolDescriptor> swapToolDescriptors(final Collection<YamlMCPToolDescriptor> yamlDescriptors) {

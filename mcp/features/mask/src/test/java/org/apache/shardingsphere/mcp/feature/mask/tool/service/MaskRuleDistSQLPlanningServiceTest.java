@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MaskRuleDistSQLPlanningServiceTest {
@@ -49,6 +51,23 @@ class MaskRuleDistSQLPlanningServiceTest {
         assertTrue(actual.getSql().startsWith("ALTER MASK RULE orders"));
         assertTrue(actual.getSql().contains("NAME=email"));
         assertTrue(actual.getSql().contains("NAME=phone"));
+    }
+    
+    @Test
+    void assertPlanMaskRuleEscapesAlgorithmLiterals() {
+        WorkflowRequest request = createRequest("create");
+        request.setAlgorithmType("KEEP'X");
+        request.getPrimaryAlgorithmProperties().put("replace-char", "x'");
+        RuleArtifact actual = service.planMaskRule(request, List.of());
+        assertTrue(actual.getSql().contains("TYPE(NAME='keep''x'"));
+        assertTrue(actual.getSql().contains("'replace-char'='x'''"));
+    }
+    
+    @Test
+    void assertPlanMaskRuleRejectsUnsafeExistingColumn() {
+        MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class,
+                () -> service.planMaskRule(createRequest("alter"), List.of(Map.of("column", "bad column", "algorithm_type", "MD5"))));
+        assertThat(actualException.getMessage(), is("column `bad column` contains unsupported characters. Only unquoted SQL identifiers are supported in V1."));
     }
     
     @Test

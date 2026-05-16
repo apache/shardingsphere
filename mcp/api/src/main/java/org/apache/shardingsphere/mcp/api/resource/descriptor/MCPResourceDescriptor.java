@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.mcp.api.resource.descriptor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
 /**
  * MCP resource descriptor.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPResourceDescriptor {
     
@@ -37,31 +39,9 @@ public final class MCPResourceDescriptor {
     
     private final String mimeType;
     
-    private final long size;
-    
-    private final boolean sizePresent;
-    
     private final MCPResourceAnnotations annotations;
     
     private final Map<String, Object> meta;
-    
-    public MCPResourceDescriptor(final String uriTemplate, final String name, final String title, final String description, final String mimeType,
-                                 final MCPResourceAnnotations annotations, final Map<String, Object> meta) {
-        this(uriTemplate, name, title, description, mimeType, 0L, false, annotations, meta);
-    }
-    
-    public MCPResourceDescriptor(final String uriTemplate, final String name, final String title, final String description, final String mimeType, final long size,
-                                 final boolean sizePresent, final MCPResourceAnnotations annotations, final Map<String, Object> meta) {
-        this.uriTemplate = uriTemplate;
-        this.name = name;
-        this.title = title;
-        this.description = description;
-        this.mimeType = mimeType;
-        this.size = size;
-        this.sizePresent = sizePresent;
-        this.annotations = annotations;
-        this.meta = meta;
-    }
     
     /**
      * Judge whether the resource is a URI template.

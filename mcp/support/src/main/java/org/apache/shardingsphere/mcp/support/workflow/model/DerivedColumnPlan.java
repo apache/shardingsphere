@@ -78,9 +78,9 @@ public final class DerivedColumnPlan {
     public Map<String, Object> toMap() {
         Map<String, Object> result = new LinkedHashMap<>(12, 1F);
         result.put("logical_column", logicalColumn);
-        result.put("cipher_column_name", cipherColumnName);
-        result.put("assisted_query_column_name", assistedQueryColumnName);
-        result.put("like_query_column_name", likeQueryColumnName);
+        result.put(WorkflowFieldNames.CIPHER_COLUMN_NAME, cipherColumnName);
+        result.put(WorkflowFieldNames.ASSISTED_QUERY_COLUMN_NAME, assistedQueryColumnName);
+        result.put(WorkflowFieldNames.LIKE_QUERY_COLUMN_NAME, likeQueryColumnName);
         result.put("cipher_column_required", cipherColumnRequired);
         result.put("assisted_query_column_required", assistedQueryColumnRequired);
         result.put("like_query_column_required", likeQueryColumnRequired);

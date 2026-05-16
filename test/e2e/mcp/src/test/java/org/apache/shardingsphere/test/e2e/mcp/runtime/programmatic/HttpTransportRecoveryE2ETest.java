@@ -34,10 +34,13 @@ import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
 class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+    
+    private static final String RECOVERY_SECRET = "recovery-secret-value";
     
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();
@@ -146,6 +149,24 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertModelFacingPayloadContract(completionPayload);
     }
     
+    @Test
+    void assertWorkflowRecoveryRedactsEncryptSecret() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> planResponse = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_encrypt_rule", createEncryptRulePlanArguments());
+        assertThat(planResponse.statusCode(), is(200));
+        assertFalse(planResponse.body().contains(RECOVERY_SECRET));
+        String planId = String.valueOf(getStructuredContent(planResponse.body()).get("plan_id"));
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME, Map.of("plan_id", planId));
+        assertThat(actual.statusCode(), is(200));
+        assertFalse(actual.body().contains(RECOVERY_SECRET));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> recovery = assertRecoveryCategory(payload, "invalid_request", "missing_context");
+        assertThat(String.valueOf(recovery.get("category")), is("missing_execution_mode"));
+        assertModelFacingPayloadContract(payload);
+    }
+    
     private Map<String, Object> assertRecoveryCategory(final Map<String, Object> payload, final String expectedErrorCode, final String expectedRecoveryCategory) {
         assertThat(String.valueOf(payload.get("error_code")), is(expectedErrorCode));
         Map<String, Object> result = castToMap(payload.get("recovery"));
@@ -174,6 +195,18 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         String referenceType = Objects.toString(action.get("reference_type"), "");
         String reference = Objects.toString(action.get("reference"), "");
         return "ref/resource".equals(referenceType) ? Map.of("type", referenceType, "uri", reference) : Map.of("type", referenceType, "name", reference);
+    }
+    
+    private Map<String, Object> createEncryptRulePlanArguments() {
+        return Map.of(
+                "database", "logic_db",
+                "schema", "public",
+                "table", "orders",
+                "column", "status",
+                "operation_type", "create",
+                "algorithm_type", "AES",
+                "primary_algorithm_properties", Map.of("aes-key-value", RECOVERY_SECRET),
+                "structured_intent_evidence", Map.of("requires_equality_filter", false, "requires_like_query", false));
     }
     
     private Map<String, Object> getResultPayload(final HttpResponse<String> response) {

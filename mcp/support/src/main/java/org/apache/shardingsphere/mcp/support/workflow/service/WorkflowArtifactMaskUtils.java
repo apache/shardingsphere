@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -46,7 +47,7 @@ public final class WorkflowArtifactMaskUtils {
     public static Map<String, Object> createMaskedRuleArtifactMap(final RuleArtifact ruleArtifact, final WorkflowPropertySource propertySource,
                                                                   final List<AlgorithmPropertyRequirement> propertyRequirements) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("operation_type", ruleArtifact.getOperationType());
+        result.put(WorkflowFieldNames.OPERATION_TYPE, ruleArtifact.getOperationType());
         result.put("sql", maskSensitiveSql(ruleArtifact.getSql(), propertySource, propertyRequirements));
         result.put("redaction", createRedactionPayload(propertySource, propertyRequirements));
         return result;

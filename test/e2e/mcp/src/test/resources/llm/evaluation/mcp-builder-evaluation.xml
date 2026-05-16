@@ -15,58 +15,178 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<mcp_builder_evaluation version="2026-05-13"
+<mcp_builder_evaluation version="2026-05-16"
                         standard_reference="MCP 2025-11-25"
                         operation_mode="read_only"
                         requires_external_model="false">
   <qa_pair id="q01" category="protocol_discovery" read_only="true">
-    <question>A new MCP client has no ShardingSphere-specific URI cached. Which official MCP method should it call first to enumerate callable server tools?</question>
-    <expected_answer>tools/list</expected_answer>
-    <verification>Exact MCP method name.</verification>
+    <question>
+      A new MCP client is attached to a ShardingSphere MCP server with no cached tool names, resource URIs, or schema hints. Describe the
+      read-only discovery sequence it should use before deciding whether an encrypt or mask workflow is possible.
+    </question>
+    <expected_answer>
+      The client should discover the server surface before choosing any workflow action. It should call tools/list to inspect callable tools
+      and their input schemas, call resources/templates/list to learn the parameterized ShardingSphere metadata URI patterns, and read safe
+      resources such as shardingsphere://runtime or shardingsphere://databases only after selecting a concrete URI. The answer must not
+      guess tool names, skip schema inspection, or execute workflow apply actions during discovery.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer uses tools/list for tool discovery and schema inspection.</step>
+      <step>Confirm the answer uses resources/templates/list before constructing ShardingSphere metadata URIs.</step>
+      <step>Confirm the answer keeps the sequence read-only and avoids workflow apply or SQL mutation.</step>
+    </verification>
   </qa_pair>
   <qa_pair id="q02" category="protocol_discovery" read_only="true">
-    <question>The client needs templated resource URIs for database, schema, table, column, index, and sequence details. Which official MCP method exposes those templates?</question>
-    <expected_answer>resources/templates/list</expected_answer>
-    <verification>Exact MCP method name.</verification>
+    <question>
+      An AI assistant needs to inspect a logical table but the user only supplied a database name and a partial table name. Explain how it should
+      combine MCP resource discovery with ShardingSphere metadata search without relying on placeholder text from tool descriptions.
+    </question>
+    <expected_answer>
+      The assistant should use resources/templates/list to learn valid URI templates, use shardingsphere://databases or metadata search to
+      disambiguate the logical database and schema, and then read the exact table resource with resources/read when a concrete URI is known.
+      If the metadata search returns multiple candidates, the assistant should ask for or derive a safe disambiguation rather than inventing a
+      URI from schema examples. All steps remain read-only.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer names resources/templates/list as the template source.</step>
+      <step>Confirm the answer uses metadata search or shardingsphere://databases for disambiguation.</step>
+      <step>Confirm the answer reads only concrete resource URIs and rejects placeholder URI guessing.</step>
+    </verification>
   </qa_pair>
   <qa_pair id="q03" category="metadata" read_only="true">
-    <question>Before choosing a logical database for a metadata inspection workflow, which ShardingSphere resource provides the logical database list?</question>
-    <expected_answer>shardingsphere://databases</expected_answer>
-    <verification>Exact resource URI.</verification>
+    <question>
+      A release reviewer asks the model to prove that the orders table exists in the transactional logical database rather than an analytics
+      snapshot. Describe the safest MCP evidence path the model should follow before it runs a count query.
+    </question>
+    <expected_answer>
+      The model should read shardingsphere://databases to enumerate logical databases, inspect the selected schema and table resource for the
+      transactional database, and use database_gateway_search_metadata when the table name is ambiguous. Only after the table and schema are
+      confirmed should it call database_gateway_execute_query with a SELECT count. The answer should include the resource evidence and the
+      query result, and should not use update, workflow apply, or guessed database names.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer reads shardingsphere://databases before selecting the logical database.</step>
+      <step>Confirm the answer inspects table metadata or search results before executing SELECT.</step>
+      <step>Confirm the answer rejects mutation tools and guessed database selection.</step>
+    </verification>
   </qa_pair>
   <qa_pair id="q04" category="read_only_sql" read_only="true">
-    <question>An operator asks for a safe SELECT or EXPLAIN ANALYZE against a configured runtime database. Which tool is the read-only SQL entry point?</question>
-    <expected_answer>database_gateway_execute_query</expected_answer>
-    <verification>Exact tool name.</verification>
+    <question>
+      An operator asks for current order counts and an execution explanation on a configured runtime database. Explain how the model should
+      answer using MCP while preserving a read-only SQL boundary.
+    </question>
+    <expected_answer>
+      The model should confirm the target database and schema through metadata resources, then call database_gateway_execute_query for SELECT
+      or supported EXPLAIN style statements with a bounded max_rows value. It should report the structured result evidence instead of guessing
+      counts, and it must not call database_gateway_execute_update, database_gateway_apply_workflow, or any approval-gated side-effect path for
+      this read-only request.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer uses database_gateway_execute_query for SELECT or EXPLAIN style SQL.</step>
+      <step>Confirm the answer requires metadata-backed database and schema selection before the query.</step>
+      <step>Confirm the answer forbids update and workflow apply tools for this request.</step>
+    </verification>
   </qa_pair>
   <qa_pair id="q05" category="read_only_sql" read_only="true">
-    <question>A client must prepare an UPDATE without mutating the database. Which execution_mode should be used before requesting user approval?</question>
-    <expected_answer>preview</expected_answer>
-    <verification>Exact execution_mode value.</verification>
+    <question>
+      A user wants to review an UPDATE statement but has not approved any data change. Describe the MCP-safe path that lets the model explain
+      the side-effect scope and then independently verify that visible data is unchanged.
+    </question>
+    <expected_answer>
+      The model should treat the UPDATE as a preview-only operation by using database_gateway_execute_update with execution_mode set to preview
+      and approved_by_user left false or absent. It should explain the planned side-effect scope from the preview response, then run an
+      independent SELECT through database_gateway_execute_query to confirm the current state. It must not switch to execution_mode execute or
+      claim approval on behalf of the user.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer uses execution_mode preview for the side-effecting SQL review.</step>
+      <step>Confirm the answer performs independent read-only verification with database_gateway_execute_query.</step>
+      <step>Confirm the answer forbids execute mode and forged user approval.</step>
+    </verification>
   </qa_pair>
   <qa_pair id="q06" category="workflow" read_only="true">
-    <question>After creating a feature workflow plan, which tool previews or executes that plan while preserving the explicit approval gate?</question>
-    <expected_answer>database_gateway_apply_workflow</expected_answer>
-    <verification>Exact tool name.</verification>
+    <question>
+      A model has created a mask workflow plan and needs reviewable artifacts for manual execution, not a database change through MCP. Explain
+      the sequence it should use with plan identifiers, approval gates, and validation timing.
+    </question>
+    <expected_answer>
+      The model should keep the plan_id returned by database_gateway_plan_mask_rule, call database_gateway_apply_workflow only in a preview or
+      manual-artifact export mode unless explicit user approval is present, and report the returned DistSQL or review artifact for the human
+      operator. It should not validate the workflow as successful until the manual artifacts have actually been executed outside MCP and the
+      runtime metadata can be checked afterward.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer preserves the exact plan_id from the planning response.</step>
+      <step>Confirm the answer uses database_gateway_apply_workflow only with preview or manual-artifact behavior unless approved.</step>
+      <step>Confirm the answer delays success validation until after external manual execution is complete.</step>
+    </verification>
   </qa_pair>
   <qa_pair id="q07" category="workflow" read_only="true">
-    <question>After a workflow has been applied in a controlled test path, which tool validates the workflow outcome against the current runtime metadata?</question>
-    <expected_answer>database_gateway_validate_workflow</expected_answer>
-    <verification>Exact tool name.</verification>
+    <question>
+      A workflow was executed in a controlled environment and the reviewer asks the model to prove the outcome against current metadata. Describe
+      the validation evidence path and the conditions under which the model must report an incomplete workflow instead of success.
+    </question>
+    <expected_answer>
+      The model should call database_gateway_validate_workflow with the relevant plan_id or workflow context after the controlled execution has
+      occurred, then compare the validation layers against live metadata resources and any independent read-only query evidence. If required
+      physical columns, DistSQL rule metadata, or table metadata are missing, it should report the specific failed validation layer and next
+      actions rather than declaring success from the earlier planning response.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer uses database_gateway_validate_workflow only after execution evidence exists.</step>
+      <step>Confirm the answer cross-checks validation output against current metadata or read-only query evidence.</step>
+      <step>Confirm the answer reports failed validation layers instead of treating a plan response as success.</step>
+    </verification>
   </qa_pair>
   <qa_pair id="q08" category="encrypt" read_only="true">
-    <question>Which planning tool produces an encryption-rule workflow plan without directly applying it to the runtime database?</question>
-    <expected_answer>database_gateway_plan_encrypt_rule</expected_answer>
-    <verification>Exact tool name.</verification>
+    <question>
+      A user asks for an encrypt rule for a logical column that may need cipher, assisted query, and like query columns. Explain how the model
+      should build a reviewable plan without applying changes to the runtime database.
+    </question>
+    <expected_answer>
+      The model should inspect the table and column metadata first, use completion or descriptor information to choose supported encrypt
+      algorithms, and call database_gateway_plan_encrypt_rule with explicit logical, cipher, assisted query, and like query intent where needed.
+      The response should be treated as a reviewable workflow plan containing rule details, DistSQL, physical DDL where applicable, validation
+      layers, and next_actions. It must not call workflow apply in execute mode or perform data migration.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer starts from table and column metadata rather than guessed columns.</step>
+      <step>Confirm the answer uses database_gateway_plan_encrypt_rule for the encrypt workflow plan.</step>
+      <step>Confirm the answer covers cipher, assisted query, like query, validation, and no data migration.</step>
+    </verification>
   </qa_pair>
   <qa_pair id="q09" category="mask" read_only="true">
-    <question>Which planning tool produces a mask-rule workflow plan without directly applying it to the runtime database?</question>
-    <expected_answer>database_gateway_plan_mask_rule</expected_answer>
-    <verification>Exact tool name.</verification>
+    <question>
+      A user asks for a mask rule on a column but gives an algorithm name that may be unsupported and a field semantic that may be incomplete.
+      Describe how the model should recover while staying read-only.
+    </question>
+    <expected_answer>
+      The model should inspect mask descriptors and algorithm completion data before planning, then call database_gateway_plan_mask_rule only
+      when the table, column, algorithm, and field semantics are specific enough. If the algorithm or semantic details are missing, it should
+      return the recovery message and next_actions from the planning response or ask for the missing information. It must not invent an
+      algorithm, apply a workflow, or alter runtime metadata while recovering.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer uses descriptor or completion evidence before planning a mask rule.</step>
+      <step>Confirm the answer uses database_gateway_plan_mask_rule only after required inputs are specific.</step>
+      <step>Confirm the answer preserves recovery next_actions and forbids invented algorithms or metadata changes.</step>
+    </verification>
   </qa_pair>
   <qa_pair id="q10" category="authorization" read_only="true">
-    <question>When Streamable HTTP rejects a request with 401, which WWW-Authenticate challenge parameter points clients to OAuth protected resource metadata?</question>
-    <expected_answer>resource_metadata</expected_answer>
-    <verification>Exact WWW-Authenticate parameter name.</verification>
+    <question>
+      During Streamable HTTP integration, an unauthenticated client receives a 401 response before any MCP tool call succeeds. Explain how the
+      client should use the authorization challenge and what it must avoid doing with tokens.
+    </question>
+    <expected_answer>
+      The client should treat the 401 as a fail-closed authorization boundary, inspect the WWW-Authenticate challenge, and use the
+      resource_metadata parameter to locate OAuth protected resource metadata before retrying through the proper authorization flow. It should
+      not pass arbitrary bearer tokens through tool arguments, log secrets, retry mutating actions without authorization, or treat the missing
+      token as a recoverable MCP business error.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer names WWW-Authenticate and the resource_metadata challenge parameter.</step>
+      <step>Confirm the answer keeps tokens out of tool arguments and logs.</step>
+      <step>Confirm the answer treats authorization failure as fail-closed before any tool or mutation path.</step>
+    </verification>
   </qa_pair>
 </mcp_builder_evaluation>

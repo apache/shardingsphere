@@ -58,24 +58,12 @@ class MCPDescriptorCatalogPayloadBuilderTest {
     @SuppressWarnings("unchecked")
     void assertBuildResourceAnnotationsPayload() {
         MCPResourceDescriptor emptyAnnotationsResource = createResourceDescriptor("shardingsphere://empty", MCPResourceAnnotations.EMPTY);
-        MCPResourceAnnotations priorityZeroAnnotations = new MCPResourceAnnotations(List.of("assistant"), 0D, true, null);
+        MCPResourceAnnotations priorityZeroAnnotations = new MCPResourceAnnotations(List.of("assistant"), 0D, null);
         MCPResourceDescriptor priorityZeroResource = createResourceDescriptor("shardingsphere://priority-zero", priorityZeroAnnotations);
         Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(createCatalog(List.of(emptyAnnotationsResource, priorityZeroResource), List.of()), List.of(), List.of(), List.of());
         List<Map<String, Object>> actualResources = (List<Map<String, Object>>) payload.get("resources");
         assertFalse(actualResources.get(0).containsKey("annotations"));
         assertThat((Map<String, Object>) actualResources.get(1).get("annotations"), is(Map.of("audience", List.of("assistant"), "priority", 0D)));
-    }
-    
-    @Test
-    @SuppressWarnings("unchecked")
-    void assertBuildResourceSizePayload() {
-        MCPResourceDescriptor absentSizeResource = createResourceDescriptor("shardingsphere://absent-size", MCPResourceAnnotations.EMPTY);
-        MCPResourceDescriptor sizedResource = new MCPResourceDescriptor("shardingsphere://sized", "test-resource", "Test Resource", "Read a test resource.", "application/json", 128L, true,
-                MCPResourceAnnotations.EMPTY, Map.of());
-        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(createCatalog(List.of(absentSizeResource, sizedResource), List.of()), List.of(), List.of(), List.of());
-        List<Map<String, Object>> actualResources = (List<Map<String, Object>>) payload.get("resources");
-        assertFalse(actualResources.get(0).containsKey("size"));
-        assertThat(actualResources.get(1).get("size"), is(128L));
     }
     
     @Test

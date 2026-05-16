@@ -198,6 +198,17 @@ class ToolHandlerRegistryTest {
     }
     
     @Test
+    void assertValidateWithUnknownNestedArgument() {
+        MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
+                () -> MCPToolArgumentContract.create(createNestedFixtureToolDescriptor()).validate(Map.of("options", Map.of("mode", "preview", "limit", 10))));
+        assertThat(actual.getMessage(), is("options.limit is not a supported argument for fixture_tool."));
+        assertThat(actual.getToolName(), is("fixture_tool"));
+        assertThat(actual.getArgumentPath(), is("options.limit"));
+        assertThat(actual.getCategory(), is("unknown_argument"));
+        assertThat(actual.getSuggestedArguments(), is(Map.of()));
+    }
+    
+    @Test
     void assertGetSupportedToolsWithNoToolHandlers() {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(Collections.emptyList());
@@ -260,6 +271,12 @@ class ToolHandlerRegistryTest {
         when(result.getContextType()).thenReturn(MCPServiceHandlerContext.class);
         when(result.getToolDescriptor()).thenReturn(descriptor);
         return result;
+    }
+    
+    private static MCPToolDescriptor createNestedFixtureToolDescriptor() {
+        Map<String, Object> optionSchema = Map.of("type", "object", "properties", Map.of("mode", Map.of("type", "string")), "required", List.of(), "additionalProperties", false);
+        return new MCPToolDescriptor("fixture_tool", "Fixture Tool", "Fixture tool.", Map.of("type", "object", "properties", Map.of("options", optionSchema), "required", List.of(),
+                "additionalProperties", false), Collections.emptyMap(), new MCPToolAnnotations("Fixture Tool", true, false, true, true), Collections.emptyMap());
     }
     
     private static void assertToolFields(final MCPToolDescriptor descriptor, final List<String> expectedFieldNames) {

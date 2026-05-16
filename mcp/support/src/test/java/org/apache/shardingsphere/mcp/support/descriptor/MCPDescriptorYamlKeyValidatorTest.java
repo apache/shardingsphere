@@ -190,39 +190,12 @@ class MCPDescriptorYamlKeyValidatorTest {
     }
     
     @Test
-    void assertValidateResourceSize() {
-        assertDoesNotThrow(() -> MCPDescriptorYamlKeyValidator.validate("test.yaml", toBytes("""
+    void assertValidateUnknownResourceSizeKey() {
+        assertUnknownKey("""
                 resources:
                   - uri: shardingsphere://capabilities
                     size: 128
-                """)));
-    }
-    
-    @Test
-    void assertValidateLongMaxResourceSize() {
-        assertDoesNotThrow(() -> MCPDescriptorYamlKeyValidator.validate("test.yaml", toBytes("""
-                resources:
-                  - uri: shardingsphere://capabilities
-                    size: 9223372036854775807
-                """)));
-    }
-    
-    @Test
-    void assertValidateRejectsNonIntegerResourceSize() {
-        assertValidationError("""
-                resources:
-                  - uri: shardingsphere://capabilities
-                    size: 12.5
-                """, "MCP descriptor resource `test.yaml` expects integer within Java long range at `$.resources[0].size`.");
-    }
-    
-    @Test
-    void assertValidateRejectsOutOfLongRangeResourceSize() {
-        assertValidationError("""
-                resources:
-                  - uri: shardingsphere://capabilities
-                    size: 9223372036854775808
-                """, "MCP descriptor resource `test.yaml` expects integer within Java long range at `$.resources[0].size`.");
+                """, "$.resources[0].size");
     }
     
     @Test

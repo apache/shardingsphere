@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.model.DDLArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PhysicalDDLPlanningServiceTest {
@@ -52,6 +54,22 @@ class PhysicalDDLPlanningServiceTest {
         List<DDLArtifact> actual = service.planAddColumnArtifacts("orders", createDerivedColumnPlan(false, true), new LinkedHashSet<>(), "VARCHAR(64)");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getSql(), is("ALTER TABLE orders ADD COLUMN phone_cipher VARCHAR(64), ADD COLUMN phone_like_query VARCHAR(64)"));
+    }
+    
+    @Test
+    void assertPlanAddColumnArtifactsRejectsUnsafeTable() {
+        MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class,
+                () -> service.planAddColumnArtifacts("orders;drop", createDerivedColumnPlan(false, false), new LinkedHashSet<>(), ""));
+        assertThat(actualException.getMessage(), is("table `orders;drop` contains unsupported characters. Only unquoted SQL identifiers are supported in V1."));
+    }
+    
+    @Test
+    void assertPlanAddColumnArtifactsRejectsUnsafeDerivedColumn() {
+        DerivedColumnPlan derivedColumnPlan = createDerivedColumnPlan(false, false);
+        derivedColumnPlan.setCipherColumnName("phone cipher");
+        MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class,
+                () -> service.planAddColumnArtifacts("orders", derivedColumnPlan, new LinkedHashSet<>(), ""));
+        assertThat(actualException.getMessage(), is("cipher_column `phone cipher` contains unsupported characters. Only unquoted SQL identifiers are supported in V1."));
     }
     
     private DerivedColumnPlan createDerivedColumnPlan(final boolean assistedQuery, final boolean likeQuery) {

@@ -30,13 +30,11 @@ import java.util.List;
 @Getter
 public final class MCPResourceAnnotations {
     
-    public static final MCPResourceAnnotations EMPTY = new MCPResourceAnnotations(Collections.emptyList(), 0D, false, null);
+    public static final MCPResourceAnnotations EMPTY = new MCPResourceAnnotations(Collections.emptyList(), null, null);
     
     private final List<String> audience;
     
-    private final double priority;
-    
-    private final boolean priorityPresent;
+    private final Double priority;
     
     private final String lastModified;
     
@@ -46,6 +44,6 @@ public final class MCPResourceAnnotations {
      * @return true if annotations are empty
      */
     public boolean isEmpty() {
-        return audience.isEmpty() && !priorityPresent && (null == lastModified || lastModified.isBlank());
+        return audience.isEmpty() && null == priority && (null == lastModified || lastModified.isBlank());
     }
 }

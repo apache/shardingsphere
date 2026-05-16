@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMe
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFeatureData;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
@@ -187,14 +188,14 @@ public final class WorkflowPlanningSupport {
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
-        if (!ensureSupportedIdentifier("database", request.getDatabase(), snapshot)
-                || !ensureSupportedIdentifier("table", request.getTable(), snapshot)
-                || !ensureSupportedIdentifier("column", request.getColumn(), snapshot)) {
+        if (!ensureSupportedIdentifier(WorkflowFieldNames.DATABASE, request.getDatabase(), snapshot)
+                || !ensureSupportedIdentifier(WorkflowFieldNames.TABLE, request.getTable(), snapshot)
+                || !ensureSupportedIdentifier(WorkflowFieldNames.COLUMN, request.getColumn(), snapshot)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
         request.setSchema(resolveSchema(metadataQueryFacade, request, clarifiedIntent));
-        if (!ensureSupportedIdentifier("schema", request.getSchema(), snapshot)) {
+        if (!ensureSupportedIdentifier(WorkflowFieldNames.SCHEMA, request.getSchema(), snapshot)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
@@ -258,7 +259,7 @@ public final class WorkflowPlanningSupport {
     
     private String recordInferredSchema(final ClarifiedIntent clarifiedIntent, final String schema) {
         if (null != clarifiedIntent) {
-            clarifiedIntent.getInferredValues().put("schema", schema);
+            clarifiedIntent.getInferredValues().put(WorkflowFieldNames.SCHEMA, schema);
         }
         return schema;
     }

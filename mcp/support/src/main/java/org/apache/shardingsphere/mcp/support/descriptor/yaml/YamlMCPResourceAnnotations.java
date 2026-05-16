@@ -35,19 +35,7 @@ public final class YamlMCPResourceAnnotations {
     @Size(min = 1, message = "must not be empty")
     private List<@NotBlank(message = "is required") String> audience = new LinkedList<>();
     
-    private double priority;
-    
-    private boolean priorityPresent;
+    private Double priority;
     
     private String lastModified;
-    
-    /**
-     * Set priority and mark it as explicitly declared.
-     *
-     * @param priority priority
-     */
-    public void setPriority(final double priority) {
-        this.priority = priority;
-        priorityPresent = true;
-    }
 }

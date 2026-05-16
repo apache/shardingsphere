@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.workflow.descriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidator;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidationUtils;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
 import java.util.List;
 import java.util.Set;
@@ -40,9 +41,10 @@ public final class WorkflowToolDescriptorValidator implements MCPToolDescriptorV
     public void validate(final MCPToolDescriptor toolDescriptor) {
         if (WorkflowToolDescriptors.APPLY_TOOL_NAME.equals(toolDescriptor.getName())) {
             MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor,
-                    List.of("response_mode", "plan_id", "status", "execution_mode", "next_actions", "requires_user_approval", "manual_artifact_summary"));
+                    List.of("response_mode", WorkflowFieldNames.PLAN_ID, "status", WorkflowFieldNames.EXECUTION_MODE, "next_actions", "requires_user_approval", "manual_artifact_summary"));
         } else {
-            MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor, List.of("response_mode", "plan_id", "status", "overall_status", "issues", "next_actions"));
+            MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor,
+                    List.of("response_mode", WorkflowFieldNames.PLAN_ID, "status", "overall_status", "issues", "next_actions"));
         }
     }
 }

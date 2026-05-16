@@ -118,8 +118,8 @@ class MCPHandlerLoaderTest {
     
     private static MCPResourceHandler<?> createResourceHandler(final String uriTemplate) {
         MCPResourceHandler<?> result = mock(MCPResourceHandler.class);
-        when(result.getResourceDescriptor()).thenReturn(new MCPResourceDescriptor(uriTemplate, "foo", "Foo", "Read the fixture foo resource.", "application/json", MCPResourceAnnotations.EMPTY,
-                Collections.emptyMap()));
+        when(result.getResourceDescriptor()).thenReturn(new MCPResourceDescriptor(uriTemplate, "foo", "Foo", "Read the fixture foo resource.", "application/json",
+                MCPResourceAnnotations.EMPTY, Collections.emptyMap()));
         return result;
     }
 }

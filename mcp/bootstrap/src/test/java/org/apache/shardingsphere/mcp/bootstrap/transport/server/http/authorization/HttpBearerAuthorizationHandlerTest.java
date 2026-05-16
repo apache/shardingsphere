@@ -60,6 +60,20 @@ class HttpBearerAuthorizationHandlerTest {
     }
     
     @Test
+    void assertRejectQueryAccessTokenWithoutAuthorizationHeader() throws IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getHeader("Authorization")).thenReturn(null);
+        when(request.getParameter("access_token")).thenReturn("test-token");
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://127.0.0.1:18088/mcp"));
+        when(request.getRequestURI()).thenReturn("/mcp");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        boolean actual = new HttpBearerAuthorizationHandler(createConfig("test-token")).authorize(request, response);
+        assertFalse(actual);
+        verify(request, never()).getParameter("access_token");
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+    }
+    
+    @Test
     void assertRejectUnauthorizedRequestWithProtectedResourceMetadataChallenge() throws IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader("Authorization")).thenReturn("Bearer wrong-token");

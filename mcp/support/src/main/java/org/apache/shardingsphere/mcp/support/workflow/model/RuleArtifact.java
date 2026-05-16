@@ -41,7 +41,7 @@ public final class RuleArtifact {
      */
     public Map<String, Object> toMap() {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put("operation_type", operationType);
+        result.put(WorkflowFieldNames.OPERATION_TYPE, operationType);
         result.put("sql", sql);
         return result;
     }

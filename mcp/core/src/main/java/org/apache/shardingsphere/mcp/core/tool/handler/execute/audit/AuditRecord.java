@@ -41,9 +41,6 @@ public final class AuditRecord {
     private final boolean success;
     
     @Getter(AccessLevel.NONE)
-    private final boolean errorCodePresent;
-    
-    @Getter(AccessLevel.NONE)
     private final String errorCode;
     
     private final String statementMarker;
@@ -56,6 +53,6 @@ public final class AuditRecord {
      * @return optional error code
      */
     public Optional<String> getErrorCode() {
-        return errorCodePresent ? Optional.of(errorCode) : Optional.empty();
+        return Optional.ofNullable(errorCode);
     }
 }

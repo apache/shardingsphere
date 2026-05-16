@@ -54,7 +54,7 @@ public final class AlgorithmCandidate {
     public Map<String, Object> toMap() {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("algorithm_role", algorithmRole);
-        result.put("algorithm_type", algorithmType);
+        result.put(WorkflowFieldNames.ALGORITHM_TYPE, algorithmType);
         result.put("supports_decrypt", supportsDecrypt);
         result.put("supports_equivalent_filter", supportsEquivalentFilter);
         result.put("supports_like", supportsLike);

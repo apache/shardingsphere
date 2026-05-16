@@ -26,7 +26,10 @@ The feature is incomplete while any item is below 100 or lacks evidence.
 
 The 2026-05-11 production and E2E tables remain historical evidence for the previous checkpoint.
 The 2026-05-13 user requirement reopens completion with a stricter source-driven gate.
-The 2026-05-14 user requirement reopens HTTP authorization again for complete OAuth token validation:
+The 2026-05-14 user requirement reopens HTTP authorization again for complete OAuth token validation.
+The 2026-05-16 package `019-mcp-encrypt-mask-scorecard-100` is the current encrypt/mask-only checkpoint.
+This historical package remains reusable evidence, but its 100/100 status does not automatically close package 019 dimensions.
+The active sources and constraints are:
 
 - Official MCP Specification `2025-11-25` is the protocol source of truth.
 - MCP Java SDK `1.1.2` is the detected implementation API and must be verified before code changes.

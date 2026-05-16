@@ -97,15 +97,12 @@ final class MCPDescriptorCatalogPayloadBuilder {
     }
     
     private Map<String, Object> toResourcePayload(final MCPResourceDescriptor descriptor) {
-        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("uri", descriptor.getUriTemplate());
         result.put("name", descriptor.getName());
         result.put("title", descriptor.getTitle());
         result.put("description", descriptor.getDescription());
         result.put("mimeType", descriptor.getMimeType());
-        if (descriptor.isSizePresent()) {
-            result.put("size", descriptor.getSize());
-        }
         if (!descriptor.getAnnotations().isEmpty()) {
             result.put("annotations", toResourceAnnotationsPayload(descriptor.getAnnotations()));
         }
@@ -283,7 +280,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         if (!annotations.getAudience().isEmpty()) {
             result.put("audience", annotations.getAudience());
         }
-        if (annotations.isPriorityPresent()) {
+        if (null != annotations.getPriority()) {
             result.put("priority", annotations.getPriority());
         }
         if (null != annotations.getLastModified() && !annotations.getLastModified().isBlank()) {

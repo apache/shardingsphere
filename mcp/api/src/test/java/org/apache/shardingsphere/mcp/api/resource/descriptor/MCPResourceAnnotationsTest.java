@@ -24,6 +24,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPResourceAnnotationsTest {
@@ -32,14 +33,13 @@ class MCPResourceAnnotationsTest {
     void assertEmpty() {
         MCPResourceAnnotations actual = MCPResourceAnnotations.EMPTY;
         assertTrue(actual.isEmpty());
-        assertFalse(actual.isPriorityPresent());
+        assertNull(actual.getPriority());
     }
     
     @Test
-    void assertPriorityZeroIsPresent() {
-        MCPResourceAnnotations actual = new MCPResourceAnnotations(List.of(), 0D, true, null);
+    void assertPriorityZero() {
+        MCPResourceAnnotations actual = new MCPResourceAnnotations(List.of(), 0D, null);
         assertFalse(actual.isEmpty());
-        assertTrue(actual.isPriorityPresent());
         assertThat(actual.getPriority(), is(0D));
     }
 }

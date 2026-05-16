@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.infra.util.props.PropertiesUtils;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
@@ -25,7 +24,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -89,11 +87,7 @@ public final class MaskRuleDistSQLPlanningService {
     }
     
     private String createTargetMaskColumnSegment(final WorkflowRequest request) {
-        String type = request.getAlgorithmType().toLowerCase(Locale.ENGLISH);
-        String algorithmFragment = request.getPrimaryAlgorithmProperties().isEmpty()
-                ? String.format("TYPE(NAME='%s')", type)
-                : String.format("TYPE(NAME='%s', PROPERTIES(%s))", type, PropertiesUtils.toString(WorkflowSQLUtils.createProperties(request.getPrimaryAlgorithmProperties())));
-        return String.format("(NAME=%s, %s)", request.getColumn(), algorithmFragment);
+        return String.format("(NAME=%s, %s)", request.getColumn(), WorkflowSQLUtils.createAlgorithmFragment(request.getAlgorithmType(), request.getPrimaryAlgorithmProperties()));
     }
     
     private String createExistingMaskColumnSegment(final Map<String, Object> rule) {
@@ -101,11 +95,7 @@ public final class MaskRuleDistSQLPlanningService {
         WorkflowSQLUtils.checkSafeIdentifier("column", columnName);
         String algorithmType = WorkflowRuleValueUtils.getRuleValue(rule, "algorithm_type");
         Map<String, String> algorithmProperties = WorkflowSQLUtils.createPropertyMap(rule.get("algorithm_props"));
-        String algorithmFragment = algorithmProperties.isEmpty()
-                ? String.format("TYPE(NAME='%s')", algorithmType.toLowerCase(Locale.ENGLISH))
-                : String.format("TYPE(NAME='%s', PROPERTIES(%s))", algorithmType.toLowerCase(Locale.ENGLISH),
-                        PropertiesUtils.toString(WorkflowSQLUtils.createProperties(algorithmProperties)));
-        return String.format("(NAME=%s, %s)", columnName, algorithmFragment);
+        return String.format("(NAME=%s, %s)", columnName, WorkflowSQLUtils.createAlgorithmFragment(algorithmType, algorithmProperties));
     }
     
     private String createMaskRuleSql(final String prefix, final String tableName, final List<String> columnSegments) {

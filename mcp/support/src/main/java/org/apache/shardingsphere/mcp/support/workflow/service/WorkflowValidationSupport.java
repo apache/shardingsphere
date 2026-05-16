@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
@@ -86,7 +87,8 @@ public final class WorkflowValidationSupport {
                                                      final ValidationReport validationReport) {
         if (metadataQueryFacade.queryTableColumn(
                 snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), snapshot.getRequest().getTable(), snapshot.getRequest().getColumn()).isPresent()) {
-            return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, Map.of("table", snapshot.getRequest().getTable(), "column", snapshot.getRequest().getColumn()),
+            return new ValidationSection(WorkflowLifecycle.STATUS_PASSED,
+                    Map.of(WorkflowFieldNames.TABLE, snapshot.getRequest().getTable(), WorkflowFieldNames.COLUMN, snapshot.getRequest().getColumn()),
                     "Logical table and column are still visible from Proxy metadata.");
         }
         validationReport.getMismatches().add(createMismatch(WorkflowIssueCode.LOGICAL_METADATA_MISMATCH, "logical_metadata", snapshot.getRequest().getColumn(), "",
@@ -101,8 +103,8 @@ public final class WorkflowValidationSupport {
      * @return projection validation SQL
      */
     public String createProjectionValidationSql(final WorkflowContextSnapshot snapshot) {
-        WorkflowSQLUtils.checkSafeIdentifier("table", snapshot.getRequest().getTable());
-        WorkflowSQLUtils.checkSafeIdentifier("column", snapshot.getRequest().getColumn());
+        WorkflowSQLUtils.checkSafeIdentifier(WorkflowFieldNames.TABLE, snapshot.getRequest().getTable());
+        WorkflowSQLUtils.checkSafeIdentifier(WorkflowFieldNames.COLUMN, snapshot.getRequest().getColumn());
         return String.format("SELECT %s FROM %s", snapshot.getRequest().getColumn(), snapshot.getRequest().getTable());
     }
     
@@ -148,7 +150,7 @@ public final class WorkflowValidationSupport {
         workflowSessionContext.persist(snapshot, WorkflowLifecycle.STEP_VALIDATED, validationStatus);
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         result.put("response_mode", "validation");
-        result.put("plan_id", snapshot.getPlanId());
+        result.put(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId());
         result.put("status", validationStatus);
         result.put("issues", createValidationIssues(validationReport));
         result.putAll(validationReport.toMap());
@@ -230,7 +232,7 @@ public final class WorkflowValidationSupport {
     private Map<String, Object> createRejectedResponse(final WorkflowContextSnapshot snapshot, final String issueCode, final String message, final String userAction) {
         Map<String, Object> result = new LinkedHashMap<>(9, 1F);
         result.put("response_mode", "terminal");
-        result.put("plan_id", snapshot.getPlanId());
+        result.put(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId());
         result.put("status", WorkflowLifecycle.STATUS_FAILED);
         result.put("issues", List.of(new WorkflowIssue(issueCode, "error", "validating", message, userAction, false, Map.of()).toMap()));
         result.put("overall_status", WorkflowLifecycle.STATUS_FAILED);

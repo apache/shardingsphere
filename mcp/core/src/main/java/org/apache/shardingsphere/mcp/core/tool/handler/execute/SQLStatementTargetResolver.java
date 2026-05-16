@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 final class SQLStatementTargetResolver {
     
@@ -57,13 +58,14 @@ final class SQLStatementTargetResolver {
             if (sourceObjectName.isEmpty()) {
                 continue;
             }
-            SQLCommonTableExpression commonTableExpression = findCommonTableExpression(statementStructure, sourceObjectName);
-            if (null == commonTableExpression) {
+            Optional<SQLCommonTableExpression> commonTableExpression = findCommonTableExpression(statementStructure, sourceObjectName);
+            if (commonTableExpression.isEmpty()) {
                 return sourceObjectName;
             }
-            String normalizedAliasName = scanner.normalizeIdentifierForComparison(commonTableExpression.aliasName());
+            SQLCommonTableExpression actualCommonTableExpression = commonTableExpression.get();
+            String normalizedAliasName = scanner.normalizeIdentifierForComparison(actualCommonTableExpression.aliasName());
             if (!visitedAliases.contains(normalizedAliasName)) {
-                String result = resolve(commonTableExpression.statementStructure(), statementClassResolver.resolve(commonTableExpression.statementStructure()),
+                String result = resolve(actualCommonTableExpression.statementStructure(), statementClassResolver.resolve(actualCommonTableExpression.statementStructure()),
                         appendVisitedAlias(visitedAliases, normalizedAliasName));
                 if (!result.isEmpty()) {
                     return result;
@@ -127,14 +129,14 @@ final class SQLStatementTargetResolver {
         return result;
     }
     
-    private SQLCommonTableExpression findCommonTableExpression(final SQLStatementStructure statementStructure, final String aliasName) {
+    private Optional<SQLCommonTableExpression> findCommonTableExpression(final SQLStatementStructure statementStructure, final String aliasName) {
         String normalizedAliasName = scanner.normalizeIdentifierForComparison(aliasName);
         for (SQLCommonTableExpression each : statementStructure.commonTableExpressions()) {
             if (scanner.normalizeIdentifierForComparison(each.aliasName()).equals(normalizedAliasName)) {
-                return each;
+                return Optional.of(each);
             }
         }
-        return null;
+        return Optional.empty();
     }
     
     private String extractObjectNameAfterTypeKeyword(final List<SQLStatementToken> tokens, final List<String> typeKeywords, final String... optionalKeywords) {

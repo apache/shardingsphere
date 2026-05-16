@@ -58,96 +58,119 @@
 
 ## Phase 2: Protocol and Descriptor Evidence
 
-- [ ] T010 [P] [US4] Refresh source-driven MCP protocol evidence for lifecycle, transports, authorization, tools, resources, prompts,
+- [x] T010 [P] [US4] Refresh source-driven MCP protocol evidence for lifecycle, transports, authorization, tools, resources, prompts,
   completion, pagination, structured content, output schema, and optional capabilities.
   Path: `.specify/specs/019-mcp-encrypt-mask-scorecard-100/source-map.md`
-- [ ] T011 [P] [US4] Revalidate MCP Java SDK `1.1.2` support and SDK-deferred fields before any descriptor/API changes.
+- [x] T011 [P] [US4] Revalidate MCP Java SDK `1.1.2` support and SDK-deferred fields before any descriptor/API changes.
   Paths: `mcp/bootstrap/pom.xml`, `.specify/specs/019-mcp-encrypt-mask-scorecard-100/source-map.md`
-- [ ] T012 [US4] Prove tool results use `structuredContent` plus serialized JSON text fallback and do not require Markdown.
+- [x] T012 [US4] Prove tool results use `structuredContent` plus serialized JSON text fallback and do not require Markdown.
   Paths: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/MCPTransportPayloadUtils.java`,
   `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/MCPTransportPayloadUtilsTest.java`
-- [ ] T013 [US4] Prove unimplemented optional MCP capabilities are absent, disabled, or documented as future scope without being advertised as implemented.
+- [x] T013 [US4] Prove unimplemented optional MCP capabilities are absent, disabled, or documented as future scope without being advertised as implemented.
   Paths: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/MCPSyncServerFactory.java`,
   `mcp/README.md`, `mcp/README_ZH.md`
+
+**Evidence**: `source-map.md` records official MCP `2025-11-25` sources, local MCP Java SDK `1.1.2` `javap` evidence, implementation paths,
+and the focused bootstrap test command with exit code `0`.
 
 ---
 
 ## Phase 3: Encrypt and Mask Functional Completeness
 
-- [ ] T020 [P] [US2] Map encrypt workflow branches to one test each: create, alter, drop limitation, algorithm missing, assisted query,
+- [x] T020 [P] [US2] Map encrypt workflow branches to one test each: create, alter, drop limitation, algorithm missing, assisted query,
   like query, existing rule conflict, metadata unavailable, validation failure, and successful validation.
   Path: `mcp/features/encrypt/src/test/java/org/apache/shardingsphere/mcp/feature/encrypt/`
-- [ ] T021 [P] [US2] Map mask workflow branches to one test each: create, alter, drop, algorithm missing, field semantics missing,
+- [x] T021 [P] [US2] Map mask workflow branches to one test each: create, alter, drop, algorithm missing, field semantics missing,
   existing rule conflict, metadata unavailable, validation failure, and successful validation.
   Path: `mcp/features/mask/src/test/java/org/apache/shardingsphere/mcp/feature/mask/`
-- [ ] T022 [US2] Add or revalidate focused tests for encrypt resources, prompts, completions, descriptor validation, planning, apply, validate, and recovery payloads.
+- [x] T022 [US2] Add or revalidate focused tests for encrypt resources, prompts, completions, descriptor validation, planning, apply, validate, and recovery payloads.
   Paths: `mcp/features/encrypt`, `mcp/core`, `mcp/bootstrap`
-- [ ] T023 [US2] Add or revalidate focused tests for mask resources, prompts, completions, descriptor validation, planning, apply, validate, and recovery payloads.
+- [x] T023 [US2] Add or revalidate focused tests for mask resources, prompts, completions, descriptor validation, planning, apply, validate, and recovery payloads.
   Paths: `mcp/features/mask`, `mcp/core`, `mcp/bootstrap`
-- [ ] T024 [US2] Update the scorecard only after encrypt/mask functionality has passing unit and product-path E2E evidence.
+- [x] T024 [US2] Update the scorecard only after encrypt/mask functionality has passing unit and product-path E2E evidence.
   Path: `.specify/specs/019-mcp-encrypt-mask-scorecard-100/scorecard.md`
+
+**Evidence**: `workflow-branch-coverage.md` maps every T020 and T021 branch to a public-method test.
+Focused planning and validation tests, Checkstyle, and Spotless passed with exit code `0`.
+`product-path-evidence.md` maps every T022 and T023 product path to focused feature, core, and bootstrap tests.
+Focused product-path tests passed with exit code `0`.
 
 ---
 
 ## Phase 4: Safety, Correctness, and Security
 
-- [ ] T030 [P] [US2] Prove preview-before-apply and explicit approval for all side-effecting workflow operations.
+- [x] T030 [P] [US2] Prove preview-before-apply and explicit approval for all side-effecting workflow operations.
   Paths: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/workflow`, `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/`
-- [ ] T031 [P] [US2] Prove session isolation for workflow plan IDs, approval, completion suggestions, and DELETE cleanup.
+- [x] T031 [P] [US2] Prove session isolation for workflow plan IDs, approval, completion suggestions, and DELETE cleanup.
   Path: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/`
-- [ ] T032 [US2] Prove secret-safe elicitation and redaction for encrypt/mask planning and recovery payloads.
+- [x] T032 [US2] Prove secret-safe elicitation and redaction for encrypt/mask planning and recovery payloads.
   Paths: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolElicitationHandler.java`, `mcp/features/encrypt`, `mcp/features/mask`
-- [ ] T033 [US2] Prove OAuth/static authorization, origin policy, no-token-passthrough, and fail-closed negative cases remain current.
+- [x] T033 [US2] Prove OAuth/static authorization, origin policy, no-token-passthrough, and fail-closed negative cases remain current.
   Paths: `mcp/bootstrap`, `test/e2e/mcp`
-- [ ] T034 [US2] Prove SQL safety and workflow SQL identifier/literal handling for encrypt/mask physical DDL and DistSQL planning.
+- [x] T034 [US2] Prove SQL safety and workflow SQL identifier/literal handling for encrypt/mask physical DDL and DistSQL planning.
   Paths: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/workflow`, `mcp/features/encrypt`, `mcp/features/mask`
+
+**Evidence**: Phase 4 focused unit tests, programmatic HTTP E2E tests, Checkstyle, and Spotless passed with exit code `0` on 2026-05-16.
+The implementation keeps approval, session isolation, secret-safe payloads, header-only authorization, origin/fail-closed behavior,
+and SQL identifier/literal safety within their existing module boundaries.
 
 ---
 
 ## Phase 5: Architecture, Elegance, and Code Cleanliness
 
-- [ ] T040 [P] [US1] Search production code for nullable returns in MCP modules and either refactor, justify framework-required nulls, or keep code cleanliness below 100.
+- [x] T040 [P] [US1] Search production code for nullable returns in MCP modules and either refactor, justify framework-required nulls, or keep code cleanliness below 100.
   Path: `mcp`
-- [ ] T041 [P] [US1] Search tests for direct `mockStatic` and `mockConstruction`; migrate touched cases to AutoMockExtension where practical or document justified try-with-resources exceptions.
+- [x] T041 [P] [US1] Search tests for direct `mockStatic` and `mockConstruction`; migrate touched cases to AutoMockExtension where practical or document justified try-with-resources exceptions.
   Paths: `mcp`, `test/e2e/mcp`
-- [ ] T042 [US1] Reduce stringly typed workflow payload duplication where it directly affects readability or testability, without introducing broad refactors.
+- [x] T042 [US1] Reduce stringly typed workflow payload duplication where it directly affects readability or testability, without introducing broad refactors.
   Paths: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/workflow`, `mcp/features/encrypt`, `mcp/features/mask`
-- [ ] T043 [US1] Review custom input-schema validation and SQL scanning boundaries; add source-backed limitations and tests instead of speculative rewrites.
+- [x] T043 [US1] Review custom input-schema validation and SQL scanning boundaries; add source-backed limitations and tests instead of speculative rewrites.
   Paths: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/MCPToolArgumentContract.java`, `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/execute/`
-- [ ] T044 [US1] Update documentation to reconcile historical 100/100 Speckit claims with this current checkpoint.
+- [x] T044 [US1] Update documentation to reconcile historical 100/100 Speckit claims with this current checkpoint.
   Paths: `.specify/specs/012-mcp-scorecard-perfect-100`, `.specify/specs/016-mcp-contract-e2e-gap-triage`, `.specify/specs/019-mcp-encrypt-mask-scorecard-100`
+
+**Evidence**: `architecture-cleanliness-evidence.md` records the nullable-return review, mock migration boundary, workflow field-name contract,
+input-schema and SQL scanner boundary tests, historical 100/100 reconciliation, and focused command evidence.
 
 ---
 
 ## Phase 6: E2E, LLM Evaluation, and Operations
 
-- [ ] T050 [P] [US3] Rebuild the mcp-builder evaluation XML into ten complex, read-only, independent, realistic, verifiable, and stable questions.
+- [x] T050 [P] [US3] Rebuild the mcp-builder evaluation XML into ten complex, read-only, independent, realistic, verifiable, and stable questions.
   Path: `test/e2e/mcp/src/test/resources/llm/evaluation/mcp-builder-evaluation.xml`
-- [ ] T051 [P] [US3] Strengthen the evaluation artifact validator so it rejects shallow exact-name questions and missing multi-step evidence.
+- [x] T051 [P] [US3] Strengthen the evaluation artifact validator so it rejects shallow exact-name questions and missing multi-step evidence.
   Path: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/MCPBuilderEvaluationArtifactTest.java`
-- [ ] T052 [US3] Run and record default H2/HTTP E2E evidence.
+- [x] T052 [US3] Run and record default H2/HTTP E2E evidence.
   Path: `test/e2e/mcp`
-- [ ] T053 [US3] Run and record opt-in MySQL, STDIO, distribution, packaged runtime, and LLM lanes when infrastructure is available.
+- [x] T053 [US3] Run and record opt-in MySQL, STDIO, distribution, packaged runtime, and LLM lanes when infrastructure is available.
   Paths: `test/e2e/mcp`, `distribution/mcp`
-- [ ] T054 [US3] Add or refresh performance budgets for descriptor loading, metadata search, request scope creation, workflow planning, and E2E lane duration.
+- [x] T054 [US3] Add or refresh performance budgets for descriptor loading, metadata search, request scope creation, workflow planning, and E2E lane duration.
   Path: `.specify/specs/019-mcp-encrypt-mask-scorecard-100/scorecard.md`
+
+**Evidence**: `e2e-llm-operations-evidence.md` records default H2/HTTP, MySQL, STDIO, packaged distribution, LLM smoke, full LLM usability,
+and performance-budget evidence. Full LLM usability run `20260516015738-b8a8d5be` produced core and extended `overallScore=100.0`,
+`fullScore=true`, and `invalidCallRate=0.0`.
 
 ---
 
 ## Phase 7: Final Verification
 
-- [ ] T060 Run scoped unit tests for touched MCP modules.
+- [x] T060 Run scoped unit tests for touched MCP modules.
   Command: `./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false test`
-- [ ] T061 Run scoped E2E tests for touched product-path classes.
+- [x] T061 Run scoped E2E tests for touched product-path classes.
   Command: `./mvnw -pl test/e2e/mcp -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false test`
-- [ ] T062 Run Checkstyle for touched modules.
+- [x] T062 Run Checkstyle for touched modules.
   Command: `./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap,test/e2e/mcp -am -Pcheck -DskipTests -DskipITs checkstyle:check`
-- [ ] T063 Run Spotless check for touched modules.
+- [x] T063 Run Spotless check for touched modules.
   Command: `./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap,test/e2e/mcp -Pcheck -DskipTests -DskipITs spotless:check`
-- [ ] T064 Run branch/status verification and record that no branch switch occurred.
+- [x] T064 Run branch/status verification and record that no branch switch occurred.
   Path: repository root
-- [ ] T065 Update every score dimension to 100 only after T060 through T064 and all dimension-specific evidence pass.
+- [x] T065 Update every score dimension to 100 only after T060 through T064 and all dimension-specific evidence pass.
   Path: `.specify/specs/019-mcp-encrypt-mask-scorecard-100/scorecard.md`
+
+**Evidence**: scoped MCP unit, scoped E2E, broad Checkstyle, broad Spotless, branch/status, opt-in runtime, distribution, LLM smoke,
+and full LLM usability commands are recorded in `e2e-llm-operations-evidence.md`. `git branch --show-current` returned
+`001-shardingsphere-mcp`.
 
 ## Dependencies
 

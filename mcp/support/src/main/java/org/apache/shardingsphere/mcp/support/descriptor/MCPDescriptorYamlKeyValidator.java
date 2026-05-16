@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
@@ -32,7 +31,7 @@ final class MCPDescriptorYamlKeyValidator {
     
     private static final Collection<String> ROOT_KEYS = Set.of("resources", "resourceTemplates", "tools", "prompts", "completionTargets", "resourceNavigation");
     
-    private static final Collection<String> RESOURCE_KEYS = Set.of("uri", "name", "title", "description", "mimeType", "size", "annotations", "meta", "extension");
+    private static final Collection<String> RESOURCE_KEYS = Set.of("uri", "name", "title", "description", "mimeType", "annotations", "meta", "extension");
     
     private static final Collection<String> RESOURCE_TEMPLATE_KEYS = Set.of("uriTemplate", "name", "title", "description", "mimeType", "annotations", "meta", "extension");
     
@@ -60,10 +59,6 @@ final class MCPDescriptorYamlKeyValidator {
     
     private static final Collection<String> RESOURCE_NAVIGATION_KEYS = Set.of("from", "to", "requiredArguments", "carriedArguments", "description");
     
-    private static final BigInteger LONG_MIN = BigInteger.valueOf(Long.MIN_VALUE);
-    
-    private static final BigInteger LONG_MAX = BigInteger.valueOf(Long.MAX_VALUE);
-    
     static void validate(final String resourceName, final byte[] yamlBytes) {
         String yamlContent = new String(yamlBytes, StandardCharsets.UTF_8);
         if (yamlContent.isBlank()) {
@@ -84,7 +79,6 @@ final class MCPDescriptorYamlKeyValidator {
         for (Object each : asList(resourceName, "$.resources", resources)) {
             Map<?, ?> resource = asMap(resourceName, "$.resources[" + index + "]", each);
             validateKeys(resourceName, "$.resources[" + index + "]", resource, RESOURCE_KEYS);
-            validateFixedResourceFields(resourceName, "$.resources[" + index + "]", resource);
             validateResourceAnnotations(resourceName, "$.resources[" + index + "].annotations", resource.get("annotations"));
             validateResourceExtension(resourceName, "$.resources[" + index + "].extension", resource.get("extension"));
             index++;
@@ -152,25 +146,6 @@ final class MCPDescriptorYamlKeyValidator {
         if (annotationMap.containsKey("lastModified")) {
             checkState(annotationMap.get("lastModified") instanceof String, String.format("MCP descriptor resource `%s` expects string at `%s.lastModified`.", resourceName, path));
         }
-    }
-    
-    private static void validateFixedResourceFields(final String resourceName, final String path, final Map<?, ?> resource) {
-        if (resource.containsKey("size")) {
-            Object value = resource.get("size");
-            checkState(isLongInteger(value), String.format("MCP descriptor resource `%s` expects integer within Java long range at `%s.size`.", resourceName, path));
-        }
-    }
-    
-    private static boolean isLongInteger(final Object value) {
-        return value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Long || isLongRangeBigInteger(value);
-    }
-    
-    private static boolean isLongRangeBigInteger(final Object value) {
-        return value instanceof BigInteger bigInteger && isLongRange(bigInteger);
-    }
-    
-    private static boolean isLongRange(final BigInteger value) {
-        return value.compareTo(LONG_MIN) >= 0 && value.compareTo(LONG_MAX) <= 0;
     }
     
     private static void validateToolAnnotations(final String resourceName, final String path, final Object annotations) {

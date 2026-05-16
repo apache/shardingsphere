@@ -69,6 +69,7 @@ class LLMUsabilityScenarioCatalogTest {
         assertThat(actualScenarios.get("extended-workflow-context-recovery-h2").getLlmScenario().getRequiredToolNames(),
                 is(List.of("mcp_read_resource", "database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_execute_query")));
         assertThat(actualScenarios.get("extended-workflow-context-recovery-h2").getLlmScenario().getUserPrompt(), containsString("Do not validate the workflow"));
+        assertThat(actualScenarios.get("extended-database-disambiguation-h2").getLlmScenario().getUserPrompt(), containsString("`object_types` set to `[\"table\"]` only"));
         assertTrue(actualScenarios.get("extended-recovery-missing-database-h2").isNaturalTask());
         assertTrue(actualScenarios.get("extended-prompt-completion-inspect-h2").isProtocolContract());
         assertTrue(actualScenarios.get("extended-runtime-status-h2").isProtocolContract());
@@ -76,6 +77,8 @@ class LLMUsabilityScenarioCatalogTest {
         assertTrue(actual.stream().allMatch(each -> each.isNaturalTask() || each.isProtocolContract()));
         assertTrue(actual.stream().noneMatch(each -> each.isNaturalTask() && each.isProtocolContract()));
         assertTrue(actual.stream().noneMatch(each -> each.getLlmScenario().getUserPrompt().contains("First call")));
+        assertTrue(actual.stream().noneMatch(each -> each.getLlmScenario().getUserPrompt().contains("database_scope")));
+        assertTrue(actual.stream().noneMatch(each -> each.getLlmScenario().getUserPrompt().contains("page_offset")));
         assertFalse(actual.stream().filter(LLMUsabilityScenario::isNaturalTask).anyMatch(each -> each.getLlmScenario().getUserPrompt().contains("Use the MCP prompt list")));
     }
 }

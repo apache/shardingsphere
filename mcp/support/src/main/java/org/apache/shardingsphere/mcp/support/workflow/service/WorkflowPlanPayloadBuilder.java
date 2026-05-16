@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
@@ -54,7 +55,7 @@ public final class WorkflowPlanPayloadBuilder {
     public static Map<String, Object> build(final WorkflowContextSnapshot snapshot) {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         result.put("response_mode", resolveResponseMode(snapshot));
-        result.put("plan_id", snapshot.getPlanId());
+        result.put(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId());
         result.put("workflow_kind", snapshot.getWorkflowKind().getValue());
         result.put("status", snapshot.getStatus());
         result.put("issues", snapshot.getIssues().stream().map(WorkflowIssue::toMap).toList());
@@ -63,8 +64,8 @@ public final class WorkflowPlanPayloadBuilder {
         result.put("algorithm_recommendations", snapshot.getAlgorithmCandidates().stream().map(AlgorithmCandidate::toMap).toList());
         result.put("property_requirements", snapshot.getPropertyRequirements().stream().map(AlgorithmPropertyRequirement::toMap).toList());
         result.put("validation_strategy", snapshot.getInteractionPlan().getValidationStrategy());
-        result.put("delivery_mode", snapshot.getInteractionPlan().getDeliveryMode());
-        result.put("execution_mode", snapshot.getInteractionPlan().getExecutionMode());
+        result.put(WorkflowFieldNames.DELIVERY_MODE, snapshot.getInteractionPlan().getDeliveryMode());
+        result.put(WorkflowFieldNames.EXECUTION_MODE, snapshot.getInteractionPlan().getExecutionMode());
         result.put("intent_inference", createIntentInference(snapshot.getClarifiedIntent()));
         result.put("argument_provenance", createArgumentProvenance(snapshot));
         result.put("review_focus", createReviewFocus(snapshot));
@@ -78,8 +79,8 @@ public final class WorkflowPlanPayloadBuilder {
     
     private static Map<String, Object> createIntentInference(final ClarifiedIntent clarifiedIntent) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
-        result.put("operation_type", clarifiedIntent.getOperationType());
-        result.put("field_semantics", clarifiedIntent.getFieldSemantics());
+        result.put(WorkflowFieldNames.OPERATION_TYPE, clarifiedIntent.getOperationType());
+        result.put(WorkflowFieldNames.FIELD_SEMANTICS, clarifiedIntent.getFieldSemantics());
         result.put("inferred_values", clarifiedIntent.getInferredValues());
         result.put("unresolved_fields", clarifiedIntent.getUnresolvedFields());
         result.put("reasoning_notes", clarifiedIntent.getReasoningNotes());
@@ -100,21 +101,23 @@ public final class WorkflowPlanPayloadBuilder {
     private static Map<String, Object> createArgumentProvenance(final WorkflowContextSnapshot snapshot) {
         WorkflowRequest request = snapshot.getRequest();
         if (null == request) {
-            return Map.of("plan_id", "server_generated");
+            return Map.of(WorkflowFieldNames.PLAN_ID, "server_generated");
         }
         Map<String, Object> result = new LinkedHashMap<>(10, 1F);
-        result.put("plan_id", "server_generated");
-        putUserProvided(result, "database", request.getDatabase());
+        result.put(WorkflowFieldNames.PLAN_ID, "server_generated");
+        putUserProvided(result, WorkflowFieldNames.DATABASE, request.getDatabase());
         Map<String, Object> inferredValues = getInferredValues(snapshot);
-        putArgumentProvenance(result, "schema", request.getSchema(), inferredValues.containsKey("schema") ? "inferred_from_intent" : "user_provided");
-        putUserProvided(result, "table", request.getTable());
-        putUserProvided(result, "column", request.getColumn());
-        putArgumentProvenance(result, "operation_type", request.getOperationType(), inferredValues.containsKey("operation_type") ? "inferred_from_intent" : "user_provided");
-        putUserProvided(result, "natural_language_intent", request.getNaturalLanguageIntent());
-        putArgumentProvenance(result, "field_semantics", request.getFieldSemantics(), inferredValues.containsKey("field_semantics") ? "inferred_from_intent" : "user_provided");
-        result.put("delivery_mode", resolveModeProvenance("delivery_mode", request.getDeliveryMode(), inferredValues));
-        result.put("execution_mode", resolveModeProvenance("execution_mode", request.getExecutionMode(), inferredValues));
-        putUserProvided(result, "algorithm_type", request.getAlgorithmType());
+        putArgumentProvenance(result, WorkflowFieldNames.SCHEMA, request.getSchema(), inferredValues.containsKey(WorkflowFieldNames.SCHEMA) ? "inferred_from_intent" : "user_provided");
+        putUserProvided(result, WorkflowFieldNames.TABLE, request.getTable());
+        putUserProvided(result, WorkflowFieldNames.COLUMN, request.getColumn());
+        putArgumentProvenance(result, WorkflowFieldNames.OPERATION_TYPE, request.getOperationType(),
+                inferredValues.containsKey(WorkflowFieldNames.OPERATION_TYPE) ? "inferred_from_intent" : "user_provided");
+        putUserProvided(result, WorkflowFieldNames.NATURAL_LANGUAGE_INTENT, request.getNaturalLanguageIntent());
+        putArgumentProvenance(result, WorkflowFieldNames.FIELD_SEMANTICS, request.getFieldSemantics(),
+                inferredValues.containsKey(WorkflowFieldNames.FIELD_SEMANTICS) ? "inferred_from_intent" : "user_provided");
+        result.put(WorkflowFieldNames.DELIVERY_MODE, resolveModeProvenance(WorkflowFieldNames.DELIVERY_MODE, request.getDeliveryMode(), inferredValues));
+        result.put(WorkflowFieldNames.EXECUTION_MODE, resolveModeProvenance(WorkflowFieldNames.EXECUTION_MODE, request.getExecutionMode(), inferredValues));
+        putUserProvided(result, WorkflowFieldNames.ALGORITHM_TYPE, request.getAlgorithmType());
         return result;
     }
     
@@ -129,7 +132,7 @@ public final class WorkflowPlanPayloadBuilder {
     }
     
     private static boolean isDefaultMode(final String fieldName, final String value) {
-        return "delivery_mode".equals(fieldName) ? DELIVERY_MODE_ALL_AT_ONCE.equals(value) : EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(value);
+        return WorkflowFieldNames.DELIVERY_MODE.equals(fieldName) ? DELIVERY_MODE_ALL_AT_ONCE.equals(value) : EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(value);
     }
     
     private static Map<String, Object> getInferredValues(final WorkflowContextSnapshot snapshot) {

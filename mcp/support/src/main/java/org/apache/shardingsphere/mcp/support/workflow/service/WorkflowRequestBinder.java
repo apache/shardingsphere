@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.Collection;
@@ -54,9 +55,9 @@ public final class WorkflowRequestBinder {
         WorkflowPlanningArguments workflowPlanningArguments = new WorkflowPlanningArguments(arguments);
         T result = requestSupplier.get();
         bindCommonPlanningFields(result, workflowPlanningArguments);
-        applyObjectMap(arguments.get("structured_intent_evidence"), actualValue -> structuredIntentBinder.accept(result, actualValue));
+        applyObjectMap(arguments.get(WorkflowFieldNames.STRUCTURED_INTENT_EVIDENCE), actualValue -> structuredIntentBinder.accept(result, actualValue));
         featureArgumentBinder.accept(result, workflowPlanningArguments);
-        Map<String, Object> userOverrides = getObjectMap(arguments.get("user_overrides"));
+        Map<String, Object> userOverrides = getObjectMap(arguments.get(WorkflowFieldNames.USER_OVERRIDES));
         validateUserOverrideConflicts(arguments, userOverrides);
         if (!userOverrides.isEmpty()) {
             userOverrideBinder.accept(result, userOverrides);
@@ -81,20 +82,20 @@ public final class WorkflowRequestBinder {
     }
     
     private static void bindCommonPlanningFields(final WorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        request.setPlanId(normalizePlanId(workflowPlanningArguments.getStringArgument("plan_id")));
-        request.setDatabase(workflowPlanningArguments.getStringArgument("database"));
-        request.setSchema(workflowPlanningArguments.getStringArgument("schema"));
-        request.setTable(workflowPlanningArguments.getStringArgument("table"));
-        request.setColumn(workflowPlanningArguments.getStringArgument("column"));
-        request.setOperationType(workflowPlanningArguments.getStringArgument("operation_type"));
-        request.setNaturalLanguageIntent(workflowPlanningArguments.getStringArgument("natural_language_intent"));
-        request.setDeliveryMode(workflowPlanningArguments.getStringArgument("delivery_mode"));
-        request.setExecutionMode(workflowPlanningArguments.getStringArgument("execution_mode"));
+        request.setPlanId(normalizePlanId(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.PLAN_ID)));
+        request.setDatabase(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.DATABASE));
+        request.setSchema(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.SCHEMA));
+        request.setTable(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.TABLE));
+        request.setColumn(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.COLUMN));
+        request.setOperationType(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.OPERATION_TYPE));
+        request.setNaturalLanguageIntent(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.NATURAL_LANGUAGE_INTENT));
+        request.setDeliveryMode(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.DELIVERY_MODE));
+        request.setExecutionMode(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.EXECUTION_MODE));
     }
     
     private static String normalizePlanId(final String planId) {
         String result = planId.trim();
-        return "plan_id".equals(result) || "{plan_id}".equals(result) || "<plan_id>".equals(result) ? "" : result;
+        return WorkflowFieldNames.PLAN_ID.equals(result) || "{plan_id}".equals(result) || "<plan_id>".equals(result) ? "" : result;
     }
     
     private static void applyObjectMap(final Object rawValue, final Consumer<Map<String, Object>> consumer) {
@@ -129,7 +130,7 @@ public final class WorkflowRequestBinder {
         String actualValue = normalizeComparableValue(arguments.get(entry.getKey()));
         String overrideValue = normalizeComparableValue(entry.getValue());
         if (!actualValue.isEmpty() && !overrideValue.isEmpty() && !actualValue.equals(overrideValue)) {
-            conflicts.add(String.format("%s conflicts with user_overrides.%s", entry.getKey(), entry.getKey()));
+            conflicts.add(String.format("%s conflicts with %s.%s", entry.getKey(), WorkflowFieldNames.USER_OVERRIDES, entry.getKey()));
         }
     }
     

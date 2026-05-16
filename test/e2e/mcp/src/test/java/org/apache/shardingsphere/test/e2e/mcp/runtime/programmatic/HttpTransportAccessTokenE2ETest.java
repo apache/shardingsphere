@@ -81,6 +81,15 @@ class HttpTransportAccessTokenE2ETest extends AbstractHttpProgrammaticRuntimeE2E
     }
     
     @Test
+    void assertRejectInitializeWithQueryAccessToken() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> actual = sendInitializeRequestWithQueryAccessToken(httpClient);
+        assertThat(actual.statusCode(), is(401));
+        assertProtectedResourceMetadataChallenge(actual);
+    }
+    
+    @Test
     void assertReadProtectedResourceMetadata() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -127,6 +136,14 @@ class HttpTransportAccessTokenE2ETest extends AbstractHttpProgrammaticRuntimeE2E
         HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Authorization", createAuthorizationHeaderValue(accessToken)), createInitializeRequestParams());
         assertThat(actual.statusCode(), is(200));
         return actual.headers().firstValue("MCP-Session-Id").orElseThrow();
+    }
+    
+    private HttpResponse<String> sendInitializeRequestWithQueryAccessToken(final HttpClient httpClient) throws IOException, InterruptedException {
+        URI endpointUri = URI.create(getEndpointUri() + "?access_token=" + ACCESS_TOKEN);
+        HttpRequest request = MCPHttpTransportTestSupport.createJsonRequestBuilder(endpointUri)
+                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody("init-query-token", "initialize", createInitializeRequestParams())))
+                .build();
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
     private Map<String, String> createAuthorizedSessionHeaders(final String sessionId, final String accessToken) {

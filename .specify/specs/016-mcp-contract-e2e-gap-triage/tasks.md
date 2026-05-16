@@ -22,6 +22,8 @@
 `e2e-test-disposition.md`, `checklists/requirements.md`
 **Tests**: Required for every Java, YAML descriptor, HTTP transport, completion, workflow, CI, or E2E change.
 **Constraint**: Do not run `git switch`, `git checkout`, branch creation scripts, or branch-changing Speckit commands.
+**Current checkpoint note**: package `019-mcp-encrypt-mask-scorecard-100` is the active encrypt/mask-only scorecard as of 2026-05-16.
+Package 016 remains historical contract/E2E triage evidence and does not automatically close package 019 dimensions.
 
 ## Format: `[ID] [P?] [Story] Description`
 

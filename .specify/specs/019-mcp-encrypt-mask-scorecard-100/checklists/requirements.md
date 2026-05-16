@@ -41,7 +41,11 @@
 
 ## Open Risks
 
-- [ ] Current score dimensions are not yet 100/100.
-- [ ] No fresh Maven, Checkstyle, Spotless, Jacoco, E2E, distribution, or LLM commands have been recorded for this package.
-- [ ] Some historical Speckit files still contain 100/100 claims that require current revalidation or explicit historical labeling.
-- [ ] Opt-in MySQL, STDIO, distribution, packaged runtime, and LLM lanes may require local infrastructure.
+- [x] Current score dimensions are 100/100 with attached evidence.
+- [x] Fresh focused Maven evidence exists for `T010` through `T013`.
+- [x] Full scoped Maven, Checkstyle, Spotless, E2E, distribution, and LLM commands are recorded for this package.
+- [x] Jacoco-specific enforcement was not rerun in the final pass because this phase changed E2E/LLM evaluation contracts and evidence docs,
+  while production branch coverage was already mapped in Phase 3 and Phase 4 evidence.
+- [x] Focused Phase 2 evidence was collected on a dirty worktree and later covered by final scoped verification before score closure.
+- [x] Historical Speckit files with 100/100 claims are explicitly treated as historical evidence rather than automatic current closure.
+- [x] Opt-in MySQL, STDIO, distribution, packaged runtime, and LLM lanes had local Docker/Testcontainers infrastructure available and passed.

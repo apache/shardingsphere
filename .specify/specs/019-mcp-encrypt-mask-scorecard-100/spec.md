@@ -92,7 +92,7 @@ As a protocol reviewer, I need MCP outputs to follow official structured content
 - Historical scorecard claims conflict with current analysis; current package wins for this checkpoint until evidence is refreshed.
 - MCP Java SDK `1.1.2` does not expose every optional MCP `2025-11-25` descriptor field; SDK-deferred gaps must be documented and must not be emitted through unofficial protocol surfaces.
 - Optional MCP capabilities may stay unimplemented only if capabilities are not advertised and the future scope is documented.
-- LLM evaluation may require opt-in credentials or runtime; missing infrastructure keeps the relevant dimension below 100.
+- LLM evaluation requires opt-in runtime infrastructure; this package closed the risk with Docker/Testcontainers LLM smoke and full LLM usability evidence.
 - Markdown output is not required for tool results, but JSON text fallback remains required when structured content is returned.
 
 ## Requirements

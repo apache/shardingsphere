@@ -27,8 +27,6 @@ import java.time.Instant;
  */
 public final class AuditRecorder {
     
-    private static final String NO_ERROR_CODE = "";
-    
     /**
      * Record one query-execution audit event.
      *
@@ -40,7 +38,7 @@ public final class AuditRecorder {
      * @return recorded audit entry
      */
     public AuditRecord recordQueryExecution(final String sessionId, final String databaseName, final String sql, final boolean success, final String statementMarker) {
-        return record(sessionId, databaseName, sql, success, false, NO_ERROR_CODE, statementMarker);
+        return record(sessionId, databaseName, sql, success, null, statementMarker);
     }
     
     /**
@@ -56,12 +54,12 @@ public final class AuditRecorder {
      */
     public AuditRecord recordQueryExecution(final String sessionId, final String databaseName, final String sql, final boolean success,
                                             final String errorCode, final String statementMarker) {
-        return record(sessionId, databaseName, sql, success, true, errorCode, statementMarker);
+        return record(sessionId, databaseName, sql, success, errorCode, statementMarker);
     }
     
     private AuditRecord record(final String sessionId, final String databaseName, final String operationSource,
-                               final boolean success, final boolean errorCodePresent, final String errorCode, final String statementMarker) {
-        return new AuditRecord(sessionId, databaseName, OperationClass.QUERY_EXECUTION, digest(operationSource), success, errorCodePresent, errorCode, statementMarker, Instant.now().toString());
+                               final boolean success, final String errorCode, final String statementMarker) {
+        return new AuditRecord(sessionId, databaseName, OperationClass.QUERY_EXECUTION, digest(operationSource), success, errorCode, statementMarker, Instant.now().toString());
     }
     
     private String digest(final String value) {

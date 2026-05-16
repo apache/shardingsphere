@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.props.PropertiesUtils;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 
 import java.util.LinkedHashMap;
@@ -30,6 +29,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Workflow SQL utilities.
@@ -111,8 +112,14 @@ public final class WorkflowSQLUtils {
         }
         Properties actualProperties = createProperties(properties);
         return actualProperties.isEmpty()
-                ? String.format("TYPE(NAME='%s')", actualType)
-                : String.format("TYPE(NAME='%s', PROPERTIES(%s))", actualType, PropertiesUtils.toString(actualProperties));
+                ? String.format("TYPE(NAME='%s')", escapeLiteral(actualType))
+                : String.format("TYPE(NAME='%s', PROPERTIES(%s))", escapeLiteral(actualType), createPropertiesFragment(actualProperties));
+    }
+    
+    private static String createPropertiesFragment(final Properties props) {
+        return new TreeMap<>(props).entrySet().stream()
+                .map(entry -> String.format("'%s'='%s'", escapeLiteral(String.valueOf(entry.getKey())), escapeLiteral(String.valueOf(entry.getValue()))))
+                .collect(Collectors.joining(", "));
     }
     
     /**

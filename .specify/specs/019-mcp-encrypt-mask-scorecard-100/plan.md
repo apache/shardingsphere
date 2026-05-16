@@ -47,8 +47,8 @@ Markdown is explicitly not a mandatory tool-result format; MCP structured conten
 - **Explicit operator control**: Pass. Every schema/rule-changing path must keep preview and approval gates.
 - **Minimal safe automation**: Pass. No data migration, backfill, rollback orchestration, or audit persistence is added by this package.
 - **Deterministic naming and transparent changes**: Pass. Encrypt derived column naming remains deterministic and must be covered by existing or new tests.
-- **Complete verification before completion**: Pass with condition. Score dimensions remain below 100 until four-layer validation evidence and relevant E2E lanes are current.
-- **Repository rules**: Pass with condition. Implementation tasks must satisfy `CODE_OF_CONDUCT.md` readability, cleanliness, consistency, simplicity, abstraction, build, and unit-test standards.
+- **Complete verification before completion**: Pass. Score dimensions were kept below 100 until four-layer validation evidence and relevant E2E lanes became current.
+- **Repository rules**: Pass. Implementation tasks satisfy `CODE_OF_CONDUCT.md` readability, cleanliness, consistency, simplicity, abstraction, build, and unit-test standards through scoped evidence.
 
 ## Project Structure
 
