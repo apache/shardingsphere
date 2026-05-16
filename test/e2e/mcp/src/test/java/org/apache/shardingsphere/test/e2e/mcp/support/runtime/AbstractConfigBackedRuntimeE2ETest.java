@@ -154,7 +154,7 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
     
     private StreamableHttpMCPServer createStartedHttpServer(final Path configFile) throws IOException {
         MCPLaunchConfiguration launchConfig = MCPConfigurationLoader.load(configFile.toString());
-        MCPRuntimeServer server = new MCPRuntimeLauncher().launch(launchConfig);
+        MCPRuntimeServer server = new MCPRuntimeLauncher().launch(launchConfig, configFile.toFile().getName());
         if (!(server instanceof StreamableHttpMCPServer)) {
             server.stop();
             throw new IllegalStateException("HTTP transport must be enabled for launched runtime E2E tests.");

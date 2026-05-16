@@ -55,7 +55,7 @@ class MCPRuntimeLauncherTest {
                 MockedConstruction<MCPDatabaseCapabilityProvider> mockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
                 MockedConstruction<StreamableHttpMCPServer> mockedHttpServer = mockConstruction(StreamableHttpMCPServer.class);
                 MockedConstruction<StdioMCPServer> mockedStdioServer = mockConstruction(StdioMCPServer.class)) {
-            MCPRuntimeServer actual = new MCPRuntimeLauncher().launch(createLaunchConfiguration(true));
+            MCPRuntimeServer actual = new MCPRuntimeLauncher().launch(createLaunchConfiguration(true), "conf/mcp-http.yaml");
             assertThat(actual, is(mockedHttpServer.constructed().get(0)));
             assertThat(mockedHttpServer.constructed().size(), is(1));
             assertThat(mockedStdioServer.constructed().size(), is(0));
@@ -70,7 +70,7 @@ class MCPRuntimeLauncherTest {
                 MockedConstruction<MCPDatabaseCapabilityProvider> mockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
                 MockedConstruction<StreamableHttpMCPServer> mockedHttpServer = mockConstruction(StreamableHttpMCPServer.class);
                 MockedConstruction<StdioMCPServer> mockedStdioServer = mockConstruction(StdioMCPServer.class)) {
-            MCPRuntimeServer actual = new MCPRuntimeLauncher().launch(createLaunchConfiguration(false));
+            MCPRuntimeServer actual = new MCPRuntimeLauncher().launch(createLaunchConfiguration(false), "conf/mcp-http.yaml");
             assertThat(actual, isA(StdioMCPServer.class));
             assertThat(actual, is(mockedStdioServer.constructed().get(0)));
             assertThat(mockedHttpServer.constructed().size(), is(0));
@@ -84,13 +84,13 @@ class MCPRuntimeLauncherTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> runtimeLauncher.launch(
                 new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
-                        new OAuthIntrospectionConfiguration()), new StdioTransportConfiguration(false), Map.of())));
+                        new OAuthIntrospectionConfiguration()), new StdioTransportConfiguration(false), Map.of()), "conf/mcp-http.yaml"));
         assertThat(actual.getMessage(), is("At least one runtime database must be configured."));
     }
     
     @Test
     void assertLaunchWithNullConfiguration() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new MCPRuntimeLauncher().launch(null));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new MCPRuntimeLauncher().launch(null, "conf/mcp-http.yaml"));
         assertThat(actual.getMessage(), is("MCP launch configuration cannot be null."));
     }
     
@@ -101,7 +101,7 @@ class MCPRuntimeLauncherTest {
                 MockedConstruction<MCPSessionManager> mockedSessionManager = mockConstruction(MCPSessionManager.class);
                 MockedConstruction<MCPDatabaseCapabilityProvider> mockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
                 MockedConstruction<StreamableHttpMCPServer> mockedHttpServer = mockConstruction(StreamableHttpMCPServer.class, (mock, context) -> doThrow(startFailure).when(mock).start())) {
-            IOException actual = assertThrows(IOException.class, () -> new MCPRuntimeLauncher().launch(createLaunchConfiguration(true)));
+            IOException actual = assertThrows(IOException.class, () -> new MCPRuntimeLauncher().launch(createLaunchConfiguration(true), "conf/mcp-http.yaml"));
             assertThat(actual.getMessage(), is("Failed to start HTTP server."));
             assertThat(actual.getCause(), is(startFailure));
             verify(mockedHttpServer.constructed().get(0)).stop();
@@ -115,7 +115,7 @@ class MCPRuntimeLauncherTest {
                 MockedConstruction<MCPSessionManager> mockedSessionManager = mockConstruction(MCPSessionManager.class);
                 MockedConstruction<MCPDatabaseCapabilityProvider> mockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
                 MockedConstruction<StdioMCPServer> mockedStdioServer = mockConstruction(StdioMCPServer.class, (mock, context) -> doThrow(startFailure).when(mock).start())) {
-            IOException actual = assertThrows(IOException.class, () -> new MCPRuntimeLauncher().launch(createLaunchConfiguration(false)));
+            IOException actual = assertThrows(IOException.class, () -> new MCPRuntimeLauncher().launch(createLaunchConfiguration(false), "conf/mcp-http.yaml"));
             assertThat(actual.getMessage(), is("Failed to start STDIO server."));
             assertThat(actual.getCause(), is(startFailure));
             verify(mockedStdioServer.constructed().get(0)).stop();

@@ -41,17 +41,6 @@ public final class MCPRuntimeLauncher {
      * Launch.
      *
      * @param config launch configuration
-     * @return MCP runtime server
-     * @throws IOException when the active server startup fails
-     */
-    public MCPRuntimeServer launch(final MCPLaunchConfiguration config) throws IOException {
-        return launch(config, "");
-    }
-    
-    /**
-     * Launch.
-     *
-     * @param config launch configuration
      * @param configPath configuration path
      * @return MCP runtime server
      * @throws IOException when the active server startup fails
@@ -75,7 +64,7 @@ public final class MCPRuntimeLauncher {
     List<String> createStartupHints(final MCPLaunchConfiguration config, final MCPRuntimeServer server, final String configPath) {
         List<String> result = new LinkedList<>();
         result.add("ShardingSphere MCP runtime started.");
-        result.add("Configuration: " + (Objects.toString(configPath, "").isBlank() ? "conf/mcp-http.yaml" : configPath));
+        result.add("Configuration: " + configPath);
         result.add("Logs: logs/mcp.log");
         result.add("Runtime databases: " + config.getDatabases().size());
         if (config.getHttpTransport().isEnabled()) {
