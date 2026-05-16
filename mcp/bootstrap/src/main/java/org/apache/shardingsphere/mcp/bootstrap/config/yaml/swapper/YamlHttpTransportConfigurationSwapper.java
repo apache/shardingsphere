@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlOAuthIntro
 import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -99,11 +98,6 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     }
     
     private List<String> resolveTextList(final Collection<String> values, final String propertyName, final Map<String, String> environment) {
-        if (null == values) {
-            return Collections.emptyList();
-        }
-        return values.stream()
-                .map(each -> Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(each, propertyName, environment), "").trim())
-                .filter(each -> !each.isEmpty()).toList();
+        return values.stream().map(each -> Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(each, propertyName, environment), "").trim()).filter(each -> !each.isEmpty()).toList();
     }
 }
