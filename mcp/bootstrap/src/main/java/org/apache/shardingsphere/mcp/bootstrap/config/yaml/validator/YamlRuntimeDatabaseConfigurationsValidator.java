@@ -17,28 +17,17 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator;
 
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfigurationProperties;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * YAML runtime database configurations validator.
  */
 public final class YamlRuntimeDatabaseConfigurationsValidator implements ConstraintValidator<ValidYamlRuntimeDatabaseConfigurations, Map<String, Map<String, Object>>> {
-    
-    private static final String DATABASE_TYPE_KEY = "databaseType";
-    
-    private static final String JDBC_URL_KEY = "jdbcUrl";
-    
-    private static final String USERNAME_KEY = "username";
-    
-    private static final String PASSWORD_KEY = "password";
-    
-    private static final String DRIVER_CLASS_NAME_KEY = "driverClassName";
-    
-    private static final Set<String> SUPPORTED_PROPERTIES = Set.of(DATABASE_TYPE_KEY, JDBC_URL_KEY, USERNAME_KEY, PASSWORD_KEY, DRIVER_CLASS_NAME_KEY);
     
     @Override
     public boolean isValid(final Map<String, Map<String, Object>> value, final ConstraintValidatorContext context) {
@@ -63,7 +52,7 @@ public final class YamlRuntimeDatabaseConfigurationsValidator implements Constra
     private boolean validateSupportedProperties(final Entry<String, Map<String, Object>> entry, final ConstraintValidatorContext context) {
         boolean result = true;
         for (String each : entry.getValue().keySet()) {
-            if (!SUPPORTED_PROPERTIES.contains(each)) {
+            if (!YamlRuntimeDatabaseConfigurationProperties.SUPPORTED_PROPERTIES.contains(each)) {
                 addViolation(context, String.format("contains unsupported property `%s` for database `%s`", each, entry.getKey()));
                 result = false;
             }
@@ -72,11 +61,11 @@ public final class YamlRuntimeDatabaseConfigurationsValidator implements Constra
     }
     
     private boolean validateRequiredProperties(final Entry<String, Map<String, Object>> entry, final ConstraintValidatorContext context) {
-        boolean result = validateRequiredText(entry, DATABASE_TYPE_KEY, context);
-        result = validateRequiredText(entry, JDBC_URL_KEY, context) && result;
-        result = validateExplicitText(entry, USERNAME_KEY, context) && result;
-        result = validateExplicitText(entry, PASSWORD_KEY, context) && result;
-        return validateExplicitText(entry, DRIVER_CLASS_NAME_KEY, context) && result;
+        boolean result = validateRequiredText(entry, YamlRuntimeDatabaseConfigurationProperties.DATABASE_TYPE, context);
+        result = validateRequiredText(entry, YamlRuntimeDatabaseConfigurationProperties.JDBC_URL, context) && result;
+        result = validateExplicitText(entry, YamlRuntimeDatabaseConfigurationProperties.USERNAME, context) && result;
+        result = validateExplicitText(entry, YamlRuntimeDatabaseConfigurationProperties.PASSWORD, context) && result;
+        return validateExplicitText(entry, YamlRuntimeDatabaseConfigurationProperties.DRIVER_CLASS_NAME, context) && result;
     }
     
     private boolean validateRequiredText(final Entry<String, Map<String, Object>> entry, final String key, final ConstraintValidatorContext context) {

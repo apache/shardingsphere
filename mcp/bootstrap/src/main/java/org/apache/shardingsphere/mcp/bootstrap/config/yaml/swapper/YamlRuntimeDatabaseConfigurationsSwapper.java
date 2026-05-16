@@ -19,30 +19,18 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfigurationProperties;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * YAML runtime databases configuration swapper.
  */
 public final class YamlRuntimeDatabaseConfigurationsSwapper {
-    
-    private static final String DATABASE_TYPE_KEY = "databaseType";
-    
-    private static final String JDBC_URL_KEY = "jdbcUrl";
-    
-    private static final String USERNAME_KEY = "username";
-    
-    private static final String PASSWORD_KEY = "password";
-    
-    private static final String DRIVER_CLASS_NAME_KEY = "driverClassName";
-    
-    private static final Set<String> SUPPORTED_PROPERTIES = Set.of(DATABASE_TYPE_KEY, JDBC_URL_KEY, USERNAME_KEY, PASSWORD_KEY, DRIVER_CLASS_NAME_KEY);
     
     private final YamlRuntimeDatabaseConfigurationSwapper runtimeDatabaseConfigSwapper = new YamlRuntimeDatabaseConfigurationSwapper();
     
@@ -84,21 +72,21 @@ public final class YamlRuntimeDatabaseConfigurationsSwapper {
             return null;
         }
         YamlRuntimeDatabaseConfiguration result = new YamlRuntimeDatabaseConfiguration();
-        result.setDatabaseType(getYamlText(yamlProperties, DATABASE_TYPE_KEY));
-        result.setJdbcUrl(getYamlText(yamlProperties, JDBC_URL_KEY));
-        result.setUsername(getYamlText(yamlProperties, USERNAME_KEY));
-        result.setPassword(getYamlText(yamlProperties, PASSWORD_KEY));
-        result.setDriverClassName(getYamlText(yamlProperties, DRIVER_CLASS_NAME_KEY));
+        result.setDatabaseType(getYamlText(yamlProperties, YamlRuntimeDatabaseConfigurationProperties.DATABASE_TYPE));
+        result.setJdbcUrl(getYamlText(yamlProperties, YamlRuntimeDatabaseConfigurationProperties.JDBC_URL));
+        result.setUsername(getYamlText(yamlProperties, YamlRuntimeDatabaseConfigurationProperties.USERNAME));
+        result.setPassword(getYamlText(yamlProperties, YamlRuntimeDatabaseConfigurationProperties.PASSWORD));
+        result.setDriverClassName(getYamlText(yamlProperties, YamlRuntimeDatabaseConfigurationProperties.DRIVER_CLASS_NAME));
         return result;
     }
     
     private Map<String, Object> createYamlRuntimeDatabaseConfiguration(final YamlRuntimeDatabaseConfiguration yamlRuntimeDatabaseConfig) {
-        Map<String, Object> result = new LinkedHashMap<>(SUPPORTED_PROPERTIES.size(), 1F);
-        result.put(DATABASE_TYPE_KEY, yamlRuntimeDatabaseConfig.getDatabaseType());
-        result.put(JDBC_URL_KEY, yamlRuntimeDatabaseConfig.getJdbcUrl());
-        result.put(USERNAME_KEY, yamlRuntimeDatabaseConfig.getUsername());
-        result.put(PASSWORD_KEY, yamlRuntimeDatabaseConfig.getPassword());
-        result.put(DRIVER_CLASS_NAME_KEY, yamlRuntimeDatabaseConfig.getDriverClassName());
+        Map<String, Object> result = new LinkedHashMap<>(YamlRuntimeDatabaseConfigurationProperties.SUPPORTED_PROPERTIES.size(), 1F);
+        result.put(YamlRuntimeDatabaseConfigurationProperties.DATABASE_TYPE, yamlRuntimeDatabaseConfig.getDatabaseType());
+        result.put(YamlRuntimeDatabaseConfigurationProperties.JDBC_URL, yamlRuntimeDatabaseConfig.getJdbcUrl());
+        result.put(YamlRuntimeDatabaseConfigurationProperties.USERNAME, yamlRuntimeDatabaseConfig.getUsername());
+        result.put(YamlRuntimeDatabaseConfigurationProperties.PASSWORD, yamlRuntimeDatabaseConfig.getPassword());
+        result.put(YamlRuntimeDatabaseConfigurationProperties.DRIVER_CLASS_NAME, yamlRuntimeDatabaseConfig.getDriverClassName());
         return result;
     }
     
@@ -107,7 +95,7 @@ public final class YamlRuntimeDatabaseConfigurationsSwapper {
             return;
         }
         for (String each : yamlProperties.keySet()) {
-            ShardingSpherePreconditions.checkState(SUPPORTED_PROPERTIES.contains(each),
+            ShardingSpherePreconditions.checkState(YamlRuntimeDatabaseConfigurationProperties.SUPPORTED_PROPERTIES.contains(each),
                     () -> new IllegalArgumentException(String.format("Unsupported runtime database property `%s`.", each)));
         }
     }
