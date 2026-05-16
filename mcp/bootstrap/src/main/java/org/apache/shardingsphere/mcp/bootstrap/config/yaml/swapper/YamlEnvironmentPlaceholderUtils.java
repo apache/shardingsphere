@@ -40,11 +40,11 @@ final class YamlEnvironmentPlaceholderUtils {
         Matcher matcher = ENVIRONMENT_PLACEHOLDER_PATTERN.matcher(value);
         StringBuilder result = new StringBuilder();
         while (matcher.find()) {
-            String environmentName = matcher.group(1);
-            String replacement = environment.get(environmentName);
-            ShardingSpherePreconditions.checkState(null != replacement,
-                    () -> new IllegalArgumentException(String.format("Environment variable `%s` referenced by property `%s` is not set.", environmentName, propertyName)));
-            matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
+            String envName = matcher.group(1);
+            String envValue = environment.get(envName);
+            ShardingSpherePreconditions.checkNotNull(envValue,
+                    () -> new IllegalArgumentException(String.format("Environment variable `%s` referenced by property `%s` is not set.", envName, propertyName)));
+            matcher.appendReplacement(result, Matcher.quoteReplacement(envValue));
         }
         matcher.appendTail(result);
         return result.toString();
