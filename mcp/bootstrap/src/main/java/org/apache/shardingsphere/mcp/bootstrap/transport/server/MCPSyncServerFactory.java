@@ -40,9 +40,9 @@ public final class MCPSyncServerFactory {
     
     private final McpJsonMapper jsonMapper;
     
-    private final MCPToolSpecificationFactory toolSpecificationFactory;
-    
     private final MCPResourceSpecificationFactory resourceSpecificationFactory;
+    
+    private final MCPToolSpecificationFactory toolSpecificationFactory;
     
     private final MCPPromptSpecificationFactory promptSpecificationFactory;
     
@@ -50,8 +50,8 @@ public final class MCPSyncServerFactory {
     
     public MCPSyncServerFactory(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
         this.jsonMapper = jsonMapper;
-        toolSpecificationFactory = new MCPToolSpecificationFactory(runtimeContext);
         resourceSpecificationFactory = new MCPResourceSpecificationFactory(runtimeContext);
+        toolSpecificationFactory = new MCPToolSpecificationFactory(runtimeContext);
         promptSpecificationFactory = new MCPPromptSpecificationFactory();
         completionSpecificationFactory = new MCPCompletionSpecificationFactory(runtimeContext);
     }
@@ -82,9 +82,9 @@ public final class MCPSyncServerFactory {
                 .serverInfo(MCPTransportConstants.SERVER_NAME, Optional.ofNullable(MCPSyncServerFactory.class.getPackage().getImplementationVersion()).orElse("development"))
                 .instructions(MCPTransportConstants.SERVER_INSTRUCTIONS)
                 .capabilities(ServerCapabilities.builder().resources(Boolean.FALSE, Boolean.FALSE).tools(Boolean.FALSE).prompts(Boolean.FALSE).completions().build())
-                .tools(toolSpecificationFactory.createToolSpecifications())
                 .resources(resourceSpecificationFactory.createResourceSpecifications())
                 .resourceTemplates(resourceSpecificationFactory.createResourceTemplateSpecifications())
+                .tools(toolSpecificationFactory.createToolSpecifications())
                 .prompts(promptSpecificationFactory.createPromptSpecifications())
                 .completions(completionSpecificationFactory.createCompletionSpecifications())
                 .build();
