@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.PositiveOrZero;
-import java.util.Objects;
 
 /**
  * OAuth introspection configuration.
  */
+@RequiredArgsConstructor
 @Getter
 public final class OAuthIntrospectionConfiguration {
     
@@ -41,14 +42,6 @@ public final class OAuthIntrospectionConfiguration {
     
     public OAuthIntrospectionConfiguration() {
         this("", "", "", "", 0L);
-    }
-    
-    public OAuthIntrospectionConfiguration(final String endpoint, final String clientId, final String clientSecret, final String expectedIssuer, final long cacheTtlMillis) {
-        this.endpoint = Objects.toString(endpoint, "").trim();
-        this.clientId = Objects.toString(clientId, "").trim();
-        this.clientSecret = Objects.toString(clientSecret, "").trim();
-        this.expectedIssuer = Objects.toString(expectedIssuer, "").trim();
-        this.cacheTtlMillis = cacheTtlMillis;
     }
     
     /**
