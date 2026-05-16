@@ -60,7 +60,7 @@ public final class TableDataConsistencyCheckResult {
     }
     
     /**
-     * Whether to successful.
+     * Is successful.
      *
      * @return successful or not
      */

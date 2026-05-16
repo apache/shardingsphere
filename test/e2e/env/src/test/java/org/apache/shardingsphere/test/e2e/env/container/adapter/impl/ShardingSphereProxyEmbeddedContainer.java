@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.adapter.impl;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -68,6 +69,7 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere proxy embedded container.
  */
+@RequiredArgsConstructor
 @Slf4j
 // TODO Reset static properties when closing the class., like PipelineAPIFactory#GOVERNANCE_FACADE_MAP
 public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2EContainer, AdapterContainer {
@@ -91,12 +93,6 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
     
     public ShardingSphereProxyEmbeddedContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
         this(databaseType, config, Integer.parseInt(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getDefaultValue()));
-    }
-    
-    public ShardingSphereProxyEmbeddedContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config, final int proxyPort) {
-        this.databaseType = databaseType;
-        this.config = config;
-        this.proxyPort = proxyPort;
     }
     
     /**
