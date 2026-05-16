@@ -91,7 +91,12 @@ class YamlMCPTransportConfigurationSwapperTest {
         transport.setStdio(stdio);
         YamlMCPLaunchConfiguration result = new YamlMCPLaunchConfiguration();
         result.setTransport(transport);
-        result.setRuntimeDatabases(Map.of());
+        result.setRuntimeDatabases(Map.of("logic_db", Map.of(
+                "databaseType", "H2",
+                "jdbcUrl", "jdbc:h2:mem:logic",
+                "username", "",
+                "password", "",
+                "driverClassName", "org.h2.Driver")));
         return result;
     }
 }

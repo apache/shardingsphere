@@ -86,6 +86,12 @@ class MCPRuntimeLauncherTest {
     }
     
     @Test
+    void assertLaunchWithNullConfiguration() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new MCPRuntimeLauncher().launch(null));
+        assertThat(actual.getMessage(), is("MCP launch configuration cannot be null."));
+    }
+    
+    @Test
     void assertLaunchWithHttpStartFailure() {
         IOException startFailure = new IOException("mocked http failure");
         try (

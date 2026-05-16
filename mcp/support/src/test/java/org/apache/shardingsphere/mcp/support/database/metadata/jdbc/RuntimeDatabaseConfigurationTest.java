@@ -47,6 +47,14 @@ class RuntimeDatabaseConfigurationTest {
         assertThat(actual.getMessage(), is(expectedMessage));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidExplicitConfigurationArguments")
+    void assertConstructWithInvalidExplicitConfiguration(final String name, final String jdbcUrl, final String username, final String password, final String driverClassName,
+                                                         final String expectedMessage) {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new RuntimeDatabaseConfiguration("H2", jdbcUrl, username, password, driverClassName));
+        assertThat(actual.getMessage(), is(expectedMessage));
+    }
+    
     @Test
     void assertOpenConnectionWithoutDriverClassName() throws SQLException {
         RecordingDriver.reset();
@@ -81,6 +89,16 @@ class RuntimeDatabaseConfigurationTest {
                 Arguments.of("null database type", null, "databaseType cannot be null."),
                 Arguments.of("empty database type", "", "databaseType cannot be empty."),
                 Arguments.of("blank database type", "   ", "databaseType cannot be empty."));
+    }
+    
+    private static Stream<Arguments> invalidExplicitConfigurationArguments() {
+        return Stream.of(
+                Arguments.of("null jdbc URL", null, "", "", "", "Runtime database configuration property `jdbcUrl` is required."),
+                Arguments.of("blank jdbc URL", "   ", "", "", "", "Runtime database configuration property `jdbcUrl` is required."),
+                Arguments.of("null username", "jdbc:test:logic", null, "", "", "Runtime database configuration property `username` is required. Use an empty string when no value is needed."),
+                Arguments.of("null password", "jdbc:test:logic", "", null, "", "Runtime database configuration property `password` is required. Use an empty string when no value is needed."),
+                Arguments.of("null driver class", "jdbc:test:logic", "", "", null,
+                        "Runtime database configuration property `driverClassName` is required. Use an empty string when no value is needed."));
     }
     
     private static final class RecordingDriver implements Driver {

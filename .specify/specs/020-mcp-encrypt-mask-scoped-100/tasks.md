@@ -52,7 +52,8 @@
 - [ ] T002 [US1] Update `mcp/README.md` and `mcp/README_ZH.md` so SDK `1.1.2`, MCP `2025-11-25`, icons non-goal, and encrypt/mask-only scoring are explicit.
   Paths: `mcp/README.md`, `mcp/README_ZH.md`
 - [ ] T003 [US1] Reconcile historical Speckit 019 100/100 claims as previous evidence, not automatic closure for this scoped package.
-  Paths: `.specify/specs/019-mcp-encrypt-mask-scorecard-100/scorecard.md`, `.specify/specs/020-mcp-encrypt-mask-scoped-100/scorecard.md`
+  Historical 019 files are read-only references for this package.
+  Path: `.specify/specs/020-mcp-encrypt-mask-scoped-100/scorecard.md`
 - [ ] T004 [US1] Create an evidence ledger for every score dimension before implementation starts.
   Path: `.specify/specs/020-mcp-encrypt-mask-scoped-100/scorecard.md`
 
@@ -203,8 +204,12 @@
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/OllamaLLMRuntimeSupport.java`
 - [ ] T088 [US5] Add tests proving the default LLM lane is Docker-owned and external endpoint reuse is debug-only.
   Path: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/OllamaLLMRuntimeSupportTest.java`
-- [ ] T089 [US5] Update LLM docs so local reproduction no longer asks users to pre-run or configure an external LLM endpoint for score evidence.
+- [ ] T089 [US5] Update LLM docs so local reproduction uses the Maven `llm-e2e` profile,
+  does not use stale `MCP_LLM_E2E_ENABLED`, and does not ask users to pre-run or configure an external LLM endpoint for score evidence.
   Paths: `mcp/README.md`, `mcp/README_ZH.md`, `.specify/specs/020-mcp-encrypt-mask-scoped-100/llm-docker-runtime-analysis.md`
+- [ ] T090 [US5] Pin score-closing LLM runtime to `ollama/ollama:0.23.1` and record resolved image digest in evidence.
+  Paths: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/OllamaLLMRuntimeSupport.java`,
+  `.specify/specs/020-mcp-encrypt-mask-scoped-100/e2e-evidence.md`
 
 **Score closure**: Documentation, operations, performance, and reliability can move to 100 after docs and evidence files are current.
 
@@ -212,15 +217,15 @@
 
 ## Phase 10: Final Score Closure
 
-- [ ] T090 [US1] Update `scorecard.md` only after every mapped task has passing evidence.
+- [ ] T100 [US1] Update `scorecard.md` only after every mapped task has passing evidence.
   Path: `.specify/specs/020-mcp-encrypt-mask-scoped-100/scorecard.md`
-- [ ] T091 [US1] Run final scoped unit, E2E, Checkstyle, Spotless, and Jacoco commands required by completed tasks.
+- [ ] T101 [US1] Run final scoped unit, E2E, Checkstyle, Spotless, and Jacoco commands required by completed tasks.
   Path: repository root
-- [ ] T092 [US1] Verify the branch did not change.
+- [ ] T102 [US1] Verify the branch did not change.
   Command: `git branch --show-current`
-- [ ] T093 [US1] Run `git status --short` and ensure only intentional files are modified.
+- [ ] T103 [US1] Run `git status --short` and ensure only intentional files are modified.
   Path: repository root
-- [ ] T094 [US1] Record final evidence and update all ten score dimensions to `100/100`.
+- [ ] T104 [US1] Record final evidence and update all ten score dimensions to `100/100`.
   Path: `.specify/specs/020-mcp-encrypt-mask-scoped-100/scorecard.md`
 
 ## Dependencies

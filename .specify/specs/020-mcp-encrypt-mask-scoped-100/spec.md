@@ -130,7 +130,7 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - LLM score evidence must not depend on external model credentials or an operator-managed model endpoint.
 - External LLM endpoints are allowed only as an explicit debug mode and cannot close scorecard evidence.
 - Docker/Testcontainers can provide the local opt-in runtime for MySQL, Proxy workflow, Docker image STDIO, and Ollama-backed LLM lanes.
-- LLM opt-in must start a Docker-owned Ollama runtime and may pull `ollama/ollama:latest` and `qwen3:1.7b` online when local caches are empty.
+- LLM opt-in must start a Docker-owned Ollama runtime and may pull `ollama/ollama:0.23.1` and `qwen3:1.7b` online when local caches are empty.
 - Performance optimizations must not reduce readability or introduce broad abstractions.
 
 ## Requirements
@@ -159,6 +159,7 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - **FR-020**: LLM score evidence MUST use a Docker-owned Ollama runtime started by the E2E support layer.
 - **FR-021**: LLM score evidence MUST NOT require `MCP_LLM_BASE_URL`, `MCP_LLM_API_KEY`, or a pre-running external model service.
 - **FR-022**: External LLM endpoints MAY remain available only through an explicit debug mode and MUST NOT count as score-closing evidence.
+- **FR-023**: LLM score evidence MUST use `ollama/ollama:0.23.1`, not `latest`, and SHOULD record the resolved image digest.
 
 ### Key Entities
 

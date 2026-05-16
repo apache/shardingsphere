@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -49,6 +50,7 @@ public final class YamlHttpTransportConfiguration implements YamlConfiguration {
     private Integer port;
     
     @NotBlank(message = "is required")
+    @Pattern(regexp = "/.*", message = "must start with '/'")
     private String endpointPath;
     
     private Collection<String> allowedOrigins = new LinkedList<>();

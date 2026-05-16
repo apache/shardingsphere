@@ -49,7 +49,13 @@ class MCPConfigurationLoaderTest {
                 endpointPath: /gateway
               stdio:
                 enabled: false
-            runtimeDatabases: {}
+            runtimeDatabases:
+              logic_db:
+                databaseType: H2
+                jdbcUrl: jdbc:h2:mem:logic
+                username: ''
+                password: ''
+                driverClassName: org.h2.Driver
             """;
     
     private static final String RUNTIME_DATABASE_CONFIGURATION_YAML = """
@@ -110,7 +116,7 @@ class MCPConfigurationLoaderTest {
             assertFalse(actual.getStdioTransport().isEnabled());
             assertThat(actual.getHttpTransport().getBindHost(), is("127.0.0.1"));
             assertThat(actual.getHttpTransport().getPort(), is(9090));
-            assertTrue(actual.getDatabases().isEmpty());
+            assertThat(actual.getDatabases().size(), is(1));
         } finally {
             deleteDirectory(searchBaseDirectory);
         }

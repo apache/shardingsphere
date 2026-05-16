@@ -25,6 +25,8 @@
 - MCP prompts: `https://modelcontextprotocol.io/specification/2025-11-25/server/prompts`
 - MCP completions: `https://modelcontextprotocol.io/specification/2025-11-25/server/utilities/completion`
 - MCP transports: `https://modelcontextprotocol.io/specification/2025-11-25/basic/transports`
+- Ollama releases: `https://github.com/ollama/ollama/releases`
+- Ollama Docker tags: `https://hub.docker.com/r/ollama/ollama/tags`
 
 ## Local Version Sources
 
@@ -50,6 +52,7 @@
 - Binding code standards: `CODE_OF_CONDUCT.md`
 - Spec Kit constitution: `.specify/memory/constitution.md`
 - Spec Kit templates: `.specify/templates/spec-template.md`, `.specify/templates/tasks-template.md`
+- Codex CLI command source: `codex exec --help`, including `--ephemeral`, `--sandbox read-only`, `-C`, and stdin prompt support.
 
 ## LLM Docker Runtime Sources
 
@@ -57,6 +60,13 @@
 - Dockerized Ollama support: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/OllamaLLMRuntimeSupport.java`
 - LLM smoke E2E entry: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/smoke/LLMSmokeE2ETest.java`
 - LLM usability E2E entry: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/LLMUsabilitySuiteE2ETest.java`
+
+## Pinned LLM Runtime
+
+- Ollama image tag for score evidence: `ollama/ollama:0.23.1`.
+- Docker manifest inspected locally for `ollama/ollama:0.23.1`.
+- Resolved linux/amd64 digest during planning: `sha256:133a0539e836688c7cb88e318e31232f344a84cff7aab0cf6ac90476bc99c8ed`.
+- Resolved linux/arm64 digest during planning: `sha256:fcaa568338a6b0993c82f259a5072f46814d6de276cf3dea5b91e281b7f9d149`.
 
 ## Non-Goal Evidence
 

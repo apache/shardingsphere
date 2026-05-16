@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlStdioTransportConfiguration;
+import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
 
 /**
  * YAML STDIO transport configuration swapper.
@@ -36,7 +36,7 @@ public final class YamlStdioTransportConfigurationSwapper implements YamlConfigu
     
     @Override
     public StdioTransportConfiguration swapToObject(final YamlStdioTransportConfiguration yamlConfig) {
-        ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Property `transport.stdio` is required."));
+        MCPYamlConfigurationValidator.validate(yamlConfig, "MCP STDIO transport configuration");
         return new StdioTransportConfiguration(yamlConfig.isEnabled());
     }
 }

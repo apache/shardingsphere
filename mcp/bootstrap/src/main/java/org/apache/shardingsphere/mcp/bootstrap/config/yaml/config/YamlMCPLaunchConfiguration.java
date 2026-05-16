@@ -19,9 +19,11 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator.ValidYamlRuntimeDatabaseConfigurations;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 
@@ -36,5 +38,7 @@ public final class YamlMCPLaunchConfiguration implements YamlConfiguration {
     @Valid
     private YamlMCPTransportConfiguration transport;
     
+    @NotEmpty(message = "is required")
+    @ValidYamlRuntimeDatabaseConfigurations
     private Map<String, Map<String, Object>> runtimeDatabases;
 }

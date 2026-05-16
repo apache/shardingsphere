@@ -117,7 +117,8 @@ Required before final score closure:
 - Do not reflectively test private methods, and do not widen production visibility only for tests.
 - Treat opt-in lanes as environment-dependent verification paths, not default-lane blockers.
 - Run a fresh-context doubt-driven review before the next implementation round.
-- Use Codex CLI for cross-model second opinion after the exact read-only invocation is confirmed.
+- Use `codex exec --ephemeral --sandbox read-only -C /Users/zhangliang/IdeaProjects/shardingsphere - < /tmp/mcp-doubt-review.md`
+  for the cross-model second opinion when the prompt file is current.
 
 ## Lane Definitions
 
@@ -125,6 +126,7 @@ Required before final score closure:
   and default H2/HTTP MCP E2E that does not require external services or credentials.
 - **Opt-in lane**: MySQL E2E, Proxy encrypt/mask workflow E2E, Docker image STDIO, packaged distribution smoke, and LLM evaluation.
   These lanes are local when Docker/Testcontainers can start required containers and pull required images/models.
-- **LLM opt-in note**: score-closing LLM evidence must use a Docker-owned Ollama container with `qwen3:1.7b`.
+- **LLM opt-in note**: score-closing LLM evidence must use Docker-owned `ollama/ollama:0.23.1` with `qwen3:1.7b`.
   The support layer must not silently reuse an external OpenAI-compatible endpoint for score evidence.
   External endpoints may remain available only as an explicit debug mode outside score closure.
+  Evidence should record the resolved image digest for reproducibility.

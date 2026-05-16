@@ -25,6 +25,7 @@ Branch constraint: do not switch or create branches for this work.
 
 Move MCP YAML configuration input validation and direct counterpart configuration input validation into validation-driven constraints where practical.
 The scope is limited to bootstrap configuration DTOs, configuration swappers, launch/transport configuration objects, and the direct runtime database configuration object created from YAML.
+YAML conversion ownership determines scope, so a direct swapper output class remains in scope even when it lives outside `mcp/bootstrap`.
 
 ## User Constraints
 
@@ -52,10 +53,12 @@ The scope is limited to bootstrap configuration DTOs, configuration swappers, la
 - Authorization servers: required when authorization is enabled and must be HTTPS URLs without fragments.
 - OAuth introspection: endpoint, client ID, client secret, cache TTL, and expected issuer must be consistent after placeholder resolution.
 - Runtime database counterpart validation: non-YAML construction must still protect required configuration input such as `databaseType`.
+- Counterpart construction validation must mirror YAML-derived required fields where the same configuration class can be created directly.
 
 ## Out Of Scope
 
 - Branch switching, branch creation, commits, pushes, dependency upgrades, or broad refactors.
+- Configuration file path resolution in the loader.
 - Descriptor catalog validation and descriptor YAML validation.
 - Registry metadata validation, including `server.json`.
 - Tool, resource, prompt, completion, and catalog semantic validation.

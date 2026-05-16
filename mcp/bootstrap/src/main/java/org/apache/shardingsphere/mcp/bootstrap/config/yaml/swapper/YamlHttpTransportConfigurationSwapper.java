@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
@@ -68,13 +67,11 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     }
     
     HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig, final Map<String, String> environment) {
-        ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Property `transport.http` is required."));
         MCPYamlConfigurationValidator.validate(yamlConfig, "MCP HTTP transport configuration");
-        String bindHost = resolveBindHost(yamlConfig.getBindHost());
         boolean allowRemoteAccess = yamlConfig.isAllowRemoteAccess();
         String accessToken = resolveAccessToken(yamlConfig.getAccessToken(), environment);
-        return new HttpTransportConfiguration(yamlConfig.isEnabled(), bindHost, allowRemoteAccess, accessToken, resolvePort(yamlConfig.getPort()),
-                resolveEndpointPath(yamlConfig.getEndpointPath()), resolveTextList(yamlConfig.getAllowedOrigins(), "transport.http.allowedOrigins", environment),
+        return new HttpTransportConfiguration(yamlConfig.isEnabled(), yamlConfig.getBindHost(), allowRemoteAccess, accessToken, yamlConfig.getPort(), yamlConfig.getEndpointPath(),
+                resolveTextList(yamlConfig.getAllowedOrigins(), "transport.http.allowedOrigins", environment),
                 resolveTextList(yamlConfig.getAuthorizationServers(), "transport.http.authorizationServers", environment),
                 resolveTextList(yamlConfig.getScopesSupported(), "transport.http.scopesSupported", environment),
                 Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(yamlConfig.getProtectedResource(), "transport.http.protectedResource", environment), "").trim(),
@@ -92,16 +89,6 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
                 null == yamlConfig.getCacheTtlMillis() ? 0L : yamlConfig.getCacheTtlMillis());
     }
     
-    private String resolveBindHost(final String bindHost) {
-        return resolveRequiredText(bindHost, "transport.http.bindHost");
-    }
-    
-    private String resolveRequiredText(final String value, final String propertyName) {
-        ShardingSpherePreconditions.checkNotNull(value, () -> new IllegalArgumentException(String.format("Property `%s` is required.", propertyName)));
-        ShardingSpherePreconditions.checkState(!value.isBlank(), () -> new IllegalArgumentException(String.format("Property `%s` cannot be blank.", propertyName)));
-        return value;
-    }
-    
     private String resolveAccessToken(final String accessToken, final Map<String, String> environment) {
         return Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(accessToken, "transport.http.accessToken", environment), "").trim();
     }
@@ -117,17 +104,5 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         return values.stream()
                 .map(each -> Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(each, propertyName, environment), "").trim())
                 .filter(each -> !each.isEmpty()).toList();
-    }
-    
-    private int resolvePort(final Integer port) {
-        ShardingSpherePreconditions.checkNotNull(port, () -> new IllegalArgumentException("Property `transport.http.port` is required."));
-        ShardingSpherePreconditions.checkState(port >= 0, () -> new IllegalArgumentException("Property `transport.http.port` cannot be negative."));
-        return port;
-    }
-    
-    private String resolveEndpointPath(final String endpointPath) {
-        String result = resolveRequiredText(endpointPath, "transport.http.endpointPath");
-        ShardingSpherePreconditions.checkState(result.startsWith("/"), () -> new IllegalArgumentException("Property `transport.http.endpointPath` must start with '/'."));
-        return result;
     }
 }

@@ -77,7 +77,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
     @Test
     void assertSwapToObjectWithEmptyContent() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal("", YamlMCPLaunchConfiguration.class)));
-        assertThat(actual.getMessage(), is("MCP launch configuration property `transport` is required."));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` is required.; MCP launch configuration property `transport` is required."));
     }
     
     @Test
@@ -94,11 +94,11 @@ class YamlMCPLaunchConfigurationSwapperTest {
     
     @Test
     void assertSwapToObjectWithoutRuntimeDatabasesSection() {
-        MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(
                 "transport:\n" + "  http:\n" + "    enabled: false\n" + "    bindHost: 127.0.0.1\n" + "    allowRemoteAccess: false\n" + "    port: 18088\n" + "    endpointPath: /mcp\n"
                         + "  stdio:\n" + "    enabled: true\n",
-                YamlMCPLaunchConfiguration.class));
-        assertTrue(actual.getDatabases().isEmpty());
+                YamlMCPLaunchConfiguration.class)));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` is required."));
     }
     
     @Test
@@ -108,8 +108,8 @@ class YamlMCPLaunchConfigurationSwapperTest {
                         + "  stdio:\n" + "    enabled: true\n",
                 YamlMCPLaunchConfiguration.class);
         yamlConfig.setRuntimeDatabases(null);
-        MCPLaunchConfiguration actual = swapper.swapToObject(yamlConfig);
-        assertTrue(actual.getDatabases().isEmpty());
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` is required."));
     }
     
     @Test
@@ -122,7 +122,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    endpointPath: /mcp\n"
                 + "  stdio:\n"
                 + "    enabled: true\n"
-                + "runtimeDatabases: {}\n", YamlMCPLaunchConfiguration.class));
+                + createRuntimeDatabasesYaml(), YamlMCPLaunchConfiguration.class));
         assertFalse(actual.getHttpTransport().isEnabled());
         assertTrue(actual.getStdioTransport().isEnabled());
     }
@@ -202,6 +202,46 @@ class YamlMCPLaunchConfigurationSwapperTest {
     }
     
     @Test
+    void assertSwapToObjectWithNullRuntimeDatabaseConfiguration() {
+        String yamlContent = "transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    allowRemoteAccess: false\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases:\n"
+                + "  logic_db:\n";
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` contains null configuration for database `logic_db`."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithUnsupportedRuntimeDatabaseProperty() {
+        String yamlContent = "transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    allowRemoteAccess: false\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
+                + "    driverClassName: org.h2.Driver\n"
+                + "    unsupported: true\n";
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` contains unsupported property `unsupported` for database `logic_db`."));
+    }
+    
+    @Test
     void assertSwapToYamlConfigurationWithRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> databases = new LinkedHashMap<>(1, 1F);
         databases.put("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));
@@ -213,5 +253,15 @@ class YamlMCPLaunchConfigurationSwapperTest {
         assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
         assertFalse(actual.getTransport().getHttp().isAllowRemoteAccess());
         assertTrue(actual.getTransport().getStdio().isEnabled());
+    }
+    
+    private String createRuntimeDatabasesYaml() {
+        return "runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
+                + "    driverClassName: org.h2.Driver\n";
     }
 }

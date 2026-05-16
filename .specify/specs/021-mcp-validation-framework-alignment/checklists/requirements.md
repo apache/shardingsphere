@@ -29,12 +29,15 @@
 - [x] All mandatory sections are completed.
 - [x] Branch switching is explicitly forbidden.
 - [x] Scope is limited to YAML configuration and direct counterpart configuration input validation.
+- [x] Direct YAML swapper output classes remain in scope even outside `mcp/bootstrap`.
 
 ## Requirement Completeness
 
 - [x] Directly movable configuration validation candidates are listed.
 - [x] Custom-constraint and DTO-adjustment configuration candidates are listed.
 - [x] Descriptor, registry, request, and runtime-state checks are explicitly out of scope.
+- [x] Loader file path validation is explicitly out of scope.
+- [x] Environment placeholder validation is treated as conversion-time validation unless resolved configuration validation covers it.
 - [x] Success criteria are measurable.
 - [x] Scope boundaries and non-goals are explicit.
 - [x] Tests and verification expectations are defined.

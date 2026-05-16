@@ -30,8 +30,14 @@ In scope:
 - `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/MCPRuntimeLauncher.java`
 - `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/database/metadata/jdbc/RuntimeDatabaseConfiguration.java`
 
+Scope rule:
+
+- A configuration class is in scope when it is a direct output of an MCP YAML configuration swapper.
+- Package location alone does not exclude direct YAML conversion counterparts such as `RuntimeDatabaseConfiguration`.
+
 Out of scope:
 
+- Configuration file path resolution in `MCPConfigurationLoader`; it validates loader input, not YAML configuration model input.
 - MCP descriptor catalog and descriptor YAML under `mcp/support/descriptor`.
 - Registry metadata, including `server.json` publication.
 - Tool, resource, prompt, completion, and catalog semantic validation.
@@ -83,10 +89,12 @@ These checks are still in scope, but they need class-level constraints, type-use
 
 - `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/MCPLaunchConfiguration.java`
   - Current checks: HTTP and STDIO cannot both be enabled, and exactly one transport must be enabled.
+  - Additional concern: programmatic construction should reject missing HTTP transport, STDIO transport, or database map inputs before startup logic dereferences them.
   - Target: class-level configuration input validation on `MCPLaunchConfiguration` or an equivalent resolved launch configuration validator.
 
 - `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/HttpTransportConfiguration.java`
   - Current checks: remote HTTP access requires explicit opt-in, non-loopback bindings require allowed origins, and remote access requires authorization.
+  - Additional concern: resolved `bindHost`, `endpointPath`, and `oauthIntrospection` inputs should be present before enabled HTTP validation uses them.
   - Target: class-level configuration input validation on resolved `HttpTransportConfiguration`.
 
 - `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/HttpTransportConfiguration.java`
@@ -107,7 +115,14 @@ These checks are still in scope, but they need class-level constraints, type-use
 
 - `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/database/metadata/jdbc/RuntimeDatabaseConfiguration.java`
   - Current check: `databaseType` must be non-null and non-blank for programmatic configuration input.
-  - Target: retain or centralize as counterpart configuration input validation so non-YAML construction remains protected.
+  - Gap: counterpart construction does not yet mirror YAML requirements for `jdbcUrl`, `username`, `password`, and `driverClassName`.
+  - Target: retain or centralize counterpart configuration input validation so non-YAML construction matches YAML-derived required fields.
+  - Input contract: `databaseType` and `jdbcUrl` are required text; `username`, `password`, and `driverClassName` are required explicit strings where empty values are allowed.
+
+- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlEnvironmentPlaceholderUtils.java`
+  - Current check: referenced environment variables must exist while YAML values are resolved.
+  - Target: keep this as conversion-time validation, not raw YAML DTO validation, because it depends on an environment map.
+  - Implementation note: migrated counterpart validation may validate the resolved values after placeholder replacement.
 
 ## Intentionally Retained In Domain Or Runtime Validation
 
@@ -118,7 +133,7 @@ These are reviewed but are not part of the Bean Validation migration unless a la
 - Runtime tool argument validation against JSON schema.
 - HTTP request headers, security decisions, session state, and transport lifecycle checks.
 - Registry connectivity, filesystem publication side effects, and environment-specific runtime state.
-- Post-environment-resolution checks where raw YAML values may legally contain placeholders.
+- Environment placeholder existence checks and post-environment-resolution checks where raw YAML values may legally contain placeholders.
 
 ## Migration Decision Rules
 

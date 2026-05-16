@@ -37,6 +37,7 @@ Do not switch branches.
 - Scope includes directly movable validation checks and checks that are movable after adding custom constraints or adjusting configuration DTOs.
 - Scope excludes implementation in this Speckit pass; the output of this pass is requirement, plan, task, and scope mapping documentation.
 - Scope is limited to `mcp/bootstrap` YAML configuration DTOs, `mcp/bootstrap` configuration objects, and the direct runtime database configuration object created from YAML.
+- A counterpart configuration class is in scope when it is created directly by an MCP YAML configuration swapper, even if the class lives outside `mcp/bootstrap`.
 - Descriptor catalog, registry metadata, tool/resource/prompt schemas, runtime request validation, and transport header validation are outside this requirement package.
 
 ## User Scenarios & Testing
@@ -89,19 +90,21 @@ The map should explicitly exclude descriptor, registry, catalog, request, and ru
 - **FR-001**: The work MUST stay on branch `001-shardingsphere-mcp`; branch switching, branch creation, and Speckit commands that change branches MUST NOT be used.
 - **FR-002**: Scope MUST be limited to YAML configuration DTOs under `mcp/bootstrap/.../config/yaml/config`, their swappers, and direct counterpart configuration classes.
 - **FR-003**: Direct counterpart configuration classes in scope are launch, HTTP transport, STDIO transport, OAuth introspection, and runtime database configuration classes.
+  YAML conversion ownership, not package location alone, determines whether a counterpart configuration class is in scope.
 - **FR-004**: Existing MCP YAML validation entry points MUST remain the source of truth for YAML DTO validation, including nested DTO validation through `@Valid`.
 - **FR-005**: Directly duplicated null, blank, range, and pattern checks MUST be migrated from swappers into configuration validation only after equivalent constraints and tests are present.
 - **FR-006**: Direct migration scope MUST match `scope-map.md`.
   It includes launch transport presence, HTTP host/port/path, STDIO section presence, OAuth cache TTL, runtime database required fields, and runtime database collection presence.
 - **FR-007**: Custom-constraint or DTO-adjustment scope MUST match `scope-map.md`.
   It includes typed runtime database map validation, exactly-one transport mode, HTTP remote-access safety, allowed origins, authorization requirements, and OAuth introspection consistency.
-- **FR-008**: DTO adjustments MUST preserve the existing external YAML shape and public behavior unless a later implementation plan records a compatibility-safe transition.
-- **FR-009**: Checks that depend on resolved environment placeholders MUST run after resolution or on counterpart configuration objects.
+- **FR-008**: Counterpart configuration validation MUST cover direct construction inputs that are equivalent to YAML-derived required fields.
+- **FR-009**: DTO adjustments MUST preserve the existing external YAML shape and public behavior unless a later implementation plan records a compatibility-safe transition.
+- **FR-010**: Checks that depend on resolved environment placeholders MUST run after resolution or on counterpart configuration objects.
   Raw YAML constraints MUST NOT reject values that become valid only after placeholder resolution.
-- **FR-010**: Descriptor catalog, registry metadata, tool/resource/prompt catalog, runtime request, HTTP header, session, and lifecycle validation MUST remain out of scope.
-- **FR-011**: Error messages and property paths SHOULD become more framework-consistent, but tests MUST document any intentional message or path changes.
-- **FR-012**: Each migrated production path MUST have scoped tests proving invalid input fails at the configuration validation layer and valid input still swaps or launches successfully.
-- **FR-013**: Implementation MUST avoid broad refactors, dependency upgrades, generated-directory edits, and unrelated MCP behavior changes.
+- **FR-011**: Descriptor catalog, registry metadata, tool/resource/prompt catalog, runtime request, HTTP header, session, and lifecycle validation MUST remain out of scope.
+- **FR-012**: Error messages and property paths SHOULD become more framework-consistent, but tests MUST document any intentional message or path changes.
+- **FR-013**: Each migrated production path MUST have scoped tests proving invalid input fails at the configuration validation layer and valid input still swaps or launches successfully.
+- **FR-014**: Implementation MUST avoid broad refactors, dependency upgrades, generated-directory edits, and unrelated MCP behavior changes.
 
 ### Key Entities
 
@@ -127,6 +130,7 @@ The map should explicitly exclude descriptor, registry, catalog, request, and ru
 
 - Branch switching, branch creation, commits, pushes, or destructive git operations.
 - MCP SDK upgrades, dependency upgrades, or unrelated module restructuring.
+- Configuration file path resolution; it is loader input validation, not YAML configuration model or counterpart configuration validation.
 - Descriptor catalog validation, registry metadata validation, tool/resource/prompt schema validation, and catalog-level semantics.
 - Dynamic tool argument JSON-schema validation.
 - HTTP header parsing, request/session state, transport lifecycle state, and request security checks that require runtime context.

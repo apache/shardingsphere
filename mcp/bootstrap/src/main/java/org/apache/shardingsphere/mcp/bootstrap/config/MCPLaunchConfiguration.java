@@ -19,9 +19,11 @@ package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.bootstrap.config.validator.ValidMCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 /**
@@ -29,22 +31,23 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
+@ValidMCPLaunchConfiguration
 public final class MCPLaunchConfiguration {
     
+    @NotNull(message = "is required")
     private final HttpTransportConfiguration httpTransport;
     
+    @NotNull(message = "is required")
     private final StdioTransportConfiguration stdioTransport;
     
+    @NotNull(message = "is required")
     private final Map<String, RuntimeDatabaseConfiguration> databases;
     
     /**
      * Validate launch configuration.
      */
     public void validate() {
-        ShardingSpherePreconditions.checkState(!httpTransport.isEnabled() || !stdioTransport.isEnabled(),
-                () -> new IllegalArgumentException("HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport."));
-        ShardingSpherePreconditions.checkState(httpTransport.isEnabled() || stdioTransport.isEnabled(),
-                () -> new IllegalArgumentException("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true."));
+        MCPConfigurationValidator.validate(this, "MCP launch configuration");
         httpTransport.validate();
     }
 }

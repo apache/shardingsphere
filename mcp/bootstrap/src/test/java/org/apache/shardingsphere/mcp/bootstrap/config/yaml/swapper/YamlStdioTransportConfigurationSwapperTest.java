@@ -46,7 +46,7 @@ class YamlStdioTransportConfigurationSwapperTest {
     
     @Test
     void assertSwapToObjectWithNullConfiguration() {
-        assertThat(assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null)).getMessage(), is("Property `transport.stdio` is required."));
+        assertThat(assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null)).getMessage(), is("MCP STDIO transport configuration cannot be null."));
     }
     
     @Test

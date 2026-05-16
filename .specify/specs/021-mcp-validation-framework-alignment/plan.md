@@ -32,6 +32,17 @@ Scope is limited to bootstrap configuration input.
 **Target Modules**: `mcp/bootstrap` and the direct `RuntimeDatabaseConfiguration` counterpart in `mcp/support`  
 **Constraints**: No branch switching; no generated directory edits; no dependency upgrades; preserve external YAML shape  
 
+## Framework Basis
+
+- Project dependency detection: `mcp/pom.xml` uses `jakarta.validation-api` 2.0.2 and Hibernate Validator 6.2.5.Final.
+- Hibernate Validator 6.2 is compatible with Jakarta Validation 2.0 and keeps the `javax.validation.*` package model.
+- Bean Validation 2.0 supports built-in constraints such as `@NotEmpty`, `@NotBlank`, and `@PositiveOrZero`.
+- Bean Validation 2.0 supports container element constraints and cascaded validation on generic container element types.
+- Sources:
+  - https://hibernate.org/validator/releases/6.2/
+  - https://beanvalidation.org/2.0-jsr380/
+  - https://beanvalidation.org/2.0/spec/
+
 ## Governance Check
 
 - Use the existing branch `001-shardingsphere-mcp`; do not run `git switch`, `git checkout`, branch creation helpers, or Speckit branch commands.
@@ -40,6 +51,7 @@ Scope is limited to bootstrap configuration input.
 - Add custom constraints only for DTO-local invariants that cannot be expressed by built-in annotations.
 - Keep descriptor, registry, request, and runtime state checks outside this configuration-only requirement.
 - Keep post-placeholder checks on resolved counterpart configuration when raw YAML validation would lose required context.
+- Treat direct YAML swapper output classes as in scope even when the class is outside `mcp/bootstrap`.
 - Run scoped tests and style checks for touched modules during implementation.
 
 ## Project Structure
@@ -90,7 +102,8 @@ specs/012-mcp-validation-framework-alignment/
 
 1. Centralize exactly-one transport validation for `MCPLaunchConfiguration`.
 2. Centralize HTTP remote-access, allowed-origin, authorization, and OAuth introspection consistency validation for `HttpTransportConfiguration`.
-3. Keep checks that need resolved placeholders on counterpart configuration objects rather than raw YAML DTOs.
+3. Include required nested counterpart configuration objects and required resolved scalar fields for programmatic construction paths.
+4. Keep checks that need resolved placeholders on counterpart configuration objects rather than raw YAML DTOs.
 
 ### Phase 5 - Explicitly Retained Outside Scope
 

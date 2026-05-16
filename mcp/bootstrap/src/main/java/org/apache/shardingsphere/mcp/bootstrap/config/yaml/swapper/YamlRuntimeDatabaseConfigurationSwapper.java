@@ -47,7 +47,6 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
     }
     
     RuntimeDatabaseConfiguration swapToObject(final YamlRuntimeDatabaseConfiguration yamlConfig, final Map<String, String> environment) {
-        ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Runtime database configuration cannot be null."));
         MCPYamlConfigurationValidator.validate(yamlConfig, "MCP runtime database configuration");
         return new RuntimeDatabaseConfiguration(resolveRequiredText(yamlConfig.getDatabaseType(), "databaseType", environment), resolveRequiredText(yamlConfig.getJdbcUrl(), "jdbcUrl", environment),
                 resolveExplicitText(yamlConfig.getUsername(), "username", environment), resolveExplicitText(yamlConfig.getPassword(), "password", environment),
@@ -55,22 +54,16 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
     }
     
     private String resolveRequiredText(final String value, final String fieldName, final Map<String, String> environment) {
-        ShardingSpherePreconditions.checkNotNull(value, () -> new IllegalArgumentException(formatRequiredMessage(fieldName)));
         String result = YamlEnvironmentPlaceholderUtils.resolve(value, String.format("runtime.databases[].%s", fieldName), environment);
         ShardingSpherePreconditions.checkState(!result.isBlank(), () -> new IllegalArgumentException(formatRequiredMessage(fieldName)));
         return result;
     }
     
     private String resolveExplicitText(final String value, final String fieldName, final Map<String, String> environment) {
-        ShardingSpherePreconditions.checkNotNull(value, () -> new IllegalArgumentException(formatExplicitMessage(fieldName)));
         return YamlEnvironmentPlaceholderUtils.resolve(value, String.format("runtime.databases[].%s", fieldName), environment);
     }
     
     private String formatRequiredMessage(final String fieldName) {
         return String.format("Runtime database property `%s` is required.", fieldName);
-    }
-    
-    private String formatExplicitMessage(final String fieldName) {
-        return String.format("Runtime database property `%s` is required. Use an empty string when no value is needed.", fieldName);
     }
 }

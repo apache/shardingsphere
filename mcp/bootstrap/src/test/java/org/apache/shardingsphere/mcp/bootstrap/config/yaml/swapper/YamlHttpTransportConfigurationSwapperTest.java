@@ -177,13 +177,20 @@ class YamlHttpTransportConfigurationSwapperTest {
     void assertSwapToObjectWithEndpointPathMissingLeadingSlash() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> swapper.swapToObject(createYamlConfig("127.0.0.1", false, "", 18088, "gateway")));
-        assertThat(actual.getMessage(), is("Property `transport.http.endpointPath` must start with '/'."));
+        assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `endpointPath` must start with '/'."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithMissingPort() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> swapper.swapToObject(createYamlConfig("127.0.0.1", false, "", null, "/mcp")));
+        assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `port` is required."));
     }
     
     @Test
     void assertSwapToObjectWithNullConfiguration() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null));
-        assertThat(actual.getMessage(), is("Property `transport.http` is required."));
+        assertThat(actual.getMessage(), is("MCP HTTP transport configuration cannot be null."));
     }
     
     @Test

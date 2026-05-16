@@ -57,7 +57,7 @@ public final class MCPRuntimeLauncher {
      * @throws IOException when the active server startup fails
      */
     public MCPRuntimeServer launch(final MCPLaunchConfiguration config, final String configPath) throws IOException {
-        ShardingSpherePreconditions.checkNotEmpty(config.getDatabases(), () -> new IllegalArgumentException("At least one runtime database must be configured."));
+        ShardingSpherePreconditions.checkNotNull(config, () -> new IllegalArgumentException("MCP launch configuration cannot be null."));
         config.validate();
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(config.getDatabases()), new MCPDatabaseCapabilityProvider(config.getDatabases()),
                 config.getHttpTransport().isEnabled() ? "http" : "stdio");

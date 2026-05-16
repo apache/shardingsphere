@@ -80,7 +80,7 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     @Test
     void assertSwapToObjectWithNullConfiguration() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null));
-        assertThat(actual.getMessage(), is("Runtime database configuration cannot be null."));
+        assertThat(actual.getMessage(), is("MCP runtime database configuration cannot be null."));
     }
     
     @Test

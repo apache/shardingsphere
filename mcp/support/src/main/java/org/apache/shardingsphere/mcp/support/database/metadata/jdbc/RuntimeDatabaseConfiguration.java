@@ -19,7 +19,10 @@ package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -31,14 +34,19 @@ import java.util.Properties;
 @Getter
 public final class RuntimeDatabaseConfiguration {
     
+    @NotBlank(message = "is required")
     private final String databaseType;
     
+    @NotBlank(message = "is required")
     private final String jdbcUrl;
     
+    @NotNull(message = "is required. Use an empty string when no value is needed")
     private final String username;
     
+    @NotNull(message = "is required. Use an empty string when no value is needed")
     private final String password;
     
+    @NotNull(message = "is required. Use an empty string when no value is needed")
     private final String driverClassName;
     
     public RuntimeDatabaseConfiguration(final String databaseType, final String jdbcUrl, final String username, final String password, final String driverClassName) {
@@ -47,6 +55,7 @@ public final class RuntimeDatabaseConfiguration {
         this.username = username;
         this.password = password;
         this.driverClassName = driverClassName;
+        MCPConfigurationValidator.validate(this, "Runtime database configuration");
     }
     
     private String validateDatabaseType(final String databaseType) {

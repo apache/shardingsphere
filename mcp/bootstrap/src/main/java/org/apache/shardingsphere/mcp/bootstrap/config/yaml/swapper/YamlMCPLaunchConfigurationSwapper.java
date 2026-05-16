@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
@@ -47,9 +46,8 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     
     @Override
     public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
-        ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("MCP launch configuration cannot be null."));
         MCPYamlConfigurationValidator.validate(yamlConfig, "MCP launch configuration");
-        YamlMCPTransportConfiguration yamlTransportConfig = resolveRequiredTransportConfiguration(yamlConfig);
+        YamlMCPTransportConfiguration yamlTransportConfig = yamlConfig.getTransport();
         MCPLaunchConfiguration result = new MCPLaunchConfiguration(httpTransportConfigSwapper.swapToObject(yamlTransportConfig.getHttp()),
                 stdioTransportConfigSwapper.swapToObject(yamlTransportConfig.getStdio()), runtimeDatabasesSwapper.swapToObject(yamlConfig.getRuntimeDatabases()));
         result.validate();
@@ -60,12 +58,6 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         YamlMCPTransportConfiguration result = new YamlMCPTransportConfiguration();
         result.setHttp(httpTransportConfigSwapper.swapToYamlConfiguration(httpTransport));
         result.setStdio(stdioTransportConfigSwapper.swapToYamlConfiguration(stdioTransport));
-        return result;
-    }
-    
-    private YamlMCPTransportConfiguration resolveRequiredTransportConfiguration(final YamlMCPLaunchConfiguration yamlConfig) {
-        YamlMCPTransportConfiguration result = yamlConfig.getTransport();
-        ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalArgumentException("Property `transport` is required."));
         return result;
     }
 }

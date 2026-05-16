@@ -43,8 +43,9 @@ Raise every scoped MCP encrypt/mask score dimension to **100/100** without switc
 - Only score encrypt and mask functional completeness.
 - Prefer readable, elegant, minimal code over broad abstraction.
 - Use Docker/Testcontainers for local opt-in lanes when Docker, network, and local resources are available.
-- LLM score evidence must use Docker-owned Ollama with `qwen3:1.7b`; external LLM endpoints are debug-only.
-- Use Codex CLI for cross-model second opinion after confirming the exact read-only command.
+- LLM score evidence must use Docker-owned `ollama/ollama:0.23.1` with `qwen3:1.7b`; external LLM endpoints are debug-only.
+- Use Codex CLI for cross-model second opinion with the confirmed ephemeral read-only command:
+  `codex exec --ephemeral --sandbox read-only -C /Users/zhangliang/IdeaProjects/shardingsphere - < /tmp/mcp-doubt-review.md`.
 
 ## Active Scores
 

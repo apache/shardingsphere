@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -52,6 +54,49 @@ class MCPLaunchConfigurationTest {
     }
     
     @Test
+    void assertValidateWhenHttpTransportMissing() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new MCPLaunchConfiguration(null, new StdioTransportConfiguration(true), createRuntimeDatabases()).validate());
+        assertThat(actual.getMessage(), is("MCP launch configuration property `httpTransport` is required."));
+    }
+    
+    @Test
+    void assertValidateWhenStdioTransportMissing() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "/mcp"), null, createRuntimeDatabases()).validate());
+        assertThat(actual.getMessage(), is("MCP launch configuration property `stdioTransport` is required."));
+    }
+    
+    @Test
+    void assertValidateWhenDatabasesMissing() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "/mcp"), new StdioTransportConfiguration(false), null).validate());
+        assertThat(actual.getMessage(), is("MCP launch configuration property `databases` is required."));
+    }
+    
+    @Test
+    void assertValidateWhenDatabasesEmpty() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp"), new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+        assertThat(actual.getMessage(), is("At least one runtime database must be configured."));
+    }
+    
+    @Test
+    void assertValidateWhenHttpBindHostMissing() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new MCPLaunchConfiguration(new HttpTransportConfiguration(true, null, false, "token", 0, "/mcp"), new StdioTransportConfiguration(false), createRuntimeDatabases()).validate());
+        assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `bindHost` is required."));
+    }
+    
+    @Test
+    void assertValidateWhenHttpEndpointPathMissingLeadingSlash() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "mcp"), new StdioTransportConfiguration(false), createRuntimeDatabases())
+                        .validate());
+        assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `endpointPath` must start with '/'."));
+    }
+    
+    @Test
     void assertValidateWhenRemoteHttpIsNotExplicitlyAllowed() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, createLaunchConfiguration(true, false, "0.0.0.0", false, "")::validate);
         assertThat(actual.getMessage(), is("Property `transport.http.allowRemoteAccess` must be true when `transport.http.bindHost` is not loopback."));
@@ -69,7 +114,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "0.0.0.0", true, "token", 0, "/mcp", Collections.emptyList(),
                         Collections.singleton("https://auth.example.test"), Collections.emptyList(), ""),
-                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+                        new StdioTransportConfiguration(false), createRuntimeDatabases()).validate());
         assertThat(actual.getMessage(), is("Property `transport.http.allowedOrigins` must not be empty when remote HTTP access is enabled."));
     }
     
@@ -78,7 +123,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "0.0.0.0", true, "token", 0, "/mcp",
                         Collections.singleton("https://gateway.example.test/path"), Collections.singleton("https://auth.example.test"), Collections.emptyList(), ""),
-                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+                        new StdioTransportConfiguration(false), createRuntimeDatabases()).validate());
         assertThat(actual.getMessage(), is("Property `transport.http.allowedOrigins` must use valid HTTP or HTTPS origins."));
     }
     
@@ -86,7 +131,7 @@ class MCPLaunchConfigurationTest {
     void assertValidateWhenHttpAuthorizationServersAreMissing() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "/mcp"),
-                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+                        new StdioTransportConfiguration(false), createRuntimeDatabases()).validate());
         assertThat(actual.getMessage(), is("Property `transport.http.authorizationServers` must not be empty when HTTP authorization is enabled."));
     }
     
@@ -95,7 +140,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> new MCPLaunchConfiguration(
                         new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "/mcp", Collections.singleton("http://auth.example.test"), Collections.emptyList(), ""),
-                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+                        new StdioTransportConfiguration(false), createRuntimeDatabases()).validate());
         assertThat(actual.getMessage(), is("Property `transport.http.authorizationServers` must use valid HTTPS URLs when HTTP authorization is enabled."));
     }
     
@@ -104,7 +149,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> new MCPLaunchConfiguration(
                         new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "/mcp", Collections.singleton("https://"), Collections.emptyList(), ""),
-                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+                        new StdioTransportConfiguration(false), createRuntimeDatabases()).validate());
         assertThat(actual.getMessage(), is("Property `transport.http.authorizationServers` must use valid HTTPS URLs when HTTP authorization is enabled."));
     }
     
@@ -114,7 +159,7 @@ class MCPLaunchConfigurationTest {
                 () -> new MCPLaunchConfiguration(
                         new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "/mcp", Collections.singleton("https://auth.example.test#fragment"),
                                 Collections.emptyList(), ""),
-                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+                        new StdioTransportConfiguration(false), createRuntimeDatabases()).validate());
         assertThat(actual.getMessage(), is("Property `transport.http.authorizationServers` must use valid HTTPS URLs when HTTP authorization is enabled."));
     }
     
@@ -122,7 +167,7 @@ class MCPLaunchConfigurationTest {
     void assertValidateWhenHttpAuthorizationMetadataIsConfigured() {
         assertDoesNotThrow(() -> new MCPLaunchConfiguration(
                 new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "/mcp", Collections.singleton("https://auth.example.test"), Collections.singleton("mcp.read"), ""),
-                new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+                new StdioTransportConfiguration(false), createRuntimeDatabases()).validate());
     }
     
     @Test
@@ -131,7 +176,7 @@ class MCPLaunchConfigurationTest {
                 new HttpTransportConfiguration(true, "0.0.0.0", true, "", 0, "/mcp", Collections.singleton("https://gateway.example.test"),
                         Collections.singleton("https://auth.example.test"), Collections.singleton("mcp.read"), "",
                         createOAuthIntrospectionConfiguration("https://auth.example.test/introspect", "foo_client", "foo_secret", "", 30000L)),
-                new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+                new StdioTransportConfiguration(false), createRuntimeDatabases()).validate());
     }
     
     @Test
@@ -139,7 +184,7 @@ class MCPLaunchConfigurationTest {
         assertDoesNotThrow(() -> new MCPLaunchConfiguration(
                 new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp", Collections.singleton("https://auth.example.test"), Collections.singleton("mcp.read"), "",
                         createOAuthIntrospectionConfiguration("http://127.0.0.1:19090/introspect", "foo_client", "foo_secret", "https://auth.example.test", 0L)),
-                new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+                new StdioTransportConfiguration(false), createRuntimeDatabases()).validate());
     }
     
     @Test
@@ -148,7 +193,7 @@ class MCPLaunchConfigurationTest {
                 () -> new MCPLaunchConfiguration(
                         new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 0, "/mcp", Collections.singleton("https://auth.example.test"),
                                 Collections.emptyList(), "", createOAuthIntrospectionConfiguration("https://auth.example.test/introspect", "foo_client", "foo_secret", "", 0L)),
-                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+                        new StdioTransportConfiguration(false), createRuntimeDatabases()).validate());
         assertThat(actual.getMessage(), is("Properties `transport.http.accessToken` and `transport.http.oauthIntrospection.endpoint` cannot both be configured."));
     }
     
@@ -158,7 +203,7 @@ class MCPLaunchConfigurationTest {
                 () -> new MCPLaunchConfiguration(
                         new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp", Collections.singleton("https://auth.example.test"),
                                 Collections.emptyList(), "", createOAuthIntrospectionConfiguration("http://auth.example.test/introspect", "foo_client", "foo_secret", "", 0L)),
-                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+                        new StdioTransportConfiguration(false), createRuntimeDatabases()).validate());
         assertThat(actual.getMessage(), is("Property `transport.http.oauthIntrospection` must include a valid endpoint, clientId, clientSecret, and non-negative cacheTtlMillis."));
     }
     
@@ -168,7 +213,7 @@ class MCPLaunchConfigurationTest {
                 () -> new MCPLaunchConfiguration(
                         new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp", Collections.singleton("https://auth.example.test"),
                                 Collections.emptyList(), "", createOAuthIntrospectionConfiguration("https://auth.example.test/introspect", "foo_client", "foo_secret", "http://auth.example.test", 0L)),
-                        new StdioTransportConfiguration(false), Collections.emptyMap()).validate());
+                        new StdioTransportConfiguration(false), createRuntimeDatabases()).validate());
         assertThat(actual.getMessage(), is("Property `transport.http.oauthIntrospection` must include a valid endpoint, clientId, clientSecret, and non-negative cacheTtlMillis."));
     }
     
@@ -190,11 +235,15 @@ class MCPLaunchConfigurationTest {
                                                              final boolean allowRemoteAccess, final String accessToken, final Collection<String> allowedOrigins) {
         return new MCPLaunchConfiguration(new HttpTransportConfiguration(httpEnabled, bindHost, allowRemoteAccess, accessToken, 0, "/mcp", allowedOrigins,
                 Collections.singleton("https://auth.example.test"), Collections.emptyList(), ""),
-                new StdioTransportConfiguration(stdioEnabled), Collections.emptyMap());
+                new StdioTransportConfiguration(stdioEnabled), createRuntimeDatabases());
     }
     
     private OAuthIntrospectionConfiguration createOAuthIntrospectionConfiguration(final String endpoint, final String clientId, final String clientSecret,
                                                                                   final String expectedIssuer, final long cacheTtlMillis) {
         return new OAuthIntrospectionConfiguration(endpoint, clientId, clientSecret, expectedIssuer, cacheTtlMillis);
+    }
+    
+    private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
+        return Collections.singletonMap("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", ""));
     }
 }
