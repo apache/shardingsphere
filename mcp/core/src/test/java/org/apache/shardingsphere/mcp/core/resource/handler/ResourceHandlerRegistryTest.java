@@ -54,11 +54,6 @@ import static org.mockito.Mockito.when;
 class ResourceHandlerRegistryTest {
     
     @Test
-    void assertGetRegisteredResources() {
-        assertThat(ResourceHandlerRegistry.getRegisteredResources().size(), is(20));
-    }
-    
-    @Test
     void assertDispatch() {
         Optional<MCPResponse> actual = ResourceHandlerRegistry.dispatch(mock(MCPRequestScope.class), "shardingsphere://capabilities");
         assertTrue(actual.isPresent());
@@ -90,7 +85,7 @@ class ResourceHandlerRegistryTest {
     
     @Test
     void assertGetSupportedResources() {
-        List<String> actual = ResourceHandlerRegistry.getSupportedResources();
+        Collection<String> actual = ResourceHandlerRegistry.getSupportedResources();
         assertThat(actual.size(), is(20));
         assertTrue(actual.contains("shardingsphere://capabilities"));
         assertTrue(actual.contains("shardingsphere://runtime"));

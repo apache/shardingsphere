@@ -35,6 +35,7 @@ import org.apache.shardingsphere.mcp.core.resource.MCPResourceController;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -44,7 +45,7 @@ import java.util.stream.Collectors;
  */
 public final class MCPResourceSpecificationFactory {
     
-    private final List<MCPResourceDescriptor> resourceDescriptors;
+    private final Collection<MCPResourceDescriptor> resourceDescriptors;
     
     private final MCPResourceController controller;
     

@@ -48,22 +48,18 @@ public final class ResourceHandlerRegistry {
     
     private static final Map<MCPUriPattern, MCPResourceHandler<?>> REGISTERED_RESOURCES;
     
-    private static final List<String> SUPPORTED_RESOURCES;
+    private static final Collection<String> SUPPORTED_RESOURCES;
     
-    private static final List<MCPResourceDescriptor> SUPPORTED_RESOURCE_DESCRIPTORS;
+    private static final Collection<MCPResourceDescriptor> SUPPORTED_RESOURCE_DESCRIPTORS;
     
     static {
-        REGISTERED_RESOURCES = createRegisteredResources();
+        REGISTERED_RESOURCES = createRegisteredResources(MCPHandlerLoader.loadResourceHandlers());
         validateRegisteredResources();
         SUPPORTED_RESOURCES = REGISTERED_RESOURCES.keySet().stream().map(MCPUriPattern::getPattern).collect(Collectors.toList());
         SUPPORTED_RESOURCE_DESCRIPTORS = REGISTERED_RESOURCES.values().stream().map(MCPResourceHandler::getResourceDescriptor).collect(Collectors.toList());
     }
     
-    private static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources() {
-        return createRegisteredResources(MCPHandlerLoader.loadResourceHandlers());
-    }
-    
-    static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources(final Collection<MCPResourceHandler<?>> handlers) {
+    private static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources(final Collection<MCPResourceHandler<?>> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPResourceHandler<?> each : handlers) {
@@ -98,15 +94,6 @@ public final class ResourceHandlerRegistry {
     }
     
     /**
-     * Get registered resources.
-     *
-     * @return registered resources
-     */
-    static Map<MCPUriPattern, MCPResourceHandler<?>> getRegisteredResources() {
-        return REGISTERED_RESOURCES;
-    }
-    
-    /**
      * Dispatch resource URI to registered resource.
      *
      * @param requestScope request scope
@@ -132,7 +119,7 @@ public final class ResourceHandlerRegistry {
      *
      * @return supported resources
      */
-    public static List<String> getSupportedResources() {
+    public static Collection<String> getSupportedResources() {
         return SUPPORTED_RESOURCES;
     }
     
@@ -141,7 +128,7 @@ public final class ResourceHandlerRegistry {
      *
      * @return supported resource descriptors
      */
-    public static List<MCPResourceDescriptor> getSupportedResourceDescriptors() {
+    public static Collection<MCPResourceDescriptor> getSupportedResourceDescriptors() {
         return SUPPORTED_RESOURCE_DESCRIPTORS;
     }
 }
