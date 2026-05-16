@@ -38,7 +38,7 @@ final class YamlEnvironmentPlaceholderUtils {
             return null;
         }
         Matcher matcher = ENVIRONMENT_PLACEHOLDER_PATTERN.matcher(value);
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         while (matcher.find()) {
             String environmentName = matcher.group(1);
             String replacement = environment.get(environmentName);

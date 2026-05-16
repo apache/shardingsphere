@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.api.resource.descriptor;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -44,6 +45,6 @@ public final class MCPResourceAnnotations {
      * @return true if annotations are empty
      */
     public boolean isEmpty() {
-        return audience.isEmpty() && null == priority && (null == lastModified || lastModified.isBlank());
+        return audience.isEmpty() && null == priority && Strings.isNullOrEmpty(lastModified);
     }
 }

@@ -108,8 +108,7 @@ final class MCPDescriptorCatalogYamlSwapper {
     }
     
     private static MCPResourceAnnotations swapResourceAnnotations(final YamlMCPResourceAnnotations yamlAnnotations) {
-        return null == yamlAnnotations ? MCPResourceAnnotations.EMPTY
-                : new MCPResourceAnnotations(yamlAnnotations.getAudience(), yamlAnnotations.getPriority(), yamlAnnotations.getLastModified());
+        return null == yamlAnnotations ? MCPResourceAnnotations.EMPTY : new MCPResourceAnnotations(yamlAnnotations.getAudience(), yamlAnnotations.getPriority(), yamlAnnotations.getLastModified());
     }
     
     private static Collection<MCPToolDescriptor> swapToolDescriptors(final Collection<YamlMCPToolDescriptor> yamlDescriptors) {
