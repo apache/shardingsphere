@@ -35,6 +35,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +75,7 @@ class HttpTransportOAuthIntrospectionE2ETest extends AbstractHttpProgrammaticRun
     
     @Override
     protected HttpTransportConfiguration createHttpTransportConfiguration(final boolean enabled) {
-        return new HttpTransportConfiguration(enabled, "127.0.0.1", false, "", 0, getHttpEndpointPath(), List.of(AUTHORIZATION_SERVER), List.of("mcp.read"),
+        return new HttpTransportConfiguration(enabled, "127.0.0.1", false, "", 0, getHttpEndpointPath(), Collections.emptyList(), List.of(AUTHORIZATION_SERVER), List.of("mcp.read"),
                 PROTECTED_RESOURCE, new OAuthIntrospectionConfiguration(getIntrospectionEndpoint(), CLIENT_ID, CLIENT_SECRET, AUTHORIZATION_SERVER, 30000L));
     }
     

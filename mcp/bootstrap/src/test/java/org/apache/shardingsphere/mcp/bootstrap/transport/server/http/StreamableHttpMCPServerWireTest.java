@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -53,7 +54,8 @@ class StreamableHttpMCPServerWireTest {
     
     private StreamableHttpMCPServer createServer() {
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), new MCPDatabaseCapabilityProvider(Collections.emptyMap()), "http");
-        return new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp"), runtimeContext);
+        return new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
+                new OAuthIntrospectionConfiguration()), runtimeContext);
     }
     
     private HttpRequest createInitializeRequest(final int port, final String contentType) throws Exception {

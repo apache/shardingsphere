@@ -23,6 +23,7 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFactory;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
@@ -109,7 +110,8 @@ class StreamableHttpMCPServerTest {
     }
     
     private HttpTransportConfiguration createConfig(final int port) {
-        return new HttpTransportConfiguration(true, "127.0.0.1", false, "", port, "/mcp");
+        return new HttpTransportConfiguration(true, "127.0.0.1", false, "", port, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
+                new OAuthIntrospectionConfiguration());
     }
     
     private StreamableHttpMCPServlet createTransportServlet() {

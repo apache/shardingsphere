@@ -352,7 +352,8 @@ class StreamableHttpMCPServletTest {
         when(request.getRequestURI()).thenReturn("/mcp");
         HttpServletResponse response = mock(HttpServletResponse.class);
         StreamableHttpMCPServlet actual = createServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class),
-                new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18088, "/mcp", List.of("https://auth.example.test"), List.of("mcp.read"), ""));
+                new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18088, "/mcp", Collections.emptyList(), List.of("https://auth.example.test"), List.of("mcp.read"), "",
+                        new OAuthIntrospectionConfiguration()));
         actual.service(request, response);
         verify(response).setHeader("WWW-Authenticate", "Bearer resource_metadata=\"http://127.0.0.1:18088/.well-known/oauth-protected-resource/mcp\", scope=\"mcp.read\"");
         verify(delegate, never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
@@ -417,7 +418,9 @@ class StreamableHttpMCPServletTest {
     
     private StreamableHttpMCPServlet createServlet(final HttpServletStreamableServerTransportProvider delegate, final MCPSessionManager sessionManager,
                                                    final MCPSessionExecutionCoordinator sessionExecutionCoordinator) throws ReflectiveOperationException {
-        return createServlet(delegate, sessionManager, sessionExecutionCoordinator, new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp"));
+        return createServlet(delegate, sessionManager, sessionExecutionCoordinator,
+                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
+                        new OAuthIntrospectionConfiguration()));
     }
     
     private StreamableHttpMCPServlet createServlet(final HttpServletStreamableServerTransportProvider delegate, final MCPSessionManager sessionManager,

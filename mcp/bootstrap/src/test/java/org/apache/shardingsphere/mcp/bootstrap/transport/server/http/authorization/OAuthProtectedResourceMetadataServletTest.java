@@ -22,11 +22,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -43,8 +45,10 @@ class OAuthProtectedResourceMetadataServletTest {
         StringWriter responseBody = new StringWriter();
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(response.getWriter()).thenReturn(new PrintWriter(responseBody));
-        new OAuthProtectedResourceMetadataServlet(new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18088, "/mcp",
-                List.of("https://auth.example.test"), List.of("mcp.read"), "")).doGet(createRequest(), response);
+        new OAuthProtectedResourceMetadataServlet(
+                new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18088, "/mcp", Collections.emptyList(), List.of("https://auth.example.test"), List.of("mcp.read"), "",
+                        new OAuthIntrospectionConfiguration()))
+                .doGet(createRequest(), response);
         Map<String, Object> actual = JsonUtils.fromJsonString(responseBody.toString(), new TypeReference<>() {
         });
         assertThat(actual.get("resource"), is("http://127.0.0.1:18088/mcp"));
@@ -58,8 +62,9 @@ class OAuthProtectedResourceMetadataServletTest {
         StringWriter responseBody = new StringWriter();
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(response.getWriter()).thenReturn(new PrintWriter(responseBody));
-        new OAuthProtectedResourceMetadataServlet(new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18088, "/mcp",
-                List.of("https://auth.example.test"), List.of(), "https://gateway.example.test/mcp")).doGet(createRequest(), response);
+        new OAuthProtectedResourceMetadataServlet(new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18088, "/mcp", Collections.emptyList(), List.of("https://auth.example.test"),
+                List.of(), "https://gateway.example.test/mcp",
+                new OAuthIntrospectionConfiguration())).doGet(createRequest(), response);
         Map<String, Object> actual = JsonUtils.fromJsonString(responseBody.toString(), new TypeReference<>() {
         });
         assertThat(actual.get("resource"), is("https://gateway.example.test/mcp"));
@@ -68,7 +73,10 @@ class OAuthProtectedResourceMetadataServletTest {
     @Test
     void assertDoGetWhenProtectedResourceMetadataIsDisabled() throws IOException {
         HttpServletResponse response = mock(HttpServletResponse.class);
-        new OAuthProtectedResourceMetadataServlet(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp")).doGet(createRequest(), response);
+        new OAuthProtectedResourceMetadataServlet(
+                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
+                        new OAuthIntrospectionConfiguration()))
+                .doGet(createRequest(), response);
         verify(response).sendError(HttpServletResponse.SC_NOT_FOUND);
     }
     

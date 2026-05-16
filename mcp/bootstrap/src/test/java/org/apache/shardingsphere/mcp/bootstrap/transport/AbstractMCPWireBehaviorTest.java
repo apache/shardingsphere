@@ -23,6 +23,7 @@ import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
@@ -97,7 +98,9 @@ public abstract class AbstractMCPWireBehaviorTest {
     }
     
     private static MCPWireClient createHttpWireClient() throws Exception {
-        HttpTransportConfiguration config = new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, ENDPOINT_PATH);
+        HttpTransportConfiguration config =
+                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, ENDPOINT_PATH, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
+                        new OAuthIntrospectionConfiguration());
         StreamableHttpMCPServer server = new StreamableHttpMCPServer(config, createRuntimeContext("http"));
         server.start();
         HttpWireClient result = new HttpWireClient(server);

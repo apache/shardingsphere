@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -81,7 +83,8 @@ class MCPRuntimeLauncherTest {
     void assertLaunchWithoutRuntimeDatabases() {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> runtimeLauncher.launch(
-                new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp"), new StdioTransportConfiguration(false), Map.of())));
+                new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
+                        new OAuthIntrospectionConfiguration()), new StdioTransportConfiguration(false), Map.of())));
         assertThat(actual.getMessage(), is("At least one runtime database must be configured."));
     }
     
@@ -140,8 +143,10 @@ class MCPRuntimeLauncherTest {
     void assertCreateHttpStartupHintsWithProtectedResourceMetadata() {
         StreamableHttpMCPServer server = mock(StreamableHttpMCPServer.class);
         when(server.getLocalPort()).thenReturn(19090);
-        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18080, "/mcp",
-                List.of("https://auth.example.test"), List.of("mcp.read"), ""), new StdioTransportConfiguration(false),
+        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(
+                new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18080, "/mcp", Collections.emptyList(), List.of("https://auth.example.test"), List.of("mcp.read"), "",
+                        new OAuthIntrospectionConfiguration()),
+                new StdioTransportConfiguration(false),
                 Map.of("logic_db", mock(RuntimeDatabaseConfiguration.class)));
         List<String> actual = new MCPRuntimeLauncher().createStartupHints(launchConfig, server, "custom.yaml");
         assertTrue(actual.contains("OAuth protected resource metadata: http://127.0.0.1:19090/.well-known/oauth-protected-resource/mcp"));
@@ -164,7 +169,9 @@ class MCPRuntimeLauncherTest {
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled) {
-        return new MCPLaunchConfiguration(new HttpTransportConfiguration(httpEnabled, "127.0.0.1", false, "", 18080, "/mcp"),
+        return new MCPLaunchConfiguration(
+                new HttpTransportConfiguration(httpEnabled, "127.0.0.1", false, "", 18080, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
+                        new OAuthIntrospectionConfiguration()),
                 new StdioTransportConfiguration(!httpEnabled), Map.of("logic_db", mock(RuntimeDatabaseConfiguration.class)));
     }
 }

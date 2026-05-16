@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
@@ -39,6 +40,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -179,7 +181,8 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
     }
     
     protected HttpTransportConfiguration createHttpTransportConfiguration(final boolean enabled) {
-        return new HttpTransportConfiguration(enabled, LOOPBACK_BIND_HOST, false, "", 0, getHttpEndpointPath());
+        return new HttpTransportConfiguration(enabled, LOOPBACK_BIND_HOST, false, "", 0, getHttpEndpointPath(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
+                new OAuthIntrospectionConfiguration());
     }
     
     protected String getHttpEndpointPath() {

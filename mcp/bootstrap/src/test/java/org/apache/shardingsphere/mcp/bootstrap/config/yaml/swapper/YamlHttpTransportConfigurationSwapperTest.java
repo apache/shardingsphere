@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransp
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlOAuthIntrospectionConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -196,7 +197,7 @@ class YamlHttpTransportConfigurationSwapperTest {
     @Test
     void assertSwapToYamlConfiguration() {
         YamlHttpTransportConfiguration actual = swapper.swapToYamlConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18088, "/mcp",
-                List.of("https://gateway.example.test"), List.of("https://auth.example.test"), List.of("mcp.read"), "https://gateway.example.test/mcp"));
+                List.of("https://gateway.example.test"), List.of("https://auth.example.test"), List.of("mcp.read"), "https://gateway.example.test/mcp", new OAuthIntrospectionConfiguration()));
         assertTrue(actual.isEnabled());
         assertThat(actual.getBindHost(), is("127.0.0.1"));
         assertFalse(actual.isAllowRemoteAccess());
@@ -212,7 +213,7 @@ class YamlHttpTransportConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfigurationWithOAuthIntrospection() {
-        HttpTransportConfiguration data = new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", List.of("https://auth.example.test"),
+        HttpTransportConfiguration data = new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", Collections.emptyList(), List.of("https://auth.example.test"),
                 List.of("mcp.read"), "https://gateway.example.test/mcp",
                 new OAuthIntrospectionConfiguration("https://auth.example.test/introspect", "foo_client", "foo_secret", "https://auth.example.test", 30000L));
         YamlHttpTransportConfiguration actual = swapper.swapToYamlConfiguration(data);

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
@@ -52,8 +53,8 @@ class HttpTransportSecurityE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     @Override
     protected HttpTransportConfiguration createHttpTransportConfiguration(final boolean enabled) {
         return remoteBinding
-                ? new HttpTransportConfiguration(enabled, "0.0.0.0", true, ACCESS_TOKEN, 0, getHttpEndpointPath(), List.of(ALLOWED_ORIGIN),
-                        List.of(AUTHORIZATION_SERVER), List.of("mcp.read"), "")
+                ? new HttpTransportConfiguration(enabled, "0.0.0.0", true, ACCESS_TOKEN, 0, getHttpEndpointPath(), List.of(ALLOWED_ORIGIN), List.of(AUTHORIZATION_SERVER), List.of("mcp.read"), "",
+                        new OAuthIntrospectionConfiguration())
                 : super.createHttpTransportConfiguration(enabled);
     }
     

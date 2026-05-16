@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfigur
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -141,7 +142,7 @@ class OAuthTokenValidatorTest {
     }
     
     private HttpTransportConfiguration createConfig(final long cacheTtlMillis) {
-        return new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", List.of("https://auth.example.test"), List.of("mcp.read"), resource(),
+        return new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", Collections.emptyList(), List.of("https://auth.example.test"), List.of("mcp.read"), resource(),
                 new OAuthIntrospectionConfiguration("https://auth.example.test/introspect", "foo_client", "foo_secret", "", cacheTtlMillis));
     }
     

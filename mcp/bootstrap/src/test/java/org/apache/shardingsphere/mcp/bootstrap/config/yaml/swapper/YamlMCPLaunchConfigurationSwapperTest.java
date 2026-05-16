@@ -20,12 +20,14 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.constructor.ConstructorException;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -246,7 +248,9 @@ class YamlMCPLaunchConfigurationSwapperTest {
         Map<String, RuntimeDatabaseConfiguration> databases = new LinkedHashMap<>(1, 1F);
         databases.put("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(
-                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp"), new StdioTransportConfiguration(true), databases);
+                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
+                        new OAuthIntrospectionConfiguration()),
+                new StdioTransportConfiguration(true), databases);
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         assertThat(String.valueOf(actual.getRuntimeDatabases().get("logic_db").get("databaseType")), is("H2"));
         assertThat(String.valueOf(actual.getRuntimeDatabases().get("logic_db").get("username")), is(""));

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +52,8 @@ class HttpTransportAccessTokenE2ETest extends AbstractHttpProgrammaticRuntimeE2E
     
     @Override
     protected HttpTransportConfiguration createHttpTransportConfiguration(final boolean enabled) {
-        return new HttpTransportConfiguration(enabled, "127.0.0.1", false, ACCESS_TOKEN, 0, getHttpEndpointPath(), List.of(AUTHORIZATION_SERVER), List.of("mcp.read"), "");
+        return new HttpTransportConfiguration(enabled, "127.0.0.1", false, ACCESS_TOKEN, 0, getHttpEndpointPath(), Collections.emptyList(), List.of(AUTHORIZATION_SERVER), List.of("mcp.read"), "",
+                new OAuthIntrospectionConfiguration());
     }
     
     @Test

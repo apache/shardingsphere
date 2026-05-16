@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTranspo
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlStdioTransportConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -69,7 +71,8 @@ class YamlMCPTransportConfigurationSwapperTest {
     @Test
     void assertSwapToYamlConfiguration() {
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(
-                new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp"), new StdioTransportConfiguration(false), Map.of()));
+                new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
+                        new OAuthIntrospectionConfiguration()), new StdioTransportConfiguration(false), Map.of()));
         assertTrue(actual.getTransport().getHttp().isEnabled());
         assertFalse(actual.getTransport().getHttp().isAllowRemoteAccess());
         assertThat(actual.getTransport().getHttp().getAccessToken(), is(""));

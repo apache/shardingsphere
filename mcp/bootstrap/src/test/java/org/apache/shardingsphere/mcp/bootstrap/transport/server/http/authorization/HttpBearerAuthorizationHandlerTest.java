@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfigur
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -136,15 +137,15 @@ class HttpBearerAuthorizationHandlerTest {
     
     private HttpTransportConfiguration createConfig(final String accessToken) {
         return accessToken.isEmpty()
-                ? new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp")
-                : new HttpTransportConfiguration(true, "127.0.0.1", false, accessToken, 18088, "/mcp",
-                        List.of("https://auth.example.test"), List.of("mcp.read"), "");
+                ? new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
+                        new OAuthIntrospectionConfiguration())
+                : new HttpTransportConfiguration(true, "127.0.0.1", false, accessToken, 18088, "/mcp", Collections.emptyList(), List.of("https://auth.example.test"), List.of("mcp.read"), "",
+                        new OAuthIntrospectionConfiguration());
     }
     
     private HttpBearerAuthorizationHandler createOAuthHandler(final Map<String, Object> introspectionResponse) {
-        HttpTransportConfiguration config = new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", List.of("https://auth.example.test"),
-                List.of("mcp.read"), "http://127.0.0.1:18088/mcp",
-                new OAuthIntrospectionConfiguration("https://auth.example.test/introspect", "foo_client", "foo_secret", "", 0L));
+        HttpTransportConfiguration config = new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", Collections.emptyList(), List.of("https://auth.example.test"),
+                List.of("mcp.read"), "http://127.0.0.1:18088/mcp", new OAuthIntrospectionConfiguration("https://auth.example.test/introspect", "foo_client", "foo_secret", "", 0L));
         return new HttpBearerAuthorizationHandler("", "/mcp", List.of("mcp.read"), true, new OAuthTokenValidator(config, token -> introspectionResponse,
                 () -> 1800000000000L));
     }
