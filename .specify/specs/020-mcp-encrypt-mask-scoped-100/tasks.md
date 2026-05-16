@@ -47,14 +47,14 @@
 
 ## Phase 1: Scoped Baseline and Governance
 
-- [ ] T001 [US1] Confirm branch before implementation with `git branch --show-current` and record `001-shardingsphere-mcp`.
+- [x] T001 [US1] Confirm branch before implementation with `git branch --show-current` and record `001-shardingsphere-mcp`.
   Path: repository root
-- [ ] T002 [US1] Update `mcp/README.md` and `mcp/README_ZH.md` so SDK `1.1.2`, MCP `2025-11-25`, icons non-goal, and encrypt/mask-only scoring are explicit.
+- [x] T002 [US1] Update `mcp/README.md` and `mcp/README_ZH.md` so SDK `1.1.2`, MCP `2025-11-25`, icons non-goal, and encrypt/mask-only scoring are explicit.
   Paths: `mcp/README.md`, `mcp/README_ZH.md`
-- [ ] T003 [US1] Reconcile historical Speckit 019 100/100 claims as previous evidence, not automatic closure for this scoped package.
+- [x] T003 [US1] Reconcile historical Speckit 019 100/100 claims as previous evidence, not automatic closure for this scoped package.
   Historical 019 files are read-only references for this package.
   Path: `.specify/specs/020-mcp-encrypt-mask-scoped-100/scorecard.md`
-- [ ] T004 [US1] Create an evidence ledger for every score dimension before implementation starts.
+- [x] T004 [US1] Create an evidence ledger for every score dimension before implementation starts.
   Path: `.specify/specs/020-mcp-encrypt-mask-scoped-100/scorecard.md`
 
 **Checkpoint**: The score target is stable and irrelevant work is excluded.
@@ -63,15 +63,18 @@
 
 ## Phase 2: MCP Protocol Conformity 95 -> 100
 
-- [ ] T010 [P] [US2] Add focused tests proving declared capabilities for resources, tools, prompts, and completions under SDK `1.1.2`.
+- [x] T010 [P] [US2] Add focused tests proving declared capabilities for resources, tools, prompts, and completions under SDK `1.1.2`.
   Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/MCPSyncServerFactoryTest.java`
-- [ ] T011 [P] [US2] Add HTTP transport tests for `2025-11-25` protocol header, POST, GET, DELETE, session id, unsupported content type, and missing header negative cases.
-  Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/StreamableHttpMCPServletTest.java`
-- [ ] T012 [US2] Add payload tests proving schema-conforming `structuredContent` plus serialized JSON text fallback for tool results with `outputSchema`.
+- [x] T011 [P] [US2] Add HTTP transport tests for `2025-11-25` protocol header, POST, GET, DELETE, session id, unsupported content type, and missing header negative cases.
+  Paths: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/StreamableHttpMCPServletTest.java`,
+  `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/StreamableHttpMCPServerWireTest.java`,
+  `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/validator/`
+- [x] T012 [US2] Add payload tests proving schema-conforming `structuredContent` plus serialized JSON text fallback for tool results with `outputSchema`.
   Path: `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/MCPTransportPayloadUtilsTest.java`
-- [ ] T013 [US2] Add descriptor validation tests proving optional non-goal fields are not required for scoring and unsupported public aliases remain rejected.
-  Path: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogValidatorTest.java`
-- [ ] T014 [US2] Record that compatibility tests for non-`2025-11-25` protocol revisions are intentionally not required.
+- [x] T013 [US2] Add descriptor validation tests proving optional non-goal fields are not required for scoring and unsupported public aliases remain rejected.
+  Paths: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogValidatorTest.java`,
+  `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorYamlKeyValidatorTest.java`
+- [x] T014 [US2] Record that compatibility tests for non-`2025-11-25` protocol revisions are intentionally not required.
   Path: `.specify/specs/020-mcp-encrypt-mask-scoped-100/source-map.md`
 
 **Score closure**: MCP protocol conformity can move to 100 after T010 through T014 pass and evidence is recorded.

@@ -27,6 +27,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
@@ -64,6 +65,16 @@ class StreamableHttpMCPServletTest {
     void assertProtocolVersions() throws ReflectiveOperationException {
         StreamableHttpMCPServlet actual = createServlet(mock(HttpServletStreamableServerTransportProvider.class), mock(MCPSessionManager.class),
                 mock(MCPSessionExecutionCoordinator.class));
+        assertThat(actual.protocolVersions(), is(MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS));
+    }
+    
+    @Test
+    void assertCreateWithOAuthIntrospection() throws ReflectiveOperationException {
+        OAuthIntrospectionConfiguration introspection = new OAuthIntrospectionConfiguration("http://127.0.0.1:18088/oauth/introspect", "client", "secret", "", 0L);
+        HttpTransportConfiguration config = new HttpTransportConfiguration(true, "127.0.0.1", false, "static-token", 18088, "/mcp", List.of(), List.of(), List.of(), "",
+                introspection);
+        StreamableHttpMCPServlet actual = createServlet(mock(HttpServletStreamableServerTransportProvider.class), mock(MCPSessionManager.class),
+                mock(MCPSessionExecutionCoordinator.class), config);
         assertThat(actual.protocolVersions(), is(MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS));
     }
     
@@ -230,6 +241,33 @@ class StreamableHttpMCPServletTest {
         actual.service(request, response);
         verify(response).setHeader(HttpHeaders.MCP_SESSION_ID, "session-id");
         verify(response).setHeader(HttpHeaders.PROTOCOL_VERSION, MCPTransportConstants.PROTOCOL_VERSION);
+    }
+    
+    @Test
+    void assertServicePostWithJsonContentType() throws ServletException, IOException, ReflectiveOperationException {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("POST");
+        when(request.getContentType()).thenReturn("application/json; charset=UTF-8");
+        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
+        when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        StreamableHttpMCPServlet actual = createServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class));
+        actual.service(request, response);
+        verify(delegate).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+    }
+    
+    @Test
+    void assertServicePostRejectUnsupportedContentType() throws ServletException, IOException, ReflectiveOperationException {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("POST");
+        when(request.getContentType()).thenReturn("text/plain");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        StreamableHttpMCPServlet actual = createServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class));
+        actual.service(request, response);
+        verify(response).sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Content-Type must be application/json.");
+        verify(delegate, never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
     
     @Test

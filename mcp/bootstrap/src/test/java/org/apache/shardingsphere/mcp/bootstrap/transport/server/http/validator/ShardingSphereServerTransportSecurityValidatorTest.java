@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
 
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
+import io.modelcontextprotocol.spec.HttpHeaders;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.ProtocolVersionHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.SessionRequiredTransportHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -58,6 +60,18 @@ class ShardingSphereServerTransportSecurityValidatorTest {
         assertThat(actual.getStatusCode(), is(401));
         assertThat(actual.getMessage(), is("Unauthorized."));
         verifyNoInteractions(second);
+    }
+    
+    @Test
+    void assertValidateHeadersWithExistingSessionMissingProtocolVersion() {
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        when(sessionManager.hasSession("session-id")).thenReturn(true);
+        ShardingSphereServerTransportSecurityValidator validator = new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(new ProtocolVersionHeaderConstraint()));
+        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class,
+                () -> validator.validateHeaders(Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-id"))));
+        assertThat(actual.getStatusCode(), is(400));
+        assertThat(actual.getMessage(), is("MCP-Protocol-Version header is required."));
+        verify(sessionManager).hasSession("session-id");
     }
     
     @ParameterizedTest(name = "{0}")

@@ -199,6 +199,15 @@ class MCPDescriptorYamlKeyValidatorTest {
     }
     
     @Test
+    void assertValidateUnknownResourceIconsKey() {
+        assertUnknownKey("""
+                resources:
+                  - uri: shardingsphere://capabilities
+                    icons: []
+                """, "$.resources[0].icons");
+    }
+    
+    @Test
     void assertValidateUnknownResourceTemplateSizeKey() {
         assertUnknownKey("""
                 resourceTemplates:
@@ -215,6 +224,15 @@ class MCPDescriptorYamlKeyValidatorTest {
                     execution:
                       unknown: true
                 """, "$.tools[0].execution");
+    }
+    
+    @Test
+    void assertValidateUnknownToolIconsKey() {
+        assertUnknownKey("""
+                tools:
+                  - name: database_gateway_search_metadata
+                    icons: []
+                """, "$.tools[0].icons");
     }
     
     @Test

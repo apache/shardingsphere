@@ -74,3 +74,11 @@
 - Compatibility with protocol revisions other than `2025-11-25` is not part of the coverage target.
 - Non-encrypt/mask ShardingSphere MCP features are not part of functional completeness scoring.
 - External LLM endpoints are debug-only and are not valid score-closing evidence for this package.
+
+## Protocol Closure Evidence
+
+- Protocol score closure is source-mapped only to MCP `2025-11-25` and local SDK `1.1.2`.
+- `mcp/bootstrap/pom.xml` fixes `mcp-java-sdk.version` at `1.1.2`; no SDK upgrade or dependency drift is part of this package.
+- `MCPTransportConstants.PROTOCOL_VERSION` is the score-closing server protocol version for MCP `2025-11-25`.
+- Existing `2025-06-18` transport compatibility may remain as product compatibility, but it is not required evidence for this scorecard and is not counted toward MCP protocol conformity.
+- Descriptor `icons` and `Tool.execution` stay non-goals for this checkpoint. YAML descriptor key validation rejects them today so unsupported optional protocol fields cannot silently become public ShardingSphere descriptor API.

@@ -24,7 +24,8 @@ Every dimension targets **100/100**. A dimension can reach 100 only when all sco
 ## Current Baseline
 
 - Assessment date: 2026-05-16.
-- Overall scoped baseline: **88/100**.
+- Original scoped baseline: **88/100**.
+- Current scoped score: **89/100** after Phase 1 baseline evidence and Phase 2 MCP protocol closure.
 - Protocol scope: MCP `2025-11-25` only.
 - SDK scope: MCP Java SDK `1.1.2`, fixed.
 - Functional scope: encrypt and mask workflows only.
@@ -42,7 +43,7 @@ Every dimension targets **100/100**. A dimension can reach 100 only when all sco
 
 | Dimension | Current | Target | Closing evidence needed |
 | --- | ---: | ---: | --- |
-| MCP protocol conformity | 95 | 100 | Contract tests for declared `2025-11-25` methods, SDK `1.1.2` scope documentation, structured content/output schema checks, transport/session negative cases. |
+| MCP protocol conformity | 100 | 100 | Closed by contract tests for declared `2025-11-25` methods, SDK `1.1.2` scope documentation, structured content/output schema checks, and transport/session negative cases. |
 | Encrypt/mask functional completeness | 91 | 100 | End-to-end lifecycle evidence for resources, prompts, completions, plan, preview, approval apply, validation, and recovery for encrypt and mask. |
 | Implementation elegance | 88 | 100 | Minimal readability-first cleanup of duplicated workflow payload construction, no broad framework rewrite, clear handler/service boundaries. |
 | AI usability and MCP ergonomics | 91 | 100 | Ten mcp-builder evaluation questions, stable `next_actions`, useful resource links, prompt coverage for common encrypt/mask operator intents. |
@@ -75,3 +76,39 @@ Invalid evidence:
 - A task may be marked complete only after its evidence is recorded in `tasks.md` or a linked evidence file.
 - A dimension may be moved to 100 only after every task mapped to that dimension is complete.
 - Final closure requires `git branch --show-current` to remain `001-shardingsphere-mcp`.
+
+## Evidence Ledger
+
+### Phase 1: Scoped Baseline and Governance
+
+- T001: `git branch --show-current` returned `001-shardingsphere-mcp` with exit code `0`.
+- T002: `mcp/README.md` and `mcp/README_ZH.md` already state SDK `1.1.2`, MCP `2025-11-25`, icons/`Tool.execution` non-goals, and the narrowed public MCP surface.
+- T003: historical `.specify/specs/019-mcp-encrypt-mask-scorecard-100/` files are retained as previous evidence only; they do not automatically close this scoped package.
+- T004: this ledger records every current score dimension and its closing evidence state before further score movement.
+
+### Phase 2: MCP Protocol Conformity
+
+- T010: `MCPSyncServerFactoryTest` verifies declared resource, resource template, tool, prompt, and completion capabilities exposed through SDK `1.1.2`.
+- T011: `StreamableHttpMCPServletTest`, `StreamableHttpMCPServerWireTest`, `ProtocolVersionHeaderConstraintTest`, and `ShardingSphereServerTransportSecurityValidatorTest`
+  verify POST, GET, DELETE, session id, negotiated protocol header, missing protocol header, and unsupported HTTP content type behavior.
+- T012: `MCPTransportPayloadUtilsTest` verifies schema-conforming `structuredContent` plus serialized JSON text fallback for tool result payloads.
+- T013: `MCPDescriptorCatalogValidatorTest` and `MCPDescriptorYamlKeyValidatorTest` verify scoped non-goal fields are not required, unsupported `icons` and `Tool.execution`
+  descriptor keys are rejected, and legacy public alias fields remain rejected.
+- T014: `source-map.md` records that non-`2025-11-25` compatibility tests are not score-closing evidence for this package.
+- Verification: `./mvnw -pl mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -Dtest=MCPSyncServerFactoryTest,StreamableHttpMCPServletTest,StreamableHttpMCPServerWireTest,MCPTransportPayloadUtilsTest,ProtocolVersionHeaderConstraintTest,ShardingSphereServerTransportSecurityValidatorTest,MCPDescriptorCatalogValidatorTest,MCPDescriptorYamlKeyValidatorTest test` exited `0`.
+- Regression verification: `./mvnw -pl mcp/support,mcp/bootstrap -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false test` exited `0`.
+- Coverage verification: `./mvnw -pl mcp/support,mcp/bootstrap -DskipITs -Dspotless.skip=true -Djacoco.skip=false -Dsurefire.failIfNoSpecifiedTests=false test jacoco:report` exited `0`;
+  `StreamableHttpMCPServlet` has JaCoCo `METHOD missed=0 covered=24`, `BRANCH missed=0 covered=18`, and `LINE missed=0 covered=66`.
+- Style verification: `./mvnw -pl mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap -Pcheck -DskipTests -DskipITs checkstyle:check spotless:check` exited `0`.
+
+### Remaining Dimensions
+
+- Encrypt/mask functional completeness: remains `91/100`; Phase 3 tasks are not complete.
+- Implementation elegance: remains `88/100`; Phase 6 cleanup is not complete.
+- AI usability and MCP ergonomics: remains `91/100`; Phase 4 tasks are not complete.
+- Safety and approval control: remains `90/100`; Phase 5 tasks are not complete.
+- Architecture cleanliness: remains `89/100`; Phase 6 tasks are not complete.
+- Code cleanliness: remains `83/100`; Phase 7 tasks are not complete.
+- Test coverage and quality: remains `84/100`; Phase 8 Jacoco and coverage maps are not complete.
+- Documentation and operations handoff: remains `87/100`; Phase 9 docs and operations evidence are not complete.
+- Performance and reliability evidence: remains `84/100`; Phase 9 performance and distribution evidence are not complete.

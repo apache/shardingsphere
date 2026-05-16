@@ -30,6 +30,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ProtocolVersionHeaderConstraintTest {
     
     @Test
+    void assertValidateWithMissingProtocolVersion() {
+        ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class, () -> new ProtocolVersionHeaderConstraint().validate(""));
+        assertThat(ex.getStatusCode(), is(400));
+        assertThat(ex.getMessage(), is("MCP-Protocol-Version header is required."));
+    }
+    
+    @Test
+    void assertValidateWithBlankProtocolVersion() {
+        ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class, () -> new ProtocolVersionHeaderConstraint().validate("  "));
+        assertThat(ex.getStatusCode(), is(400));
+        assertThat(ex.getMessage(), is(String.format("Unsupported MCP protocol version `%s`. Supported versions are %s.", "  ",
+                MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS)));
+    }
+    
+    @Test
     void assertValidateWithProtocolMismatch() {
         ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class, () -> new ProtocolVersionHeaderConstraint().validate(ProtocolVersions.MCP_2025_03_26));
         assertThat(ex.getStatusCode(), is(400));

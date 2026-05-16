@@ -52,6 +52,8 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private static final String PROTOCOL_HEADER = HttpHeaders.PROTOCOL_VERSION;
     
+    private static final String JSON_CONTENT_TYPE = "application/json";
+    
     private final HttpServletStreamableServerTransportProvider delegate;
     
     private final MCPSessionManager sessionManager;
@@ -152,7 +154,16 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+        if (!isJsonContentType(request)) {
+            response.sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Content-Type must be application/json.");
+            return;
+        }
         serviceRequest(request, withInitializeProtocolHeader(response));
+    }
+    
+    private boolean isJsonContentType(final HttpServletRequest request) {
+        String contentType = Objects.toString(request.getContentType(), "").trim();
+        return contentType.isEmpty() || JSON_CONTENT_TYPE.equalsIgnoreCase(contentType.split(";", 2)[0].trim());
     }
     
     private void serviceRequest(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {

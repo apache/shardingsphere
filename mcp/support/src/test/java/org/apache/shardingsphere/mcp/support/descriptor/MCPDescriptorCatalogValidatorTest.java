@@ -70,6 +70,21 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     @Test
+    void assertValidateScopedProtocolNonGoalFieldsAreNotRequired() {
+        assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createCatalog(
+                List.of(createResourceDescriptor(MCPResourceAnnotations.EMPTY)),
+                List.of(createToolDescriptor(new MCPToolAnnotations("Test Tool", true, false, true, true))))));
+    }
+    
+    @Test
+    void assertValidateRejectsPublicAliasOutputField() {
+        assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
+                "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                createOutputSchema(Map.of("recommended_next_tool", Map.of("type", "string", "description", "Legacy alias.")))))),
+                "Tool `database_gateway_test_tool` outputSchema must use canonical fields instead of banned `recommended_next_tool`.");
+    }
+    
+    @Test
     void assertValidateRejectsFeatureOwnedToolDescriptor() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
                 "database_gateway_extension_test_tool", new MCPToolAnnotations("Extension Tool", true, false, true, true), createOutputSchema()))),
@@ -114,6 +129,10 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     private Map<String, Object> createOutputSchema() {
-        return Map.of("type", "object", "properties", Map.of("status", Map.of("type", "string", "description", "Status.")), "examples", List.of(Map.of("status", "ok")));
+        return createOutputSchema(Map.of("status", Map.of("type", "string", "description", "Status.")));
+    }
+    
+    private Map<String, Object> createOutputSchema(final Map<String, Object> properties) {
+        return Map.of("type", "object", "properties", properties, "examples", List.of(Map.of("status", "ok")));
     }
 }
