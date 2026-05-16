@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 /**
  * MCP completion target descriptor.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPCompletionTargetDescriptor {
     
@@ -32,17 +34,9 @@ public final class MCPCompletionTargetDescriptor {
     
     private final String reference;
     
-    private final List<String> arguments;
+    private final Collection<String> arguments;
     
     private final int maxValues;
     
     private final Map<String, Object> meta;
-    
-    public MCPCompletionTargetDescriptor(final String referenceType, final String reference, final List<String> arguments, final int maxValues, final Map<String, Object> meta) {
-        this.referenceType = referenceType;
-        this.reference = reference;
-        this.arguments = arguments;
-        this.maxValues = maxValues;
-        this.meta = meta;
-    }
 }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportOriginUtils;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -32,7 +33,7 @@ public final class AllowedOriginHeaderConstraint implements TransportHeaderConst
     private final Set<String> allowedOrigins;
     
     public AllowedOriginHeaderConstraint(final Collection<String> allowedOrigins) {
-        this.allowedOrigins = Set.copyOf(HttpTransportOriginUtils.normalizeOrigins(allowedOrigins));
+        this.allowedOrigins = new HashSet<>(HttpTransportOriginUtils.normalizeOrigins(allowedOrigins));
     }
     
     @Override

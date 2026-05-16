@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateBinding;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateLoader;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,10 +35,10 @@ import java.util.Optional;
  */
 public final class MCPPromptSpecificationFactory {
     
-    private final List<MCPPromptDescriptor> promptDescriptors;
+    private final Collection<MCPPromptDescriptor> promptDescriptors;
     
     public MCPPromptSpecificationFactory() {
-        promptDescriptors = List.copyOf(MCPDescriptorRegistry.getPromptDescriptors());
+        promptDescriptors = MCPDescriptorRegistry.getPromptDescriptors();
     }
     
     /**
@@ -50,8 +51,8 @@ public final class MCPPromptSpecificationFactory {
     }
     
     private McpSchema.Prompt createPrompt(final MCPPromptDescriptor descriptor) {
-        return new McpSchema.Prompt(descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(),
-                descriptor.getArguments().stream().map(this::createPromptArgument).toList(), descriptor.getMeta());
+        return new McpSchema.Prompt(
+                descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getArguments().stream().map(this::createPromptArgument).toList(), descriptor.getMeta());
     }
     
     private McpSchema.PromptArgument createPromptArgument(final MCPPromptArgumentDescriptor descriptor) {
@@ -62,7 +63,6 @@ public final class MCPPromptSpecificationFactory {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
         MCPPromptTemplateBinding binding = MCPDescriptorRegistry.getRequiredPromptTemplateBinding(descriptor.getName());
         String text = MCPPromptTemplateLoader.render(MCPPromptTemplateLoader.load(binding.getTemplateResource()), arguments);
-        return new McpSchema.GetPromptResult(descriptor.getDescription(), List.of(new McpSchema.PromptMessage(McpSchema.Role.USER, new McpSchema.TextContent(text))),
-                descriptor.getMeta());
+        return new McpSchema.GetPromptResult(descriptor.getDescription(), List.of(new McpSchema.PromptMessage(McpSchema.Role.USER, new McpSchema.TextContent(text))), descriptor.getMeta());
     }
 }

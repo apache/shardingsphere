@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -68,7 +69,7 @@ class EncryptAlgorithmCompletionProviderTest {
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         MCPCompletionProviderResult actual = new EncryptAlgorithmCompletionProvider().complete(handlerContext,
                 createRequestContext(EncryptFeatureDefinition.PLAN_PROMPT_NAME, "algorithm_type"));
-        List<MCPCompletionCandidate> actualCandidates = List.copyOf(actual.getCandidates());
+        List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());
         assertThat(actualCandidates.size(), is(1));
         assertThat(actualCandidates.get(0).getValue(), is("AES"));
         assertThat(actualCandidates.get(0).getLabel(), is("AES encryptor"));

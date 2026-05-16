@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * MCP resource navigation descriptor.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPResourceNavigationDescriptor {
     
@@ -31,18 +33,9 @@ public final class MCPResourceNavigationDescriptor {
     
     private final String to;
     
-    private final List<String> requiredArguments;
+    private final Collection<String> requiredArguments;
     
-    private final List<String> carriedArguments;
+    private final Collection<String> carriedArguments;
     
     private final String description;
-    
-    public MCPResourceNavigationDescriptor(final String from, final String to, final List<String> requiredArguments,
-                                           final List<String> carriedArguments, final String description) {
-        this.from = from;
-        this.to = to;
-        this.requiredArguments = requiredArguments;
-        this.carriedArguments = carriedArguments;
-        this.description = description;
-    }
 }

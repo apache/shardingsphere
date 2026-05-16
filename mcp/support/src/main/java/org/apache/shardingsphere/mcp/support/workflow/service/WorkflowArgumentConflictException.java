@@ -34,6 +34,6 @@ public final class WorkflowArgumentConflictException extends MCPInvalidRequestEx
     
     public WorkflowArgumentConflictException(final List<String> conflictingArguments) {
         super(String.format("Conflicting workflow arguments: %s.", String.join(", ", conflictingArguments)));
-        this.conflictingArguments = List.copyOf(conflictingArguments);
+        this.conflictingArguments = conflictingArguments;
     }
 }

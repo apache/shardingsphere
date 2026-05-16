@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * MCP tool runtime descriptor.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPToolRuntimeDescriptor {
     
@@ -33,12 +35,5 @@ public final class MCPToolRuntimeDescriptor {
     
     private final boolean requiresUserApproval;
     
-    private final List<String> sideEffectScope;
-    
-    public MCPToolRuntimeDescriptor(final String toolName, final String workflowRole, final boolean requiresUserApproval, final List<String> sideEffectScope) {
-        this.toolName = toolName;
-        this.workflowRole = workflowRole;
-        this.requiresUserApproval = requiresUserApproval;
-        this.sideEffectScope = sideEffectScope;
-    }
+    private final Collection<String> sideEffectScope;
 }

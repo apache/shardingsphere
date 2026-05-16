@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,17 +46,17 @@ class MaskAlgorithmCompletionProviderTest {
     
     @Test
     void assertSupports() {
-        assertTrue(new MaskAlgorithmCompletionProvider().supports(createRequestContext(MaskFeatureDefinition.PLAN_PROMPT_NAME, "algorithm_type")));
+        assertTrue(new MaskAlgorithmCompletionProvider().supports(createRequestContext(MaskFeatureDefinition.PLAN_PROMPT_NAME)));
     }
     
     @Test
     void assertSupportsWithAlgorithmResource() {
-        assertTrue(new MaskAlgorithmCompletionProvider().supports(createRequestContext(MaskFeatureDefinition.ALGORITHMS_RESOURCE_URI, "algorithm_type")));
+        assertTrue(new MaskAlgorithmCompletionProvider().supports(createRequestContext(MaskFeatureDefinition.ALGORITHMS_RESOURCE_URI)));
     }
     
     @Test
     void assertSupportsWithForeignReference() {
-        assertFalse(new MaskAlgorithmCompletionProvider().supports(createRequestContext("plan_encrypt_rule", "algorithm_type")));
+        assertFalse(new MaskAlgorithmCompletionProvider().supports(createRequestContext("plan_encrypt_rule")));
     }
     
     @Test
@@ -67,14 +68,14 @@ class MaskAlgorithmCompletionProviderTest {
         MCPDatabaseHandlerContext handlerContext = mock(MCPDatabaseHandlerContext.class);
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         MCPCompletionProviderResult actual = new MaskAlgorithmCompletionProvider().complete(handlerContext,
-                createRequestContext(MaskFeatureDefinition.PLAN_PROMPT_NAME, "algorithm_type"));
-        List<MCPCompletionCandidate> actualCandidates = List.copyOf(actual.getCandidates());
+                createRequestContext(MaskFeatureDefinition.PLAN_PROMPT_NAME));
+        List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());
         assertThat(actualCandidates.size(), is(1));
         assertThat(actualCandidates.get(0).getValue(), is("MASK_FROM_X_TO_Y"));
         assertThat(actualCandidates.get(0).getLabel(), is("Range mask"));
     }
     
-    private MCPCompletionRequestContext createRequestContext(final String reference, final String argumentName) {
-        return new MCPCompletionRequestContext("session-1", new MCPCompletionTargetDescriptor("prompt", reference, List.of(argumentName), 50, Map.of()), argumentName, Map.of());
+    private MCPCompletionRequestContext createRequestContext(final String reference) {
+        return new MCPCompletionRequestContext("session-1", new MCPCompletionTargetDescriptor("prompt", reference, List.of("algorithm_type"), 50, Map.of()), "algorithm_type", Map.of());
     }
 }

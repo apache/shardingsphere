@@ -20,8 +20,6 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -55,6 +53,6 @@ public final class SQLToolMismatchException extends MCPUnsupportedException {
         this.sourceTool = sourceTool;
         this.targetTool = targetTool;
         this.classificationResult = classificationResult;
-        this.suggestedArguments = Collections.unmodifiableMap(new LinkedHashMap<>(suggestedArguments));
+        this.suggestedArguments = suggestedArguments;
     }
 }

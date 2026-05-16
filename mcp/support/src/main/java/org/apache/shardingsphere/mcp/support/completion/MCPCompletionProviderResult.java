@@ -17,26 +17,26 @@
 
 package org.apache.shardingsphere.mcp.support.completion;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * MCP completion provider result.
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class MCPCompletionProviderResult {
     
-    private final List<MCPCompletionCandidate> candidates;
+    private final Collection<MCPCompletionCandidate> candidates;
     
     private final Map<String, Object> inferredContextArguments;
     
-    private final List<String> missingContextArguments;
+    private final Collection<String> missingContextArguments;
     
     private final String guidanceResourceUri;
     
@@ -46,14 +46,6 @@ public final class MCPCompletionProviderResult {
     
     public MCPCompletionProviderResult(final Collection<MCPCompletionCandidate> candidates, final Map<String, Object> inferredContextArguments) {
         this(candidates, inferredContextArguments, List.of(), "");
-    }
-    
-    public MCPCompletionProviderResult(final Collection<MCPCompletionCandidate> candidates, final Map<String, Object> inferredContextArguments,
-                                       final Collection<String> missingContextArguments, final String guidanceResourceUri) {
-        this.candidates = List.copyOf(candidates);
-        this.inferredContextArguments = Collections.unmodifiableMap(new LinkedHashMap<>(inferredContextArguments));
-        this.missingContextArguments = List.copyOf(missingContextArguments);
-        this.guidanceResourceUri = Objects.toString(guidanceResourceUri, "");
     }
     
     /**

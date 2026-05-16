@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -152,7 +153,7 @@ class MetadataCompletionProviderTest {
     }
     
     private void assertCandidate(final MCPCompletionProviderResult actual, final String expectedValue) {
-        List<MCPCompletionCandidate> actualCandidates = List.copyOf(actual.getCandidates());
+        List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());
         assertThat(actualCandidates.size(), is(1));
         assertThat(actualCandidates.get(0).getValue(), is(expectedValue));
     }

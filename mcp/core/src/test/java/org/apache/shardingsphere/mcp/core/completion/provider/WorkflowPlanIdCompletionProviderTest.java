@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +57,7 @@ class WorkflowPlanIdCompletionProviderTest {
         MCPWorkflowHandlerContext handlerContext = mock(MCPWorkflowHandlerContext.class);
         when(handlerContext.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
         MCPCompletionProviderResult actual = new WorkflowPlanIdCompletionProvider().complete(handlerContext, createRequestContext());
-        List<MCPCompletionCandidate> actualCandidates = List.copyOf(actual.getCandidates());
+        List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());
         assertThat(actualCandidates.size(), is(1));
         assertThat(actualCandidates.get(0).getValue(), is("plan-ready"));
         assertThat(actualCandidates.get(0).getRankingReason(), is("recent-plan-first-for-plan_id"));

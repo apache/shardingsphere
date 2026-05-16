@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.mcp.core.completion;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * MCP completion result.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPCompletionResult {
     
@@ -37,11 +37,4 @@ public final class MCPCompletionResult {
     private final boolean hasMore;
     
     private final Map<String, Object> meta;
-    
-    public MCPCompletionResult(final List<String> values, final int total, final boolean hasMore, final Map<String, Object> meta) {
-        this.values = List.copyOf(values);
-        this.total = total;
-        this.hasMore = hasMore;
-        this.meta = Collections.unmodifiableMap(new LinkedHashMap<>(meta));
-    }
 }

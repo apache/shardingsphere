@@ -95,8 +95,7 @@ final class MCPDescriptorCatalogYamlSwapper {
             return new MCPResourceExtensionDescriptor(uriOrTemplate, List.of(), null, null, null, List.of(), List.of(), List.of());
         }
         return new MCPResourceExtensionDescriptor(uriOrTemplate, swapUriVariables(yamlExtension.getUriVariables()), yamlExtension.getResourceKind(), yamlExtension.getObjectScope(),
-                yamlExtension.getFeature(), List.copyOf(emptyIfNull(yamlExtension.getRelatedTools())), List.copyOf(emptyIfNull(yamlExtension.getRelatedResources())),
-                List.copyOf(emptyIfNull(yamlExtension.getUseBefore())));
+                yamlExtension.getFeature(), emptyIfNull(yamlExtension.getRelatedTools()), emptyIfNull(yamlExtension.getRelatedResources()), emptyIfNull(yamlExtension.getUseBefore()));
     }
     
     private static List<MCPUriVariableDescriptor> swapUriVariables(final Collection<YamlMCPUriVariableDescriptor> yamlUriVariables) {
@@ -139,8 +138,7 @@ final class MCPDescriptorCatalogYamlSwapper {
     private static Collection<MCPCompletionTargetDescriptor> swapCompletionTargetDescriptors(final Collection<YamlMCPCompletionTargetDescriptor> yamlDescriptors) {
         Collection<MCPCompletionTargetDescriptor> result = new LinkedList<>();
         for (YamlMCPCompletionTargetDescriptor each : emptyIfNull(yamlDescriptors)) {
-            result.add(new MCPCompletionTargetDescriptor(each.getReferenceType(), each.getReference(), List.copyOf(emptyIfNull(each.getArguments())), each.getMaxValues(),
-                    emptyMapIfNull(each.getMeta())));
+            result.add(new MCPCompletionTargetDescriptor(each.getReferenceType(), each.getReference(), emptyIfNull(each.getArguments()), each.getMaxValues(), emptyMapIfNull(each.getMeta())));
         }
         return result;
     }
@@ -148,8 +146,7 @@ final class MCPDescriptorCatalogYamlSwapper {
     private static Collection<MCPResourceNavigationDescriptor> swapResourceNavigationDescriptors(final Collection<YamlMCPResourceNavigationDescriptor> yamlDescriptors) {
         Collection<MCPResourceNavigationDescriptor> result = new LinkedList<>();
         for (YamlMCPResourceNavigationDescriptor each : emptyIfNull(yamlDescriptors)) {
-            result.add(new MCPResourceNavigationDescriptor(each.getFrom(), each.getTo(), List.copyOf(emptyIfNull(each.getRequiredArguments())),
-                    List.copyOf(emptyIfNull(each.getCarriedArguments())), each.getDescription()));
+            result.add(new MCPResourceNavigationDescriptor(each.getFrom(), each.getTo(), emptyIfNull(each.getRequiredArguments()), emptyIfNull(each.getCarriedArguments()), each.getDescription()));
         }
         return result;
     }
@@ -169,7 +166,7 @@ final class MCPDescriptorCatalogYamlSwapper {
     
     private static MCPToolRuntimeDescriptor swapToolRuntimeDescriptor(final String toolName, final YamlMCPToolRuntimeDescriptor yamlRuntime) {
         return null == yamlRuntime ? new MCPToolRuntimeDescriptor(toolName, "", false, List.of())
-                : new MCPToolRuntimeDescriptor(toolName, yamlRuntime.getWorkflowRole(), yamlRuntime.isRequiresUserApproval(), List.copyOf(emptyIfNull(yamlRuntime.getSideEffectScope())));
+                : new MCPToolRuntimeDescriptor(toolName, yamlRuntime.getWorkflowRole(), yamlRuntime.isRequiresUserApproval(), emptyIfNull(yamlRuntime.getSideEffectScope()));
     }
     
     private static <T> Collection<T> emptyIfNull(final Collection<T> values) {

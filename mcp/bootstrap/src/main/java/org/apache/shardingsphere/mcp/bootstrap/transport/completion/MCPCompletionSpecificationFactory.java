@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +39,11 @@ public final class MCPCompletionSpecificationFactory {
     
     private final MCPCompletionService completionService;
     
-    private final List<MCPCompletionTargetDescriptor> completionTargetDescriptors;
+    private final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors;
     
     public MCPCompletionSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         completionService = new MCPCompletionService(runtimeContext);
-        completionTargetDescriptors = List.copyOf(MCPDescriptorRegistry.getCompletionTargetDescriptors());
+        completionTargetDescriptors = MCPDescriptorRegistry.getCompletionTargetDescriptors();
     }
     
     /**
