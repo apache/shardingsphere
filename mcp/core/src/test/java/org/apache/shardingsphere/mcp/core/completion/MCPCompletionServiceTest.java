@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.mcp.core.completion;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.core.completion.provider.MetadataCompletionProvider;
+import org.apache.shardingsphere.mcp.core.completion.provider.WorkflowPlanIdCompletionProvider;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
@@ -32,8 +35,10 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,14 +50,14 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPCompletionServiceTest {
     
     @Test
     void assertCompleteDatabaseValues() {
-        MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext())).complete("session-1",
-                createDescriptor("inspect_metadata", "database", 1), "database", "", new LinkedHashMap<>());
+        MCPCompletionResult actual = complete(new InMemoryWorkflowSessionContext(), createDescriptor("inspect_metadata", "database", 1), "database", "", new LinkedHashMap<>());
         assertThat(actual.getValues(), is(List.of("logic_db")));
         assertThat(actual.getTotal(), is(2));
         assertTrue(actual.isHasMore());
@@ -62,8 +67,7 @@ class MCPCompletionServiceTest {
     
     @Test
     void assertCompleteTableValuesWithMissingContextDiagnostic() {
-        MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext())).complete("session-1",
-                createDescriptor("inspect_metadata", "table", 50), "table", "order", new LinkedHashMap<>());
+        MCPCompletionResult actual = complete(new InMemoryWorkflowSessionContext(), createDescriptor("inspect_metadata", "table", 50), "table", "order", new LinkedHashMap<>());
         assertThat(actual.getValues(), is(List.of()));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("missing_context"));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS), is(List.of("database", "schema")));
@@ -74,8 +78,8 @@ class MCPCompletionServiceTest {
     
     @Test
     void assertCompleteMissingContextUsesProtocolReferenceType() {
-        MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext()), List.of(new MissingContextCompletionProvider())).complete("session-1",
-                createDescriptor("inspect_metadata", "table", 50), "table", "order", new LinkedHashMap<>());
+        MCPCompletionResult actual = complete(new InMemoryWorkflowSessionContext(), createDescriptor("inspect_metadata", "table", 50), "table", "order", new LinkedHashMap<>(),
+                List.of(new MissingContextCompletionProvider()));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
         assertThat(actualNextAction.get("reference_type"), is("ref/prompt"));
         assertThat(actualNextAction.get("resume_target_type"), is("ref/prompt"));
@@ -88,16 +92,15 @@ class MCPCompletionServiceTest {
                 createSnapshot("plan-old", WorkflowLifecycle.STATUS_PLANNED, Instant.parse("2026-05-04T11:00:00Z")),
                 createSnapshot("plan-new", WorkflowLifecycle.STATUS_PLANNED, Instant.parse("2026-05-04T12:00:00Z")),
                 createSnapshot("plan-clarifying", WorkflowLifecycle.STATUS_CLARIFYING, Instant.parse("2026-05-04T13:00:00Z"))));
-        MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(workflowSessionContext)).complete("session-1",
-                createDescriptor("recover_workflow", "plan_id", 50), "plan_id", "plan-", new LinkedHashMap<>());
+        MCPCompletionResult actual = complete(workflowSessionContext, createDescriptor("recover_workflow", "plan_id", 50), "plan_id", "plan-", new LinkedHashMap<>());
         assertThat(actual.getValues(), is(List.of("plan-new", "plan-old")));
         assertThat(((Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.VALUE_DETAILS)).get(0)).get("rankingReason"), is("recent-plan-first-for-plan_id"));
     }
     
     @Test
     void assertCompleteCapsMaxValues() {
-        MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext()), List.of(new SizedCompletionProvider())).complete("session-1",
-                createDescriptor("foo_prompt", "value", 101), "value", "value-", new LinkedHashMap<>());
+        MCPCompletionResult actual = complete(new InMemoryWorkflowSessionContext(), createDescriptor("foo_prompt", "value", 101), "value", "value-", new LinkedHashMap<>(),
+                List.of(new SizedCompletionProvider()));
         assertThat(actual.getValues().size(), is(100));
         assertThat(actual.getTotal(), is(101));
         assertTrue(actual.isHasMore());
@@ -105,11 +108,24 @@ class MCPCompletionServiceTest {
     
     @Test
     void assertCompleteReplacesEmptyContextWithInferredContext() {
-        MCPCompletionResult actual = new MCPCompletionService(createRuntimeContext(new InMemoryWorkflowSessionContext()), List.of(new InferredContextCompletionProvider())).complete("session-1",
-                createDescriptor("inspect_metadata", "table", 50), "table", "t_", new LinkedHashMap<>(Map.of("database", "logic_db", "schema", "")));
+        MCPCompletionResult actual = complete(new InMemoryWorkflowSessionContext(), createDescriptor("inspect_metadata", "table", 50), "table", "t_",
+                new LinkedHashMap<>(Map.of("database", "logic_db", "schema", "")), List.of(new InferredContextCompletionProvider()));
         assertThat(actual.getValues(), is(List.of("t_order")));
         assertThat(((Map<?, ?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.CONTEXT_ARGUMENTS)).get("schema"), is("public"));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
+    }
+    
+    private MCPCompletionResult complete(final WorkflowSessionContext workflowSessionContext, final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix,
+                                         final Map<String, String> contextArguments) {
+        return complete(workflowSessionContext, descriptor, argumentName, prefix, contextArguments, List.of(new MetadataCompletionProvider(), new WorkflowPlanIdCompletionProvider()));
+    }
+    
+    private MCPCompletionResult complete(final WorkflowSessionContext workflowSessionContext, final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix,
+                                         final Map<String, String> contextArguments, final Collection<? extends MCPCompletionProvider<?>> completionProviders) {
+        try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPCompletionProvider.class)).thenReturn(completionProviders);
+            return new MCPCompletionService(createRuntimeContext(workflowSessionContext)).complete("session-1", descriptor, argumentName, prefix, contextArguments);
+        }
     }
     
     private MCPCompletionTargetDescriptor createDescriptor(final String reference, final String argument, final int maxValues) {

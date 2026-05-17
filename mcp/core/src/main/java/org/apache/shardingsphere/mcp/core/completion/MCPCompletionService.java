@@ -56,12 +56,8 @@ public final class MCPCompletionService {
     private final Collection<MCPCompletionProvider<?>> completionProviders;
     
     public MCPCompletionService(final MCPRuntimeContext runtimeContext) {
-        this(runtimeContext, MCPCompletionProviderLoader.load());
-    }
-    
-    MCPCompletionService(final MCPRuntimeContext runtimeContext, final Collection<MCPCompletionProvider<?>> completionProviders) {
         this.runtimeContext = runtimeContext;
-        this.completionProviders = completionProviders;
+        completionProviders = MCPCompletionProviderLoader.load();
     }
     
     /**
