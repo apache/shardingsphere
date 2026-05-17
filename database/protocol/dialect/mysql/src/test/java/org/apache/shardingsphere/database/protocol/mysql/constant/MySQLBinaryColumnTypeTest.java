@@ -64,13 +64,13 @@ class MySQLBinaryColumnTypeTest {
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DATE, "YEAR"), is(MySQLBinaryColumnType.YEAR));
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DATE, "year"), is(MySQLBinaryColumnType.YEAR));
     }
-
+    
     @Test
     void assertValueOfJDBCTypeForDate() {
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DATE, "DATE"), is(MySQLBinaryColumnType.DATE));
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DATE, null), is(MySQLBinaryColumnType.DATE));
     }
-
+    
     @Test
     void assertIsYear() {
         assertTrue(MySQLBinaryColumnType.isYear(Types.DATE, "YEAR"));
@@ -79,7 +79,7 @@ class MySQLBinaryColumnTypeTest {
         assertFalse(MySQLBinaryColumnType.isYear(Types.DATE, null));
         assertFalse(MySQLBinaryColumnType.isYear(Types.INTEGER, "YEAR"));
     }
-
+    
     @Test
     void assertValueOf() {
         assertThat(MySQLBinaryColumnType.valueOf(MySQLBinaryColumnType.DECIMAL.getValue()), is(MySQLBinaryColumnType.DECIMAL));
