@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.registry;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,10 +38,14 @@ final class MCPDockerImageMetadataValidator {
     
     static void validate(final Path dockerfilePath, final String serverName) throws IOException {
         String dockerfile = Files.readString(dockerfilePath);
-        require(containsLine(dockerfile, SERVER_NAME_ARGUMENT_PREFIX + serverName), "Dockerfile must define ARG MCP_SERVER_NAME=" + serverName + ".");
-        require(containsLine(dockerfile, IMAGE_VERSION_ARGUMENT), "Dockerfile must define ARG MCP_IMAGE_VERSION=unknown.");
-        require(containsLabel(dockerfile, SERVER_NAME_LABEL), "Dockerfile must label io.modelcontextprotocol.server.name with ${MCP_SERVER_NAME}.");
-        require(containsLabel(dockerfile, IMAGE_VERSION_LABEL), "Dockerfile must label org.opencontainers.image.version with ${MCP_IMAGE_VERSION}.");
+        ShardingSpherePreconditions.checkState(containsLine(dockerfile, SERVER_NAME_ARGUMENT_PREFIX + serverName),
+                () -> new IllegalArgumentException("Dockerfile must define ARG MCP_SERVER_NAME=" + serverName + "."));
+        ShardingSpherePreconditions.checkState(containsLine(dockerfile, IMAGE_VERSION_ARGUMENT),
+                () -> new IllegalArgumentException("Dockerfile must define ARG MCP_IMAGE_VERSION=unknown."));
+        ShardingSpherePreconditions.checkState(containsLabel(dockerfile, SERVER_NAME_LABEL),
+                () -> new IllegalArgumentException("Dockerfile must label io.modelcontextprotocol.server.name with ${MCP_SERVER_NAME}."));
+        ShardingSpherePreconditions.checkState(containsLabel(dockerfile, IMAGE_VERSION_LABEL),
+                () -> new IllegalArgumentException("Dockerfile must label org.opencontainers.image.version with ${MCP_IMAGE_VERSION}."));
     }
     
     private static boolean containsLine(final String content, final String expectedLine) {
@@ -61,11 +66,5 @@ final class MCPDockerImageMetadataValidator {
     
     private static boolean isActiveLine(final String line) {
         return !line.startsWith("#");
-    }
-    
-    private static void require(final boolean condition, final String message) {
-        if (!condition) {
-            throw new IllegalArgumentException(message);
-        }
     }
 }
