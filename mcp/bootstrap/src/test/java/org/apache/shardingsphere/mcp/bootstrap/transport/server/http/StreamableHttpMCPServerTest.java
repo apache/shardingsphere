@@ -31,8 +31,9 @@ import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.InOrder;
 import org.mockito.MockedConstruction;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.reflect.Field;
 import java.io.IOException;
@@ -45,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
@@ -107,6 +109,24 @@ class StreamableHttpMCPServerTest {
         assertDoesNotThrow(() -> createServer(18080).stop());
     }
     
+    @Test
+    void assertStopClosesTomcatBeforeSyncServer() throws IOException, LifecycleException {
+        MCPSyncServerFactory syncServerFactory = mock(MCPSyncServerFactory.class);
+        McpSyncServer syncServer = mock(McpSyncServer.class);
+        StreamableHttpMCPServlet transportServlet = createTransportServlet();
+        when(syncServerFactory.create(transportServlet)).thenReturn(syncServer);
+        try (MockedConstruction<Tomcat> mockedTomcat = mockConstruction(Tomcat.class, (mock, context) -> when(mock.addContext(anyString(), anyString())).thenReturn(new StandardContext()))) {
+            StreamableHttpMCPServer actual = createServer(createConfig(0), syncServerFactory, transportServlet);
+            actual.start();
+            actual.stop();
+            Tomcat tomcat = mockedTomcat.constructed().get(0);
+            InOrder inOrder = inOrder(tomcat, syncServer);
+            inOrder.verify(tomcat).stop();
+            inOrder.verify(tomcat).destroy();
+            inOrder.verify(syncServer).closeGracefully();
+        }
+    }
+
     private StreamableHttpMCPServer createServer(final int port) {
         return createServer(createConfig(port), mock(MCPSyncServerFactory.class), createTransportServlet());
     }
