@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
-import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.spec.McpSchema.ServerCapabilities;
@@ -78,10 +77,9 @@ public final class MCPSyncServerFactory {
     
     private McpSyncServer create(final McpServer.SyncSpecification<?> specification) {
         return specification.jsonMapper(jsonMapper)
-                .jsonSchemaValidator(new DefaultJsonSchemaValidator())
-                .serverInfo(MCPTransportConstants.SERVER_NAME, Optional.ofNullable(MCPSyncServerFactory.class.getPackage().getImplementationVersion()).orElse("development"))
+                .serverInfo(MCPTransportConstants.SERVER_NAME, Optional.ofNullable(MCPSyncServerFactory.class.getPackage().getImplementationVersion()).orElse("dev"))
                 .instructions(MCPTransportConstants.SERVER_INSTRUCTIONS)
-                .capabilities(ServerCapabilities.builder().resources(Boolean.FALSE, Boolean.FALSE).tools(Boolean.FALSE).prompts(Boolean.FALSE).completions().build())
+                .capabilities(ServerCapabilities.builder().resources(false, false).tools(false).prompts(false).completions().build())
                 .resources(resourceSpecificationFactory.createResourceSpecifications())
                 .resourceTemplates(resourceSpecificationFactory.createResourceTemplateSpecifications())
                 .tools(toolSpecificationFactory.createToolSpecifications())
