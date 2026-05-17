@@ -189,11 +189,12 @@ class ServerCapabilitiesHandlerTest {
     
     private void assertSecurityHints(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("security_hints");
-        assertTrue(actual.containsKey("http_access_token"));
-        assertTrue(actual.containsKey("remote_access"));
+        assertTrue(actual.containsKey("http_transport"));
+        assertTrue(actual.containsKey("origin_header"));
         assertTrue(actual.containsKey("stdio_stdout"));
         Map<?, ?> actualClientSafetyPolicy = (Map<?, ?>) actual.get("client_safety_policy");
         assertThat(actualClientSafetyPolicy.get("identity_scope"), is("mcp_session"));
+        assertTrue(String.valueOf(actualClientSafetyPolicy.get("transport_scope")).contains("no built-in authorization"));
         assertThat(((Map<?, ?>) actualClientSafetyPolicy.get("tool_call_limit")).get("scope"), is("session"));
         assertTrue(String.valueOf(actualClientSafetyPolicy.get("abuse_guard")).contains("counted before dispatch"));
     }

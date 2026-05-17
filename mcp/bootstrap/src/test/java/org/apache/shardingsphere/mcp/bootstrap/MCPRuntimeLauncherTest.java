@@ -19,8 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
@@ -31,7 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -137,36 +135,6 @@ class MCPRuntimeLauncherTest {
     }
     
     @Test
-    void assertCreateHttpStartupLogMessagesWithProtectedResourceMetadata() {
-        StreamableHttpMCPServer server = mock(StreamableHttpMCPServer.class);
-        when(server.getLocalPort()).thenReturn(19090);
-        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(
-                new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18080, "/mcp", Collections.emptyList(), List.of("https://auth.example.test"), List.of("mcp.read"), "",
-                        new OAuthIntrospectionConfiguration()),
-                new StdioTransportConfiguration(false),
-                Map.of("logic_db", mock(RuntimeDatabaseConfiguration.class)));
-        List<String> actual = new MCPRuntimeLauncher("custom.yaml").createStartupLogMessages(launchConfig, server);
-        assertThat(actual, is(List.of(
-                "ShardingSphere MCP runtime started, transport=http, config=custom.yaml, databases=1, endpoint=http://127.0.0.1:19090/mcp, authorization=required, logs=logs/mcp.log.",
-                "OAuth protected resource metadata endpoint: http://127.0.0.1:19090/.well-known/oauth-protected-resource/mcp")));
-    }
-    
-    @Test
-    void assertCreateHttpStartupLogMessagesWithOAuthIntrospection() {
-        StreamableHttpMCPServer server = mock(StreamableHttpMCPServer.class);
-        when(server.getLocalPort()).thenReturn(19090);
-        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(
-                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18080, "/mcp", Collections.emptyList(), List.of("https://auth.example.test"), List.of("mcp.read"), "",
-                        new OAuthIntrospectionConfiguration("https://auth.example.test/introspect", "client", "secret", "", 0L)),
-                new StdioTransportConfiguration(false),
-                Map.of("logic_db", mock(RuntimeDatabaseConfiguration.class)));
-        List<String> actual = new MCPRuntimeLauncher("custom.yaml").createStartupLogMessages(launchConfig, server);
-        assertThat(actual, is(List.of(
-                "ShardingSphere MCP runtime started, transport=http, config=custom.yaml, databases=1, endpoint=http://127.0.0.1:19090/mcp, authorization=required, logs=logs/mcp.log.",
-                "OAuth protected resource metadata endpoint: http://127.0.0.1:19090/.well-known/oauth-protected-resource/mcp")));
-    }
-    
-    @Test
     void assertCreateStdioStartupLogMessages() {
         MCPRuntimeServer server = mock(MCPRuntimeServer.class);
         List<String> actual = new MCPRuntimeLauncher("conf/mcp-http.yaml").createStartupLogMessages(createLaunchConfiguration(false), server);
@@ -179,9 +147,6 @@ class MCPRuntimeLauncherTest {
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled, final Map<String, RuntimeDatabaseConfiguration> databases) {
-        return new MCPLaunchConfiguration(
-                new HttpTransportConfiguration(httpEnabled, "127.0.0.1", false, "", 18080, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
-                        new OAuthIntrospectionConfiguration()),
-                new StdioTransportConfiguration(!httpEnabled), databases);
+        return new MCPLaunchConfiguration(httpEnabled ? MCPTransportType.STREAMABLE_HTTP : MCPTransportType.STDIO, new HttpTransportConfiguration("127.0.0.1", 18080, "/mcp"), databases);
     }
 }

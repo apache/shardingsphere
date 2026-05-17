@@ -53,7 +53,7 @@ final class MCPBuilderEvaluationArtifactTest {
     
     private static final int MINIMUM_EVIDENCE_TERMS = 3;
     
-    private static final Set<String> REQUIRED_CATEGORIES = Set.of("protocol_discovery", "metadata", "read_only_sql", "workflow", "encrypt", "mask", "authorization");
+    private static final Set<String> REQUIRED_CATEGORIES = Set.of("protocol_discovery", "metadata", "read_only_sql", "workflow", "encrypt", "mask", "transport_security");
     
     private static final List<String> SHALLOW_QUESTION_PHRASES = List.of(
             "Which official MCP method",
@@ -81,10 +81,10 @@ final class MCPBuilderEvaluationArtifactTest {
             "execution_mode",
             "plan_id",
             "next_actions",
-            "WWW-Authenticate",
-            "resource_metadata",
-            "OAuth",
-            "authorization",
+            "transport.type",
+            "STREAMABLE_HTTP",
+            "STDIO",
+            "Origin",
             "metadata",
             "approval",
             "read-only");

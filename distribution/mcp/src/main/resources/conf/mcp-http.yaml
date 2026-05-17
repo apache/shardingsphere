@@ -14,14 +14,7 @@
 # limitations under the License.
 
 transport:
-  http:
-    enabled: true
-    bindHost: 127.0.0.1
-    allowRemoteAccess: false
-    port: 18088
-    endpointPath: /mcp
-  stdio:
-    enabled: false
+  type: STREAMABLE_HTTP
 
 runtimeDatabases:
   # Replace this demo runtime block for real deployments.

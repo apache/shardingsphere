@@ -51,7 +51,7 @@ public final class MCPClientSafetyPolicy {
     public static Map<String, Object> createModelFacingPayload() {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("identity_scope", "mcp_session");
-        result.put("authorization_scope", "HTTP bearer token when configured; STDIO inherits the local process boundary.");
+        result.put("transport_scope", "HTTP transport has no built-in authorization in this release; STDIO inherits the local process boundary.");
         result.put("tool_call_limit", createToolCallLimitPayload());
         result.put("abuse_guard", "Every tool call is counted before dispatch, including invalid calls, so runaway model loops stop at the session quota.");
         result.put("external_model_boundary", "The MCP runtime never calls external model providers; live LLM E2E clients call configured endpoints outside the server.");

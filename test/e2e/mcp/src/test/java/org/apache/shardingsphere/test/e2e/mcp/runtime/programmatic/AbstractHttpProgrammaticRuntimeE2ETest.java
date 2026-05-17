@@ -124,10 +124,6 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
         return MCPInteractionPayloads.castToMap(value);
     }
     
-    protected final String createAuthorizationHeaderValue(final String accessToken) {
-        return "Bearer " + accessToken;
-    }
-    
     protected final URI getEndpointUri() throws IOException {
         return getHttpEndpointUri();
     }

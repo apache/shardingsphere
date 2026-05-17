@@ -181,22 +181,22 @@
       <step>Confirm the answer preserves recovery next_actions and forbids invented algorithms or metadata changes.</step>
     </verification>
   </qa_pair>
-  <qa_pair id="q10" category="authorization" read_only="true">
+  <qa_pair id="q10" category="transport_security" read_only="true">
     <question>
-      During Streamable HTTP integration, an unauthenticated client receives a 401 response before any MCP tool call succeeds. Explain how the
-      client should use the authorization challenge and what it must avoid doing with tokens.
+      During Streamable HTTP deployment, an operator sets transport.type to STREAMABLE_HTTP and bindHost to 0.0.0.0 for a trusted gateway.
+      Explain what built-in authorization exists, how present Origin headers are treated, and where authentication must happen.
     </question>
-    <answer>www-authenticate|resource_metadata|no_token_arguments_or_logs</answer>
+    <answer>no_builtin_auth|origin_403|gateway_auth_boundary</answer>
     <expected_answer>
-      The client should treat the 401 as a fail-closed authorization boundary, inspect the WWW-Authenticate challenge, and use the
-      resource_metadata parameter to locate OAuth protected resource metadata before retrying through the proper authorization flow. It should
-      not pass arbitrary bearer tokens through tool arguments, log secrets, retry mutating actions without authorization, or treat the missing
-      token as a recoverable MCP business error.
+      The built-in ShardingSphere MCP HTTP runtime does not provide authorization in this release; transport.type only selects the active
+      transport, and bindHost controls the listener address. Missing Origin is accepted for non-browser clients, but any present Origin on a
+      non-loopback binding is rejected with 403. Authentication and authorization must be enforced by the trusted network, reverse proxy, or
+      gateway, and the answer should not invent OAuth or token YAML fields.
     </expected_answer>
     <verification>
-      <step>Confirm the answer names WWW-Authenticate and the resource_metadata challenge parameter.</step>
-      <step>Confirm the answer keeps tokens out of tool arguments and logs.</step>
-      <step>Confirm the answer treats authorization failure as fail-closed before any tool or mutation path.</step>
+      <step>Confirm the answer says built-in Streamable HTTP authorization is absent in this release.</step>
+      <step>Confirm the answer states present Origin headers are rejected for non-loopback bindings.</step>
+      <step>Confirm the answer places authentication at a trusted gateway or network boundary.</step>
     </verification>
   </qa_pair>
 </mcp_builder_evaluation>

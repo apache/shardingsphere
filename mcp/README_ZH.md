@@ -48,13 +48,10 @@ bin\start.bat
 - 发行包运行时默认使用 `conf/mcp-http.yaml`，同时内置 `conf/mcp-stdio.yaml`，并读取 `conf/logback.xml` 作为日志配置。
 - 启用 HTTP 时，默认端点是 `http://127.0.0.1:18088/mcp`。
 - 日志会写到 `logs/` 目录。
-- `conf/mcp-http.yaml` 现在对支持字段名采用严格 schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.allowRemoteAccess`、
-  `transport.http.allowedOrigins`、`transport.http.accessToken`、`transport.http.port`、`transport.http.endpointPath`、
-  `transport.http.authorizationServers`、`transport.http.scopesSupported`、`transport.http.protectedResource`、`transport.http.oauthIntrospection.endpoint`、
-  `transport.http.oauthIntrospection.clientId`、`transport.http.oauthIntrospection.clientSecret`、`transport.http.oauthIntrospection.expectedIssuer`、
-  `transport.http.oauthIntrospection.cacheTtlMillis`、`transport.stdio.enabled`，以及每个 runtime database 的全部字段都只能使用受支持字段名。
-- MCP YAML 值均为显式配置。HTTP token、JDBC 凭证等部署相关敏感配置应写入受保护的自定义配置文件，再通过 `SHARDINGSPHERE_MCP_CONFIG` 或启动脚本参数选择该文件。
-- 每个进程必须且只能启用一种 transport。发行包内置示例配置默认只启用 HTTP。
+- `conf/mcp-http.yaml` 采用严格 schema：`transport.type`、`transport.http.bindHost`、`transport.http.port`、
+  `transport.http.endpointPath`，以及每个 runtime database 的全部字段都只能使用受支持字段名。
+- MCP YAML 值均为显式配置。JDBC 凭证等部署相关敏感配置应写入受保护的自定义配置文件，再通过 `SHARDINGSPHERE_MCP_CONFIG` 或启动脚本参数选择该文件。
+- 每个进程必须且只能通过 `transport.type` 选择一种 transport。发行包内置示例配置默认选择 Streamable HTTP。
 - `bin/start.sh` 和 `bin\start.bat` 启动前都会校验配置文件、运行时依赖和 Java 环境，并自动创建 `data/`、`logs/`、`plugins/` 目录，然后切到发行包根目录启动，确保相对路径可用。
 - 如果启动成功，进程会保持前台运行；如果立刻退出，优先查看终端报错和 `logs/mcp.log`。
 - 内置 demo runtime 会暴露两个逻辑库 `orders` 和 `billing`，底层使用发行包自带的 H2 驱动以及 `data/` 下的种子数据。
@@ -63,14 +60,7 @@ bin\start.bat
 
 ```yaml
 transport:
-  http:
-    enabled: true
-    bindHost: 127.0.0.1
-    allowRemoteAccess: false
-    port: 18088
-    endpointPath: /mcp
-  stdio:
-    enabled: false
+  type: STREAMABLE_HTTP
 
 runtimeDatabases:
   orders:
@@ -283,8 +273,8 @@ bin\start.bat conf\mcp-stdio.yaml
 说明：
 
 - 进程仍然会以前台方式运行。
-- 如果 `transport.http.enabled` 和 `transport.stdio.enabled` 同时为 `false`，启动会因 "Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true." 失败。
-- 如果两个 transport 同时启用，启动会因 "HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport." 失败。
+- `transport.type` 必须是 `STREAMABLE_HTTP` 或 `STDIO`。
+- `transport.http` 只在 `transport.type` 为 `STREAMABLE_HTTP` 时合法；`STDIO` 模式应省略它。
 - 默认 `conf/logback.xml` 会把控制台日志写到 stderr，并把文件日志写到 `logs/mcp.log`，这样 stdout 可以专门用于 MCP 协议消息。
 - STDIO 模式面向 MCP client，不是给人工手输请求的交互式 Shell。推荐在 MCP client 配置里把它作为子进程启动。
 
@@ -314,21 +304,16 @@ bin\start.bat conf\mcp-stdio.yaml
   {
     "mcpServers": {
       "shardingsphere-http": {
-        "url": "http://127.0.0.1:18088/mcp",
-        "headers": {
-          "Authorization": "Bearer <token-if-configured>"
-        }
+        "url": "http://127.0.0.1:18088/mcp"
       }
     }
   }
   ```
 
-- 启动时会通过已配置的 logger 输出一条简短诊断日志：配置文件路径、日志路径、runtime database 数量、当前 transport、endpoint 和授权状态。
-  OAuth protected resource metadata 只在配置后输出。
+- 启动时会通过已配置的 logger 输出一条简短诊断日志：配置文件路径、日志路径、runtime database 数量、当前 transport 和 endpoint。
 - Client 应先使用官方 MCP discovery 方法（`tools/list`、`resources/list`、`resources/templates/list`、`prompts/list`、
   `completion/complete`），再按需读取 `shardingsphere://capabilities` 作为领域目录。
-- 如果 HTTP 返回 `401`，检查 `WWW-Authenticate`，在存在 `resource_metadata` 时读取 OAuth protected resource metadata，
-  并发送 `Authorization: Bearer <token>`。
+- 当前内置 HTTP runtime 不提供授权。远程部署应放在受信网络、反向代理或网关后面，由外层处理认证和授权。
 - 如果启动提示 runtime database 缺失或数量为 0，修正 `runtimeDatabases`；MCP resources 暴露的是 ShardingSphere 逻辑库，
   不是物理存储单元。
 - 如果 `shardingsphere://runtime` 返回 `server_status=configuration_required`，先配置至少一个 `runtimeDatabases` 条目，再做 metadata discovery 或 SQL execution。
@@ -344,21 +329,14 @@ bin\start.bat conf\mcp-stdio.yaml
 - 发行包默认把 MCP 官方基线 jar，包括 encrypt 和 mask feature，放在 `lib/` 下。
 - 如果目标数据库驱动或额外的 MCP feature jar 没有随发行包提供，请先把对应 jar 放到 `plugins/`，再执行 `bin/start.sh` 或 `bin\start.bat`。
 - 如果你不是用发行包，而是直接嵌入 `shardingsphere-mcp-bootstrap`，那就需要把所需 feature jar 显式加入运行时 classpath。
-- 每个 runtime 进程必须且只能启用一种 transport。
-- 如果只需要本地 HTTP 调试，保留 `transport.http.enabled: true`，并把 `transport.stdio.enabled` 设为 `false`。
-- 如果要给本地 MCP client 走 stdio，保留 `transport.http.enabled: false`，并把 `transport.stdio.enabled` 设为 `true`。
+- 每个 runtime 进程必须且只能通过 `transport.type` 选择一种 transport。
+- 如果只需要本地 HTTP 调试，设置 `transport.type: STREAMABLE_HTTP`。
+- 如果要给本地 MCP client 走 stdio，设置 `transport.type: STDIO`，并省略 `transport.http`。
+- Streamable HTTP 模式下 `transport.http` 可以省略。缺省 `bindHost`、`port`、`endpointPath` 分别是 `127.0.0.1`、`18088` 和 `/mcp`。
 - `transport.http.bindHost` 表示 HTTP 服务监听在哪个地址上：`127.0.0.1`、`localhost`、`::1` 只面向本机；`0.0.0.0` 或指定内网 IP 会面向对应网络接口。
-- 非 loopback `bindHost` 必须显式设置 `transport.http.allowRemoteAccess: true`，否则启动失败；该字段只表达远程暴露意图。
-- 非 loopback `bindHost` 必须配置非空 `transport.http.allowedOrigins`；每个值必须是精确 HTTP 或 HTTPS origin，例如 `https://gateway.example.test` 或 `https://gateway.example.test:8443`。
-- 远程 HTTP 请求的 `Origin` 头缺失、格式非法、仅为 loopback、或没有出现在 `transport.http.allowedOrigins` 中时，会返回 `403`。
-- 配置了 `transport.http.accessToken` 后，必须同时配置有效 HTTPS URI 形式的 `transport.http.authorizationServers`，所有 HTTP 请求都必须携带 `Authorization: Bearer <token>`。
-- 如果要按 OAuth resource server 验证 token，请配置 `transport.http.oauthIntrospection.endpoint`、`clientId` 和 `clientSecret`，不要再配置 `transport.http.accessToken`；这两种授权模式互斥。
-- 非 loopback `bindHost` 还必须配置非空的 `transport.http.accessToken` 或 OAuth introspection，避免 remote HTTP 以匿名方式暴露。
-- 启用授权的 HTTP endpoint 会在 `/.well-known/oauth-protected-resource{endpointPath}` 暴露 OAuth protected resource metadata，并通过 `WWW-Authenticate` 告知 client。
-- 内建 `accessToken` 是面向当前受保护 MCP resource 的运维侧预配置 bearer token，不是登录态 token，也不是按用户划分的凭证。
-- OAuth introspection 使用 RFC 7662 form POST 和 HTTP Basic client authentication，endpoint 必须是 HTTPS；仅本机测试 fixture 允许 loopback HTTP。运行时会校验 active 状态、issuer、受保护 resource audience、expiration、存在时的 not-before 时间以及必需 scope。
-- OAuth 失败会返回 RFC 6750 challenge：无效或无法验证的 token 返回 `401` 和 `error="invalid_token"`，active 但缺少必需 scope 的 token 返回 `403` 和 `error="insufficient_scope"`。
-- 即使启用了内建 `accessToken`，对外暴露场景仍建议放在受信网络、上游网关或反向代理后面。
+- loopback HTTP 绑定下，如果请求带 `Origin`，它也必须是 loopback；格式非法或远程 origin 会返回 `403`。
+- 非 loopback HTTP 绑定下，缺失 `Origin` 的非浏览器请求会被接受，但任何显式 `Origin` 都会返回 `403`。
+- 内置 HTTP runtime 当前不带授权。对外暴露场景应放在受信网络、上游网关或反向代理后面。
 - 如果要使用自定义配置文件启动，Unix-like 系统可以执行 `bin/start.sh /path/to/mcp-http.yaml`，Windows 可以执行 `bin\start.bat path\to\mcp-http.yaml`。
 - 如果要调整 JVM 参数，可以使用 `JAVA_OPTS`，例如 Unix-like 系统执行 `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`，Windows 执行 `set "JAVA_OPTS=-Xms256m -Xmx256m" && bin\start.bat`。
 

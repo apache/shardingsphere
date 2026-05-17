@@ -209,7 +209,7 @@ shardingsphere
 - transport implementation seam 上，routing、SDK session 与
   `DELETE` 基础语义优先复用官方 servlet provider；ShardingSphere 只补协议头、
   follow-up contract、managed session cleanup、本地运行边界策略、
-  共享 Bearer token admission gate 与必要兼容层。
+  内部 Origin 校验与必要兼容层。
 
 ### 7.2 MCP endpoint
 - V1 使用单一 MCP endpoint，例如：
@@ -226,8 +226,6 @@ shardingsphere
 - 规则：
   - 缺少 `MCP-Session-Id` 时创建新会话
   - 初始化成功后返回 `MCP-Session-Id` 与协商后的 `MCP-Protocol-Version`
-  - 若 runtime 配置了 `transport.http.accessToken`，
-    请求必须携带 `Authorization: Bearer <token>`
   - 带 `MCP-Session-Id` 的 follow-up `POST` 负责承载 `tools/list`、`tools/call`、`resources/list` 与 `resources/read`
   - follow-up `POST` 必须先完成 transport admission check，
     再完成协议版本与 session 校验，最后进入 tool / resource dispatch
@@ -252,19 +250,14 @@ shardingsphere
 
 ### 7.3 会话头与版本头
 - V1 固定使用当前协议定义的头：
-  - `Authorization`
   - `MCP-Session-Id`
   - `MCP-Protocol-Version`
 - 规则：
-  1. 若 runtime 配置了 `transport.http.accessToken`，
-     所有 HTTP 请求必须携带 `Authorization: Bearer <token>`
-  2. `Authorization` 仅表示当前请求是否允许接入 runtime，
-     不代表用户身份与角色
-  3. 初始化成功后，服务端在 `InitializeResult` 对应 HTTP 响应头中返回 `MCP-Session-Id`
-  4. 后续 HTTP 请求必须带 `MCP-Session-Id`
-  5. 后续 HTTP 请求应带 `MCP-Protocol-Version`
-  6. 若请求缺少必须的 session id，返回 `400 Bad Request`
-  7. 若 session 已终止或不存在，返回 `404 Not Found`
+  1. 初始化成功后，服务端在 `InitializeResult` 对应 HTTP 响应头中返回 `MCP-Session-Id`
+  2. 后续 HTTP 请求必须带 `MCP-Session-Id`
+  3. 后续 HTTP 请求应带 `MCP-Protocol-Version`
+  4. 若请求缺少必须的 session id，返回 `400 Bad Request`
+  5. 若 session 已终止或不存在，返回 `404 Not Found`
 
 ### 7.4 协议版本处理
 - V1 采用如下策略：
@@ -280,11 +273,9 @@ shardingsphere
 - 根据 transport 规范，V1 要求：
   - 本地模式默认仅绑定 `127.0.0.1`
   - 若本地模式请求显式携带 `Origin`，服务端校验其 host 必须仍为 loopback / localhost
-  - 若 runtime 配置了 `transport.http.accessToken`，
-    所有 HTTP 请求都必须先通过共享 Bearer token admission gate
+  - 当前内置 HTTP runtime 不提供授权
   - 远程模式仍应由外部网关、反向代理或网络边界提供保护
 - 上述 `Origin` 校验由 ShardingSphere 独立本地策略类在 servlet 前置阶段执行；
-  `Authorization` admission gate 也在同一前置阶段执行；
   delegate 不再重复执行同一规则。ShardingSphere 继续保留零损失兼容输出与
   session 语义 glue。
 - 以上约束用于限定本地运行边界，与 MCP session 语义分层处理。
@@ -474,12 +465,13 @@ stateDiagram-v2
 ### 11.3 配置职责
 
 #### `transport`
-- `http.enabled`
+- `type`
 - `http.bindHost`
 - `http.port`
 - `http.endpointPath`
-- `stdio.enabled`
-- 所有 transport 字段都必须显式声明，不保留隐式默认值或省略时兜底
+- `type` 是唯一 transport 选择器，取值为 `STREAMABLE_HTTP` 或 `STDIO`
+- `http` 子配置仅在 `type: STREAMABLE_HTTP` 时有效；`type: STDIO` 时不携带 HTTP listener 字段
+- HTTP listener 字段可省略，默认值为 `127.0.0.1`、`18088` 与 `/mcp`
 - HTTP transport 固定使用 MCP `2025-11-25` 协议基线，不作为外部配置项暴露
 - distribution 提供 HTTP 与 STDIO 两份显式配置模板；STDIO 仍主要用于本地测试与进程内联调，不作为额外交互式文本 Shell
 

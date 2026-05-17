@@ -141,8 +141,8 @@ final class MCPModelFirstContractPayloadBuilder {
     
     Map<String, Object> createSecurityHints() {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("http_access_token", "HTTP transport bearer challenges use OAuth protected resource metadata; capabilities never exposes secrets.");
-        result.put("remote_access", "Prefer loopback access unless the operator explicitly configures remote exposure.");
+        result.put("http_transport", "Streamable HTTP is unauthenticated by default; prefer loopback binding or put remote exposure behind a trusted gateway.");
+        result.put("origin_header", "Present Origin headers must be valid loopback origins for loopback HTTP bindings; missing Origin is accepted.");
         result.put("stdio_stdout", "STDIO transport must keep MCP protocol frames on stdout and send logs to stderr or files.");
         result.put("client_safety_policy", MCPClientSafetyPolicy.createModelFacingPayload());
         return result;

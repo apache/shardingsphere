@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
@@ -211,14 +211,10 @@ public final class PackagedDistributionTestSupport {
     }
     
     private static MCPLaunchConfiguration createRuntimeConfiguration(final MCPLaunchConfiguration sourceConfig, final RuntimeTransport transport, final int httpPort) {
-        HttpTransportConfiguration actualHttpTransport = new HttpTransportConfiguration(RuntimeTransport.HTTP == transport,
-                sourceConfig.getHttpTransport().getBindHost(), sourceConfig.getHttpTransport().isAllowRemoteAccess(),
-                sourceConfig.getHttpTransport().getAccessToken(), RuntimeTransport.HTTP == transport ? httpPort : sourceConfig.getHttpTransport().getPort(),
-                sourceConfig.getHttpTransport().getEndpointPath(), sourceConfig.getHttpTransport().getAllowedOrigins(),
-                sourceConfig.getHttpTransport().getAuthorizationServers(), sourceConfig.getHttpTransport().getScopesSupported(),
-                sourceConfig.getHttpTransport().getProtectedResource(), sourceConfig.getHttpTransport().getOauthIntrospection());
-        StdioTransportConfiguration actualStdioTransport = new StdioTransportConfiguration(RuntimeTransport.STDIO == transport);
-        return new MCPLaunchConfiguration(actualHttpTransport, actualStdioTransport, sourceConfig.getDatabases());
+        HttpTransportConfiguration actualHttpTransport = new HttpTransportConfiguration(sourceConfig.getHttpTransport().getBindHost(),
+                RuntimeTransport.HTTP == transport ? httpPort : sourceConfig.getHttpTransport().getPort(), sourceConfig.getHttpTransport().getEndpointPath());
+        MCPTransportType transportType = RuntimeTransport.HTTP == transport ? MCPTransportType.STREAMABLE_HTTP : MCPTransportType.STDIO;
+        return new MCPLaunchConfiguration(transportType, actualHttpTransport, sourceConfig.getDatabases());
     }
     
     public record PreparedPackagedDistribution(Path home, Path configFile, RuntimeTransport transport, int httpPort) {

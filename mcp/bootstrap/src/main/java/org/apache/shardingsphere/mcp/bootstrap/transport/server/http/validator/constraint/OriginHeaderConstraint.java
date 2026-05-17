@@ -20,27 +20,35 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
+import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportOriginUtils;
+
+import java.net.URI;
 
 /**
- * Access token header constraint.
+ * Origin header constraint.
  */
 @RequiredArgsConstructor
-public final class AccessTokenHeaderConstraint implements TransportHeaderConstraint {
+public final class OriginHeaderConstraint implements TransportHeaderConstraint {
     
-    private static final String BEARER_AUTH_SCHEME = "Bearer";
-    
-    private final String accessToken;
+    private final boolean loopbackBinding;
     
     @Override
     public String getConstraintKey() {
-        return "Authorization";
+        return "Origin";
     }
     
     @Override
     public void validate(final String value) throws ServerTransportSecurityException {
-        String[] authorizationSegments = value.isEmpty() ? new String[0] : value.split("\\s+", 2);
-        ShardingSpherePreconditions.checkState(
-                2 == authorizationSegments.length && BEARER_AUTH_SCHEME.equalsIgnoreCase(authorizationSegments[0]) && accessToken.equals(authorizationSegments[1].trim()),
-                () -> new ServerTransportSecurityException(401, "Unauthorized. Send Authorization: Bearer <token>."));
+        if (value.isEmpty()) {
+            return;
+        }
+        String actualOrigin = HttpTransportOriginUtils.normalizeOrigin(value);
+        ShardingSpherePreconditions.checkNotEmpty(actualOrigin, this::createForbiddenException);
+        ShardingSpherePreconditions.checkState(loopbackBinding && HttpTransportHostUtils.isLoopbackHost(URI.create(actualOrigin).getHost()), this::createForbiddenException);
+    }
+    
+    private ServerTransportSecurityException createForbiddenException() {
+        return new ServerTransportSecurityException(403, "Origin is not allowed for the current binding.");
     }
 }

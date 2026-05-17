@@ -29,7 +29,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFactory;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.authorization.OAuthProtectedResourceMetadataServlet;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 
 import java.io.IOException;
@@ -83,7 +82,6 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
             Context context = tomcat.addContext("", baseDirectory.toString());
             ((StandardContext) context).setClearReferencesRmiTargets(false);
             registerTransportServlet(context);
-            registerAuthorizationMetadataServlet(context);
             tomcat.start();
         } catch (final LifecycleException ex) {
             stop();
@@ -95,16 +93,6 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
         Wrapper servletWrapper = Tomcat.addServlet(context, "mcp-streamable-http", transportServlet);
         servletWrapper.setAsyncSupported(true);
         context.addServletMappingDecoded(config.getEndpointPath(), "mcp-streamable-http");
-    }
-    
-    private void registerAuthorizationMetadataServlet(final Context context) {
-        if (!config.isProtectedResourceMetadataEnabled()) {
-            return;
-        }
-        Wrapper metadataServletWrapper = Tomcat.addServlet(context, "oauth-protected-resource-metadata", new OAuthProtectedResourceMetadataServlet(config));
-        metadataServletWrapper.setAsyncSupported(false);
-        context.addServletMappingDecoded(OAuthProtectedResourceMetadataServlet.WELL_KNOWN_ROOT_PATH, "oauth-protected-resource-metadata");
-        context.addServletMappingDecoded(OAuthProtectedResourceMetadataServlet.createEndpointWellKnownPath(config.getEndpointPath()), "oauth-protected-resource-metadata");
     }
     
     @Override

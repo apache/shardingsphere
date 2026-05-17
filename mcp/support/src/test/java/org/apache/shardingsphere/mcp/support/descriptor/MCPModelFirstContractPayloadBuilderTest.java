@@ -81,10 +81,11 @@ class MCPModelFirstContractPayloadBuilderTest {
     @Test
     void assertCreateSecurityHints() {
         Map<String, Object> actual = builder.createSecurityHints();
-        assertThat(actual.get("remote_access"), is("Prefer loopback access unless the operator explicitly configures remote exposure."));
-        assertTrue(String.valueOf(actual.get("http_access_token")).contains("OAuth protected resource metadata"));
+        assertTrue(String.valueOf(actual.get("http_transport")).contains("unauthenticated by default"));
+        assertTrue(String.valueOf(actual.get("origin_header")).contains("loopback origins"));
         Map<?, ?> actualClientSafetyPolicy = castToMap(actual.get("client_safety_policy"));
         assertThat(actualClientSafetyPolicy.get("identity_scope"), is("mcp_session"));
+        assertTrue(String.valueOf(actualClientSafetyPolicy.get("transport_scope")).contains("no built-in authorization"));
         assertThat(castToMap(actualClientSafetyPolicy.get("tool_call_limit")).get("scope"), is("session"));
         assertTrue(String.valueOf(actualClientSafetyPolicy.get("external_model_boundary")).contains("never calls external model providers"));
     }

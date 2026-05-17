@@ -23,7 +23,6 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
@@ -35,8 +34,8 @@ import org.mockito.InOrder;
 import org.mockito.MockedConstruction;
 import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -144,8 +143,7 @@ class StreamableHttpMCPServerTest {
     }
     
     private HttpTransportConfiguration createConfig(final int port) {
-        return new HttpTransportConfiguration(true, "127.0.0.1", false, "", port, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
-                new OAuthIntrospectionConfiguration());
+        return new HttpTransportConfiguration("127.0.0.1", port, "/mcp");
     }
     
     private StreamableHttpMCPServlet createTransportServlet() {

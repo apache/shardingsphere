@@ -21,17 +21,13 @@ import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.AccessTokenHeaderConstraint;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.AllowedOriginHeaderConstraint;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.LoopbackOriginHeaderConstraint;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.OriginHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.ProtocolVersionHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Server transport security validator factory.
@@ -44,26 +40,15 @@ public final class ServerTransportSecurityValidatorFactory {
      *
      * @param sessionManager session manager
      * @param bindHost bind host
-     * @param accessToken access token
-     * @param allowedOrigins allowed origins
      * @return transport security validator
      */
-    public static ServerTransportSecurityValidator create(final MCPSessionManager sessionManager, final String bindHost, final String accessToken,
-                                                          final Collection<String> allowedOrigins) {
-        return new ShardingSphereServerTransportSecurityValidator(sessionManager, createConstraints(bindHost, accessToken, allowedOrigins));
+    public static ServerTransportSecurityValidator create(final MCPSessionManager sessionManager, final String bindHost) {
+        return new ShardingSphereServerTransportSecurityValidator(sessionManager, createConstraints(bindHost));
     }
     
-    private static List<TransportHeaderConstraint> createConstraints(final String bindHost, final String accessToken, final Collection<String> allowedOrigins) {
+    private static List<TransportHeaderConstraint> createConstraints(final String bindHost) {
         List<TransportHeaderConstraint> result = new LinkedList<>();
-        String actualAccessToken = Objects.toString(accessToken, "").trim();
-        if (!actualAccessToken.isEmpty()) {
-            result.add(new AccessTokenHeaderConstraint(actualAccessToken));
-        }
-        if (HttpTransportHostUtils.isLoopbackHost(bindHost)) {
-            result.add(new LoopbackOriginHeaderConstraint());
-        } else {
-            result.add(new AllowedOriginHeaderConstraint(allowedOrigins));
-        }
+        result.add(new OriginHeaderConstraint(HttpTransportHostUtils.isLoopbackHost(bindHost)));
         result.add(new ProtocolVersionHeaderConstraint());
         return result;
     }

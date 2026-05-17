@@ -30,9 +30,9 @@ import java.util.Map;
 @Getter
 public final class MCPLaunchConfiguration {
     
-    private final HttpTransportConfiguration httpTransport;
+    private final MCPTransportType transportType;
     
-    private final StdioTransportConfiguration stdioTransport;
+    private final HttpTransportConfiguration httpTransport;
     
     private final Map<String, RuntimeDatabaseConfiguration> databases;
 }

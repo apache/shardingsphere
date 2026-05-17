@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.authorization;
+package org.apache.shardingsphere.mcp.bootstrap.config;
 
-import java.io.IOException;
-import java.util.Map;
-
-interface OAuthTokenIntrospector {
+/**
+ * MCP transport type.
+ */
+public enum MCPTransportType {
     
-    Map<String, Object> introspect(String token) throws IOException;
+    STREAMABLE_HTTP, STDIO
 }

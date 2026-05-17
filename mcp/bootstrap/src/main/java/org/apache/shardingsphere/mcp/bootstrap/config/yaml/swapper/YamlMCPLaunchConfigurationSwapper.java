@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
@@ -32,14 +31,12 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     
     private final YamlHttpTransportConfigurationSwapper httpTransportConfigSwapper = new YamlHttpTransportConfigurationSwapper();
     
-    private final YamlStdioTransportConfigurationSwapper stdioTransportConfigSwapper = new YamlStdioTransportConfigurationSwapper();
-    
     private final YamlRuntimeDatabaseConfigurationsSwapper runtimeDatabasesSwapper = new YamlRuntimeDatabaseConfigurationsSwapper();
     
     @Override
     public YamlMCPLaunchConfiguration swapToYamlConfiguration(final MCPLaunchConfiguration data) {
         YamlMCPLaunchConfiguration result = new YamlMCPLaunchConfiguration();
-        result.setTransport(createYamlTransportConfiguration(data.getHttpTransport(), data.getStdioTransport()));
+        result.setTransport(createYamlTransportConfiguration(data));
         result.setRuntimeDatabases(runtimeDatabasesSwapper.swapToYamlConfiguration(data.getDatabases()));
         return result;
     }
@@ -48,14 +45,16 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
         MCPYamlConfigurationValidator.validate(yamlConfig, "MCP launch configuration");
         YamlMCPTransportConfiguration yamlTransportConfig = yamlConfig.getTransport();
-        return new MCPLaunchConfiguration(httpTransportConfigSwapper.swapToObject(yamlTransportConfig.getHttp()),
-                stdioTransportConfigSwapper.swapToObject(yamlTransportConfig.getStdio()), runtimeDatabasesSwapper.swapToObject(yamlConfig.getRuntimeDatabases()));
+        return new MCPLaunchConfiguration(yamlTransportConfig.getType(), httpTransportConfigSwapper.swapToObject(yamlTransportConfig.getHttp()),
+                runtimeDatabasesSwapper.swapToObject(yamlConfig.getRuntimeDatabases()));
     }
     
-    private YamlMCPTransportConfiguration createYamlTransportConfiguration(final HttpTransportConfiguration httpTransport, final StdioTransportConfiguration stdioTransport) {
+    private YamlMCPTransportConfiguration createYamlTransportConfiguration(final MCPLaunchConfiguration data) {
         YamlMCPTransportConfiguration result = new YamlMCPTransportConfiguration();
-        result.setHttp(httpTransportConfigSwapper.swapToYamlConfiguration(httpTransport));
-        result.setStdio(stdioTransportConfigSwapper.swapToYamlConfiguration(stdioTransport));
+        result.setType(data.getTransportType());
+        if (MCPTransportType.STREAMABLE_HTTP == data.getTransportType()) {
+            result.setHttp(httpTransportConfigSwapper.swapToYamlConfiguration(data.getHttpTransport()));
+        }
         return result;
     }
 }

@@ -25,44 +25,45 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class LoopbackOriginHeaderConstraintTest {
+class OriginHeaderConstraintTest {
     
     @Test
     void assertValidateWithoutOrigin() {
-        LoopbackOriginHeaderConstraint actualConstraint = new LoopbackOriginHeaderConstraint();
-        assertDoesNotThrow(() -> actualConstraint.validate(""));
+        assertDoesNotThrow(() -> new OriginHeaderConstraint(true).validate(""));
     }
     
     @Test
-    void assertValidateWithLoopbackOrigin() {
-        LoopbackOriginHeaderConstraint actualConstraint = new LoopbackOriginHeaderConstraint();
-        assertDoesNotThrow(() -> actualConstraint.validate("http://localhost:8080"));
+    void assertValidateWithLoopbackOriginOnLoopbackBinding() {
+        assertDoesNotThrow(() -> new OriginHeaderConstraint(true).validate("http://127.0.0.1:8080"));
     }
     
     @Test
-    void assertValidateWithLowercaseOriginHeader() {
-        LoopbackOriginHeaderConstraint actualConstraint = new LoopbackOriginHeaderConstraint();
-        assertDoesNotThrow(() -> actualConstraint.validate("http://127.0.0.1:8080"));
+    void assertValidateWithLocalhostOriginOnLoopbackBinding() {
+        assertDoesNotThrow(() -> new OriginHeaderConstraint(true).validate("http://localhost:8080"));
     }
     
     @Test
-    void assertValidateWithBracketedIpv6LoopbackOrigin() {
-        LoopbackOriginHeaderConstraint actualConstraint = new LoopbackOriginHeaderConstraint();
-        assertDoesNotThrow(() -> actualConstraint.validate("http://[::1]:8080"));
+    void assertValidateWithBracketedIpv6LoopbackOriginOnLoopbackBinding() {
+        assertDoesNotThrow(() -> new OriginHeaderConstraint(true).validate("http://[::1]:8080"));
     }
     
     @Test
-    void assertValidateWithRemoteOrigin() {
-        LoopbackOriginHeaderConstraint actualConstraint = new LoopbackOriginHeaderConstraint();
-        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> actualConstraint.validate("http://example.com:8080"));
+    void assertValidateWithRemoteOriginOnLoopbackBinding() {
+        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> new OriginHeaderConstraint(true).validate("http://example.com:8080"));
+        assertThat(actual.getStatusCode(), is(403));
+        assertThat(actual.getMessage(), is("Origin is not allowed for the current binding."));
+    }
+    
+    @Test
+    void assertValidateWithLoopbackOriginOnNonLoopbackBinding() {
+        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> new OriginHeaderConstraint(false).validate("http://127.0.0.1:8080"));
         assertThat(actual.getStatusCode(), is(403));
         assertThat(actual.getMessage(), is("Origin is not allowed for the current binding."));
     }
     
     @Test
     void assertValidateWithInvalidOrigin() {
-        LoopbackOriginHeaderConstraint actualConstraint = new LoopbackOriginHeaderConstraint();
-        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> actualConstraint.validate("://bad-origin"));
+        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> new OriginHeaderConstraint(true).validate("://bad-origin"));
         assertThat(actual.getStatusCode(), is(403));
         assertThat(actual.getMessage(), is("Origin is not allowed for the current binding."));
     }

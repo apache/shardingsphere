@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport.PreparedPackagedDistribution;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
@@ -44,14 +45,7 @@ class PackagedDistributionTestSupportTest {
     
     private static final String HTTP_CONFIGURATION = """
             transport:
-              http:
-                enabled: true
-                bindHost: 127.0.0.1
-                allowRemoteAccess: false
-                port: 18088
-                endpointPath: /mcp
-              stdio:
-                enabled: false
+              type: STREAMABLE_HTTP
             runtimeDatabases:
               orders:
                 databaseType: H2
@@ -63,14 +57,7 @@ class PackagedDistributionTestSupportTest {
     
     private static final String STDIO_CONFIGURATION = """
             transport:
-              http:
-                enabled: false
-                bindHost: 127.0.0.1
-                allowRemoteAccess: false
-                port: 18088
-                endpointPath: /mcp
-              stdio:
-                enabled: true
+              type: STDIO
             runtimeDatabases:
               orders:
                 databaseType: H2
@@ -146,7 +133,7 @@ class PackagedDistributionTestSupportTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("prepareCases")
-    void assertPrepareWithTransport(final String caseName, final RuntimeTransport transport, final boolean httpEnabled, final boolean stdioEnabled) throws IOException {
+    void assertPrepareWithTransport(final String caseName, final RuntimeTransport transport, final MCPTransportType expectedTransportType) throws IOException {
         final Path distributionHome = createDistributionHome(tempDir.resolve(caseName));
         final String actualOriginalHome = System.getProperty("mcp.distribution.home");
         System.setProperty("mcp.distribution.home", distributionHome.toString());
@@ -162,9 +149,8 @@ class PackagedDistributionTestSupportTest {
             if ("start.sh".equals(actual.getStartScript().getFileName().toString())) {
                 assertTrue(actual.getStartScript().toFile().canExecute());
             }
-            assertThat(actualConfig.getHttpTransport().isEnabled(), is(httpEnabled));
-            assertThat(actualConfig.getStdioTransport().isEnabled(), is(stdioEnabled));
-            if (httpEnabled) {
+            assertThat(actualConfig.getTransportType(), is(expectedTransportType));
+            if (RuntimeTransport.HTTP == transport) {
                 assertThat(actual.httpPort(), greaterThan(0));
                 assertThat(actualConfig.getHttpTransport().getPort(), is(actual.httpPort()));
             } else {
@@ -178,8 +164,8 @@ class PackagedDistributionTestSupportTest {
     
     private static Stream<Arguments> prepareCases() {
         return Stream.of(
-                Arguments.of("http transport", RuntimeTransport.HTTP, true, false),
-                Arguments.of("stdio transport", RuntimeTransport.STDIO, false, true));
+                Arguments.of("http transport", RuntimeTransport.HTTP, MCPTransportType.STREAMABLE_HTTP),
+                Arguments.of("stdio transport", RuntimeTransport.STDIO, MCPTransportType.STDIO));
     }
     
     private Path createDistributionHome(final Path target) throws IOException {

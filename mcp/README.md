@@ -48,14 +48,11 @@ Notes:
 - The packaged runtime defaults to `conf/mcp-http.yaml`, also ships `conf/mcp-stdio.yaml`, and reads `conf/logback.xml` for logging.
 - When HTTP is enabled, the default endpoint is `http://127.0.0.1:18088/mcp`.
 - Logs are written under `logs/`.
-- `conf/mcp-http.yaml` is now strict about supported field names: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.allowRemoteAccess`,
-  `transport.http.allowedOrigins`, `transport.http.accessToken`, `transport.http.port`, `transport.http.endpointPath`, `transport.http.authorizationServers`,
-  `transport.http.scopesSupported`, `transport.http.protectedResource`, `transport.http.oauthIntrospection.endpoint`, `transport.http.oauthIntrospection.clientId`,
-  `transport.http.oauthIntrospection.clientSecret`, `transport.http.oauthIntrospection.expectedIssuer`, `transport.http.oauthIntrospection.cacheTtlMillis`,
-  `transport.stdio.enabled`, and all runtime database fields must be declared with supported keys only.
-- MCP YAML values are explicit. Put deployment-specific secrets such as HTTP tokens and JDBC credentials in a protected custom configuration file,
+- `conf/mcp-http.yaml` is strict about supported field names: `transport.type`, `transport.http.bindHost`, `transport.http.port`,
+  `transport.http.endpointPath`, and all runtime database fields must be declared with supported keys only.
+- MCP YAML values are explicit. Put deployment-specific secrets such as JDBC credentials in a protected custom configuration file,
   then select that file with `SHARDINGSPHERE_MCP_CONFIG` or a startup script argument.
-- Exactly one transport must be enabled per process. The packaged sample configuration enables HTTP only.
+- Exactly one transport must be selected per process with `transport.type`. The packaged sample configuration selects Streamable HTTP.
 - `bin/start.sh` and `bin\start.bat` validate the config file, runtime libraries, and Java availability before startup, create `data/`, `logs/`, and `plugins/`, then start from the package root so relative runtime paths resolve consistently.
 - If startup succeeds, the process stays running in the foreground. If it exits immediately, inspect the terminal error and `logs/mcp.log` first.
 - The bundled demo runtime exposes two logical databases named `orders` and `billing`, both backed by the packaged H2 driver and seed data under `data/`.
@@ -64,14 +61,7 @@ The packaged sample configuration is:
 
 ```yaml
 transport:
-  http:
-    enabled: true
-    bindHost: 127.0.0.1
-    allowRemoteAccess: false
-    port: 18088
-    endpointPath: /mcp
-  stdio:
-    enabled: false
+  type: STREAMABLE_HTTP
 
 runtimeDatabases:
   orders:
@@ -310,8 +300,8 @@ bin\start.bat conf\mcp-stdio.yaml
 Notes:
 
 - The process still runs in the foreground.
-- If both `transport.http.enabled` and `transport.stdio.enabled` are `false`, startup fails with: "Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true."
-- If both transports are enabled, startup fails with: "HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport."
+- `transport.type` must be `STREAMABLE_HTTP` or `STDIO`.
+- `transport.http` is valid only when `transport.type` is `STREAMABLE_HTTP`; omit it for `STDIO`.
 - The default `conf/logback.xml` writes console logs to stderr and file logs to `logs/mcp.log`, so stdout stays reserved for MCP protocol messages.
 - STDIO mode is for MCP clients, not for a human-oriented interactive shell. Launch it from an MCP client configuration rather than typing requests manually in the terminal.
 
@@ -341,21 +331,18 @@ Reference:
   {
     "mcpServers": {
       "shardingsphere-http": {
-        "url": "http://127.0.0.1:18088/mcp",
-        "headers": {
-          "Authorization": "Bearer <token-if-configured>"
-        }
+        "url": "http://127.0.0.1:18088/mcp"
       }
     }
   }
   ```
 
 - Startup logs one concise diagnostic line through the configured logger: configuration path, log path, runtime database count,
-  active transport, endpoint, and authorization state. OAuth protected resource metadata is logged only when configured.
+  active transport, and endpoint.
 - Configure clients to use official MCP discovery methods first (`tools/list`, `resources/list`, `resources/templates/list`, `prompts/list`,
   `completion/complete`), then read `shardingsphere://capabilities` as a domain catalog when needed.
-- For HTTP `401`, check `WWW-Authenticate`, read the advertised OAuth protected resource metadata when present,
-  and send `Authorization: Bearer <token>`.
+- The built-in HTTP runtime does not provide authorization in this release. Put remote deployments behind a trusted network boundary,
+  reverse proxy, or gateway that handles authentication and authorization.
 - If startup reports zero or missing runtime databases, fix `runtimeDatabases`; MCP resources expose ShardingSphere logical databases,
   not physical storage units.
 - If `shardingsphere://runtime` reports `server_status=configuration_required`, configure at least one `runtimeDatabases` entry before metadata discovery or SQL execution.
@@ -371,21 +358,14 @@ Reference:
 - The packaged distribution keeps the official MCP baseline jars, including encrypt and mask, under `lib/`.
 - If your target database driver or an extra MCP feature jar is not already packaged, copy that jar under `plugins/` before running `bin/start.sh` or `bin\start.bat`.
 - If you embed `shardingsphere-mcp-bootstrap` directly instead of using the packaged distribution, add the feature jars you need to that runtime classpath explicitly.
-- Exactly one transport must be enabled for each runtime process.
-- For local-only HTTP usage, keep `transport.http.enabled: true` and `transport.stdio.enabled: false`.
-- For local MCP client integration, keep `transport.http.enabled: false` and `transport.stdio.enabled: true`.
+- Exactly one transport must be selected for each runtime process with `transport.type`.
+- For local-only HTTP usage, set `transport.type: STREAMABLE_HTTP`.
+- For local MCP client integration, set `transport.type: STDIO` and omit `transport.http`.
+- `transport.http` is optional for Streamable HTTP. Missing `bindHost`, `port`, and `endpointPath` use defaults: `127.0.0.1`, `18088`, and `/mcp`.
 - `transport.http.bindHost` controls which address the HTTP service listens on: `127.0.0.1`, `localhost`, and `::1` are local-only; `0.0.0.0` or a specific intranet IP exposes the matching network interface.
-- Non-loopback `bindHost` values require `transport.http.allowRemoteAccess: true`, otherwise startup fails; this field only declares remote-exposure intent.
-- Non-loopback `bindHost` values require non-empty `transport.http.allowedOrigins`; each value must be an exact HTTP or HTTPS origin such as `https://gateway.example.test` or `https://gateway.example.test:8443`.
-- Remote HTTP requests whose `Origin` header is missing, malformed, loopback-only, or not listed in `transport.http.allowedOrigins` fail with `403`.
-- When `transport.http.accessToken` is configured, configure valid HTTPS `transport.http.authorizationServers` values and make every HTTP request provide `Authorization: Bearer <token>`.
-- For OAuth resource-server validation, configure `transport.http.oauthIntrospection.endpoint`, `clientId`, and `clientSecret` instead of `transport.http.accessToken`; these two authorization modes are mutually exclusive.
-- Non-loopback `bindHost` values also require either a non-blank `transport.http.accessToken` or OAuth introspection, so remote HTTP is not exposed anonymously.
-- Authorized HTTP endpoints expose OAuth protected resource metadata at `/.well-known/oauth-protected-resource{endpointPath}` and advertise it through `WWW-Authenticate`.
-- The built-in access token is an operator-provisioned bearer token for this protected MCP resource, not a login or per-user credential.
-- OAuth introspection uses RFC 7662 form POST with HTTP Basic client authentication, requires HTTPS endpoints except loopback HTTP for local test fixtures, and validates active state, issuer, protected resource audience, expiration, not-before time when present, and required scopes.
-- OAuth failures return RFC 6750 challenges: `401` with `error="invalid_token"` for invalid or unverifiable tokens and `403` with `error="insufficient_scope"` for active tokens missing required scopes.
-- Even with the built-in access token enabled, keep externally exposed endpoints behind a trusted network, gateway, or reverse proxy.
+- For loopback HTTP bindings, a present `Origin` header must also be loopback; malformed or remote origins fail with `403`.
+- For non-loopback HTTP bindings, missing `Origin` is accepted for non-browser clients, but any present `Origin` is rejected with `403`.
+- The built-in HTTP runtime is unauthenticated. Keep externally exposed endpoints behind a trusted network, gateway, or reverse proxy.
 - To start with a custom configuration file, run `bin/start.sh /path/to/mcp-http.yaml` on Unix-like systems or `bin\start.bat path\to\mcp-http.yaml` on Windows.
 - To tune the JVM for local experiments, use `JAVA_OPTS`, for example `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh` on Unix-like systems or `set "JAVA_OPTS=-Xms256m -Xmx256m" && bin\start.bat` on Windows.
 

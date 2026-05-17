@@ -22,8 +22,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
@@ -40,7 +39,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -174,15 +172,13 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
     
     private String createConfigurationContent(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         RuntimeTransport transport = getTransport();
-        HttpTransportConfiguration httpTransportConfig = createHttpTransportConfiguration(RuntimeTransport.HTTP == transport);
-        StdioTransportConfiguration stdioTransportConfig = new StdioTransportConfiguration(RuntimeTransport.STDIO == transport);
-        return YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(new MCPLaunchConfiguration(
-                httpTransportConfig, stdioTransportConfig, runtimeDatabases)));
+        MCPTransportType transportType = RuntimeTransport.HTTP == transport ? MCPTransportType.STREAMABLE_HTTP : MCPTransportType.STDIO;
+        return YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(
+                new MCPLaunchConfiguration(transportType, createHttpTransportConfiguration(), runtimeDatabases)));
     }
     
-    protected HttpTransportConfiguration createHttpTransportConfiguration(final boolean enabled) {
-        return new HttpTransportConfiguration(enabled,
-                LOOPBACK_BIND_HOST, false, "", 0, getHttpEndpointPath(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "", new OAuthIntrospectionConfiguration());
+    protected HttpTransportConfiguration createHttpTransportConfiguration() {
+        return new HttpTransportConfiguration(LOOPBACK_BIND_HOST, 0, getHttpEndpointPath());
     }
     
     protected String getHttpEndpointPath() {

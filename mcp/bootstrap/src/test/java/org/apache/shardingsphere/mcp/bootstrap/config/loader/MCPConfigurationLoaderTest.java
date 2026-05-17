@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.config.loader;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,22 +34,17 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPConfigurationLoaderTest {
     
     private static final String HTTP_CONFIGURATION_YAML = """
             transport:
+              type: STREAMABLE_HTTP
               http:
-                enabled: true
                 bindHost: 127.0.0.1
-                allowRemoteAccess: false
                 port: 9090
                 endpointPath: /gateway
-              stdio:
-                enabled: false
             runtimeDatabases:
               logic_db:
                 databaseType: H2
@@ -60,14 +56,7 @@ class MCPConfigurationLoaderTest {
     
     private static final String RUNTIME_DATABASE_CONFIGURATION_YAML = """
             transport:
-              http:
-                enabled: false
-                bindHost: 127.0.0.1
-                allowRemoteAccess: false
-                port: 18088
-                endpointPath: /mcp
-              stdio:
-                enabled: true
+              type: STDIO
             runtimeDatabases:
               logic_db:
                 databaseType: H2
@@ -84,8 +73,7 @@ class MCPConfigurationLoaderTest {
     void assertLoadWithExistingConfigurationFile() throws IOException {
         Path configFile = createConfigFile(tempDir, "mcp-http.yaml", RUNTIME_DATABASE_CONFIGURATION_YAML);
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
-        assertFalse(actual.getHttpTransport().isEnabled());
-        assertTrue(actual.getStdioTransport().isEnabled());
+        assertThat(actual.getTransportType(), is(MCPTransportType.STDIO));
         assertThat(actual.getDatabases().size(), is(1));
         assertThat(actual.getDatabases().get("logic_db").getDatabaseType(), is("H2"));
         assertThat(actual.getDatabases().get("logic_db").getJdbcUrl(), is("jdbc:h2:mem:logic"));
@@ -112,8 +100,7 @@ class MCPConfigurationLoaderTest {
             createConfigFile(searchBaseDirectory, "conf/mcp-http.yaml", HTTP_CONFIGURATION_YAML);
             String actualConfigPath = searchBaseDirectory.getFileName().resolve("conf").resolve("mcp-http.yaml").toString();
             MCPLaunchConfiguration actual = MCPConfigurationLoader.load(actualConfigPath);
-            assertTrue(actual.getHttpTransport().isEnabled());
-            assertFalse(actual.getStdioTransport().isEnabled());
+            assertThat(actual.getTransportType(), is(MCPTransportType.STREAMABLE_HTTP));
             assertThat(actual.getHttpTransport().getBindHost(), is("127.0.0.1"));
             assertThat(actual.getHttpTransport().getPort(), is(9090));
             assertThat(actual.getDatabases().size(), is(1));

@@ -38,25 +38,23 @@ class ServerTransportSecurityValidatorFactoryTest {
     @Test
     void assertCreateWithoutOptionalRules() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        ServerTransportSecurityValidator actual = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1", "", List.of());
+        ServerTransportSecurityValidator actual = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1");
         assertDoesNotThrow(() -> actual.validateHeaders(Map.of()));
         verifyNoInteractions(sessionManager);
     }
     
     @Test
-    void assertCreateWithAccessTokenConstraintFirst() {
+    void assertCreateWithLoopbackOrigin() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1", "foo_token", List.of());
-        ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class,
-                () -> validator.validateHeaders(Map.of("Origin", List.of("http://example.com:8080"), "Mcp-Session-Id", List.of("session-id"))));
-        assertThat(ex.getStatusCode(), is(401));
+        ServerTransportSecurityValidator actual = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1");
+        assertDoesNotThrow(() -> actual.validateHeaders(Map.of("Origin", List.of("http://127.0.0.1:8080"))));
         verifyNoInteractions(sessionManager);
     }
     
     @Test
-    void assertCreateWithLoopbackOriginConstraintSecond() {
+    void assertCreateWithLoopbackOriginRejectsRemoteOrigin() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1", "", List.of());
+        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1");
         ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class,
                 () -> validator.validateHeaders(Map.of("Origin", List.of("http://example.com:8080"), "Mcp-Session-Id", List.of("session-id"))));
         assertThat(ex.getStatusCode(), is(403));
@@ -64,28 +62,28 @@ class ServerTransportSecurityValidatorFactoryTest {
     }
     
     @Test
-    void assertCreateWithAllowedOriginConstraintSecond() {
+    void assertCreateWithNonLoopbackBindingAcceptsMissingOrigin() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        ServerTransportSecurityValidator actual = ServerTransportSecurityValidatorFactory.create(sessionManager, "0.0.0.0", "", List.of("https://gateway.example.test"));
-        assertDoesNotThrow(() -> actual.validateHeaders(Map.of("Origin", List.of("https://gateway.example.test"))));
+        ServerTransportSecurityValidator actual = ServerTransportSecurityValidatorFactory.create(sessionManager, "0.0.0.0");
+        assertDoesNotThrow(() -> actual.validateHeaders(Map.of()));
         verifyNoInteractions(sessionManager);
     }
     
     @Test
-    void assertCreateWithAllowedOriginConstraintRejectsEmptyOrigin() {
+    void assertCreateWithNonLoopbackBindingRejectsPresentOrigin() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "0.0.0.0", "", List.of("https://gateway.example.test"));
-        ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class, () -> validator.validateHeaders(Map.of()));
+        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "0.0.0.0");
+        ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class,
+                () -> validator.validateHeaders(Map.of("Origin", List.of("https://gateway.example.test"))));
         assertThat(ex.getStatusCode(), is(403));
         verifyNoInteractions(sessionManager);
     }
     
     @Test
-    void assertCreateWithAllowedOriginConstraintRejectsUnlistedOrigin() {
+    void assertCreateRejectsInvalidOrigin() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "0.0.0.0", "", List.of("https://gateway.example.test"));
-        ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class,
-                () -> validator.validateHeaders(Map.of("Origin", List.of("https://evil.example.test"))));
+        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1");
+        ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class, () -> validator.validateHeaders(Map.of("Origin", List.of("://bad-origin"))));
         assertThat(ex.getStatusCode(), is(403));
         verifyNoInteractions(sessionManager);
     }
@@ -94,9 +92,9 @@ class ServerTransportSecurityValidatorFactoryTest {
     void assertCreateWithProtocolVersionConstraintLast() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(sessionManager.hasSession("session-id")).thenReturn(true);
-        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "0.0.0.0", "", List.of("https://gateway.example.test"));
+        ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1");
         ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class,
-                () -> validator.validateHeaders(Map.of("Origin", List.of("https://gateway.example.test"), "Mcp-Session-Id", List.of("session-id"))));
+                () -> validator.validateHeaders(Map.of("Mcp-Session-Id", List.of("session-id"))));
         assertThat(ex.getStatusCode(), is(400));
     }
 }

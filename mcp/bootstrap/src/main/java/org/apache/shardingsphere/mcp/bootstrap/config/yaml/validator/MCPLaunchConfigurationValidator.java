@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator;
 
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
 
@@ -37,15 +38,11 @@ public final class MCPLaunchConfigurationValidator implements ConstraintValidato
     }
     
     private boolean isValid(final YamlMCPTransportConfiguration value, final ConstraintValidatorContext context) {
-        if (null == value.getHttp() || null == value.getStdio()) {
+        if (null == value.getType()) {
             return true;
         }
-        if (value.getHttp().isEnabled() && value.getStdio().isEnabled()) {
-            addViolation(context, "HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport.");
-            return false;
-        }
-        if (!value.getHttp().isEnabled() && !value.getStdio().isEnabled()) {
-            addViolation(context, "Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true.");
+        if (MCPTransportType.STDIO == value.getType() && null != value.getHttp()) {
+            addViolation(context, "transport.http is only valid when `transport.type` is STREAMABLE_HTTP.");
             return false;
         }
         return true;

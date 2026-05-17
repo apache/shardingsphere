@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,6 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,12 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 @EnabledIf("isEnabled")
 class HttpTransportSecurityE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
-    private static final String ACCESS_TOKEN = "test-access-token";
-    
-    private static final String ALLOWED_ORIGIN = "https://gateway.example.test";
-    
-    private static final String AUTHORIZATION_SERVER = "https://auth.example.test";
-    
     private boolean remoteBinding;
     
     private static boolean isEnabled() {
@@ -51,11 +43,8 @@ class HttpTransportSecurityE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
     
     @Override
-    protected HttpTransportConfiguration createHttpTransportConfiguration(final boolean enabled) {
-        return remoteBinding
-                ? new HttpTransportConfiguration(enabled, "0.0.0.0", true, ACCESS_TOKEN, 0, getHttpEndpointPath(), List.of(ALLOWED_ORIGIN), List.of(AUTHORIZATION_SERVER), List.of("mcp.read"), "",
-                        new OAuthIntrospectionConfiguration())
-                : super.createHttpTransportConfiguration(enabled);
+    protected HttpTransportConfiguration createHttpTransportConfiguration() {
+        return remoteBinding ? new HttpTransportConfiguration("0.0.0.0", 0, getHttpEndpointPath()) : super.createHttpTransportConfiguration();
     }
     
     @Test
@@ -76,27 +65,19 @@ class HttpTransportSecurityE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
     
     @Test
-    void assertAcceptInitializeWithAllowedRemoteOrigin() throws IOException, InterruptedException {
+    void assertAcceptInitializeWithoutOriginForRemoteBinding() throws IOException, InterruptedException {
         launchRemoteHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> actual = sendInitializeRequest(httpClient, createRemoteHeaders(ALLOWED_ORIGIN), createInitializeRequestParams());
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of(), createInitializeRequestParams());
         assertThat(actual.statusCode(), is(200));
         assertFalse(actual.headers().firstValue("MCP-Session-Id").orElse("").isEmpty());
     }
     
     @Test
-    void assertRejectInitializeWithUnlistedRemoteOrigin() throws IOException, InterruptedException {
+    void assertRejectInitializeWithPresentRemoteOrigin() throws IOException, InterruptedException {
         launchRemoteHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> actual = sendInitializeRequest(httpClient, createRemoteHeaders("https://evil.example.test"), createInitializeRequestParams());
-        assertThat(actual.statusCode(), is(403));
-    }
-    
-    @Test
-    void assertRejectInitializeWithoutRemoteOrigin() throws IOException, InterruptedException {
-        launchRemoteHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> actual = sendInitializeRequest(httpClient, createRemoteHeaders(""), createInitializeRequestParams());
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Origin", "https://gateway.example.test"), createInitializeRequestParams());
         assertThat(actual.statusCode(), is(403));
     }
     
@@ -104,7 +85,7 @@ class HttpTransportSecurityE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     void assertRejectInitializeWithMalformedRemoteOrigin() throws IOException, InterruptedException {
         launchRemoteHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> actual = sendInitializeRequest(httpClient, createRemoteHeaders("://bad-origin"), createInitializeRequestParams());
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Origin", "://bad-origin"), createInitializeRequestParams());
         assertThat(actual.statusCode(), is(403));
     }
     
@@ -112,22 +93,13 @@ class HttpTransportSecurityE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     void assertRejectInitializeWithLoopbackOriginForRemoteBinding() throws IOException, InterruptedException {
         launchRemoteHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> actual = sendInitializeRequest(httpClient, createRemoteHeaders("http://127.0.0.1:8080"), createInitializeRequestParams());
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Origin", "http://127.0.0.1:8080"), createInitializeRequestParams());
         assertThat(actual.statusCode(), is(403));
     }
     
     private void launchRemoteHttpTransport() throws IOException {
         remoteBinding = true;
         launchHttpTransport();
-    }
-    
-    private Map<String, String> createRemoteHeaders(final String origin) {
-        Map<String, String> result = new LinkedHashMap<>(2, 1F);
-        result.put("Authorization", createAuthorizationHeaderValue(ACCESS_TOKEN));
-        if (!origin.isEmpty()) {
-            result.put("Origin", origin);
-        }
-        return result;
     }
     
     private Map<String, Object> createInitializeRequestParams() {

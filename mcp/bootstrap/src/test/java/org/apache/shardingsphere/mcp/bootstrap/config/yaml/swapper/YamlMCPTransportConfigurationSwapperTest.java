@@ -19,79 +19,72 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlStdioTransportConfiguration;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlMCPTransportConfigurationSwapperTest {
     
     private final YamlMCPLaunchConfigurationSwapper swapper = new YamlMCPLaunchConfigurationSwapper();
     
     @Test
-    void assertSwapToObjectWithMissingHttp() {
+    void assertSwapToObjectWithMissingType() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig();
-        yamlConfig.getTransport().setHttp(null);
+        yamlConfig.getTransport().setType(null);
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http` is required."));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `transport.type` is required."));
     }
     
     @Test
-    void assertSwapToObjectWithMissingStdio() {
+    void assertSwapToObjectWithStdioTransportRejectsHttp() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig();
-        yamlConfig.getTransport().setStdio(null);
+        yamlConfig.getTransport().setType(MCPTransportType.STDIO);
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        assertThat(actual.getMessage(), is("MCP launch configuration property `transport.stdio` is required."));
+        assertThat(actual.getMessage(), is("transport.http is only valid when `transport.type` is STREAMABLE_HTTP."));
     }
     
     @Test
     void assertSwapToObject() {
         MCPLaunchConfiguration actual = swapper.swapToObject(createYamlConfig());
-        assertFalse(actual.getHttpTransport().isEnabled());
+        assertThat(actual.getTransportType(), is(MCPTransportType.STREAMABLE_HTTP));
         assertThat(actual.getHttpTransport().getBindHost(), is("127.0.0.1"));
-        assertFalse(actual.getHttpTransport().isAllowRemoteAccess());
-        assertThat(actual.getHttpTransport().getAccessToken(), is(""));
         assertThat(actual.getHttpTransport().getPort(), is(18088));
         assertThat(actual.getHttpTransport().getEndpointPath(), is("/mcp"));
-        assertTrue(actual.getStdioTransport().isEnabled());
     }
     
     @Test
     void assertSwapToYamlConfiguration() {
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(
-                new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
-                        new OAuthIntrospectionConfiguration()), new StdioTransportConfiguration(false), Map.of()));
-        assertTrue(actual.getTransport().getHttp().isEnabled());
-        assertFalse(actual.getTransport().getHttp().isAllowRemoteAccess());
-        assertThat(actual.getTransport().getHttp().getAccessToken(), is(""));
+                new MCPLaunchConfiguration(MCPTransportType.STREAMABLE_HTTP, new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp"), Map.of()));
+        assertThat(actual.getTransport().getType(), is(MCPTransportType.STREAMABLE_HTTP));
         assertThat(actual.getTransport().getHttp().getPort(), is(18088));
-        assertFalse(actual.getTransport().getStdio().isEnabled());
+    }
+    
+    @Test
+    void assertSwapToYamlConfigurationWithStdioTransport() {
+        YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(
+                new MCPLaunchConfiguration(MCPTransportType.STDIO, new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp"), Map.of()));
+        assertThat(actual.getTransport().getType(), is(MCPTransportType.STDIO));
+        assertNull(actual.getTransport().getHttp());
     }
     
     private YamlMCPLaunchConfiguration createYamlConfig() {
         YamlHttpTransportConfiguration http = new YamlHttpTransportConfiguration();
-        http.setEnabled(false);
         http.setBindHost("127.0.0.1");
-        http.setAllowRemoteAccess(false);
         http.setPort(18088);
         http.setEndpointPath("/mcp");
-        YamlStdioTransportConfiguration stdio = new YamlStdioTransportConfiguration();
-        stdio.setEnabled(true);
         YamlMCPTransportConfiguration transport = new YamlMCPTransportConfiguration();
+        transport.setType(MCPTransportType.STREAMABLE_HTTP);
         transport.setHttp(http);
-        transport.setStdio(stdio);
         YamlMCPLaunchConfiguration result = new YamlMCPLaunchConfiguration();
         result.setTransport(transport);
         result.setRuntimeDatabases(Map.of("logic_db", Map.of(

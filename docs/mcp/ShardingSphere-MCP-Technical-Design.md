@@ -166,14 +166,13 @@
 ### 7.7 HTTP 服务承载
 - 最终决策：
   - 使用 embedded Tomcat 11 承载 MCP Java SDK 的 Streamable HTTP servlet
-  - 对配置了 `accessToken` 的 runtime，
-    servlet 前置阶段执行共享 Bearer token admission gate
-  - loopback `Origin` 边界保持独立本地策略类，并由 servlet 前置校验
+  - 当前内置 HTTP runtime 不提供授权，远程暴露由外部网关、反向代理或网络边界负责
+  - `Origin` 边界保持独立本地策略类，并由 servlet 前置校验
 - 原因：
   - 只在 bootstrap 层引入最小 servlet 容器
   - 与官方 Streamable HTTP servlet transport 对齐
   - 仍然不把运行时依赖扩散到主仓库其他模块
-  - 用最小改动关闭 anonymous remote HTTP，而不扩展成完整 auth 平台
+  - 不在开源默认配置中扩展授权平台，避免引入与 MCP transport 无关的过度设计
 
 ### 7.8 HTTP 会话与事务状态
 - 最终决策：
@@ -621,7 +620,7 @@ flowchart TB
 ### 16.2.1 默认发行包启动面
 - distribution 默认启动使用 HTTP 配置，STDIO 通过 `conf/mcp-stdio.yaml` 或 `SHARDINGSPHERE_MCP_TRANSPORT=stdio` 显式选择。
 - 默认 `conf/mcp-http.yaml` 内置一段 demo JDBC runtime，用于首次启动时验证非空 metadata 和真实 `execute_query` 行为。
-- `conf/mcp-http.yaml` 采用 strict schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.port`、`transport.http.endpointPath`、`transport.stdio.enabled` 以及每个 runtime database 的全部字段都必须显式声明。
+- `conf/mcp-http.yaml` 采用 strict schema：`transport.type`、`transport.http.bindHost`、`transport.http.port`、`transport.http.endpointPath` 以及每个 runtime database 的全部字段都必须使用受支持字段名。
 - 真实部署需要替换 `runtimeDatabases` 段为目标逻辑库与 JDBC 连接属性；schema 范围与默认 schema 由 JDBC metadata 自动发现，如需额外 JDBC 驱动，可放入发行包根目录下的 `ext-lib/`。
 
 ### 16.3 推荐集群拓扑

@@ -20,8 +20,6 @@ package org.apache.shardingsphere.mcp.bootstrap.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
 /**
  * HTTP transport configuration.
  */
@@ -29,34 +27,9 @@ import java.util.List;
 @Getter
 public final class HttpTransportConfiguration {
     
-    private final boolean enabled;
-    
     private final String bindHost;
-    
-    private final boolean allowRemoteAccess;
-    
-    private final String accessToken;
     
     private final int port;
     
     private final String endpointPath;
-    
-    private final List<String> allowedOrigins;
-    
-    private final List<String> authorizationServers;
-    
-    private final List<String> scopesSupported;
-    
-    private final String protectedResource;
-    
-    private final OAuthIntrospectionConfiguration oauthIntrospection;
-    
-    /**
-     * Judge whether OAuth protected resource metadata is enabled.
-     *
-     * @return OAuth protected resource metadata is enabled or not
-     */
-    public boolean isProtectedResourceMetadataEnabled() {
-        return !authorizationServers.isEmpty();
-    }
 }

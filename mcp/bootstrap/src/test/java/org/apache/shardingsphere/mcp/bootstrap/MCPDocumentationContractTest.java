@@ -42,8 +42,8 @@ class MCPDocumentationContractTest {
         String actualChinese = Files.readString(resolveMCPDirectory().resolve("README_ZH.md"));
         assertDocumentationIncludesRuntimeSafety(actualEnglish);
         assertDocumentationIncludesRuntimeSafety(actualChinese);
-        assertFalse(actualEnglish.contains("accessToken: foo_token"));
-        assertFalse(actualChinese.contains("accessToken: foo_token"));
+        assertDocumentationOmitsBuiltInAuthorization(actualEnglish);
+        assertDocumentationOmitsBuiltInAuthorization(actualChinese);
     }
     
     @Test
@@ -52,6 +52,15 @@ class MCPDocumentationContractTest {
         for (String each : List.of("pending_questions", "resource_uri", "parent_uri", "next_resource_uris", "read_resources_first", "empty_reason", "not_found_reason")) {
             assertFalse(actual.contains(each));
         }
+    }
+    
+    @Test
+    void assertDesignDocumentationOmitsBuiltInAuthorization() throws IOException {
+        Path docsDirectory = resolveRepositoryDirectory().resolve("docs/mcp");
+        String actual = Files.readString(docsDirectory.resolve("ShardingSphere-MCP-PRD.md"))
+                + Files.readString(docsDirectory.resolve("ShardingSphere-MCP-Detailed-Design.md"))
+                + Files.readString(docsDirectory.resolve("ShardingSphere-MCP-Technical-Design.md"));
+        assertDocumentationOmitsBuiltInAuthorization(actual);
     }
     
     @Test
@@ -77,16 +86,12 @@ class MCPDocumentationContractTest {
     }
     
     private void assertDocumentationIncludesRuntimeSafety(final String content) {
+        assertTrue(content.contains("transport.type"));
+        assertTrue(content.contains("STREAMABLE_HTTP"));
+        assertTrue(content.contains("STDIO"));
         assertTrue(content.contains("transport.http.bindHost"));
-        assertTrue(content.contains("transport.http.allowRemoteAccess"));
-        assertTrue(content.contains("transport.http.allowedOrigins"));
-        assertTrue(content.contains("transport.http.accessToken"));
-        assertTrue(content.contains("transport.http.oauthIntrospection.endpoint"));
-        assertTrue(content.contains("transport.http.authorizationServers"));
-        assertTrue(content.contains("WWW-Authenticate"));
-        assertTrue(content.contains("invalid_token"));
-        assertTrue(content.contains("insufficient_scope"));
-        assertTrue(content.contains("Authorization: Bearer <token>"));
+        assertTrue(content.contains("transport.http.endpointPath"));
+        assertTrue(content.contains("Origin"));
         assertTrue(content.contains("MCP form elicitation"));
         assertTrue(content.contains("URL mode"));
         assertTrue(content.contains("secret manager"));
@@ -94,11 +99,22 @@ class MCPDocumentationContractTest {
         assertTrue(content.contains("configuration_required"));
     }
     
+    private void assertDocumentationOmitsBuiltInAuthorization(final String content) {
+        for (String each : List.of("accessToken", "oauthIntrospection", "authorizationServers", "scopesSupported", "protectedResource",
+                "WWW-Authenticate", "Authorization: Bearer <token>", "invalid_token", "insufficient_scope", "Bearer", "http.enabled", "stdio.enabled")) {
+            assertFalse(content.contains(each));
+        }
+    }
+    
     private Path resolveMCPDirectory() {
+        return resolveRepositoryDirectory().resolve("mcp");
+    }
+    
+    private Path resolveRepositoryDirectory() {
         Path result = Path.of("").toAbsolutePath();
         while (null != result && !Files.exists(result.resolve("mcp/README.md"))) {
             result = result.getParent();
         }
-        return result.resolve("mcp");
+        return result;
     }
 }

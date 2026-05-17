@@ -15,211 +15,206 @@
   limitations under the License.
 -->
 
-# Feature Specification: MCP GitHub Actions E2E Hardening
+# Feature Specification: MCP LLM Docker E2E Environment Hardening
 
 **Feature Branch**: `001-shardingsphere-mcp`
 **Created**: 2026-05-17
 **Status**: Draft
-**Input**: User requested a Speckit requirement package for MCP GitHub Actions consolidation and coverage improvement. Do not switch branches. Do not write workflow or test implementation code yet.
+**Input**: User accepted fixing all five remaining Docker LLM E2E environment issues and requested a new Speckit spec without switching branches.
 
 ## Branch Constraint
 
-- Work must remain on the existing `001-shardingsphere-mcp` branch.
-- Speckit branch creation or branch switching commands are forbidden for this requirement package.
-- This round is documentation-only; workflow, production, test, distribution, and E2E implementation changes require a later explicit implementation command.
-- Existing worktree changes are out of scope and must not be reverted or reformatted by this package.
+- Work must stay on the existing `001-shardingsphere-mcp` branch.
+- Branch creation, branch switching, and branch-changing Speckit commands are forbidden.
+- This Speckit package is documentation-only; implementation requires the next explicit coding command.
+- Existing unrelated worktree changes must not be reverted, reformatted, staged, or committed by this package.
 
 ## Goal
 
-Reduce duplicated MCP GitHub Actions configuration while preserving the current E2E gates, then add targeted coverage for the currently thin areas: scoped JDK 21 quality checks, container HTTP runtime smoke, release image pull-back validation, release manifest inspection, and broader LLM usability topology coverage.
+Harden the MCP LLM E2E Docker environment so that score-closing LLM validation remains reproducible, cheaper to run, and safer to operate locally and in GitHub Actions.
 
-The package separates fast PR gates, heavier scheduled gates, and release-only publication gates so that coverage improves without turning every MCP PR into an unstable or overly expensive pipeline.
+The five accepted fixes are:
 
-## Clarifications
-
-### Session 2026-05-17
-
-- The current branch already contains four MCP-related workflow files relative to `master`: `jdk21-subchain-ci.yml`, `mcp-build.yml`, `mcp-llm-e2e.yml`, and `mcp-llm-usability-e2e.yml`.
-- Existing dedicated LLM workflows share nearly identical setup, Docker runtime image build, Maven invocation shape, and artifact upload logic; they differ mainly by suite selector and schedule.
-- Existing distribution and container gates both depend on a packaged MCP distribution and can share the packaging step.
-- Release publishing must remain a separate workflow because it needs release event semantics, package write permissions, OIDC login, image push, and MCP Registry publication.
-- LLM usability coverage is valuable but heavier and more variable than smoke coverage; it must be split between PR-critical and scheduled coverage.
-- This specification records the design target only. It does not authorize code changes.
+1. Align LLM workflow triggers with the MCP-scoped, non-required PR lane policy.
+2. Provide a local architecture-aware LLM runtime image build entry point.
+3. Add Docker build cache for the server-plus-model image in GitHub Actions.
+4. Move Docker image build and Docker preflight before Maven dependency/test work so infrastructure failures fail fast.
+5. Add a safe Docker disk cleanup path with explicit confirmation for destructive cleanup.
 
 ## User Scenarios & Testing
 
-### User Story 1 - Maintainers consolidate LLM E2E workflows (Priority: P1)
+### User Story 1 - Maintainers run LLM validation for MCP PRs without blocking merge (Priority: P1)
 
-As an MCP CI maintainer, I want the smoke and usability LLM suites to share one workflow definition so that image digest, Docker build, artifact upload, and Maven setup changes cannot drift between two near-duplicate files.
+As an MCP maintainer, I want LLM E2E workflows to run for PRs that touch MCP-related paths, while remaining a non-required check so an unfinished LLM lane does not block merge.
 
-**Independent Test**: Review the future workflow diff and verify one LLM E2E workflow still runs `LLMSmokeE2ETest` and `LLMUsabilitySuiteE2ETest` with separate suite identities, artifacts, schedules, and failure reporting.
-
-**Acceptance Scenarios**:
-
-1. Given an MCP PR touches LLM E2E code or MCP tool/resource behavior, when LLM smoke is required, then the consolidated workflow runs the smoke suite without requiring a second duplicated workflow file.
-2. Given scheduled usability validation is required, when the schedule fires, then the consolidated workflow runs the usability suite with its own artifact name and report path.
-3. Given both suites are represented by a matrix, when workflow parallelism is configured, then `max-parallel` is set to `1` to avoid concurrent local LLM runtime contention.
-4. Given a suite class is renamed or missing, when Maven runs with `-Dsurefire.failIfNoSpecifiedTests=true`, then the workflow fails without an additional shell-only selector existence check.
-5. Given artifacts are uploaded after failure, when either suite fails, then `test/e2e/mcp/target/llm-e2e` and `test/e2e/mcp/target/surefire-reports` remain available with suite-specific artifact names.
-
-### User Story 2 - Maintainers consolidate distribution and container E2E packaging (Priority: P1)
-
-As an MCP CI maintainer, I want distribution smoke and container smoke to share the packaged distribution build so that CI does not package the same MCP distribution twice before testing closely related runtime surfaces.
-
-**Independent Test**: Review the future `jdk21-subchain-ci.yml` and verify one distribution/container job packages `distribution/mcp` once, validates registry metadata, runs packaged distribution smoke, builds the local Docker image, and runs container smoke.
+**Independent Test**: Inspect `.github/workflows/mcp-llm-e2e.yml` and `.github/workflows/mcp-llm-usability-e2e.yml`; both workflows contain MCP-scoped `pull_request` path filters, both retain `workflow_dispatch` and `schedule`, and documentation says these checks must not be configured as required merge checks.
 
 **Acceptance Scenarios**:
 
-1. Given the distribution/container job starts, when `distribution/mcp` is packaged, then subsequent packaged and container smoke steps reuse the same packaged artifact.
-2. Given registry metadata validation fails, when the job reaches the validation step, then Docker image build and container smoke do not run.
-3. Given packaged distribution smoke fails, when the job reports failure, then the failed step identifies whether HTTP/STDIO packaged runtime or plugin discovery failed.
-4. Given Docker image smoke fails, when the job reports failure, then packaged distribution validation remains separately visible in the step history.
-5. Given the combined job uses a longer runtime budget, when timeout is configured, then it remains at or below the repository maximum of 60 minutes.
+1. Given a PR touches MCP-related paths, when workflow triggers are evaluated, then the dedicated LLM workflows are started by `pull_request`.
+2. Given a PR does not touch MCP-related paths, when workflow triggers are evaluated, then the dedicated LLM workflows are not started.
+3. Given an LLM workflow is still running, when maintainers evaluate merge readiness, then the workflow is visible as a non-required signal and does not block merge by itself.
+4. Given a maintainer wants score evidence outside PR timing, when `workflow_dispatch` is used, then the LLM workflow can still be run manually.
+5. Given nightly evidence is needed, when the weekday schedule fires, then the LLM workflow still runs.
+6. Given README documents the LLM lane, when reviewers read it, then it says MCP-scoped PR plus manual plus scheduled, non-required for merge.
+7. Given only root or aggregator files such as `pom.xml`, `distribution/pom.xml`, `test/e2e/pom.xml`, or Speckit documents change, when workflow triggers are evaluated, then the dedicated LLM workflows are not started unless an MCP module path or the dedicated LLM workflow infrastructure changed.
+8. Given a very large PR exceeds GitHub's path-filter changed-file limit, when maintainers need LLM evidence, then the README directs them to use `workflow_dispatch` as the fallback.
 
-### User Story 3 - Reviewers get scoped MCP quality gates (Priority: P1)
+### User Story 2 - Developers build the LLM runtime image on different local CPU architectures (Priority: P1)
 
-As a reviewer, I want the MCP subchain to have a scoped quality gate in GitHub Actions so that Java 21 compilation and E2E success cannot hide Checkstyle, Spotless, RAT, or related `-Pcheck` failures.
+As a developer on either amd64 or Apple Silicon, I want one local build entry point that selects the right pinned `llama.cpp` base image digest, so I do not accidentally pull the wrong platform or copy CI-only commands.
 
-**Independent Test**: Trigger an MCP-only workflow change and verify a scoped Maven quality command runs for MCP-related modules without requiring a full repository build.
-
-**Acceptance Scenarios**:
-
-1. Given MCP source, test, distribution, or workflow files change, when the JDK 21 subchain workflow runs, then a scoped quality job validates style/static gates for touched MCP modules.
-2. Given the quality job is scoped, when it runs, then it avoids full-repository `clean install` unless explicitly requested by a later implementation decision.
-3. Given a license header or style issue exists in MCP files, when the quality job runs, then the workflow fails before handoff.
-4. Given the workflow contains Maven commands, when implementation is reviewed, then any use of `-Dspotless.skip=true` is limited to non-style jobs and is not the only quality signal.
-
-### User Story 4 - Release maintainers verify the published MCP image (Priority: P1)
-
-As an MCP release maintainer, I want the release workflow to validate the image that was actually pushed so that a locally built distribution cannot pass while the GHCR tag or multi-arch manifest is broken.
-
-**Independent Test**: Run a release or manual release workflow in a safe environment and verify it inspects the published image manifest and pulls the published tag for at least one runtime smoke test.
+**Independent Test**: Run the local build helper on the current machine and verify it chooses the expected base digest and tags `apache/shardingsphere-mcp-llm-runtime:local`.
 
 **Acceptance Scenarios**:
 
-1. Given the release workflow pushes `ghcr.io/apache/shardingsphere-mcp:<version>`, when push succeeds, then the workflow pulls the same published tag before final publication completion.
-2. Given the image is published as multi-arch, when manifest inspection runs, then `linux/amd64` and `linux/arm64` entries are verified.
-3. Given the current runner is `ubuntu-latest`, when pull-back smoke runs, then at least the amd64 image is launched and smoke-tested through a supported transport.
-4. Given arm64 runtime execution is unavailable, when release evidence is collected, then manifest presence is verified and the missing arm64 runtime smoke is explicitly recorded as residual risk.
-5. Given MCP Publisher is downloaded during release, when the implementation is reviewed, then the publisher version and archive integrity are pinned or otherwise justified by release policy.
+1. Given `uname -m` returns `x86_64` or `amd64`, when the helper builds the image, then it uses the pinned linux/amd64 base digest.
+2. Given `uname -m` returns `arm64` or `aarch64`, when the helper builds the image, then it uses the pinned linux/arm64 base digest.
+3. Given an unsupported architecture is detected, when the helper starts, then it fails before Docker build with an actionable message.
+4. Given the image is built, when Maven LLM E2E starts, then it uses the local prepackaged image and does not download the model during Maven execution.
+5. Given a developer only wants to validate architecture selection, when the helper runs in dry-run or print mode, then it reports the selected digest without starting Docker build.
 
-### User Story 5 - Runtime coverage includes container HTTP (Priority: P2)
+### User Story 3 - GitHub Actions avoids repeated large model downloads when possible (Priority: P1)
 
-As an MCP runtime maintainer, I want the Docker image to be smoke-tested over HTTP as well as STDIO so that the container's remote-usable transport is covered before release.
+As a CI maintainer, I want Docker build cache around the LLM runtime image so repeated runs do not always download the 1.28GB GGUF model layer from scratch.
 
-**Independent Test**: Build the local MCP Docker image, start it with HTTP transport enabled, initialize an MCP session, list tools, read capabilities, search metadata, and execute a read-only SQL query.
-
-**Acceptance Scenarios**:
-
-1. Given a local MCP Docker image exists, when the container HTTP smoke starts, then it exposes the configured Streamable HTTP endpoint.
-2. Given the HTTP endpoint is reachable, when the test initializes a session, then the MCP runtime returns a valid session response.
-3. Given the session is initialized, when the test lists tools and reads `shardingsphere://capabilities`, then core database gateway tools and capabilities are present.
-4. Given the fixture database is available, when the test calls `database_gateway_search_metadata` and `database_gateway_execute_query`, then metadata and read-only query results are returned.
-5. Given the container exits early or logs unsafe diagnostics, when the test fails, then the failure includes actionable runtime logs without exposing configured secrets.
-
-### User Story 6 - LLM usability coverage expands without slowing every PR (Priority: P2)
-
-As an MCP product maintainer, I want LLM usability coverage to include additional runtime topologies on a schedule while keeping PR feedback focused on the fastest score-closing checks.
-
-**Independent Test**: Review future LLM workflow configuration and verify PR-triggered smoke remains short, while scheduled usability covers H2 HTTP, H2 STDIO core, and MySQL HTTP core scenarios.
+**Independent Test**: Inspect the workflow and verify Docker Buildx/GHA cache is configured for the LLM runtime image build.
 
 **Acceptance Scenarios**:
 
-1. Given a normal MCP PR, when LLM validation is required, then the smoke suite remains the PR-critical gate.
-2. Given scheduled usability validation runs, when H2 HTTP full usability executes, then core and extended usability scenarios are evaluated.
-3. Given scheduled usability validation runs, when H2 STDIO core executes, then the model is evaluated against STDIO for the core scenarios.
-4. Given scheduled usability validation runs, when MySQL HTTP core executes, then the model is evaluated against a real MySQL backend for core scenarios.
-5. Given MySQL STDIO full usability is too expensive or unstable, when coverage is reviewed, then it remains out of PR-critical scope unless later evidence justifies adding it.
+1. Given a cold GitHub runner, when the LLM runtime image builds, then the workflow still downloads and verifies the pinned GGUF file through Docker build.
+2. Given a warm cache exists, when the same Dockerfile, base digest, model URL, and checksum are reused, then Docker build can restore cached layers.
+3. Given the model checksum changes, when Docker build runs, then the cache is invalidated and the checksum-protected layer is rebuilt.
+4. Given the local image is needed for Testcontainers, when the build completes, then the image is loaded into the local Docker daemon with the expected tag.
+5. Given GitHub Actions cache export is unavailable or throttled, when the image itself builds successfully, then cache export failure does not fail the score run.
+6. Given Buildx is used with `load: true`, when the workflow builds the LLM runtime image, then it does not request a multi-platform output.
+7. Given the runner has an outdated Buildx/BuildKit stack, when the LLM runtime image build tries to use GHA cache, then the workflow evidence shows the Buildx version so maintainers can identify GitHub Cache API v2 incompatibility.
+
+### User Story 4 - CI fails fast on Docker/model infrastructure problems (Priority: P1)
+
+As a CI maintainer, I want Docker preflight and LLM image build to run before Maven install work, so GHCR, Hugging Face, Docker disk, or Docker daemon problems are reported early.
+
+**Independent Test**: Inspect workflow step order and verify Docker preflight and image build precede `Build MCP E2E Test Dependencies`.
+
+**Acceptance Scenarios**:
+
+1. Given Docker is unavailable, when the workflow starts, then a Docker preflight step fails before Maven dependency installation.
+2. Given the base image or model download is unavailable, when the workflow runs, then the Docker image build step fails before Maven installation.
+3. Given Docker disk pressure exists, when `docker system df` is printed, then the failure evidence includes disk usage before the expensive steps.
+4. Given Docker image build succeeds, when Maven install runs, then later LLM tests can rely on an already built score-closing image.
+
+### User Story 5 - Developers have a safe Docker disk cleanup path (Priority: P2)
+
+As a developer running LLM E2E locally, I want documented low-risk cleanup commands and explicit confirmation boundaries so model/build-cache disk usage can be recovered without deleting useful database volumes accidentally.
+
+**Independent Test**: Review README and Speckit tasks; low-risk dangling image/build-cache cleanup is separated from volume cleanup, and volume cleanup requires explicit confirmation.
+
+**Acceptance Scenarios**:
+
+1. Given Docker disk usage is high, when the developer follows the documented preflight, then `docker system df` is checked before cleanup.
+2. Given dangling images or build cache are reclaimable, when the low-risk cleanup is explicitly requested, then only dangling images and build cache are pruned.
+3. Given local volumes are reclaimable, when cleanup is considered, then volume pruning is documented as higher risk and is not part of the default cleanup.
+4. Given cleanup has run, when evidence is reported, then before/after `docker system df` output is recorded.
 
 ## Edge Cases
 
-- The consolidated LLM workflow must not start two local LLM server containers concurrently on the same runner unless resource isolation is explicitly designed.
-- A failed scheduled LLM usability run must keep evidence artifacts even if the model runtime fails readiness checks.
-- Distribution/container consolidation must preserve step-level failure localization despite sharing one job.
-- Release pull-back smoke must use the pushed image tag or digest, not the local pre-push image.
-- Manifest inspection alone is not a substitute for amd64 runtime smoke on the published image.
-- Workflow matrix use must satisfy the repository rule requiring `max-parallel: 20` or lower; LLM matrix should use `max-parallel: 1`.
+- Workflow trigger changes must not remove `workflow_dispatch`; maintainers still need manual score evidence.
+- PR path filters must not be so broad that non-MCP-only PRs start the LLM workflows.
+- Dedicated LLM workflow file changes are the only non-module path exception because they directly change this MCP LLM lane's execution contract.
+- Root and aggregator Maven files must not appear as standalone LLM workflow path triggers because GitHub `paths` entries are OR-matched.
+- GitHub path-filter changed-file limits can miss unusually large PR matches; manual dispatch remains the documented fallback.
+- The workflow must not hide failures with success-only reporting just to avoid merge blocking; the non-blocking behavior belongs to required-check configuration and documentation.
+- Build cache must not weaken model integrity. The GGUF download remains pinned by revision and checksum.
+- Build cache export failures should not turn a valid LLM image build into an E2E failure; cache is an optimization, not score evidence.
+- GHA cache compatibility depends on modern Buildx/BuildKit support for GitHub Cache service API v2; the workflow should print the Buildx version after setup.
+- Local architecture selection must not change the score-closing model, model quantization, server command, or artifact metadata contract.
+- Local helper validation must not require downloading the GGUF model when only script behavior is being checked.
+- Docker build cache must still load the image into the local daemon because Testcontainers starts `apache/shardingsphere-mcp-llm-runtime:local`.
+- Buildx `load: true` must stay single-platform for the LLM runtime image build; multi-platform image publishing is outside this score lane.
+- Docker cleanup must not prune volumes or running-container resources unless the user explicitly confirms that higher-risk operation.
 - Generated directories such as `target/` must not be edited or committed.
+- Existing LLM smoke/usability score behavior must not regress.
 
 ## Requirements
 
 ### Functional Requirements
 
-- **MGA-FR-001**: The work MUST stay on branch `001-shardingsphere-mcp`; branch switching, branch creation, and branch-changing Speckit commands MUST NOT be used.
-- **MGA-FR-002**: This package MUST NOT modify GitHub Actions, production code, tests, distribution files, or generated files before an explicit later implementation command.
-- **MGA-FR-003**: Existing unrelated worktree changes MUST NOT be reverted, reformatted, staged, or otherwise changed by this package.
-- **MGA-FR-004**: The LLM smoke and LLM usability workflows MUST be consolidated into one workflow or one reusable workflow family unless implementation evidence shows the consolidation increases instability or hides failures.
-- **MGA-FR-005**: The consolidated LLM workflow MUST preserve independent execution identity for `LLMSmokeE2ETest` and `LLMUsabilitySuiteE2ETest`.
-- **MGA-FR-006**: The consolidated LLM workflow MUST use shared setup, local LLM runtime image build, Maven invocation conventions, and artifact upload paths.
-- **MGA-FR-007**: If the LLM workflow uses a matrix, it MUST set `max-parallel` to `1` unless a later resource-isolation design proves safe parallel execution.
-- **MGA-FR-008**: The LLM workflow MUST rely on Maven `-Dtest=... -Dsurefire.failIfNoSpecifiedTests=true` for selector existence and MUST NOT require separate `test -f` selector checks.
-- **MGA-FR-009**: Distribution smoke and container smoke SHOULD be consolidated into one job that packages `distribution/mcp` once and reuses that artifact for packaged runtime and Docker image validation.
-- **MGA-FR-010**: The consolidated distribution/container job MUST keep registry metadata validation, packaged distribution smoke, plugin discovery, Docker image build, and container smoke as distinct named steps.
-- **MGA-FR-011**: The consolidated distribution/container job timeout MUST remain at or below 60 minutes.
-- **MGA-FR-012**: The JDK 21 subchain workflow MUST include a scoped MCP quality gate that covers Checkstyle, Spotless, license/RAT, or equivalent `-Pcheck` behavior for MCP-related modules.
-- **MGA-FR-013**: Non-quality E2E jobs MAY keep `-Dspotless.skip=true`, but the workflow set MUST include at least one scoped style/static quality signal for MCP changes.
-- **MGA-FR-014**: The release workflow MUST remain separate from PR CI because it owns release triggers, package write permissions, OIDC registry authentication, image push, and MCP Registry publication.
-- **MGA-FR-015**: The release workflow SHOULD validate the published image after push by pulling the published tag or digest and running at least one smoke test on the pulled image.
-- **MGA-FR-016**: The release workflow SHOULD inspect the published image manifest and verify `linux/amd64` and `linux/arm64` platform entries.
-- **MGA-FR-017**: If true arm64 runtime smoke is not available, the release evidence MUST record manifest-only arm64 validation as a residual risk.
-- **MGA-FR-018**: The release workflow SHOULD pin or integrity-check the MCP Publisher download, or document why an unpinned `latest` download remains acceptable.
-- **MGA-FR-019**: Container smoke coverage MUST include STDIO and SHOULD add HTTP transport smoke for the MCP Docker image.
-- **MGA-FR-020**: Container HTTP smoke MUST cover session initialization, `tools/list`, `shardingsphere://capabilities`, metadata search, and read-only SQL execution.
-- **MGA-FR-021**: LLM PR-critical coverage MUST keep a short smoke gate that includes at least H2 HTTP, MySQL HTTP, H2 STDIO, and MySQL STDIO smoke scenarios unless later timing evidence requires a documented reduction.
-- **MGA-FR-022**: Scheduled LLM usability SHOULD cover H2 HTTP full usability, H2 STDIO core usability, and MySQL HTTP core usability.
-- **MGA-FR-023**: MySQL STDIO full usability SHOULD remain outside PR-critical scope unless timing, stability, and value evidence justify adding it.
-- **MGA-FR-024**: Any workflow matrix introduced by implementation MUST satisfy repository GitHub Action standards for job timeout, unique job names, and `max-parallel`.
-- **MGA-FR-025**: Future implementation MUST preserve artifact upload for LLM and distribution/container failures.
-- **MGA-FR-026**: Future implementation MUST report verification commands and exit codes, including YAML syntax checks and scoped Maven checks.
+- **MLD-FR-001**: The work MUST remain on branch `001-shardingsphere-mcp`; branch creation and switching MUST NOT be used.
+- **MLD-FR-002**: The implementation MUST preserve the current score-closing model `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`, quantization `Q4_K_M`, model revision, model SHA-256, and Docker-owned runtime evidence.
+- **MLD-FR-003**: The dedicated LLM E2E workflows MUST retain `pull_request` triggers scoped to MCP-related paths.
+- **MLD-FR-004**: The dedicated LLM E2E workflows MUST NOT run for PRs that do not touch MCP-related paths.
+- **MLD-FR-005**: The dedicated LLM E2E workflows MUST retain `workflow_dispatch` and weekday scheduled execution.
+- **MLD-FR-006**: `mcp/README.md` and `mcp/README_ZH.md` MUST describe the LLM lane as MCP-scoped PR plus manual plus scheduled, and as a non-required merge check.
+- **MLD-FR-007**: The LLM workflows SHOULD still fail visibly when their tests fail; they MUST NOT turn failing LLM evidence into success only to avoid blocking merge.
+- **MLD-FR-008**: The LLM workflow path filters SHOULD include MCP module, MCP E2E, MCP distribution, and the dedicated LLM workflow files as a narrow lane-infrastructure exception.
+- **MLD-FR-009**: The LLM workflow path filters MUST NOT include root or aggregator-only paths such as `pom.xml`, `distribution/pom.xml`, `test/e2e/pom.xml`, or Speckit-only documentation paths as standalone triggers.
+- **MLD-FR-009A**: README guidance SHOULD document `workflow_dispatch` as the fallback when an unusually large PR is affected by GitHub path-filter changed-file limits.
+- **MLD-FR-010**: A local LLM runtime image build helper SHOULD be added under the LLM runtime Docker resource path.
+- **MLD-FR-011**: The local build helper MUST select the pinned `llama.cpp` base image digest from the current CPU architecture.
+- **MLD-FR-012**: The local build helper MUST tag the image as `apache/shardingsphere-mcp-llm-runtime:local` by default.
+- **MLD-FR-013**: Unsupported local architectures MUST fail with an actionable message before Docker build starts.
+- **MLD-FR-014**: The local build helper SHOULD support a dry-run or print mode that validates architecture selection without starting Docker build.
+- **MLD-FR-014A**: The local build helper MUST be POSIX `sh` compatible, include the ASF license header, and either be executable or be documented through `sh <script>`.
+- **MLD-FR-015**: GitHub Actions LLM runtime image build MUST use Docker Buildx or an equivalent BuildKit path that supports GHA layer cache.
+- **MLD-FR-016**: The cached image build MUST use explicit build context and Dockerfile inputs equivalent to the current `docker build` command.
+- **MLD-FR-017**: The cached image build MUST still verify the model through the Dockerfile checksum and pinned revision.
+- **MLD-FR-018**: The cached image build MUST load the local image into the GitHub runner Docker daemon before Maven LLM tests.
+- **MLD-FR-019**: The cached image build MUST NOT configure multi-platform output when using local image loading for Testcontainers.
+- **MLD-FR-020**: Cache export SHOULD ignore cache-export errors or otherwise prevent cache service failures from failing a successful image build.
+- **MLD-FR-021**: The workflow SHOULD print `docker buildx version` after Buildx setup so GitHub Cache service API v2 compatibility is visible.
+- **MLD-FR-022**: Docker preflight and LLM image build MUST run before Maven dependency installation in the LLM workflows.
+- **MLD-FR-023**: Docker preflight SHOULD print Docker version and `docker system df` for actionable failure evidence.
+- **MLD-FR-024**: Documentation MUST include a safe cleanup flow that checks `docker system df` before cleanup.
+- **MLD-FR-025**: Low-risk cleanup guidance MUST be limited to dangling images and build cache unless the user explicitly confirms more destructive cleanup.
+- **MLD-FR-026**: Volume pruning MUST be documented as higher risk and excluded from default cleanup guidance.
+- **MLD-FR-027**: Future implementation MUST preserve LLM artifacts on failure.
+- **MLD-FR-028**: Future implementation MUST run `mcp-builder` review if MCP or MCP E2E files are changed.
+- **MLD-FR-029**: Future implementation MUST report verification commands and exit codes.
 
 ### Key Entities
 
-- **LLM E2E Suite**: A named suite selector for `LLMSmokeE2ETest` or `LLMUsabilitySuiteE2ETest`, including schedule, Maven command, artifact name, and runtime resource expectations.
-- **MCP Distribution/Container Gate**: A CI job that packages `distribution/mcp`, validates metadata, tests packaged runtime, builds a local image, and runs container smoke.
-- **Scoped MCP Quality Gate**: A Maven quality check limited to MCP-related modules and workflows, intended to catch style/static/license failures missed by E2E-only commands.
-- **Release Pull-Back Smoke**: A release-only verification that tests the image tag or digest after it is pushed to GHCR.
-- **LLM Topology Coverage**: The matrix of model-facing validation across runtime backend and transport combinations, such as H2 HTTP, H2 STDIO, MySQL HTTP, and MySQL STDIO.
+- **LLM Runtime Image**: The locally tagged Docker image containing `llama.cpp` server and the pinned Qwen3 GGUF model.
+- **Local Build Helper**: A script that chooses the base image digest by architecture and builds the local score-closing image.
+- **LLM Workflow Trigger Policy**: The rule that the dedicated LLM workflows run for MCP-scoped PRs, manual dispatch, and schedule, while remaining non-required for merge.
+- **Docker Build Cache**: GitHub Actions BuildKit cache used to avoid repeated base/model layer downloads when inputs are unchanged.
+- **Docker Cleanup Path**: A documented and confirmation-aware procedure for reclaiming dangling image and build cache disk usage.
 
 ## Scope
 
 ### In Scope
 
-- GitHub Actions design for MCP workflow consolidation.
-- Requirements for LLM workflow consolidation.
-- Requirements for distribution/container job consolidation.
-- Requirements for scoped MCP quality gates.
-- Requirements for published image pull-back and manifest inspection.
-- Requirements for container HTTP smoke coverage.
-- Requirements for scheduled LLM usability topology expansion.
-- Documentation-only Speckit package creation.
+- `.github/workflows/mcp-llm-e2e.yml`
+- `.github/workflows/mcp-llm-usability-e2e.yml`
+- LLM runtime Docker resource documentation and helper script.
+- `mcp/README.md` and `mcp/README_ZH.md`.
+- Speckit documentation for requirements, plan, tasks, and source map.
+- Verification of MCP-scoped PR trigger filters, helper behavior, workflow cache inputs, style checks, and focused LLM configuration/runtime tests.
 
 ### Out of Scope
 
-- Editing `.github/workflows/**` in this round.
-- Editing Java production, test, E2E, distribution, Dockerfile, or generated files in this round.
-- Committing, pushing, creating a branch, or opening a pull request.
-- Full-repository CI redesign unrelated to MCP.
-- Removing existing E2E tests without a later implementation command and failure-impact analysis.
-- Adding new external service dependencies beyond Docker/GHCR checks already implied by release validation.
-- Guaranteeing true arm64 runtime smoke without an available arm64 runner.
+- Changing the selected LLM model or quantization.
+- Replacing `llama.cpp` with another serving runtime.
+- Publishing a prebuilt LLM runtime image to a registry.
+- Configuring LLM workflows as required merge checks.
+- Pruning Docker volumes without explicit user confirmation.
+- Editing generated `target/` content.
+- Committing, pushing, staging, or switching branches.
 
 ## Success Criteria
 
-### Measurable Outcomes
-
-- **MGA-SC-001**: The future LLM workflow consolidation removes duplicate workflow setup while preserving both smoke and usability suite execution.
-- **MGA-SC-002**: The future distribution/container consolidation packages `distribution/mcp` once for packaged and container smoke validation.
-- **MGA-SC-003**: MCP PR validation includes at least one scoped quality gate that can fail on style/static/license issues before handoff.
-- **MGA-SC-004**: Release validation proves the pushed GHCR image is pullable and runnable on at least amd64, and verifies the multi-arch manifest contains amd64 and arm64 entries.
-- **MGA-SC-005**: Container HTTP smoke exercises the same published runtime surface that remote MCP clients are expected to use.
-- **MGA-SC-006**: Scheduled LLM usability expands beyond H2 HTTP while PR-critical LLM feedback remains bounded.
-- **MGA-SC-007**: Workflow YAML validation and scoped Maven verification commands are reported with exit codes after implementation.
-- **MGA-SC-008**: No unrelated existing worktree changes are modified by this package or its later implementation.
+- **MLD-SC-001**: Both LLM workflows retain `pull_request` triggers with MCP-scoped path filters and are documented as non-required merge checks.
+- **MLD-SC-002**: The local build helper selects the correct digest for the host architecture and builds `apache/shardingsphere-mcp-llm-runtime:local`.
+- **MLD-SC-003**: The local build helper can dry-run or print the selected digest without building the image.
+- **MLD-SC-004**: The LLM workflows use BuildKit/GHA cache with explicit context/file inputs and still load the local image for Testcontainers.
+- **MLD-SC-005**: Docker preflight and image build appear before Maven install in both LLM workflows.
+- **MLD-SC-006**: README files document MCP-scoped PR plus manual plus scheduled LLM execution, local build helper usage, and safe Docker cleanup boundaries.
+- **MLD-SC-007**: Focused LLM configuration/runtime tests pass after implementation.
+- **MLD-SC-008**: Scoped Checkstyle/Spotless for touched MCP/E2E modules passes after implementation.
+- **MLD-SC-009**: No unrelated existing worktree changes are reverted or reformatted.
 
 ## Assumptions
 
-- `LLMSmokeE2ETest` remains the fastest model-facing confidence gate.
-- `LLMUsabilitySuiteE2ETest` remains more expensive and belongs partly or fully in scheduled validation unless reviewers explicitly require it on PRs.
-- Docker is available on the relevant GitHub-hosted Linux runners for MySQL, LLM runtime, and MCP image smoke tests.
-- Release jobs can pull from GHCR after push using the same permissions model already used for image publication.
-- A true arm64 runtime smoke depends on runner availability and may be deferred with explicit residual risk.
+- GitHub-hosted Ubuntu LLM runners are linux/amd64.
+- Local Apple Silicon developers need the linux/arm64 base digest to avoid unnecessary emulation or wrong-platform pulls.
+- GHA cache improves repeated runs but cannot guarantee zero download on cache misses.
+- Docker cleanup execution remains a separate confirmation-gated action because pruning deletes local Docker resources.

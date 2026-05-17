@@ -56,52 +56,52 @@
 
 ## Phase 4 - Config Model Implementation
 
-- [ ] T023 Update transport launch configuration to use `transport.type` as the only transport selector.
-- [ ] T024 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/HttpTransportConfiguration.java` to express the approved listener model or a compatibility bridge.
-- [ ] T025 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/config/YamlHttpTransportConfiguration.java` for approved HTTP YAML shape and migration behavior.
-- [ ] T026 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlHttpTransportConfigurationSwapper.java` to default missing `bindHost`, `port`, and `endpointPath` to `127.0.0.1`, `18088`, and `/mcp`.
-- [ ] T027 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/validator/HttpTransportConfigurationValidator.java` for `transport.type`, optional HTTP fields, `STDIO` without `transport.http`, listener override validation, removed-field validation, and unknown-field failure branches.
+- [x] T023 Update transport launch configuration to use `transport.type` as the only transport selector.
+- [x] T024 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/HttpTransportConfiguration.java` to express the approved listener model or a compatibility bridge.
+- [x] T025 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/config/YamlHttpTransportConfiguration.java` for approved HTTP YAML shape and migration behavior.
+- [x] T026 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlHttpTransportConfigurationSwapper.java` to default missing `bindHost`, `port`, and `endpointPath` to `127.0.0.1`, `18088`, and `/mcp`.
+- [x] T027 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/validator/HttpTransportConfigurationValidator.java` for `transport.type`, optional HTTP fields, `STDIO` without `transport.http`, listener override validation, removed-field validation, and unknown-field failure branches.
 
 ## Phase 5 - Runtime
 
-- [ ] T028 Remove or reject static token runtime behavior in `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/HttpBearerAuthorizationHandler.java`.
-- [ ] T029 Do not register OAuth protected resource metadata servlets in this slice.
-- [ ] T030 Do not wire token introspection or OAuth token validation in this slice.
-- [ ] T031 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/StreamableHttpMCPServer.java` and servlet wiring only as needed for listener defaults and MCP-required HTTP safeguards.
+- [x] T028 Remove or reject static token runtime behavior in `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/HttpBearerAuthorizationHandler.java`.
+- [x] T029 Do not register OAuth protected resource metadata servlets in this slice.
+- [x] T030 Do not wire token introspection or OAuth token validation in this slice.
+- [x] T031 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/StreamableHttpMCPServer.java` and servlet wiring only as needed for listener defaults and MCP-required HTTP safeguards.
 
 ## Phase 6 - Tests
 
-- [ ] T032 Add or update transport configuration validator tests for `STREAMABLE_HTTP`, `STDIO`, `STDIO` with forbidden `transport.http`, missing `transport.type`, invalid `transport.type`, default HTTP fields, listener overrides, endpoint-path bounds, `port: 0`, and deferred authorization fields.
-- [ ] T033 Update YAML swapper tests for `bindHost`, `port`, and `endpointPath` defaulting, listener validation boundaries, and legacy field handling.
-- [ ] T034 Update HTTP servlet/server tests for POST, GET, and DELETE MCP-required Origin behavior.
-- [ ] T035 Delete `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportAccessTokenE2ETest.java`; do not retain static-token or protected-resource metadata success paths.
-- [ ] T036 Delete `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportOAuthIntrospectionE2ETest.java`; OAuth token introspection is future work.
-- [ ] T037 Simplify `HttpTransportSecurityE2ETest` for non-loopback binding and the internal Origin matrix without access token, authorization server, `allowedOrigins`, or OAuth introspection fixtures.
-- [ ] T038 Add or update valid GET coverage for the Streamable HTTP MCP endpoint with `Accept: text/event-stream`; assert SSE behavior or HTTP 405 according to the implementation.
-- [ ] T039 Update `AbstractConfigBackedRuntimeE2ETest`, `PackagedDistributionTestSupport`, and `PackagedDistributionTestSupportTest` so E2E fixtures use minimal `transport.type` HTTP/STDIO configs and no default `OAuthIntrospectionConfiguration`.
-- [ ] T040 Add tests that old OAuth-related YAML fields are rejected or documented as unsupported if implementation is authorized to enforce that behavior.
-- [ ] T041 Add tests that old boolean, remote, exposure, `allowedOrigins`, and unknown transport YAML fields are rejected with migration guidance.
-- [ ] T042 Replace the mcp-builder LLM evaluation authorization question and validator constants with current transport-security/configuration coverage.
-- [ ] T043 Preserve external LLM provider `Authorization: Bearer <api key>` and secret-redaction tests, and preserve SQL `metadata_introspection_sql` tests.
+- [x] T032 Add or update transport configuration validator tests for `STREAMABLE_HTTP`, `STDIO`, `STDIO` with forbidden `transport.http`, missing `transport.type`, invalid `transport.type`, default HTTP fields, listener overrides, endpoint-path bounds, `port: 0`, and deferred authorization fields.
+- [x] T033 Update YAML swapper tests for `bindHost`, `port`, and `endpointPath` defaulting, listener validation boundaries, and legacy field handling.
+- [x] T034 Update HTTP servlet/server tests for POST, GET, and DELETE MCP-required Origin behavior.
+- [x] T035 Delete `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportAccessTokenE2ETest.java`; do not retain static-token or protected-resource metadata success paths.
+- [x] T036 Delete `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportOAuthIntrospectionE2ETest.java`; OAuth token introspection is future work.
+- [x] T037 Simplify `HttpTransportSecurityE2ETest` for non-loopback binding and the internal Origin matrix without access token, authorization server, `allowedOrigins`, or OAuth introspection fixtures.
+- [x] T038 Add or update valid GET coverage for the Streamable HTTP MCP endpoint with `Accept: text/event-stream`; assert SSE behavior or HTTP 405 according to the implementation.
+- [x] T039 Update `AbstractConfigBackedRuntimeE2ETest`, `PackagedDistributionTestSupport`, and `PackagedDistributionTestSupportTest` so E2E fixtures use minimal `transport.type` HTTP/STDIO configs and no default `OAuthIntrospectionConfiguration`.
+- [x] T040 Add tests that old OAuth-related YAML fields are rejected or documented as unsupported if implementation is authorized to enforce that behavior.
+- [x] T041 Add tests that old boolean, remote, exposure, `allowedOrigins`, and unknown transport YAML fields are rejected with migration guidance.
+- [x] T042 Replace the mcp-builder LLM evaluation authorization question and validator constants with current transport-security/configuration coverage.
+- [x] T043 Preserve external LLM provider `Authorization: Bearer <api key>` and secret-redaction tests, and preserve SQL `metadata_introspection_sql` tests.
 
 ## Phase 7 - Docs, Distribution, And Migration
 
-- [ ] T044 Update `distribution/mcp/src/main/resources/conf/mcp-http.yaml` and `mcp-stdio.yaml` examples.
-- [ ] T045 Update `mcp/README.md` and `mcp/README_ZH.md` with field migration guidance.
-- [ ] T046 Update `docs/mcp/ShardingSphere-MCP-Detailed-Design.md` and related technical design docs if they describe old fields.
-- [ ] T047 Add documentation contract coverage for removed, renamed, or deferred fields.
-- [ ] T048 Update documentation contract tests so stale current-behavior examples fail for `accessToken`, `oauthIntrospection`, `authorizationServers`, `scopesSupported`, `protectedResource`, `WWW-Authenticate`, and `Authorization: Bearer <token>`.
+- [x] T044 Update `distribution/mcp/src/main/resources/conf/mcp-http.yaml` and `mcp-stdio.yaml` examples.
+- [x] T045 Update `mcp/README.md` and `mcp/README_ZH.md` with field migration guidance.
+- [x] T046 Update `docs/mcp/ShardingSphere-MCP-Detailed-Design.md` and related technical design docs if they describe old fields.
+- [x] T047 Add documentation contract coverage for removed, renamed, or deferred fields.
+- [x] T048 Update documentation contract tests so stale current-behavior examples fail for `accessToken`, `oauthIntrospection`, `authorizationServers`, `scopesSupported`, `protectedResource`, `WWW-Authenticate`, and `Authorization: Bearer <token>`.
 
 ## Phase 8 - Verification And Review
 
-- [ ] T049 Run scoped `mcp/bootstrap` tests for config and HTTP transport changes.
-- [ ] T050 Run focused `test/e2e/mcp` HTTP security, contract, distribution, and mcp-builder evaluation tests affected by this cleanup.
-- [ ] T051 Run scoped Checkstyle and Spotless for touched modules.
-- [ ] T052 Run reverse searches for stale `transport.http.enabled`, `transport.stdio.enabled`, `transport.http` under STDIO examples, `accessToken`, `allowRemoteAccess`, `remote`, `exposure`, `allowedOrigins`, `authorization`, `oauthIntrospection`, `protectedResource`, `authorizationServers`, `scopesSupported`, `requiredScopes`, `bearerMethodsSupported`, `WWW-Authenticate`, and `resource_metadata` examples.
-- [ ] T053 Classify `Authorization` and `introspection` search hits by path so external LLM provider auth and SQL metadata introspection are preserved.
-- [ ] T054 Run mcp-builder design and implementation reasonableness review and record findings/classification/evidence.
-- [ ] T055 Run final doubt-driven review using Codex CLI and classify findings.
-- [ ] T056 Confirm no unresolved user questions remain before final handoff.
+- [x] T049 Run scoped `mcp/bootstrap` tests for config and HTTP transport changes.
+- [x] T050 Run focused `test/e2e/mcp` HTTP security, contract, distribution, and mcp-builder evaluation tests affected by this cleanup.
+- [x] T051 Run scoped Checkstyle and Spotless for touched modules.
+- [x] T052 Run reverse searches for stale `transport.http.enabled`, `transport.stdio.enabled`, `transport.http` under STDIO examples, `accessToken`, `allowRemoteAccess`, `remote`, `exposure`, `allowedOrigins`, `authorization`, `oauthIntrospection`, `protectedResource`, `authorizationServers`, `scopesSupported`, `requiredScopes`, `bearerMethodsSupported`, `WWW-Authenticate`, and `resource_metadata` examples.
+- [x] T053 Classify `Authorization` and `introspection` search hits by path so external LLM provider auth and SQL metadata introspection are preserved.
+- [x] T054 Run mcp-builder design and implementation reasonableness review and record findings/classification/evidence.
+- [x] T055 Run final doubt-driven review using Codex CLI and classify findings.
+- [x] T056 Confirm no unresolved user questions remain before final handoff.
 
 ## Dependencies And Execution Order
 

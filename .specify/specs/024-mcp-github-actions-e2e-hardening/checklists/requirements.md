@@ -15,9 +15,9 @@
   limitations under the License.
 -->
 
-# Requirements Checklist: MCP GitHub Actions E2E Hardening
+# Requirements Checklist: MCP LLM Docker E2E Environment Hardening
 
-**Purpose**: Validate the Speckit package before any workflow or test implementation starts.
+**Purpose**: Validate the Speckit package before implementation starts.
 **Created**: 2026-05-17
 **Package**: `.specify/specs/024-mcp-github-actions-e2e-hardening/`
 
@@ -28,38 +28,47 @@
 - [x] Documentation-only work performed before implementation authorization.
 - [x] Existing worktree changes preserved and not reverted.
 - [x] Repository rules from `AGENTS.md` and `CODE_OF_CONDUCT.md` considered.
-- [x] GitHub Action naming, timeout, unique job, and matrix parallelism requirements captured.
+- [x] Destructive Docker cleanup identified as confirmation-gated.
 
 ## Requirement Quality
 
-- [x] LLM workflow consolidation requirement keeps both smoke and usability suite identities.
-- [x] LLM workflow matrix parallelism risk is captured with `max-parallel: 1`.
-- [x] Redundant selector existence shell checks are identified for removal in favor of Maven `failIfNoSpecifiedTests`.
-- [x] Distribution/container consolidation requirement preserves step-level failure locality.
-- [x] Scoped MCP quality gate requirement covers style/static/license risk.
-- [x] Release workflow independence is preserved.
-- [x] Published image pull-back smoke is required for release validation.
-- [x] Multi-arch manifest inspection is required for `linux/amd64` and `linux/arm64`.
-- [x] Arm64 runtime smoke limitation is recorded as residual risk when no runner is available.
-- [x] MCP Publisher pinning or integrity-check requirement is captured.
-- [x] Container HTTP smoke coverage is specified.
-- [x] LLM usability topology expansion is split between PR-critical and scheduled gates.
+- [x] LLM workflow trigger policy is explicit: MCP-scoped PR plus manual plus scheduled, non-required for merge.
+- [x] LLM workflow path filters exclude broad root, aggregator, and Speckit-only path triggers.
+- [x] Dedicated LLM workflow files are captured as the only non-module lane-infrastructure trigger exception.
+- [x] GitHub path-filter changed-file limits and manual dispatch fallback are captured.
+- [x] Local architecture-aware image build is required and testable.
+- [x] Local helper dry-run or print-mode validation is required to avoid unnecessary model downloads during script checks.
+- [x] Local helper shell portability, license header, and execution style are captured.
+- [x] Docker BuildKit/GHA cache requirement preserves checksum-based model integrity.
+- [x] Docker cache export failure risk is separated from score-evidence failure.
+- [x] Buildx local image loading is constrained to a single-platform output.
+- [x] Docker GHA cache API v2 compatibility diagnostics are captured.
+- [x] Docker preflight and image build are required before Maven install for fail-fast behavior.
+- [x] Docker cleanup is split into low-risk dangling image/build-cache cleanup and higher-risk volume pruning.
+- [x] Model, quantization, checksum, Docker-owned runtime, and artifact metadata must stay unchanged.
+- [x] README and README_ZH alignment is required.
 
 ## Testability
 
-- [x] Future YAML syntax validation is required.
-- [x] Future scoped Maven verification commands and exit codes are required.
-- [x] LLM artifact preservation is required for both smoke and usability failures.
-- [x] Distribution/container artifacts and logs remain visible by named steps.
-- [x] Release pull-back smoke must use the pushed tag or digest rather than the local pre-push image.
-- [x] Container HTTP smoke has concrete session, tool, resource, metadata, and SQL checks.
-- [x] Scheduled LLM usability has concrete H2 HTTP, H2 STDIO core, and MySQL HTTP core targets.
+- [x] Workflow trigger scope has an `rg pull_request|paths` verification.
+- [x] Broad path trigger removal has a reverse-search verification.
+- [x] Local helper behavior has architecture and image tag checks.
+- [x] Local helper no-build validation is testable.
+- [x] Local helper syntax and README execution style are testable.
+- [x] Build cache can be reviewed through workflow YAML and Buildx configuration.
+- [x] Explicit Buildx `context`, `file`, `load`, and cache inputs are testable by YAML inspection.
+- [x] Absence of release-style multi-platform output in the LLM runtime build is testable by YAML inspection.
+- [x] Buildx version logging is testable by workflow inspection.
+- [x] Docker action major-version stability is captured to avoid accidental dependency upgrades.
+- [x] Step order can be reviewed statically.
+- [x] Focused LLM configuration/runtime tests are identified.
+- [x] Scoped Checkstyle/Spotless verification is required for touched modules.
+- [x] `mcp-builder` review is required when implementation touches MCP or MCP E2E files.
 
 ## Confirmed Decisions Before Code
 
 - [x] Do not switch branches.
-- [x] Do not edit workflow or test code in this round.
-- [x] Consolidate the two LLM workflows unless later evidence shows higher risk than duplication.
-- [x] Consolidate distribution and container packaging unless later timing evidence requires separate jobs.
-- [x] Keep release publication workflow separate.
-- [x] Add coverage through layered PR, schedule, and release gates rather than one overloaded PR gate.
+- [x] Do not edit implementation code in this Speckit-only round.
+- [x] Keep `llama.cpp` plus `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
+- [x] Do not publish a prebuilt image in this slice.
+- [x] Do not prune Docker volumes unless the user explicitly confirms that higher-risk cleanup.

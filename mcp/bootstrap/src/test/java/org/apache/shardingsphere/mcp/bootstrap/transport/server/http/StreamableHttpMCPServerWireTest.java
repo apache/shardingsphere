@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -41,7 +42,7 @@ class StreamableHttpMCPServerWireTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     
     @Test
-    void assertInitializeRejectsUnsupportedContentType() throws Exception {
+    void assertInitializeRejectsUnsupportedContentType() throws IOException, InterruptedException {
         StreamableHttpMCPServer server = createServer();
         server.start();
         try {
@@ -54,11 +55,10 @@ class StreamableHttpMCPServerWireTest {
     
     private StreamableHttpMCPServer createServer() {
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), new MCPDatabaseCapabilityProvider(Collections.emptyMap()), "http");
-        return new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
-                new OAuthIntrospectionConfiguration()), runtimeContext);
+        return new StreamableHttpMCPServer(new HttpTransportConfiguration("127.0.0.1", 0, "/mcp"), runtimeContext);
     }
     
-    private HttpRequest createInitializeRequest(final int port, final String contentType) throws Exception {
+    private HttpRequest createInitializeRequest(final int port, final String contentType) throws JsonProcessingException {
         return HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/mcp"))
                 .header("Content-Type", contentType)
                 .header("Accept", "application/json, text/event-stream")

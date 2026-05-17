@@ -27,7 +27,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
@@ -40,10 +39,9 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.ArgumentCaptor;
 import reactor.core.publisher.Mono;
 
-import java.lang.reflect.Field;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -65,16 +63,6 @@ class StreamableHttpMCPServletTest {
     void assertProtocolVersions() throws ReflectiveOperationException {
         StreamableHttpMCPServlet actual = createServlet(mock(HttpServletStreamableServerTransportProvider.class), mock(MCPSessionManager.class),
                 mock(MCPSessionExecutionCoordinator.class));
-        assertThat(actual.protocolVersions(), is(MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS));
-    }
-    
-    @Test
-    void assertCreateWithOAuthIntrospection() throws ReflectiveOperationException {
-        OAuthIntrospectionConfiguration introspection = new OAuthIntrospectionConfiguration("http://127.0.0.1:18088/oauth/introspect", "client", "secret", "", 0L);
-        HttpTransportConfiguration config = new HttpTransportConfiguration(true, "127.0.0.1", false, "static-token", 18088, "/mcp", List.of(), List.of(), List.of(), "",
-                introspection);
-        StreamableHttpMCPServlet actual = createServlet(mock(HttpServletStreamableServerTransportProvider.class), mock(MCPSessionManager.class),
-                mock(MCPSessionExecutionCoordinator.class), config);
         assertThat(actual.protocolVersions(), is(MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS));
     }
     
@@ -341,25 +329,6 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServiceRejectUnauthorizedRequestBeforeDelegate() throws ServletException, IOException, ReflectiveOperationException {
-        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getMethod()).thenReturn("POST");
-        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
-        when(request.getHeader("Authorization")).thenReturn(null);
-        when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
-        when(request.getRequestURL()).thenReturn(new StringBuffer("http://127.0.0.1:18088/mcp"));
-        when(request.getRequestURI()).thenReturn("/mcp");
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        StreamableHttpMCPServlet actual = createServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class),
-                new HttpTransportConfiguration(true, "127.0.0.1", false, "token", 18088, "/mcp", Collections.emptyList(), List.of("https://auth.example.test"), List.of("mcp.read"), "",
-                        new OAuthIntrospectionConfiguration()));
-        actual.service(request, response);
-        verify(response).setHeader("WWW-Authenticate", "Bearer resource_metadata=\"http://127.0.0.1:18088/.well-known/oauth-protected-resource/mcp\", scope=\"mcp.read\"");
-        verify(delegate, never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
-    }
-    
-    @Test
     void assertServiceDeleteCloseSessionWhenStatusOk() throws ServletException, IOException, ReflectiveOperationException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         MCPSessionExecutionCoordinator sessionExecutionCoordinator = mock(MCPSessionExecutionCoordinator.class);
@@ -419,8 +388,7 @@ class StreamableHttpMCPServletTest {
     private StreamableHttpMCPServlet createServlet(final HttpServletStreamableServerTransportProvider delegate, final MCPSessionManager sessionManager,
                                                    final MCPSessionExecutionCoordinator sessionExecutionCoordinator) throws ReflectiveOperationException {
         return createServlet(delegate, sessionManager, sessionExecutionCoordinator,
-                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
-                        new OAuthIntrospectionConfiguration()));
+                new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp"));
     }
     
     private StreamableHttpMCPServlet createServlet(final HttpServletStreamableServerTransportProvider delegate, final MCPSessionManager sessionManager,
