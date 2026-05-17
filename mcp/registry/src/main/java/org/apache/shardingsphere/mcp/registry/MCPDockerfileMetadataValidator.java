@@ -26,7 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class MCPDockerImageMetadataValidator {
+final class MCPDockerfileMetadataValidator {
     
     private static final String SERVER_NAME_ARGUMENT_PREFIX = "ARG MCP_SERVER_NAME=";
     
@@ -49,12 +49,12 @@ final class MCPDockerImageMetadataValidator {
     }
     
     private static boolean containsLine(final String content, final String expectedLine) {
-        return content.lines().map(String::trim).filter(MCPDockerImageMetadataValidator::isActiveLine).anyMatch(expectedLine::equals);
+        return content.lines().map(String::trim).filter(MCPDockerfileMetadataValidator::isActiveLine).anyMatch(expectedLine::equals);
     }
     
     private static boolean containsLabel(final String content, final String expectedLabel) {
         boolean labelInstruction = false;
-        for (String each : content.lines().map(String::trim).filter(MCPDockerImageMetadataValidator::isActiveLine).toList()) {
+        for (String each : content.lines().map(String::trim).filter(MCPDockerfileMetadataValidator::isActiveLine).toList()) {
             labelInstruction = each.startsWith("LABEL ") || labelInstruction;
             if (labelInstruction && each.contains(expectedLabel)) {
                 return true;
@@ -65,6 +65,6 @@ final class MCPDockerImageMetadataValidator {
     }
     
     private static boolean isActiveLine(final String line) {
-        return !line.startsWith("#");
+        return !line.isBlank() && !line.startsWith("#");
     }
 }
