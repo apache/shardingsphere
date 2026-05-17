@@ -59,7 +59,7 @@ final class OAuthTokenValidator {
         expectedIssuers = config.getOauthIntrospection().getExpectedIssuer().isEmpty()
                 ? config.getAuthorizationServers()
                 : List.of(config.getOauthIntrospection().getExpectedIssuer());
-        requiredScopes = config.getScopesSupported().stream().collect(Collectors.toUnmodifiableSet());
+        requiredScopes = config.getScopesSupported().stream().collect(Collectors.toSet());
         protectedResource = config.getProtectedResource();
         endpointPath = config.getEndpointPath();
         cacheTtlMillis = config.getOauthIntrospection().getCacheTtlMillis();

@@ -26,9 +26,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class YamlRuntimeDatabaseConfigurationSwapperTest {
-    
+
     private final YamlRuntimeDatabaseConfigurationSwapper swapper = new YamlRuntimeDatabaseConfigurationSwapper();
-    
+
     @Test
     void assertSwapToObject() {
         RuntimeDatabaseConfiguration actual = swapper.swapToObject(createYamlConfig());
@@ -38,7 +38,7 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         assertThat(actual.getPassword(), is(" secret "));
         assertThat(actual.getDriverClassName(), is(" org.h2.Driver "));
     }
-    
+
     @Test
     void assertSwapToObjectWithDatabaseTypeMissing() {
         YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
@@ -46,7 +46,31 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
         assertThat(actual.getMessage(), is("MCP runtime database configuration property `databaseType` is required."));
     }
-    
+
+    @Test
+    void assertSwapToObjectWithBlankDatabaseType() {
+        YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
+        yamlConfig.setDatabaseType("   ");
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP runtime database configuration property `databaseType` is required."));
+    }
+
+    @Test
+    void assertSwapToObjectWithJdbcUrlMissing() {
+        YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
+        yamlConfig.setJdbcUrl(null);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP runtime database configuration property `jdbcUrl` is required."));
+    }
+
+    @Test
+    void assertSwapToObjectWithBlankJdbcUrl() {
+        YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
+        yamlConfig.setJdbcUrl("   ");
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP runtime database configuration property `jdbcUrl` is required."));
+    }
+
     @Test
     void assertSwapToObjectWithUsernameMissing() {
         YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
@@ -54,13 +78,29 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
         assertThat(actual.getMessage(), is("MCP runtime database configuration property `username` is required. Use an empty string when no value is needed."));
     }
-    
+
+    @Test
+    void assertSwapToObjectWithPasswordMissing() {
+        YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
+        yamlConfig.setPassword(null);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP runtime database configuration property `password` is required. Use an empty string when no value is needed."));
+    }
+
+    @Test
+    void assertSwapToObjectWithDriverClassNameMissing() {
+        YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
+        yamlConfig.setDriverClassName(null);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP runtime database configuration property `driverClassName` is required. Use an empty string when no value is needed."));
+    }
+
     @Test
     void assertSwapToObjectWithNullConfiguration() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null));
         assertThat(actual.getMessage(), is("MCP runtime database configuration cannot be null."));
     }
-    
+
     @Test
     void assertSwapToYamlConfiguration() {
         YamlRuntimeDatabaseConfiguration actual = swapper.swapToYamlConfiguration(
@@ -71,7 +111,7 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         assertThat(actual.getPassword(), is(""));
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
     }
-    
+
     private YamlRuntimeDatabaseConfiguration createYamlConfig() {
         YamlRuntimeDatabaseConfiguration result = new YamlRuntimeDatabaseConfiguration();
         result.setDatabaseType("H2");

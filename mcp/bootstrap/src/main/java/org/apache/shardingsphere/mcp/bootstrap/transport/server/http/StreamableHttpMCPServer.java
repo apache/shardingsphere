@@ -61,14 +61,9 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
     }
     
     StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPSyncServerFactory syncServerFactory, final StreamableHttpMCPServlet transportServlet) {
-        this.config = requireValidConfig(config);
+        this.config = config;
         this.syncServerFactory = syncServerFactory;
         this.transportServlet = transportServlet;
-    }
-    
-    private static HttpTransportConfiguration requireValidConfig(final HttpTransportConfiguration config) {
-        config.validate();
-        return config;
     }
     
     @Override

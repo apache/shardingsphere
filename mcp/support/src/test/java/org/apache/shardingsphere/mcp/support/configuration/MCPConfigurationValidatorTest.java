@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,6 +44,13 @@ class MCPConfigurationValidatorTest {
                 () -> MCPConfigurationValidator.validate(new FixtureConfiguration(), "Fixture configuration"));
         assertThat(actual.getMessage(), is("Fixture configuration property `name` is required."));
     }
+
+    @Test
+    void assertValidateWithPunctuatedViolation() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> MCPConfigurationValidator.validate(new PunctuatedFixtureConfiguration(), "Fixture configuration"));
+        assertThat(actual.getMessage(), is("Fixture configuration property `valid` must be valid."));
+    }
     
     @Test
     void assertValidateWithNullConfiguration() {
@@ -56,5 +64,13 @@ class MCPConfigurationValidatorTest {
         
         @NotBlank(message = "is required")
         private String name;
+    }
+
+    @Getter
+    @Setter
+    private static final class PunctuatedFixtureConfiguration {
+
+        @AssertTrue(message = "must be valid.")
+        private boolean valid;
     }
 }

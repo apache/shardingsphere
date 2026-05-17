@@ -147,10 +147,8 @@ jobs:
           test -f "${DISTRIBUTION_HOME}/conf/mcp-stdio.yaml"
           ./mvnw -pl mcp/registry -DskipTests -DskipITs -Dspotless.skip=true \
             -Dexec.mainClass=org.apache.shardingsphere.mcp.registry.MCPRegistryMetadataCommand \
-            -Dexec.args="--validate-only --allow-snapshot" \
+            -Dexec.args="--validate-only --allow-snapshot --dockerfile-path distribution/mcp/Dockerfile" \
             compile exec:java -B -ntp
-          grep -q '^ARG MCP_SERVER_NAME=io.github.apache/shardingsphere-mcp$' distribution/mcp/Dockerfile
-          grep -q 'io.modelcontextprotocol.server.name="${MCP_SERVER_NAME}"' distribution/mcp/Dockerfile
       - name: Install MCP E2E Test Dependencies
         run: ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
       - name: Run MCP Distribution Smoke

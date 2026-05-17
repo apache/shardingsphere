@@ -21,11 +21,15 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
     - Delete unused code; when changing functionality, remove legacy compatibility shims.
     - Keep variable declarations adjacent to first use; if a value must be retained, declare it `final` to satisfy Checkstyle VariableDeclarationUsageDistance.
     - Single-use local variables must be inlined by default; keep a local variable only when it is reused (for stubbing/verification/assertions) or materially improves readability.
-    - Do not add defensive immutable collection copies in constructors or method return values by default.
+    - Do not add explicit defensive immutable collection copies in constructors or method return values by default.
       Avoid `List.copyOf`, `Set.copyOf`, `Map.copyOf`, `Collections.unmodifiableList`, `Collections.unmodifiableSet`, `Collections.unmodifiableMap`,
-      `List.of`, `Set.of`, `Map.of`, Guava `ImmutableList` / `ImmutableSet` / `ImmutableMap`, or similar immutable wrappers
+      `Collectors.toUnmodifiableList`, `Collectors.toUnmodifiableSet`, `Collectors.toUnmodifiableMap`,
+      Guava `ImmutableList` / `ImmutableSet` / `ImmutableMap`, or similar explicit immutable copy/wrapper APIs
       when the only reason is defensive programming.
-    - Immutable collection copies or wrappers are allowed only with a concrete semantic reason, such as enforcing a documented public API contract,
+    - Ordinary collection literals or stream collection results are allowed when they express direct data construction or transformation.
+      Do not flag `List.of`, `Set.of`, `Map.of`, or `Stream.toList()` by default, and do not replace `Stream.toList()` with a mutable collector
+      unless the code has a concrete mutability requirement.
+    - Explicit immutable collection copies or wrappers are allowed only with a concrete semantic reason, such as enforcing a documented public API contract,
       preserving a snapshot across shared ownership or asynchronous execution, protecting cached/global state from mutation, or satisfying an external API requirement.
       Record the reason in the plan, review note, or nearby code rationale.
 - **Complete Implementation**: no MVPs/placeholders/TODOs—deliver fully runnable solutions.

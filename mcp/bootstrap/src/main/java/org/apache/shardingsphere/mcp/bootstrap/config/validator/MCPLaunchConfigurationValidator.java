@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.validator;
 
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -25,23 +26,23 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * MCP launch configuration validator.
  */
-public final class MCPLaunchConfigurationValidator implements ConstraintValidator<ValidMCPLaunchConfiguration, MCPLaunchConfiguration> {
+public final class MCPLaunchConfigurationValidator implements ConstraintValidator<ValidMCPLaunchConfiguration, YamlMCPLaunchConfiguration> {
     
     @Override
-    public boolean isValid(final MCPLaunchConfiguration value, final ConstraintValidatorContext context) {
-        if (null == value || null == value.getHttpTransport() || null == value.getStdioTransport()) {
+    public boolean isValid(final YamlMCPLaunchConfiguration value, final ConstraintValidatorContext context) {
+        if (null == value || null == value.getTransport()) {
             return true;
         }
-        if (value.getHttpTransport().isEnabled() && value.getStdioTransport().isEnabled()) {
+        YamlMCPTransportConfiguration transport = value.getTransport();
+        if (null == transport.getHttp() || null == transport.getStdio()) {
+            return true;
+        }
+        if (transport.getHttp().isEnabled() && transport.getStdio().isEnabled()) {
             addViolation(context, "HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport.");
             return false;
         }
-        if (!value.getHttpTransport().isEnabled() && !value.getStdioTransport().isEnabled()) {
+        if (!transport.getHttp().isEnabled() && !transport.getStdio().isEnabled()) {
             addViolation(context, "Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true.");
-            return false;
-        }
-        if (null != value.getDatabases() && value.getDatabases().isEmpty()) {
-            addViolation(context, "At least one runtime database must be configured.");
             return false;
         }
         return true;

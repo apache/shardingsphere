@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -30,7 +27,6 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -40,19 +36,14 @@ import static org.mockito.Mockito.mock;
 
 class RuntimeDatabaseConfigurationTest {
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidDatabaseTypeArguments")
-    void assertConstructWithInvalidDatabaseType(final String name, final String databaseType, final String expectedMessage) {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new RuntimeDatabaseConfiguration(databaseType, "jdbc:test:logic", "", "", ""));
-        assertThat(actual.getMessage(), is(expectedMessage));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidExplicitConfigurationArguments")
-    void assertConstructWithInvalidExplicitConfiguration(final String name, final String jdbcUrl, final String username, final String password, final String driverClassName,
-                                                         final String expectedMessage) {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new RuntimeDatabaseConfiguration("H2", jdbcUrl, username, password, driverClassName));
-        assertThat(actual.getMessage(), is(expectedMessage));
+    @Test
+    void assertConstruct() {
+        RuntimeDatabaseConfiguration actual = new RuntimeDatabaseConfiguration("H2", "jdbc:test:logic", "", "", "");
+        assertThat(actual.getDatabaseType(), is("H2"));
+        assertThat(actual.getJdbcUrl(), is("jdbc:test:logic"));
+        assertThat(actual.getUsername(), is(""));
+        assertThat(actual.getPassword(), is(""));
+        assertThat(actual.getDriverClassName(), is(""));
     }
     
     @Test
@@ -83,24 +74,7 @@ class RuntimeDatabaseConfigurationTest {
         assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: missing_jdbc_driver."));
         assertThat(actual.getCategory(), is("missing_jdbc_driver"));
     }
-    
-    private static Stream<Arguments> invalidDatabaseTypeArguments() {
-        return Stream.of(
-                Arguments.of("null database type", null, "databaseType cannot be null."),
-                Arguments.of("empty database type", "", "databaseType cannot be empty."),
-                Arguments.of("blank database type", "   ", "databaseType cannot be empty."));
-    }
-    
-    private static Stream<Arguments> invalidExplicitConfigurationArguments() {
-        return Stream.of(
-                Arguments.of("null jdbc URL", null, "", "", "", "Runtime database configuration property `jdbcUrl` is required."),
-                Arguments.of("blank jdbc URL", "   ", "", "", "", "Runtime database configuration property `jdbcUrl` is required."),
-                Arguments.of("null username", "jdbc:test:logic", null, "", "", "Runtime database configuration property `username` is required. Use an empty string when no value is needed."),
-                Arguments.of("null password", "jdbc:test:logic", "", null, "", "Runtime database configuration property `password` is required. Use an empty string when no value is needed."),
-                Arguments.of("null driver class", "jdbc:test:logic", "", "", null,
-                        "Runtime database configuration property `driverClassName` is required. Use an empty string when no value is needed."));
-    }
-    
+
     private static final class RecordingDriver implements Driver {
         
         private static final String JDBC_URL = "jdbc:recording:runtime-config";

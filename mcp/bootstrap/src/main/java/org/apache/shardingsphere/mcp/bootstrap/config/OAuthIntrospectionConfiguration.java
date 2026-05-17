@@ -20,8 +20,6 @@ package org.apache.shardingsphere.mcp.bootstrap.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import javax.validation.constraints.PositiveOrZero;
-
 /**
  * OAuth introspection configuration.
  */
@@ -37,7 +35,6 @@ public final class OAuthIntrospectionConfiguration {
     
     private final String expectedIssuer;
     
-    @PositiveOrZero(message = "must be zero or positive")
     private final long cacheTtlMillis;
     
     public OAuthIntrospectionConfiguration() {

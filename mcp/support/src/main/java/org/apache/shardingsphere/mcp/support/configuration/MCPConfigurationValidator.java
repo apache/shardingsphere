@@ -55,6 +55,7 @@ public final class MCPConfigurationValidator {
         if (violation.getPropertyPath().toString().isEmpty()) {
             return violation.getMessage();
         }
-        return String.format("%s property `%s` %s.", configName, violation.getPropertyPath(), violation.getMessage());
+        String message = violation.getMessage();
+        return String.format("%s property `%s` %s%s", configName, violation.getPropertyPath(), message, message.endsWith(".") ? "" : ".");
     }
 }

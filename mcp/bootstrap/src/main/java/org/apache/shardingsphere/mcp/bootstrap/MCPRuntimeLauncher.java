@@ -50,7 +50,6 @@ public final class MCPRuntimeLauncher {
      */
     public MCPRuntimeServer launch(final MCPLaunchConfiguration config) throws IOException {
         ShardingSpherePreconditions.checkNotNull(config, () -> new IllegalArgumentException("MCP launch configuration cannot be null."));
-        config.validate();
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(config.getDatabases()), new MCPDatabaseCapabilityProvider(config.getDatabases()),
                 config.getHttpTransport().isEnabled() ? "http" : "stdio");
         MCPRuntimeServer result = config.getHttpTransport().isEnabled() ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioMCPServer(runtimeContext);

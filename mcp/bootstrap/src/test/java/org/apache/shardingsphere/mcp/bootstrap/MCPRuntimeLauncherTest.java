@@ -80,12 +80,18 @@ class MCPRuntimeLauncherTest {
     }
     
     @Test
-    void assertLaunchWithoutRuntimeDatabases() {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher("conf/mcp-http.yaml");
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> runtimeLauncher.launch(
-                new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
-                        new OAuthIntrospectionConfiguration()), new StdioTransportConfiguration(false), Map.of())));
-        assertThat(actual.getMessage(), is("At least one runtime database must be configured."));
+    void assertLaunchWithoutRuntimeDatabases() throws IOException {
+        try (
+                MockedConstruction<MCPSessionManager> ignoredMockedSessionManager = mockConstruction(MCPSessionManager.class);
+                MockedConstruction<MCPDatabaseCapabilityProvider> ignoredMockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
+                MockedConstruction<StreamableHttpMCPServer> mockedHttpServer = mockConstruction(StreamableHttpMCPServer.class);
+                MockedConstruction<StdioMCPServer> mockedStdioServer = mockConstruction(StdioMCPServer.class)) {
+            MCPRuntimeServer actual = new MCPRuntimeLauncher("conf/mcp-http.yaml").launch(createLaunchConfiguration(true, Map.of()));
+            assertThat(actual, is(mockedHttpServer.constructed().get(0)));
+            assertThat(mockedHttpServer.constructed().size(), is(1));
+            assertThat(mockedStdioServer.constructed().size(), is(0));
+            verify(actual).start();
+        }
     }
     
     @Test
@@ -169,9 +175,13 @@ class MCPRuntimeLauncherTest {
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled) {
+        return createLaunchConfiguration(httpEnabled, Map.of("logic_db", mock(RuntimeDatabaseConfiguration.class)));
+    }
+
+    private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled, final Map<String, RuntimeDatabaseConfiguration> databases) {
         return new MCPLaunchConfiguration(
                 new HttpTransportConfiguration(httpEnabled, "127.0.0.1", false, "", 18080, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
                         new OAuthIntrospectionConfiguration()),
-                new StdioTransportConfiguration(!httpEnabled), Map.of("logic_db", mock(RuntimeDatabaseConfiguration.class)));
+                new StdioTransportConfiguration(!httpEnabled), databases);
     }
 }

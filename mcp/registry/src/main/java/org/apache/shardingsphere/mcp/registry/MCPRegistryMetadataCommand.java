@@ -85,6 +85,9 @@ public final class MCPRegistryMetadataCommand {
             prepareServerJson(server, options.version(), options.identifier());
         }
         validateServerJson(server, options.allowSnapshot());
+        if (!options.dockerfilePath().isBlank()) {
+            MCPDockerImageMetadataValidator.validate(Path.of(options.dockerfilePath()), String.valueOf(server.get("name")));
+        }
         if (!options.validateOnly()) {
             Files.writeString(options.path(), JSON_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(server) + System.lineSeparator());
         }
@@ -94,6 +97,7 @@ public final class MCPRegistryMetadataCommand {
         Path path = Path.of("mcp/server.json");
         String version = "";
         String identifier = "";
+        String dockerfilePath = "";
         boolean validateOnly = false;
         boolean allowSnapshot = false;
         int index = 0;
@@ -111,6 +115,10 @@ public final class MCPRegistryMetadataCommand {
                     identifier = readOptionValue(args, index + 1, "--identifier");
                     index += 2;
                     break;
+                case "--dockerfile-path":
+                    dockerfilePath = readOptionValue(args, index + 1, "--dockerfile-path");
+                    index += 2;
+                    break;
                 case "--validate-only":
                     validateOnly = true;
                     index++;
@@ -123,7 +131,7 @@ public final class MCPRegistryMetadataCommand {
                     throw new IllegalArgumentException("Unknown argument: " + args[index]);
             }
         }
-        return new CommandOptions(path, version, identifier, validateOnly, allowSnapshot);
+        return new CommandOptions(path, version, identifier, dockerfilePath, validateOnly, allowSnapshot);
     }
     
     private static String readOptionValue(final String[] args, final int index, final String optionName) {
@@ -226,6 +234,6 @@ public final class MCPRegistryMetadataCommand {
         }
     }
     
-    private record CommandOptions(Path path, String version, String identifier, boolean validateOnly, boolean allowSnapshot) {
+    private record CommandOptions(Path path, String version, String identifier, String dockerfilePath, boolean validateOnly, boolean allowSnapshot) {
     }
 }

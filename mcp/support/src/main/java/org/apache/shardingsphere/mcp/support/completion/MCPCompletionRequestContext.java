@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.support.completion;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -43,6 +42,6 @@ public final class MCPCompletionRequestContext {
         this.sessionId = sessionId;
         this.descriptor = descriptor;
         this.argumentName = argumentName;
-        this.contextArguments = Collections.unmodifiableMap(new LinkedHashMap<>(contextArguments));
+        this.contextArguments = new LinkedHashMap<>(contextArguments);
     }
 }

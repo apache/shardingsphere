@@ -19,14 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.bootstrap.config.validator.ValidHttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
@@ -34,23 +27,18 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-@ValidHttpTransportConfiguration
 public final class HttpTransportConfiguration {
     
     private final boolean enabled;
     
-    @NotBlank(message = "is required")
     private final String bindHost;
     
     private final boolean allowRemoteAccess;
     
     private final String accessToken;
     
-    @PositiveOrZero(message = "must be zero or positive")
     private final int port;
     
-    @NotBlank(message = "is required")
-    @Pattern(regexp = "/.*", message = "must start with '/'")
     private final String endpointPath;
     
     private final List<String> allowedOrigins;
@@ -61,16 +49,7 @@ public final class HttpTransportConfiguration {
     
     private final String protectedResource;
     
-    @NotNull(message = "is required")
-    @Valid
     private final OAuthIntrospectionConfiguration oauthIntrospection;
-    
-    /**
-     * Validate HTTP transport configuration.
-     */
-    public void validate() {
-        MCPConfigurationValidator.validate(this, "MCP HTTP transport configuration");
-    }
     
     /**
      * Judge whether OAuth protected resource metadata is enabled.

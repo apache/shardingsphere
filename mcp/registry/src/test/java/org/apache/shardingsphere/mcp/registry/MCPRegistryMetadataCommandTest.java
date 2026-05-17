@@ -127,10 +127,83 @@ class MCPRegistryMetadataCommandTest {
         assertDoesNotThrow(() -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
     }
     
+    @Test
+    void assertExecuteValidatesDockerfileMetadata() throws IOException {
+        Path serverPath = createServerJson(createServerMetadata());
+        Path dockerfilePath = createDockerfile(createDockerfileContent());
+        assertDoesNotThrow(() -> MCPRegistryMetadataCommand.execute(
+                "--path", serverPath.toString(), "--validate-only", "--allow-snapshot", "--dockerfile-path", dockerfilePath.toString()));
+    }
+    
+    @Test
+    void assertExecuteRejectsMissingDockerfilePathValue() throws IOException {
+        Path serverPath = createServerJson(createServerMetadata());
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot", "--dockerfile-path"));
+        assertThat(actual.getMessage(), is("--dockerfile-path requires a value."));
+    }
+    
+    @Test
+    void assertExecuteRejectsMismatchedDockerfileServerName() throws IOException {
+        assertDockerfileMetadataRejected(createDockerfileContent().replace(
+                "ARG MCP_SERVER_NAME=io.github.apache/shardingsphere-mcp", "ARG MCP_SERVER_NAME=io.github.apache/other-mcp"),
+                "Dockerfile must define ARG MCP_SERVER_NAME=io.github.apache/shardingsphere-mcp.");
+    }
+    
+    @Test
+    void assertExecuteRejectsMissingDockerfileServerNameLabel() throws IOException {
+        assertDockerfileMetadataRejected(createDockerfileContent().replace("      io.modelcontextprotocol.server.name=\"${MCP_SERVER_NAME}\"", ""),
+                "Dockerfile must label io.modelcontextprotocol.server.name with ${MCP_SERVER_NAME}.");
+    }
+    
+    @Test
+    void assertExecuteRejectsCommentedDockerfileServerNameLabel() throws IOException {
+        assertDockerfileMetadataRejected(createDockerfileContent().replace(
+                "      io.modelcontextprotocol.server.name=\"${MCP_SERVER_NAME}\"", "#      io.modelcontextprotocol.server.name=\"${MCP_SERVER_NAME}\""),
+                "Dockerfile must label io.modelcontextprotocol.server.name with ${MCP_SERVER_NAME}.");
+    }
+    
+    @Test
+    void assertExecuteRejectsMissingDockerfileImageVersionArgument() throws IOException {
+        assertDockerfileMetadataRejected(createDockerfileContent().replace("ARG MCP_IMAGE_VERSION=unknown", "ARG MCP_IMAGE_VERSION=latest"),
+                "Dockerfile must define ARG MCP_IMAGE_VERSION=unknown.");
+    }
+    
+    @Test
+    void assertExecuteRejectsMissingDockerfileImageVersionLabel() throws IOException {
+        assertDockerfileMetadataRejected(createDockerfileContent().replace(
+                "LABEL org.opencontainers.image.version=\"${MCP_IMAGE_VERSION}\" \\", "LABEL io.modelcontextprotocol.server.name=\"${MCP_SERVER_NAME}\""),
+                "Dockerfile must label org.opencontainers.image.version with ${MCP_IMAGE_VERSION}.");
+    }
+    
+    @Test
+    void assertExecuteValidatesSourceDockerfileMetadata() {
+        Path projectRoot = resolveProjectRoot();
+        assertDoesNotThrow(() -> MCPRegistryMetadataCommand.execute(
+                "--path", projectRoot.resolve("mcp/server.json").toString(),
+                "--validate-only", "--allow-snapshot",
+                "--dockerfile-path", projectRoot.resolve("distribution/mcp/Dockerfile").toString()));
+    }
+    
     private Path createServerJson(final Map<String, Object> server) throws IOException {
         Path result = tempDir.resolve("server.json");
         Files.writeString(result, JSON_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(server));
         return result;
+    }
+    
+    private Path createDockerfile(final String content) throws IOException {
+        Path result = tempDir.resolve("Dockerfile");
+        Files.writeString(result, content);
+        return result;
+    }
+    
+    private String createDockerfileContent() {
+        return String.join(System.lineSeparator(),
+                "FROM eclipse-temurin:21-jre",
+                "ARG MCP_SERVER_NAME=io.github.apache/shardingsphere-mcp",
+                "ARG MCP_IMAGE_VERSION=unknown",
+                "LABEL org.opencontainers.image.version=\"${MCP_IMAGE_VERSION}\" \\",
+                "      io.modelcontextprotocol.server.name=\"${MCP_SERVER_NAME}\"");
     }
     
     private void assertPackageShapeRejected(final Map<String, Object> server) throws IOException {
@@ -138,6 +211,14 @@ class MCPRegistryMetadataCommandTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
         assertThat(actual.getMessage(), is(PACKAGE_SHAPE_ERROR_MESSAGE));
+    }
+    
+    private void assertDockerfileMetadataRejected(final String dockerfileContent, final String expectedMessage) throws IOException {
+        Path serverPath = createServerJson(createServerMetadata());
+        Path dockerfilePath = createDockerfile(dockerfileContent);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPRegistryMetadataCommand.execute(
+                "--path", serverPath.toString(), "--validate-only", "--allow-snapshot", "--dockerfile-path", dockerfilePath.toString()));
+        assertThat(actual.getMessage(), is(expectedMessage));
     }
     
     private Map<String, Object> readServerJson(final Path serverPath) throws IOException {
@@ -197,10 +278,17 @@ class MCPRegistryMetadataCommandTest {
     }
     
     private Path resolveMCPDirectory() {
+        return resolveProjectRoot().resolve("mcp");
+    }
+    
+    private Path resolveProjectRoot() {
         Path result = Path.of("").toAbsolutePath();
         while (null != result && !Files.exists(result.resolve("mcp/README.md"))) {
             result = result.getParent();
         }
-        return result.resolve("mcp");
+        if (null == result) {
+            throw new IllegalStateException("Project root was not found.");
+        }
+        return result;
     }
 }
