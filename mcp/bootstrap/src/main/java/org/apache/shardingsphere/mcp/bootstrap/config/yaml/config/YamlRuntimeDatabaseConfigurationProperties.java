@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.config;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Set;
 
 /**
  * YAML runtime database configuration properties.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlRuntimeDatabaseConfigurationProperties {
     
     public static final String DATABASE_TYPE = "databaseType";
@@ -35,7 +39,4 @@ public final class YamlRuntimeDatabaseConfigurationProperties {
     public static final String DRIVER_CLASS_NAME = "driverClassName";
     
     public static final Set<String> SUPPORTED_PROPERTIES = Set.of(DATABASE_TYPE, JDBC_URL, USERNAME, PASSWORD, DRIVER_CLASS_NAME);
-    
-    private YamlRuntimeDatabaseConfigurationProperties() {
-    }
 }
