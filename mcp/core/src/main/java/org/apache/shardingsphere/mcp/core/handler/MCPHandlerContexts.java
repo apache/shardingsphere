@@ -20,8 +20,6 @@ package org.apache.shardingsphere.mcp.core.handler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
@@ -45,19 +43,5 @@ public final class MCPHandlerContexts {
     
     private static boolean isSupportedContextType(final Class<?> contextType) {
         return MCPServiceHandlerContext.class == contextType || MCPDatabaseHandlerContext.class == contextType || MCPWorkflowHandlerContext.class == contextType;
-    }
-    
-    /**
-     * Resolve request scope as required handler context.
-     *
-     * @param requestScope request scope
-     * @param contextType context type
-     * @param handlerType handler type
-     * @param <T> type of handler context
-     * @return handler context
-     */
-    public static <T extends MCPHandlerContext> T resolve(final MCPRequestScope requestScope, final Class<T> contextType, final Class<?> handlerType) {
-        validateContextType(contextType, handlerType);
-        return contextType.cast(requestScope);
     }
 }

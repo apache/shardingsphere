@@ -56,10 +56,11 @@ public final class ResourceHandlerRegistry {
     }
     
     private static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources(final Collection<MCPResourceHandler<?>> handlers) {
+        ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPResourceHandler<?> each : handlers) {
             String uriOrTemplate = each.getResourceDescriptor().getUriTemplate();
-            ShardingSpherePreconditions.checkNotEmpty(uriOrTemplate,
+            ShardingSpherePreconditions.checkState(null != uriOrTemplate && !uriOrTemplate.isBlank(),
                     () -> new IllegalArgumentException(String.format("Resource URI or URI template is required for `%s`.", each.getClass().getName())));
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
             result.put(new MCPUriPattern(uriOrTemplate), each);
@@ -106,7 +107,7 @@ public final class ResourceHandlerRegistry {
     }
     
     private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceHandler<T> resourceHandler, final MCPUriVariables uriVariables) {
-        return resourceHandler.handle(MCPHandlerContexts.resolve(requestScope, resourceHandler.getContextType(), resourceHandler.getClass()), uriVariables);
+        return resourceHandler.handle(resourceHandler.getContextType().cast(requestScope), uriVariables);
     }
     
     /**

@@ -123,6 +123,6 @@ public final class ToolHandlerRegistry {
     }
     
     private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolHandler<T> toolHandler, final MCPToolCall toolCall) {
-        return toolHandler.handle(MCPHandlerContexts.resolve(requestScope, toolHandler.getContextType(), toolHandler.getClass()), toolCall);
+        return toolHandler.handle(toolHandler.getContextType().cast(requestScope), toolCall);
     }
 }

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
@@ -147,7 +146,7 @@ public final class MCPCompletionService {
     
     private <T extends MCPHandlerContext> MCPCompletionProviderResult completeCandidates(final MCPRequestScope requestScope, final MCPCompletionProvider<T> provider,
                                                                                          final MCPCompletionRequestContext requestContext) {
-        return provider.complete(MCPHandlerContexts.resolve(requestScope, provider.getContextType(), provider.getClass()), requestContext);
+        return provider.complete(provider.getContextType().cast(requestScope), requestContext);
     }
     
     private Map<String, Object> createMeta(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix, final String matchStrategy,
