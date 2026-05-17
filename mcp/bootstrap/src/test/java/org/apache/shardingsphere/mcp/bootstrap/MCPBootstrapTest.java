@@ -63,7 +63,7 @@ class MCPBootstrapTest {
     }
     
     private void assertMain(final String[] args, final String expectedConfigPath, final boolean runShutdownHookTwice) throws IOException {
-        MCPLaunchConfiguration launchConfig = createLaunchConfiguration(true);
+        MCPLaunchConfiguration launchConfig = createLaunchConfiguration();
         MCPRuntimeServer runtimeServer = mock(MCPRuntimeServer.class);
         Runtime runtime = mock(Runtime.class);
         AtomicReference<Thread> shutdownHook = new AtomicReference<>();
@@ -91,10 +91,10 @@ class MCPBootstrapTest {
         verifyNoMoreInteractions(runtimeServer);
     }
     
-    private MCPLaunchConfiguration createLaunchConfiguration(final boolean stdioEnabled) {
+    private MCPLaunchConfiguration createLaunchConfiguration() {
         return new MCPLaunchConfiguration(
-                new HttpTransportConfiguration(!stdioEnabled,
+                new HttpTransportConfiguration(true,
                         "127.0.0.1", false, "", 18080, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "", new OAuthIntrospectionConfiguration()),
-                new StdioTransportConfiguration(stdioEnabled), Collections.emptyMap());
+                new StdioTransportConfiguration(false), Collections.emptyMap());
     }
 }
