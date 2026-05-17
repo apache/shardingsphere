@@ -108,3 +108,48 @@ Style command:
 ```
 
 Result: exit code `0`, `0` Checkstyle violations, `0` Spotless changes needed.
+
+## Default and Opt-In Lanes
+
+Default lane:
+
+- Programmatic HTTP runtime tests that use in-process runtime fixtures.
+- LLM artifact and configuration unit tests.
+- MCP builder evaluation artifact validation.
+- No external Docker service is required unless a selected test explicitly starts one.
+
+Opt-in lanes:
+
+- Proxy/MySQL product-path lane: starts Testcontainers MySQL and embedded ShardingSphere-Proxy before HTTP MCP workflow calls.
+- STDIO lane: starts the packaged or classpath runtime over stdio and reserves stdout for MCP protocol frames.
+- Distribution lane: builds or resolves the packaged MCP distribution and verifies packaged HTTP/STDIO startup behavior.
+- LLM lane: starts Docker-owned `ollama/ollama:0.23.1` and pulls or uses `qwen3:1.7b`.
+
+## Local Prerequisites for Opt-In Lanes
+
+- Docker must be installed and running for MySQL, Proxy, distribution smoke with runtime containers, and LLM lanes.
+- Testcontainers must be able to pull images and allocate loopback ports.
+- The Proxy/MySQL lane must wait for MySQL readiness before JDBC or Proxy workflow calls.
+- The LLM lane must not use `MCP_LLM_BASE_URL`, `MCP_LLM_API_KEY`, or external endpoint settings as score evidence.
+- The distribution lane expects the MCP package under `distribution/mcp/target` or builds it through Maven with `-am`.
+- The STDIO lane expects the runtime config to enable stdio only, with HTTP disabled for that process.
+
+Recommended opt-in commands:
+
+```bash
+./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
+  -Dtest=HttpProductionProxyEncryptWorkflowE2ETest,HttpProductionProxyMaskWorkflowE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+```bash
+./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
+  -Dtest=PackagedDistributionSmokeE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+```bash
+./mvnw -pl test/e2e/mcp -Pllm-e2e -DskipITs -Dspotless.skip=true \
+  -Dtest=LLMSmokeE2ETest,LLMUsabilitySuiteE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=true test
+```

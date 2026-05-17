@@ -208,9 +208,9 @@ README、descriptor、capabilities 和容易被模型读取的设计文档必须
 验收标准：
 
 - 以 `next_actions` 作为主引导字段。
-- 每个 action 至少包含 `action_kind`、`reason` 和 `requires_user_approval`。
-- 调工具 action 包含 `target_tool` 和 `required_arguments`。
-- 读资源 action 包含 `target_resource` 或等价字段。
+- 每个 action 至少包含 `type`、`reason` 和 `requires_user_approval`。
+- 调工具 action 包含 `tool_name` 和 `arguments`。
+- 读资源 action 包含 `resource_uri`。
 - 问用户 action 包含 `required_inputs`。
 - `recommended_next_tool`、`suggested_next_tool` 等旧推荐字段不得继续作为兼容字段保留。
 - 实现应把旧推荐语义迁移到 `next_actions`，并删除依赖旧字段的文档、schema 和测试。

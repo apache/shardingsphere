@@ -46,6 +46,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -99,6 +100,17 @@ class MaskToolHandlerTest {
         assertThat(((List<?>) actualPayload.get("ddl_artifacts")).size(), is(0));
         assertThat(((List<?>) actualPayload.get("index_plan")).size(), is(0));
         assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).get(0)).get("sql")).contains("keep_first_n_last_m"));
+        List<String> actualResourceUris = extractResourceUris((List<?>) actualPayload.get("resources_to_read"));
+        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/algorithms"));
+        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/rules"));
+        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
+        assertThat(actualNextAction.get("type"), is("tool_call"));
+        assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
+        assertFalse((Boolean) actualNextAction.get("requires_user_approval"));
+        assertFalse(actualNextAction.containsKey("required_arguments"));
+        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("plan_id"), is("plan-1"));
+        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
     }
     
     private WorkflowContextSnapshot createSnapshot(final String planId, final String status) {
@@ -114,10 +126,13 @@ class MaskToolHandlerTest {
     
     private WorkflowContextSnapshot createDetailedSnapshot() {
         WorkflowRequest request = new WorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setSchema("public");
+        request.setTable("orders");
         request.getPrimaryAlgorithmProperties().put("first-n", "3");
         request.getPrimaryAlgorithmProperties().put("last-m", "2");
         request.getPrimaryAlgorithmProperties().put("replace-char", "*");
-        final WorkflowContextSnapshot result = createSnapshot("plan-1", "planned");
+        WorkflowContextSnapshot result = createSnapshot("plan-1", "planned");
         result.setRequest(request);
         result.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "first-n", true, false, "from", ""));
         result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders (TYPE(NAME='keep_first_n_last_m'))"));
@@ -136,6 +151,10 @@ class MaskToolHandlerTest {
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField(fieldName);
         Plugins.getMemberAccessor().set(field, target, value);
+    }
+    
+    private List<String> extractResourceUris(final List<?> resources) {
+        return resources.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {

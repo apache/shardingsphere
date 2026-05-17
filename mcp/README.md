@@ -431,6 +431,7 @@ The encrypt and mask modules are the recommended reference implementations.
 These workflow tools allow an MCP client to plan, execute, and validate encrypt or mask rules for one logical column by using natural language, structured arguments, or both.
 The goal is not to re-implement encryption inside MCP. Instead, MCP translates user intent into executable DDL, DistSQL, and validation steps for ShardingSphere-Proxy.
 The tools and resources described below are registered by the encrypt and mask feature modules through SPI; bootstrap only aggregates and publishes them to the protocol layer.
+For a condensed scorecard-oriented flow, see `.specify/specs/020-mcp-encrypt-mask-scoped-100/quickstart.md`.
 
 ### Prerequisites
 

@@ -406,6 +406,7 @@ encrypt 和 mask 模块本身就是最直接的参考实现。
 这组 workflow tool 让 MCP client 可以通过自然语言或结构化参数，对某个逻辑表的某一列规划、执行并校验加密或脱敏规则。
 它的目标不是自己实现加密，而是帮助大模型把用户意图转换成 ShardingSphere-Proxy 可执行的 DDL、DistSQL 与校验动作。
 这些 tools 与 resources 由 encrypt / mask feature 通过 SPI 注册进入 MCP，bootstrap 只负责汇总并发布到协议层。
+如果只需要面向本次评分闭环的精简流程，请看 `.specify/specs/020-mcp-encrypt-mask-scoped-100/quickstart.md`。
 
 ### 前置条件
 

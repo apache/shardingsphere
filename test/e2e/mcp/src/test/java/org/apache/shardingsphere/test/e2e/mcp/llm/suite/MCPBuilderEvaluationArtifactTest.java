@@ -23,7 +23,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 final class MCPBuilderEvaluationArtifactTest {
@@ -39,6 +42,8 @@ final class MCPBuilderEvaluationArtifactTest {
     private static final int EXPECTED_QA_PAIR_COUNT = 10;
     
     private static final int MINIMUM_QUESTION_WORDS = 24;
+    
+    private static final int MAXIMUM_ANSWER_KEY_LENGTH = 96;
     
     private static final int MINIMUM_EXPECTED_ANSWER_WORDS = 45;
     
@@ -59,6 +64,13 @@ final class MCPBuilderEvaluationArtifactTest {
             "Exact MCP method",
             "Exact tool name",
             "Exact resource URI");
+    
+    private static final List<String> DESTRUCTIVE_QUESTION_PHRASES = List.of(
+            "apply the workflow in execute mode",
+            "approve the execution",
+            "change runtime metadata",
+            "run an update statement",
+            "execute the mutation");
     
     private static final List<String> EVIDENCE_TERMS = List.of(
             "tools/list",
@@ -89,26 +101,89 @@ final class MCPBuilderEvaluationArtifactTest {
         assertEvaluationQuestions(qaPairs);
     }
     
+    @Test
+    void assertRejectsShallowEvaluationQuestion() throws Exception {
+        assertThrows(AssertionError.class, () -> assertQAPair(loadQAPair("""
+                <qa_pair id="q01" category="metadata" read_only="true">
+                  <question>Which tool lists metadata?</question>
+                  <answer>database_gateway_search_metadata</answer>
+                  <expected_answer>
+                    This answer is intentionally long enough to prove the shallow question is what fails during validation. It mentions
+                    tools/list, resources/read, and metadata evidence so that evidence counting cannot be the reason this fixture is rejected.
+                  </expected_answer>
+                  <verification>
+                    <step>Confirm the tool name is copied directly without workflow reasoning.</step>
+                    <step>Confirm the question is shorter than the minimum complex question length.</step>
+                    <step>Confirm the artifact validator rejects shallow exact-name prompts.</step>
+                  </verification>
+                </qa_pair>"""), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>()));
+    }
+    
+    @Test
+    void assertRejectsDestructiveEvaluationQuestion() throws Exception {
+        assertThrows(AssertionError.class, () -> assertQAPair(loadQAPair("""
+                <qa_pair id="q01" category="workflow" read_only="true">
+                  <question>
+                    A user wants the assistant to apply the workflow in execute mode against a runtime database before reviewing preview
+                    artifacts, then report the changed encrypt or mask rule as complete.
+                  </question>
+                  <answer>apply_workflow_execute</answer>
+                  <expected_answer>
+                    This destructive fixture should never be accepted for mcp-builder scoring. It mentions tools/list, resources/read, and
+                    approval evidence, but the question still asks the model to perform a side-effecting workflow rather than stay read-only.
+                  </expected_answer>
+                  <verification>
+                    <step>Confirm the question asks for a side-effecting workflow execution path.</step>
+                    <step>Confirm read-only scoring cannot include mutation or forged approval.</step>
+                    <step>Confirm destructive evaluation intent is rejected before model execution.</step>
+                  </verification>
+                </qa_pair>"""), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>()));
+    }
+    
+    @Test
+    void assertRejectsUnverifiableEvaluationAnswer() throws Exception {
+        assertThrows(AssertionError.class, () -> assertQAPair(loadQAPair("""
+                <qa_pair id="q01" category="metadata" read_only="true">
+                  <question>
+                    A reviewer asks for a stable metadata evidence path that combines tool discovery, resource templates, and exact
+                    ShardingSphere resource reads before any SQL is attempted.
+                  </question>
+                  <answer>it depends on what the model decides after reading the available resources</answer>
+                  <expected_answer>
+                    The narrative explanation is long enough to avoid the shallow-answer check. It cites tools/list, resources/templates/list,
+                    resources/read, metadata, and read-only evidence, but the answer key is not stable enough for string comparison.
+                  </expected_answer>
+                  <verification>
+                    <step>Confirm the answer key is a sentence instead of a canonical string.</step>
+                    <step>Confirm the expected answer narrative still contains enough evidence terms.</step>
+                    <step>Confirm unverifiable answer keys fail artifact validation.</step>
+                  </verification>
+                </qa_pair>"""), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>()));
+    }
+    
     private void assertEvaluationQuestions(final NodeList qaPairs) {
         Set<String> categories = new LinkedHashSet<>();
         Set<String> ids = new LinkedHashSet<>();
         Set<String> questions = new LinkedHashSet<>();
+        Set<String> answers = new LinkedHashSet<>();
         for (int i = 0; i < qaPairs.getLength(); i++) {
             Element each = (Element) qaPairs.item(i);
-            assertQAPair(each, ids, categories, questions);
+            assertQAPair(each, ids, categories, questions, answers);
         }
         assertTrue(categories.containsAll(REQUIRED_CATEGORIES));
     }
     
-    private void assertQAPair(final Element qaPair, final Set<String> ids, final Set<String> categories, final Set<String> questions) {
+    private void assertQAPair(final Element qaPair, final Set<String> ids, final Set<String> categories, final Set<String> questions, final Set<String> answers) {
         assertTrue(ids.add(qaPair.getAttribute("id")));
         categories.add(qaPair.getAttribute("category"));
         assertThat(qaPair.getAttribute("read_only"), is("true"));
         String question = readElementText(qaPair, "question");
+        String answer = readElementText(qaPair, "answer");
         String expectedAnswer = readElementText(qaPair, "expected_answer");
         assertQuestion(question, questions);
+        assertAnswer(answer, answers);
         assertExpectedAnswer(expectedAnswer);
-        assertVerification(qaPair, question, expectedAnswer);
+        assertVerification(qaPair, question, answer, expectedAnswer);
     }
     
     private void assertQuestion(final String question, final Set<String> questions) {
@@ -117,6 +192,17 @@ final class MCPBuilderEvaluationArtifactTest {
         for (String each : SHALLOW_QUESTION_PHRASES) {
             assertFalse(question.contains(each), () -> "Question must not ask for shallow exact names: " + question);
         }
+        String lowerQuestion = question.toLowerCase();
+        for (String each : DESTRUCTIVE_QUESTION_PHRASES) {
+            assertFalse(lowerQuestion.contains(each), () -> "Question must not require side effects: " + question);
+        }
+    }
+    
+    private void assertAnswer(final String answer, final Set<String> answers) {
+        assertTrue(answers.add(answer));
+        assertTrue(answer.length() <= MAXIMUM_ANSWER_KEY_LENGTH, () -> "Answer key is too long for string comparison: " + answer);
+        assertTrue(answer.matches("[a-z0-9_:/|.\\-]+"), () -> "Answer key must be canonical and string-comparable: " + answer);
+        assertTrue(answer.contains("|"), () -> "Answer key must encode the required evidence sequence: " + answer);
     }
     
     private void assertExpectedAnswer(final String expectedAnswer) {
@@ -125,7 +211,7 @@ final class MCPBuilderEvaluationArtifactTest {
         assertTrue(expectedAnswer.contains("."), () -> "Expected answer must contain narrative evidence: " + expectedAnswer);
     }
     
-    private void assertVerification(final Element qaPair, final String question, final String expectedAnswer) {
+    private void assertVerification(final Element qaPair, final String question, final String answer, final String expectedAnswer) {
         Element verification = readSingleElement(qaPair, "verification");
         NodeList steps = verification.getElementsByTagName("step");
         assertTrue(steps.getLength() >= MINIMUM_VERIFICATION_STEPS, "Verification must contain multiple review steps.");
@@ -135,7 +221,7 @@ final class MCPBuilderEvaluationArtifactTest {
             assertTrue(stepTexts.add(stepText), () -> "Duplicate verification step: " + stepText);
             assertTrue(countWords(stepText) >= MINIMUM_STEP_WORDS, () -> "Verification step is too shallow: " + stepText);
         }
-        assertTrue(countEvidenceTerms(question + " " + expectedAnswer + " " + verification.getTextContent()) >= MINIMUM_EVIDENCE_TERMS,
+        assertTrue(countEvidenceTerms(question + " " + answer + " " + expectedAnswer + " " + verification.getTextContent()) >= MINIMUM_EVIDENCE_TERMS,
                 "Evaluation question must contain multiple protocol or ShardingSphere evidence terms.");
     }
     
@@ -158,12 +244,20 @@ final class MCPBuilderEvaluationArtifactTest {
     }
     
     private Document loadDocument() throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         try (InputStream inputStream = MCPBuilderEvaluationArtifactTest.class.getResourceAsStream("/llm/evaluation/mcp-builder-evaluation.xml")) {
             assertNotNull(inputStream);
-            return factory.newDocumentBuilder().parse(inputStream);
+            return loadDocument(inputStream);
         }
+    }
+    
+    private Element loadQAPair(final String xml) throws Exception {
+        return (Element) loadDocument(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))).getDocumentElement();
+    }
+    
+    private Document loadDocument(final InputStream inputStream) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        return factory.newDocumentBuilder().parse(inputStream);
     }
     
     private String readElementText(final Element parent, final String tagName) {

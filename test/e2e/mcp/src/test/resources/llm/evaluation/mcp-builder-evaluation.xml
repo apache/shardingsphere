@@ -24,6 +24,7 @@
       A new MCP client is attached to a ShardingSphere MCP server with no cached tool names, resource URIs, or schema hints. Describe the
       read-only discovery sequence it should use before deciding whether an encrypt or mask workflow is possible.
     </question>
+    <answer>tools/list|resources/templates/list|resources/read</answer>
     <expected_answer>
       The client should discover the server surface before choosing any workflow action. It should call tools/list to inspect callable tools
       and their input schemas, call resources/templates/list to learn the parameterized ShardingSphere metadata URI patterns, and read safe
@@ -41,6 +42,7 @@
       An AI assistant needs to inspect a logical table but the user only supplied a database name and a partial table name. Explain how it should
       combine MCP resource discovery with ShardingSphere metadata search without relying on placeholder text from tool descriptions.
     </question>
+    <answer>resources/templates/list|database_gateway_search_metadata|resources/read</answer>
     <expected_answer>
       The assistant should use resources/templates/list to learn valid URI templates, use shardingsphere://databases or metadata search to
       disambiguate the logical database and schema, and then read the exact table resource with resources/read when a concrete URI is known.
@@ -58,6 +60,7 @@
       A release reviewer asks the model to prove that the orders table exists in the transactional logical database rather than an analytics
       snapshot. Describe the safest MCP evidence path the model should follow before it runs a count query.
     </question>
+    <answer>shardingsphere://databases|metadata_resource|database_gateway_execute_query</answer>
     <expected_answer>
       The model should read shardingsphere://databases to enumerate logical databases, inspect the selected schema and table resource for the
       transactional database, and use database_gateway_search_metadata when the table name is ambiguous. Only after the table and schema are
@@ -75,6 +78,7 @@
       An operator asks for current order counts and an execution explanation on a configured runtime database. Explain how the model should
       answer using MCP while preserving a read-only SQL boundary.
     </question>
+    <answer>metadata_resources|database_gateway_execute_query|no_update_or_apply</answer>
     <expected_answer>
       The model should confirm the target database and schema through metadata resources, then call database_gateway_execute_query for SELECT
       or supported EXPLAIN style statements with a bounded max_rows value. It should report the structured result evidence instead of guessing
@@ -92,6 +96,7 @@
       A user wants to review an UPDATE statement but has not approved any data change. Describe the MCP-safe path that lets the model explain
       the side-effect scope and then independently verify that visible data is unchanged.
     </question>
+    <answer>execute_update_preview|execute_query_verify|no_execute_without_approval</answer>
     <expected_answer>
       The model should treat the UPDATE as a preview-only operation by using database_gateway_execute_update with execution_mode set to preview
       and approved_by_user left false or absent. It should explain the planned side-effect scope from the preview response, then run an
@@ -109,6 +114,7 @@
       A model has created a mask workflow plan and needs reviewable artifacts for manual execution, not a database change through MCP. Explain
       the sequence it should use with plan identifiers, approval gates, and validation timing.
     </question>
+    <answer>plan_id|apply_workflow_preview_or_manual|validate_after_external_execution</answer>
     <expected_answer>
       The model should keep the plan_id returned by database_gateway_plan_mask_rule, call database_gateway_apply_workflow only in a preview or
       manual-artifact export mode unless explicit user approval is present, and report the returned DistSQL or review artifact for the human
@@ -126,6 +132,7 @@
       A workflow was executed in a controlled environment and the reviewer asks the model to prove the outcome against current metadata. Describe
       the validation evidence path and the conditions under which the model must report an incomplete workflow instead of success.
     </question>
+    <answer>validate_workflow|live_metadata_check|report_failed_layer</answer>
     <expected_answer>
       The model should call database_gateway_validate_workflow with the relevant plan_id or workflow context after the controlled execution has
       occurred, then compare the validation layers against live metadata resources and any independent read-only query evidence. If required
@@ -143,6 +150,7 @@
       A user asks for an encrypt rule for a logical column that may need cipher, assisted query, and like query columns. Explain how the model
       should build a reviewable plan without applying changes to the runtime database.
     </question>
+    <answer>metadata|encrypt_algorithms|plan_encrypt_rule|no_apply_execute</answer>
     <expected_answer>
       The model should inspect the table and column metadata first, use completion or descriptor information to choose supported encrypt
       algorithms, and call database_gateway_plan_encrypt_rule with explicit logical, cipher, assisted query, and like query intent where needed.
@@ -160,6 +168,7 @@
       A user asks for a mask rule on a column but gives an algorithm name that may be unsupported and a field semantic that may be incomplete.
       Describe how the model should recover while staying read-only.
     </question>
+    <answer>mask_descriptors_or_completion|plan_mask_rule_when_complete|return_recovery_next_actions</answer>
     <expected_answer>
       The model should inspect mask descriptors and algorithm completion data before planning, then call database_gateway_plan_mask_rule only
       when the table, column, algorithm, and field semantics are specific enough. If the algorithm or semantic details are missing, it should
@@ -177,6 +186,7 @@
       During Streamable HTTP integration, an unauthenticated client receives a 401 response before any MCP tool call succeeds. Explain how the
       client should use the authorization challenge and what it must avoid doing with tokens.
     </question>
+    <answer>www-authenticate|resource_metadata|no_token_arguments_or_logs</answer>
     <expected_answer>
       The client should treat the 401 as a fail-closed authorization boundary, inspect the WWW-Authenticate challenge, and use the
       resource_metadata parameter to locate OAuth protected resource metadata before retrying through the proper authorization flow. It should
