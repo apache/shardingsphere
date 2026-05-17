@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -133,18 +134,27 @@ public final class InsertClauseShardingConditionEngine {
             if (!shardingColumn.isPresent()) {
                 continue;
             }
-            if (each instanceof SimpleExpressionSegment) {
-                List<Integer> parameterMarkerIndexes = each instanceof ParameterMarkerExpressionSegment
-                        ? Collections.singletonList(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex())
+            ExpressionSegment value = unwrapTypeCast(each);
+            if (value instanceof SimpleExpressionSegment) {
+                List<Integer> parameterMarkerIndexes = value instanceof ParameterMarkerExpressionSegment
+                        ? Collections.singletonList(((ParameterMarkerExpressionSegment) value).getParameterMarkerIndex())
                         : Collections.emptyList();
-                Object shardingValue = getShardingValue((SimpleExpressionSegment) each, params);
+                Object shardingValue = getShardingValue((SimpleExpressionSegment) value, params);
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(shardingValue),
                         parameterMarkerIndexes));
-            } else if (each instanceof CommonExpressionSegment) {
-                generateShardingCondition((CommonExpressionSegment) each, result, shardingColumn.get(), tableName);
-            } else if (ExpressionConditionUtils.isNowExpression(each)) {
+            } else if (value instanceof CommonExpressionSegment) {
+                generateShardingCondition((CommonExpressionSegment) value, result, shardingColumn.get(), tableName);
+            } else if (ExpressionConditionUtils.isNowExpression(value)) {
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(timestampServiceRule.getTimestamp())));
             }
+        }
+        return result;
+    }
+    
+    private static ExpressionSegment unwrapTypeCast(final ExpressionSegment expressionSegment) {
+        ExpressionSegment result = expressionSegment;
+        while (result instanceof TypeCastExpression) {
+            result = ((TypeCastExpression) result).getExpression();
         }
         return result;
     }

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -182,6 +183,42 @@ class InsertClauseShardingConditionEngineTest {
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
         when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(1));
+        assertThat(shardingConditions.size(), is(1));
+        assertThat(shardingConditions.get(0).getValues().size(), is(1));
+        assertThat(shardingConditions.get(0).getValues().get(0).getParameterMarkerIndexes(), is(Collections.singletonList(0)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastParameterMarker() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(7), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(7));
+        assertThat(shardingConditions.size(), is(1));
+        assertThat(shardingConditions.get(0).getValues().size(), is(1));
+        assertThat(shardingConditions.get(0).getValues().get(0).getParameterMarkerIndexes(), is(Collections.singletonList(0)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastLiteral() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "1::int4", new LiteralExpressionSegment(0, 10, 1), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.emptyList(), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
+        assertThat(shardingConditions.size(), is(1));
+        assertThat(shardingConditions.get(0).getValues().size(), is(1));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithNestedTypeCastParameterMarker() {
+        TypeCastExpression inner = new TypeCastExpression(0, 5, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        TypeCastExpression outer = new TypeCastExpression(0, 12, "?::int4::text", inner, "text");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(outer), Collections.singletonList(42), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(42));
         assertThat(shardingConditions.size(), is(1));
         assertThat(shardingConditions.get(0).getValues().size(), is(1));
         assertThat(shardingConditions.get(0).getValues().get(0).getParameterMarkerIndexes(), is(Collections.singletonList(0)));
