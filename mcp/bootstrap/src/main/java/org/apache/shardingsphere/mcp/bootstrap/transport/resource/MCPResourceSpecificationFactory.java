@@ -65,18 +65,6 @@ public final class MCPResourceSpecificationFactory {
                 .map(each -> new SyncResourceSpecification(createResource(each), this::handleReadResource)).collect(Collectors.toList());
     }
     
-    /**
-     * Create MCP resource template specifications.
-     *
-     * @return resource template specifications
-     */
-    public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
-        return resourceDescriptors.stream()
-                .filter(MCPResourceDescriptor::isTemplated)
-                .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource))
-                .collect(Collectors.toList());
-    }
-    
     private McpSchema.Resource createResource(final MCPResourceDescriptor descriptor) {
         McpSchema.Resource.Builder result = McpSchema.Resource.builder()
                 .uri(descriptor.getUriTemplate())
@@ -91,6 +79,17 @@ public final class MCPResourceSpecificationFactory {
             result.meta(descriptor.getMeta());
         }
         return result.build();
+    }
+    
+    /**
+     * Create MCP resource template specifications.
+     *
+     * @return resource template specifications
+     */
+    public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
+        return resourceDescriptors.stream()
+                .filter(MCPResourceDescriptor::isTemplated)
+                .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource)).collect(Collectors.toList());
     }
     
     private McpSchema.ResourceTemplate createResourceTemplate(final MCPResourceDescriptor descriptor) {
