@@ -20,6 +20,7 @@
 1. Proxy: Fix primary key metadata loss for aliased columns in mysql prepare probe path - [#38517](https://github.com/apache/shardingsphere/pull/38517)
 1. Pipeline: Fix MySQL JSON literal decoding in migration - [#38622](https://github.com/apache/shardingsphere/pull/38622)
 1. Pipeline: Fix MySQL zero-value temporal binlog decoding with fractional precision in migration - [#35531](https://github.com/apache/shardingsphere/issues/35531)
+1. Sharding: Support ORDER BY MySQL VARBINARY column by wrapping byte[] values in a Comparable adapter - [#38699](https://github.com/apache/shardingsphere/pull/38699)
 
 ### Enhancements
 
