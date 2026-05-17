@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.MCPDescription;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.MCPMetadataKey;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -40,7 +42,7 @@ public final class YamlMCPToolDescriptor {
     @NotBlank(message = "is required")
     private String title;
     
-    @NotBlank(message = "is required")
+    @MCPDescription
     private String description;
     
     @NotEmpty(message = "is required")
@@ -57,5 +59,5 @@ public final class YamlMCPToolDescriptor {
     private YamlMCPToolRuntimeDescriptor runtime;
     
     @NotNull(message = "is required")
-    private Map<String, Object> meta = new LinkedHashMap<>();
+    private Map<@MCPMetadataKey String, Object> meta = new LinkedHashMap<>();
 }

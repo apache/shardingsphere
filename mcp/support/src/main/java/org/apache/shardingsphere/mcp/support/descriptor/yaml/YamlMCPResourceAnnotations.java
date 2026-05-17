@@ -19,8 +19,11 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.ISOOffsetDateTime;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.MCPResourcePriority;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,9 +36,11 @@ import java.util.List;
 public final class YamlMCPResourceAnnotations {
     
     @Size(min = 1, message = "must not be empty")
-    private List<@NotBlank(message = "is required") String> audience = new LinkedList<>();
+    private List<@NotBlank(message = "is required") @Pattern(regexp = "user|assistant", message = "must be an MCP role") String> audience = new LinkedList<>();
     
+    @MCPResourcePriority
     private Double priority;
     
+    @ISOOffsetDateTime
     private String lastModified;
 }

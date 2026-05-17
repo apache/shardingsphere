@@ -15,32 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.descriptor.yaml;
+package org.apache.shardingsphere.mcp.support.descriptor.yaml.validator;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.MCPDescription;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolAnnotations;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
 /**
- * YAML MCP URI variable descriptor.
+ * Valid MCP tool annotations validator.
  */
-@Getter
-@Setter
-public final class YamlMCPUriVariableDescriptor {
+public final class ValidMCPToolAnnotationsValidator implements ConstraintValidator<ValidMCPToolAnnotations, YamlMCPToolAnnotations> {
     
-    @NotBlank(message = "is required")
-    private String name;
-    
-    @NotBlank(message = "is required")
-    private String title;
-    
-    @MCPDescription
-    private String description;
-    
-    private boolean required;
-    
-    @NotBlank(message = "is required")
-    private String scope;
+    @Override
+    public boolean isValid(final YamlMCPToolAnnotations value, final ConstraintValidatorContext context) {
+        return null == value || !Boolean.TRUE.equals(value.getReadOnlyHint()) || !Boolean.TRUE.equals(value.getDestructiveHint());
+    }
 }

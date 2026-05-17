@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.ValidMCPToolAnnotations;
 
 import javax.validation.constraints.NotNull;
 
@@ -27,6 +28,7 @@ import javax.validation.constraints.NotNull;
  */
 @Getter
 @Setter
+@ValidMCPToolAnnotations
 public final class YamlMCPToolAnnotations {
     
     private String title;

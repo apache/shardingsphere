@@ -15,32 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.descriptor.yaml;
+package org.apache.shardingsphere.mcp.support.descriptor.yaml.validator;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.MCPDescription;
-
-import javax.validation.constraints.NotBlank;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
 /**
- * YAML MCP URI variable descriptor.
+ * MCP resource priority validator.
  */
-@Getter
-@Setter
-public final class YamlMCPUriVariableDescriptor {
+public final class MCPResourcePriorityValidator implements ConstraintValidator<MCPResourcePriority, Double> {
     
-    @NotBlank(message = "is required")
-    private String name;
-    
-    @NotBlank(message = "is required")
-    private String title;
-    
-    @MCPDescription
-    private String description;
-    
-    private boolean required;
-    
-    @NotBlank(message = "is required")
-    private String scope;
+    @Override
+    public boolean isValid(final Double value, final ConstraintValidatorContext context) {
+        if (null == value) {
+            return true;
+        }
+        if (!Double.isFinite(value)) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("must be finite").addConstraintViolation();
+            return false;
+        }
+        return value >= 0D && value <= 1D;
+    }
 }

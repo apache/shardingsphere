@@ -19,10 +19,14 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.MCPMetadataKey;
+import org.hibernate.validator.constraints.UniqueElements;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -37,17 +41,20 @@ import java.util.Map;
 public final class YamlMCPCompletionTargetDescriptor {
     
     @NotBlank(message = "is required")
+    @Pattern(regexp = "prompt|resource", message = "must be prompt or resource")
     private String referenceType;
     
     @NotBlank(message = "is required")
     private String reference;
     
     @NotEmpty(message = "is required")
-    private Collection<String> arguments = new LinkedList<>();
+    @UniqueElements(message = "must not contain duplicate values")
+    private Collection<@NotBlank(message = "is required") String> arguments = new LinkedList<>();
     
+    @Max(value = 100, message = "must not exceed 100")
     @PositiveOrZero(message = "must be zero or positive")
     private int maxValues;
     
     @NotNull(message = "is required")
-    private Map<String, Object> meta = new LinkedHashMap<>();
+    private Map<@MCPMetadataKey String, Object> meta = new LinkedHashMap<>();
 }

@@ -19,6 +19,10 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.MCPDescription;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.MCPMetadataKey;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.MCPPromptGuidanceMeta;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.UniqueMCPPromptArgumentNames;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -41,9 +45,10 @@ public final class YamlMCPPromptDescriptor {
     @NotBlank(message = "is required")
     private String title;
     
-    @NotBlank(message = "is required")
+    @MCPDescription
     private String description;
     
+    @UniqueMCPPromptArgumentNames
     private Collection<@Valid YamlMCPPromptArgumentDescriptor> arguments = new LinkedList<>();
     
     @NotNull(message = "is required")
@@ -51,5 +56,6 @@ public final class YamlMCPPromptDescriptor {
     private YamlMCPPromptBindingDescriptor binding;
     
     @NotNull(message = "is required")
-    private Map<String, Object> meta = new LinkedHashMap<>();
+    @MCPPromptGuidanceMeta
+    private Map<@MCPMetadataKey String, Object> meta = new LinkedHashMap<>();
 }

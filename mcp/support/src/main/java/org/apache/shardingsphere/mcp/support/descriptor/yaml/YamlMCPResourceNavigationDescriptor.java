@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.MCPDescription;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Collection;
@@ -37,10 +39,12 @@ public final class YamlMCPResourceNavigationDescriptor {
     @NotBlank(message = "is required")
     private String to;
     
-    private Collection<String> requiredArguments = new LinkedList<>();
+    @UniqueElements(message = "must not contain duplicate values")
+    private Collection<@NotBlank(message = "is required") String> requiredArguments = new LinkedList<>();
     
-    private Collection<String> carriedArguments = new LinkedList<>();
+    @UniqueElements(message = "must not contain duplicate values")
+    private Collection<@NotBlank(message = "is required") String> carriedArguments = new LinkedList<>();
     
-    @NotBlank(message = "is required")
+    @MCPDescription
     private String description;
 }

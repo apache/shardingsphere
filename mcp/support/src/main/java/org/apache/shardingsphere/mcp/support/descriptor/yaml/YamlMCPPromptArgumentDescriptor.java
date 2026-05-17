@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.MCPDescription;
 
 import javax.validation.constraints.NotBlank;
 
@@ -35,7 +36,7 @@ public final class YamlMCPPromptArgumentDescriptor {
     @NotBlank(message = "is required")
     private String title;
     
-    @NotBlank(message = "is required")
+    @MCPDescription
     private String description;
     
     private boolean required;

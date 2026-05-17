@@ -20,14 +20,15 @@ package org.apache.shardingsphere.mcp.core.resource.handler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
-import org.apache.shardingsphere.mcp.core.handler.MCPHandlerLoader;
 import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
 
 import java.util.ArrayList;
@@ -53,7 +54,8 @@ public final class ResourceHandlerRegistry {
     private static final Collection<MCPResourceDescriptor> SUPPORTED_RESOURCE_DESCRIPTORS;
     
     static {
-        REGISTERED_RESOURCES = createRegisteredResources(MCPHandlerLoader.loadResourceHandlers());
+        REGISTERED_RESOURCES = createRegisteredResources(
+                ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class).stream().flatMap(each -> each.getResourceHandlers().stream()).collect(Collectors.toList()));
         validateRegisteredResources();
         SUPPORTED_RESOURCES = REGISTERED_RESOURCES.keySet().stream().map(MCPUriPattern::getPattern).collect(Collectors.toList());
         SUPPORTED_RESOURCE_DESCRIPTORS = REGISTERED_RESOURCES.values().stream().map(MCPResourceHandler::getResourceDescriptor).collect(Collectors.toList());

@@ -66,14 +66,6 @@ class MCPDescriptorCatalogLoaderTest {
     }
     
     @Test
-    void assertValidateRejectsLargeCompletionMaxValues() {
-        MCPDescriptorCatalog actual = new MCPDescriptorCatalog(List.of(), List.of(createResourceTemplateDescriptor()), List.of(createResourceExtensionDescriptor()), List.of(), List.of(), List.of(),
-                List.of(new MCPCompletionTargetDescriptor("resource", "shardingsphere://databases/{database}", List.of("database"), 101, Map.of())), List.of(), List.of());
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> MCPDescriptorCatalogValidator.validate(actual));
-        assertThat(exception.getMessage(), is("Completion target `resource:shardingsphere://databases/{database}` maxValues must not exceed 100."));
-    }
-    
-    @Test
     void assertValidateRejectsUndeclaredPromptCompletionArgument() {
         MCPDescriptorCatalog actual = new MCPDescriptorCatalog(List.of(), List.of(createResourceTemplateDescriptor()), List.of(createResourceExtensionDescriptor()), List.of(),
                 List.of(createPromptDescriptor()), List.of(new MCPPromptTemplateBinding("inspect_metadata", "META-INF/shardingsphere-mcp/prompts/inspect-metadata.md")),

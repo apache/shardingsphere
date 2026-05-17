@@ -40,36 +40,6 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     @Test
-    void assertValidateRejectsInvalidResourceAudience() {
-        assertValidationError(createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of("model"), null, null))), List.of()),
-                "Resource `shardingsphere://capabilities` annotations audience `model` is not an MCP role.");
-    }
-    
-    @Test
-    void assertValidateRejectsInvalidResourcePriorityRange() {
-        assertValidationError(createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of(), 1.1D, null))), List.of()),
-                "Resource `shardingsphere://capabilities` annotations priority must be between 0.0 and 1.0.");
-    }
-    
-    @Test
-    void assertValidateRejectsInvalidResourcePriorityValue() {
-        assertValidationError(createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of(), Double.NaN, null))), List.of()),
-                "Resource `shardingsphere://capabilities` annotations priority must be finite.");
-    }
-    
-    @Test
-    void assertValidateRejectsInvalidResourceLastModified() {
-        assertValidationError(createCatalog(List.of(createResourceDescriptor(new MCPResourceAnnotations(List.of(), null, "2026-05-13T00:00:00"))), List.of()),
-                "Resource `shardingsphere://capabilities` annotations lastModified must be an ISO 8601 timestamp with an explicit offset or UTC marker.");
-    }
-    
-    @Test
-    void assertValidateRejectsContradictoryToolAnnotations() {
-        assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(new MCPToolAnnotations("Test Tool", true, true, true, true)))),
-                "Tool `database_gateway_test_tool` annotations cannot be both read-only and destructive.");
-    }
-    
-    @Test
     void assertValidateScopedProtocolNonGoalFieldsAreNotRequired() {
         assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createCatalog(
                 List.of(createResourceDescriptor(MCPResourceAnnotations.EMPTY)),
