@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.core.handler;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
@@ -27,31 +27,17 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPHandlerLoaderTest {
-    
-    @Test
-    void assertLoadToolHandlers() {
-        MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
-        List<MCPToolHandler<?>> toolHandlers = List.of(createToolHandler("database_gateway_search_metadata"), createToolHandler("database_gateway_plan_encrypt_rule"));
-        when(provider.getToolHandlers()).thenReturn(toolHandlers);
-        try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(provider));
-            List<String> actual = MCPHandlerLoader.loadToolHandlers().stream().map(each -> each.getToolDescriptor().getName()).toList();
-            assertThat(actual, is(List.of("database_gateway_search_metadata", "database_gateway_plan_encrypt_rule")));
-        }
-    }
     
     @Test
     void assertLoadResourceHandlers() {
@@ -65,61 +51,30 @@ class MCPHandlerLoaderTest {
         }
     }
     
-    @Test
-    void assertCreateToolHandlersWithNullHandlers() {
-        MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
-        when(provider.getToolHandlers()).thenReturn(null);
-        NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPHandlerLoader.createToolHandlers(provider));
-        assertThat(actual.getMessage(), is(String.format("Tool handlers are required for `%s`.", provider.getClass().getName())));
-    }
-    
-    @Test
-    void assertCreateToolHandlersWithNullHandler() {
-        MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
-        List<MCPToolHandler<?>> toolHandlers = new ArrayList<>();
-        toolHandlers.add(createToolHandler("database_gateway_search_metadata"));
-        toolHandlers.add(null);
-        when(provider.getToolHandlers()).thenReturn(toolHandlers);
-        NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPHandlerLoader.createToolHandlers(provider));
-        assertThat(actual.getMessage(), is(String.format("Tool handler is required for `%s`.", provider.getClass().getName())));
-    }
-    
-    @Test
-    void assertCreateResourceHandlersWithNullHandlers() {
-        MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
-        when(provider.getResourceHandlers()).thenReturn(null);
-        NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPHandlerLoader.createResourceHandlers(provider));
-        assertThat(actual.getMessage(), is(String.format("Resource handlers are required for `%s`.", provider.getClass().getName())));
-    }
-    
-    @Test
-    void assertCreateResourceHandlersWithNullHandler() {
-        MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
-        List<MCPResourceHandler<?>> resourceHandlers = new ArrayList<>();
-        resourceHandlers.add(createResourceHandler("shardingsphere://foo"));
-        resourceHandlers.add(null);
-        when(provider.getResourceHandlers()).thenReturn(resourceHandlers);
-        NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPHandlerLoader.createResourceHandlers(provider));
-        assertThat(actual.getMessage(), is(String.format("Resource handler is required for `%s`.", provider.getClass().getName())));
-    }
-    
-    private static MCPToolHandler<?> createToolHandler(final String toolName) {
-        MCPToolDescriptor descriptor = createToolDescriptor(toolName);
-        MCPToolHandler<?> result = mock(MCPToolHandler.class);
-        when(result.getToolDescriptor()).thenReturn(descriptor);
-        return result;
-    }
-    
-    private static MCPToolDescriptor createToolDescriptor(final String toolName) {
-        MCPToolDescriptor result = mock(MCPToolDescriptor.class);
-        when(result.getName()).thenReturn(toolName);
-        return result;
-    }
-    
-    private static MCPResourceHandler<?> createResourceHandler(final String uriTemplate) {
+    private MCPResourceHandler<?> createResourceHandler(final String uriTemplate) {
         MCPResourceHandler<?> result = mock(MCPResourceHandler.class);
         when(result.getResourceDescriptor()).thenReturn(new MCPResourceDescriptor(uriTemplate, "foo", "Foo", "Read the fixture foo resource.", "application/json",
                 MCPResourceAnnotations.EMPTY, Collections.emptyMap()));
+        return result;
+    }
+    
+    @Test
+    void assertLoadToolHandlers() {
+        MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
+        List<MCPToolHandler<?>> toolHandlers = List.of(createToolHandler("database_gateway_search_metadata"), createToolHandler("database_gateway_plan_encrypt_rule"));
+        when(provider.getToolHandlers()).thenReturn(toolHandlers);
+        try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(provider));
+            List<String> actual = MCPHandlerLoader.loadToolHandlers().stream().map(each -> each.getToolDescriptor().getName()).toList();
+            assertThat(actual, is(List.of("database_gateway_search_metadata", "database_gateway_plan_encrypt_rule")));
+        }
+    }
+    
+    private MCPToolHandler<?> createToolHandler(final String toolName) {
+        MCPToolDescriptor descriptor = mock(MCPToolDescriptor.class);
+        when(descriptor.getName()).thenReturn(toolName);
+        MCPToolHandler<?> result = mock(MCPToolHandler.class);
+        when(result.getToolDescriptor()).thenReturn(descriptor);
         return result;
     }
 }

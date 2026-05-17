@@ -20,13 +20,13 @@ package org.apache.shardingsphere.mcp.core.handler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * MCP handler loader.
@@ -35,44 +35,34 @@ import java.util.Objects;
 public final class MCPHandlerLoader {
     
     /**
-     * Load tool handlers from MCP handler providers.
-     *
-     * @return tool handlers
-     */
-    public static Collection<MCPToolHandler<?>> loadToolHandlers() {
-        Collection<MCPToolHandler<?>> result = new LinkedList<>();
-        for (MCPHandlerProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)) {
-            result.addAll(createToolHandlers(each));
-        }
-        return result;
-    }
-    
-    /**
      * Load resource handlers from MCP handler providers.
      *
      * @return resource handlers
      */
     public static Collection<MCPResourceHandler<?>> loadResourceHandlers() {
-        Collection<MCPResourceHandler<?>> result = new LinkedList<>();
-        for (MCPHandlerProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)) {
-            result.addAll(createResourceHandlers(each));
-        }
-        return result;
+        return ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class).stream().flatMap(each -> createResourceHandlers(each).stream()).collect(Collectors.toList());
     }
     
-    static Collection<MCPToolHandler<?>> createToolHandlers(final MCPHandlerProvider provider) {
-        Collection<MCPToolHandler<?>> handlers = Objects.requireNonNull(provider.getToolHandlers(),
-                () -> String.format("Tool handlers are required for `%s`.", provider.getClass().getName()));
-        handlers.forEach(each -> Objects.requireNonNull(each,
-                () -> String.format("Tool handler is required for `%s`.", provider.getClass().getName())));
-        return handlers;
-    }
-    
-    static Collection<MCPResourceHandler<?>> createResourceHandlers(final MCPHandlerProvider provider) {
+    private static Collection<MCPResourceHandler<?>> createResourceHandlers(final MCPHandlerProvider provider) {
         Collection<MCPResourceHandler<?>> handlers = Objects.requireNonNull(provider.getResourceHandlers(),
                 () -> String.format("Resource handlers are required for `%s`.", provider.getClass().getName()));
         handlers.forEach(each -> Objects.requireNonNull(each,
                 () -> String.format("Resource handler is required for `%s`.", provider.getClass().getName())));
+        return handlers;
+    }
+    
+    /**
+     * Load tool handlers from MCP handler providers.
+     *
+     * @return tool handlers
+     */
+    public static Collection<MCPToolHandler<?>> loadToolHandlers() {
+        return ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class).stream().flatMap(each -> createToolHandlers(each).stream()).collect(Collectors.toList());
+    }
+    
+    private static Collection<MCPToolHandler<?>> createToolHandlers(final MCPHandlerProvider provider) {
+        Collection<MCPToolHandler<?>> handlers = Objects.requireNonNull(provider.getToolHandlers(), () -> String.format("Tool handlers are required for `%s`.", provider.getClass().getName()));
+        handlers.forEach(each -> Objects.requireNonNull(each, () -> String.format("Tool handler is required for `%s`.", provider.getClass().getName())));
         return handlers;
     }
 }
