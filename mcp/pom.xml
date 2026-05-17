@@ -33,6 +33,7 @@
         <module>core</module>
         <module>features</module>
         <module>bootstrap</module>
+        <module>registry</module>
     </modules>
     
     <properties>
