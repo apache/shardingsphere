@@ -53,7 +53,8 @@ Notes:
   `transport.http.scopesSupported`, `transport.http.protectedResource`, `transport.http.oauthIntrospection.endpoint`, `transport.http.oauthIntrospection.clientId`,
   `transport.http.oauthIntrospection.clientSecret`, `transport.http.oauthIntrospection.expectedIssuer`, `transport.http.oauthIntrospection.cacheTtlMillis`,
   `transport.stdio.enabled`, and all runtime database fields must be declared with supported keys only.
-- `transport.http.allowedOrigins`, `transport.http.accessToken`, `transport.http.oauthIntrospection` string fields, HTTP authorization metadata fields, and runtime database fields support simple `${ENV_NAME}` placeholders for deployment secrets such as JDBC credentials.
+- MCP YAML values are explicit. Put deployment-specific secrets such as HTTP tokens and JDBC credentials in a protected custom configuration file,
+  then select that file with `SHARDINGSPHERE_MCP_CONFIG` or a startup script argument.
 - Exactly one transport must be enabled per process. The packaged sample configuration enables HTTP only.
 - `bin/start.sh` and `bin\start.bat` validate the config file, runtime libraries, and Java availability before startup, create `data/`, `logs/`, and `plugins/`, then start from the package root so relative runtime paths resolve consistently.
 - If startup succeeds, the process stays running in the foreground. If it exits immediately, inspect the terminal error and `logs/mcp.log` first.

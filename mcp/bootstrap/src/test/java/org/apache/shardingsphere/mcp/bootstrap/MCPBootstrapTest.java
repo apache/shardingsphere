@@ -93,7 +93,7 @@ class MCPBootstrapTest {
     
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean stdioEnabled) {
         return new MCPLaunchConfiguration(
-                new HttpTransportConfiguration(!stdioEnabled, 
+                new HttpTransportConfiguration(!stdioEnabled,
                         "127.0.0.1", false, "", 18080, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "", new OAuthIntrospectionConfiguration()),
                 new StdioTransportConfiguration(stdioEnabled), Collections.emptyMap());
     }

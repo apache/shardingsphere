@@ -37,7 +37,7 @@ class MCPDocumentationContractTest {
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     
     @Test
-    void assertHttpDockerAndPlaceholderDocs() throws IOException {
+    void assertHttpDockerAndConfigurationDocs() throws IOException {
         String actualEnglish = Files.readString(resolveMCPDirectory().resolve("README.md"));
         String actualChinese = Files.readString(resolveMCPDirectory().resolve("README_ZH.md"));
         assertDocumentationIncludesRuntimeSafety(actualEnglish);
@@ -86,7 +86,6 @@ class MCPDocumentationContractTest {
         assertTrue(content.contains("WWW-Authenticate"));
         assertTrue(content.contains("invalid_token"));
         assertTrue(content.contains("insufficient_scope"));
-        assertTrue(content.contains("${ENV_NAME}"));
         assertTrue(content.contains("Authorization: Bearer <token>"));
         assertTrue(content.contains("MCP form elicitation"));
         assertTrue(content.contains("URL mode"));

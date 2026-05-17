@@ -43,6 +43,14 @@ public final class MCPHandlerContexts {
                 () -> new IllegalArgumentException(String.format("Unsupported handler context type `%s` for `%s`.", getContextTypeName(contextType), handlerType.getName())));
     }
     
+    private static boolean isSupportedContextType(final Class<?> contextType) {
+        return MCPServiceHandlerContext.class == contextType || MCPDatabaseHandlerContext.class == contextType || MCPWorkflowHandlerContext.class == contextType;
+    }
+    
+    private static String getContextTypeName(final Class<?> contextType) {
+        return null == contextType ? "null" : contextType.getName();
+    }
+    
     /**
      * Resolve request scope as required handler context.
      *
@@ -55,13 +63,5 @@ public final class MCPHandlerContexts {
     public static <T extends MCPHandlerContext> T resolve(final MCPRequestScope requestScope, final Class<T> contextType, final Class<?> handlerType) {
         validateContextType(contextType, handlerType);
         return contextType.cast(requestScope);
-    }
-    
-    private static boolean isSupportedContextType(final Class<?> contextType) {
-        return MCPServiceHandlerContext.class == contextType || MCPDatabaseHandlerContext.class == contextType || MCPWorkflowHandlerContext.class == contextType;
-    }
-    
-    private static String getContextTypeName(final Class<?> contextType) {
-        return null == contextType ? "null" : contextType.getName();
     }
 }

@@ -39,7 +39,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public final class MCPRuntimeLauncher {
     
-    private final String configPath; 
+    private final String configPath;
     
     /**
      * Launch.

@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
-
-import java.util.Map;
 
 /**
  * YAML runtime database configuration swapper.
@@ -43,27 +40,7 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
     
     @Override
     public RuntimeDatabaseConfiguration swapToObject(final YamlRuntimeDatabaseConfiguration yamlConfig) {
-        return swapToObject(yamlConfig, System.getenv());
-    }
-    
-    RuntimeDatabaseConfiguration swapToObject(final YamlRuntimeDatabaseConfiguration yamlConfig, final Map<String, String> environment) {
         MCPYamlConfigurationValidator.validate(yamlConfig, "MCP runtime database configuration");
-        return new RuntimeDatabaseConfiguration(resolveRequiredText(yamlConfig.getDatabaseType(), "databaseType", environment), resolveRequiredText(yamlConfig.getJdbcUrl(), "jdbcUrl", environment),
-                resolveExplicitText(yamlConfig.getUsername(), "username", environment), resolveExplicitText(yamlConfig.getPassword(), "password", environment),
-                resolveExplicitText(yamlConfig.getDriverClassName(), "driverClassName", environment));
-    }
-    
-    private String resolveRequiredText(final String value, final String fieldName, final Map<String, String> environment) {
-        String result = YamlEnvironmentPlaceholderUtils.resolve(value, String.format("runtime.databases[].%s", fieldName), environment);
-        ShardingSpherePreconditions.checkState(!result.isBlank(), () -> new IllegalArgumentException(formatRequiredMessage(fieldName)));
-        return result;
-    }
-    
-    private String resolveExplicitText(final String value, final String fieldName, final Map<String, String> environment) {
-        return YamlEnvironmentPlaceholderUtils.resolve(value, String.format("runtime.databases[].%s", fieldName), environment);
-    }
-    
-    private String formatRequiredMessage(final String fieldName) {
-        return String.format("Runtime database property `%s` is required.", fieldName);
+        return new RuntimeDatabaseConfiguration(yamlConfig.getDatabaseType(), yamlConfig.getJdbcUrl(), yamlConfig.getUsername(), yamlConfig.getPassword(), yamlConfig.getDriverClassName());
     }
 }

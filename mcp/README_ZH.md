@@ -53,7 +53,7 @@ bin\start.bat
   `transport.http.authorizationServers`、`transport.http.scopesSupported`、`transport.http.protectedResource`、`transport.http.oauthIntrospection.endpoint`、
   `transport.http.oauthIntrospection.clientId`、`transport.http.oauthIntrospection.clientSecret`、`transport.http.oauthIntrospection.expectedIssuer`、
   `transport.http.oauthIntrospection.cacheTtlMillis`、`transport.stdio.enabled`，以及每个 runtime database 的全部字段都只能使用受支持字段名。
-- `transport.http.allowedOrigins`、`transport.http.accessToken`、`transport.http.oauthIntrospection` 字符串字段、HTTP authorization metadata 字段和 runtime database 字段支持简单的 `${ENV_NAME}` 占位，便于部署时注入 JDBC 凭证等敏感配置。
+- MCP YAML 值均为显式配置。HTTP token、JDBC 凭证等部署相关敏感配置应写入受保护的自定义配置文件，再通过 `SHARDINGSPHERE_MCP_CONFIG` 或启动脚本参数选择该文件。
 - 每个进程必须且只能启用一种 transport。发行包内置示例配置默认只启用 HTTP。
 - `bin/start.sh` 和 `bin\start.bat` 启动前都会校验配置文件、运行时依赖和 Java 环境，并自动创建 `data/`、`logs/`、`plugins/` 目录，然后切到发行包根目录启动，确保相对路径可用。
 - 如果启动成功，进程会保持前台运行；如果立刻退出，优先查看终端报错和 `logs/mcp.log`。

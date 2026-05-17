@@ -155,7 +155,7 @@ class MCPRuntimeLauncherTest {
     @Test
     void assertCreateStdioStartupHints() {
         MCPRuntimeServer server = mock(MCPRuntimeServer.class);
-        List<String> actual = new MCPRuntimeLauncher("").createStartupHints(createLaunchConfiguration(false), server);
+        List<String> actual = new MCPRuntimeLauncher("conf/mcp-http.yaml").createStartupHints(createLaunchConfiguration(false), server);
         assertThat(actual, is(List.of(
                 "ShardingSphere MCP runtime started.",
                 "Configuration: conf/mcp-http.yaml",
@@ -171,6 +171,7 @@ class MCPRuntimeLauncherTest {
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled) {
         return new MCPLaunchConfiguration(
                 new HttpTransportConfiguration(httpEnabled, "127.0.0.1", false, "", 18080, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
-                        new OAuthIntrospectionConfiguration()), new StdioTransportConfiguration(!httpEnabled), Map.of("logic_db", mock(RuntimeDatabaseConfiguration.class)));
+                        new OAuthIntrospectionConfiguration()),
+                new StdioTransportConfiguration(!httpEnabled), Map.of("logic_db", mock(RuntimeDatabaseConfiguration.class)));
     }
 }

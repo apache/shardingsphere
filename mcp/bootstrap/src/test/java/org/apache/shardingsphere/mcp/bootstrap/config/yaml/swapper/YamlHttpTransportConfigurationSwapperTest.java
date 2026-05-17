@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -92,17 +91,10 @@ class YamlHttpTransportConfigurationSwapperTest {
     }
     
     @Test
-    void assertSwapToObjectWithAccessTokenEnvironmentPlaceholder() {
-        HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("0.0.0.0", true, "${MCP_ACCESS_TOKEN}", 18088, "/mcp"),
-                Map.of("MCP_ACCESS_TOKEN", "foo_token"));
-        assertThat(actual.getAccessToken(), is("foo_token"));
-    }
-    
-    @Test
     void assertSwapToObjectWithAllowedOrigins() {
         YamlHttpTransportConfiguration yamlConfig = createYamlConfig("0.0.0.0", true, "foo_token", 18088, "/mcp");
-        yamlConfig.setAllowedOrigins(List.of(" https://gateway.example.test ", "", "${MCP_ALLOWED_ORIGIN}"));
-        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig, Map.of("MCP_ALLOWED_ORIGIN", "https://console.example.test"));
+        yamlConfig.setAllowedOrigins(List.of(" https://gateway.example.test ", "", " https://console.example.test "));
+        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig);
         assertThat(actual.getAllowedOrigins(), is(List.of("https://gateway.example.test", "https://console.example.test")));
     }
     
@@ -111,8 +103,8 @@ class YamlHttpTransportConfigurationSwapperTest {
         YamlHttpTransportConfiguration yamlConfig = createYamlConfig("127.0.0.1", false, "foo_token", 18088, "/mcp");
         yamlConfig.setAuthorizationServers(List.of(" https://auth.example.test ", ""));
         yamlConfig.setScopesSupported(List.of("mcp.read", "mcp.write"));
-        yamlConfig.setProtectedResource("${MCP_RESOURCE}");
-        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig, Map.of("MCP_RESOURCE", "https://gateway.example.test/mcp"));
+        yamlConfig.setProtectedResource(" https://gateway.example.test/mcp ");
+        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig);
         assertThat(actual.getAuthorizationServers(), is(List.of("https://auth.example.test")));
         assertThat(actual.getScopesSupported(), is(List.of("mcp.read", "mcp.write")));
         assertThat(actual.getProtectedResource(), is("https://gateway.example.test/mcp"));
@@ -123,26 +115,15 @@ class YamlHttpTransportConfigurationSwapperTest {
         YamlHttpTransportConfiguration yamlConfig = createYamlConfig("0.0.0.0", true, "", 18088, "/mcp");
         yamlConfig.setAuthorizationServers(List.of("https://auth.example.test"));
         yamlConfig.setScopesSupported(List.of("mcp.read"));
-        yamlConfig.setOauthIntrospection(createYamlOAuthIntrospectionConfiguration("${MCP_INTROSPECTION_ENDPOINT}", "${MCP_CLIENT_ID}", "${MCP_CLIENT_SECRET}",
-                "${MCP_EXPECTED_ISSUER}", 30000L));
-        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig, Map.of(
-                "MCP_INTROSPECTION_ENDPOINT", "https://auth.example.test/introspect",
-                "MCP_CLIENT_ID", "foo_client",
-                "MCP_CLIENT_SECRET", "foo_secret",
-                "MCP_EXPECTED_ISSUER", "https://auth.example.test"));
+        yamlConfig.setOauthIntrospection(createYamlOAuthIntrospectionConfiguration(" https://auth.example.test/introspect ", " foo_client ", " foo_secret ",
+                " https://auth.example.test ", 30000L));
+        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig);
         assertTrue(actual.getOauthIntrospection().isEnabled());
         assertThat(actual.getOauthIntrospection().getEndpoint(), is("https://auth.example.test/introspect"));
         assertThat(actual.getOauthIntrospection().getClientId(), is("foo_client"));
         assertThat(actual.getOauthIntrospection().getClientSecret(), is("foo_secret"));
         assertThat(actual.getOauthIntrospection().getExpectedIssuer(), is("https://auth.example.test"));
         assertThat(actual.getOauthIntrospection().getCacheTtlMillis(), is(30000L));
-    }
-    
-    @Test
-    void assertSwapToObjectWithMissingAccessTokenEnvironmentPlaceholder() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> swapper.swapToObject(createYamlConfig("0.0.0.0", true, "${MCP_ACCESS_TOKEN}", 18088, "/mcp"), Map.of()));
-        assertThat(actual.getMessage(), is("Environment variable `MCP_ACCESS_TOKEN` referenced by property `transport.http.accessToken` is not set."));
     }
     
     @Test

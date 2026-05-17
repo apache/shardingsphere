@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -63,41 +62,25 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     
     @Override
     public HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig) {
-        return swapToObject(yamlConfig, System.getenv());
-    }
-    
-    HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig, final Map<String, String> environment) {
         MCPYamlConfigurationValidator.validate(yamlConfig, "MCP HTTP transport configuration");
-        boolean allowRemoteAccess = yamlConfig.isAllowRemoteAccess();
-        String accessToken = resolveAccessToken(yamlConfig.getAccessToken(), environment);
-        return new HttpTransportConfiguration(yamlConfig.isEnabled(), yamlConfig.getBindHost(), allowRemoteAccess, accessToken, yamlConfig.getPort(), yamlConfig.getEndpointPath(),
-                resolveTextList(yamlConfig.getAllowedOrigins(), "transport.http.allowedOrigins", environment),
-                resolveTextList(yamlConfig.getAuthorizationServers(), "transport.http.authorizationServers", environment),
-                resolveTextList(yamlConfig.getScopesSupported(), "transport.http.scopesSupported", environment),
-                Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(yamlConfig.getProtectedResource(), "transport.http.protectedResource", environment), "").trim(),
-                swapOAuthIntrospectionToObject(yamlConfig.getOauthIntrospection(), environment));
+        return new HttpTransportConfiguration(yamlConfig.isEnabled(), yamlConfig.getBindHost(), yamlConfig.isAllowRemoteAccess(), trimOptionalText(yamlConfig.getAccessToken()),
+                yamlConfig.getPort(), yamlConfig.getEndpointPath(), trimTextList(yamlConfig.getAllowedOrigins()), trimTextList(yamlConfig.getAuthorizationServers()),
+                trimTextList(yamlConfig.getScopesSupported()), trimOptionalText(yamlConfig.getProtectedResource()), swapOAuthIntrospectionToObject(yamlConfig.getOauthIntrospection()));
     }
     
-    private OAuthIntrospectionConfiguration swapOAuthIntrospectionToObject(final YamlOAuthIntrospectionConfiguration yamlConfig, final Map<String, String> environment) {
+    private OAuthIntrospectionConfiguration swapOAuthIntrospectionToObject(final YamlOAuthIntrospectionConfiguration yamlConfig) {
         if (null == yamlConfig) {
             return new OAuthIntrospectionConfiguration();
         }
-        return new OAuthIntrospectionConfiguration(resolveOptionalText(yamlConfig.getEndpoint(), "transport.http.oauthIntrospection.endpoint", environment),
-                resolveOptionalText(yamlConfig.getClientId(), "transport.http.oauthIntrospection.clientId", environment),
-                resolveOptionalText(yamlConfig.getClientSecret(), "transport.http.oauthIntrospection.clientSecret", environment),
-                resolveOptionalText(yamlConfig.getExpectedIssuer(), "transport.http.oauthIntrospection.expectedIssuer", environment),
-                null == yamlConfig.getCacheTtlMillis() ? 0L : yamlConfig.getCacheTtlMillis());
+        return new OAuthIntrospectionConfiguration(trimOptionalText(yamlConfig.getEndpoint()), trimOptionalText(yamlConfig.getClientId()), trimOptionalText(yamlConfig.getClientSecret()),
+                trimOptionalText(yamlConfig.getExpectedIssuer()), null == yamlConfig.getCacheTtlMillis() ? 0L : yamlConfig.getCacheTtlMillis());
     }
     
-    private String resolveAccessToken(final String accessToken, final Map<String, String> environment) {
-        return Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(accessToken, "transport.http.accessToken", environment), "").trim();
+    private String trimOptionalText(final String value) {
+        return Objects.toString(value, "").trim();
     }
     
-    private String resolveOptionalText(final String value, final String propertyName, final Map<String, String> environment) {
-        return Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(value, propertyName, environment), "").trim();
-    }
-    
-    private List<String> resolveTextList(final Collection<String> values, final String propertyName, final Map<String, String> environment) {
-        return values.stream().map(each -> Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(each, propertyName, environment), "").trim()).filter(each -> !each.isEmpty()).toList();
+    private List<String> trimTextList(final Collection<String> values) {
+        return values.stream().map(each -> Objects.toString(each, "").trim()).filter(each -> !each.isEmpty()).toList();
     }
 }
