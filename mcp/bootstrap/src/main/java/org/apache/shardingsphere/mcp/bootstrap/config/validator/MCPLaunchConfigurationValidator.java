@@ -33,15 +33,18 @@ public final class MCPLaunchConfigurationValidator implements ConstraintValidato
         if (null == value || null == value.getTransport()) {
             return true;
         }
-        YamlMCPTransportConfiguration transport = value.getTransport();
-        if (null == transport.getHttp() || null == transport.getStdio()) {
+        return isValid(value.getTransport(), context);
+    }
+    
+    private boolean isValid(final YamlMCPTransportConfiguration value, final ConstraintValidatorContext context) {
+        if (null == value.getHttp() || null == value.getStdio()) {
             return true;
         }
-        if (transport.getHttp().isEnabled() && transport.getStdio().isEnabled()) {
+        if (value.getHttp().isEnabled() && value.getStdio().isEnabled()) {
             addViolation(context, "HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport.");
             return false;
         }
-        if (!transport.getHttp().isEnabled() && !transport.getStdio().isEnabled()) {
+        if (!value.getHttp().isEnabled() && !value.getStdio().isEnabled()) {
             addViolation(context, "Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true.");
             return false;
         }
