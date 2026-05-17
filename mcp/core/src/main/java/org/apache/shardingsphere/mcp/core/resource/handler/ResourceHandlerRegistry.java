@@ -59,7 +59,7 @@ public final class ResourceHandlerRegistry {
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPResourceHandler<?> each : handlers) {
             String uriOrTemplate = each.getResourceDescriptor().getUriTemplate();
-            ShardingSpherePreconditions.checkState(null != uriOrTemplate && !uriOrTemplate.isBlank(),
+            ShardingSpherePreconditions.checkNotEmpty(uriOrTemplate,
                     () -> new IllegalArgumentException(String.format("Resource URI or URI template is required for `%s`.", each.getClass().getName())));
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
             result.put(new MCPUriPattern(uriOrTemplate), each);
