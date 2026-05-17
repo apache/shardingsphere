@@ -23,7 +23,9 @@ import java.sql.Types;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MySQLBinaryColumnTypeTest {
     
@@ -57,6 +59,27 @@ class MySQLBinaryColumnTypeTest {
         assertThrows(IllegalArgumentException.class, () -> MySQLBinaryColumnType.valueOfJDBCType(9999));
     }
     
+    @Test
+    void assertValueOfJDBCTypeForYear() {
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DATE, "YEAR"), is(MySQLBinaryColumnType.YEAR));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DATE, "year"), is(MySQLBinaryColumnType.YEAR));
+    }
+
+    @Test
+    void assertValueOfJDBCTypeForDate() {
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DATE, "DATE"), is(MySQLBinaryColumnType.DATE));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DATE, null), is(MySQLBinaryColumnType.DATE));
+    }
+
+    @Test
+    void assertIsYear() {
+        assertTrue(MySQLBinaryColumnType.isYear(Types.DATE, "YEAR"));
+        assertTrue(MySQLBinaryColumnType.isYear(Types.DATE, "year"));
+        assertFalse(MySQLBinaryColumnType.isYear(Types.DATE, "DATE"));
+        assertFalse(MySQLBinaryColumnType.isYear(Types.DATE, null));
+        assertFalse(MySQLBinaryColumnType.isYear(Types.INTEGER, "YEAR"));
+    }
+
     @Test
     void assertValueOf() {
         assertThat(MySQLBinaryColumnType.valueOf(MySQLBinaryColumnType.DECIMAL.getValue()), is(MySQLBinaryColumnType.DECIMAL));
