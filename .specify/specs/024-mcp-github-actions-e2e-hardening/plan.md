@@ -124,7 +124,7 @@ rg -n "'pom.xml'|'distribution/pom.xml'|'test/e2e/pom.xml'|'.specify/specs/\\*mc
 ```
 
 ```bash
-./mvnw -pl test/e2e/mcp -DskipITs -Dspotless.skip=true \
+./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
   -Dtest=LLME2EConfigurationTest,LLMRuntimeSupportTest \
   -Dsurefire.failIfNoSpecifiedTests=false test
 ```

@@ -64,7 +64,6 @@
 - `rg -n "platforms:" .github/workflows/mcp-llm*.yml`
 - `rg -n "docker buildx version" .github/workflows/mcp-llm*.yml`
 - `sh -n test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh`
-- `test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh --dry-run`
 - `sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh --dry-run`
 - `rg "mcp-llm-runtime:local|Qwen3-1.7B-GGUF|MCP_LLM_BASE_SERVER_IMAGE_DIGEST" .github mcp test/e2e/mcp/src/test`
 - `docker system df`
