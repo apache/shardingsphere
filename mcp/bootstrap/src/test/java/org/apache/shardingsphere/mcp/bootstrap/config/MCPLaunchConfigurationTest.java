@@ -34,29 +34,29 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MCPLaunchConfigurationTest {
-
+    
     @Test
     void assertValidateWhenHttpTransportEnabled() {
         assertDoesNotThrow(() -> validate(createYamlConfig(true, false)));
     }
-
+    
     @Test
     void assertValidateWhenStdioTransportEnabled() {
         assertDoesNotThrow(() -> validate(createYamlConfig(false, true)));
     }
-
+    
     @Test
     void assertValidateWhenBothTransportsEnabled() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(createYamlConfig(true, true)));
         assertThat(actual.getMessage(), is("HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport."));
     }
-
+    
     @Test
     void assertValidateWhenBothTransportsDisabled() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(createYamlConfig(false, false)));
         assertThat(actual.getMessage(), is("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }
-
+    
     @Test
     void assertValidateWhenHttpTransportMissing() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(false, true);
@@ -64,7 +64,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http` is required."));
     }
-
+    
     @Test
     void assertValidateWhenStdioTransportMissing() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false);
@@ -72,7 +72,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.stdio` is required."));
     }
-
+    
     @Test
     void assertValidateWhenDatabasesMissing() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false);
@@ -80,7 +80,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` is required."));
     }
-
+    
     @Test
     void assertValidateWhenDatabasesEmpty() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false);
@@ -88,7 +88,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` is required."));
     }
-
+    
     @Test
     void assertValidateWhenHttpBindHostMissing() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false);
@@ -96,7 +96,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.bindHost` is required."));
     }
-
+    
     @Test
     void assertValidateWhenHttpEndpointPathMissingLeadingSlash() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false);
@@ -104,14 +104,14 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.endpointPath` must start with '/'."));
     }
-
+    
     @Test
     void assertValidateWhenRemoteHttpIsNotExplicitlyAllowed() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false, "0.0.0.0", false, "");
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.allowRemoteAccess` must be true when `transport.http.bindHost` is not loopback."));
     }
-
+    
     @Test
     void assertValidateWhenRemoteHttpAccessTokenIsMissing() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false, "0.0.0.0", true, "");
@@ -120,7 +120,7 @@ class MCPLaunchConfigurationTest {
         assertThat(actual.getMessage(),
                 is("MCP launch configuration property `transport.http.accessToken` or `transport.http.oauthIntrospection.endpoint` must be configured when remote HTTP access is enabled."));
     }
-
+    
     @Test
     void assertValidateWhenRemoteHttpAllowedOriginsAreMissing() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false, "0.0.0.0", true, "token");
@@ -128,7 +128,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.allowedOrigins` must not be empty when remote HTTP access is enabled."));
     }
-
+    
     @Test
     void assertValidateWhenRemoteHttpAllowedOriginIsMalformed() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false, "0.0.0.0", true, "token");
@@ -137,14 +137,14 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.allowedOrigins` must use valid HTTP or HTTPS origins."));
     }
-
+    
     @Test
     void assertValidateWhenHttpAuthorizationServersAreMissing() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false, "127.0.0.1", false, "token");
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.authorizationServers` must not be empty when HTTP authorization is enabled."));
     }
-
+    
     @Test
     void assertValidateWhenHttpAuthorizationServerIsNotHttps() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false, "127.0.0.1", false, "token");
@@ -152,7 +152,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.authorizationServers` must use valid HTTPS URLs when HTTP authorization is enabled."));
     }
-
+    
     @Test
     void assertValidateWhenHttpAuthorizationServerIsMalformed() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false, "127.0.0.1", false, "token");
@@ -160,7 +160,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.authorizationServers` must use valid HTTPS URLs when HTTP authorization is enabled."));
     }
-
+    
     @Test
     void assertValidateWhenHttpAuthorizationServerHasFragment() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false, "127.0.0.1", false, "token");
@@ -168,7 +168,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.authorizationServers` must use valid HTTPS URLs when HTTP authorization is enabled."));
     }
-
+    
     @Test
     void assertValidateWhenHttpAuthorizationMetadataIsConfigured() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false, "127.0.0.1", false, "token");
@@ -176,7 +176,7 @@ class MCPLaunchConfigurationTest {
         yamlConfig.getTransport().getHttp().setScopesSupported(Collections.singletonList("mcp.read"));
         assertDoesNotThrow(() -> validate(yamlConfig));
     }
-
+    
     @Test
     void assertValidateWhenRemoteHttpOAuthIntrospectionIsConfigured() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false, "0.0.0.0", true, "");
@@ -186,7 +186,7 @@ class MCPLaunchConfigurationTest {
         yamlConfig.getTransport().getHttp().setOauthIntrospection(createYamlOAuthIntrospectionConfiguration("https://auth.example.test/introspect", "foo_client", "foo_secret", "", 30000L));
         assertDoesNotThrow(() -> validate(yamlConfig));
     }
-
+    
     @Test
     void assertValidateWhenLocalOAuthIntrospectionEndpointUsesLoopbackHttp() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false);
@@ -196,7 +196,7 @@ class MCPLaunchConfigurationTest {
                 "https://auth.example.test", 0L));
         assertDoesNotThrow(() -> validate(yamlConfig));
     }
-
+    
     @Test
     void assertValidateWhenAccessTokenAndOAuthIntrospectionAreBothConfigured() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false, "127.0.0.1", false, "token");
@@ -205,7 +205,7 @@ class MCPLaunchConfigurationTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.accessToken` cannot be configured with `transport.http.oauthIntrospection.endpoint`."));
     }
-
+    
     @Test
     void assertValidateWhenOAuthIntrospectionIsInvalid() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false);
@@ -215,7 +215,7 @@ class MCPLaunchConfigurationTest {
         assertThat(actual.getMessage(),
                 is("MCP launch configuration property `transport.http.oauthIntrospection` must include a valid endpoint, clientId, clientSecret, and non-negative cacheTtlMillis."));
     }
-
+    
     @Test
     void assertValidateWhenOAuthIntrospectionExpectedIssuerIsInvalid() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(true, false);
@@ -226,35 +226,35 @@ class MCPLaunchConfigurationTest {
         assertThat(actual.getMessage(),
                 is("MCP launch configuration property `transport.http.oauthIntrospection` must include a valid endpoint, clientId, clientSecret, and non-negative cacheTtlMillis."));
     }
-
+    
     @Test
     void assertValidateWhenDisabledRemoteHttpDoesNotRequireAccessToken() {
         assertDoesNotThrow(() -> validate(createYamlConfig(false, true, "0.0.0.0", false, "")));
     }
-
+    
     private void validate(final YamlMCPLaunchConfiguration yamlConfig) {
         MCPYamlConfigurationValidator.validate(yamlConfig, "MCP launch configuration");
     }
-
+    
     private YamlMCPLaunchConfiguration createYamlConfig(final boolean httpEnabled, final boolean stdioEnabled) {
         return createYamlConfig(httpEnabled, stdioEnabled, "127.0.0.1", false, "");
     }
-
+    
     private YamlMCPLaunchConfiguration createYamlConfig(final boolean httpEnabled, final boolean stdioEnabled, final String bindHost, final boolean allowRemoteAccess, final String accessToken) {
         YamlMCPLaunchConfiguration result = new YamlMCPLaunchConfiguration();
         result.setTransport(createYamlTransportConfiguration(httpEnabled, stdioEnabled, bindHost, allowRemoteAccess, accessToken));
         result.setRuntimeDatabases(createRuntimeDatabases());
         return result;
     }
-
+    
     private YamlMCPTransportConfiguration createYamlTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String bindHost, final boolean allowRemoteAccess,
-                                                                          final String accessToken) {
+                                                                           final String accessToken) {
         YamlMCPTransportConfiguration result = new YamlMCPTransportConfiguration();
         result.setHttp(createYamlHttpTransportConfiguration(httpEnabled, bindHost, allowRemoteAccess, accessToken));
         result.setStdio(createYamlStdioTransportConfiguration(stdioEnabled));
         return result;
     }
-
+    
     private YamlHttpTransportConfiguration createYamlHttpTransportConfiguration(final boolean enabled, final String bindHost, final boolean allowRemoteAccess, final String accessToken) {
         YamlHttpTransportConfiguration result = new YamlHttpTransportConfiguration();
         result.setEnabled(enabled);
@@ -265,15 +265,15 @@ class MCPLaunchConfigurationTest {
         result.setEndpointPath("/mcp");
         return result;
     }
-
+    
     private YamlStdioTransportConfiguration createYamlStdioTransportConfiguration(final boolean enabled) {
         YamlStdioTransportConfiguration result = new YamlStdioTransportConfiguration();
         result.setEnabled(enabled);
         return result;
     }
-
+    
     private YamlOAuthIntrospectionConfiguration createYamlOAuthIntrospectionConfiguration(final String endpoint, final String clientId, final String clientSecret,
-                                                                                         final String expectedIssuer, final Long cacheTtlMillis) {
+                                                                                          final String expectedIssuer, final Long cacheTtlMillis) {
         YamlOAuthIntrospectionConfiguration result = new YamlOAuthIntrospectionConfiguration();
         result.setEndpoint(endpoint);
         result.setClientId(clientId);
@@ -282,7 +282,7 @@ class MCPLaunchConfigurationTest {
         result.setCacheTtlMillis(cacheTtlMillis);
         return result;
     }
-
+    
     private Map<String, Map<String, Object>> createRuntimeDatabases() {
         return Collections.singletonMap("logic_db", Map.of(
                 "databaseType", "H2",

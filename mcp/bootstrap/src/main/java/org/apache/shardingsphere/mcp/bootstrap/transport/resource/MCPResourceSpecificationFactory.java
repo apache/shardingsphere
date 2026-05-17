@@ -84,7 +84,9 @@ public final class MCPResourceSpecificationFactory {
                 .title(descriptor.getTitle())
                 .description(descriptor.getDescription())
                 .mimeType(descriptor.getMimeType());
-        appendResourceAnnotations(result, descriptor.getAnnotations());
+        if (!descriptor.getAnnotations().isEmpty()) {
+            result.annotations(createAnnotations(descriptor.getAnnotations()));
+        }
         if (!descriptor.getMeta().isEmpty()) {
             result.meta(descriptor.getMeta());
         }
@@ -98,23 +100,13 @@ public final class MCPResourceSpecificationFactory {
                 .title(descriptor.getTitle())
                 .description(descriptor.getDescription())
                 .mimeType(descriptor.getMimeType());
-        appendResourceTemplateAnnotations(result, descriptor.getAnnotations());
+        if (!descriptor.getAnnotations().isEmpty()) {
+            result.annotations(createAnnotations(descriptor.getAnnotations()));
+        }
         if (!descriptor.getMeta().isEmpty()) {
             result.meta(descriptor.getMeta());
         }
         return result.build();
-    }
-    
-    private void appendResourceAnnotations(final McpSchema.Resource.Builder builder, final MCPResourceAnnotations annotations) {
-        if (!annotations.isEmpty()) {
-            builder.annotations(createAnnotations(annotations));
-        }
-    }
-    
-    private void appendResourceTemplateAnnotations(final McpSchema.ResourceTemplate.Builder builder, final MCPResourceAnnotations annotations) {
-        if (!annotations.isEmpty()) {
-            builder.annotations(createAnnotations(annotations));
-        }
     }
     
     private McpSchema.Annotations createAnnotations(final MCPResourceAnnotations annotations) {

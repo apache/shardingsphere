@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,7 +37,10 @@ import java.util.Objects;
  * MCP runtime launcher.
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class MCPRuntimeLauncher {
+    
+    private static final String LOG_PATH = "logs/mcp.log";
     
     private final String configPath;
     
@@ -55,7 +58,7 @@ public final class MCPRuntimeLauncher {
         MCPRuntimeServer result = config.getHttpTransport().isEnabled() ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioMCPServer(runtimeContext);
         try {
             result.start();
-            printStartupHints(createStartupHints(config, result));
+            logStartupMessages(createStartupLogMessages(config, result));
         } catch (final IOException ex) {
             result.stop();
             throw new IOException(String.format("Failed to start %s server.", config.getHttpTransport().isEnabled() ? "HTTP" : "STDIO"), ex);
@@ -63,34 +66,30 @@ public final class MCPRuntimeLauncher {
         return result;
     }
     
-    List<String> createStartupHints(final MCPLaunchConfiguration config, final MCPRuntimeServer server) {
-        List<String> result = new LinkedList<>();
-        result.add("ShardingSphere MCP runtime started.");
-        result.add("Configuration: " + configPath);
-        result.add("Logs: logs/mcp.log");
-        result.add("Runtime databases: " + config.getDatabases().size());
+    List<String> createStartupLogMessages(final MCPLaunchConfiguration config, final MCPRuntimeServer server) {
         if (config.getHttpTransport().isEnabled()) {
-            int port = server instanceof StreamableHttpMCPServer ? ((StreamableHttpMCPServer) server).getLocalPort() : config.getHttpTransport().getPort();
-            result.add("HTTP endpoint: http://" + config.getHttpTransport().getBindHost() + ":" + port + config.getHttpTransport().getEndpointPath());
-            result.add("HTTP bearer token: " + (Objects.toString(config.getHttpTransport().getAccessToken(), "").isBlank() ? "not configured" : "required"));
-            if (config.getHttpTransport().isProtectedResourceMetadataEnabled()) {
-                result.add("OAuth protected resource metadata: http://" + config.getHttpTransport().getBindHost() + ":" + port
-                        + OAuthProtectedResourceMetadataServlet.createEndpointWellKnownPath(config.getHttpTransport().getEndpointPath()));
-            }
-            result.add("Official list discovery: tools/list, resources/list, resources/templates/list, prompts/list");
-            result.add("Argument completion: completion/complete");
-            result.add("Optional domain catalog resource: shardingsphere://capabilities");
-            return result;
+            return createHttpStartupLogMessages(config, server);
         }
-        result.add("STDIO transport: enabled");
-        result.add("STDIO stdout: reserved for MCP protocol frames; send diagnostics to stderr or logs.");
-        result.add("Official list discovery: tools/list, resources/list, resources/templates/list, prompts/list");
-        result.add("Argument completion: completion/complete");
-        result.add("Optional domain catalog resource: shardingsphere://capabilities");
-        return result;
+        return List.of(String.format("ShardingSphere MCP runtime started, transport=stdio, config=%s, databases=%d, logs=%s. Stdout is reserved for MCP protocol frames.",
+                configPath, config.getDatabases().size(), LOG_PATH));
     }
     
-    private void printStartupHints(final List<String> startupHints) {
-        startupHints.forEach(System.err::println);
+    private List<String> createHttpStartupLogMessages(final MCPLaunchConfiguration config, final MCPRuntimeServer server) {
+        int port = server instanceof StreamableHttpMCPServer ? ((StreamableHttpMCPServer) server).getLocalPort() : config.getHttpTransport().getPort();
+        String endpoint = String.format("http://%s:%d%s", config.getHttpTransport().getBindHost(), port, config.getHttpTransport().getEndpointPath());
+        String startupLog = String.format("ShardingSphere MCP runtime started, transport=http, config=%s, databases=%d, endpoint=%s, authorization=%s, logs=%s.",
+                configPath, config.getDatabases().size(), endpoint, getAuthorizationStatus(config), LOG_PATH);
+        return config.getHttpTransport().isProtectedResourceMetadataEnabled()
+                ? List.of(startupLog, String.format("OAuth protected resource metadata endpoint: http://%s:%d%s", config.getHttpTransport().getBindHost(), port,
+                        OAuthProtectedResourceMetadataServlet.createEndpointWellKnownPath(config.getHttpTransport().getEndpointPath())))
+                : List.of(startupLog);
+    }
+    
+    private String getAuthorizationStatus(final MCPLaunchConfiguration config) {
+        return config.getHttpTransport().getOauthIntrospection().isEnabled() || !Objects.toString(config.getHttpTransport().getAccessToken(), "").isBlank() ? "required" : "none";
+    }
+    
+    private void logStartupMessages(final List<String> startupMessages) {
+        startupMessages.forEach(log::info);
     }
 }

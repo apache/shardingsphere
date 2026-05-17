@@ -35,7 +35,8 @@ public final class StdioMCPServer implements MCPRuntimeServer {
     private McpSyncServer syncServer;
     
     public StdioMCPServer(final MCPRuntimeContext runtimeContext) {
-        this(new MCPSyncServerFactory(runtimeContext, MCPTransportJsonMapperFactory.create()), new SessionManagedStdioTransportProvider(runtimeContext.getSessionManager(), MCPTransportJsonMapperFactory.create()));
+        this(new MCPSyncServerFactory(runtimeContext, MCPTransportJsonMapperFactory.create()),
+                new SessionManagedStdioTransportProvider(runtimeContext.getSessionManager(), MCPTransportJsonMapperFactory.create()));
     }
     
     StdioMCPServer(final MCPSyncServerFactory syncServerFactory, final SessionManagedStdioTransportProvider transportProvider) {

@@ -350,8 +350,8 @@ Reference:
   }
   ```
 
-- Startup prints concise hints to stderr: configuration path, log path, runtime database count, active transport, token state,
-  official MCP discovery methods, and the ShardingSphere domain catalog resource.
+- Startup logs one concise diagnostic line through the configured logger: configuration path, log path, runtime database count,
+  active transport, endpoint, and authorization state. OAuth protected resource metadata is logged only when configured.
 - Configure clients to use official MCP discovery methods first (`tools/list`, `resources/list`, `resources/templates/list`, `prompts/list`,
   `completion/complete`), then read `shardingsphere://capabilities` as a domain catalog when needed.
 - For HTTP `401`, check `WWW-Authenticate`, read the advertised OAuth protected resource metadata when present,

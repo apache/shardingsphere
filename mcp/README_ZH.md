@@ -323,8 +323,8 @@ bin\start.bat conf\mcp-stdio.yaml
   }
   ```
 
-- 启动时会向 stderr 输出简短提示：配置文件路径、日志路径、runtime database 数量、当前 transport、token 状态、
-  官方 MCP discovery 方法，以及 ShardingSphere 领域目录 resource。
+- 启动时会通过已配置的 logger 输出一条简短诊断日志：配置文件路径、日志路径、runtime database 数量、当前 transport、endpoint 和授权状态。
+  OAuth protected resource metadata 只在配置后输出。
 - Client 应先使用官方 MCP discovery 方法（`tools/list`、`resources/list`、`resources/templates/list`、`prompts/list`、
   `completion/complete`），再按需读取 `shardingsphere://capabilities` 作为领域目录。
 - 如果 HTTP 返回 `401`，检查 `WWW-Authenticate`，在存在 `resource_metadata` 时读取 OAuth protected resource metadata，

@@ -34,7 +34,7 @@ import java.util.Objects;
  * HTTP transport configuration validator.
  */
 public final class HttpTransportConfigurationValidator implements ConstraintValidator<ValidHttpTransportConfiguration, YamlHttpTransportConfiguration> {
-
+    
     @Override
     public boolean isValid(final YamlHttpTransportConfiguration value, final ConstraintValidatorContext context) {
         if (null == value || !value.isEnabled() || !hasValidBasicProperties(value)) {
@@ -44,13 +44,13 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
                 && validateAuthorization(value, context)
                 && validateOAuthIntrospection(value, context);
     }
-
+    
     private boolean hasValidBasicProperties(final YamlHttpTransportConfiguration config) {
         return !Objects.toString(config.getBindHost(), "").isBlank()
                 && !Objects.toString(config.getEndpointPath(), "").isBlank()
                 && config.getEndpointPath().startsWith("/");
     }
-
+    
     private boolean validateRemoteAccess(final YamlHttpTransportConfiguration config, final ConstraintValidatorContext context) {
         Collection<String> configuredAllowedOrigins = getConfiguredValues(config.getAllowedOrigins());
         if (!config.isAllowRemoteAccess() && !isLoopbackBinding(config)) {
@@ -67,7 +67,7 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
         }
         return true;
     }
-
+    
     private boolean validateAuthorization(final YamlHttpTransportConfiguration config, final ConstraintValidatorContext context) {
         boolean authorizationConfigured = hasAuthorization(config);
         if (!isLoopbackBinding(config) && !authorizationConfigured) {
@@ -88,57 +88,57 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
         }
         return true;
     }
-
+    
     private boolean validateOAuthIntrospection(final YamlHttpTransportConfiguration config, final ConstraintValidatorContext context) {
         YamlOAuthIntrospectionConfiguration oauthIntrospection = config.getOauthIntrospection();
-        if (null == oauthIntrospection || !isOAuthIntrospectionEnabled(oauthIntrospection) || hasValidOAuthIntrospection(oauthIntrospection)) {
+        if (!isOAuthIntrospectionEnabled(oauthIntrospection) || hasValidOAuthIntrospection(oauthIntrospection)) {
             return true;
         }
         addViolation(context, "oauthIntrospection", "must include a valid endpoint, clientId, clientSecret, and non-negative cacheTtlMillis");
         return false;
     }
-
+    
     private boolean isLoopbackBinding(final YamlHttpTransportConfiguration config) {
         return HttpTransportHostUtils.isLoopbackHost(config.getBindHost());
     }
-
+    
     private boolean hasAccessToken(final YamlHttpTransportConfiguration config) {
         return !Objects.toString(config.getAccessToken(), "").trim().isEmpty();
     }
-
+    
     private boolean hasValidAllowedOrigins(final YamlHttpTransportConfiguration config) {
         return getConfiguredValues(config.getAllowedOrigins()).stream().allMatch(HttpTransportOriginUtils::isValidOrigin);
     }
-
+    
     private boolean hasAuthorization(final YamlHttpTransportConfiguration config) {
         return hasAccessToken(config) || isOAuthIntrospectionEnabled(config.getOauthIntrospection());
     }
-
+    
     private boolean hasHttpsAuthorizationServers(final YamlHttpTransportConfiguration config) {
         return getConfiguredValues(config.getAuthorizationServers()).stream().allMatch(this::isHttpsAuthorizationServer);
     }
-
+    
     private boolean isOAuthIntrospectionEnabled(final YamlOAuthIntrospectionConfiguration config) {
         return null != config && !trimOptionalText(config.getEndpoint()).isEmpty();
     }
-
+    
     private boolean hasValidOAuthIntrospection(final YamlOAuthIntrospectionConfiguration config) {
         return isValidIntrospectionEndpoint(trimOptionalText(config.getEndpoint())) && !trimOptionalText(config.getClientId()).isEmpty() && !trimOptionalText(config.getClientSecret()).isEmpty()
                 && (null == config.getCacheTtlMillis() || config.getCacheTtlMillis() >= 0L)
                 && (trimOptionalText(config.getExpectedIssuer()).isEmpty() || isHttpsAuthorizationServer(trimOptionalText(config.getExpectedIssuer())));
     }
-
+    
     private List<String> getConfiguredValues(final Collection<String> values) {
         if (null == values) {
             return List.of();
         }
         return values.stream().map(this::trimOptionalText).filter(each -> !each.isEmpty()).toList();
     }
-
+    
     private String trimOptionalText(final String value) {
         return Objects.toString(value, "").trim();
     }
-
+    
     private boolean isValidIntrospectionEndpoint(final String value) {
         try {
             URI uri = URI.create(value);
@@ -149,7 +149,7 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
             return false;
         }
     }
-
+    
     private boolean isHttpsAuthorizationServer(final String value) {
         try {
             URI uri = URI.create(value);
@@ -159,7 +159,7 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
             return false;
         }
     }
-
+    
     private void addViolation(final ConstraintValidatorContext context, final String propertyName, final String message) {
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(message).addPropertyNode(propertyName).addConstraintViolation();
