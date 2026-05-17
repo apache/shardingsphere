@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.DDLArtifact;
@@ -32,6 +34,7 @@ import java.util.Map;
 /**
  * Workflow artifact bundle.
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowArtifactBundle {
     
     private final List<DDLArtifact> ddlArtifacts;
@@ -39,12 +42,6 @@ public final class WorkflowArtifactBundle {
     private final List<IndexPlan> indexPlans;
     
     private final List<RuleArtifact> ruleArtifacts;
-    
-    private WorkflowArtifactBundle(final List<DDLArtifact> ddlArtifacts, final List<IndexPlan> indexPlans, final List<RuleArtifact> ruleArtifacts) {
-        this.ddlArtifacts = ddlArtifacts;
-        this.indexPlans = indexPlans;
-        this.ruleArtifacts = ruleArtifacts;
-    }
     
     /**
      * Create artifact bundle from workflow snapshot.

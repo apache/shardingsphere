@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
@@ -36,6 +38,7 @@ import java.util.Map;
 /**
  * Mask workflow planning service.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class MaskWorkflowPlanningService {
     
     private static final List<String> INTERACTION_STEPS = List.of(
@@ -68,19 +71,6 @@ public final class MaskWorkflowPlanningService {
     public MaskWorkflowPlanningService() {
         this(new WorkflowPlanningSupport(), new MaskWorkflowIntentResolver(), new MaskRuleInspectionService(),
                 new MaskAlgorithmRecommendationService(), new MaskAlgorithmPropertyTemplateService(), new MaskRuleDistSQLPlanningService());
-    }
-    
-    MaskWorkflowPlanningService(final WorkflowPlanningSupport planningSupport, final MaskWorkflowIntentResolver intentResolver,
-                                final MaskRuleInspectionService ruleInspectionService,
-                                final MaskAlgorithmRecommendationService algorithmRecommendationService,
-                                final MaskAlgorithmPropertyTemplateService algorithmPropertyTemplateService,
-                                final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService) {
-        this.planningSupport = planningSupport;
-        this.intentResolver = intentResolver;
-        this.ruleInspectionService = ruleInspectionService;
-        this.algorithmRecommendationService = algorithmRecommendationService;
-        this.algorithmPropertyTemplateService = algorithmPropertyTemplateService;
-        this.ruleDistSQLPlanningService = ruleDistSQLPlanningService;
     }
     
     /**

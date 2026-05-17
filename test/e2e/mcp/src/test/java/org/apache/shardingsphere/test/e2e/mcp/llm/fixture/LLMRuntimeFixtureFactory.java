@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.fixture;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
@@ -108,6 +110,7 @@ public final class LLMRuntimeFixtureFactory {
     /**
      * Runtime fixture.
      */
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class Fixture implements AutoCloseable {
         
         private final String schemaName;
@@ -117,13 +120,6 @@ public final class LLMRuntimeFixtureFactory {
         private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
         
         private final Runnable closeAction;
-        
-        private Fixture(final String schemaName, final int totalOrders, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final Runnable closeAction) {
-            this.schemaName = schemaName;
-            this.totalOrders = totalOrders;
-            this.runtimeDatabases = runtimeDatabases;
-            this.closeAction = closeAction;
-        }
         
         /**
          * Get schema name.

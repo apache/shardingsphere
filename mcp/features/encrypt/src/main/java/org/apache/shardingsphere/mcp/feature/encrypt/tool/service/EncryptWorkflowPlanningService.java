@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
@@ -48,6 +50,7 @@ import java.util.Set;
 /**
  * Encrypt workflow planning service.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class EncryptWorkflowPlanningService {
     
     private static final List<String> INTERACTION_STEPS = List.of(
@@ -87,24 +90,6 @@ public final class EncryptWorkflowPlanningService {
         this(new WorkflowPlanningSupport(), new EncryptWorkflowIntentResolver(), new EncryptRuleInspectionService(),
                 new EncryptAlgorithmRecommendationService(), new EncryptAlgorithmPropertyTemplateService(), new DerivedColumnNamingService(),
                 new PhysicalDDLPlanningService(), new IndexPlanningService(), new EncryptRuleDistSQLPlanningService());
-    }
-    
-    EncryptWorkflowPlanningService(final WorkflowPlanningSupport planningSupport, final EncryptWorkflowIntentResolver intentResolver,
-                                   final EncryptRuleInspectionService ruleInspectionService,
-                                   final EncryptAlgorithmRecommendationService algorithmRecommendationService,
-                                   final EncryptAlgorithmPropertyTemplateService algorithmPropertyTemplateService,
-                                   final DerivedColumnNamingService derivedColumnNamingService,
-                                   final PhysicalDDLPlanningService physicalDDLPlanningService, final IndexPlanningService indexPlanningService,
-                                   final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService) {
-        this.planningSupport = planningSupport;
-        this.intentResolver = intentResolver;
-        this.ruleInspectionService = ruleInspectionService;
-        this.algorithmRecommendationService = algorithmRecommendationService;
-        this.algorithmPropertyTemplateService = algorithmPropertyTemplateService;
-        this.derivedColumnNamingService = derivedColumnNamingService;
-        this.physicalDDLPlanningService = physicalDDLPlanningService;
-        this.indexPlanningService = indexPlanningService;
-        this.ruleDistSQLPlanningService = ruleDistSQLPlanningService;
     }
     
     /**

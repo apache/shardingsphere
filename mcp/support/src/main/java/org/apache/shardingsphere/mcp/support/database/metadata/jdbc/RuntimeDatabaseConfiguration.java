@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Getter;
 
 import java.sql.Connection;
@@ -28,6 +29,7 @@ import java.util.Properties;
  * Runtime database configuration for one logical database binding.
  */
 @Getter
+@RequiredArgsConstructor
 public final class RuntimeDatabaseConfiguration {
     
     private final String databaseType;
@@ -39,14 +41,6 @@ public final class RuntimeDatabaseConfiguration {
     private final String password;
     
     private final String driverClassName;
-    
-    public RuntimeDatabaseConfiguration(final String databaseType, final String jdbcUrl, final String username, final String password, final String driverClassName) {
-        this.databaseType = databaseType;
-        this.jdbcUrl = jdbcUrl;
-        this.username = username;
-        this.password = password;
-        this.driverClassName = driverClassName;
-    }
     
     /**
      * Open connection.

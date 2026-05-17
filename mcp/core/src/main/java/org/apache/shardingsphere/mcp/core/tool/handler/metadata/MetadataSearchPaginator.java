@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
@@ -33,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class MetadataSearchPaginator {
     
     private static final Map<String, Integer> OBJECT_TYPE_ORDERS = Map.of(
@@ -43,11 +46,6 @@ final class MetadataSearchPaginator {
     private final int defaultPageSize;
     
     private final int maxPageSize;
-    
-    MetadataSearchPaginator(final int defaultPageSize, final int maxPageSize) {
-        this.defaultPageSize = defaultPageSize;
-        this.maxPageSize = maxPageSize;
-    }
     
     MetadataSearchResult paginate(final List<MetadataSearchHit> metadataItems, final MetadataSearchRequest request,
                                   final Set<SupportedMCPMetadataObjectType> searchObjectTypes, final boolean broadSearchGuarded) {

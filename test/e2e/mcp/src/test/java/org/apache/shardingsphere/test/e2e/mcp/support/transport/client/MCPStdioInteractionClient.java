@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.nio.file.Paths;
  * STDIO MCP interaction client backed by one child process.
  */
 @SuppressWarnings("UseOfProcessBuilder")
+@RequiredArgsConstructor
 public final class MCPStdioInteractionClient extends AbstractProcessMCPStdioInteractionClient {
     
     private static final String CLIENT_NAME = "mcp-e2e-stdio";
@@ -35,10 +37,6 @@ public final class MCPStdioInteractionClient extends AbstractProcessMCPStdioInte
     private static final String LOGBACK_CONFIG_FILE_NAME = "mcp-e2e-stdio-logback.xml";
     
     private final Path configFile;
-    
-    public MCPStdioInteractionClient(final Path configFile) {
-        this.configFile = configFile;
-    }
     
     @Override
     protected ProcessBuilder createProcessBuilder() throws IOException {

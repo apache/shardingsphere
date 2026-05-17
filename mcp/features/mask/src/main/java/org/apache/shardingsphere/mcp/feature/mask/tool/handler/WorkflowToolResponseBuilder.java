@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
@@ -27,13 +29,10 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloa
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class WorkflowToolResponseBuilder {
     
     private final MaskAlgorithmPropertyTemplateService propertyTemplateService;
-    
-    WorkflowToolResponseBuilder(final MaskAlgorithmPropertyTemplateService propertyTemplateService) {
-        this.propertyTemplateService = propertyTemplateService;
-    }
     
     Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
         WorkflowPropertySource propertySource = getPropertySource(snapshot);

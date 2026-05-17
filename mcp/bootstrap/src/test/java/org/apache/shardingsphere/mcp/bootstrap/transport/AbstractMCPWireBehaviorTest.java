@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.modelcontextprotocol.json.McpJsonMapper;
@@ -198,6 +200,7 @@ public abstract class AbstractMCPWireBehaviorTest {
         Map<String, Object> sendRawRequest(String requestId, String method, Map<String, Object> params) throws Exception;
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class HttpWireClient implements MCPWireClient {
         
         private final StreamableHttpMCPServer server;
@@ -207,10 +210,6 @@ public abstract class AbstractMCPWireBehaviorTest {
         private String sessionId;
         
         private String protocolVersion;
-        
-        private HttpWireClient(final StreamableHttpMCPServer server) {
-            this.server = server;
-        }
         
         private void open() throws IOException, InterruptedException {
             HttpResponse<String> initializeResponse = sendInitializeRequest();

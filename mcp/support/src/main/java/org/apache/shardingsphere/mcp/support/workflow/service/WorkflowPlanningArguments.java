@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -27,13 +29,10 @@ import java.util.Objects;
 /**
  * Workflow-scoped planning arguments.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class WorkflowPlanningArguments {
     
     private final Map<String, Object> arguments;
-    
-    WorkflowPlanningArguments(final Map<String, Object> arguments) {
-        this.arguments = arguments;
-    }
     
     /**
      * Get string argument.

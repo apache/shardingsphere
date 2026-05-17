@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -106,6 +108,7 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
      * Proxy-backed runtime fixture.
      */
     @Getter
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class ProxyEncryptWorkflowRuntimeFixture implements AutoCloseable {
         
         private final GenericContainer<?> storageContainer;
@@ -117,13 +120,6 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
         private final String logicalDatabaseName = LOGICAL_DATABASE_NAME;
         
         private final String physicalDatabaseName = PHYSICAL_DATABASE_NAME;
-        
-        private ProxyEncryptWorkflowRuntimeFixture(final GenericContainer<?> storageContainer, final ShardingSphereProxyEmbeddedContainer proxyContainer,
-                                                   final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-            this.storageContainer = storageContainer;
-            this.proxyContainer = proxyContainer;
-            this.runtimeDatabases = runtimeDatabases;
-        }
         
         @Override
         public void close() {

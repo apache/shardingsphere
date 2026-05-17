@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactBundle;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
@@ -26,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class LLMMCPConversationArtifacts {
     
     private final String modelProvider;
@@ -41,11 +44,6 @@ final class LLMMCPConversationArtifacts {
     private Map<String, Object> capabilityFingerprints = Map.of();
     
     private String finalAnswerJson = "";
-    
-    LLMMCPConversationArtifacts(final String modelProvider, final String modelName) {
-        this.modelProvider = modelProvider;
-        this.modelName = modelName;
-    }
     
     void addRawModelOutput(final String rawModelOutput) {
         rawModelOutputs.add(rawModelOutput);

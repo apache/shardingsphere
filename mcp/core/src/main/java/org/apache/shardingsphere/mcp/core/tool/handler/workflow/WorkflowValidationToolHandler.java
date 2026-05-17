@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
@@ -35,13 +36,10 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 /**
  * Generic workflow validation tool handler.
  */
+@RequiredArgsConstructor
 public final class WorkflowValidationToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
     
     private final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry;
-    
-    public WorkflowValidationToolHandler(final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) {
-        this.workflowRuntimeDefinitionRegistry = workflowRuntimeDefinitionRegistry;
-    }
     
     @Override
     public Class<MCPWorkflowHandlerContext> getContextType() {

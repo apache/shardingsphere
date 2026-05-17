@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
@@ -714,13 +716,10 @@ class MCPJdbcMetadataLoaderTest {
         return false;
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class LoadedMetadataCatalog {
         
         private final Map<String, MCPDatabaseMetadata> databaseMetadataMap;
-        
-        private LoadedMetadataCatalog(final Map<String, MCPDatabaseMetadata> databaseMetadataMap) {
-            this.databaseMetadataMap = databaseMetadataMap;
-        }
         
         private Optional<MCPDatabaseMetadata> findMetadata(final String databaseName) {
             return Optional.ofNullable(databaseMetadataMap.get(databaseName));
@@ -731,16 +730,12 @@ class MCPJdbcMetadataLoaderTest {
         }
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class MockDriver implements Driver {
         
         private final String jdbcUrl;
         
         private final Connection connection;
-        
-        private MockDriver(final String jdbcUrl, final Connection connection) {
-            this.jdbcUrl = jdbcUrl;
-            this.connection = connection;
-        }
         
         @Override
         public Connection connect(final String url, final Properties info) {

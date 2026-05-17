@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
 import java.util.ArrayList;
@@ -25,16 +27,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class SQLStatementTargetResolver {
     
     private final SQLStatementScanner scanner;
     
     private final SQLStatementClassResolver statementClassResolver;
-    
-    SQLStatementTargetResolver(final SQLStatementScanner scanner, final SQLStatementClassResolver statementClassResolver) {
-        this.scanner = scanner;
-        this.statementClassResolver = statementClassResolver;
-    }
     
     String resolve(final SQLStatementStructure statementStructure, final SupportedMCPStatement statementClass) {
         return resolve(statementStructure, statementClass, new LinkedList<>());

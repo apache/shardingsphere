@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
 
@@ -27,6 +29,7 @@ import java.util.Map;
 /**
  * Model-first contract payload builder.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class MCPModelFirstContractPayloadBuilder {
     
     private static final String PLANNING_TOOL_NAME_PREFIX = "database_gateway_plan_";
@@ -38,10 +41,6 @@ final class MCPModelFirstContractPayloadBuilder {
     private static final String OFFICIAL_DISCOVERY_SOURCE = "Official MCP list methods: tools/list, resources/list, resources/templates/list, prompts/list.";
     
     private final MCPDescriptorCatalog catalog;
-    
-    MCPModelFirstContractPayloadBuilder(final MCPDescriptorCatalog catalog) {
-        this.catalog = catalog;
-    }
     
     Map<String, Object> createModelFirstSummary() {
         Map<String, Object> result = new LinkedHashMap<>(10, 1F);

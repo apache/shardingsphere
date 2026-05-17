@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.authorization;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
@@ -158,15 +160,12 @@ class OAuthTokenValidatorTest {
         return "https://gateway.example.test/mcp";
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class CountingOAuthTokenIntrospector implements OAuthTokenIntrospector {
         
         private final Map<String, Object> response;
         
         private int count;
-        
-        private CountingOAuthTokenIntrospector(final Map<String, Object> response) {
-            this.response = response;
-        }
         
         @Override
         public Map<String, Object> introspect(final String token) {

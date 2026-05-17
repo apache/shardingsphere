@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
@@ -29,13 +31,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class WorkflowToolResponseBuilder {
     
     private final EncryptAlgorithmPropertyTemplateService propertyTemplateService;
-    
-    WorkflowToolResponseBuilder(final EncryptAlgorithmPropertyTemplateService propertyTemplateService) {
-        this.propertyTemplateService = propertyTemplateService;
-    }
     
     Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
         EncryptWorkflowState workflowState = (EncryptWorkflowState) snapshot.getFeatureData();

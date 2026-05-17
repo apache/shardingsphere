@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
@@ -29,6 +30,7 @@ import java.util.LinkedList;
  * MCP descriptor catalog.
  */
 @Getter
+@RequiredArgsConstructor
 public final class MCPDescriptorCatalog {
     
     private final Collection<MCPResourceDescriptor> resourceDescriptors;
@@ -43,27 +45,11 @@ public final class MCPDescriptorCatalog {
     
     private final Collection<MCPPromptTemplateBinding> promptTemplateBindings;
     
-    private final Collection<MCPToolRuntimeDescriptor> toolRuntimeDescriptors;
-    
     private final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors;
     
     private final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors;
     
-    public MCPDescriptorCatalog(final Collection<MCPResourceDescriptor> resourceDescriptors, final Collection<MCPResourceDescriptor> resourceTemplateDescriptors,
-                                final Collection<MCPResourceExtensionDescriptor> resourceExtensionDescriptors, final Collection<MCPToolDescriptor> toolDescriptors,
-                                final Collection<MCPPromptDescriptor> promptDescriptors, final Collection<MCPPromptTemplateBinding> promptTemplateBindings,
-                                final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors, final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors,
-                                final Collection<MCPToolRuntimeDescriptor> toolRuntimeDescriptors) {
-        this.resourceDescriptors = resourceDescriptors;
-        this.resourceTemplateDescriptors = resourceTemplateDescriptors;
-        this.resourceExtensionDescriptors = resourceExtensionDescriptors;
-        this.toolDescriptors = toolDescriptors;
-        this.promptDescriptors = promptDescriptors;
-        this.promptTemplateBindings = promptTemplateBindings;
-        this.completionTargetDescriptors = completionTargetDescriptors;
-        this.resourceNavigationDescriptors = resourceNavigationDescriptors;
-        this.toolRuntimeDescriptors = toolRuntimeDescriptors;
-    }
+    private final Collection<MCPToolRuntimeDescriptor> toolRuntimeDescriptors;
     
     /**
      * Get all resource descriptors.

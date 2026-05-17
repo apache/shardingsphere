@@ -237,6 +237,7 @@ public final class MCPJdbcMetadataLoader {
         return SchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics ? databaseName : result;
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class DatabaseMetadataAccumulator {
         
         private final String database;
@@ -246,12 +247,6 @@ public final class MCPJdbcMetadataLoader {
         private final String databaseVersion;
         
         private final Map<String, SchemaMetadataAccumulator> schemaAccumulators = new LinkedHashMap<>(16, 1F);
-        
-        private DatabaseMetadataAccumulator(final String database, final String databaseType, final String databaseVersion) {
-            this.database = database;
-            this.databaseType = databaseType;
-            this.databaseVersion = databaseVersion;
-        }
         
         private SchemaMetadataAccumulator getSchemaAccumulator(final String schema) {
             SchemaMetadataAccumulator result = schemaAccumulators.get(schema);
@@ -271,6 +266,7 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class SchemaMetadataAccumulator {
         
         private final String database;
@@ -282,11 +278,6 @@ public final class MCPJdbcMetadataLoader {
         private final Map<String, ViewMetadataAccumulator> viewAccumulators = new LinkedHashMap<>(16, 1F);
         
         private final Map<String, MCPSequenceMetadata> sequences = new LinkedHashMap<>(16, 1F);
-        
-        private SchemaMetadataAccumulator(final String database, final String schema) {
-            this.database = database;
-            this.schema = schema;
-        }
         
         private TableMetadataAccumulator getTableAccumulator(final String table) {
             TableMetadataAccumulator result = tableAccumulators.get(table);
@@ -323,6 +314,7 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class TableMetadataAccumulator {
         
         private final String database;
@@ -334,12 +326,6 @@ public final class MCPJdbcMetadataLoader {
         private final Map<String, MCPColumnMetadata> columns = new LinkedHashMap<>(16, 1F);
         
         private final Map<String, MCPIndexMetadata> indexes = new LinkedHashMap<>(16, 1F);
-        
-        private TableMetadataAccumulator(final String database, final String schema, final String table) {
-            this.database = database;
-            this.schema = schema;
-            this.table = table;
-        }
         
         private void addColumn(final String column) {
             columns.putIfAbsent(column, new MCPColumnMetadata(database, schema, table, "", column));

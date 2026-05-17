@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class SQLCommonTableExpression {
     
     private final String aliasName;
     
     private final SQLStatementStructure statementStructure;
-    
-    SQLCommonTableExpression(final String aliasName, final SQLStatementStructure statementStructure) {
-        this.aliasName = aliasName;
-        this.statementStructure = statementStructure;
-    }
     
     String aliasName() {
         return aliasName;

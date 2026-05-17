@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.authorization;
 
+import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,6 +34,7 @@ import java.util.Objects;
 /**
  * OAuth protected resource metadata servlet.
  */
+@RequiredArgsConstructor
 public final class OAuthProtectedResourceMetadataServlet extends HttpServlet {
     
     public static final String WELL_KNOWN_ROOT_PATH = "/.well-known/oauth-protected-resource";
@@ -42,10 +44,6 @@ public final class OAuthProtectedResourceMetadataServlet extends HttpServlet {
     private static final String JSON_CONTENT_TYPE = "application/json";
     
     private final HttpTransportConfiguration config;
-    
-    public OAuthProtectedResourceMetadataServlet(final HttpTransportConfiguration config) {
-        this.config = config;
-    }
     
     /**
      * Create endpoint-scoped well-known path.

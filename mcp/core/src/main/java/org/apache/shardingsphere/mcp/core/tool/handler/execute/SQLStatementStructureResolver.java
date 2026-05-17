@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class SQLStatementStructureResolver {
     
     private final SQLStatementScanner scanner;
-    
-    SQLStatementStructureResolver(final SQLStatementScanner scanner) {
-        this.scanner = scanner;
-    }
     
     SQLStatementStructure resolve(final String sql) {
         int startIndex = scanner.skipInsignificant(sql, 0);

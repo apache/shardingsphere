@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class MCPResourceLinkCandidateCollector {
     
     private static final String RESOURCES_TO_READ_FIELD = "resources_to_read";
@@ -50,10 +53,6 @@ final class MCPResourceLinkCandidateCollector {
     private static final String DEFAULT_DESCRIPTION = "Read this ShardingSphere MCP resource.";
     
     private final int limit;
-    
-    MCPResourceLinkCandidateCollector(final int limit) {
-        this.limit = limit;
-    }
     
     ResourceLinkCandidates collect(final Map<String, Object> payload) {
         List<OrderedResourceLinkCandidate> candidates = new LinkedList<>();

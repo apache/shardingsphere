@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -34,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Session-local in-memory workflow session context.
  */
+@RequiredArgsConstructor
 public final class InMemoryWorkflowSessionContext implements WorkflowSessionContext {
     
     private final Clock clock;
@@ -42,10 +44,6 @@ public final class InMemoryWorkflowSessionContext implements WorkflowSessionCont
     
     public InMemoryWorkflowSessionContext() {
         this(Clock.systemUTC());
-    }
-    
-    public InMemoryWorkflowSessionContext(final Clock clock) {
-        this.clock = clock;
     }
     
     @Override

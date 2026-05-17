@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.authorization;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 
@@ -165,15 +167,12 @@ final class OAuthTokenValidator {
         }
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class CachedValidationResult {
         
         private final OAuthTokenValidationResult result;
         
         private final long expiresAtMillis;
         
-        private CachedValidationResult(final OAuthTokenValidationResult result, final long expiresAtMillis) {
-            this.result = result;
-            this.expiresAtMillis = expiresAtMillis;
-        }
     }
 }

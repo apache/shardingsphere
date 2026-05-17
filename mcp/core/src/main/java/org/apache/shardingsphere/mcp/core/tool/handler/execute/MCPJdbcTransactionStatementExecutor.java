@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
@@ -30,13 +31,10 @@ import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
 /**
  * MCP JDBC transaction statement executor.
  */
+@RequiredArgsConstructor
 public final class MCPJdbcTransactionStatementExecutor {
     
     private final MCPSessionManager sessionManager;
-    
-    public MCPJdbcTransactionStatementExecutor(final MCPSessionManager sessionManager) {
-        this.sessionManager = sessionManager;
-    }
     
     /**
      * Execute one transaction-control or savepoint command with resolved database capability.

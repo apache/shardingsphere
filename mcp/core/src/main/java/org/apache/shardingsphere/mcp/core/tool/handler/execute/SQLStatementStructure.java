@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class SQLStatementStructure {
     
     private final String mainSql;
@@ -28,14 +31,6 @@ final class SQLStatementStructure {
     private final boolean containsDataModifyingCommonTableExpression;
     
     private final Collection<SQLCommonTableExpression> commonTableExpressions;
-    
-    SQLStatementStructure(final String mainSql, final String statementType, final boolean containsDataModifyingCommonTableExpression,
-                          final Collection<SQLCommonTableExpression> commonTableExpressions) {
-        this.mainSql = mainSql;
-        this.statementType = statementType;
-        this.containsDataModifyingCommonTableExpression = containsDataModifyingCommonTableExpression;
-        this.commonTableExpressions = commonTableExpressions;
-    }
     
     String mainSql() {
         return mainSql;

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.protocol.response;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
@@ -28,6 +30,7 @@ import java.util.UUID;
 /**
  * Response for resource errors.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class MCPErrorResponse implements MCPResponse {
     
     @Getter
@@ -45,13 +48,6 @@ public final class MCPErrorResponse implements MCPResponse {
     
     public MCPErrorResponse(final String errorCode, final String message, final Map<String, Object> recovery) {
         this(errorCode, message, recovery, UUID.randomUUID().toString());
-    }
-    
-    MCPErrorResponse(final String errorCode, final String message, final Map<String, Object> recovery, final String requestId) {
-        this.errorCode = errorCode;
-        this.message = message;
-        this.recovery = recovery;
-        this.requestId = requestId;
     }
     
     @Override

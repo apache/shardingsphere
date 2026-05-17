@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
@@ -34,16 +36,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class MetadataSearchCollector {
     
     private final MCPMetadataQueryFacade metadataQueryFacade;
     
     private final MetadataSearchResourceUriFactory resourceUriFactory;
-    
-    MetadataSearchCollector(final MCPMetadataQueryFacade metadataQueryFacade, final MetadataSearchResourceUriFactory resourceUriFactory) {
-        this.metadataQueryFacade = metadataQueryFacade;
-        this.resourceUriFactory = resourceUriFactory;
-    }
     
     List<MetadataSearchHit> collect(final MetadataSearchRequest request, final Set<SupportedMCPMetadataObjectType> searchObjectTypes) {
         return request.getDatabase().isEmpty()

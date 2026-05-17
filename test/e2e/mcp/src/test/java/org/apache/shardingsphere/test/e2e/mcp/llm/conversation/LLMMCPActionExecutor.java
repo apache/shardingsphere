@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 
@@ -28,13 +30,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class LLMMCPActionExecutor {
     
     private final MCPInteractionClient mcpInteractionClient;
-    
-    LLMMCPActionExecutor(final MCPInteractionClient mcpInteractionClient) {
-        this.mcpInteractionClient = mcpInteractionClient;
-    }
     
     Map<String, Object> executeSafely(final String actionName, final Map<String, Object> args) throws InterruptedException {
         try {
