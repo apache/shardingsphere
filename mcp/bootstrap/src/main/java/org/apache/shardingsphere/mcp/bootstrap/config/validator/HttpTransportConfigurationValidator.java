@@ -40,15 +40,11 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
         if (null == value || !value.isEnabled() || !hasValidBasicProperties(value)) {
             return true;
         }
-        return validateRemoteAccess(value, context)
-                && validateAuthorization(value, context)
-                && validateOAuthIntrospection(value, context);
+        return validateRemoteAccess(value, context) && validateAuthorization(value, context) && validateOAuthIntrospection(value, context);
     }
     
     private boolean hasValidBasicProperties(final YamlHttpTransportConfiguration config) {
-        return !Objects.toString(config.getBindHost(), "").isBlank()
-                && !Objects.toString(config.getEndpointPath(), "").isBlank()
-                && config.getEndpointPath().startsWith("/");
+        return !Objects.toString(config.getBindHost(), "").isBlank() && !Objects.toString(config.getEndpointPath(), "").isBlank() && config.getEndpointPath().startsWith("/");
     }
     
     private boolean validateRemoteAccess(final YamlHttpTransportConfiguration config, final ConstraintValidatorContext context) {
