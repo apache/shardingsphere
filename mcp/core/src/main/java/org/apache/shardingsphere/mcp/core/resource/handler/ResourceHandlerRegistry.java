@@ -56,7 +56,6 @@ public final class ResourceHandlerRegistry {
     }
     
     private static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources(final Collection<MCPResourceHandler<?>> handlers) {
-        ShardingSpherePreconditions.checkState(!handlers.isEmpty(), () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPResourceHandler<?> each : handlers) {
             String uriOrTemplate = each.getResourceDescriptor().getUriTemplate();
