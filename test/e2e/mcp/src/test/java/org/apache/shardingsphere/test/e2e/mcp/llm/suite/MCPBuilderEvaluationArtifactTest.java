@@ -103,7 +103,7 @@ final class MCPBuilderEvaluationArtifactTest {
     
     @Test
     void assertRejectsShallowEvaluationQuestion() throws Exception {
-        assertThrows(AssertionError.class, () -> assertQAPair(loadQAPair("""
+        String xml = """
                 <qa_pair id="q01" category="metadata" read_only="true">
                   <question>Which tool lists metadata?</question>
                   <answer>database_gateway_search_metadata</answer>
@@ -116,12 +116,14 @@ final class MCPBuilderEvaluationArtifactTest {
                     <step>Confirm the question is shorter than the minimum complex question length.</step>
                     <step>Confirm the artifact validator rejects shallow exact-name prompts.</step>
                   </verification>
-                </qa_pair>"""), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>()));
+                </qa_pair>""";
+        assertThrows(AssertionError.class, () -> assertQAPair(
+                loadQAPair(xml), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>()));
     }
     
     @Test
     void assertRejectsDestructiveEvaluationQuestion() throws Exception {
-        assertThrows(AssertionError.class, () -> assertQAPair(loadQAPair("""
+        String xml = """
                 <qa_pair id="q01" category="workflow" read_only="true">
                   <question>
                     A user wants the assistant to apply the workflow in execute mode against a runtime database before reviewing preview
@@ -137,12 +139,14 @@ final class MCPBuilderEvaluationArtifactTest {
                     <step>Confirm read-only scoring cannot include mutation or forged approval.</step>
                     <step>Confirm destructive evaluation intent is rejected before model execution.</step>
                   </verification>
-                </qa_pair>"""), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>()));
+                </qa_pair>""";
+        assertThrows(AssertionError.class, () -> assertQAPair(
+                loadQAPair(xml), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>()));
     }
     
     @Test
     void assertRejectsUnverifiableEvaluationAnswer() throws Exception {
-        assertThrows(AssertionError.class, () -> assertQAPair(loadQAPair("""
+        String xml = """
                 <qa_pair id="q01" category="metadata" read_only="true">
                   <question>
                     A reviewer asks for a stable metadata evidence path that combines tool discovery, resource templates, and exact
@@ -158,7 +162,9 @@ final class MCPBuilderEvaluationArtifactTest {
                     <step>Confirm the expected answer narrative still contains enough evidence terms.</step>
                     <step>Confirm unverifiable answer keys fail artifact validation.</step>
                   </verification>
-                </qa_pair>"""), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>()));
+                </qa_pair>""";
+        assertThrows(AssertionError.class, () -> assertQAPair(
+                loadQAPair(xml), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>()));
     }
     
     private void assertEvaluationQuestions(final NodeList qaPairs) {
@@ -246,15 +252,15 @@ final class MCPBuilderEvaluationArtifactTest {
     private Document loadDocument() throws Exception {
         try (InputStream inputStream = MCPBuilderEvaluationArtifactTest.class.getResourceAsStream("/llm/evaluation/mcp-builder-evaluation.xml")) {
             assertNotNull(inputStream);
-            return loadDocument(inputStream);
+            return parseDocument(inputStream);
         }
     }
     
     private Element loadQAPair(final String xml) throws Exception {
-        return (Element) loadDocument(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))).getDocumentElement();
+        return (Element) parseDocument(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))).getDocumentElement();
     }
     
-    private Document loadDocument(final InputStream inputStream) throws Exception {
+    private Document parseDocument(final InputStream inputStream) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         return factory.newDocumentBuilder().parse(inputStream);

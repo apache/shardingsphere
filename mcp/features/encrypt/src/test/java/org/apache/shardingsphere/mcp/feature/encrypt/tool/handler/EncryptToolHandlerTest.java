@@ -137,12 +137,12 @@ class EncryptToolHandlerTest {
     }
     
     private WorkflowContextSnapshot createDetailedSnapshot() {
-        WorkflowContextSnapshot result = createSnapshot("plan-1", "planned");
         WorkflowRequest request = new WorkflowRequest();
         request.setDatabase("logic_db");
         request.setSchema("public");
         request.setTable("orders");
         request.getPrimaryAlgorithmProperties().put("aes-key-value", "123456");
+        WorkflowContextSnapshot result = createSnapshot("plan-1", "planned");
         result.setRequest(request);
         EncryptWorkflowState workflowState = new EncryptWorkflowState();
         workflowState.setDerivedColumnPlan(createDerivedColumnPlan());

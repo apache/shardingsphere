@@ -109,6 +109,41 @@ Style command:
 
 Result: exit code `0`, `0` Checkstyle violations, `0` Spotless changes needed.
 
+## Default Security and Artifact Lane
+
+Focused command:
+
+```bash
+./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
+  -Dtest=MCPBuilderEvaluationArtifactTest,HttpTransportApprovalSafetyE2ETest,HttpTransportSessionLifecycleE2ETest,HttpTransportSecurityE2ETest,HttpTransportAccessTokenE2ETest,HttpTransportCompletionE2ETest,HttpTransportRecoveryE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+Result: exit code `0`, `39` tests, `0` failures, `0` errors, `0` skipped.
+
+## Distribution Smoke Evidence
+
+Precondition:
+
+- `distribution/mcp/target/apache-shardingsphere-mcp-5.5.4-SNAPSHOT` existed locally before the smoke run.
+- The lane was explicitly enabled with `-Dmcp.e2e.distribution.enabled=true`.
+
+Focused command:
+
+```bash
+./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
+  -Dmcp.e2e.distribution.enabled=true \
+  -Dtest=PackagedDistributionSmokeE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+Result: exit code `0`, `2` tests, `0` failures, `0` errors, `0` skipped.
+
+Covered runtime paths:
+
+- Packaged HTTP runtime startup, runtime diagnostics, database resources, tool discovery, metadata search, and safe query execution.
+- Packaged STDIO runtime startup, stdout protocol isolation, runtime diagnostics, database resources, tool discovery, metadata search, and safe query execution.
+
 ## Default and Opt-In Lanes
 
 Default lane:

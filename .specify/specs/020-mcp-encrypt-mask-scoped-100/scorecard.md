@@ -25,7 +25,7 @@ Every dimension targets **100/100**. A dimension can reach 100 only when all sco
 
 - Assessment date: 2026-05-16.
 - Original scoped baseline: **88/100**.
-- Current scoped score: **90/100** after Phase 1 baseline evidence, Phase 2 MCP protocol closure, and Phase 3 encrypt/mask functional closure.
+- Current scoped score: **100/100** after Phase 1 through Phase 10 evidence closure.
 - Protocol scope: MCP `2025-11-25` only.
 - SDK scope: MCP Java SDK `1.1.2`, fixed.
 - Functional scope: encrypt and mask workflows only.
@@ -45,14 +45,14 @@ Every dimension targets **100/100**. A dimension can reach 100 only when all sco
 | --- | ---: | ---: | --- |
 | MCP protocol conformity | 100 | 100 | Closed by contract tests for declared `2025-11-25` methods, SDK `1.1.2` scope documentation, structured content/output schema checks, and transport/session negative cases. |
 | Encrypt/mask functional completeness | 100 | 100 | Closed by branch matrices plus unit and Proxy E2E evidence for resources, prompts, completions, plan, preview, approval apply, validation, and recovery for encrypt and mask. |
-| Implementation elegance | 88 | 100 | Minimal readability-first cleanup of duplicated workflow payload construction, no broad framework rewrite, clear handler/service boundaries. |
-| AI usability and MCP ergonomics | 91 | 100 | Ten mcp-builder evaluation questions, stable `next_actions`, useful resource links, prompt coverage for common encrypt/mask operator intents. |
-| Safety and approval control | 90 | 100 | Negative tests for approval bypass, session isolation, redaction, token/origin failures, unsafe SQL or malformed workflow inputs. |
-| Architecture cleanliness | 89 | 100 | Dependency boundary review, feature isolation, descriptor validation ownership, lifecycle clarity for static registries where they affect testability. |
-| Code cleanliness | 83 | 100 | Remove or justify direct private reflection, direct static/constructor mocks, broad `containsString` assertions, and unexplained Checkstyle suppressions. |
-| Test coverage and quality | 84 | 100 | Public-method test map, branch coverage matrix, Jacoco evidence where relevant, default and focused test commands with exit codes. |
-| Documentation and operations handoff | 87 | 100 | README/Speckit/validator alignment for scoped non-goals, encrypt/mask quickstart, troubleshooting, and evidence ledger. |
-| Performance and reliability evidence | 84 | 100 | Budgets and tests for descriptor loading, workflow planning, metadata/resource operations, E2E duration, distribution smoke, and session cleanup. |
+| Implementation elegance | 100 | 100 | Closed by readability-first handler response assertions, prompt rendering tests, performance smoke coverage, and explicit rejection of broad framework extraction. |
+| AI usability and MCP ergonomics | 100 | 100 | Closed by ten mcp-builder evaluation questions, stable answer keys, negative artifact validation, stable `next_actions`, resource links, and prompt coverage. |
+| Safety and approval control | 100 | 100 | Closed by approval bypass, session isolation, redaction, token/origin fail-closed, and encrypt/mask SQL safety tests. |
+| Architecture cleanliness | 100 | 100 | Closed by lightweight dependency boundary test and documented feature/core/bootstrap ownership boundaries. |
+| Code cleanliness | 100 | 100 | Closed by reflection, static-mock, broad assertion, and Checkstyle suppression review plus passing scoped style gate. |
+| Test coverage and quality | 100 | 100 | Closed by public-method coverage map, branch ownership matrix, scoped unit/E2E commands, Jacoco report, and artifact validation tests. |
+| Documentation and operations handoff | 100 | 100 | Closed by README/Speckit/validator alignment, encrypt/mask quickstart, default/opt-in lane separation, and Docker-owned LLM reproduction notes. |
+| Performance and reliability evidence | 100 | 100 | Closed by descriptor/request/metadata/workflow/completion/SQL budgets and packaged HTTP/STDIO distribution smoke. |
 
 ## Evidence Policy
 
@@ -128,13 +128,57 @@ Invalid evidence:
 - Scoped style verification: `./mvnw -pl mcp/support,mcp/core,test/e2e/mcp -Pcheck -DskipTests -DskipITs checkstyle:check spotless:check`
   exited `0`.
 
-### Remaining Dimensions
+### Phase 4: AI Usability and MCP Ergonomics
 
-- Implementation elegance: remains `88/100`; Phase 6 cleanup is not complete.
-- AI usability and MCP ergonomics: remains `91/100`; Phase 4 tasks are not complete.
-- Safety and approval control: remains `90/100`; Phase 5 tasks are not complete.
-- Architecture cleanliness: remains `89/100`; Phase 6 tasks are not complete.
-- Code cleanliness: remains `83/100`; Phase 7 tasks are not complete.
-- Test coverage and quality: remains `84/100`; Phase 8 Jacoco and coverage maps are not complete.
-- Documentation and operations handoff: remains `87/100`; Phase 9 docs and operations evidence are not complete.
-- Performance and reliability evidence: remains `84/100`; Phase 9 performance and distribution evidence are not complete.
+- T030: `mcp-builder-evaluation.xml` now contains 10 read-only, independent, complex, realistic, verifiable encrypt/mask questions with stable answer keys.
+- T031: `MCPBuilderEvaluationArtifactTest` validates stable answer keys and rejects shallow exact-name questions, destructive questions, and unverifiable answer keys.
+- T032: `EncryptToolHandlerTest` and `MaskToolHandlerTest` assert structured `resources_to_read`, `next_actions.tool_name`, and `next_actions.arguments`.
+- T033: `MCPPromptSpecificationFactoryTest` asserts inspect, safe SQL execution, recovery, plan encrypt, and plan mask prompt rendering without broad string matching.
+- Verification: `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dtest=MCPBuilderEvaluationArtifactTest -Dsurefire.failIfNoSpecifiedTests=false test` exited `0`; 4 tests, 0 failures, 0 errors, 0 skipped.
+- Verification: `./mvnw -pl mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dtest=MCPPromptSpecificationFactoryTest,MCPArchitectureBoundaryTest,MCPDocumentationContractTest -Dsurefire.failIfNoSpecifiedTests=false test` exited `0`; 10 tests, 0 failures, 0 errors.
+- Verification: `./mvnw -pl mcp/features/encrypt,mcp/features/mask -am -DskipITs -Dspotless.skip=true -Dtest=EncryptToolHandlerTest,MaskToolHandlerTest,EncryptRuleDistSQLPlanningServiceTest,MaskRuleDistSQLPlanningServiceTest -Dsurefire.failIfNoSpecifiedTests=false test` exited `0`; 18 tests, 0 failures, 0 errors.
+
+### Phase 5: Safety and Approval Control
+
+- T040: `WorkflowExecutionServiceTest` and `HttpTransportApprovalSafetyE2ETest` cover unapproved apply rejection, preview non-execution, unsupported execution mode, invalid lifecycle, approved-step handling, and cross-session approval rejection.
+- T041: `HttpTransportSessionLifecycleE2ETest` and `HttpTransportCompletionE2ETest` cover DELETE cleanup, preserved unrelated sessions, and session-scoped plan completion.
+- T042: `HttpTransportRecoveryE2ETest`, workflow service tests, and packaged runtime status checks cover redaction for recovery payloads, manual artifacts, runtime diagnostics, and logs-facing payloads.
+- T043: `HttpTransportAccessTokenE2ETest` and `HttpTransportSecurityE2ETest` cover missing/invalid token, origin rejection, protected resource metadata, and no token passthrough.
+- T044: `EncryptRuleDistSQLPlanningServiceTest`, `MaskRuleDistSQLPlanningServiceTest`, and physical DDL planning tests cover unsupported identifier rejection and literal-safe DistSQL planning.
+- Verification: `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dtest=MCPBuilderEvaluationArtifactTest,HttpTransportApprovalSafetyE2ETest,HttpTransportSessionLifecycleE2ETest,HttpTransportSecurityE2ETest,HttpTransportAccessTokenE2ETest,HttpTransportCompletionE2ETest,HttpTransportRecoveryE2ETest -Dsurefire.failIfNoSpecifiedTests=false test` exited `0`; 39 tests, 0 failures, 0 errors.
+
+### Phase 6: Architecture Cleanliness and Implementation Elegance
+
+- T050: No new broad payload framework was added; repeated response expectations are protected by structured public tests around existing readable handlers.
+- T051/T052: `MCPArchitectureBoundaryTest` scans generic MCP production modules and fails if bootstrap/core/support/api import encrypt or mask feature packages.
+- T053: stale `next_actions` aliases were removed from docs and remain rejected by descriptor validators; no legacy compatibility shim was retained for the scoped contract.
+- T054: `architecture-evidence.md` records the boundary, local-cleanup decision, and why broader extraction would be over-design.
+
+### Phase 7: Code Cleanliness
+
+- T060: `rg "getDeclaredMethod|setAccessible|invoke\\(" mcp test/e2e/mcp` found no private-method reflection or `setAccessible`; remaining public `getMethod` calls use `Plugins.getMemberAccessor()`.
+- T061: `rg "mockStatic|mockConstruction" mcp test/e2e/mcp` was reviewed; remaining direct static/constructor mocks are documented bounded exceptions where migration would add wider dependencies or reduce readability.
+- T062: touched prompt, encrypt, mask, and mcp-builder tests use structured assertions instead of broad `containsString`.
+- T063: `rg "CHECKSTYLE:OFF|CHECKSTYLE:ON" mcp test/e2e/mcp` was reviewed and documented in `code-cleanliness-evidence.md`.
+- T064: `./mvnw -pl mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap,test/e2e/mcp -am -Pcheck -DskipTests -DskipITs checkstyle:check spotless:check` exited `0`.
+
+### Phase 8: Test Coverage and Quality
+
+- T070/T071: `test-coverage-map.md` maps touched public production methods and branch paths to owning tests and documents intentionally unscored paths.
+- T072: scoped MCP unit verification commands for bootstrap/core/encrypt/mask completed with exit code `0`.
+- T073: `./mvnw -pl mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Djacoco.skip=false -Dtest=MCPPromptSpecificationFactoryTest,MCPArchitectureBoundaryTest,MCPDocumentationContractTest,MCPPerformanceBudgetSmokeTest,WorkflowExecutionServiceTest,MCPErrorConverterTest,WorkflowPlanIdCompletionProviderTest,EncryptToolHandlerTest,MaskToolHandlerTest,EncryptRuleDistSQLPlanningServiceTest,MaskRuleDistSQLPlanningServiceTest -Dsurefire.failIfNoSpecifiedTests=false test jacoco:report` exited `0`.
+- T074: default MCP security/artifact lane exited `0`; report-owning tests are listed in `e2e-evidence.md`.
+
+### Phase 9: Documentation, Operations, Performance
+
+- T080: `docs/mcp/ShardingSphere-MCP-AI-Friendly-Requirements.md` now uses canonical `next_actions.type`, `tool_name`, `resource_uri`, and `arguments` names.
+- T081: `quickstart.md`, `mcp/README.md`, and `mcp/README_ZH.md` point encrypt/mask workflow reproduction to discover, plan, preview, approve apply, validate, and recover.
+- T082: `performance-budget.md` records budgets for descriptor loading, metadata search, workflow planning, completion, default E2E, and distribution smoke.
+- T083: `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dmcp.e2e.distribution.enabled=true -Dtest=PackagedDistributionSmokeE2ETest -Dsurefire.failIfNoSpecifiedTests=false test` exited `0`; 2 tests, 0 failures, 0 errors, 0 skipped.
+- T084/T085: `e2e-evidence.md` separates default and opt-in lanes and documents Docker/Testcontainers prerequisites for Proxy/MySQL, STDIO, distribution, and Docker-owned Ollama LLM lanes.
+
+### Phase 10: Final Score Closure
+
+- T100/T104: all ten dimensions are updated to `100/100` only after the evidence above.
+- T101: final scoped unit, E2E, Jacoco, Checkstyle, Spotless, and packaged distribution smoke commands exited `0`.
+- T102/T103: final branch and worktree status are verified in the handoff.

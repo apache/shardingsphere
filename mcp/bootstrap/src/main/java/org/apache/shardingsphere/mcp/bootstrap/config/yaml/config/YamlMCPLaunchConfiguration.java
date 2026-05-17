@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.validator.ValidMCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator.ValidMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator.ValidYamlRuntimeDatabaseConfigurations;
 
 import javax.validation.Valid;

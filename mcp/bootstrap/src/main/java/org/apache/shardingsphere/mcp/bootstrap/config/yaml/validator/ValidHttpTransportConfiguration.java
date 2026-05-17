@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.config.validator;
+package org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -26,13 +26,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Valid MCP launch configuration.
+ * Valid HTTP transport configuration.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = MCPLaunchConfigurationValidator.class)
+@Constraint(validatedBy = HttpTransportConfigurationValidator.class)
 @Documented
-public @interface ValidMCPLaunchConfiguration {
+public @interface ValidHttpTransportConfiguration {
     
     /**
      * Get message.
