@@ -68,7 +68,7 @@ class ExecuteQueryToolHandlerTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(List.of(), List.of(), false));
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(new MCPSchemaMetadata("logic_db", "public", List.of(), List.of())));
+        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(new MCPSchemaMetadata("logic_db", "public", List.of(), List.of(), List.of())));
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         when(databaseContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
@@ -117,7 +117,7 @@ class ExecuteQueryToolHandlerTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(List.of(), List.of(), false));
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(new MCPSchemaMetadata("logic_db", "public", List.of(), List.of())));
+        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(new MCPSchemaMetadata("logic_db", "public", List.of(), List.of(), List.of())));
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         when(databaseContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);

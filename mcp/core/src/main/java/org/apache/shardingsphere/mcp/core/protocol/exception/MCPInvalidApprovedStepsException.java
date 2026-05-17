@@ -35,10 +35,6 @@ public final class MCPInvalidApprovedStepsException extends MCPInvalidRequestExc
     
     private final Map<String, Object> suggestedArguments;
     
-    public MCPInvalidApprovedStepsException(final List<String> allowedValues) {
-        this(allowedValues, Map.of());
-    }
-    
     public MCPInvalidApprovedStepsException(final List<String> allowedValues, final Map<String, Object> suggestedArguments) {
         super(String.format("approved_steps must contain only %s.", allowedValues));
         this.allowedValues = allowedValues;

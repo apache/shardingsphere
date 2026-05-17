@@ -42,10 +42,6 @@ public final class MCPSchemaMetadata {
     
     private final List<MCPSequenceMetadata> sequences;
     
-    public MCPSchemaMetadata(final String database, final String schema, final List<MCPTableMetadata> tables, final List<MCPViewMetadata> views) {
-        this(database, schema, tables, views, Collections.emptyList());
-    }
-    
     /**
      * Create summary.
      *

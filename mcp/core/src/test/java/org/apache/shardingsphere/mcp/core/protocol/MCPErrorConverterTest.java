@@ -121,7 +121,7 @@ class MCPErrorConverterTest {
     
     @Test
     void assertConvertMissingExecutionModeWithRecovery() {
-        Map<String, Object> actual = MCPErrorConverter.convert(new MCPExecutionModeRequiredException("database_gateway_execute_update", List.of("execute", "preview"))).toPayload();
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPExecutionModeRequiredException("database_gateway_execute_update", List.of("execute", "preview"), Map.of())).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("missing_execution_mode"));
         assertThat(actualRecovery.get("recovery_category"), is("missing_context"));
@@ -136,7 +136,7 @@ class MCPErrorConverterTest {
     @Test
     void assertConvertMissingWorkflowExecutionModeWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPExecutionModeRequiredException(
-                "database_gateway_apply_workflow", List.of("preview", "review-then-execute", "manual-only"))).toPayload();
+                "database_gateway_apply_workflow", List.of("preview", "review-then-execute", "manual-only"), Map.of())).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("missing_execution_mode"));
         assertThat(actualRecovery.get("recovery_category"), is("missing_context"));
@@ -154,7 +154,7 @@ class MCPErrorConverterTest {
     @Test
     void assertConvertInvalidWorkflowExecutionModeWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidExecutionModeException(
-                "database_gateway_apply_workflow", List.of("preview", "review-then-execute", "manual-only"))).toPayload();
+                "database_gateway_apply_workflow", List.of("preview", "review-then-execute", "manual-only"), Map.of())).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("invalid_enum_value"));
         assertThat(actualRecovery.get("recovery_category"), is("invalid_enum"));
@@ -166,7 +166,7 @@ class MCPErrorConverterTest {
     
     @Test
     void assertConvertInvalidApprovedStepsWithRecovery() {
-        Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidApprovedStepsException(List.of("ddl", "index_ddl", "rule_distsql"))).toPayload();
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidApprovedStepsException(List.of("ddl", "index_ddl", "rule_distsql"), Map.of())).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("invalid_enum_value"));
         assertThat(actualRecovery.get("recovery_category"), is("invalid_enum"));

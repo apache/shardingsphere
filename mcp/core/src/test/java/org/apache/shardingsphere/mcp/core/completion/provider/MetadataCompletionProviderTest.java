@@ -145,7 +145,7 @@ class MetadataCompletionProviderTest {
     }
     
     private MCPSchemaMetadata createSchemaMetadata() {
-        return new MCPSchemaMetadata("logic_db", "public", List.of(createTableMetadata()), List.of());
+        return new MCPSchemaMetadata("logic_db", "public", List.of(createTableMetadata()), List.of(), List.of());
     }
     
     private MCPTableMetadata createTableMetadata() {

@@ -256,6 +256,6 @@ class SearchMetadataToolHandlerTest {
     
     private MCPDatabaseMetadata createDatabaseMetadata(final String databaseName, final String tableName) {
         return new MCPDatabaseMetadata(databaseName, "MySQL", "", List.of(
-                new MCPSchemaMetadata(databaseName, "public", List.of(new MCPTableMetadata(databaseName, "public", tableName, List.of(), List.of())), List.of())));
+                new MCPSchemaMetadata(databaseName, "public", List.of(new MCPTableMetadata(databaseName, "public", tableName, List.of(), List.of())), List.of(), List.of())));
     }
 }

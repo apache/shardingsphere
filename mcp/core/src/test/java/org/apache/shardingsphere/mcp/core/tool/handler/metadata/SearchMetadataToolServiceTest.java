@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -308,7 +309,7 @@ class SearchMetadataToolServiceTest {
     }
     
     private List<MCPDatabaseMetadata> createDatabaseMetadata() {
-        List<MCPDatabaseMetadata> result = new java.util.LinkedList<>();
+        List<MCPDatabaseMetadata> result = new LinkedList<>();
         result.add(new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
                 new MCPSchemaMetadata("logic_db", "public", List.of(
                         new MCPTableMetadata("logic_db", "public", "orders",
@@ -320,17 +321,18 @@ class SearchMetadataToolServiceTest {
                                 new MCPViewMetadata("logic_db", "public", "active_orders",
                                         List.of(new MCPColumnMetadata("logic_db", "public", "", "active_orders", "order_id"),
                                                 new MCPColumnMetadata("logic_db", "public", "", "active_orders", "order_status"))),
-                                new MCPViewMetadata("logic_db", "public", "archived_orders", List.of()))))));
+                                new MCPViewMetadata("logic_db", "public", "archived_orders", List.of())),
+                        List.of()))));
         result.add(new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "", List.of(
                 new MCPSchemaMetadata("analytics_db", "public", List.of(
                         new MCPTableMetadata("analytics_db", "public", "metrics",
                                 List.of(new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())),
-                        List.of()))));
+                        List.of(), List.of()))));
         result.add(new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
                 new MCPSchemaMetadata("warehouse", "warehouse", List.of(
                         new MCPTableMetadata("warehouse", "warehouse", "facts",
                                 List.of(new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())),
-                        List.of()))));
+                        List.of(), List.of()))));
         result.add(new MCPDatabaseMetadata("runtime_db", "H2", "", List.of(
                 new MCPSchemaMetadata("runtime_db", "public", List.of(), List.of(), List.of(new MCPSequenceMetadata("runtime_db", "public", "order_seq"))))));
         return result;
@@ -338,18 +340,18 @@ class SearchMetadataToolServiceTest {
     
     private List<MCPDatabaseMetadata> createDatabaseMetadataWithEmptySchema() {
         return List.of(new MCPDatabaseMetadata("schema_less_db", "H2", "",
-                List.of(new MCPSchemaMetadata("schema_less_db", "", List.of(new MCPTableMetadata("schema_less_db", "", "schema_less_orders", List.of(), List.of())), List.of()))));
+                List.of(new MCPSchemaMetadata("schema_less_db", "", List.of(new MCPTableMetadata("schema_less_db", "", "schema_less_orders", List.of(), List.of())), List.of(), List.of()))));
     }
     
     private List<MCPDatabaseMetadata> createDatabaseMetadataWithUnsafeUriName() {
         return List.of(new MCPDatabaseMetadata("逻辑 库", "MySQL", "",
                 List.of(new MCPSchemaMetadata("逻辑 库", "public/main",
-                        List.of(new MCPTableMetadata("逻辑 库", "public/main", "orders?archive%2026", List.of(), List.of())), List.of()))));
+                        List.of(new MCPTableMetadata("逻辑 库", "public/main", "orders?archive%2026", List.of(), List.of())), List.of(), List.of()))));
     }
     
     private List<MCPDatabaseMetadata> createDatabaseMetadataWithNullViewColumn() {
         return List.of(new MCPDatabaseMetadata("null_view_db", "H2", "",
                 List.of(new MCPSchemaMetadata("null_view_db", "public", List.of(),
-                        List.of(new MCPViewMetadata("null_view_db", "public", "active_view", List.of(new MCPColumnMetadata("null_view_db", "public", "", null, "status"))))))));
+                        List.of(new MCPViewMetadata("null_view_db", "public", "active_view", List.of(new MCPColumnMetadata("null_view_db", "public", "", null, "status")))), List.of()))));
     }
 }

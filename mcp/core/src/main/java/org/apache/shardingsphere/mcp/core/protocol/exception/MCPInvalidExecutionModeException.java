@@ -37,10 +37,6 @@ public final class MCPInvalidExecutionModeException extends MCPInvalidRequestExc
     
     private final Map<String, Object> suggestedArguments;
     
-    public MCPInvalidExecutionModeException(final String toolName, final List<String> allowedValues) {
-        this(toolName, allowedValues, Map.of());
-    }
-    
     public MCPInvalidExecutionModeException(final String toolName, final List<String> allowedValues, final Map<String, Object> suggestedArguments) {
         super(String.format("%s execution_mode must be one of %s.", toolName, allowedValues));
         this.toolName = toolName;
