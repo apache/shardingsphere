@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.resource;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpecification;
-import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
@@ -62,7 +61,7 @@ public final class MCPResourceSpecificationFactory {
     public List<SyncResourceSpecification> createResourceSpecifications() {
         return resourceDescriptors.stream()
                 .filter(each -> !each.isTemplated())
-                .map(each -> new SyncResourceSpecification(createResource(each), this::handleReadResource)).collect(Collectors.toList());
+                .map(each -> new SyncResourceSpecification(createResource(each), (exchange, request) -> readResource(request))).collect(Collectors.toList());
     }
     
     private McpSchema.Resource createResource(final MCPResourceDescriptor descriptor) {
@@ -89,7 +88,7 @@ public final class MCPResourceSpecificationFactory {
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
         return resourceDescriptors.stream()
                 .filter(MCPResourceDescriptor::isTemplated)
-                .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource)).collect(Collectors.toList());
+                .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), (exchange, request) -> readResource(request))).collect(Collectors.toList());
     }
     
     private McpSchema.ResourceTemplate createResourceTemplate(final MCPResourceDescriptor descriptor) {
@@ -113,7 +112,7 @@ public final class MCPResourceSpecificationFactory {
         return new McpSchema.Annotations(audience, annotations.getPriority(), annotations.getLastModified());
     }
     
-    private McpSchema.ReadResourceResult handleReadResource(final McpSyncServerExchange exchange, final McpSchema.ReadResourceRequest request) {
+    private McpSchema.ReadResourceResult readResource(final McpSchema.ReadResourceRequest request) {
         try {
             return MCPTransportPayloadUtils.createReadResourceResult(request.uri(), controller.handle(request.uri()).toPayload());
         } catch (final MCPUnsupportedException ex) {
