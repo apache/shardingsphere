@@ -17,20 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport.H2AccessMode;
-
 /**
  * Runtime transport type for MCP E2E tests.
  */
-@RequiredArgsConstructor
-@Getter
 public enum RuntimeTransport {
     
-    HTTP(H2AccessMode.SINGLE_PROCESS),
+    HTTP,
     
-    STDIO(H2AccessMode.MULTI_PROCESS);
-    
-    private final H2AccessMode h2AccessMode;
+    STDIO
 }

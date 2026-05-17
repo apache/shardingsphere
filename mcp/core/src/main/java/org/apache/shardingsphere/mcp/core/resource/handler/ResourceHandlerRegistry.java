@@ -49,16 +49,10 @@ public final class ResourceHandlerRegistry {
     
     private static final Map<MCPUriPattern, MCPResourceHandler<?>> REGISTERED_RESOURCES;
     
-    private static final List<String> SUPPORTED_RESOURCES;
-    
-    private static final List<MCPResourceDescriptor> SUPPORTED_RESOURCE_DESCRIPTORS;
-    
     static {
         REGISTERED_RESOURCES = createRegisteredResources(
                 ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class).stream().flatMap(each -> each.getResourceHandlers().stream()).collect(Collectors.toList()));
         validateRegisteredResources();
-        SUPPORTED_RESOURCES = REGISTERED_RESOURCES.keySet().stream().map(MCPUriPattern::getPattern).collect(Collectors.toList());
-        SUPPORTED_RESOURCE_DESCRIPTORS = REGISTERED_RESOURCES.values().stream().map(MCPResourceHandler::getResourceDescriptor).collect(Collectors.toList());
     }
     
     private static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources(final Collection<MCPResourceHandler<?>> handlers) {
@@ -122,7 +116,7 @@ public final class ResourceHandlerRegistry {
      * @return supported resources
      */
     public static Collection<String> getSupportedResources() {
-        return SUPPORTED_RESOURCES;
+        return REGISTERED_RESOURCES.keySet().stream().map(MCPUriPattern::getPattern).toList();
     }
     
     /**
@@ -131,6 +125,6 @@ public final class ResourceHandlerRegistry {
      * @return supported resource descriptors
      */
     public static Collection<MCPResourceDescriptor> getSupportedResourceDescriptors() {
-        return SUPPORTED_RESOURCE_DESCRIPTORS;
+        return REGISTERED_RESOURCES.values().stream().map(MCPResourceHandler::getResourceDescriptor).toList();
     }
 }

@@ -20,13 +20,10 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.fixture;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.junit.jupiter.api.Assumptions;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -34,60 +31,6 @@ import java.util.Map;
  * Create runtime fixtures for LLM E2E tests.
  */
 public final class LLMRuntimeFixtureFactory {
-    
-    /**
-     * Runtime backend.
-     */
-    public enum Backend {
-        
-        H2,
-        
-        MYSQL
-    }
-    
-    /**
-     * Create one single-database H2 runtime fixture.
-     *
-     * @param tempDir temp directory
-     * @param databaseName database name
-     * @param logicalDatabase logical database
-     * @param transport runtime transport
-     * @return runtime fixture
-     * @throws IOException IO exception
-     */
-    public Fixture createSingleDatabaseH2Fixture(final Path tempDir, final String databaseName,
-                                                 final String logicalDatabase, final RuntimeTransport transport) throws IOException {
-        try {
-            H2RuntimeTestSupport.LLMH2RuntimeFixture actualFixture =
-                    H2RuntimeTestSupport.createLLMRuntimeFixture(tempDir, databaseName, logicalDatabase, transport.getH2AccessMode());
-            return new Fixture("public", actualFixture.totalOrders(), actualFixture.runtimeDatabases(), () -> {
-            });
-        } catch (final SQLException ex) {
-            throw new IOException(ex);
-        }
-    }
-    
-    /**
-     * Create one multi-database H2 runtime fixture.
-     *
-     * @param tempDir temp directory
-     * @param logicalDatabase logical database
-     * @param analyticsDatabase analytics database
-     * @param transport runtime transport
-     * @return runtime fixture
-     * @throws IOException IO exception
-     */
-    public Fixture createMultiDatabaseH2Fixture(final Path tempDir, final String logicalDatabase,
-                                                final String analyticsDatabase, final RuntimeTransport transport) throws IOException {
-        try {
-            H2RuntimeTestSupport.LLMH2RuntimeFixture actualFixture =
-                    H2RuntimeTestSupport.createMultiDatabaseLLMRuntimeFixture(tempDir, logicalDatabase, analyticsDatabase, transport.getH2AccessMode());
-            return new Fixture("public", actualFixture.totalOrders(), actualFixture.runtimeDatabases(), () -> {
-            });
-        } catch (final SQLException ex) {
-            throw new IOException(ex);
-        }
-    }
     
     /**
      * Create one MySQL runtime fixture.

@@ -193,6 +193,8 @@ public abstract class AbstractMCPWireBehaviorTest {
     
     protected interface MCPWireClient extends AutoCloseable {
         
+        Map<String, Object> getInitializePayload();
+        
         Map<String, Object> sendRawRequest(String requestId, String method, Map<String, Object> params) throws Exception;
     }
     
@@ -207,12 +209,14 @@ public abstract class AbstractMCPWireBehaviorTest {
         
         private String protocolVersion;
         
+        private Map<String, Object> initializePayload = Map.of();
+        
         private void open() throws IOException, InterruptedException {
             HttpResponse<String> initializeResponse = sendInitializeRequest();
             if (200 != initializeResponse.statusCode()) {
                 throw new IllegalStateException("MCP HTTP initialize failed with status " + initializeResponse.statusCode() + ".");
             }
-            Map<String, Object> initializePayload = parseJsonPayload(initializeResponse.body());
+            initializePayload = parseJsonPayload(initializeResponse.body());
             if (initializePayload.containsKey("error")) {
                 throw new IllegalStateException("MCP HTTP initialize failed: " + getErrorMessage(initializePayload) + ".");
             }
@@ -220,6 +224,11 @@ public abstract class AbstractMCPWireBehaviorTest {
                     .orElseThrow(() -> new IllegalStateException("MCP HTTP initialize response does not contain MCP-Session-Id."));
             protocolVersion = initializeResponse.headers().firstValue("MCP-Protocol-Version").orElse(MCPTransportConstants.PROTOCOL_VERSION);
             sendInitializedNotification();
+        }
+        
+        @Override
+        public Map<String, Object> getInitializePayload() {
+            return initializePayload;
         }
         
         private HttpResponse<String> sendInitializeRequest() throws IOException, InterruptedException {
@@ -281,6 +290,8 @@ public abstract class AbstractMCPWireBehaviorTest {
         
         private BufferedReader reader;
         
+        private Map<String, Object> initializePayload = Map.of();
+        
         private void open() throws IOException {
             PipedOutputStream clientOutput = new PipedOutputStream();
             PipedInputStream serverInput = new PipedInputStream(clientOutput, PIPE_SIZE);
@@ -294,11 +305,16 @@ public abstract class AbstractMCPWireBehaviorTest {
         }
         
         private void initializeSession() throws IOException {
-            Map<String, Object> initializePayload = sendRawRequest(INITIALIZE_REQUEST_ID, "initialize", createInitializeRequestParams());
+            initializePayload = sendRawRequest(INITIALIZE_REQUEST_ID, "initialize", createInitializeRequestParams());
             if (initializePayload.containsKey("error")) {
                 throw new IllegalStateException("MCP STDIO initialize failed: " + getErrorMessage(initializePayload) + ".");
             }
             writePayload(createNotification("notifications/initialized"));
+        }
+        
+        @Override
+        public Map<String, Object> getInitializePayload() {
+            return initializePayload;
         }
         
         @Override

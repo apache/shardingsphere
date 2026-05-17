@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @EnabledIf("isEnabled")
-class ProductionH2MetadataResourceE2ETest extends ProductionH2RuntimeSmokeE2ETest {
+class ProductionH2MetadataResourceE2ETest extends AbstractProductionH2RuntimeE2ETest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertReadSingleMetadataResourceCases")

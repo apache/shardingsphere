@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 
 import java.io.IOException;
@@ -36,6 +37,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -48,11 +50,17 @@ public final class PackagedDistributionTestSupport {
     
     private static final String DISTRIBUTION_PACKAGE_COMMAND = "./mvnw -pl distribution/mcp -am -DskipTests package";
     
+    private static final String DOCKER_BIND_HOST = "0.0.0.0";
+    
+    private static final int DOCKER_HTTP_PORT = 18088;
+    
+    private static final String DEFAULT_ENDPOINT_PATH = "/mcp";
+    
     private PackagedDistributionTestSupport() {
     }
     
     /**
-     * Prepare one packaged MCP distribution copy for smoke tests.
+     * Prepare one packaged MCP distribution copy for E2E tests.
      *
      * @param tempDir temporary directory
      * @param transport runtime transport
@@ -60,10 +68,42 @@ public final class PackagedDistributionTestSupport {
      * @throws IOException I/O exception
      */
     public static PreparedPackagedDistribution prepare(final Path tempDir, final RuntimeTransport transport) throws IOException {
+        return prepare(tempDir, transport, Map.of());
+    }
+    
+    /**
+     * Prepare one packaged MCP distribution copy with supplied runtime databases.
+     *
+     * @param tempDir temporary directory
+     * @param transport runtime transport
+     * @param runtimeDatabases runtime databases
+     * @return prepared packaged distribution
+     * @throws IOException I/O exception
+     */
+    public static PreparedPackagedDistribution prepare(final Path tempDir, final RuntimeTransport transport,
+                                                       final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
         Path workingHome = prepareWorkingHome(tempDir);
         int httpPort = resolveHttpPort(transport);
-        Path configFile = rewriteConfiguration(workingHome, transport, httpPort);
+        Path configFile = rewriteConfiguration(workingHome, transport, httpPort, runtimeDatabases);
         return new PreparedPackagedDistribution(workingHome, configFile, transport, httpPort);
+    }
+    
+    /**
+     * Create a mounted configuration file for a Dockerized MCP distribution.
+     *
+     * @param targetFile target config file
+     * @param transport runtime transport
+     * @param runtimeDatabases runtime databases
+     * @return created config file
+     * @throws IOException I/O exception
+     */
+    public static Path createDockerConfigurationFile(final Path targetFile, final RuntimeTransport transport,
+                                                     final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
+        HttpTransportConfiguration httpTransport = new HttpTransportConfiguration(DOCKER_BIND_HOST, DOCKER_HTTP_PORT, DEFAULT_ENDPOINT_PATH);
+        MCPTransportType transportType = RuntimeTransport.HTTP == transport ? MCPTransportType.STREAMABLE_HTTP : MCPTransportType.STDIO;
+        Files.writeString(targetFile, YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(
+                new MCPLaunchConfiguration(transportType, httpTransport, runtimeDatabases))));
+        return targetFile;
     }
     
     /**
@@ -198,10 +238,11 @@ public final class PackagedDistributionTestSupport {
         return RuntimeTransport.HTTP == transport ? allocatePort() : -1;
     }
     
-    private static Path rewriteConfiguration(final Path workingHome, final RuntimeTransport transport, final int httpPort) throws IOException {
+    private static Path rewriteConfiguration(final Path workingHome, final RuntimeTransport transport, final int httpPort,
+                                             final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
         Path result = resolveConfigFile(workingHome, transport);
         MCPLaunchConfiguration sourceConfig = MCPConfigurationLoader.load(result.toString());
-        MCPLaunchConfiguration actualConfig = createRuntimeConfiguration(sourceConfig, transport, httpPort);
+        MCPLaunchConfiguration actualConfig = createRuntimeConfiguration(sourceConfig, transport, httpPort, runtimeDatabases);
         Files.writeString(result, YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(actualConfig)));
         return result;
     }
@@ -210,11 +251,12 @@ public final class PackagedDistributionTestSupport {
         return RuntimeTransport.HTTP == transport ? workingHome.resolve("conf/mcp-http.yaml") : workingHome.resolve("conf/mcp-stdio.yaml");
     }
     
-    private static MCPLaunchConfiguration createRuntimeConfiguration(final MCPLaunchConfiguration sourceConfig, final RuntimeTransport transport, final int httpPort) {
+    private static MCPLaunchConfiguration createRuntimeConfiguration(final MCPLaunchConfiguration sourceConfig, final RuntimeTransport transport,
+                                                                     final int httpPort, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         HttpTransportConfiguration actualHttpTransport = new HttpTransportConfiguration(sourceConfig.getHttpTransport().getBindHost(),
                 RuntimeTransport.HTTP == transport ? httpPort : sourceConfig.getHttpTransport().getPort(), sourceConfig.getHttpTransport().getEndpointPath());
         MCPTransportType transportType = RuntimeTransport.HTTP == transport ? MCPTransportType.STREAMABLE_HTTP : MCPTransportType.STDIO;
-        return new MCPLaunchConfiguration(transportType, actualHttpTransport, sourceConfig.getDatabases());
+        return new MCPLaunchConfiguration(transportType, actualHttpTransport, runtimeDatabases.isEmpty() ? sourceConfig.getDatabases() : runtimeDatabases);
     }
     
     public record PreparedPackagedDistribution(Path home, Path configFile, RuntimeTransport transport, int httpPort) {

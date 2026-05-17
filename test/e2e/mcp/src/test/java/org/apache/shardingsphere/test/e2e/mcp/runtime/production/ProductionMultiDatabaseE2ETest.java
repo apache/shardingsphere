@@ -58,8 +58,8 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
-            firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-multi-first", getTransport().getH2AccessMode());
-            secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-multi-second", getTransport().getH2AccessMode());
+            firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-multi-first", getTransport());
+            secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-multi-second", getTransport());
             H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
             H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         } catch (final SQLException ex) {
@@ -180,7 +180,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
     }
     
     private static boolean isEnabled() {
-        return MCPE2ECondition.isProductionH2Enabled() || MCPE2ECondition.isProductionStdioEnabled();
+        return MCPE2ECondition.isProductionH2Enabled() || MCPE2ECondition.isProductionH2StdioEnabled();
     }
     
     private static Stream<Arguments> transports() {
@@ -188,7 +188,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
         if (MCPE2ECondition.isProductionH2Enabled()) {
             result.add(Arguments.of("http", RuntimeTransport.HTTP));
         }
-        if (MCPE2ECondition.isProductionStdioEnabled()) {
+        if (MCPE2ECondition.isProductionH2StdioEnabled()) {
             result.add(Arguments.of("stdio", RuntimeTransport.STDIO));
         }
         return result.build();

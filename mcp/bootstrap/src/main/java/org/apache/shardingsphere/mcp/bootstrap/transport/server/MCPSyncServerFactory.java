@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.prompt.MCPPromptSpecifi
 import org.apache.shardingsphere.mcp.bootstrap.transport.resource.MCPResourceSpecificationFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.tool.MCPToolSpecificationFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.support.markdown.MCPMarkdownResourceLoader;
 
 import java.util.Optional;
 
@@ -78,7 +79,7 @@ public final class MCPSyncServerFactory {
     private McpSyncServer create(final McpServer.SyncSpecification<?> specification) {
         return specification.jsonMapper(jsonMapper)
                 .serverInfo(MCPTransportConstants.SERVER_NAME, Optional.ofNullable(MCPSyncServerFactory.class.getPackage().getImplementationVersion()).orElse("dev"))
-                .instructions(MCPTransportConstants.SERVER_INSTRUCTIONS)
+                .instructions(loadServerInstructions())
                 .capabilities(ServerCapabilities.builder().resources(false, false).tools(false).prompts(false).completions().build())
                 .resources(resourceSpecificationFactory.createResourceSpecifications())
                 .resourceTemplates(resourceSpecificationFactory.createResourceTemplateSpecifications())
@@ -86,5 +87,9 @@ public final class MCPSyncServerFactory {
                 .prompts(promptSpecificationFactory.createPromptSpecifications())
                 .completions(completionSpecificationFactory.createCompletionSpecifications())
                 .build();
+    }
+    
+    private String loadServerInstructions() {
+        return MCPMarkdownResourceLoader.loadRequired(MCPTransportConstants.SERVER_INSTRUCTIONS_RESOURCE, "server instruction");
     }
 }

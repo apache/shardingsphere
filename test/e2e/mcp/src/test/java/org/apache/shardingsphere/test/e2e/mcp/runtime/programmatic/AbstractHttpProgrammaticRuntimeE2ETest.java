@@ -152,7 +152,7 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     @Override
     protected final void prepareRuntimeFixture() throws IOException {
         try {
-            runtimeDatabases = H2RuntimeTestSupport.createPreparedProgrammaticRuntimeDatabases(getTempDir(), getTransport().getH2AccessMode());
+            runtimeDatabases = H2RuntimeTestSupport.createPreparedProgrammaticRuntimeDatabases(getTempDir(), getTransport());
         } catch (final SQLException ex) {
             throw new IOException("Failed to initialize MCP E2E runtime databases.", ex);
         }

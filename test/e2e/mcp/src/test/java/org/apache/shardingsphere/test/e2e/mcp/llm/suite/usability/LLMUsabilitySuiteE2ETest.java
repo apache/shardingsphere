@@ -33,19 +33,20 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Tag("llm-e2e")
 @EnabledIf("isEnabled")
 class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
-    private static final String SUITE_ID = "llm-usability-h2";
-    
-    private static final String RUNTIME_KIND = "h2";
+    private static final String RUNTIME_KIND = "mysql";
     
     private static final String DATABASE_NAME = "logic_db";
     
@@ -60,6 +61,8 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private final LLMUsabilitySuiteRunner suiteRunner = new LLMUsabilitySuiteRunner();
     
     private final LLMUsabilityScenarioCatalog scenarioCatalog = new LLMUsabilityScenarioCatalog();
+    
+    private RuntimeTransport currentTransport;
     
     private Fixture currentRuntimeFixture;
     
@@ -82,24 +85,33 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
             currentRuntimeFixture.close();
             currentRuntimeFixture = null;
         }
+        currentTransport = null;
     }
     
     private static boolean isEnabled() {
         return MCPE2ECondition.isLLMEnabled();
     }
     
-    @Test
-    void assertUsabilityBaseline() throws IOException, InterruptedException {
+    static Stream<Arguments> getTestCases() {
+        return Stream.of(
+                Arguments.of("llm-usability-mysql-http", RuntimeTransport.HTTP),
+                Arguments.of("llm-usability-mysql-stdio", RuntimeTransport.STDIO));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getTestCases")
+    void assertUsabilityBaseline(final String suiteId, final RuntimeTransport transport) throws IOException, InterruptedException {
+        currentTransport = transport;
         LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration(), getRequiredLLMRuntimeEvidence());
         conversationExecutor.assertModelReady();
         prepareRuntimeFixture();
-        suiteRunner.assertCoreSuite(SUITE_ID + "/core",
+        suiteRunner.assertCoreSuite(suiteId + "/core",
                 this::createCoreScenarios,
-                each -> conversationExecutor.runConversation(SUITE_ID + "/core/" + each.getScenarioId(), each, createInteractionClient()),
+                each -> conversationExecutor.runConversation(suiteId + "/core/" + each.getScenarioId(), each, createInteractionClient()),
                 conversationExecutor.getConfiguration());
-        suiteRunner.assertExtendedSuite(SUITE_ID + "/extended",
+        suiteRunner.assertExtendedSuite(suiteId + "/extended",
                 this::createExtendedScenarios,
-                each -> conversationExecutor.runConversation(SUITE_ID + "/extended/" + each.getScenarioId(), each, createInteractionClient()),
+                each -> conversationExecutor.runConversation(suiteId + "/extended/" + each.getScenarioId(), each, createInteractionClient()),
                 conversationExecutor.getConfiguration());
     }
     
@@ -132,7 +144,7 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     @Override
     protected RuntimeTransport getTransport() {
-        return RuntimeTransport.HTTP;
+        return getRequiredTransport();
     }
     
     @Override
@@ -145,8 +157,7 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         if (null != currentRuntimeFixture) {
             return;
         }
-        currentRuntimeFixture = runtimeFixtureFactory.createMultiDatabaseH2Fixture(getTempDir(), DATABASE_NAME, "analytics_db",
-                getTransport());
+        currentRuntimeFixture = runtimeFixtureFactory.createMySQLFixture(DATABASE_NAME, "Docker is required for the MySQL-backed LLM usability E2E test.");
     }
     
     private Fixture getRequiredRuntimeFixture() {
@@ -154,5 +165,12 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
             throw new IllegalStateException("LLM usability runtime fixture was not initialized.");
         }
         return currentRuntimeFixture;
+    }
+    
+    private RuntimeTransport getRequiredTransport() {
+        if (null == currentTransport) {
+            throw new IllegalStateException("LLM usability test case was not initialized.");
+        }
+        return currentTransport;
     }
 }

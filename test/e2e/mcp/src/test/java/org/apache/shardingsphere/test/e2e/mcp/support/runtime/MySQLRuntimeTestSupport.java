@@ -130,7 +130,19 @@ public final class MySQLRuntimeTestSupport {
      * @return runtime databases
      */
     public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final GenericContainer<?> container, final String logicalDatabase) {
-        return Map.of(logicalDatabase, new RuntimeDatabaseConfiguration("MySQL", createJdbcUrl(container), USERNAME, PASSWORD, "com.mysql.cj.jdbc.Driver"));
+        return Map.of(logicalDatabase, new RuntimeDatabaseConfiguration("MySQL", createJdbcUrl(container.getHost(), container.getMappedPort(3306)), USERNAME, PASSWORD, "com.mysql.cj.jdbc.Driver"));
+    }
+    
+    /**
+     * Create runtime databases for a Dockerized MCP runtime that connects back to the host-mapped MySQL port.
+     *
+     * @param container running container
+     * @param logicalDatabase logical database name
+     * @return runtime databases
+     */
+    public static Map<String, RuntimeDatabaseConfiguration> createDockerHostRuntimeDatabases(final GenericContainer<?> container, final String logicalDatabase) {
+        return Map.of(logicalDatabase, new RuntimeDatabaseConfiguration("MySQL", createJdbcUrl("host.docker.internal", container.getMappedPort(3306)),
+                USERNAME, PASSWORD, "com.mysql.cj.jdbc.Driver"));
     }
     
     /**
@@ -247,7 +259,7 @@ public final class MySQLRuntimeTestSupport {
     }
     
     private static Connection getConnection(final GenericContainer<?> container) throws SQLException {
-        String jdbcUrl = createJdbcUrl(container);
+        String jdbcUrl = createJdbcUrl(container.getHost(), container.getMappedPort(3306));
         long startTime = System.currentTimeMillis();
         long deadline = System.currentTimeMillis() + JDBC_READY_TIMEOUT.toMillis();
         long intervalMillis = JDBC_READY_INITIAL_INTERVAL_MILLIS;
@@ -287,9 +299,9 @@ public final class MySQLRuntimeTestSupport {
                 : new SQLException(result + " Last readiness failure: " + cause.getMessage(), cause);
     }
     
-    private static String createJdbcUrl(final GenericContainer<?> container) {
+    private static String createJdbcUrl(final String host, final int port) {
         return String.format("jdbc:mysql://%s:%d/%s?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&connectTimeout=3000&socketTimeout=3000",
-                container.getHost(), container.getMappedPort(3306), DATABASE_NAME);
+                host, port, DATABASE_NAME);
     }
     
     @RequiredArgsConstructor

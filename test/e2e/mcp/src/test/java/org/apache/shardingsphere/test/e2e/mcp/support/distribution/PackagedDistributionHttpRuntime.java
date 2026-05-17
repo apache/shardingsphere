@@ -45,7 +45,7 @@ public final class PackagedDistributionHttpRuntime implements AutoCloseable {
      */
     public PackagedDistributionHttpRuntime(final PreparedPackagedDistribution distribution) {
         this.distribution = distribution;
-        processSupport = new PackagedDistributionProcessSupport(distribution, "mcp-packaged-http-smoke");
+        processSupport = new PackagedDistributionProcessSupport(distribution, "mcp-packaged-http-e2e");
     }
     
     /**

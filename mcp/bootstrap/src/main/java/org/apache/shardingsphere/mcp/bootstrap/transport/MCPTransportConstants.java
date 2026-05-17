@@ -35,9 +35,5 @@ public final class MCPTransportConstants {
     
     public static final String SERVER_NAME = "apache-shardingsphere-mcp";
     
-    public static final String SERVER_INSTRUCTIONS = "Apache ShardingSphere MCP. Use official MCP list discovery methods "
-            + "(`tools/list`, `resources/list`, `resources/templates/list`, `prompts/list`) for the public surface, "
-            + "use `completion/complete` for supported argument values, and read `shardingsphere://capabilities` only as optional ShardingSphere domain catalog guidance. "
-            + "Use `database_gateway_execute_query` only for read-only SELECT or EXPLAIN ANALYZE. Use `database_gateway_execute_update` with `execution_mode=preview` before side effects, "
-            + "and continue from `next_actions` or `recovery.next_actions` instead of guessing hidden tools or arguments.";
+    public static final String SERVER_INSTRUCTIONS_RESOURCE = "META-INF/shardingsphere-mcp/instructions/server-instructions.md";
 }

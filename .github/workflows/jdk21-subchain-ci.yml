@@ -29,7 +29,6 @@ on:
       - 'test/e2e/pom.xml'
       - 'test/e2e/mcp/**'
       - '.specify/specs/*mcp*/**'
-      - '.github/workflows/mcp-llm-e2e.yml'
       - '.github/workflows/mcp-llm-usability-e2e.yml'
       - '.github/workflows/mcp-build.yml'
   workflow_dispatch:
@@ -66,31 +65,6 @@ jobs:
       - name: Run MCP Default E2E
         run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
 
-  mcp-h2-stdio-e2e:
-    name: MCP E2E - H2 STDIO
-    if: github.repository == 'apache/shardingsphere'
-    needs: global-environment
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
-        with:
-          java-version: '21'
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
-          cache-suffix: 'mcp'
-      - name: Install MCP E2E Test Dependencies
-        run: ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
-      - name: Run MCP H2 STDIO E2E
-        run: >
-          ./mvnw -pl test/e2e/mcp test
-          -DskipITs -Dspotless.skip=true
-          -Dtest=ProductionH2CapabilityDiscoveryE2ETest,ProductionH2MetadataResourceE2ETest,ProductionH2SQLExecutionE2ETest,ProductionH2AiNativeInteractionE2ETest,ProductionMultiDatabaseE2ETest
-          -Dsurefire.failIfNoSpecifiedTests=true
-          -Dmcp.e2e.production.h2.enabled=false
-          -Dmcp.e2e.production.stdio.enabled=true
-          -B -ntp
-
   mcp-mysql-e2e:
     name: MCP E2E - MySQL HTTP and STDIO
     if: github.repository == 'apache/shardingsphere'
@@ -111,7 +85,7 @@ jobs:
         run: >
           ./mvnw -pl test/e2e/mcp test
           -DskipITs -Dspotless.skip=true
-          -Dtest=ProductionMySQLRuntimeSmokeE2ETest,HttpProductionProxyEncryptWorkflowE2ETest,HttpProductionProxyMaskWorkflowE2ETest
+          -Dtest=ProductionMySQLRuntimeE2ETest,HttpProductionProxyEncryptWorkflowE2ETest,HttpProductionProxyMaskWorkflowE2ETest
           -Dsurefire.failIfNoSpecifiedTests=true
           -Dmcp.e2e.production.mysql.enabled=true
           -Dmcp.e2e.production.stdio.enabled=true
@@ -122,7 +96,7 @@ jobs:
     if: github.repository == 'apache/shardingsphere'
     needs: global-environment
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
@@ -130,10 +104,13 @@ jobs:
           java-version: '21'
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
           cache-suffix: 'mcp'
+          enable-docker-setup: 'true'
       - name: Test MCP Registry Metadata Command
         run: ./mvnw -pl mcp/registry -am -DskipITs -Dspotless.skip=true -Dtest=MCPRegistryMetadataCommandTest -Dsurefire.failIfNoSpecifiedTests=false test -B -ntp
       - name: Package MCP Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
+      - name: Build MCP Docker Image
+        run: docker build -f distribution/mcp/Dockerfile -t shardingsphere-mcp-ci:local distribution/mcp/target
       - name: Validate MCP Registry Metadata
         shell: bash
         run: |
@@ -151,7 +128,7 @@ jobs:
             compile exec:java -B -ntp
       - name: Install MCP E2E Test Dependencies
         run: ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
-      - name: Run MCP Distribution Smoke
+      - name: Run MCP Distribution E2E
         shell: bash
         run: |
           set -euo pipefail
@@ -162,35 +139,9 @@ jobs:
           fi
           DISTRIBUTION_HOME=$(cd "${DISTRIBUTION_HOME}" && pwd)
           ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-            -Dtest=PackagedDistributionSmokeE2ETest,PackagedDistributionPluginDiscoveryE2ETest \
+            -Dtest=PackagedDistributionE2ETest \
             -Dsurefire.failIfNoSpecifiedTests=true \
             -Dmcp.e2e.distribution.enabled=true \
+            -Dmcp.e2e.container.image=shardingsphere-mcp-ci:local \
             -Dmcp.distribution.home="${DISTRIBUTION_HOME}" \
             -B -ntp
-
-  mcp-stdio-container-e2e:
-    name: MCP E2E - STDIO Container
-    if: github.repository == 'apache/shardingsphere'
-    needs: global-environment
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
-        with:
-          java-version: '21'
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
-          cache-suffix: 'mcp'
-          enable-docker-setup: 'true'
-      - name: Package MCP Distribution
-        run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
-      - name: Build MCP Docker Image
-        run: docker build -f distribution/mcp/Dockerfile -t shardingsphere-mcp-ci:local distribution/mcp/target
-      - name: Run MCP STDIO Container Smoke
-        run: >
-          ./mvnw -pl test/e2e/mcp -am test
-          -DskipITs -Dspotless.skip=true
-          -Dtest=ContainerStdioSmokeE2ETest
-          -Dsurefire.failIfNoSpecifiedTests=false
-          -Dmcp.e2e.container.image=shardingsphere-mcp-ci:local
-          -B -ntp

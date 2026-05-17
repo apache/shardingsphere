@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @EnabledIf("isEnabled")
-class ProductionH2AiNativeInteractionE2ETest extends ProductionH2RuntimeSmokeE2ETest {
+class ProductionH2AiNativeInteractionE2ETest extends AbstractProductionH2RuntimeE2ETest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")

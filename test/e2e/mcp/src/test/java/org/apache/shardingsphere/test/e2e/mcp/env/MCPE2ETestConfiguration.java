@@ -40,7 +40,7 @@ final class MCPE2ETestConfiguration {
     }
     
     boolean isProductionH2Enabled() {
-        return getBoolean("mcp.e2e.production.h2.enabled", true);
+        return getBoolean("mcp.e2e.production.h2.enabled", false);
     }
     
     boolean isProductionMySQLEnabled() {

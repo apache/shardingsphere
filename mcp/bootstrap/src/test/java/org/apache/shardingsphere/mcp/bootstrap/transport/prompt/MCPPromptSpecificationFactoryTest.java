@@ -62,7 +62,9 @@ class MCPPromptSpecificationFactoryTest {
     @Test
     void assertRenderSafeSQLExecutionPromptTemplate() {
         McpSchema.GetPromptResult actual = renderPrompt("safe_sql_execution", Map.of("database", "logic_db", "schema", "public", "sql_intent", "count orders"));
-        assertRenderedLines(readText(actual), List.of(
+        String actualText = readText(actual);
+        assertFirstRenderedLine(actualText, "Choose the safest MCP SQL path.");
+        assertRenderedLines(actualText, List.of(
                 "- database: logic_db",
                 "- sql_intent: count orders",
                 "2. Use database_gateway_execute_query only for one SELECT or EXPLAIN ANALYZE statement.",
@@ -117,6 +119,10 @@ class MCPPromptSpecificationFactoryTest {
         for (String each : expectedLines) {
             assertTrue(actualLines.contains(each), () -> "Missing rendered line: " + each);
         }
+    }
+    
+    private void assertFirstRenderedLine(final String text, final String expectedLine) {
+        assertThat(text.lines().findFirst().orElse(""), is(expectedLine));
     }
     
     private SyncPromptSpecification findPrompt(final List<SyncPromptSpecification> specifications, final String name) {

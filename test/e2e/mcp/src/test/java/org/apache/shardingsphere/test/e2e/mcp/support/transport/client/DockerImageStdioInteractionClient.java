@@ -19,17 +19,32 @@ package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
 import lombok.RequiredArgsConstructor;
 
+import java.nio.file.Path;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Docker image STDIO MCP interaction client.
  */
 @RequiredArgsConstructor
 public final class DockerImageStdioInteractionClient extends AbstractProcessMCPStdioInteractionClient {
     
+    private static final String CONTAINER_CONFIG_FILE = "/tmp/shardingsphere-mcp-e2e.yaml";
+    
     private final String imageName;
+    
+    private final Path configFile;
     
     @Override
     protected ProcessBuilder createProcessBuilder() {
-        return new ProcessBuilder("docker", "run", "--rm", "-i", "-e", "SHARDINGSPHERE_MCP_TRANSPORT=stdio", imageName);
+        List<String> command = new LinkedList<>();
+        command.addAll(List.of("docker", "run", "--rm", "-i", "--add-host=host.docker.internal:host-gateway", "-e", "SHARDINGSPHERE_MCP_TRANSPORT=stdio"));
+        if (null != configFile) {
+            command.addAll(List.of("-v", configFile.toAbsolutePath().normalize() + ":" + CONTAINER_CONFIG_FILE + ":ro", "-e",
+                    "SHARDINGSPHERE_MCP_CONFIG=" + CONTAINER_CONFIG_FILE));
+        }
+        command.add(imageName);
+        return new ProcessBuilder(command);
     }
     
     @Override

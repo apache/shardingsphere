@@ -19,10 +19,8 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.markdown.MCPMarkdownResourceLoader;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -46,15 +44,7 @@ public final class MCPPromptTemplateLoader {
      * @throws IllegalStateException when the template cannot be loaded
      */
     public static String load(final String templateResource) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        try (InputStream inputStream = classLoader.getResourceAsStream(templateResource)) {
-            if (null == inputStream) {
-                throw new IllegalStateException(String.format("MCP prompt template resource `%s` is not found.", templateResource));
-            }
-            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (final IOException ex) {
-            throw new IllegalStateException(String.format("Failed to load MCP prompt template resource `%s`.", templateResource), ex);
-        }
+        return MCPMarkdownResourceLoader.loadRequired(templateResource, "prompt template");
     }
     
     /**

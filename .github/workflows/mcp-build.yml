@@ -37,6 +37,9 @@ permissions:
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
   MCP_IMAGE: ghcr.io/apache/shardingsphere-mcp
+  MCP_PUBLISHER_LINUX_AMD64_SHA256: ab128162b0616090b47cf245afe0a23f3ef08936fdce19074f5ba0a4469281ac
+  MCP_PUBLISHER_LINUX_ARM64_SHA256: 04f5199b3deef8e6fc4d6ed98c56a74f799def53edca3fe6d4862ecd4397c172
+  MCP_PUBLISHER_VERSION: v1.7.9
   MCP_SERVER_NAME: io.github.apache/shardingsphere-mcp
 
 jobs:
@@ -86,7 +89,9 @@ jobs:
         run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
       - name: Package JDK 21 Subchain Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
-      - name: Run MCP Distribution Smoke
+      - name: Build Local MCP Docker Image
+        run: docker build -f distribution/mcp/Dockerfile -t shardingsphere-mcp-release:local distribution/mcp/target
+      - name: Run MCP Distribution E2E
         shell: bash
         run: |
           set -euo pipefail
@@ -97,9 +102,10 @@ jobs:
           fi
           DISTRIBUTION_HOME=$(cd "${DISTRIBUTION_HOME}" && pwd)
           ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-            -Dtest=PackagedDistributionSmokeE2ETest,PackagedDistributionPluginDiscoveryE2ETest \
+            -Dtest=PackagedDistributionE2ETest \
             -Dsurefire.failIfNoSpecifiedTests=true \
             -Dmcp.e2e.distribution.enabled=true \
+            -Dmcp.e2e.container.image=shardingsphere-mcp-release:local \
             -Dmcp.distribution.home="${DISTRIBUTION_HOME}" \
             -B -ntp
       - name: Prepare MCP Registry Metadata
@@ -127,6 +133,7 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - name: Push MCP Docker Image
+        id: push-image
         uses: docker/build-push-action@v6
         with:
           context: distribution/mcp/target
@@ -138,13 +145,57 @@ jobs:
             MCP_SERVER_NAME=${{ env.MCP_SERVER_NAME }}
             MCP_IMAGE_VERSION=${{ steps.release-version.outputs.version }}
             MCP_SOURCE_URL=https://github.com/apache/shardingsphere
-      - name: Install MCP Publisher
+      - name: Validate Published MCP Image Manifest
+        shell: bash
         run: |
-          MCP_PUBLISHER_ARCHIVE="mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz"
-          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/${MCP_PUBLISHER_ARCHIVE}" | tar xz mcp-publisher
+          set -euo pipefail
+          IMAGE_REF="${{ env.MCP_IMAGE }}@${{ steps.push-image.outputs.digest }}"
+          docker buildx imagetools inspect "${IMAGE_REF}" | tee "${RUNNER_TEMP}/mcp-image-manifest.txt"
+          grep -q 'linux/amd64' "${RUNNER_TEMP}/mcp-image-manifest.txt"
+          grep -q 'linux/arm64' "${RUNNER_TEMP}/mcp-image-manifest.txt"
+      - name: Pull Published MCP Docker Image
+        run: docker pull "${{ env.MCP_IMAGE }}@${{ steps.push-image.outputs.digest }}"
+      - name: Run Published MCP Image E2E
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
+            -Dtest=PackagedDistributionE2ETest#assertLaunchContainerOverHttp+assertLaunchContainerOverStdio \
+            -Dsurefire.failIfNoSpecifiedTests=true \
+            -Dmcp.e2e.distribution.enabled=true \
+            -Dmcp.e2e.container.image="${{ env.MCP_IMAGE }}@${{ steps.push-image.outputs.digest }}" \
+            -B -ntp
+      - name: Install MCP Publisher
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$(uname -m)" in
+            x86_64 | amd64)
+              MCP_PUBLISHER_ARCHIVE="mcp-publisher_linux_amd64.tar.gz"
+              MCP_PUBLISHER_SHA256="${MCP_PUBLISHER_LINUX_AMD64_SHA256}"
+              ;;
+            aarch64 | arm64)
+              MCP_PUBLISHER_ARCHIVE="mcp-publisher_linux_arm64.tar.gz"
+              MCP_PUBLISHER_SHA256="${MCP_PUBLISHER_LINUX_ARM64_SHA256}"
+              ;;
+            *)
+              echo "Unsupported MCP Publisher architecture: $(uname -m)" 1>&2
+              exit 1
+              ;;
+          esac
+          curl -fsSL --retry 3 --output "${MCP_PUBLISHER_ARCHIVE}" \
+            "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/${MCP_PUBLISHER_ARCHIVE}"
+          printf '%s  %s\n' "${MCP_PUBLISHER_SHA256}" "${MCP_PUBLISHER_ARCHIVE}" | sha256sum -c -
+          tar xzf "${MCP_PUBLISHER_ARCHIVE}" mcp-publisher
       - name: Authenticate to MCP Registry
         working-directory: mcp
         run: ../mcp-publisher login github-oidc
       - name: Publish Server to MCP Registry
         working-directory: mcp
         run: ../mcp-publisher publish
+      - name: Report MCP Release Evidence
+        run: |
+          echo "MCP version: ${{ steps.release-version.outputs.version }}"
+          echo "MCP image tags: ${{ steps.release-version.outputs.tags }}"
+          echo "MCP image digest: ${{ steps.push-image.outputs.digest }}"
+          echo "MCP server identifier: ${{ env.MCP_SERVER_NAME }}"

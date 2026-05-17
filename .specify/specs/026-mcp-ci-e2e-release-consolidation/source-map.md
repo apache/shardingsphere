@@ -45,15 +45,15 @@
 ## Workflow Paths
 
 - `.github/workflows/jdk21-subchain-ci.yml`
-  - Current JDK 21 MCP lane.
-  - Current smoke-related targets include H2 STDIO, MySQL runtime smoke, distribution smoke, and STDIO container smoke.
+  - JDK 21 MCP lane.
+  - Final target: MySQL HTTP/STDIO runtime E2E plus one complete distribution E2E job; no MCP smoke-only selector remains.
 - `.github/workflows/mcp-build.yml`
-  - Current release build, GHCR push, and MCP Registry publish workflow.
-  - Current gap: local validation exists before push, but published image validation is not complete.
+  - Release build, GHCR push, and MCP Registry publish workflow.
+  - Final target: local pre-push distribution E2E remains, then the pushed GHCR image digest is inspected, pulled, and runtime-validated on the native runner platform.
 - `.github/workflows/mcp-llm-e2e.yml`
-  - Current LLM smoke workflow invoking `LLMSmokeE2ETest`.
+  - Removed after LLM usability became the complete MySQL HTTP/STDIO target.
 - `.github/workflows/mcp-llm-usability-e2e.yml`
-  - Current LLM usability workflow invoking `LLMUsabilitySuiteE2ETest`.
+  - LLM usability workflow invoking `LLMUsabilitySuiteE2ETest` as the single complete LLM E2E target.
 - `.github/workflows/required-check.yml`
   - Repo-wide Checkstyle, Spotless, and RAT owner.
   - Current evidence: the workflow runs `./mvnw checkstyle:check -Pcheck -T1C`, `./mvnw spotless:check -Pcheck -T1C`, and `./mvnw apache-rat:check -Pcheck -T1C` without workflow path filters.
@@ -67,12 +67,20 @@
 ## MCP E2E Test Paths
 
 - `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/smoke/LLMSmokeE2ETest.java`
+  - Removed after usability absorbed the topology.
 - `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/LLMUsabilitySuiteE2ETest.java`
+  - Final target: parameterized MySQL HTTP and MySQL STDIO usability suite.
 - `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/scenario/LLMUsabilityScenarioCatalog.java`
-- `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/ProductionMySQLRuntimeSmokeE2ETest.java`
+- `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/ProductionMySQLRuntimeE2ETest.java`
+  - Final target: MySQL HTTP and STDIO production runtime E2E.
+- `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/PackagedDistributionE2ETest.java`
+  - Final target: packaged HTTP, packaged STDIO, packaged plugin discovery, container HTTP, and container STDIO from one distribution E2E suite.
 - `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/ContainerStdioSmokeE2ETest.java`
+  - Removed after container STDIO moved into `PackagedDistributionE2ETest`.
 - `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/PackagedDistributionSmokeE2ETest.java`
+  - Removed after packaged HTTP/STDIO moved into `PackagedDistributionE2ETest`.
 - `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/PackagedDistributionPluginDiscoveryE2ETest.java`
+  - Removed after plugin discovery moved into `PackagedDistributionE2ETest`.
 - `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/HttpProductionProxyEncryptWorkflowE2ETest.java`
 - `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/HttpProductionProxyMaskWorkflowE2ETest.java`
 - `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/runtime/MySQLRuntimeTestSupport.java`
@@ -81,8 +89,9 @@
 - `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/transport/client/MCPStdioInteractionClient.java`
 - `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/transport/client/DockerImageStdioInteractionClient.java`
 - `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/distribution/PackagedDistributionTestSupport.java`
+- `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/distribution/DockerImageHttpRuntime.java`
 - `test/e2e/mcp/src/test/resources/env/e2e-env.properties`
-  - Current risk: `mcp.e2e.production.h2.enabled=true` can imply H2 remains production E2E evidence unless changed, renamed, or documented during implementation.
+  - Final target: `mcp.e2e.production.h2.enabled=false`, so H2 is not default production E2E evidence.
 
 ## MCP Distribution Paths
 

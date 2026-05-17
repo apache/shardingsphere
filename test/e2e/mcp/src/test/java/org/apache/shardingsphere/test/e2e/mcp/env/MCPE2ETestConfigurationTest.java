@@ -30,7 +30,7 @@ class MCPE2ETestConfigurationTest {
     void assertDefaultLaneValues() {
         MCPE2ETestConfiguration config = new MCPE2ETestConfiguration(new Properties());
         assertTrue(config.isContractEnabled());
-        assertTrue(config.isProductionH2Enabled());
+        assertFalse(config.isProductionH2Enabled());
         assertFalse(config.isProductionMySQLEnabled());
         assertFalse(config.isProductionStdioEnabled());
         assertFalse(config.isDistributionEnabled());
@@ -76,5 +76,18 @@ class MCPE2ETestConfigurationTest {
         MCPE2ETestConfiguration bothConfig = new MCPE2ETestConfiguration(bothProps);
         assertFalse(MCPE2ECondition.isProductionMySQLStdioEnabled(mysqlOnlyConfig));
         assertTrue(MCPE2ECondition.isProductionMySQLStdioEnabled(bothConfig));
+    }
+    
+    @Test
+    void assertCompositeH2StdioCondition() {
+        Properties stdioOnlyProps = new Properties();
+        stdioOnlyProps.setProperty("mcp.e2e.production.stdio.enabled", "true");
+        MCPE2ETestConfiguration stdioOnlyConfig = new MCPE2ETestConfiguration(stdioOnlyProps);
+        Properties bothProps = new Properties();
+        bothProps.setProperty("mcp.e2e.production.h2.enabled", "true");
+        bothProps.setProperty("mcp.e2e.production.stdio.enabled", "true");
+        MCPE2ETestConfiguration bothConfig = new MCPE2ETestConfiguration(bothProps);
+        assertFalse(MCPE2ECondition.isProductionH2StdioEnabled(stdioOnlyConfig));
+        assertTrue(MCPE2ECondition.isProductionH2StdioEnabled(bothConfig));
     }
 }

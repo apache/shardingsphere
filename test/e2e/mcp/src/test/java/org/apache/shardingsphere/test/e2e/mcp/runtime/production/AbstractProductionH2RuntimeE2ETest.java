@@ -41,14 +41,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
-abstract class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
+abstract class AbstractProductionH2RuntimeE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
     
     private String jdbcUrl;
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
-            jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-runtime-smoke", getTransport().getH2AccessMode());
+            jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-h2-runtime", getTransport());
             H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         } catch (final SQLException ex) {
             throw new IOException(ex);
@@ -131,7 +131,7 @@ abstract class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParamete
     }
     
     protected static boolean isEnabled() {
-        return MCPE2ECondition.isProductionH2Enabled() || MCPE2ECondition.isProductionStdioEnabled();
+        return MCPE2ECondition.isProductionH2Enabled() || MCPE2ECondition.isProductionH2StdioEnabled();
     }
     
     protected static Stream<Arguments> transports() {
@@ -174,7 +174,7 @@ abstract class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParamete
         if (MCPE2ECondition.isProductionH2Enabled()) {
             result.add(RuntimeTransport.HTTP);
         }
-        if (MCPE2ECondition.isProductionStdioEnabled()) {
+        if (MCPE2ECondition.isProductionH2StdioEnabled()) {
             result.add(RuntimeTransport.STDIO);
         }
         return result.build();

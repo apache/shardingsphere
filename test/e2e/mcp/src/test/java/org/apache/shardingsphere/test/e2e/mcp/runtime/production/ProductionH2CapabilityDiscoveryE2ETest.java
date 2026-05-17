@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
-class ProductionH2CapabilityDiscoveryE2ETest extends ProductionH2RuntimeSmokeE2ETest {
+class ProductionH2CapabilityDiscoveryE2ETest extends AbstractProductionH2RuntimeE2ETest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")

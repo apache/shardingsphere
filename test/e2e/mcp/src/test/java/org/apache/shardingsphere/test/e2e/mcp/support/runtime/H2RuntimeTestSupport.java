@@ -49,10 +49,14 @@ public final class H2RuntimeTestSupport {
      *
      * @param tempDir temp directory
      * @param databaseName database name
-     * @param accessMode H2 access mode
+     * @param transport runtime transport
      * @return JDBC URL
      */
-    public static String createJdbcUrl(final Path tempDir, final String databaseName, final H2AccessMode accessMode) {
+    public static String createJdbcUrl(final Path tempDir, final String databaseName, final RuntimeTransport transport) {
+        return createJdbcUrl(tempDir, databaseName, getAccessMode(transport));
+    }
+    
+    private static String createJdbcUrl(final Path tempDir, final String databaseName, final H2AccessMode accessMode) {
         return String.format("jdbc:h2:file:%s;MODE=MySQL%s;DATABASE_TO_UPPER=false", tempDir.resolve(databaseName).toAbsolutePath(), accessMode.getJdbcParameter());
     }
     
@@ -98,11 +102,15 @@ public final class H2RuntimeTestSupport {
      * Create prepared runtime databases for programmatic E2E tests.
      *
      * @param tempDir temp directory
-     * @param accessMode H2 access mode
+     * @param transport runtime transport
      * @return prepared runtime databases
      * @throws SQLException SQL exception
      */
-    public static Map<String, RuntimeDatabaseConfiguration> createPreparedProgrammaticRuntimeDatabases(final Path tempDir, final H2AccessMode accessMode) throws SQLException {
+    public static Map<String, RuntimeDatabaseConfiguration> createPreparedProgrammaticRuntimeDatabases(final Path tempDir, final RuntimeTransport transport) throws SQLException {
+        return createPreparedProgrammaticRuntimeDatabases(tempDir, getAccessMode(transport));
+    }
+    
+    private static Map<String, RuntimeDatabaseConfiguration> createPreparedProgrammaticRuntimeDatabases(final Path tempDir, final H2AccessMode accessMode) throws SQLException {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(3, 1F);
         result.put("logic_db", createRuntimeDatabase(tempDir, "abstract-mcp-e2e-logic", "public", accessMode));
         result.put("analytics_db", createRuntimeDatabase(tempDir, "abstract-mcp-e2e-analytics", "public", accessMode));
@@ -129,12 +137,17 @@ public final class H2RuntimeTestSupport {
      * @param tempDir temp directory
      * @param databaseName database name
      * @param logicalDatabase logical database
-     * @param accessMode H2 access mode
+     * @param transport runtime transport
      * @return H2 runtime fixture
      * @throws SQLException SQL exception
      */
     public static LLMH2RuntimeFixture createLLMRuntimeFixture(final Path tempDir, final String databaseName,
-                                                              final String logicalDatabase, final H2AccessMode accessMode) throws SQLException {
+                                                              final String logicalDatabase, final RuntimeTransport transport) throws SQLException {
+        return createLLMRuntimeFixture(tempDir, databaseName, logicalDatabase, getAccessMode(transport));
+    }
+    
+    private static LLMH2RuntimeFixture createLLMRuntimeFixture(final Path tempDir, final String databaseName,
+                                                               final String logicalDatabase, final H2AccessMode accessMode) throws SQLException {
         String jdbcUrl = createJdbcUrl(tempDir, databaseName, accessMode);
         initializeDatabase(jdbcUrl);
         return new LLMH2RuntimeFixture(querySingleInt(jdbcUrl, COUNT_ORDERS_JDBC_SQL),
@@ -147,12 +160,17 @@ public final class H2RuntimeTestSupport {
      * @param tempDir temp directory
      * @param logicalDatabase logical database
      * @param analyticsDatabase analytics database
-     * @param accessMode H2 access mode
+     * @param transport runtime transport
      * @return H2 runtime fixture
      * @throws SQLException SQL exception
      */
     public static LLMH2RuntimeFixture createMultiDatabaseLLMRuntimeFixture(final Path tempDir, final String logicalDatabase,
-                                                                           final String analyticsDatabase, final H2AccessMode accessMode) throws SQLException {
+                                                                           final String analyticsDatabase, final RuntimeTransport transport) throws SQLException {
+        return createMultiDatabaseLLMRuntimeFixture(tempDir, logicalDatabase, analyticsDatabase, getAccessMode(transport));
+    }
+    
+    private static LLMH2RuntimeFixture createMultiDatabaseLLMRuntimeFixture(final Path tempDir, final String logicalDatabase,
+                                                                            final String analyticsDatabase, final H2AccessMode accessMode) throws SQLException {
         String logicalJdbcUrl = createJdbcUrl(tempDir, logicalDatabase + "-llm", accessMode);
         String analyticsJdbcUrl = createJdbcUrl(tempDir, analyticsDatabase + "-llm", accessMode);
         initializeDatabase(logicalJdbcUrl);
@@ -193,6 +211,10 @@ public final class H2RuntimeTestSupport {
         return new RuntimeDatabaseConfiguration(H2_DATABASE_TYPE, jdbcUrl, "", "", H2_DRIVER_CLASS_NAME);
     }
     
+    private static H2AccessMode getAccessMode(final RuntimeTransport transport) {
+        return RuntimeTransport.HTTP == transport ? H2AccessMode.SINGLE_PROCESS : H2AccessMode.MULTI_PROCESS;
+    }
+    
     /**
      * LLM H2 runtime fixture.
      *
@@ -207,7 +229,7 @@ public final class H2RuntimeTestSupport {
      */
     @RequiredArgsConstructor
     @Getter
-    public enum H2AccessMode {
+    private enum H2AccessMode {
         
         SINGLE_PROCESS(";DB_CLOSE_DELAY=-1"),
         

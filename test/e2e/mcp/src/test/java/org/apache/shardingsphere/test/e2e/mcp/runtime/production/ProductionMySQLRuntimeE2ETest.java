@@ -42,7 +42,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
-class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
+class ProductionMySQLRuntimeE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
     
     private static final String LOGICAL_DATABASE_NAME = "logic_db";
     
@@ -64,7 +64,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(),
-                () -> MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the MySQL-backed production runtime smoke test."));
+                () -> MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the MySQL-backed production runtime E2E test."));
         container = MySQLRuntimeTestSupport.createContainer();
         container.start();
         try {

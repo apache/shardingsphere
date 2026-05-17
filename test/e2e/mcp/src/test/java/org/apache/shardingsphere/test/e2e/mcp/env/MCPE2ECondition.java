@@ -47,12 +47,12 @@ public final class MCPE2ECondition {
         return config.isProductionMySQLEnabled();
     }
     
-    public static boolean isProductionStdioEnabled() {
-        return isProductionStdioEnabled(MCPE2ETestConfiguration.getInstance());
+    public static boolean isProductionH2StdioEnabled() {
+        return isProductionH2StdioEnabled(MCPE2ETestConfiguration.getInstance());
     }
     
-    static boolean isProductionStdioEnabled(final MCPE2ETestConfiguration config) {
-        return config.isProductionStdioEnabled();
+    static boolean isProductionH2StdioEnabled(final MCPE2ETestConfiguration config) {
+        return config.isProductionH2Enabled() && config.isProductionStdioEnabled();
     }
     
     public static boolean isProductionMySQLStdioEnabled() {
