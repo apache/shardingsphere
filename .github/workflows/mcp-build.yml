@@ -106,24 +106,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          DISTRIBUTION_HOME=$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | head -n 1)
-          if [[ -z "${DISTRIBUTION_HOME}" ]]; then
-            echo "Packaged MCP distribution was not found." 1>&2
-            exit 1
-          fi
-          java -cp "${DISTRIBUTION_HOME}/lib/*" org.apache.shardingsphere.mcp.bootstrap.registry.MCPRegistryMetadataCommand \
-            --version "${{ steps.release-version.outputs.version }}" \
-            --identifier "${{ steps.release-version.outputs.identifier }}"
+          ./mvnw -pl mcp/registry -DskipTests -DskipITs -Dspotless.skip=true \
+            -Dexec.mainClass=org.apache.shardingsphere.mcp.registry.MCPRegistryMetadataCommand \
+            -Dexec.args="--version ${{ steps.release-version.outputs.version }} --identifier ${{ steps.release-version.outputs.identifier }}" \
+            compile exec:java -B -ntp
       - name: Validate MCP Registry Metadata
         shell: bash
         run: |
           set -euo pipefail
-          DISTRIBUTION_HOME=$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | head -n 1)
-          if [[ -z "${DISTRIBUTION_HOME}" ]]; then
-            echo "Packaged MCP distribution was not found." 1>&2
-            exit 1
-          fi
-          java -cp "${DISTRIBUTION_HOME}/lib/*" org.apache.shardingsphere.mcp.bootstrap.registry.MCPRegistryMetadataCommand --validate-only
+          ./mvnw -pl mcp/registry -DskipTests -DskipITs -Dspotless.skip=true \
+            -Dexec.mainClass=org.apache.shardingsphere.mcp.registry.MCPRegistryMetadataCommand \
+            -Dexec.args="--validate-only" \
+            compile exec:java -B -ntp
       - name: Login Container Registry
         uses: docker/login-action@v3
         with:

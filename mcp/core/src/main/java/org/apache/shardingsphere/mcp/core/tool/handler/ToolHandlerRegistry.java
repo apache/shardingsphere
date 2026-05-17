@@ -56,7 +56,7 @@ public final class ToolHandlerRegistry {
         SUPPORTED_TOOL_DESCRIPTORS = REGISTERED_TOOL_HANDLERS.values().stream().map(MCPToolHandler::getToolDescriptor).collect(Collectors.toList());
     }
     
-    static Map<String, MCPToolHandler<?>> createRegisteredTools(final Collection<MCPToolHandler<?>> handlers) {
+    private static Map<String, MCPToolHandler<?>> createRegisteredTools(final Collection<MCPToolHandler<?>> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No tool handlers are registered."));
         Map<String, MCPToolHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPToolHandler<?> each : handlers) {
@@ -113,8 +113,7 @@ public final class ToolHandlerRegistry {
      * @param arguments tool arguments
      * @return handled response
      */
-    public static Optional<MCPResponse> dispatch(final MCPRequestScope requestScope, final String sessionId,
-                                                 final String toolName, final Map<String, Object> arguments) {
+    public static Optional<MCPResponse> dispatch(final MCPRequestScope requestScope, final String sessionId, final String toolName, final Map<String, Object> arguments) {
         Optional<MCPToolHandler<?>> toolHandler = findRegisteredTool(toolName);
         if (toolHandler.isEmpty()) {
             return Optional.empty();

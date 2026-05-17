@@ -32,8 +32,8 @@
         <module>support</module>
         <module>core</module>
         <module>features</module>
-        <module>bootstrap</module>
         <module>registry</module>
+        <module>bootstrap</module>
     </modules>
     
     <properties>

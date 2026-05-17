@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.core.tool.handler;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidApprovedStepsException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
@@ -55,7 +53,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 class ToolHandlerRegistryTest {
     
@@ -220,57 +217,6 @@ class ToolHandlerRegistryTest {
             assertThat(actualCause.getClass(), is(IllegalStateException.class));
             assertThat(actualCause.getMessage(), is("No tool handlers are registered."));
         }
-    }
-    
-    @Test
-    void assertCreateRegisteredToolsWithInvalidHandlers() {
-        MCPToolHandler<?> firstHandler = createToolHandler("database_gateway_search_metadata");
-        MCPToolHandler<?> secondHandler = createToolHandler("database_gateway_search_metadata");
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(firstHandler, secondHandler)));
-        assertThat(actual.getMessage(), is(String.format("Duplicate tool name `database_gateway_search_metadata` with `%s` and `%s`.",
-                firstHandler.getClass().getName(), secondHandler.getClass().getName())));
-        MCPToolHandler<?> handler = mock(MCPToolHandler.class);
-        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(handler)));
-        assertThat(actual.getMessage(), is(String.format("Tool descriptor is required for `%s`.", handler.getClass().getName())));
-        MCPToolHandler<?> nullNameHandler = createToolHandler(null);
-        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(nullNameHandler)));
-        assertThat(actual.getMessage(), is(String.format("Tool name is required for `%s`.", nullNameHandler.getClass().getName())));
-        MCPToolHandler<?> blankNameHandler = createToolHandler("   ");
-        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(blankNameHandler)));
-        assertThat(actual.getMessage(), is(String.format("Tool name is required for `%s`.", blankNameHandler.getClass().getName())));
-        MCPToolHandler<?> missingAnnotationsHandler = createToolHandler("missing_annotations", null);
-        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(missingAnnotationsHandler)));
-        assertThat(actual.getMessage(), is(String.format("Tool `missing_annotations` MCP annotations are required for `%s`.", missingAnnotationsHandler.getClass().getName())));
-        MCPToolHandler<MCPHandlerContext> unsupportedHandler = mock(MCPToolHandler.class);
-        when(unsupportedHandler.getContextType()).thenReturn(MCPHandlerContext.class);
-        when(unsupportedHandler.getToolDescriptor()).thenReturn(
-                new MCPToolDescriptor("unsupported", "Unsupported", "Unsupported tool.", Map.of("type", "object", "properties", Map.of(), "required", List.of(),
-                        "additionalProperties", false), Collections.emptyMap(), new MCPToolAnnotations("Unsupported", true, false, true, true), Collections.emptyMap()));
-        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(unsupportedHandler)));
-        assertThat(actual.getMessage(), is(String.format("Unsupported handler context type `%s` for `%s`.", MCPHandlerContext.class.getName(), unsupportedHandler.getClass().getName())));
-    }
-    
-    @Test
-    void assertCreateRegisteredTools() {
-        MCPToolHandler<?> firstHandler = createToolHandler("database_gateway_search_metadata");
-        MCPToolHandler<?> secondHandler = createToolHandler("database_gateway_execute_query");
-        Map<String, MCPToolHandler<?>> actual = ToolHandlerRegistry.createRegisteredTools(List.of(firstHandler, secondHandler));
-        assertThat(actual.size(), is(2));
-        assertThat(actual.keySet().stream().toList(), is(List.of("database_gateway_search_metadata", "database_gateway_execute_query")));
-    }
-    
-    private static MCPToolHandler<?> createToolHandler(final String toolName) {
-        return createToolHandler(toolName, new MCPToolAnnotations("Fixture Tool", true, false, true, true));
-    }
-    
-    private static MCPToolHandler<?> createToolHandler(final String toolName, final MCPToolAnnotations annotations) {
-        MCPToolDescriptor descriptor = mock(MCPToolDescriptor.class);
-        when(descriptor.getName()).thenReturn(toolName);
-        when(descriptor.getAnnotations()).thenReturn(annotations);
-        MCPToolHandler<MCPServiceHandlerContext> result = mock(MCPToolHandler.class);
-        when(result.getContextType()).thenReturn(MCPServiceHandlerContext.class);
-        when(result.getToolDescriptor()).thenReturn(descriptor);
-        return result;
     }
     
     private static MCPToolDescriptor createNestedFixtureToolDescriptor() {

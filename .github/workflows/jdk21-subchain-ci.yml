@@ -131,7 +131,7 @@ jobs:
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
           cache-suffix: 'mcp'
       - name: Test MCP Registry Metadata Command
-        run: ./mvnw -pl mcp/bootstrap -am -DskipITs -Dspotless.skip=true -Dtest=MCPRegistryMetadataCommandTest -Dsurefire.failIfNoSpecifiedTests=false test -B -ntp
+        run: ./mvnw -pl mcp/registry -am -DskipITs -Dspotless.skip=true -Dtest=MCPRegistryMetadataCommandTest -Dsurefire.failIfNoSpecifiedTests=false test -B -ntp
       - name: Package MCP Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
       - name: Validate MCP Registry Metadata
@@ -145,7 +145,10 @@ jobs:
           fi
           test -f "${DISTRIBUTION_HOME}/conf/mcp-http.yaml"
           test -f "${DISTRIBUTION_HOME}/conf/mcp-stdio.yaml"
-          java -cp "${DISTRIBUTION_HOME}/lib/*" org.apache.shardingsphere.mcp.bootstrap.registry.MCPRegistryMetadataCommand --validate-only --allow-snapshot
+          ./mvnw -pl mcp/registry -DskipTests -DskipITs -Dspotless.skip=true \
+            -Dexec.mainClass=org.apache.shardingsphere.mcp.registry.MCPRegistryMetadataCommand \
+            -Dexec.args="--validate-only --allow-snapshot" \
+            compile exec:java -B -ntp
           grep -q '^ARG MCP_SERVER_NAME=io.github.apache/shardingsphere-mcp$' distribution/mcp/Dockerfile
           grep -q 'io.modelcontextprotocol.server.name="${MCP_SERVER_NAME}"' distribution/mcp/Dockerfile
       - name: Install MCP E2E Test Dependencies
