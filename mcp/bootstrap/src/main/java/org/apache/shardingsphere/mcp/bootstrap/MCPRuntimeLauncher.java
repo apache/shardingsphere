@@ -58,7 +58,7 @@ public final class MCPRuntimeLauncher {
         MCPRuntimeServer result = config.getHttpTransport().isEnabled() ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioMCPServer(runtimeContext);
         try {
             result.start();
-            logStartupMessages(createStartupLogMessages(config, result));
+            createStartupLogMessages(config, result).forEach(log::info);
         } catch (final IOException ex) {
             result.stop();
             throw new IOException(String.format("Failed to start %s server.", config.getHttpTransport().isEnabled() ? "HTTP" : "STDIO"), ex);
@@ -67,11 +67,7 @@ public final class MCPRuntimeLauncher {
     }
     
     List<String> createStartupLogMessages(final MCPLaunchConfiguration config, final MCPRuntimeServer server) {
-        if (config.getHttpTransport().isEnabled()) {
-            return createHttpStartupLogMessages(config, server);
-        }
-        return List.of(String.format("ShardingSphere MCP runtime started, transport=stdio, config=%s, databases=%d, logs=%s. Stdout is reserved for MCP protocol frames.",
-                configPath, config.getDatabases().size(), LOG_PATH));
+        return config.getHttpTransport().isEnabled() ? createHttpStartupLogMessages(config, server) : createStdioStartupLogMessages(config);
     }
     
     private List<String> createHttpStartupLogMessages(final MCPLaunchConfiguration config, final MCPRuntimeServer server) {
@@ -85,11 +81,12 @@ public final class MCPRuntimeLauncher {
                 : List.of(startupLog);
     }
     
-    private String getAuthorizationStatus(final MCPLaunchConfiguration config) {
-        return config.getHttpTransport().getOauthIntrospection().isEnabled() || !Objects.toString(config.getHttpTransport().getAccessToken(), "").isBlank() ? "required" : "none";
+    private List<String> createStdioStartupLogMessages(final MCPLaunchConfiguration config) {
+        return List.of(String.format("ShardingSphere MCP runtime started, transport=stdio, config=%s, databases=%d, logs=%s. Stdout is reserved for MCP protocol frames.",
+                configPath, config.getDatabases().size(), LOG_PATH));
     }
     
-    private void logStartupMessages(final List<String> startupMessages) {
-        startupMessages.forEach(log::info);
+    private String getAuthorizationStatus(final MCPLaunchConfiguration config) {
+        return config.getHttpTransport().getOauthIntrospection().isEnabled() || !Objects.toString(config.getHttpTransport().getAccessToken(), "").isBlank() ? "required" : "none";
     }
 }
