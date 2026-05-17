@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio;
 
-import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpSyncServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFactory;
@@ -36,11 +35,7 @@ public final class StdioMCPServer implements MCPRuntimeServer {
     private McpSyncServer syncServer;
     
     public StdioMCPServer(final MCPRuntimeContext runtimeContext) {
-        this(runtimeContext, MCPTransportJsonMapperFactory.create());
-    }
-    
-    private StdioMCPServer(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
-        this(new MCPSyncServerFactory(runtimeContext, jsonMapper), new SessionManagedStdioTransportProvider(runtimeContext.getSessionManager(), jsonMapper));
+        this(new MCPSyncServerFactory(runtimeContext, MCPTransportJsonMapperFactory.create()), new SessionManagedStdioTransportProvider(runtimeContext.getSessionManager(), MCPTransportJsonMapperFactory.create()));
     }
     
     StdioMCPServer(final MCPSyncServerFactory syncServerFactory, final SessionManagedStdioTransportProvider transportProvider) {
