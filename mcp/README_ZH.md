@@ -1184,14 +1184,22 @@ docker run --rm -i \
 ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
 ```
 
+- 构建本地 score-closing LLM runtime image 前，先检查 Docker 磁盘占用：
+
+```bash
+docker system df
+```
+
+- 只校验本机架构选择，不下载模型：
+
+```bash
+sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh --dry-run
+```
+
 - 在 Maven 启动 LLM lane 前，先构建本地 score-closing LLM runtime image：
 
 ```bash
-docker build \
-  --build-arg BASE_IMAGE=ghcr.io/ggml-org/llama.cpp@sha256:988d2695631987e28a29d98970aaf0e979e23b843a26824abb790ac4245d1d57 \
-  -t apache/shardingsphere-mcp-llm-runtime:local \
-  -f test/e2e/mcp/src/test/resources/docker/llm-runtime/Dockerfile \
-  test/e2e/mcp/src/test/resources/docker/llm-runtime
+sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh
 ```
 
 - 本地复现这条 LLM smoke：
@@ -1214,8 +1222,13 @@ docker build \
 
 - 仅本地调试时，可以用 `-Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:8080/v1`
   连接已经运行的 OpenAI-compatible endpoint。External debug endpoint 不能作为 score-closing evidence。
-- LLM smoke 的 artifact 会落到 `test/e2e/mcp/target/llm-e2e/`。
-- 对应的 GitHub Actions 入口是 `.github/workflows/mcp-llm-e2e.yml`，第一轮按 `workflow_dispatch` 和 nightly schedule 交付，不进 PR gate。
+- LLM artifact 会落到 `test/e2e/mcp/target/llm-e2e/`。
+- 对应的 GitHub Actions 入口是 `.github/workflows/mcp-llm-e2e.yml` 和 `.github/workflows/mcp-llm-usability-e2e.yml`。
+  它们会在 PR 改到 MCP module 路径或对应 workflow 文件自身时运行，也保留 `workflow_dispatch` 和工作日 schedule。
+  不要把这两条检查配置成 branch protection 或 ruleset 的 required check；失败应该可见，但未跑完的 LLM lane 不应该单独卡住 merge。
+  如果超大 PR 因 GitHub path filter 限制漏触发，就用 `workflow_dispatch` 手动补 score evidence。
+- 本地 Docker 清理先用 `docker system df` 看占用，再用 `docker image prune` 或 `docker builder prune` 清 dangling image 和 build cache。
+  不要把 volume prune 放进默认清理流程；volume 可能包含本地数据库状态，必须单独显式确认。
 - `mcp/api`：public tool / resource handler 契约、共享 descriptor、协议 response 与 MCP 协议异常
 - `mcp/support`：为 MCP core 与可插拔 feature 提供 database metadata、execution、capability、workflow context、model、facade、SPI 与复用 helper
 - `mcp/features/encrypt`：encrypt tools、resources、planning / apply / validation 与算法可见性装配

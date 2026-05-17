@@ -1214,14 +1214,22 @@ Notes:
 ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
 ```
 
+- Check Docker disk usage before building the local score-closing LLM runtime image:
+
+```bash
+docker system df
+```
+
+- Validate local architecture selection without downloading the model:
+
+```bash
+sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh --dry-run
+```
+
 - Build the local score-closing LLM runtime image before Maven starts the LLM lane:
 
 ```bash
-docker build \
-  --build-arg BASE_IMAGE=ghcr.io/ggml-org/llama.cpp@sha256:988d2695631987e28a29d98970aaf0e979e23b843a26824abb790ac4245d1d57 \
-  -t apache/shardingsphere-mcp-llm-runtime:local \
-  -f test/e2e/mcp/src/test/resources/docker/llm-runtime/Dockerfile \
-  test/e2e/mcp/src/test/resources/docker/llm-runtime
+sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh
 ```
 
 - Local reproduction for the LLM smoke lane:
@@ -1245,8 +1253,13 @@ docker build \
 - For local debugging only, an already running OpenAI-compatible endpoint can be used with
   `-Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:8080/v1`.
   External debug endpoints are not valid score-closing evidence.
-- The LLM smoke artifacts are written under `test/e2e/mcp/target/llm-e2e/`.
-- The dedicated GitHub Actions entry point is `.github/workflows/mcp-llm-e2e.yml`, delivered as `workflow_dispatch` plus nightly schedule instead of a PR gate.
+- The LLM artifacts are written under `test/e2e/mcp/target/llm-e2e/`.
+- The dedicated GitHub Actions entry points are `.github/workflows/mcp-llm-e2e.yml` and `.github/workflows/mcp-llm-usability-e2e.yml`.
+  They run for PRs that touch MCP module paths or the dedicated workflow file itself, and they also keep `workflow_dispatch` plus weekday schedules.
+  Keep these checks out of required branch-protection or ruleset checks; failures should stay visible, but an unfinished LLM lane must not block merge by itself.
+  If a very large PR misses a path-filter match, use `workflow_dispatch` for manual score evidence.
+- For local Docker cleanup, inspect first with `docker system df`, then use `docker image prune` or `docker builder prune` for dangling images and build cache.
+  Do not run volume pruning as part of the default cleanup flow; volumes may contain local database state and require explicit confirmation.
 - `mcp/api`: public tool / resource handler contracts, shared descriptors, protocol responses, and MCP protocol exceptions
 - `mcp/support`: database metadata, execution, capability, and workflow contexts, models, facades, SPI, and reusable helpers for MCP core and pluggable features
 - `mcp/features/encrypt`: encrypt tools, resources, planning / apply / validation, and algorithm visibility assembly
