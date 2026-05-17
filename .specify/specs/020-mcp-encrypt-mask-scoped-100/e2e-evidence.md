@@ -27,7 +27,9 @@
 - Docker-owned score mode does not reuse an externally configured API key; it talks to the test-owned Ollama container with the local default key.
 - Every LLM conversation writes runtime metadata into `run-context.json` under `runtime`.
 - Score-closing runtime metadata includes `runtimeMode=docker`, `dockerOwned=true`,
-  and `imageName=ollama/ollama:0.23.1`.
+  `imageName=ollama/ollama:0.23.1`, and the current platform `imageDigest`.
+- Generated artifacts under `test/e2e/mcp/target/llm-e2e` are valid score-closing evidence only when they were produced after the Docker-owned runtime metadata writer change.
+- Any older `run-context.json` without the top-level `runtime` object is stale execution evidence and must be regenerated before it is used to close SC-008.
 
 ## Pinned Image Manifest
 
@@ -42,23 +44,57 @@ Resolved platform digests:
 - linux/amd64: `sha256:133a0539e836688c7cb88e318e31232f344a84cff7aab0cf6ac90476bc99c8ed`
 - linux/arm64: `sha256:fcaa568338a6b0993c82f259a5072f46814d6de276cf3dea5b91e281b7f9d149`
 
+Runtime implementation note:
+
+- Score evidence still reports the stable tag `ollama/ollama:0.23.1`.
+- The Docker pull reference uses `ollama/ollama:0.23.1@<platform digest>` for the current local architecture,
+  so score runs do not depend on a mutable `latest` tag and avoid unnecessary multi-architecture layer pulls.
+
 ## Reproduction Commands
 
 LLM smoke lane:
 
 ```bash
-./mvnw -pl test/e2e/mcp -Pllm-e2e test -DskipITs -Dspotless.skip=true \
+./mvnw -pl test/e2e/mcp -am -Pllm-e2e -DskipITs -Dspotless.skip=true \
   -Dtest=LLMSmokeE2ETest \
-  -Dsurefire.failIfNoSpecifiedTests=true
+  -Dsurefire.failIfNoSpecifiedTests=false test
 ```
 
 LLM usability lane:
 
 ```bash
-./mvnw -pl test/e2e/mcp -Pllm-e2e test -DskipITs -Dspotless.skip=true \
+./mvnw -pl test/e2e/mcp -am -Pllm-e2e -DskipITs -Dspotless.skip=true \
   -Dtest=LLMUsabilitySuiteE2ETest \
-  -Dsurefire.failIfNoSpecifiedTests=true
+  -Dsurefire.failIfNoSpecifiedTests=false test
 ```
+
+## Local LLM Lane Attempt
+
+Attempted command:
+
+```bash
+MCP_LLM_RUN_ID=codex-20260517-llm-runtime ./mvnw -pl test/e2e/mcp -am -Pllm-e2e \
+  -DskipITs -Dspotless.skip=true \
+  -Dtest=LLMSmokeE2ETest,LLMUsabilitySuiteE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+Result: exit code `143` after manual stop. This attempt does not count as score-closing pass evidence.
+
+Observed evidence:
+
+- Testcontainers connected to local Docker Desktop `27.3.1`.
+- The LLM lane entered the Docker-owned path and attempted to pull `ollama/ollama:0.23.1`.
+- The smoke test failed during Docker image registration with:
+  `failed to register layer: write /usr/lib/ollama/cuda_v12/libggml-cuda.so: no space left on device`.
+- `docker system df` showed Docker images using `46.67GB` with `41.27GB` reclaimable on the local machine.
+
+Follow-up to close this lane:
+
+- Reclaim Docker disk space locally.
+- Rerun the LLM command above after this digest-pinned implementation change.
+- Confirm generated `run-context.json` files include `runtimeMode=docker`, `dockerOwned=true`,
+  `imageName=ollama/ollama:0.23.1`, and the platform `imageDigest`.
 
 ## GitHub Actions Evidence
 
@@ -79,12 +115,12 @@ The focused unit evidence for T086 through T090 is owned by:
 Focused command:
 
 ```bash
-./mvnw -pl test/e2e/mcp -DskipITs -Dspotless.skip=true \
+./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
   -Dsurefire.failIfNoSpecifiedTests=false \
-  -Dtest=LLME2EConfigurationTest,OllamaLLMRuntimeSupportTest,LLME2EArtifactWriterTest,LLMChatModelClientTest test
+  -Dtest=MCPBuilderEvaluationArtifactTest,LLME2EArtifactWriterTest,LLME2EConfigurationTest,OllamaLLMRuntimeSupportTest test
 ```
 
-Result: exit code `0`, `15` tests, `0` failures, `0` errors, `0` skipped.
+Result: exit code `0`, `24` tests, `0` failures, `0` errors, `0` skipped.
 
 Mocking note:
 
@@ -104,7 +140,7 @@ Result: exit code `0`, `281` tests, `0` failures, `0` errors, `15` skipped.
 Style command:
 
 ```bash
-./mvnw -pl test/e2e/mcp -Pcheck -DskipTests -DskipITs checkstyle:check spotless:check
+./mvnw -pl test/e2e/mcp -am -Pcheck -DskipTests -DskipITs checkstyle:check spotless:check
 ```
 
 Result: exit code `0`, `0` Checkstyle violations, `0` Spotless changes needed.
@@ -184,7 +220,7 @@ Recommended opt-in commands:
 ```
 
 ```bash
-./mvnw -pl test/e2e/mcp -Pllm-e2e -DskipITs -Dspotless.skip=true \
+./mvnw -pl test/e2e/mcp -am -Pllm-e2e -DskipITs -Dspotless.skip=true \
   -Dtest=LLMSmokeE2ETest,LLMUsabilitySuiteE2ETest \
-  -Dsurefire.failIfNoSpecifiedTests=true test
+  -Dsurefire.failIfNoSpecifiedTests=false test
 ```

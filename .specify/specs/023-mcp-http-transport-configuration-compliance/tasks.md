@@ -25,9 +25,9 @@
 
 - [x] T001 Confirm the active branch is `001-shardingsphere-mcp` without switching branches.
 - [x] T002 Re-read `AGENTS.md`, `CODE_OF_CONDUCT.md`, and `.specify/memory/constitution.md`.
-- [x] T003 Load `source-driven-development`, `doubt-driven-development`, and `mcp-builder` skills.
+- [x] T003 Load `source-driven-development` and `doubt-driven-development`, and record `mcp-builder` as a future implementation review gate.
 - [x] T004 Verify Codex CLI availability for later doubt-driven cross-model review.
-- [x] T005 Record official MCP Streamable HTTP, MCP Authorization, RFC 9728, and mcp-builder source inputs.
+- [x] T005 Record official MCP Streamable HTTP, MCP Authorization, RFC 9728, RFC 7662, RFC 6750, and RFC 8707 source inputs.
 - [x] T006 Run first Codex CLI doubt-driven review against the draft package and record classifications in `doubt-review.md`.
 
 ## Phase 2 - Speckit Documentation
@@ -49,6 +49,11 @@
 - [ ] T018 Decide when `protectedResource.uri` is mandatory for production OAuth deployments.
 - [ ] T019 Decide OAuth introspection HTTPS, timeout, client authentication, fail-closed, redaction, and cache-key rules.
 - [ ] T020 Decide RFC 6750 and RFC 9728 challenge/metadata endpoint behavior.
+- [ ] T049 Decide whether missing Origin on non-loopback HTTP is rejected as ShardingSphere hardening or allowed for OAuth-authenticated non-browser clients.
+- [ ] T050 Decide introspection behavior for active tokens without `exp`, including accept/reject policy and whether successful results may be cached.
+- [ ] T051 Decide request-required scope challenge strategy separately from `scopesSupported` metadata.
+- [ ] T052 Decide exact protected resource metadata URL registration strategy and prove `resource_metadata` challenge URIs resolve to served metadata.
+- [ ] T053 Decide whether POST, GET, and DELETE all require identical Origin and authorization gates, or document method-specific exceptions.
 
 ## Phase 4 - Config Model Implementation
 
@@ -60,10 +65,10 @@
 ## Phase 5 - Authorization And Metadata Runtime
 
 - [ ] T025 Remove or isolate static token handling in `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/HttpBearerAuthorizationHandler.java`.
-- [ ] T026 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthTokenValidator.java` to use explicit required scopes if scope splitting is approved.
+- [ ] T026 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthTokenValidator.java` to use explicit required scopes and the approved active-without-expiration policy if scope splitting is approved.
 - [ ] T027 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthProtectedResourceMetadataServlet.java` to emit metadata only for OAuth-backed authorization, include `bearer_methods_supported`, and derive RFC 9728 well-known URLs.
 - [ ] T028 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/HttpOAuthTokenIntrospector.java` for HTTPS, timeout, client-auth, fail-closed, and credential-redaction decisions.
-- [ ] T029 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/StreamableHttpMCPServer.java` and servlet wiring only as needed for the approved metadata registration rules.
+- [ ] T029 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/StreamableHttpMCPServer.java` and servlet wiring only as needed for the approved metadata registration and method security rules.
 
 ## Phase 6 - Tests
 
@@ -71,8 +76,8 @@
 - [ ] T031 Update `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlHttpTransportConfigurationSwapperTest.java` for mapping and migration behavior.
 - [ ] T032 Update `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/HttpBearerAuthorizationHandlerTest.java` for deleted or isolated static-token behavior and RFC 6750 challenges.
 - [ ] T033 Update `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthProtectedResourceMetadataServletTest.java` for OAuth-only metadata, `bearer_methods_supported`, and RFC 9728 endpoint placement.
-- [ ] T034 Update `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthTokenValidatorTest.java` for canonical resource, issuer invariants, cache behavior, and required-scope behavior.
-- [ ] T035 Update `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportSecurityE2ETest.java` for remote exposure and Origin behavior, including invalid present Origin on loopback.
+- [ ] T034 Update `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthTokenValidatorTest.java` for canonical resource, issuer invariants, cache behavior, active-without-expiration behavior, and required-scope behavior.
+- [ ] T035 Update `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportSecurityE2ETest.java` for remote exposure and Origin behavior, including invalid present Origin on loopback and the approved missing-Origin policy.
 - [ ] T036 Update or remove `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportAccessTokenE2ETest.java` based on the static-token decision.
 - [ ] T037 Update `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportOAuthIntrospectionE2ETest.java` for OAuth-backed remote authorization and challenge coverage.
 
@@ -96,7 +101,7 @@
 ## Dependencies And Execution Order
 
 - Phase 1 and Phase 2 are documentation setup and may complete before implementation authorization.
-- Phase 3 blocks all code changes.
+- Phase 3 plus reanalysis tasks T049-T053 block all code changes.
 - Phase 4 blocks Phase 5 because runtime behavior depends on the approved config model.
 - Phase 6 should be written alongside Phase 4 and Phase 5 changes.
 - Phase 7 follows the final field decision and migration behavior.

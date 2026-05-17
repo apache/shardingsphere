@@ -42,6 +42,10 @@ public final class OllamaLLMRuntimeSupport {
     
     private static final String OLLAMA_IMAGE = "ollama/ollama:0.23.1";
     
+    private static final String OLLAMA_IMAGE_DIGEST_AMD64 = "sha256:133a0539e836688c7cb88e318e31232f344a84cff7aab0cf6ac90476bc99c8ed";
+    
+    private static final String OLLAMA_IMAGE_DIGEST_ARM64 = "sha256:fcaa568338a6b0993c82f259a5072f46814d6de276cf3dea5b91e281b7f9d149";
+    
     private static final String REQUIRED_PROVIDER = "openai-compatible";
     
     private static final String REQUIRED_MODEL = "qwen3:1.7b";
@@ -88,6 +92,24 @@ public final class OllamaLLMRuntimeSupport {
         return OLLAMA_IMAGE;
     }
     
+    static String getScoreClosingDockerImage() {
+        return String.format("%s@%s", OLLAMA_IMAGE, getScoreClosingImageDigest(System.getProperty("os.arch", "")));
+    }
+    
+    static String getScoreClosingImageDigest() {
+        return getScoreClosingImageDigest(System.getProperty("os.arch", ""));
+    }
+    
+    private static String getScoreClosingImageDigest(final String architecture) {
+        if ("amd64".equals(architecture) || "x86_64".equals(architecture)) {
+            return OLLAMA_IMAGE_DIGEST_AMD64;
+        }
+        if ("aarch64".equals(architecture) || "arm64".equals(architecture)) {
+            return OLLAMA_IMAGE_DIGEST_ARM64;
+        }
+        throw new IllegalStateException(String.format("Unsupported local architecture for MCP LLM Docker score mode: %s", architecture));
+    }
+    
     private static ModelRuntime prepareExternalDebugRuntime(final LLME2EConfiguration config) throws InterruptedException {
         if (!isModelReady(config)) {
             throw new IllegalStateException("MCP LLM external-debug mode requires a ready OpenAI-compatible endpoint.");
@@ -131,7 +153,7 @@ public final class OllamaLLMRuntimeSupport {
     }
     
     private static GenericContainer<?> createContainer() {
-        return new GenericContainer<>(DockerImageName.parse(OLLAMA_IMAGE))
+        return new GenericContainer<>(DockerImageName.parse(getScoreClosingDockerImage()))
                 .withExposedPorts(OLLAMA_PORT)
                 .waitingFor(Wait.forHttp("/api/tags").forPort(OLLAMA_PORT).forStatusCode(200))
                 .withStartupTimeout(Duration.ofMinutes(3));
@@ -170,12 +192,14 @@ public final class OllamaLLMRuntimeSupport {
         
         private final String imageName;
         
+        private final String imageDigest;
+        
         private static ModelRuntime externalDebug(final LLME2EConfiguration config) {
-            return new ModelRuntime(config, null, RuntimeMode.EXTERNAL_DEBUG, "");
+            return new ModelRuntime(config, null, RuntimeMode.EXTERNAL_DEBUG, "", "");
         }
         
         private static ModelRuntime container(final LLME2EConfiguration config, final GenericContainer<?> container) {
-            return new ModelRuntime(config, container, RuntimeMode.DOCKER, OLLAMA_IMAGE);
+            return new ModelRuntime(config, container, RuntimeMode.DOCKER, getScoreClosingImage(), getScoreClosingImageDigest());
         }
         
         @Override

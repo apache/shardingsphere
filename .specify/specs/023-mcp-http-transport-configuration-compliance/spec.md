@@ -39,6 +39,7 @@ If future implementation keeps it, the implementation must document a narrow rea
 - User prefers deleting `transport.http.accessToken`; retaining it requires a convincing reason and a design that avoids pretending it is OAuth.
 - User confirmed `mcp-builder` is available as a skill and should be used for design/implementation reasonableness checks when MCP or MCP E2E implementation changes are planned.
 - User allowed doubt-driven review using Codex CLI.
+- User requested reanalysis of any worthwhile design questions before implementation; this round remains documentation-only.
 
 ## Hard Constraints
 
@@ -72,7 +73,7 @@ As an MCP client or security reviewer, I want HTTP authorization configuration t
 
 **Acceptance Scenarios**:
 
-1. Given remote HTTP access is enabled, when local authorization is required, then the preferred mode is OAuth introspection with issuer, resource, expiration, and scope checks.
+1. Given remote HTTP access is enabled, when local authorization is required, then the preferred mode is OAuth introspection with issuer, resource, time-window when available, and scope checks.
 2. Given a deployment uses only local loopback HTTP, when authorization is disabled, then protected resource metadata is not emitted.
 3. Given a static shared secret is retained only after a new explicit user approval, when reviewers inspect the behavior, then it is named as `static-token`, does not require `authorizationServers`, and does not publish OAuth protected resource metadata.
 
@@ -87,7 +88,8 @@ As an operator, I want remote HTTP exposure to require explicit configuration an
 1. Given loopback binding, when no Origin is supplied, then local non-browser clients continue to work.
 2. Given loopback binding and a present invalid or non-loopback Origin, when the request is validated, then the request is rejected.
 3. Given non-loopback binding, when `allowedOrigins` is empty or malformed, then configuration validation fails before startup.
-4. Given non-loopback binding, when an incoming request has a missing, malformed, loopback-only, or unlisted Origin, then the request is rejected.
+4. Given non-loopback binding, when an incoming request has a present malformed, loopback-only, or unlisted Origin, then the request is rejected.
+5. Given non-loopback binding and a missing Origin, when the implementation policy is chosen, then reviewers can tell whether rejection is a ShardingSphere hardening choice or whether strong OAuth authentication is allowed to cover non-browser clients.
 
 ### User Story 4 - Protected Resource Metadata Is Canonical (Priority: P2)
 
@@ -100,7 +102,9 @@ As an OAuth client integrator, I want protected resource metadata to expose a ca
 1. Given OAuth introspection is enabled, when metadata is requested, then `resource` is an HTTPS URL without fragment and matches the resource/audience validation target.
 2. Given `protectedResource` is omitted, when a public base URI is unavailable, then the design requires an explicit production URI instead of silently advertising an internal address.
 3. Given supported scopes and required scopes differ, when a token is validated, then validation uses required scopes while metadata advertises supported scopes.
-4. Given MCP OAuth metadata is emitted, when clients inspect the metadata, then `authorization_servers` is non-empty and `bearer_methods_supported` advertises `header`.
+4. Given insufficient scope is reported, when clients inspect the `WWW-Authenticate` challenge, then `scope` advertises the scopes needed for the failed request, not blindly every `scopes_supported` value.
+5. Given MCP OAuth metadata is emitted, when clients inspect the metadata, then `authorization_servers` is non-empty and `bearer_methods_supported` advertises `header`.
+6. Given a client receives `resource_metadata` in a challenge, when it follows the URI, then the same endpoint returns metadata for the canonical resource URI used for audience validation.
 
 ### User Story 5 - Compatibility and Migration Are Reviewable (Priority: P2)
 
@@ -127,7 +131,7 @@ As a downstream operator, I want any breaking configuration cleanup to include m
 - **MHC-FR-007**: Non-loopback HTTP exposure MUST require a non-empty exact-origin allowlist.
 - **MHC-FR-008**: `transport.http.accessToken` SHOULD be removed as the preferred outcome.
 - **MHC-FR-009**: If a static token is retained, it MUST be explicitly modeled as non-OAuth `static-token` mode and MUST NOT publish OAuth protected resource metadata.
-- **MHC-FR-010**: OAuth authorization MUST validate active status, issuer, expiration, not-before when present, resource/audience, and required scopes.
+- **MHC-FR-010**: OAuth authorization MUST validate active status, issuer, resource/audience, required scopes, and time-window claims such as expiration or not-before when present.
 - **MHC-FR-011**: `authorizationServers` MUST only represent OAuth authorization server metadata and MUST use valid HTTPS URIs without fragments.
 - **MHC-FR-012**: `scopesSupported` MUST NOT double as both advertised supported scopes and required scopes unless the trade-off is documented and accepted.
 - **MHC-FR-013**: OAuth protected resource metadata MUST validate `protectedResource` as an HTTPS URL without fragment; query components SHOULD be rejected unless a documented resource-identifier reason exists.
@@ -143,6 +147,12 @@ As a downstream operator, I want any breaking configuration cleanup to include m
 - **MHC-FR-023**: Any implementation touching MCP or MCP E2E paths MUST include `mcp-builder` design/implementation review evidence with findings, classification, and evidence links.
 - **MHC-FR-024**: Any non-trivial design decision MUST pass a doubt-driven review cycle before implementation starts.
 - **MHC-FR-025**: Completion evidence MUST include commands, source links, contract snapshots, or review artifacts; prose-only closure is insufficient.
+- **MHC-FR-026**: Missing Origin handling for non-loopback HTTP MUST be explicitly classified as either ShardingSphere hardening or an allowed non-browser-client compatibility case protected by OAuth; it MUST NOT be presented as a direct MCP requirement.
+- **MHC-FR-027**: OAuth introspection validation MUST treat `active` as the mandatory authoritative response field, validate `exp`, `nbf`, and other time claims when present, and define fail-closed/cache behavior when `exp` is absent.
+- **MHC-FR-028**: `WWW-Authenticate` scope challenges MUST use request-required scopes, not automatically mirror `scopesSupported`.
+- **MHC-FR-029**: Protected resource metadata endpoint placement and `resource_metadata` challenge URIs MUST be tested as one contract so the advertised metadata URI is actually served.
+- **MHC-FR-030**: `authorizationServers` MUST represent OAuth authorization server issuer identifiers and MUST remain consistent with accepted token issuer validation.
+- **MHC-FR-031**: Origin protection and authorization behavior MUST be defined consistently for POST, GET, and DELETE requests on the MCP endpoint when HTTP authorization is enabled.
 
 ### Key Entities
 
@@ -164,6 +174,7 @@ As a downstream operator, I want any breaking configuration cleanup to include m
 - **MHC-SC-005**: Tests and documentation cover migration from old YAML fields to the new configuration model.
 - **MHC-SC-006**: `mcp-builder`, source-driven, and doubt-driven evidence are recorded before implementation is considered ready.
 - **MHC-SC-007**: OAuth failure responses, metadata, and introspection behavior are traceable to MCP Authorization, RFC 6750, RFC 7662, RFC 8707, and RFC 9728.
+- **MHC-SC-008**: Reanalysis decisions for missing Origin, absent token expiration, scope challenge policy, metadata URL placement, and method coverage are recorded before implementation starts.
 
 ## Assumptions
 

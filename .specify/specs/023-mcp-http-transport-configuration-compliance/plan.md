@@ -42,10 +42,11 @@ The primary design move is to separate HTTP listener configuration from security
 
 ## Source-Driven Framework Basis
 
-- MCP Streamable HTTP requires a single HTTP endpoint and recommends Origin validation for local servers.
+- MCP Streamable HTTP requires a single HTTP endpoint and Origin validation for incoming HTTP connections, and recommends localhost binding for local servers.
+- MCP Streamable HTTP requires Origin validation when the header is present; rejecting missing Origin is a stricter product policy that must be justified for non-browser clients.
 - MCP Authorization treats MCP servers as OAuth resource servers when authorization is implemented; access tokens must be validated for the protected resource.
 - OAuth Protected Resource Metadata exposes resource identity and authorization server metadata; these fields should not be emitted for a non-OAuth static shared secret.
-- `mcp-builder` best practices emphasize service-prefixed tools, concise schemas, pagination, actionable errors, Origin protection, and matching annotations to actual behavior.
+- MCP Authorization scope challenges describe scopes needed for the current failed request, while RFC 9728 `scopes_supported` describes scopes clients may request for the protected resource.
 - OAuth introspection, bearer challenges, and resource indicators are also grounded in RFC 7662, RFC 6750, and RFC 8707.
 
 ## Constitution Check
@@ -117,7 +118,7 @@ For OAuth mode, `protectedResource.uri` is the canonical HTTPS resource identifi
 2. Confirm the default deletion path for static `accessToken`; retention requires a new explicit user approval and a renamed non-OAuth compatibility mode.
 3. Decide whether `allowRemoteAccess` becomes `exposure.mode` or remains a confirmation field.
 4. Decide migration behavior for old flat YAML fields.
-5. Record official source map and mcp-builder review notes.
+5. Record official source map and `mcp-builder` future-gate notes.
 
 ### Phase 2 - Validation Model
 
@@ -126,7 +127,9 @@ For OAuth mode, `protectedResource.uri` is the canonical HTTPS resource identifi
 3. Validate OAuth `protectedResource` as an HTTPS URL without fragment and reject query components unless justified.
 4. Split `scopesSupported` from required scopes if OAuth validation enforces scope requirements.
 5. Define `authorizationServers` and accepted issuer invariants.
-6. Define introspection HTTPS, client authentication, timeout, fail-closed, credential redaction, and cache-key behavior.
+6. Define introspection HTTPS, client authentication, timeout, fail-closed, credential redaction, absent-expiration policy, and cache-key behavior.
+7. Decide whether missing Origin on remote HTTP is rejected as hardening or accepted for OAuth-authenticated non-browser clients.
+8. Define scope challenge policy separately from `scopes_supported` metadata.
 
 ### Phase 3 - Runtime Wiring
 
@@ -135,6 +138,8 @@ For OAuth mode, `protectedResource.uri` is the canonical HTTPS resource identifi
 3. Remove static token authorization path if deletion is selected.
 4. Ensure protected resource metadata is registered only when OAuth metadata is valid.
 5. Preserve RFC 6750-compatible `WWW-Authenticate` challenges and RFC 9728 `resource_metadata` behavior.
+6. Ensure `resource_metadata` challenge URIs, well-known endpoint registration, and protected resource `resource` values stay mutually consistent.
+7. Apply the approved Origin and authorization policy consistently to POST, GET, and DELETE on the MCP endpoint.
 
 ### Phase 4 - Tests And E2E
 
@@ -169,6 +174,8 @@ For OAuth mode, `protectedResource.uri` is the canonical HTTPS resource identifi
 - **Static-token convenience pressure**: Retaining static token may preserve an attractive insecure pattern. Mitigate by deleting it unless a narrow exception is approved.
 - **Challenge drift**: Metadata may be correct while `WWW-Authenticate` points clients to stale metadata. Mitigate with RFC 6750 and RFC 9728 challenge tests.
 - **Issuer drift**: Advertised authorization servers and accepted token issuers can diverge. Mitigate with a documented invariant and tests.
+- **Missing Origin compatibility**: Strict rejection improves DNS rebinding posture but can block non-browser clients. Mitigate by documenting the policy and testing both selected and rejected behavior.
+- **Absent expiration ambiguity**: RFC 7662 makes `active` mandatory while `exp` is optional. Mitigate by defining whether active tokens without `exp` are accepted without cache, accepted with bounded cache, or rejected.
 
 ## Complexity Tracking
 

@@ -36,6 +36,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LLME2EArtifactWriterTest {
     
+    private static final String OLLAMA_IMAGE_DIGEST = "sha256:fcaa568338a6b0993c82f259a5072f46814d6de276cf3dea5b91e281b7f9d149";
+    
     @TempDir
     private Path tempDir;
     
@@ -48,7 +50,8 @@ class LLME2EArtifactWriterTest {
         new LLME2EArtifactWriter().write(tempDir, artifactBundle, Map.of(
                 "runtimeMode", "docker",
                 "dockerOwned", true,
-                "imageName", "ollama/ollama:0.23.1"));
+                "imageName", "ollama/ollama:0.23.1",
+                "imageDigest", OLLAMA_IMAGE_DIGEST));
         final Map<String, Object> runContext = JsonUtils.fromJsonString(Files.readString(tempDir.resolve("run-context.json")), new TypeReference<>() {
         });
         final String rawModelOutput = Files.readString(tempDir.resolve("raw-model-output.txt"));
@@ -59,6 +62,7 @@ class LLME2EArtifactWriterTest {
         assertThat(castToMap(runContext.get("runtime")).get("runtimeMode"), is("docker"));
         assertTrue((boolean) castToMap(runContext.get("runtime")).get("dockerOwned"));
         assertThat(castToMap(runContext.get("runtime")).get("imageName"), is("ollama/ollama:0.23.1"));
+        assertThat(castToMap(runContext.get("runtime")).get("imageDigest"), is(OLLAMA_IMAGE_DIGEST));
         assertThat(rawModelOutput, not(containsString("raw-secret")));
         assertThat(runtimeLog, not(containsString("runtime-secret")));
         assertThat(finalAnswer, not(containsString("secret-value")));

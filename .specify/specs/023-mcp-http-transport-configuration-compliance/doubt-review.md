@@ -17,9 +17,9 @@
 
 # Doubt Review: MCP HTTP Transport Configuration Compliance
 
-**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - < <doubt-review-prompt>`  
-**Exit code**: 0  
-**Mode**: Read-only Codex CLI adversarial review  
+**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - < <doubt-review-prompt>`
+**Exit code**: 0
+**Mode**: Read-only Codex CLI adversarial review
 **Date**: 2026-05-17
 
 ## Finding Classifications
@@ -50,9 +50,9 @@
 
 ## Round 2 Review
 
-**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`  
-**Exit code**: 0  
-**Mode**: Read-only Codex CLI adversarial review  
+**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
+**Exit code**: 0
+**Mode**: Read-only Codex CLI adversarial review
 **Date**: 2026-05-17
 
 ### Round 2 Finding Classifications
@@ -64,12 +64,42 @@
 
 ## Round 3 Closure Review
 
-**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`  
-**Exit code**: 0  
-**Mode**: Read-only Codex CLI adversarial review  
+**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
+**Exit code**: 0
+**Mode**: Read-only Codex CLI adversarial review
 **Date**: 2026-05-17
 
 ### Round 3 Result
 
 - **Blocking findings**: None.
 - **Non-blocking temp-path nit**: Valid and actionable. Replaced the historical absolute review prompt path with a portable placeholder.
+
+## Reanalysis Review: Origin, Introspection, Scope, Metadata, and Method Coverage
+
+**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
+**Exit code**: 0
+**Mode**: Read-only Codex CLI adversarial review
+**Date**: 2026-05-17
+
+### Reanalysis Finding Classifications
+
+- **`mcp-builder` treated as current source evidence**: Valid and actionable. Reworded source-map, research, tasks, checklist, and plan so `mcp-builder` is a future implementation gate, not official source evidence for this documentation-only reanalysis.
+- **Missing-Origin requirement overclaim**: Valid and actionable. Clarified that MCP requires rejecting invalid present Origin values, while rejecting a missing Origin is a ShardingSphere hardening or compatibility decision.
+- **Introspection expiration overclaim**: Valid and actionable. Clarified that RFC 7662 requires `active`, while `exp` is optional; future implementation must define active-without-expiration fail-closed and cache behavior.
+- **Scope challenge coupling**: Valid and actionable. Split request-required `WWW-Authenticate` scope challenges from protected resource `scopes_supported` metadata.
+- **Metadata discovery contract incomplete**: Valid and actionable. Added requirements and tasks to test `resource_metadata` challenge URI, metadata endpoint registration, and protected resource identity together.
+- **HTTP method coverage incomplete**: Valid and actionable. Added explicit POST, GET, and DELETE Origin/authorization policy coverage before implementation.
+
+## Reanalysis Closure Review
+
+**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
+**Exit code**: 0
+**Mode**: Read-only Codex CLI adversarial review
+**Date**: 2026-05-17
+
+### Reanalysis Closure Result
+
+- **Blocking findings**: None.
+- **Non-blocking source-map clarity nit**: Valid and actionable. Moved the `mcp-builder` future gate out of Official Sources into a separate Future Review Gates section.
+- **Non-blocking checklist granularity nit**: Valid and actionable. Split metadata URL registration from POST, GET, and DELETE method security coverage in the open-decision checklist.
+- **Non-blocking issuer checklist nit**: Valid and actionable. Added an explicit open decision for `authorizationServers` issuer identifiers and accepted token issuer invariants.

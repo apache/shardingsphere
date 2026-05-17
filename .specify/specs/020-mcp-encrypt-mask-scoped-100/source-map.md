@@ -25,6 +25,7 @@
 - MCP prompts: `https://modelcontextprotocol.io/specification/2025-11-25/server/prompts`
 - MCP completions: `https://modelcontextprotocol.io/specification/2025-11-25/server/utilities/completion`
 - MCP transports: `https://modelcontextprotocol.io/specification/2025-11-25/basic/transports`
+- MCP Registry server metadata schema: `https://modelcontextprotocol.io/registry/versioning`
 - Ollama releases: `https://github.com/ollama/ollama/releases`
 - Ollama Docker tags: `https://hub.docker.com/r/ollama/ollama/tags`
 
@@ -36,6 +37,7 @@
 - HTTP transport: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/StreamableHttpMCPServlet.java`
 - Payload formatting: `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/MCPTransportPayloadUtils.java`
 - Descriptor validation: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogValidator.java`
+- MCP Registry metadata validation: `mcp/registry/src/main/java/org/apache/shardingsphere/mcp/registry/MCPRegistryMetadataCommand.java`
 
 ## Encrypt/Mask Sources
 
@@ -80,5 +82,6 @@
 - Protocol score closure is source-mapped only to MCP `2025-11-25` and local SDK `1.1.2`.
 - `mcp/bootstrap/pom.xml` fixes `mcp-java-sdk.version` at `1.1.2`; no SDK upgrade or dependency drift is part of this package.
 - `MCPTransportConstants.PROTOCOL_VERSION` is the score-closing server protocol version for MCP `2025-11-25`.
+- `mcp/server.json` uses the official MCP Registry server metadata schema. That registry schema date is packaging metadata and is not the MCP protocol revision scored by this package.
 - Existing `2025-06-18` transport compatibility may remain as product compatibility, but it is not required evidence for this scorecard and is not counted toward MCP protocol conformity.
 - Descriptor `icons` and `Tool.execution` stay non-goals for this checkpoint. YAML descriptor key validation rejects them today so unsupported optional protocol fields cannot silently become public ShardingSphere descriptor API.

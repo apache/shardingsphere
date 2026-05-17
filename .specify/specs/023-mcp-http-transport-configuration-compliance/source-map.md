@@ -84,4 +84,7 @@
 - OAuth Token Introspection: `https://www.rfc-editor.org/rfc/rfc7662.html`
 - OAuth Bearer Token Usage: `https://www.rfc-editor.org/rfc/rfc6750.html`
 - OAuth Resource Indicators: `https://www.rfc-editor.org/rfc/rfc8707.html`
-- MCP builder best practices reference: local installed `mcp-builder` skill loaded during this session; relevant points are copied into `research.md`.
+
+## Future Review Gates
+
+- `mcp-builder` skill must be used when implementation touches MCP runtime, distribution, or MCP E2E paths.

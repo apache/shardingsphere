@@ -155,7 +155,8 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         return Map.of(
                 "runtimeMode", runtime.getRuntimeMode().getValue(),
                 "dockerOwned", RuntimeMode.DOCKER == runtime.getRuntimeMode(),
-                "imageName", runtime.getImageName());
+                "imageName", runtime.getImageName(),
+                "imageDigest", runtime.getImageDigest());
     }
     
     private static OllamaLLMRuntimeSupport.ModelRuntime getRequiredLLMRuntime() {

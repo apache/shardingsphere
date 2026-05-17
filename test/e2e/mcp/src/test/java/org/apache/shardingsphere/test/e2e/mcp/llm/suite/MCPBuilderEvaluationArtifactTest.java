@@ -102,7 +102,7 @@ final class MCPBuilderEvaluationArtifactTest {
     }
     
     @Test
-    void assertRejectsShallowEvaluationQuestion() throws Exception {
+    void assertRejectsShallowEvaluationQuestion() {
         String xml = """
                 <qa_pair id="q01" category="metadata" read_only="true">
                   <question>Which tool lists metadata?</question>
@@ -122,7 +122,7 @@ final class MCPBuilderEvaluationArtifactTest {
     }
     
     @Test
-    void assertRejectsDestructiveEvaluationQuestion() throws Exception {
+    void assertRejectsDestructiveEvaluationQuestion() {
         String xml = """
                 <qa_pair id="q01" category="workflow" read_only="true">
                   <question>
@@ -145,7 +145,31 @@ final class MCPBuilderEvaluationArtifactTest {
     }
     
     @Test
-    void assertRejectsUnverifiableEvaluationAnswer() throws Exception {
+    void assertRejectsUnsafeUpdateReviewQuestion() {
+        String xml = """
+                <qa_pair id="q01" category="read_only_sql" read_only="true">
+                  <question>
+                    A reviewer wants the assistant to explain a pending SQL change and compare visible row counts afterward while staying inside
+                    a read-only MCP evaluation contract.
+                  </question>
+                  <answer>execute_update_review|execute_query_verify|no_user_approval</answer>
+                  <expected_answer>
+                    The answer names database_gateway_execute_update and database_gateway_execute_query, but it leaves the side-effecting SQL
+                    review mode ambiguous. That makes the read-only evaluation unsafe because the model could interpret the update review as a
+                    real write instead of a bounded preview, even while it still mentions metadata and approval evidence.
+                  </expected_answer>
+                  <verification>
+                    <step>Confirm the response mentions the side-effecting SQL review tool.</step>
+                    <step>Confirm the response also performs independent read-only verification.</step>
+                    <step>Confirm missing preview wording makes the read-only contract unsafe.</step>
+                  </verification>
+                </qa_pair>""";
+        assertThrows(AssertionError.class, () -> assertQAPair(
+                loadQAPair(xml), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>(), new LinkedHashSet<>()));
+    }
+    
+    @Test
+    void assertRejectsUnverifiableEvaluationAnswer() {
         String xml = """
                 <qa_pair id="q01" category="metadata" read_only="true">
                   <question>
@@ -190,6 +214,7 @@ final class MCPBuilderEvaluationArtifactTest {
         assertAnswer(answer, answers);
         assertExpectedAnswer(expectedAnswer);
         assertVerification(qaPair, question, answer, expectedAnswer);
+        assertReadOnlyPreviewBoundary(qaPair, question, answer, expectedAnswer);
     }
     
     private void assertQuestion(final String question, final Set<String> questions) {
@@ -229,6 +254,20 @@ final class MCPBuilderEvaluationArtifactTest {
         }
         assertTrue(countEvidenceTerms(question + " " + answer + " " + expectedAnswer + " " + verification.getTextContent()) >= MINIMUM_EVIDENCE_TERMS,
                 "Evaluation question must contain multiple protocol or ShardingSphere evidence terms.");
+    }
+    
+    private void assertReadOnlyPreviewBoundary(final Element qaPair, final String question, final String answer, final String expectedAnswer) {
+        if (!"true".equals(qaPair.getAttribute("read_only"))) {
+            return;
+        }
+        String content = question + " " + answer + " " + expectedAnswer + " " + readSingleElement(qaPair, "verification").getTextContent();
+        if (!answer.contains("execute_update") || !content.contains("database_gateway_execute_update")) {
+            return;
+        }
+        assertTrue(content.contains("execution_mode set to preview") || content.contains("execution_mode=preview") || content.contains("execution_mode preview"),
+                () -> "Read-only update review must require preview mode: " + question);
+        assertTrue(content.contains("must not switch to execution_mode execute") || content.contains("forbids execute mode") || content.contains("no_execute_without_approval"),
+                () -> "Read-only update review must forbid execute mode: " + question);
     }
     
     private int countWords(final String value) {

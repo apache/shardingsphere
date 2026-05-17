@@ -27,7 +27,7 @@
 - [x] Package created manually without branch-changing Speckit commands.
 - [x] Documentation-only work performed before implementation authorization.
 - [x] Repository rules from `AGENTS.md` and `CODE_OF_CONDUCT.md` considered.
-- [x] Source-driven and mcp-builder guidance recorded.
+- [x] Source-driven official guidance recorded, with `mcp-builder` kept as a future implementation review gate.
 - [x] Doubt-driven Codex CLI review rounds completed and findings classified in `doubt-review.md`.
 
 ## Requirement Quality
@@ -45,6 +45,11 @@
 - [x] RFC 9728 metadata fields and endpoint placement are required.
 - [x] Reverse-proxy public resource URI risk is called out.
 - [x] Migration behavior is included as a requirement.
+- [x] Missing Origin behavior is classified as product hardening or compatibility policy rather than a direct MCP requirement.
+- [x] Active introspection responses without `exp` are called out for explicit accept/reject/cache policy.
+- [x] Scope challenge policy is separated from supported-scope metadata.
+- [x] Protected resource metadata URL placement is treated as a discovery contract.
+- [x] POST, GET, and DELETE security coverage is mapped to future implementation decisions.
 
 ## Testability
 
@@ -63,3 +68,9 @@
 - [ ] Choose legacy YAML migration behavior.
 - [ ] Split `scopesSupported` from required scopes or document one-field trade-off.
 - [ ] Define when `protectedResource.uri` is mandatory.
+- [ ] Choose missing-Origin policy for non-loopback HTTP.
+- [ ] Choose active-without-expiration introspection policy.
+- [ ] Choose request-required scope challenge policy.
+- [ ] Choose exact metadata URL registration and `resource_metadata` challenge resolution.
+- [ ] Choose POST, GET, and DELETE method security coverage.
+- [ ] Define `authorizationServers` issuer identifiers and accepted token issuer invariants.

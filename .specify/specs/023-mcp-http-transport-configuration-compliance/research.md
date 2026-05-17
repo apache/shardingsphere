@@ -27,7 +27,6 @@
 - OAuth Resource Indicators: `https://www.rfc-editor.org/rfc/rfc8707.html`
 - Repository MCP Java SDK version: `mcp/bootstrap/pom.xml` sets `mcp-java-sdk.version` to `1.1.2`.
 - Repository protocol target: `MCPTransportConstants` uses `ProtocolVersions.MCP_2025_11_25` and supports `MCP_2025_06_18`.
-- MCP builder guidance: local installed `mcp-builder` skill and its best-practices reference were loaded during this session; the package records relevant guidance directly instead of depending on a machine-local absolute path.
 
 ## Decision 1: Split HTTP Configuration By Responsibility
 
@@ -71,12 +70,14 @@
 
 - **Decision**: Preserve or strengthen exact Origin validation for non-loopback HTTP exposure.
 - **Rationale**:
-  - MCP and mcp-builder guidance both emphasize DNS rebinding protection for Streamable HTTP.
+  - MCP guidance emphasizes DNS rebinding protection for Streamable HTTP.
   - Existing code already rejects missing, malformed, loopback-only, or unlisted Origin values for remote access.
+  - MCP requires rejecting invalid present Origin values; rejecting a missing Origin is stricter than the protocol minimum and must be recorded as a ShardingSphere hardening or compatibility decision.
   - This is one of the fields with clear security value and should not be merged away.
 - **Alternatives considered**:
   - Allow wildcard origins: rejected because it weakens DNS rebinding protection.
   - Rely only on OAuth authorization: rejected because Origin protection and token authorization address different threats.
+  - Accept missing Origin for all remote requests: possible for non-browser clients only if OAuth authorization is required and the risk is explicitly accepted.
 
 ## Decision 5: Canonicalize Protected Resource Metadata
 
@@ -111,13 +112,45 @@
 
 ## Decision 8: Specify Introspection Security And Cache Boundaries
 
-- **Decision**: OAuth introspection must define endpoint HTTPS requirements, client authentication, timeout/fail-closed behavior, credential redaction, and cache key/invalidation semantics before implementation.
+- **Decision**: OAuth introspection must define endpoint HTTPS requirements, client authentication, timeout/fail-closed behavior, credential redaction, absent-expiration behavior, and cache key/invalidation semantics before implementation.
 - **Rationale**:
   - RFC 7662 makes the introspection endpoint a protected OAuth endpoint and token metadata can vary by authorization context.
+  - RFC 7662 makes `active` the required response field but keeps fields such as `exp`, `scope`, and `client_id` optional, so requiring `exp` unconditionally can reject otherwise valid opaque-token deployments.
   - A cache keyed only by token can become unsafe if issuer, resource, or scope policy changes.
   - Fail-open introspection would expose protected MCP operations when the authorization server is unavailable.
 - **Alternatives considered**:
   - Keep the existing cache behavior as an implementation detail: rejected because this package changes the authorization contract.
+  - Require `exp` for every introspection response: rejected as the default because it is stricter than RFC 7662; acceptable only if documented as a ShardingSphere policy.
+
+## Decision 10: Separate Scope Metadata From Scope Challenge
+
+- **Decision**: `scopesSupported`, required scopes, and `WWW-Authenticate scope` challenge values must be modeled as related but separate policies.
+- **Rationale**:
+  - RFC 9728 defines `scopes_supported` as scopes used in authorization requests for the protected resource.
+  - MCP Authorization says insufficient-scope responses should include scopes needed for the current request.
+  - Mirroring all supported scopes in every challenge can over-request access and increase authorization friction.
+- **Alternatives considered**:
+  - Use `scopesSupported` everywhere: rejected because it conflates metadata breadth with request-specific minimum access.
+
+## Decision 11: Treat Metadata URL Placement As A Runtime Contract
+
+- **Decision**: The well-known metadata endpoint, `resource_metadata` challenge URI, and protected resource `resource` value must be tested together.
+- **Rationale**:
+  - RFC 9728 defines protected resource metadata names and discovery via well-known resources.
+  - MCP clients rely on the `resource_metadata` challenge URI during 401/403 recovery.
+  - A valid metadata payload is insufficient if the challenge URI points to an unregistered or internally derived endpoint.
+- **Alternatives considered**:
+  - Only test servlet payload content: rejected because clients discover the servlet through the challenge path.
+
+## Decision 12: Recheck HTTP Method Coverage
+
+- **Decision**: Authorization and Origin policy must be specified for POST, GET, and DELETE on the MCP endpoint before implementation.
+- **Rationale**:
+  - Streamable HTTP uses POST and GET; DELETE may terminate sessions when sessions are enabled.
+  - A security policy that covers POST but misses GET or DELETE can leave session or stream behavior inconsistent.
+  - This is a runtime wiring decision, not a new configuration field, so it belongs in implementation verification rather than config shape.
+- **Alternatives considered**:
+  - Limit this package to YAML validation only: rejected because `HttpTransportConfiguration` drives runtime security behavior.
 
 ## Decision 9: Defer Code Until A User Command
 
@@ -128,10 +161,11 @@
 - **Alternatives considered**:
   - Start refactoring immediately: rejected by user instruction.
 
-## MCP Builder Review Notes
+## Future MCP Builder Review Notes
 
+- `mcp-builder` is not used as current source evidence for this documentation-only reanalysis.
+- It remains a future design/implementation review gate if implementation touches `mcp/**`, `distribution/mcp/**`, or `test/e2e/mcp/**`.
 - Tool naming and response-format guidance in the generic mcp-builder reference does not directly apply to this HTTP configuration package.
-- Relevant mcp-builder points are transport selection, DNS rebinding protection, actionable error messages, schema clarity, and evaluations.
 - Response-format guidance is out of scope because this package changes HTTP transport configuration, not MCP tool result formats. If future work touches tool outputs, it must reopen that decision in the owning tool-contract package.
 
 ## Doubt-Driven Claims To Review
@@ -142,3 +176,7 @@
 - `scopesSupported` should not be used as the required scope list without an explicit trade-off.
 - `WWW-Authenticate`, metadata endpoint placement, and bearer metadata fields must be reviewed together.
 - Introspection cache and reverse-proxy public URI policy must be reviewed before implementation.
+- Missing Origin rejection for remote HTTP must be treated as a product hardening decision, not a protocol requirement.
+- Introspection responses without `exp` require an explicit accept/reject/cache policy.
+- Scope challenge contents must be request-specific and not blindly copied from supported-scope metadata.
+- POST, GET, and DELETE method coverage must be verified under the same approved security policy.
