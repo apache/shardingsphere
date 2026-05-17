@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,7 +40,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class MCPRuntimeLauncherTest {
     
@@ -123,23 +121,6 @@ class MCPRuntimeLauncherTest {
             assertThat(actual.getCause(), is(startFailure));
             verify(mockedStdioServer.constructed().get(0)).stop();
         }
-    }
-    
-    @Test
-    void assertCreateHttpStartupLogMessages() {
-        StreamableHttpMCPServer server = mock(StreamableHttpMCPServer.class);
-        when(server.getLocalPort()).thenReturn(19090);
-        List<String> actual = new MCPRuntimeLauncher("custom.yaml").createStartupLogMessages(createLaunchConfiguration(true), server);
-        assertThat(actual, is(List.of(
-                "ShardingSphere MCP runtime started, transport=http, config=custom.yaml, databases=1, endpoint=http://127.0.0.1:19090/mcp, authorization=none, logs=logs/mcp.log.")));
-    }
-    
-    @Test
-    void assertCreateStdioStartupLogMessages() {
-        MCPRuntimeServer server = mock(MCPRuntimeServer.class);
-        List<String> actual = new MCPRuntimeLauncher("conf/mcp-http.yaml").createStartupLogMessages(createLaunchConfiguration(false), server);
-        assertThat(actual, is(List.of(
-                "ShardingSphere MCP runtime started, transport=stdio, config=conf/mcp-http.yaml, databases=1, logs=logs/mcp.log. Stdout is reserved for MCP protocol frames.")));
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled) {

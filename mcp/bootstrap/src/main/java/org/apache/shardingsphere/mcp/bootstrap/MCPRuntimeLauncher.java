@@ -65,7 +65,7 @@ public final class MCPRuntimeLauncher {
         return result;
     }
     
-    List<String> createStartupLogMessages(final MCPLaunchConfiguration config, final MCPRuntimeServer server) {
+    private List<String> createStartupLogMessages(final MCPLaunchConfiguration config, final MCPRuntimeServer server) {
         return isHttpTransport(config) ? createHttpStartupLogMessages(config, server) : createStdioStartupLogMessages(config);
     }
     
