@@ -19,10 +19,13 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.completion;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncCompletionSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
+import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.completion.MCPCompletionResult;
 import org.apache.shardingsphere.mcp.core.completion.MCPCompletionService;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 
@@ -64,7 +67,18 @@ public final class MCPCompletionSpecificationFactory {
         String argumentName = request.argument().name();
         String prefix = Objects.toString(request.argument().value(), "");
         Map<String, String> contextArguments = new LinkedHashMap<>(null == request.context() || null == request.context().arguments() ? Map.of() : request.context().arguments());
-        MCPCompletionResult result = completionService.complete(exchange.sessionId(), descriptor, argumentName, prefix, contextArguments);
-        return new McpSchema.CompleteResult(new McpSchema.CompleteResult.CompleteCompletion(result.getValues(), result.getTotal(), result.isHasMore()), result.getMeta());
+        try {
+            MCPCompletionResult result = completionService.complete(exchange.sessionId(), descriptor, argumentName, prefix, contextArguments);
+            return new McpSchema.CompleteResult(new McpSchema.CompleteResult.CompleteCompletion(result.getValues(), result.getTotal(), result.isHasMore()), result.getMeta());
+        } catch (final MCPInvalidRequestException ex) {
+            throw createInvalidParamsError(ex);
+        }
+    }
+    
+    private McpError createInvalidParamsError(final MCPInvalidRequestException cause) {
+        return McpError.builder(McpSchema.ErrorCodes.INVALID_PARAMS)
+                .message(cause.getMessage())
+                .data(MCPErrorConverter.convert(cause).toPayload())
+                .build();
     }
 }

@@ -19,18 +19,22 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.prompt;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncPromptSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
+import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -103,6 +107,47 @@ class MCPPromptSpecificationFactoryTest {
                 "- algorithm_type: KEEP_FIRST_N_LAST_M",
                 "2. Read shardingsphere://features/mask/algorithms before choosing algorithm_type.",
                 "4. Call database_gateway_plan_mask_rule with gathered logical names and any user-approved algorithm choice."));
+    }
+    
+    @Test
+    void assertRenderedPromptsContainNoGuessAndFinalAnswerRule() {
+        Map<String, Map<String, Object>> promptArguments = Map.of(
+                "inspect_metadata", Map.of("database", "logic_db", "schema", "public", "query", "orders"),
+                "safe_sql_execution", Map.of("database", "logic_db", "schema", "public", "sql_intent", "count orders"),
+                "recover_workflow", Map.of("plan_id", "plan-1", "failure_summary", "metadata mismatch"),
+                "plan_encrypt_rule", Map.of("database", "logic_db", "schema", "public", "table", "orders", "column", "phone", "algorithm_type", "AES", "plan_id", "plan-1"),
+                "plan_mask_rule", Map.of("database", "logic_db", "schema", "public", "table", "orders", "column", "phone", "algorithm_type", "KEEP_FIRST_N_LAST_M", "plan_id", "plan-1"));
+        for (Entry<String, Map<String, Object>> entry : promptArguments.entrySet()) {
+            String actual = readText(renderPrompt(entry.getKey(), entry.getValue()));
+            assertTrue(actual.contains("completion/complete"), () -> "Missing completion guidance in " + entry.getKey());
+            assertTrue(actual.contains("do not guess"), () -> "Missing no-guess guidance in " + entry.getKey());
+            assertTrue(actual.contains("Final answer rule:"), () -> "Missing final answer rule heading in " + entry.getKey());
+            assertTrue(actual.contains("Summarize confirmed facts, the selected MCP path, and any required next user action."), () -> "Missing final answer rule in " + entry.getKey());
+        }
+    }
+    
+    @Test
+    void assertRejectMissingRequiredPromptArgument() {
+        McpError actual = assertThrows(McpError.class, () -> renderPrompt("safe_sql_execution", Map.of("database", "logic_db")));
+        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+        assertThat(actual.getJsonRpcError().message(), is("Required prompt argument `sql_intent` is missing."));
+    }
+    
+    @Test
+    void assertRejectNullRequiredPromptArgument() {
+        Map<String, Object> arguments = new LinkedHashMap<>();
+        arguments.put("database", null);
+        arguments.put("sql_intent", "count orders");
+        McpError actual = assertThrows(McpError.class, () -> renderPrompt("safe_sql_execution", arguments));
+        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+        assertThat(actual.getJsonRpcError().message(), is("Required prompt argument `database` is missing."));
+    }
+    
+    @Test
+    void assertRejectBlankRequiredPromptArgument() {
+        McpError actual = assertThrows(McpError.class, () -> renderPrompt("safe_sql_execution", Map.of("database", "logic_db", "sql_intent", " ")));
+        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+        assertThat(actual.getJsonRpcError().message(), is("Required prompt argument `sql_intent` is missing."));
     }
     
     private McpSchema.GetPromptResult renderPrompt(final String name, final Map<String, Object> arguments) {

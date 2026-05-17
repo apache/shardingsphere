@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.prompt;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncPromptSpecification;
+import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateBinding;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateLoader;
@@ -28,6 +31,7 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateLoader;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -61,8 +65,24 @@ public final class MCPPromptSpecificationFactory {
     
     private McpSchema.GetPromptResult handle(final McpSchema.GetPromptRequest request, final MCPPromptDescriptor descriptor) {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
+        validateRequiredArguments(descriptor, arguments);
         MCPPromptTemplateBinding binding = MCPDescriptorRegistry.getRequiredPromptTemplateBinding(descriptor.getName());
         String text = MCPPromptTemplateLoader.render(MCPPromptTemplateLoader.load(binding.getTemplateResource()), arguments);
         return new McpSchema.GetPromptResult(descriptor.getDescription(), List.of(new McpSchema.PromptMessage(McpSchema.Role.USER, new McpSchema.TextContent(text))), descriptor.getMeta());
+    }
+    
+    private void validateRequiredArguments(final MCPPromptDescriptor descriptor, final Map<String, Object> arguments) {
+        for (MCPPromptArgumentDescriptor each : descriptor.getArguments()) {
+            if (each.isRequired() && Objects.toString(arguments.get(each.getName()), "").trim().isEmpty()) {
+                throw createInvalidParamsError(new MCPInvalidRequestException(String.format("Required prompt argument `%s` is missing.", each.getName())));
+            }
+        }
+    }
+    
+    private McpError createInvalidParamsError(final MCPInvalidRequestException cause) {
+        return McpError.builder(McpSchema.ErrorCodes.INVALID_PARAMS)
+                .message(cause.getMessage())
+                .data(MCPErrorConverter.convert(cause).toPayload())
+                .build();
     }
 }

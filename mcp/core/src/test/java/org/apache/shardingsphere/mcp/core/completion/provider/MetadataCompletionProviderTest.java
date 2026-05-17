@@ -21,12 +21,14 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
@@ -40,7 +42,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MetadataCompletionProviderTest {
@@ -92,6 +97,41 @@ class MetadataCompletionProviderTest {
     }
     
     @Test
+    void assertCompleteWithSingleDatabaseDefaulted() {
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
+        when(metadataQueryFacade.queryTables("logic_db", "public")).thenReturn(List.of(createTableMetadata()));
+        MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade, List.of(createDatabaseProfile("logic_db"))),
+                createRequestContext("table", Map.of()));
+        assertCandidate(actual, "t_order");
+        assertThat(actual.getInferredContextArguments(), is(Map.of("database", "logic_db", "schema", "public")));
+        assertThat(actual.getMissingContextArguments(), is(List.of()));
+        verify(metadataQueryFacade, never()).queryDatabases();
+    }
+    
+    @Test
+    void assertCompleteWithMultipleDatabasesKeepsMissingContext() {
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade,
+                List.of(createDatabaseProfile("logic_db"), createDatabaseProfile("warehouse"))), createRequestContext("table", Map.of()));
+        assertThat(actual.getCandidates(), is(List.of()));
+        assertThat(actual.getInferredContextArguments(), is(Map.of()));
+        assertThat(actual.getMissingContextArguments(), is(List.of("database", "schema")));
+        verify(metadataQueryFacade, never()).queryDatabase(anyString());
+        verify(metadataQueryFacade, never()).queryDatabases();
+    }
+    
+    @Test
+    void assertCompletePreservesProvidedDatabase() {
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.querySchemas("provided_db")).thenReturn(List.of(createSchemaMetadata()));
+        MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade, List.of(createDatabaseProfile("logic_db"))),
+                createRequestContext("schema", Map.of("database", "provided_db")));
+        assertCandidate(actual, "public");
+        assertThat(actual.getInferredContextArguments(), is(Map.of()));
+    }
+    
+    @Test
     void assertCompleteTableWithMissingContext() {
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(mock(MCPMetadataQueryFacade.class)), createRequestContext("table", Map.of()));
         assertThat(actual.getCandidates(), is(List.of()));
@@ -135,9 +175,20 @@ class MetadataCompletionProviderTest {
     }
     
     private MCPDatabaseHandlerContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade) {
+        return createHandlerContext(metadataQueryFacade, List.of());
+    }
+    
+    private MCPDatabaseHandlerContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final List<RuntimeDatabaseProfile> databaseProfiles) {
         MCPDatabaseHandlerContext result = mock(MCPDatabaseHandlerContext.class);
+        MCPFeatureCapabilityFacade capabilityFacade = mock(MCPFeatureCapabilityFacade.class);
+        when(capabilityFacade.getDatabaseProfiles()).thenReturn(databaseProfiles);
         when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
+        when(result.getCapabilityFacade()).thenReturn(capabilityFacade);
         return result;
+    }
+    
+    private RuntimeDatabaseProfile createDatabaseProfile(final String database) {
+        return new RuntimeDatabaseProfile(database, "MySQL", "8.0");
     }
     
     private MCPDatabaseMetadata createDatabaseMetadata() {

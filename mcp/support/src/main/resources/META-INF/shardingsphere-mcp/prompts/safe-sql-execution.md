@@ -28,6 +28,7 @@ Model path:
 3. Use database_gateway_execute_update with execution_mode=preview for DML, DDL, DCL, transaction control, or savepoint statements before asking the user for approval.
 4. After the user approves the preview, call database_gateway_execute_update with execution_mode=execute, approved_by_user=true, and the reviewed SQL.
 5. Never split or batch multiple SQL statements into one MCP call.
+6. Before choosing uncertain database, schema, table, or column names, use completion/complete or read the nearest MCP resource; do not guess identifiers.
 
 Ask-user conditions:
 - Ask before database_gateway_execute_update execution when the preview has not been approved.
@@ -36,3 +37,6 @@ Ask-user conditions:
 Stop conditions:
 - Stop after database_gateway_execute_query returns the requested read-only result.
 - Stop after database_gateway_execute_update preview until the user approves the reviewed side effects.
+
+Final answer rule:
+- Summarize confirmed facts, the selected MCP path, and any required next user action.

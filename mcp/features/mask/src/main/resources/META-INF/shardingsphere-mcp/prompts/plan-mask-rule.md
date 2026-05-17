@@ -31,6 +31,7 @@ Model path:
 3. Read existing mask rules for the database or table when database and table are known.
 4. Call database_gateway_plan_mask_rule with gathered logical names and any user-approved algorithm choice.
 5. Use database_gateway_apply_workflow with execution_mode=preview before applying generated DistSQL unless the user already approved the plan.
+6. Before choosing uncertain database, schema, table, column, algorithm, or plan_id values, use completion/complete or read the nearest MCP resource; do not guess identifiers.
 
 Ask-user conditions:
 - Ask when field semantics or masking strategy are unclear.
@@ -39,3 +40,6 @@ Ask-user conditions:
 Stop conditions:
 - Stop after database_gateway_plan_mask_rule returns a planned workflow with plan_id and reviewable artifacts.
 - Stop after a clarifying response lists missing inputs instead of guessing mask strategy.
+
+Final answer rule:
+- Summarize confirmed facts, the selected MCP path, and any required next user action.

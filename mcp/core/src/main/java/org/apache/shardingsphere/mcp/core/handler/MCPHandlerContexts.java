@@ -40,15 +40,11 @@ public final class MCPHandlerContexts {
      */
     public static void validateContextType(final Class<?> contextType, final Class<?> handlerType) {
         ShardingSpherePreconditions.checkState(isSupportedContextType(contextType),
-                () -> new IllegalArgumentException(String.format("Unsupported handler context type `%s` for `%s`.", getContextTypeName(contextType), handlerType.getName())));
+                () -> new IllegalArgumentException(String.format("Unsupported handler context type `%s` for `%s`.", contextType.getName(), handlerType.getName())));
     }
     
     private static boolean isSupportedContextType(final Class<?> contextType) {
         return MCPServiceHandlerContext.class == contextType || MCPDatabaseHandlerContext.class == contextType || MCPWorkflowHandlerContext.class == contextType;
-    }
-    
-    private static String getContextTypeName(final Class<?> contextType) {
-        return null == contextType ? "null" : contextType.getName();
     }
     
     /**

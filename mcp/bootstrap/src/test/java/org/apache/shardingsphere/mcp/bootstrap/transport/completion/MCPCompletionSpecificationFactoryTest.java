@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.completion;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncCompletionSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
+import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
@@ -38,6 +39,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -73,10 +75,11 @@ class MCPCompletionSpecificationFactoryTest {
     
     @Test
     void assertCompleteTableValuesWithMissingContextDiagnostic() {
+        McpSchema.ResourceReference reference = new McpSchema.ResourceReference("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}");
         SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
-                new McpSchema.PromptReference("inspect_metadata"));
+                reference);
         McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
-                new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("table", "ord")));
+                new McpSchema.CompleteRequest(reference, new McpSchema.CompleteRequest.CompleteArgument("table", "ord")));
         assertThat(actual.completion().values(), is(List.of()));
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("missing_context"));
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS), is(List.of("database", "schema")));
@@ -84,6 +87,27 @@ class MCPCompletionSpecificationFactoryTest {
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
         assertThat(actualNextAction.get("type"), is("resource_read"));
         assertThat(actualNextAction.get("resource_uri"), is("shardingsphere://databases"));
+    }
+    
+    @Test
+    void assertRejectUndeclaredPromptCompletionArgument() {
+        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
+                new McpSchema.PromptReference("inspect_metadata"));
+        McpError actual = assertThrows(McpError.class, () -> completionSpecification.completionHandler().apply(createExchange("session-1"),
+                new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("table", "ord"))));
+        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+        assertThat(actual.getJsonRpcError().message(), is("Completion argument `table` is not declared for prompt `inspect_metadata`."));
+    }
+    
+    @Test
+    void assertRejectUndeclaredResourceCompletionArgument() {
+        McpSchema.ResourceReference reference = new McpSchema.ResourceReference("shardingsphere://databases/{database}");
+        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
+                reference);
+        McpError actual = assertThrows(McpError.class, () -> completionSpecification.completionHandler().apply(createExchange("session-1"),
+                new McpSchema.CompleteRequest(reference, new McpSchema.CompleteRequest.CompleteArgument("column", "id"))));
+        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+        assertThat(actual.getJsonRpcError().message(), is("Completion argument `column` is not declared for resource `shardingsphere://databases/{database}`."));
     }
     
     @Test

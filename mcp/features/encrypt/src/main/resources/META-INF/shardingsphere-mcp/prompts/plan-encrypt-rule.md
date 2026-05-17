@@ -31,6 +31,7 @@ Model path:
 3. Read existing encrypt rules for the database or table when database and table are known.
 4. Call database_gateway_plan_encrypt_rule with gathered logical names and any user-approved algorithm choices.
 5. Use database_gateway_apply_workflow with execution_mode=preview before applying generated DDL or DistSQL unless the user already approved the plan.
+6. Before choosing uncertain database, schema, table, column, algorithm, or plan_id values, use completion/complete or read the nearest MCP resource; do not guess identifiers.
 
 Ask-user conditions:
 - Ask when decrypt, equality, LIKE, or sensitive-field semantics are unclear.
@@ -39,3 +40,6 @@ Ask-user conditions:
 Stop conditions:
 - Stop after database_gateway_plan_encrypt_rule returns a planned workflow with plan_id and reviewable artifacts.
 - Stop after a clarifying response lists missing inputs instead of guessing algorithm or column choices.
+
+Final answer rule:
+- Summarize confirmed facts, the selected MCP path, and any required next user action.

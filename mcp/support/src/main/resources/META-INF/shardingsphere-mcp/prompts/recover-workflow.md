@@ -27,6 +27,7 @@ Model path:
 3. Use database_gateway_validate_workflow when the plan has been applied and the user asks whether runtime state matches the plan.
 4. Use database_gateway_apply_workflow only after reviewing plan artifacts or an execution_mode=preview response with the user.
 5. Preserve user-provided corrections when re-planning with database_gateway_plan_encrypt_rule or database_gateway_plan_mask_rule.
+6. Before choosing uncertain plan_id or workflow handles, use completion/complete or read the nearest workflow resource; do not guess current-session identifiers.
 
 Ask-user conditions:
 - Ask which workflow kind to re-plan when the failure summary does not identify encrypt or mask.
@@ -35,3 +36,6 @@ Ask-user conditions:
 Stop conditions:
 - Stop after database_gateway_validate_workflow confirms the current plan or after a replacement plan is created.
 - Stop when the plan_id is unavailable and the matching planning tool needs fresh user inputs.
+
+Final answer rule:
+- Summarize confirmed facts, the selected MCP path, and any required next user action.

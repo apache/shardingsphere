@@ -28,6 +28,7 @@ Model path:
 3. Use database_gateway_search_metadata when query is non-empty or the exact object kind is uncertain.
 4. Prefer detail resources after resolving database, schema, table, column, index, sequence, or view names.
 5. Do not execute SQL for metadata inspection unless the user explicitly asks for SQL output.
+6. Before choosing uncertain database, schema, table, column, index, sequence, or view names, use completion/complete or read the nearest MCP resource; do not guess identifiers.
 
 Ask-user conditions:
 - Ask for the logical database when multiple databases match and no safe default is visible.
@@ -36,3 +37,6 @@ Ask-user conditions:
 Stop conditions:
 - Stop after returning resolved metadata paths or after identifying the exact resource/tool to call next.
 - Stop without SQL execution when the user only asked to inspect metadata.
+
+Final answer rule:
+- Summarize confirmed facts, the selected MCP path, and any required next user action.

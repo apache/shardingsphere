@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.completion;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.completion.provider.MetadataCompletionProvider;
 import org.apache.shardingsphere.mcp.core.completion.provider.WorkflowPlanIdCompletionProvider;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
@@ -47,6 +48,7 @@ import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -113,6 +115,13 @@ class MCPCompletionServiceTest {
         assertThat(actual.getValues(), is(List.of("t_order")));
         assertThat(((Map<?, ?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.CONTEXT_ARGUMENTS)).get("schema"), is("public"));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
+    }
+    
+    @Test
+    void assertCompleteRejectsUndeclaredArgumentBeforeProviderInvocation() {
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> complete(new InMemoryWorkflowSessionContext(),
+                createDescriptor("inspect_metadata", "database", 50), "table", "t_", new LinkedHashMap<>(), List.of(new UnexpectedCompletionProvider())));
+        assertThat(actual.getMessage(), is("Completion argument `table` is not declared for prompt `inspect_metadata`."));
     }
     
     private MCPCompletionResult complete(final WorkflowSessionContext workflowSessionContext, final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix,
@@ -208,6 +217,24 @@ class MCPCompletionServiceTest {
         @Override
         public MCPCompletionProviderResult complete(final MCPWorkflowHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
             return new MCPCompletionProviderResult(List.of(), Map.of(), List.of("database"), "");
+        }
+    }
+    
+    private static final class UnexpectedCompletionProvider implements MCPCompletionProvider<MCPWorkflowHandlerContext> {
+        
+        @Override
+        public Class<MCPWorkflowHandlerContext> getContextType() {
+            return MCPWorkflowHandlerContext.class;
+        }
+        
+        @Override
+        public boolean supports(final MCPCompletionRequestContext requestContext) {
+            throw new AssertionError("Provider should not be invoked for undeclared completion arguments.");
+        }
+        
+        @Override
+        public MCPCompletionProviderResult complete(final MCPWorkflowHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
+            throw new AssertionError("Provider should not be invoked for undeclared completion arguments.");
         }
     }
 }

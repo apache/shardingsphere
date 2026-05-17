@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.completion;
 
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
@@ -72,6 +73,7 @@ public final class MCPCompletionService {
      */
     public MCPCompletionResult complete(final String sessionId, final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix,
                                         final Map<String, String> contextArguments) {
+        validateDeclaredArgument(descriptor, argumentName);
         Map<String, String> actualContextArguments = new LinkedHashMap<>(contextArguments);
         MCPCompletionProviderResult providerResult = completeCandidates(sessionId, descriptor, argumentName, actualContextArguments);
         Map<String, Object> inferredContextArguments = providerResult.getInferredContextArguments();
@@ -89,6 +91,13 @@ public final class MCPCompletionService {
                 providerResult.getGuidanceResourceUri(), candidates, filteredCandidates, returnedCandidates);
         return new MCPCompletionResult(returnedCandidates.stream().map(MCPCompletionCandidate::getValue).toList(), filteredCandidates.size(), filteredCandidates.size() > returnedCandidates.size(),
                 meta);
+    }
+    
+    private void validateDeclaredArgument(final MCPCompletionTargetDescriptor descriptor, final String argumentName) {
+        if (!descriptor.getArguments().contains(argumentName)) {
+            throw new MCPInvalidRequestException(String.format("Completion argument `%s` is not declared for %s `%s`.",
+                    Objects.toString(argumentName, ""), descriptor.getReferenceType(), descriptor.getReference()));
+        }
     }
     
     private void mergeInferredContextArguments(final Map<String, String> contextArguments, final Map<String, Object> inferredContextArguments) {

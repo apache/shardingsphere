@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
@@ -60,12 +61,33 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
     @Override
     public MCPCompletionProviderResult complete(final MCPDatabaseHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
         Map<String, String> contextArguments = new LinkedHashMap<>(requestContext.getContextArguments());
-        Map<String, Object> inferredContextArguments = applySingleSchemaDefault(handlerContext, requestContext.getArgumentName(), contextArguments);
-        mergeInferredContextArguments(contextArguments, inferredContextArguments);
+        Map<String, Object> inferredContextArguments = applyContextDefaults(handlerContext, requestContext.getArgumentName(), contextArguments);
         Collection<String> missingContextArguments = createMissingContextArguments(requestContext.getArgumentName(), contextArguments);
-        String guidanceResourceUri = createNearestResourceUri(missingContextArguments.isEmpty() ? requestContext.getArgumentName() : new ArrayList<>(missingContextArguments).get(0), contextArguments);
+        String guidanceResourceUri = createNearestResourceUri(
+                missingContextArguments.isEmpty() ? requestContext.getArgumentName() : new ArrayList<>(missingContextArguments).get(0), contextArguments);
         return new MCPCompletionProviderResult(
                 completeMetadata(handlerContext, requestContext.getArgumentName(), contextArguments), inferredContextArguments, missingContextArguments, guidanceResourceUri);
+    }
+    
+    private Map<String, Object> applyContextDefaults(final MCPDatabaseHandlerContext handlerContext, final String argumentName, final Map<String, String> contextArguments) {
+        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
+        result.putAll(applySingleDatabaseDefault(handlerContext, argumentName, contextArguments));
+        mergeInferredContextArguments(contextArguments, result);
+        result.putAll(applySingleSchemaDefault(handlerContext, argumentName, contextArguments));
+        mergeInferredContextArguments(contextArguments, result);
+        return result;
+    }
+    
+    private Map<String, Object> applySingleDatabaseDefault(final MCPDatabaseHandlerContext handlerContext, final String argumentName, final Map<String, String> contextArguments) {
+        if (!requiresDatabaseContext(argumentName) || !Objects.toString(contextArguments.get("database"), "").isEmpty()) {
+            return Map.of();
+        }
+        List<RuntimeDatabaseProfile> databaseProfiles = handlerContext.getCapabilityFacade().getDatabaseProfiles();
+        if (1 != databaseProfiles.size()) {
+            return Map.of();
+        }
+        String database = Objects.toString(databaseProfiles.get(0).getDatabase(), "");
+        return database.isEmpty() ? Map.of() : Map.of("database", database);
     }
     
     private Map<String, Object> applySingleSchemaDefault(final MCPDatabaseHandlerContext handlerContext, final String argumentName, final Map<String, String> contextArguments) {
@@ -85,6 +107,10 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
                 contextArguments.put(entry.getKey(), Objects.toString(entry.getValue(), ""));
             }
         }
+    }
+    
+    private boolean requiresDatabaseContext(final String argumentName) {
+        return "schema".equals(argumentName) || requiresSchemaContext(argumentName);
     }
     
     private boolean requiresSchemaContext(final String argumentName) {
