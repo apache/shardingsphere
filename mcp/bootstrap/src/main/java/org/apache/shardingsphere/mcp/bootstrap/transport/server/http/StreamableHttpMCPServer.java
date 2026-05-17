@@ -107,17 +107,10 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
     
     @Override
     public void stop() {
-        closeSyncServer();
         closeTomcat();
+        closeSyncServer();
         connector = null;
         deleteBaseDirectory();
-    }
-    
-    private void closeSyncServer() {
-        if (null != syncServer) {
-            syncServer.closeGracefully();
-            syncServer = null;
-        }
     }
     
     private void closeTomcat() {
@@ -133,6 +126,13 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
         } catch (final LifecycleException ignored) {
         }
         tomcat = null;
+    }
+    
+    private void closeSyncServer() {
+        if (null != syncServer) {
+            syncServer.closeGracefully();
+            syncServer = null;
+        }
     }
     
     private void deleteBaseDirectory() {
