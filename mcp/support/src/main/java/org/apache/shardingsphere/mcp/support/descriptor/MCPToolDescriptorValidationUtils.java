@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 
 import java.util.Collection;
@@ -39,9 +40,11 @@ public final class MCPToolDescriptorValidationUtils {
     public static void validateRequiredOutputFields(final MCPToolDescriptor descriptor, final Collection<String> requiredFields) {
         Map<?, ?> properties = (Map<?, ?>) descriptor.getOutputSchema().get("properties");
         for (String each : requiredFields) {
-            checkState(properties.containsKey(each), String.format("Tool `%s` outputSchema must declare `%s`.", descriptor.getName(), each));
+            ShardingSpherePreconditions.checkState(properties.containsKey(each),
+                    () -> new IllegalStateException(String.format("Tool `%s` outputSchema must declare `%s`.", descriptor.getName(), each)));
             Object property = properties.get(each);
-            checkState(property instanceof Map, String.format("Tool `%s` outputSchema property `%s` must be an object.", descriptor.getName(), each));
+            ShardingSpherePreconditions.checkState(property instanceof Map,
+                    () -> new IllegalStateException(String.format("Tool `%s` outputSchema property `%s` must be an object.", descriptor.getName(), each)));
             Object description = ((Map<?, ?>) property).get("description");
             checkDescription(null == description ? "" : description.toString(), String.format("Tool output field `%s.%s` description", descriptor.getName(), each));
         }
@@ -54,19 +57,6 @@ public final class MCPToolDescriptorValidationUtils {
      * @param label description label
      */
     public static void checkDescription(final String value, final String label) {
-        checkState(null != value && !value.isBlank(), String.format("%s is required.", label));
-    }
-    
-    /**
-     * Check state.
-     *
-     * @param expression checked expression
-     * @param message exception message
-     * @throws IllegalStateException when expression is false
-     */
-    public static void checkState(final boolean expression, final String message) {
-        if (!expression) {
-            throw new IllegalStateException(message);
-        }
+        ShardingSpherePreconditions.checkState(null != value && !value.isBlank(), () -> new IllegalStateException(String.format("%s is required.", label)));
     }
 }

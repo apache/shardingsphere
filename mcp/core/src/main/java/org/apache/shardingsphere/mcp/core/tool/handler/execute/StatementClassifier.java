@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
@@ -171,8 +172,7 @@ public final class StatementClassifier {
         if (!savepointName.isEmpty()) {
             return;
         }
-        if ("SAVEPOINT".equals(statementType) || "ROLLBACK TO SAVEPOINT".equals(statementType) || "RELEASE SAVEPOINT".equals(statementType)) {
-            throw new IllegalArgumentException("Savepoint name is required.");
-        }
+        ShardingSpherePreconditions.checkState(!"SAVEPOINT".equals(statementType) && !"ROLLBACK TO SAVEPOINT".equals(statementType) && !"RELEASE SAVEPOINT".equals(statementType),
+                () -> new IllegalArgumentException("Savepoint name is required."));
     }
 }

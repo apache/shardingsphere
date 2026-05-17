@@ -74,7 +74,7 @@ class RuntimeDatabaseConfigurationTest {
         assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: missing_jdbc_driver."));
         assertThat(actual.getCategory(), is("missing_jdbc_driver"));
     }
-
+    
     private static final class RecordingDriver implements Driver {
         
         private static final String JDBC_URL = "jdbc:recording:runtime-config";

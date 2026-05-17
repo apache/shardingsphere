@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.nio.charset.StandardCharsets;
@@ -133,30 +134,38 @@ final class MCPDescriptorYamlKeyValidator {
     
     private static void validateResourceAnnotationTypes(final String resourceName, final String path, final Map<?, ?> annotationMap) {
         if (annotationMap.containsKey("audience")) {
-            checkState(annotationMap.get("audience") instanceof Iterable, String.format("MCP descriptor resource `%s` expects list at `%s.audience`.", resourceName, path));
+            ShardingSpherePreconditions.checkState(annotationMap.get("audience") instanceof Iterable,
+                    () -> new IllegalArgumentException(String.format("MCP descriptor resource `%s` expects list at `%s.audience`.", resourceName, path)));
             int index = 0;
             for (Object each : (Iterable<?>) annotationMap.get("audience")) {
-                checkState(each instanceof String, String.format("MCP descriptor resource `%s` expects string at `%s.audience[%d]`.", resourceName, path, index));
+                int currentIndex = index;
+                ShardingSpherePreconditions.checkState(each instanceof String,
+                        () -> new IllegalArgumentException(String.format("MCP descriptor resource `%s` expects string at `%s.audience[%d]`.", resourceName, path, currentIndex)));
                 index++;
             }
         }
         if (annotationMap.containsKey("priority")) {
-            checkState(annotationMap.get("priority") instanceof Number, String.format("MCP descriptor resource `%s` expects number at `%s.priority`.", resourceName, path));
+            ShardingSpherePreconditions.checkState(annotationMap.get("priority") instanceof Number,
+                    () -> new IllegalArgumentException(String.format("MCP descriptor resource `%s` expects number at `%s.priority`.", resourceName, path)));
         }
         if (annotationMap.containsKey("lastModified")) {
-            checkState(annotationMap.get("lastModified") instanceof String, String.format("MCP descriptor resource `%s` expects string at `%s.lastModified`.", resourceName, path));
+            ShardingSpherePreconditions.checkState(annotationMap.get("lastModified") instanceof String,
+                    () -> new IllegalArgumentException(String.format("MCP descriptor resource `%s` expects string at `%s.lastModified`.", resourceName, path)));
         }
     }
     
     private static void validateToolAnnotations(final String resourceName, final String path, final Object annotations) {
-        checkState(null != annotations, String.format("MCP descriptor resource `%s` must declare `%s`.", resourceName, path));
+        ShardingSpherePreconditions.checkState(null != annotations, () -> new IllegalArgumentException(String.format("MCP descriptor resource `%s` must declare `%s`.", resourceName, path)));
         Map<?, ?> annotationMap = validateAnnotationMap(resourceName, path, annotations, TOOL_ANNOTATION_KEYS);
         if (annotationMap.containsKey("title")) {
-            checkState(annotationMap.get("title") instanceof String, String.format("MCP descriptor resource `%s` expects string at `%s.title`.", resourceName, path));
+            ShardingSpherePreconditions.checkState(annotationMap.get("title") instanceof String,
+                    () -> new IllegalArgumentException(String.format("MCP descriptor resource `%s` expects string at `%s.title`.", resourceName, path)));
         }
         for (String each : REQUIRED_TOOL_ANNOTATION_HINT_KEYS) {
-            checkState(annotationMap.containsKey(each), String.format("MCP descriptor resource `%s` must declare `%s.%s`.", resourceName, path, each));
-            checkState(annotationMap.get(each) instanceof Boolean, String.format("MCP descriptor resource `%s` expects boolean at `%s.%s`.", resourceName, path, each));
+            ShardingSpherePreconditions.checkState(annotationMap.containsKey(each),
+                    () -> new IllegalArgumentException(String.format("MCP descriptor resource `%s` must declare `%s.%s`.", resourceName, path, each)));
+            ShardingSpherePreconditions.checkState(annotationMap.get(each) instanceof Boolean,
+                    () -> new IllegalArgumentException(String.format("MCP descriptor resource `%s` expects boolean at `%s.%s`.", resourceName, path, each)));
         }
     }
     
@@ -204,7 +213,8 @@ final class MCPDescriptorYamlKeyValidator {
     private static Map<?, ?> validateAnnotationMap(final String resourceName, final String path, final Object value, final Collection<String> allowedKeys) {
         Map<?, ?> result = asMap(resourceName, path, value);
         validateKeys(resourceName, path, result, allowedKeys);
-        checkState(!result.isEmpty(), String.format("MCP descriptor resource `%s` must omit empty annotations at `%s`.", resourceName, path));
+        ShardingSpherePreconditions.checkState(!result.isEmpty(),
+                () -> new IllegalArgumentException(String.format("MCP descriptor resource `%s` must omit empty annotations at `%s`.", resourceName, path)));
         return result;
     }
     
@@ -212,31 +222,21 @@ final class MCPDescriptorYamlKeyValidator {
         if (null == value) {
             return Set.of();
         }
-        if (value instanceof Iterable) {
-            return (Iterable<?>) value;
-        }
-        throw new IllegalArgumentException(String.format("MCP descriptor resource `%s` expects list at `%s`.", resourceName, path));
+        ShardingSpherePreconditions.checkState(value instanceof Iterable,
+                () -> new IllegalArgumentException(String.format("MCP descriptor resource `%s` expects list at `%s`.", resourceName, path)));
+        return (Iterable<?>) value;
     }
     
     private static Map<?, ?> asMap(final String resourceName, final String path, final Object value) {
-        if (value instanceof Map) {
-            return (Map<?, ?>) value;
-        }
-        throw new IllegalArgumentException(String.format("MCP descriptor resource `%s` expects map at `%s`.", resourceName, path));
+        ShardingSpherePreconditions.checkState(value instanceof Map,
+                () -> new IllegalArgumentException(String.format("MCP descriptor resource `%s` expects map at `%s`.", resourceName, path)));
+        return (Map<?, ?>) value;
     }
     
     private static void validateKeys(final String resourceName, final String path, final Map<?, ?> value, final Collection<String> allowedKeys) {
         for (Object each : value.keySet()) {
-            if (each instanceof String && allowedKeys.contains(each)) {
-                continue;
-            }
-            throw new IllegalArgumentException(String.format("MCP descriptor resource `%s` contains unknown key `%s.%s`.", resourceName, path, each));
-        }
-    }
-    
-    private static void checkState(final boolean expression, final String message) {
-        if (!expression) {
-            throw new IllegalArgumentException(message);
+            ShardingSpherePreconditions.checkState(each instanceof String && allowedKeys.contains(each),
+                    () -> new IllegalArgumentException(String.format("MCP descriptor resource `%s` contains unknown key `%s.%s`.", resourceName, path, each)));
         }
     }
 }

@@ -71,8 +71,8 @@ public final class MCPJdbcTransactionResourceManager {
         if (transactionResource.isPresent()) {
             ShardingSpherePreconditions.checkState(transactionResource.get().getDatabaseName().equals(databaseName),
                     () -> new IllegalStateException("Cross-database transaction switching is not supported."));
-            throw new IllegalStateException("Transaction already active.");
         }
+        ShardingSpherePreconditions.checkState(transactionResource.isEmpty(), () -> new IllegalStateException("Transaction already active."));
         try {
             Connection connection = openConnection(databaseName);
             connection.setAutoCommit(false);

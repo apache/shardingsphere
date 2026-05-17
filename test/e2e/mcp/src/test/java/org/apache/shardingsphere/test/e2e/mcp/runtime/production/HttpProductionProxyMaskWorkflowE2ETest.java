@@ -156,6 +156,31 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     }
     
     @Test
+    void assertApplySupportsApprovedStepsThroughProxy() throws Exception {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> actualPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
+                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
+                            "operation_type", "create", "algorithm_type", "KEEP_FIRST_N_LAST_M",
+                            "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
+            assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
+            String planId = String.valueOf(actualPlanResponse.get("plan_id"));
+            Map<String, Object> actualSkippedRuleApplyResponse = interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId, List.of("ddl")));
+            assertThat(String.valueOf(actualSkippedRuleApplyResponse.get("status")), is("completed"));
+            assertThat(getStringList(actualSkippedRuleApplyResponse.get("executed_distsql")).size(), is(0));
+            assertThat(getStringList(actualSkippedRuleApplyResponse.get("skipped_artifacts")).size(), is(1));
+            assertThat(String.valueOf(getMapList(actualSkippedRuleApplyResponse.get("step_results")).get(0).get("status")), is("skipped"));
+            Map<String, Object> actualFailedValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
+            assertValidationFailed(actualFailedValidationResponse);
+            assertThat(String.valueOf(getMap(actualFailedValidationResponse.get("rule_validation")).get("status")), is("failed"));
+            Map<String, Object> actualRuleApplyResponse = interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId, List.of("rule_distsql")));
+            assertThat(String.valueOf(actualRuleApplyResponse.get("status")), is("completed"));
+            assertThat(getStringList(actualRuleApplyResponse.get("executed_distsql")).size(), is(1));
+            assertThat(getStringList(actualRuleApplyResponse.get("skipped_artifacts")).size(), is(0));
+            assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
+        }
+    }
+    
+    @Test
     void assertPlanApplyValidateAndReadMaskResourcesWithCustomAlgorithmThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
@@ -191,6 +216,10 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     
     private Map<String, Object> createApplyArguments(final String planId) {
         return Map.of("plan_id", planId, "execution_mode", "review-then-execute", "approved_by_user", true);
+    }
+    
+    private Map<String, Object> createApplyArguments(final String planId, final List<String> approvedSteps) {
+        return Map.of("plan_id", planId, "execution_mode", "review-then-execute", "approved_steps", approvedSteps, "approved_by_user", true);
     }
     
     private Map<String, Object> findItemByField(final List<Map<String, Object>> items, final String fieldName, final String expectedValue) {

@@ -44,6 +44,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -66,16 +67,15 @@ class ResourceHandlerRegistryTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getRegisteredResourcesFailureCases")
-    void assertGetRegisteredResourcesFailure(final String name, final Collection<MCPResourceHandler<?>> handlers,
-                                             final Class<? extends Throwable> expectedCauseType, final String expectedMessage) throws ReflectiveOperationException {
+    @MethodSource("getSupportedResourcesFailureCases")
+    void assertGetSupportedResourcesFailure(final String name, final Collection<MCPResourceHandler<?>> handlers,
+                                            final Class<? extends Throwable> expectedCauseType, final String expectedMessage) {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             MCPHandlerProvider provider = createHandlerProvider(handlers);
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(provider));
-            Class<?> registryClass = Class.forName(ResourceHandlerRegistry.class.getName(), false, createIsolatedResourceHandlerRegistryClassLoader());
-            var getRegisteredResourcesMethod = registryClass.getDeclaredMethod("getRegisteredResources");
+            Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ResourceHandlerRegistry.class.getName(), false, createIsolatedResourceHandlerRegistryClassLoader()));
             InvocationTargetException actual = assertThrows(InvocationTargetException.class,
-                    () -> Plugins.getMemberAccessor().invoke(getRegisteredResourcesMethod, null));
+                    () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedResources"), null));
             assertThat(actual.getCause().getClass(), is(ExceptionInInitializerError.class));
             Throwable actualCause = actual.getCause().getCause();
             assertThat(actualCause.getClass(), is(expectedCauseType));
@@ -96,7 +96,7 @@ class ResourceHandlerRegistryTest {
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}"));
     }
     
-    private static Stream<Arguments> getRegisteredResourcesFailureCases() {
+    private static Stream<Arguments> getSupportedResourcesFailureCases() {
         MCPResourceHandler<?> nullUriHandler = createResourceHandler(null);
         MCPResourceHandler<?> emptyUriHandler = createResourceHandler("");
         MCPResourceHandler<?> blankUriHandler = createResourceHandler("   ");

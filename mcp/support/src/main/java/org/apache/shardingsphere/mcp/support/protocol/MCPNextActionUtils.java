@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.protocol;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,9 +73,7 @@ public final class MCPNextActionUtils {
      * @throws IllegalArgumentException when tool name is blank
      */
     public static Map<String, Object> retryTool(final String toolName, final String reason, final Map<String, Object> arguments, final boolean requiresUserApproval) {
-        if (toolName.isBlank()) {
-            throw new IllegalArgumentException("Tool name is required for a retry action.");
-        }
+        ShardingSpherePreconditions.checkState(!toolName.isBlank(), () -> new IllegalArgumentException("Tool name is required for a retry action."));
         Map<String, Object> result = createBaseAction("tool_call", "Retry " + toolName, reason, requiresUserApproval);
         result.put("arguments", arguments);
         result.put("tool_name", toolName);

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
@@ -65,19 +66,22 @@ final class MCPDescriptorCatalogValidator {
         Map<String, MCPResourceDescriptor> registered = new LinkedHashMap<>(catalog.getResourceDescriptors().size() + catalog.getResourceTemplateDescriptors().size(), 1F);
         for (MCPResourceDescriptor each : catalog.getResourceDescriptors()) {
             checkNotBlank(each.getUriTemplate(), "Resource URI");
-            checkState(!each.isTemplated(), String.format("Fixed resource `%s` must not contain template variables.", each.getUriTemplate()));
+            ShardingSpherePreconditions.checkState(!each.isTemplated(),
+                    () -> new IllegalStateException(String.format("Fixed resource `%s` must not contain template variables.", each.getUriTemplate())));
             validateResourceDescriptor(each, registered);
         }
         for (MCPResourceDescriptor each : catalog.getResourceTemplateDescriptors()) {
             checkNotBlank(each.getUriTemplate(), "Resource template URI template");
-            checkState(each.isTemplated(), String.format("Resource template `%s` must contain template variables.", each.getUriTemplate()));
+            ShardingSpherePreconditions.checkState(each.isTemplated(),
+                    () -> new IllegalStateException(String.format("Resource template `%s` must contain template variables.", each.getUriTemplate())));
             validateResourceDescriptor(each, registered);
             validateResourceVariables(each, findResourceExtension(catalog, each.getUriTemplate()));
         }
     }
     
     private static void validateResourceDescriptor(final MCPResourceDescriptor descriptor, final Map<String, MCPResourceDescriptor> registered) {
-        checkState(null == registered.putIfAbsent(descriptor.getUriTemplate(), descriptor), String.format("Duplicate MCP resource descriptor `%s`.", descriptor.getUriTemplate()));
+        ShardingSpherePreconditions.checkState(null == registered.putIfAbsent(descriptor.getUriTemplate(), descriptor),
+                () -> new IllegalStateException(String.format("Duplicate MCP resource descriptor `%s`.", descriptor.getUriTemplate())));
     }
     
     private static MCPResourceExtensionDescriptor findResourceExtension(final MCPDescriptorCatalog catalog, final String uriOrTemplate) {
@@ -88,19 +92,23 @@ final class MCPDescriptorCatalogValidator {
         List<String> templateVariables = MCPUriTemplateUtils.extractVariableNames(descriptor.getUriTemplate());
         Set<String> registeredTemplateVariables = new HashSet<>();
         for (String each : templateVariables) {
-            checkState(registeredTemplateVariables.add(each), String.format("Duplicate URI template variable `%s` in resource descriptor `%s`.", each, descriptor.getUriTemplate()));
+            ShardingSpherePreconditions.checkState(registeredTemplateVariables.add(each),
+                    () -> new IllegalStateException(String.format("Duplicate URI template variable `%s` in resource descriptor `%s`.", each, descriptor.getUriTemplate())));
         }
         Set<String> templateVariableSet = new HashSet<>(templateVariables);
         Collection<MCPUriVariableDescriptor> uriVariables = null == extension ? List.of() : extension.getUriVariables();
         Map<String, MCPUriVariableDescriptor> declaredParameters = new LinkedHashMap<>(uriVariables.size(), 1F);
         for (MCPUriVariableDescriptor each : uriVariables) {
-            checkState(each.isRequired(), String.format("Resource parameter `%s.%s` must be required because URI template variables are required.", descriptor.getUriTemplate(), each.getName()));
-            checkState(templateVariableSet.contains(each.getName()), String.format("Resource descriptor `%s` declares non-template parameter `%s`.", descriptor.getUriTemplate(), each.getName()));
-            checkState(null == declaredParameters.putIfAbsent(each.getName(), each), String.format("Duplicate MCP resource parameter `%s.%s`.", descriptor.getUriTemplate(), each.getName()));
+            ShardingSpherePreconditions.checkState(each.isRequired(), () -> new IllegalStateException(
+                    String.format("Resource parameter `%s.%s` must be required because URI template variables are required.", descriptor.getUriTemplate(), each.getName())));
+            ShardingSpherePreconditions.checkState(templateVariableSet.contains(each.getName()),
+                    () -> new IllegalStateException(String.format("Resource descriptor `%s` declares non-template parameter `%s`.", descriptor.getUriTemplate(), each.getName())));
+            ShardingSpherePreconditions.checkState(null == declaredParameters.putIfAbsent(each.getName(), each),
+                    () -> new IllegalStateException(String.format("Duplicate MCP resource parameter `%s.%s`.", descriptor.getUriTemplate(), each.getName())));
         }
         for (String variableName : templateVariables) {
-            checkState(declaredParameters.containsKey(variableName),
-                    String.format("Resource descriptor `%s` must describe URI template variable `%s`.", descriptor.getUriTemplate(), variableName));
+            ShardingSpherePreconditions.checkState(declaredParameters.containsKey(variableName),
+                    () -> new IllegalStateException(String.format("Resource descriptor `%s` must describe URI template variable `%s`.", descriptor.getUriTemplate(), variableName)));
         }
     }
     
@@ -110,7 +118,8 @@ final class MCPDescriptorCatalogValidator {
         Map<String, MCPToolRuntimeDescriptor> runtimes = runtimeDescriptors.stream()
                 .collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(runtimeDescriptors.size(), 1F)));
         for (MCPToolDescriptor each : descriptors) {
-            checkState(null == registered.putIfAbsent(each.getName(), each), String.format("Duplicate MCP tool descriptor `%s`.", each.getName()));
+            ShardingSpherePreconditions.checkState(null == registered.putIfAbsent(each.getName(), each),
+                    () -> new IllegalStateException(String.format("Duplicate MCP tool descriptor `%s`.", each.getName())));
             validateToolInputSchema(each);
             validateToolOutputSchema(each, descriptorValidators);
             validateDestructiveToolDescriptor(each, runtimes.get(each.getName()));
@@ -120,16 +129,19 @@ final class MCPDescriptorCatalogValidator {
     
     private static void validateToolInputSchema(final MCPToolDescriptor descriptor) {
         Map<String, Object> inputSchema = descriptor.getInputSchema();
-        checkState("object".equals(inputSchema.get("type")), String.format("Tool `%s` inputSchema must be an object.", descriptor.getName()));
+        ShardingSpherePreconditions.checkState("object".equals(inputSchema.get("type")),
+                () -> new IllegalStateException(String.format("Tool `%s` inputSchema must be an object.", descriptor.getName())));
         Object properties = inputSchema.get("properties");
-        checkState(properties instanceof Map, String.format("Tool `%s` inputSchema must declare properties.", descriptor.getName()));
+        ShardingSpherePreconditions.checkState(properties instanceof Map, () -> new IllegalStateException(String.format("Tool `%s` inputSchema must declare properties.", descriptor.getName())));
     }
     
     private static void validateToolOutputSchema(final MCPToolDescriptor descriptor, final Collection<MCPToolDescriptorValidator> descriptorValidators) {
         Map<String, Object> outputSchema = descriptor.getOutputSchema();
-        checkState("object".equals(outputSchema.get("type")), String.format("Tool `%s` outputSchema must be an object.", descriptor.getName()));
+        ShardingSpherePreconditions.checkState("object".equals(outputSchema.get("type")),
+                () -> new IllegalStateException(String.format("Tool `%s` outputSchema must be an object.", descriptor.getName())));
         Object properties = outputSchema.get("properties");
-        checkState(properties instanceof Map && !((Map<?, ?>) properties).isEmpty(), String.format("Tool `%s` outputSchema must declare properties.", descriptor.getName()));
+        ShardingSpherePreconditions.checkState(properties instanceof Map && !((Map<?, ?>) properties).isEmpty(),
+                () -> new IllegalStateException(String.format("Tool `%s` outputSchema must declare properties.", descriptor.getName())));
         validateNoBannedPublicAliasFields(descriptor, outputSchema);
         validateOutputExamples(descriptor, outputSchema);
         validateOutputExampleContractValues(descriptor, outputSchema);
@@ -146,7 +158,8 @@ final class MCPDescriptorCatalogValidator {
     }
     
     private static void validateOutputExamples(final MCPToolDescriptor descriptor, final Map<String, Object> outputSchema) {
-        checkState(isNonEmptyCollection(outputSchema.get("examples")), String.format("Tool `%s` outputSchema must declare examples.", descriptor.getName()));
+        ShardingSpherePreconditions.checkState(isNonEmptyCollection(outputSchema.get("examples")),
+                () -> new IllegalStateException(String.format("Tool `%s` outputSchema must declare examples.", descriptor.getName())));
     }
     
     private static void validateOutputExampleContractValues(final MCPToolDescriptor descriptor, final Map<String, Object> outputSchema) {
@@ -172,17 +185,18 @@ final class MCPDescriptorCatalogValidator {
     private static void validateExampleContractMap(final MCPToolDescriptor descriptor, final Map<?, ?> value) {
         Object responseMode = value.get("response_mode");
         if (null != responseMode) {
-            checkState(MCPResponseMode.isAllowed(responseMode.toString()), String.format("Tool `%s` output example uses unknown response_mode `%s`.", descriptor.getName(), responseMode));
+            ShardingSpherePreconditions.checkState(MCPResponseMode.isAllowed(responseMode.toString()),
+                    () -> new IllegalStateException(String.format("Tool `%s` output example uses unknown response_mode `%s`.", descriptor.getName(), responseMode)));
         }
         Object continuationMode = value.get("continuation_mode");
         if (null != continuationMode) {
-            checkState(CONTINUATION_MODES.contains(continuationMode.toString()),
-                    String.format("Tool `%s` output example uses unknown continuation_mode `%s`.", descriptor.getName(), continuationMode));
+            ShardingSpherePreconditions.checkState(CONTINUATION_MODES.contains(continuationMode.toString()),
+                    () -> new IllegalStateException(String.format("Tool `%s` output example uses unknown continuation_mode `%s`.", descriptor.getName(), continuationMode)));
         }
         Object recoveryCategory = value.get("recovery_category");
         if (null != recoveryCategory) {
-            checkState(RECOVERY_CATEGORIES.contains(recoveryCategory.toString()),
-                    String.format("Tool `%s` output example uses unknown recovery_category `%s`.", descriptor.getName(), recoveryCategory));
+            ShardingSpherePreconditions.checkState(RECOVERY_CATEGORIES.contains(recoveryCategory.toString()),
+                    () -> new IllegalStateException(String.format("Tool `%s` output example uses unknown recovery_category `%s`.", descriptor.getName(), recoveryCategory)));
         }
         for (Object each : value.values()) {
             validateExampleContractValue(descriptor, each);
@@ -202,7 +216,8 @@ final class MCPDescriptorCatalogValidator {
     private static void validateNoBannedPublicAliasFieldMap(final MCPToolDescriptor descriptor, final Map<?, ?> value) {
         for (Entry<?, ?> entry : value.entrySet()) {
             String key = String.valueOf(entry.getKey());
-            checkState(!BANNED_PUBLIC_ALIAS_FIELDS.contains(key), String.format("Tool `%s` outputSchema must use canonical fields instead of banned `%s`.", descriptor.getName(), key));
+            ShardingSpherePreconditions.checkState(!BANNED_PUBLIC_ALIAS_FIELDS.contains(key),
+                    () -> new IllegalStateException(String.format("Tool `%s` outputSchema must use canonical fields instead of banned `%s`.", descriptor.getName(), key)));
             validateNoBannedPublicAliasFields(descriptor, entry.getValue());
         }
     }
@@ -232,7 +247,8 @@ final class MCPDescriptorCatalogValidator {
     }
     
     private static void validateModelCriticalOutputHint(final MCPToolDescriptor descriptor, final String fieldName, final Object property) {
-        checkState(property instanceof Map, String.format("Tool `%s` model-critical output field `%s` must be an object.", descriptor.getName(), fieldName));
+        ShardingSpherePreconditions.checkState(property instanceof Map,
+                () -> new IllegalStateException(String.format("Tool `%s` model-critical output field `%s` must be an object.", descriptor.getName(), fieldName)));
         Object description = ((Map<?, ?>) property).get("description");
         checkDescription(null == description ? "" : description.toString(), String.format("Tool model-critical output field `%s.%s` description", descriptor.getName(), fieldName));
         if ("next_actions".equals(fieldName)) {
@@ -241,18 +257,22 @@ final class MCPDescriptorCatalogValidator {
     }
     
     private static void validateNextActionsSchema(final MCPToolDescriptor descriptor, final Map<?, ?> property) {
-        checkState("array".equals(property.get("type")), String.format("Tool `%s` next_actions must be an array.", descriptor.getName()));
+        ShardingSpherePreconditions.checkState("array".equals(property.get("type")), () -> new IllegalStateException(String.format("Tool `%s` next_actions must be an array.", descriptor.getName())));
         Object items = property.get("items");
-        checkState(items instanceof Map, String.format("Tool `%s` next_actions items must be an object.", descriptor.getName()));
+        ShardingSpherePreconditions.checkState(items instanceof Map, () -> new IllegalStateException(String.format("Tool `%s` next_actions items must be an object.", descriptor.getName())));
         Object properties = ((Map<?, ?>) items).get("properties");
-        checkState(properties instanceof Map, String.format("Tool `%s` next_actions items must declare properties.", descriptor.getName()));
+        ShardingSpherePreconditions.checkState(properties instanceof Map,
+                () -> new IllegalStateException(String.format("Tool `%s` next_actions items must declare properties.", descriptor.getName())));
         for (String each : BANNED_NEXT_ACTION_FIELDS) {
-            checkState(!((Map<?, ?>) properties).containsKey(each), String.format("Tool `%s` next_actions item must not declare banned `%s`.", descriptor.getName(), each));
+            ShardingSpherePreconditions.checkState(!((Map<?, ?>) properties).containsKey(each),
+                    () -> new IllegalStateException(String.format("Tool `%s` next_actions item must not declare banned `%s`.", descriptor.getName(), each)));
         }
         for (String each : List.of("order", "type", "title", "requires_user_approval")) {
-            checkState(((Map<?, ?>) properties).containsKey(each), String.format("Tool `%s` next_actions item must declare `%s`.", descriptor.getName(), each));
+            ShardingSpherePreconditions.checkState(((Map<?, ?>) properties).containsKey(each),
+                    () -> new IllegalStateException(String.format("Tool `%s` next_actions item must declare `%s`.", descriptor.getName(), each)));
             Object field = ((Map<?, ?>) properties).get(each);
-            checkState(field instanceof Map, String.format("Tool `%s` next_actions item field `%s` must be an object.", descriptor.getName(), each));
+            ShardingSpherePreconditions.checkState(field instanceof Map,
+                    () -> new IllegalStateException(String.format("Tool `%s` next_actions item field `%s` must be an object.", descriptor.getName(), each)));
             Object description = ((Map<?, ?>) field).get("description");
             checkDescription(null == description ? "" : description.toString(), String.format("Tool next_actions item field `%s.%s` description", descriptor.getName(), each));
         }
@@ -264,8 +284,9 @@ final class MCPDescriptorCatalogValidator {
                 .collect(Collectors.toMap(MCPPromptTemplateBinding::getPromptName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(templateBindings.size(), 1F)));
         for (MCPPromptDescriptor each : descriptors) {
             MCPPromptTemplateBinding binding = bindings.get(each.getName());
-            checkState(null != binding, String.format("Prompt `%s` must declare an internal template binding.", each.getName()));
-            checkState(null == registered.putIfAbsent(each.getName(), each), String.format("Duplicate MCP prompt descriptor `%s`.", each.getName()));
+            ShardingSpherePreconditions.checkState(null != binding, () -> new IllegalStateException(String.format("Prompt `%s` must declare an internal template binding.", each.getName())));
+            ShardingSpherePreconditions.checkState(null == registered.putIfAbsent(each.getName(), each),
+                    () -> new IllegalStateException(String.format("Duplicate MCP prompt descriptor `%s`.", each.getName())));
             validatePromptTemplate(each, binding);
         }
     }
@@ -273,7 +294,8 @@ final class MCPDescriptorCatalogValidator {
     private static void validatePromptTemplate(final MCPPromptDescriptor descriptor, final MCPPromptTemplateBinding binding) {
         Set<String> declaredArguments = new HashSet<>(descriptor.getArguments().stream().map(MCPPromptArgumentDescriptor::getName).toList());
         for (String each : MCPPromptTemplateLoader.extractPlaceholders(MCPPromptTemplateLoader.load(binding.getTemplateResource()))) {
-            checkState(declaredArguments.contains(each), String.format("Prompt template `%s` has undeclared placeholder `%s`.", binding.getTemplateResource(), each));
+            ShardingSpherePreconditions.checkState(declaredArguments.contains(each),
+                    () -> new IllegalStateException(String.format("Prompt template `%s` has undeclared placeholder `%s`.", binding.getTemplateResource(), each)));
         }
     }
     
@@ -287,8 +309,8 @@ final class MCPDescriptorCatalogValidator {
         for (MCPCompletionTargetDescriptor each : descriptors) {
             validateCompletionReference(each, promptNames, resourceUris);
             validatePromptCompletionArguments(each, promptArguments);
-            checkState(null == registered.putIfAbsent(each.getReferenceType() + ":" + each.getReference(), each),
-                    String.format("Duplicate MCP completion target `%s:%s`.", each.getReferenceType(), each.getReference()));
+            ShardingSpherePreconditions.checkState(null == registered.putIfAbsent(each.getReferenceType() + ":" + each.getReference(), each),
+                    () -> new IllegalStateException(String.format("Duplicate MCP completion target `%s:%s`.", each.getReferenceType(), each.getReference())));
         }
     }
     
@@ -298,31 +320,33 @@ final class MCPDescriptorCatalogValidator {
         }
         Set<String> argumentNames = promptArguments.getOrDefault(descriptor.getReference(), Set.of());
         for (String each : descriptor.getArguments()) {
-            checkState(argumentNames.contains(each),
-                    String.format("Completion target `prompt:%s` argument `%s` is not declared by prompt `%s`.", descriptor.getReference(), each, descriptor.getReference()));
+            ShardingSpherePreconditions.checkState(argumentNames.contains(each), () -> new IllegalStateException(
+                    String.format("Completion target `prompt:%s` argument `%s` is not declared by prompt `%s`.", descriptor.getReference(), each, descriptor.getReference())));
         }
     }
     
     private static void validateCompletionReference(final MCPCompletionTargetDescriptor descriptor, final Set<String> promptNames, final Set<String> resourceUris) {
         if ("prompt".equals(descriptor.getReferenceType())) {
-            checkState(promptNames.contains(descriptor.getReference()), String.format("Completion target references unknown prompt `%s`.", descriptor.getReference()));
+            ShardingSpherePreconditions.checkState(promptNames.contains(descriptor.getReference()),
+                    () -> new IllegalStateException(String.format("Completion target references unknown prompt `%s`.", descriptor.getReference())));
             return;
         }
-        if ("resource".equals(descriptor.getReferenceType())) {
-            checkState(resourceUris.contains(descriptor.getReference()), String.format("Completion target references unknown resource `%s`.", descriptor.getReference()));
-            return;
-        }
-        throw new IllegalStateException(String.format("Unsupported completion reference type `%s`.", descriptor.getReferenceType()));
+        ShardingSpherePreconditions.checkState("resource".equals(descriptor.getReferenceType()),
+                () -> new IllegalStateException(String.format("Unsupported completion reference type `%s`.", descriptor.getReferenceType())));
+        ShardingSpherePreconditions.checkState(resourceUris.contains(descriptor.getReference()),
+                () -> new IllegalStateException(String.format("Completion target references unknown resource `%s`.", descriptor.getReference())));
     }
     
     private static void validateResourceNavigationDescriptors(final Collection<MCPResourceNavigationDescriptor> descriptors, final MCPDescriptorCatalog catalog) {
         Set<String> publicIdentifiers = createPublicIdentifiers(catalog);
         Set<String> registered = new HashSet<>();
         for (MCPResourceNavigationDescriptor each : descriptors) {
-            checkState(publicIdentifiers.contains(each.getFrom()), String.format("Resource navigation references unknown source `%s`.", each.getFrom()));
-            checkState(publicIdentifiers.contains(each.getTo()), String.format("Resource navigation references unknown target `%s`.", each.getTo()));
-            checkState(registered.add(each.getFrom() + "->" + each.getTo()),
-                    String.format("Duplicate MCP resource navigation `%s` to `%s`.", each.getFrom(), each.getTo()));
+            ShardingSpherePreconditions.checkState(publicIdentifiers.contains(each.getFrom()),
+                    () -> new IllegalStateException(String.format("Resource navigation references unknown source `%s`.", each.getFrom())));
+            ShardingSpherePreconditions.checkState(publicIdentifiers.contains(each.getTo()),
+                    () -> new IllegalStateException(String.format("Resource navigation references unknown target `%s`.", each.getTo())));
+            ShardingSpherePreconditions.checkState(registered.add(each.getFrom() + "->" + each.getTo()),
+                    () -> new IllegalStateException(String.format("Duplicate MCP resource navigation `%s` to `%s`.", each.getFrom(), each.getTo())));
         }
     }
     
@@ -340,19 +364,23 @@ final class MCPDescriptorCatalogValidator {
         }
         Map<?, ?> executionMode = findToolInputProperty(descriptor, "execution_mode").orElseThrow(
                 () -> new IllegalStateException(String.format("Destructive tool `%s` must declare execution_mode.", descriptor.getName())));
-        checkState(isRequiredToolInput(descriptor, "execution_mode"), String.format("Destructive tool `%s` execution_mode must be required.", descriptor.getName()));
+        ShardingSpherePreconditions.checkState(isRequiredToolInput(descriptor, "execution_mode"),
+                () -> new IllegalStateException(String.format("Destructive tool `%s` execution_mode must be required.", descriptor.getName())));
         Collection<?> executionModes = executionMode.get("enum") instanceof Collection ? (Collection<?>) executionMode.get("enum") : List.of();
-        checkState(executionModes.contains("preview"), String.format("Destructive tool `%s` execution_mode must allow preview.", descriptor.getName()));
-        checkState(!executionModes.contains("auto-execute"), String.format("Destructive tool `%s` execution_mode must not expose auto-execute.", descriptor.getName()));
+        ShardingSpherePreconditions.checkState(executionModes.contains("preview"),
+                () -> new IllegalStateException(String.format("Destructive tool `%s` execution_mode must allow preview.", descriptor.getName())));
+        ShardingSpherePreconditions.checkState(!executionModes.contains("auto-execute"),
+                () -> new IllegalStateException(String.format("Destructive tool `%s` execution_mode must not expose auto-execute.", descriptor.getName())));
         Map<?, ?> approvedByUser = findToolInputProperty(descriptor, "approved_by_user").orElseThrow(
                 () -> new IllegalStateException(String.format("Destructive tool `%s` must declare approved_by_user.", descriptor.getName())));
-        checkState(!isRequiredToolInput(descriptor, "approved_by_user"), String.format("Destructive tool `%s` approved_by_user must not be required for preview.", descriptor.getName()));
-        checkState("boolean".equals(approvedByUser.get("type")),
-                String.format("Destructive tool `%s` approved_by_user must be boolean.", descriptor.getName()));
-        checkState(null != runtimeDescriptor && runtimeDescriptor.isRequiresUserApproval(),
-                String.format("Destructive tool `%s` must declare requiresUserApproval=true in internal runtime.", descriptor.getName()));
-        checkState(null != runtimeDescriptor && !runtimeDescriptor.getSideEffectScope().isEmpty(),
-                String.format("Destructive tool `%s` must declare sideEffectScope in internal runtime.", descriptor.getName()));
+        ShardingSpherePreconditions.checkState(!isRequiredToolInput(descriptor, "approved_by_user"),
+                () -> new IllegalStateException(String.format("Destructive tool `%s` approved_by_user must not be required for preview.", descriptor.getName())));
+        ShardingSpherePreconditions.checkState("boolean".equals(approvedByUser.get("type")),
+                () -> new IllegalStateException(String.format("Destructive tool `%s` approved_by_user must be boolean.", descriptor.getName())));
+        ShardingSpherePreconditions.checkState(null != runtimeDescriptor && runtimeDescriptor.isRequiresUserApproval(),
+                () -> new IllegalStateException(String.format("Destructive tool `%s` must declare requiresUserApproval=true in internal runtime.", descriptor.getName())));
+        ShardingSpherePreconditions.checkState(null != runtimeDescriptor && !runtimeDescriptor.getSideEffectScope().isEmpty(),
+                () -> new IllegalStateException(String.format("Destructive tool `%s` must declare sideEffectScope in internal runtime.", descriptor.getName())));
     }
     
     private static void validatePlanningExecutionMode(final MCPToolDescriptor descriptor) {
@@ -364,8 +392,10 @@ final class MCPDescriptorCatalogValidator {
             return;
         }
         Collection<?> executionModes = executionMode.get().get("enum") instanceof Collection ? (Collection<?>) executionMode.get().get("enum") : List.of();
-        checkState(!executionModes.contains("preview"), String.format("Planning tool `%s` execution_mode must not expose preview.", descriptor.getName()));
-        checkState(!executionModes.contains("auto-execute"), String.format("Planning tool `%s` execution_mode must not expose auto-execute.", descriptor.getName()));
+        ShardingSpherePreconditions.checkState(!executionModes.contains("preview"),
+                () -> new IllegalStateException(String.format("Planning tool `%s` execution_mode must not expose preview.", descriptor.getName())));
+        ShardingSpherePreconditions.checkState(!executionModes.contains("auto-execute"),
+                () -> new IllegalStateException(String.format("Planning tool `%s` execution_mode must not expose auto-execute.", descriptor.getName())));
     }
     
     private static Optional<Map<?, ?>> findToolInputProperty(final MCPToolDescriptor descriptor, final String fieldName) {
@@ -388,8 +418,10 @@ final class MCPDescriptorCatalogValidator {
     
     private static void checkDescription(final String value, final String label) {
         checkNotBlank(value, label);
-        checkState(!value.startsWith(createPlaceholderPrefix("resource:")), String.format("%s must not be a placeholder description.", label));
-        checkState(!value.startsWith(createPlaceholderPrefix("resource template:")), String.format("%s must not be a placeholder description.", label));
+        ShardingSpherePreconditions.checkState(!value.startsWith(createPlaceholderPrefix("resource:")),
+                () -> new IllegalStateException(String.format("%s must not be a placeholder description.", label)));
+        ShardingSpherePreconditions.checkState(!value.startsWith(createPlaceholderPrefix("resource template:")),
+                () -> new IllegalStateException(String.format("%s must not be a placeholder description.", label)));
     }
     
     private static String createPlaceholderPrefix(final String suffix) {
@@ -397,12 +429,6 @@ final class MCPDescriptorCatalogValidator {
     }
     
     private static void checkNotBlank(final String value, final String label) {
-        checkState(null != value && !value.isBlank(), String.format("%s is required.", label));
-    }
-    
-    private static void checkState(final boolean expression, final String message) {
-        if (!expression) {
-            throw new IllegalStateException(message);
-        }
+        ShardingSpherePreconditions.checkState(null != value && !value.isBlank(), () -> new IllegalStateException(String.format("%s is required.", label)));
     }
 }

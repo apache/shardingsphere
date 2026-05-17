@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.io.IOException;
 import java.net.URI;
@@ -81,7 +82,8 @@ public final class MCPRegistryMetadataCommand {
         Map<String, Object> server = JSON_MAPPER.readValue(options.path().toFile(), new TypeReference<>() {
         });
         if (!options.validateOnly()) {
-            require(!options.version().isBlank() && !options.identifier().isBlank(), "--version and --identifier are required unless --validate-only is set.");
+            ShardingSpherePreconditions.checkState(!options.version().isBlank() && !options.identifier().isBlank(),
+                    () -> new IllegalArgumentException("--version and --identifier are required unless --validate-only is set."));
             prepareServerJson(server, options.version(), options.identifier());
         }
         validateServerJson(server, options.allowSnapshot());
@@ -135,7 +137,8 @@ public final class MCPRegistryMetadataCommand {
     }
     
     private static String readOptionValue(final String[] args, final int index, final String optionName) {
-        require(index < args.length && !args[index].startsWith("--"), optionName + " requires a value.");
+        ShardingSpherePreconditions.checkState(index < args.length && !args[index].startsWith("--"),
+                () -> new IllegalArgumentException(optionName + " requires a value."));
         return args[index];
     }
     
@@ -148,90 +151,94 @@ public final class MCPRegistryMetadataCommand {
     }
     
     private static void validateServerJson(final Map<String, Object> server, final boolean allowSnapshot) {
-        require(SCHEMA_URL.equals(server.get("$schema")), "server.json must use the official MCP Registry schema.");
-        require(SERVER_NAME.equals(server.get("name")), "server.json name must match the published ShardingSphere MCP server name.");
-        requireString(server, "description", 100);
-        requireString(server, "version", 255);
+        ShardingSpherePreconditions.checkState(SCHEMA_URL.equals(server.get("$schema")), () -> new IllegalArgumentException("server.json must use the official MCP Registry schema."));
+        ShardingSpherePreconditions.checkState(SERVER_NAME.equals(server.get("name")),
+                () -> new IllegalArgumentException("server.json name must match the published ShardingSphere MCP server name."));
+        validateString(server, "description", 100);
+        validateString(server, "version", 255);
         validateVersion("server version", String.valueOf(server.get("version")), allowSnapshot);
         List<Map<String, Object>> packages = getPackages(server);
-        require(SUPPORTED_TRANSPORTS.size() == packages.size(), PACKAGE_SHAPE_ERROR_MESSAGE);
+        ShardingSpherePreconditions.checkState(SUPPORTED_TRANSPORTS.size() == packages.size(), () -> new IllegalArgumentException(PACKAGE_SHAPE_ERROR_MESSAGE));
         Set<String> transportTypes = new LinkedHashSet<>(packages.size(), 1F);
         for (Map<String, Object> each : packages) {
             String transportType = validatePackage(each, String.valueOf(server.get("version")), allowSnapshot);
-            require(transportTypes.add(transportType), PACKAGE_SHAPE_ERROR_MESSAGE);
+            ShardingSpherePreconditions.checkState(transportTypes.add(transportType), () -> new IllegalArgumentException(PACKAGE_SHAPE_ERROR_MESSAGE));
         }
-        require(SUPPORTED_TRANSPORTS.equals(transportTypes), PACKAGE_SHAPE_ERROR_MESSAGE);
+        ShardingSpherePreconditions.checkState(SUPPORTED_TRANSPORTS.equals(transportTypes), () -> new IllegalArgumentException(PACKAGE_SHAPE_ERROR_MESSAGE));
     }
     
     private static String validatePackage(final Map<String, Object> packageMetadata, final String serverVersion, final boolean allowSnapshot) {
-        require("oci".equals(packageMetadata.get("registryType")), "MCP Registry package registryType must be oci.");
+        ShardingSpherePreconditions.checkState("oci".equals(packageMetadata.get("registryType")),
+                () -> new IllegalArgumentException("MCP Registry package registryType must be oci."));
         String identifier = String.valueOf(packageMetadata.get("identifier"));
-        require(OCI_IDENTIFIER_PATTERN.matcher(identifier).matches(), "OCI identifier must target ghcr.io/apache/shardingsphere-mcp:<tag>.");
+        ShardingSpherePreconditions.checkState(OCI_IDENTIFIER_PATTERN.matcher(identifier).matches(),
+                () -> new IllegalArgumentException("OCI identifier must target ghcr.io/apache/shardingsphere-mcp:<tag>."));
         validateVersion("package identifier", identifier, allowSnapshot);
-        require(identifier.endsWith(":" + serverVersion), "OCI identifier tag must match the server version.");
+        ShardingSpherePreconditions.checkState(identifier.endsWith(":" + serverVersion), () -> new IllegalArgumentException("OCI identifier tag must match the server version."));
         if (packageMetadata.containsKey("version")) {
             validateVersion("package version", String.valueOf(packageMetadata.get("version")), allowSnapshot);
-            require(serverVersion.equals(packageMetadata.get("version")), "MCP Registry package version must match the server version.");
+            ShardingSpherePreconditions.checkState(serverVersion.equals(packageMetadata.get("version")),
+                    () -> new IllegalArgumentException("MCP Registry package version must match the server version."));
         }
         Map<String, Object> transport = asMap(packageMetadata.get("transport"), "MCP Registry package transport must be an object.");
         String transportType = String.valueOf(transport.get("type"));
-        require(SUPPORTED_TRANSPORTS.contains(transportType), "MCP Registry package transport type must be stdio or streamable-http.");
+        ShardingSpherePreconditions.checkState(SUPPORTED_TRANSPORTS.contains(transportType),
+                () -> new IllegalArgumentException("MCP Registry package transport type must be stdio or streamable-http."));
         if ("streamable-http".equals(transportType)) {
-            requireHttpUrl(transport.get("url"));
+            validateHttpUrl(transport.get("url"));
         }
-        requireEnvironmentVariable(packageMetadata, "SHARDINGSPHERE_MCP_TRANSPORT");
-        requireEnvironmentVariable(packageMetadata, "SHARDINGSPHERE_MCP_CONFIG");
+        validateEnvironmentVariable(packageMetadata, "SHARDINGSPHERE_MCP_TRANSPORT");
+        validateEnvironmentVariable(packageMetadata, "SHARDINGSPHERE_MCP_CONFIG");
         return transportType;
     }
     
     private static List<Map<String, Object>> getPackages(final Map<String, Object> server) {
         Object packages = server.get("packages");
-        require(packages instanceof List<?>, "server.json packages must be a non-empty array.");
+        ShardingSpherePreconditions.checkState(packages instanceof List<?>, () -> new IllegalArgumentException("server.json packages must be a non-empty array."));
         return ((List<?>) packages).stream().map(each -> asMap(each, "MCP Registry package must be an object.")).toList();
     }
     
     @SuppressWarnings("unchecked")
     private static Map<String, Object> asMap(final Object value, final String message) {
-        require(value instanceof Map<?, ?>, message);
+        ShardingSpherePreconditions.checkState(value instanceof Map<?, ?>, () -> new IllegalArgumentException(message));
         return (Map<String, Object>) value;
     }
     
-    private static void requireString(final Map<String, Object> target, final String key, final int maxLength) {
+    private static void validateString(final Map<String, Object> target, final String key, final int maxLength) {
         Object value = target.get(key);
-        require(value instanceof String && !((String) value).isBlank(), "server.json field " + key + " must be a non-empty string.");
-        require(((String) value).length() <= maxLength, "server.json field " + key + " must be at most " + maxLength + " characters.");
+        ShardingSpherePreconditions.checkState(value instanceof String && !((String) value).isBlank(),
+                () -> new IllegalArgumentException("server.json field " + key + " must be a non-empty string."));
+        ShardingSpherePreconditions.checkState(((String) value).length() <= maxLength,
+                () -> new IllegalArgumentException("server.json field " + key + " must be at most " + maxLength + " characters."));
     }
     
     private static void validateVersion(final String label, final String value, final boolean allowSnapshot) {
-        require(!value.isBlank() && !"null".equals(value), label + " must be a non-empty string.");
-        require(!"latest".equals(value), label + " must not use latest.");
-        require(!VERSION_RANGE_PATTERN.matcher(value).matches(), label + " must be a specific version, not a range.");
+        ShardingSpherePreconditions.checkState(!value.isBlank() && !"null".equals(value), () -> new IllegalArgumentException(label + " must be a non-empty string."));
+        ShardingSpherePreconditions.checkState(!"latest".equals(value), () -> new IllegalArgumentException(label + " must not use latest."));
+        ShardingSpherePreconditions.checkState(!VERSION_RANGE_PATTERN.matcher(value).matches(),
+                () -> new IllegalArgumentException(label + " must be a specific version, not a range."));
         if (!allowSnapshot) {
-            require(!value.contains("SNAPSHOT"), label + " must not contain SNAPSHOT for publication.");
+            ShardingSpherePreconditions.checkState(!value.contains("SNAPSHOT"), () -> new IllegalArgumentException(label + " must not contain SNAPSHOT for publication."));
         }
     }
     
-    private static void requireHttpUrl(final Object value) {
-        require(value instanceof String && !((String) value).isBlank(), "streamable-http transport must define a URL.");
+    private static void validateHttpUrl(final Object value) {
+        ShardingSpherePreconditions.checkState(value instanceof String && !((String) value).isBlank(),
+                () -> new IllegalArgumentException("streamable-http transport must define a URL."));
         try {
             URI uri = new URI((String) value);
-            require(("http".equals(uri.getScheme()) || "https".equals(uri.getScheme())) && null != uri.getHost(), "streamable-http transport URL must be an HTTP URL.");
+            ShardingSpherePreconditions.checkState(("http".equals(uri.getScheme()) || "https".equals(uri.getScheme())) && null != uri.getHost(),
+                    () -> new IllegalArgumentException("streamable-http transport URL must be an HTTP URL."));
         } catch (final URISyntaxException ex) {
             throw new IllegalArgumentException("streamable-http transport URL must be an HTTP URL.", ex);
         }
     }
     
-    private static void requireEnvironmentVariable(final Map<String, Object> packageMetadata, final String name) {
+    private static void validateEnvironmentVariable(final Map<String, Object> packageMetadata, final String name) {
         Object envVars = packageMetadata.get("environmentVariables");
-        require(envVars instanceof List<?>, "MCP Registry package must define " + name + ".");
-        require(((List<?>) envVars).stream().filter(each -> each instanceof Map<?, ?>).map(each -> (Map<?, ?>) each).anyMatch(each -> name.equals(each.get("name"))),
-                "MCP Registry package must define " + name + ".");
-    }
-    
-    private static void require(final boolean condition, final String message) {
-        if (!condition) {
-            throw new IllegalArgumentException(message);
-        }
+        ShardingSpherePreconditions.checkState(envVars instanceof List<?>, () -> new IllegalArgumentException("MCP Registry package must define " + name + "."));
+        ShardingSpherePreconditions.checkState(((List<?>) envVars).stream().filter(each -> each instanceof Map<?, ?>).map(each -> (Map<?, ?>) each).anyMatch(each -> name.equals(each.get("name"))),
+                () -> new IllegalArgumentException("MCP Registry package must define " + name + "."));
     }
     
     private record CommandOptions(Path path, String version, String identifier, String dockerfilePath, boolean validateOnly, boolean allowSnapshot) {

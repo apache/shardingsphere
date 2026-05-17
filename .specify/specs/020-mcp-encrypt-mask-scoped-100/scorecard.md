@@ -25,7 +25,7 @@ Every dimension targets **100/100**. A dimension can reach 100 only when all sco
 
 - Assessment date: 2026-05-16.
 - Original scoped baseline: **88/100**.
-- Current scoped score: **89/100** after Phase 1 baseline evidence and Phase 2 MCP protocol closure.
+- Current scoped score: **90/100** after Phase 1 baseline evidence, Phase 2 MCP protocol closure, and Phase 3 encrypt/mask functional closure.
 - Protocol scope: MCP `2025-11-25` only.
 - SDK scope: MCP Java SDK `1.1.2`, fixed.
 - Functional scope: encrypt and mask workflows only.
@@ -44,7 +44,7 @@ Every dimension targets **100/100**. A dimension can reach 100 only when all sco
 | Dimension | Current | Target | Closing evidence needed |
 | --- | ---: | ---: | --- |
 | MCP protocol conformity | 100 | 100 | Closed by contract tests for declared `2025-11-25` methods, SDK `1.1.2` scope documentation, structured content/output schema checks, and transport/session negative cases. |
-| Encrypt/mask functional completeness | 91 | 100 | End-to-end lifecycle evidence for resources, prompts, completions, plan, preview, approval apply, validation, and recovery for encrypt and mask. |
+| Encrypt/mask functional completeness | 100 | 100 | Closed by branch matrices plus unit and Proxy E2E evidence for resources, prompts, completions, plan, preview, approval apply, validation, and recovery for encrypt and mask. |
 | Implementation elegance | 88 | 100 | Minimal readability-first cleanup of duplicated workflow payload construction, no broad framework rewrite, clear handler/service boundaries. |
 | AI usability and MCP ergonomics | 91 | 100 | Ten mcp-builder evaluation questions, stable `next_actions`, useful resource links, prompt coverage for common encrypt/mask operator intents. |
 | Safety and approval control | 90 | 100 | Negative tests for approval bypass, session isolation, redaction, token/origin failures, unsafe SQL or malformed workflow inputs. |
@@ -101,9 +101,35 @@ Invalid evidence:
   `StreamableHttpMCPServlet` has JaCoCo `METHOD missed=0 covered=24`, `BRANCH missed=0 covered=18`, and `LINE missed=0 covered=66`.
 - Style verification: `./mvnw -pl mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap -Pcheck -DskipTests -DskipITs checkstyle:check spotless:check` exited `0`.
 
+### Phase 3: Encrypt/Mask Functional Completeness
+
+- T020: `workflow-coverage.md` records the encrypt branch matrix for create, alter, drop non-goal cleanup, missing algorithm, missing properties,
+  assisted query, LIKE query conflict, rule conflict, missing metadata, validation failure, and validation success.
+- T021: `workflow-coverage.md` records the mask branch matrix for create, alter, drop, missing algorithm, missing field semantics,
+  existing rule conflict, missing metadata, validation failure, recovery, and validation success.
+- T022: existing encrypt descriptor, resource, completion, handler, planning, validation, and DistSQL tests are mapped in `workflow-coverage.md`.
+- T023: existing mask descriptor, resource, completion, handler, planning, validation, and DistSQL tests are mapped in `workflow-coverage.md`.
+- T024: encrypt preview, approval apply, validation, partial-apply failure, and recovery coverage is mapped through `WorkflowExecutionServiceTest`,
+  `EncryptWorkflowValidationServiceTest`, and `HttpProductionProxyEncryptWorkflowE2ETest`.
+- T025: mask preview, approval apply, validation, drop, and recovery coverage is mapped through `WorkflowExecutionServiceTest`,
+  `MaskWorkflowValidationServiceTest`, and `HttpProductionProxyMaskWorkflowE2ETest#assertApplySupportsApprovedStepsThroughProxy`.
+- T026: Proxy-backed product-path E2E coverage exists for encrypt and mask workflows; approved-step recovery was verified through Docker/Testcontainers.
+- Reliability closure: `MySQLRuntimeTestSupport` now waits for the MySQL `ready for connections` log on port `3306`, so Proxy-backed E2E starts only after JDBC can accept connections.
+- Verification attempt: `./mvnw -pl test/e2e/mcp -DskipITs -Dspotless.skip=true -Dtest=HttpProductionProxyEncryptWorkflowE2ETest#assertApplySupportsApprovedStepsThroughProxy -Dsurefire.failIfNoSpecifiedTests=false test`
+  exited `1` because dependency modules were not rebuilt with the selected module.
+- Verification: `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dtest=HttpProductionProxyEncryptWorkflowE2ETest#assertApplySupportsApprovedStepsThroughProxy -Dsurefire.failIfNoSpecifiedTests=false test`
+  exited `0`; after the MySQL readiness fix, it ran 1 test with 0 failures, 0 errors, and 0 skipped tests through local Docker/Testcontainers MySQL, embedded ShardingSphere-Proxy, and HTTP MCP.
+- Verification attempt: `./mvnw -pl test/e2e/mcp -DskipITs -Dspotless.skip=true -Dtest=HttpProductionProxyMaskWorkflowE2ETest#assertApplySupportsApprovedStepsThroughProxy -Dsurefire.failIfNoSpecifiedTests=false test`
+  exited `1` because dependency modules were not rebuilt with the selected module.
+- Verification: `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dtest=HttpProductionProxyMaskWorkflowE2ETest#assertApplySupportsApprovedStepsThroughProxy -Dsurefire.failIfNoSpecifiedTests=false test`
+  exited `0`; after the MySQL readiness fix, it ran 1 test with 0 failures, 0 errors, and 0 skipped tests through local Docker/Testcontainers MySQL, embedded ShardingSphere-Proxy, and HTTP MCP.
+- Scoped unit verification: `./mvnw -pl mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false test`
+  exited `0`.
+- Scoped style verification: `./mvnw -pl mcp/support,mcp/core,test/e2e/mcp -Pcheck -DskipTests -DskipITs checkstyle:check spotless:check`
+  exited `0`.
+
 ### Remaining Dimensions
 
-- Encrypt/mask functional completeness: remains `91/100`; Phase 3 tasks are not complete.
 - Implementation elegance: remains `88/100`; Phase 6 cleanup is not complete.
 - AI usability and MCP ergonomics: remains `91/100`; Phase 4 tasks are not complete.
 - Safety and approval control: remains `90/100`; Phase 5 tasks are not complete.

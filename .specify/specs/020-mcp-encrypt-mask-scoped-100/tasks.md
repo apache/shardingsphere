@@ -83,20 +83,20 @@
 
 ## Phase 3: Encrypt/Mask Functional Completeness 91 -> 100
 
-- [ ] T020 [P] [US3] Build an encrypt branch matrix for create, alter, drop non-goal, missing algorithm,
+- [x] T020 [P] [US3] Build an encrypt branch matrix for create, alter, drop non-goal, missing algorithm,
   assisted query, like query, rule conflict, missing metadata, validation failure, and success.
   Path: `.specify/specs/020-mcp-encrypt-mask-scoped-100/workflow-coverage.md`
-- [ ] T021 [P] [US3] Build a mask branch matrix for create, alter, drop, algorithm missing, field semantics missing, existing rule conflict, metadata unavailable, validation failure, and success.
+- [x] T021 [P] [US3] Build a mask branch matrix for create, alter, drop, algorithm missing, field semantics missing, existing rule conflict, metadata unavailable, validation failure, and success.
   Path: `.specify/specs/020-mcp-encrypt-mask-scoped-100/workflow-coverage.md`
-- [ ] T022 [P] [US3] Add or refresh encrypt descriptor, resource, prompt, completion, and planning tests.
+- [x] T022 [P] [US3] Add or refresh encrypt descriptor, resource, prompt, completion, and planning tests.
   Path: `mcp/features/encrypt/src/test/java/org/apache/shardingsphere/mcp/feature/encrypt/`
-- [ ] T023 [P] [US3] Add or refresh mask descriptor, resource, prompt, completion, and planning tests.
+- [x] T023 [P] [US3] Add or refresh mask descriptor, resource, prompt, completion, and planning tests.
   Path: `mcp/features/mask/src/test/java/org/apache/shardingsphere/mcp/feature/mask/`
-- [ ] T024 [US3] Add encrypt workflow preview, approval apply, validation layer, and recovery payload tests through public tool/workflow APIs.
+- [x] T024 [US3] Add encrypt workflow preview, approval apply, validation layer, and recovery payload tests through public tool/workflow APIs.
   Paths: `mcp/features/encrypt/src/test/java/`, `mcp/core/src/test/java/`
-- [ ] T025 [US3] Add mask workflow preview, approval apply, validation layer, drop, and recovery payload tests through public tool/workflow APIs.
+- [x] T025 [US3] Add mask workflow preview, approval apply, validation layer, drop, and recovery payload tests through public tool/workflow APIs.
   Paths: `mcp/features/mask/src/test/java/`, `mcp/core/src/test/java/`
-- [ ] T026 [US3] Add product-path E2E coverage for encrypt and mask Proxy workflows where runtime infrastructure is available.
+- [x] T026 [US3] Add product-path E2E coverage for encrypt and mask Proxy workflows where runtime infrastructure is available.
   Path: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/`
 
 **Score closure**: Functional completeness can move to 100 after branch matrices and focused unit/E2E evidence pass.
