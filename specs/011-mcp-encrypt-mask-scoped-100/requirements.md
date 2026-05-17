@@ -43,7 +43,8 @@ Raise every scoped MCP encrypt/mask score dimension to **100/100** without switc
 - Only score encrypt and mask functional completeness.
 - Prefer readable, elegant, minimal code over broad abstraction.
 - Use Docker/Testcontainers for local opt-in lanes when Docker, network, and local resources are available.
-- LLM score evidence must use Docker-owned `ollama/ollama:0.23.1` with `qwen3:1.7b`; external LLM endpoints are debug-only.
+- LLM score evidence must use Docker-owned `llama.cpp` server with `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`; external LLM endpoints are debug-only.
+- The accepted LLM score-closing packaging path is a project-owned Docker image built locally in GitHub Actions before the LLM tests run.
 - Use Codex CLI for cross-model second opinion with the confirmed ephemeral read-only command:
   `codex exec --ephemeral --sandbox read-only -C /Users/zhangliang/IdeaProjects/shardingsphere - < /tmp/mcp-doubt-review.md`.
 
@@ -72,7 +73,7 @@ Raise every scoped MCP encrypt/mask score dimension to **100/100** without switc
 ## Verification Lanes
 
 - Default lane: branch/status, Spec Kit checks, scoped MCP unit tests, Checkstyle, Spotless, Jacoco for touched production classes, and H2/HTTP MCP E2E.
-- Opt-in lane: Docker/Testcontainers-backed MySQL, Proxy encrypt/mask workflow, Docker image STDIO, packaged distribution, and Docker-owned Ollama LLM evaluation.
+- Opt-in lane: Docker/Testcontainers-backed MySQL, Proxy encrypt/mask workflow, Docker image STDIO, packaged distribution, and Docker-owned `llama.cpp` LLM evaluation.
 
 ## Completion Rule
 

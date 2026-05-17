@@ -37,11 +37,11 @@ evolvability, and operations readiness.
 
 ## Confirmed Decisions
 
-- The mandatory live LLM E2E gate uses Dockerized Ollama with Alibaba Qwen model id `qwen3:1.7b`.
+- The mandatory live LLM E2E gate uses Docker-owned `llama.cpp` server with `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
 - All live MCP LLM E2E tests for the 100-point gate use this model.
-- MCP E2E owns Dockerized Ollama startup and model pull.
-- MCP E2E must automatically pull `qwen3:1.7b` when absent.
-- The mandatory live gate uses a local Ollama OpenAI-compatible endpoint and requires no paid external API key.
+- MCP E2E owns Dockerized `llama.cpp` startup through a project-owned local Docker image built in GitHub Actions before the tests run.
+- MCP E2E must pin the Hugging Face model revision and verify `Qwen3-1.7B-Q4_K_M.gguf` before the local score image is used.
+- The mandatory live gate uses a local `llama.cpp` OpenAI-compatible endpoint and requires no paid external API key.
 - Multi-provider or multi-model runs are optional evidence.
 - Natural LLM scenarios may be rewritten completely.
 - Backward compatibility is not required.
@@ -85,8 +85,8 @@ evolvability, and operations readiness.
 - Prove missing-context, unsupported-resource, invalid-enum, SQL-tool-mismatch, and stale-workflow recovery.
 - Prove preview-first behavior and explicit approval boundaries for SQL and workflows.
 - Keep live LLM tests opt-in and secret-safe.
-- Use E2E-managed Dockerized Ollama `qwen3:1.7b` for the mandatory live model gate.
-- Start or reuse Ollama and pull `qwen3:1.7b` automatically before live LLM E2E runs.
+- Use E2E-managed Dockerized `llama.cpp` plus `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` for the mandatory live model gate.
+- Build or reuse the project-owned local `llama.cpp` score image before live LLM E2E runs.
 
 ## P1 Requirements
 
@@ -103,8 +103,8 @@ evolvability, and operations readiness.
 - Add packaged HTTP and STDIO diagnostic smoke tests where practical.
 - Assert diagnostics and LLM artifacts do not leak JDBC credentials, bearer tokens, raw environment variables, or stack traces.
 - Record final command evidence before moving the strict score to 100/100.
-- Record the Ollama `qwen3:1.7b` live-gate command evidence before moving the strict score to 100/100.
-- Record Docker/Ollama startup and model pull evidence before moving the strict score to 100/100.
+- Record the `llama.cpp` `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` live-gate command evidence before moving the strict score to 100/100.
+- Record Docker image build, model verification, and `llama.cpp` startup evidence before moving the strict score to 100/100.
 
 ## Final Score Rule
 

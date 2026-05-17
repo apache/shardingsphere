@@ -132,7 +132,7 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - Docker/Testcontainers can provide the local opt-in runtime for MySQL, Proxy workflow, Docker image STDIO, and the lightweight LLM lane.
 - LLM opt-in must start a Docker-owned lightweight runtime based on `llama.cpp` server and `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
 - `ollama/ollama` full images are not acceptable score-closing LLM runtime evidence because their large CUDA-bearing layers make local and GitHub Actions execution brittle.
-- Runtime-time model download from public registries is acceptable only as an implementation fallback; score-closing CI should prefer a prepackaged Docker image that already contains the server binary and pinned GGUF model.
+- Runtime-time model download from public registries is acceptable only as debug evidence; score-closing CI must build or reuse a project-owned local Docker image that already contains the server binary and pinned GGUF model.
 - Performance optimizations must not reduce readability or introduce broad abstractions.
 
 ## Requirements
@@ -161,11 +161,12 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - **FR-020**: LLM score evidence MUST use a Docker-owned lightweight `llama.cpp` server runtime started by the E2E support layer.
 - **FR-021**: LLM score evidence MUST NOT require `MCP_LLM_BASE_URL`, `MCP_LLM_API_KEY`, or a pre-running external model service.
 - **FR-022**: External LLM endpoints MAY remain available only through an explicit debug mode and MUST NOT count as score-closing evidence.
-- **FR-023**: LLM score evidence MUST use `ghcr.io/ggml-org/llama.cpp:server` or a project-owned image built from that server runtime, and MUST NOT use `ollama/ollama` as the score-closing runtime.
+- **FR-023**: LLM score evidence MUST use a project-owned local Docker image built in GitHub Actions from pinned `ghcr.io/ggml-org/llama.cpp:server`, and MUST NOT use `ollama/ollama` as the score-closing runtime.
 - **FR-024**: LLM score evidence MUST use `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` as the model baseline because it matches the current Ollama `qwen3:1.7b` Q4_K_M capability tier while removing the heavy Ollama runtime cost.
-- **FR-025**: The score-closing LLM image or runtime metadata MUST record the server image reference, model reference, model quantization, model file size, digest or immutable reference where available, and whether the model was prepackaged or downloaded during the run.
+- **FR-025**: The score-closing LLM image or runtime metadata MUST record the server image reference, local server image ID, base server image platform digest, model reference, served model ID, model quantization, model file size, model revision, model SHA-256, `modelPackaging=prepackaged`, and Docker ownership.
 - **FR-026**: The GitHub Actions LLM lane MUST be runnable from Docker without host-level LLM installs, local model files, external credentials, or a manually pre-running model server.
-- **FR-027**: A prepackaged Docker image containing `llama-server` plus `Qwen3-1.7B-Q4_K_M.gguf` SHOULD be the preferred score-closing CI path; an online `-hf` pull path MAY remain only as a documented fallback when the prepackaged image is unavailable.
+- **FR-027**: The LLM lane MUST build or reuse the project-owned local score image before Maven tests run; an online `-hf` pull path MAY remain only as documented debug evidence and MUST NOT close score evidence.
+- **FR-028**: The Docker-owned `llama.cpp` score runtime MUST NOT enable built-in file-system, shell, Web UI, or MCP proxy tools; model actions MUST flow through the ShardingSphere MCP E2E harness only.
 
 ### Key Entities
 

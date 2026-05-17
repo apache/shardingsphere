@@ -1224,7 +1224,7 @@ Notes:
 ## Development Pointers
 
 - `test/e2e/mcp` also includes a real-model smoke lane for MCP:
-  - default stack: `Ollama + qwen3:1.7b`
+  - default stack: Docker-owned `llama.cpp` server + `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`
   - runtime coverage: file-backed H2 runtime plus a Testcontainers MySQL runtime
   - runtime shape: the tests launch the production bootstrap runtime in-process over HTTP and STDIO
   - final assertion: structured JSON plus MCP tool trace
@@ -1232,6 +1232,16 @@ Notes:
 
 ```bash
 ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+```
+
+- Build the local score-closing LLM runtime image before Maven starts the LLM lane:
+
+```bash
+docker build \
+  --build-arg BASE_IMAGE=ghcr.io/ggml-org/llama.cpp@sha256:988d2695631987e28a29d98970aaf0e979e23b843a26824abb790ac4245d1d57 \
+  -t apache/shardingsphere-mcp-llm-runtime:local \
+  -f test/e2e/mcp/src/test/resources/docker/llm-runtime/Dockerfile \
+  test/e2e/mcp/src/test/resources/docker/llm-runtime
 ```
 
 - Local reproduction for the LLM smoke lane:
@@ -1242,7 +1252,7 @@ Notes:
   -Dsurefire.failIfNoSpecifiedTests=true
 ```
 
-- The score-closing LLM lane starts a Docker-owned `ollama/ollama:0.23.1` container and pulls `qwen3:1.7b` when the local cache is empty.
+- The score-closing LLM lane starts the local `apache/shardingsphere-mcp-llm-runtime:local` image through Testcontainers. Maven does not download the model; the Docker build prepackages the pinned GGUF file and verifies it with `ADD --checksum`.
 
 - Local reproduction for the LLM usability lane:
 
@@ -1253,7 +1263,7 @@ Notes:
 ```
 
 - For local debugging only, an already running OpenAI-compatible endpoint can be used with
-  `-Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:11434/v1`.
+  `-Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:8080/v1`.
   External debug endpoints are not valid score-closing evidence.
 - The LLM smoke artifacts are written under `test/e2e/mcp/target/llm-e2e/`.
 - The dedicated GitHub Actions entry point is `.github/workflows/mcp-llm-e2e.yml`, delivered as `workflow_dispatch` plus nightly schedule instead of a PR gate.

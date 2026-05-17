@@ -86,8 +86,8 @@ public final class LLMUsabilityScenarioCatalog {
                 List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural", "workflow"),
                 new LLME2EScenario("natural-workflow-manual-export-" + runtimeKind, SYSTEM_PROMPT,
                         "Prepare a mask-rule workflow for logical database `" + databaseName + "`, schema `" + schemaName + "`, table `" + tableName
-                                + "`, and column `status` using MD5. Keep runtime side effects out of MCP, export reviewable artifacts for manual execution, "
-                                + "and finish by verifying `" + query + "`.",
+                                + "`, and column `status` using MD5. Do not send plan_id to the planning tool; use the plan_id returned by the planning response for follow-up workflow calls. "
+                                + "Keep runtime side effects out of MCP, export reviewable artifacts for manual execution, and finish by verifying `" + query + "`.",
                         createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                         workflowActions, workflowRequiredActions),
                 List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_mask_rule"), List.of(), false, false));
@@ -141,7 +141,7 @@ public final class LLMUsabilityScenarioCatalog {
         result.add(createScenario("extended-runtime-status-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
                 List.of(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG, "extended", "runtime-diagnostics"),
                 new LLME2EScenario("extended-runtime-status-" + runtimeKind, SYSTEM_PROMPT,
-                        "Read exact runtime resource `shardingsphere://runtime` and configured databases before answering. "
+                        "Read exact runtime resource `shardingsphere://runtime` and exact database list resource `shardingsphere://databases` before answering. "
                                 + "Follow any read-only resource next_actions from the runtime response before verifying `" + query + "`." + toolContext,
                         createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"),

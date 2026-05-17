@@ -29,14 +29,13 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LLME2EArtifactWriterTest {
     
-    private static final String OLLAMA_IMAGE_DIGEST = "sha256:fcaa568338a6b0993c82f259a5072f46814d6de276cf3dea5b91e281b7f9d149";
+    private static final String MODEL_NAME = "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M";
     
     @TempDir
     private Path tempDir;
@@ -44,28 +43,52 @@ class LLME2EArtifactWriterTest {
     @Test
     void assertWriteRedactsSecretsAndRecordsRunContext() throws IOException {
         LLME2EArtifactBundle artifactBundle = new LLME2EArtifactBundle("scenario-id", "system", "user",
-                "openai-compatible", "qwen3:1.7b", Map.of("descriptorCatalog", "abc123"),
+                "openai-compatible", MODEL_NAME, Map.of("descriptorCatalog", "abc123"),
                 "{\"api_key\":\"secret-value\"}", List.of("{\"token\":\"raw-secret\"}"), List.of(),
-                List.of("Authorization: Bearer runtime-secret"), LLME2EAssertionReport.failure("boom", "failed"));
-        new LLME2EArtifactWriter().write(tempDir, artifactBundle, Map.of(
-                "runtimeMode", "docker",
-                "dockerOwned", true,
-                "imageName", "ollama/ollama:0.23.1",
-                "imageDigest", OLLAMA_IMAGE_DIGEST));
-        final Map<String, Object> runContext = JsonUtils.fromJsonString(Files.readString(tempDir.resolve("run-context.json")), new TypeReference<>() {
+                List.of("Authorization: Bearer runtime-secret", "MCP_LLM_API_KEY=runtime-secret"), LLME2EAssertionReport.failure("boom", "failed"));
+        new LLME2EArtifactWriter().write(tempDir, artifactBundle, createScoreClosingEvidence());
+        Map<String, Object> runContext = JsonUtils.fromJsonString(Files.readString(tempDir.resolve("run-context.json")), new TypeReference<>() {
         });
-        final String rawModelOutput = Files.readString(tempDir.resolve("raw-model-output.txt"));
-        final String runtimeLog = Files.readString(tempDir.resolve("mcp-runtime.log"));
-        final String finalAnswer = Files.readString(tempDir.resolve("final-answer.json"));
-        assertThat(runContext.get("modelName"), is("qwen3:1.7b"));
+        assertThat(runContext.get("modelName"), is(MODEL_NAME));
         assertThat(castToMap(runContext.get("capabilityFingerprints")).get("descriptorCatalog"), is("abc123"));
         assertThat(castToMap(runContext.get("runtime")).get("runtimeMode"), is("docker"));
         assertTrue((boolean) castToMap(runContext.get("runtime")).get("dockerOwned"));
-        assertThat(castToMap(runContext.get("runtime")).get("imageName"), is("ollama/ollama:0.23.1"));
-        assertThat(castToMap(runContext.get("runtime")).get("imageDigest"), is(OLLAMA_IMAGE_DIGEST));
-        assertThat(rawModelOutput, not(containsString("raw-secret")));
-        assertThat(runtimeLog, not(containsString("runtime-secret")));
-        assertThat(finalAnswer, not(containsString("secret-value")));
+        assertThat(castToMap(runContext.get("runtime")).get("serverRuntime"), is("llama.cpp"));
+        assertThat(castToMap(runContext.get("runtime")).get("serverImage"), is("apache/shardingsphere-mcp-llm-runtime:local"));
+        assertThat(castToMap(runContext.get("runtime")).get("modelPackaging"), is("prepackaged"));
+        assertThat(Files.readString(tempDir.resolve("raw-model-output.txt")), is("{\"token\":\"<redacted>\"}"));
+        assertThat(Files.readString(tempDir.resolve("mcp-runtime.log")), is("Authorization: Bearer <redacted>" + System.lineSeparator() + "MCP_LLM_API_KEY=<redacted>"));
+        assertThat(Files.readString(tempDir.resolve("final-answer.json")), is("{\"api_key\":\"<redacted>\"}"));
+    }
+    
+    @Test
+    void assertWriteWithMissingScoreClosingEvidence() {
+        LLME2EArtifactBundle artifactBundle = new LLME2EArtifactBundle("scenario-id", "system", "user",
+                "openai-compatible", MODEL_NAME, Map.of(), "{}", List.of(), List.of(), List.of(), LLME2EAssertionReport.failure("boom", "failed"));
+        IllegalStateException actualException = assertThrows(IllegalStateException.class,
+                () -> new LLME2EArtifactWriter().write(tempDir, artifactBundle, Map.of("scoreClosing", true)));
+        assertThat(actualException.getMessage(), is("Missing score-closing LLM runtime evidence field `runtimeMode`."));
+    }
+    
+    private Map<String, Object> createScoreClosingEvidence() {
+        return Map.ofEntries(
+                Map.entry("runtimeMode", "docker"),
+                Map.entry("dockerOwned", true),
+                Map.entry("provider", "openai-compatible"),
+                Map.entry("serverRuntime", "llama.cpp"),
+                Map.entry("serverImage", "apache/shardingsphere-mcp-llm-runtime:local"),
+                Map.entry("serverImageId", "sha256:image"),
+                Map.entry("baseServerImageDigest", "sha256:base"),
+                Map.entry("modelReference", MODEL_NAME),
+                Map.entry("servedModelId", MODEL_NAME),
+                Map.entry("modelQuantization", "Q4_K_M"),
+                Map.entry("modelSizeBytes", 1282439264L),
+                Map.entry("modelRevision", "daeb8e2d528a760970442092f6bf1e55c3b659eb"),
+                Map.entry("modelFileName", "Qwen3-1.7B-Q4_K_M.gguf"),
+                Map.entry("modelSha256", "d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5"),
+                Map.entry("modelPackaging", "prepackaged"),
+                Map.entry("baseUrlOwnedByTest", true),
+                Map.entry("scoreClosing", true));
     }
     
     @SuppressWarnings("unchecked")

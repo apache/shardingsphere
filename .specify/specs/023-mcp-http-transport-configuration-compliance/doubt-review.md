@@ -17,130 +17,107 @@
 
 # Doubt Review: MCP HTTP Transport Configuration Compliance
 
-**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - < <doubt-review-prompt>`
-**Exit code**: 0
-**Mode**: Read-only Codex CLI adversarial review
+## Current-Scope Reanalysis
+
+**Mode**: Documentation-only reanalysis.
 **Date**: 2026-05-17
+**Scope**: Recheck whether this package should add MCP HTTP authorization, remote exposure switches, or user-configurable Origin policy.
 
-## Finding Classifications
+### Findings
 
-- **Doubt review placed too late**: Valid and actionable. Moved initial doubt review into the design baseline and kept a final implementation review gate.
-- **Static token design too broad**: Valid and actionable. User-confirmed decisions now delete static `accessToken` entirely; only migration-failure documentation remains.
-- **OAuth source grounding incomplete**: Valid and actionable. Added RFC 6750, RFC 7662, and RFC 8707 to source inventory and requirements.
-- **Protected resource validation too weak**: Valid and actionable. Strengthened OAuth resource identifier requirement to HTTPS URL without fragment, with query rejected unless justified.
-- **Authorization servers not required when metadata emitted**: Valid and actionable. Added MCP-mandatory non-empty `authorization_servers` requirement for OAuth protected resource metadata.
-- **WWW-Authenticate challenge missing**: Valid and actionable. Added RFC 6750 and RFC 9728 challenge requirements and test tasks.
-- **`bearer_methods_supported` missing**: Valid and actionable. Added metadata requirement and servlet test task.
-- **Loopback Origin policy incomplete**: Valid and actionable. Added present invalid/non-loopback Origin rejection for loopback binding while keeping missing Origin valid for local non-browser clients.
-- **Reverse-proxy exposure under-modeled**: Valid and actionable. Added public resource URI policy and risk.
-- **OAuth introspection security underspecified**: Valid and actionable. Added HTTPS, timeout, fail-closed, credential redaction, client-auth, and cache-key decision tasks.
-- **Token cache coupling unaddressed**: Valid and actionable. Added cache key and invalidation requirements.
-- **Authorization server and expected issuer drift**: Valid and actionable. Added invariant requirement.
-- **Metadata endpoint placement missing**: Valid and actionable. Added RFC 9728 endpoint-placement task.
-- **mcp-builder gate too vague**: Valid and actionable. Added evidence format for mcp-builder findings, classification, and evidence.
-- **Hidden package 014 coupling**: Valid and actionable. Removed reliance on package 014 for response-format reasoning and scoped it out explicitly.
-- **Local absolute paths in source evidence**: Valid and actionable. Replaced machine-local skill paths with portable session evidence wording.
-- **Governance checkbox overclaim**: Valid and actionable. This review file records the command and exit code for the completed doubt review.
-- **Dedicated validator coverage missing**: Valid and actionable. Added validator test path and future task.
+- **MCP Authorization is optional**: Valid and decisive.
+  The MCP Authorization specification says authorization is optional for MCP implementations.
+  This package can remain MCP-compliant without adding OAuth as long as it does not pretend to implement MCP Authorization.
+- **Open-source default should stay easy to start**: Valid and decisive.
+  Requiring OAuth infrastructure in the first cleanup slice would make local and demo use harder without being required by MCP.
+- **Previous OAuth configuration shape was over-scoped for this package**: Valid and actionable.
+  Removed `authorization`, `oauth`, `tokenValidation`, `introspection`, `protectedResource`, `authorizationServers`, `scopesSupported`, `requiredScopes`, and `bearerMethodsSupported` from the current target YAML shape.
+- **Static `accessToken` should not survive as a substitute**: Valid and actionable.
+  The package does not retain static shared-secret HTTP authorization as a production mode.
+- **Dual transport booleans are an avoidable invalid-state surface**: Valid and actionable.
+  `transport.type` replaces `transport.http.enabled` and `transport.stdio.enabled`.
+- **`remote.enabled` duplicates `bindHost`**: Valid and actionable.
+  Remote exposure is expressed only by choosing a non-loopback `http.bindHost`.
+- **`allowedOrigins` is a user-configurable validation policy surface**: Valid and actionable.
+  It is removed from YAML, while MCP-required Origin handling remains an internal runtime requirement.
+- **Listener defaults make the API smaller without changing MCP semantics**: Valid and actionable.
+  `bindHost`, `port`, and `endpointPath` are defaulted to `127.0.0.1`, `18088`, and `/mcp`, while remaining overridable.
 
-## Remaining Review Gates
+### Closure Result
 
-- Pre-implementation decisions in `tasks.md` are resolved for this design package.
-- Any future implementation touching MCP runtime or E2E code must run mcp-builder review and a final doubt-driven review.
+- **Blocking findings**: None after rescoping the package to a minimal transport selector plus optional HTTP listener overrides.
+- **Reviewer conclusion**: OAuth authorization should be deferred to a future independent Speckit package.
+  Remote mode fields and Origin allowlist fields should not be part of the current YAML API.
 
-## Round 2 Review
+## Future OAuth Review Gate
 
-**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
-**Exit code**: 0
-**Mode**: Read-only Codex CLI adversarial review
+If a future package adds MCP HTTP OAuth Authorization, it must re-open a separate source-driven and doubt-driven review for:
+
+- OAuth Protected Resource Metadata.
+- Token validation mechanism such as introspection or JWT/JWKS.
+- Bearer challenge behavior.
+- Scope metadata and request-level scope enforcement.
+- Reverse proxy public resource URI behavior.
+
+## E2E Simplification Reanalysis
+
+**Mode**: Codex CLI read-only adversarial review plus local reconciliation.
 **Date**: 2026-05-17
+**Scope**: Recheck whether the E2E cleanup plan fully removes current-scope MCP HTTP authorization expectations while preserving unrelated tests.
 
-### Round 2 Finding Classifications
+### Findings
 
-- **MCP `authorization_servers` non-enumerable exception**: Valid and actionable. Removed the exception and required non-empty `authorization_servers` for MCP OAuth protected resource metadata.
-- **Dirty worktree disclosure**: Valid and actionable for handoff. Existing modified files under `mcp/**` and `test/e2e/mcp/**` are outside this documentation-only package and must be disclosed in the final response.
-- **Validator paths inaccurate**: Valid and actionable. Corrected production path to `config/yaml/validator/HttpTransportConfigurationValidator.java` and moved the missing validator test to a candidate new test path.
-- **`accessToken` deletion phrased symmetrically**: Valid and actionable. Reworded the decision path; later user-confirmed decisions delete static `accessToken` entirely.
+- **Deleting only two E2E classes is under-scoped**: Valid and actionable.
+  The cleanup must also cover documentation contract tests, config validator/swapper tests, runtime fixtures, distribution helper tests, and mcp-builder evaluation artifacts that currently encode OAuth or static-token behavior.
+- **`transport.type` needs E2E and distribution contract coverage**: Valid and actionable.
+  Future E2E fixtures and packaged distribution tests must prove minimal `transport.type: STREAMABLE_HTTP`, explicit HTTP defaults, and `transport.type: STDIO` without requiring the old HTTP/STDIO booleans.
+- **Origin behavior needs a post-`allowedOrigins` matrix**: Valid and actionable.
+  `HttpTransportSecurityE2ETest` must no longer depend on allowlists or token headers, and must instead verify the internal Origin policy that remains after YAML simplification: accept missing Origin for non-browser clients, reject malformed, `null`, or non-loopback present Origin with HTTP 403, and accept loopback Origin only for loopback-bound local HTTP.
+- **Valid GET behavior is missing from the E2E plan**: Valid and actionable.
+  Streamable HTTP must cover a valid GET request with `Accept: text/event-stream` on the same MCP endpoint, asserting either SSE behavior or HTTP 405 according to the implementation.
+- **Documentation contract update must reject stale current-behavior examples**: Valid and actionable.
+  It is not enough to stop requiring old auth fields; stale examples for `accessToken`, `oauthIntrospection`, `authorizationServers`, `scopesSupported`, `protectedResource`, `WWW-Authenticate`, and `Authorization: Bearer <token>` must fail unless clearly marked as future/out-of-scope.
+- **mcp-builder evaluation has two edit points**: Valid and actionable.
+  Replacing the XML OAuth authorization question is insufficient unless `MCPBuilderEvaluationArtifactTest` constants stop requiring the `authorization` category and OAuth evidence terms.
+- **Keyword deletion would be unsafe**: Valid guardrail.
+  External LLM provider `Authorization: Bearer <api key>` redaction tests and SQL `metadata_introspection_sql` tests are unrelated to MCP HTTP authorization and must be preserved.
 
-## Round 3 Closure Review
+### Closure Result
 
-**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
-**Exit code**: 0
-**Mode**: Read-only Codex CLI adversarial review
+- **Previous answer to "is the E2E analysis complete"**: No.
+  It missed distribution fixtures, documentation contracts, mcp-builder evaluation artifacts, and valid GET coverage.
+- **Current result after documentation update**: The Speckit package now records those missing E2E cleanup boundaries and preservation guardrails.
+
+## Configuration Boundary Reanalysis
+
+**Mode**: Source-driven plus local adversarial re-check.
 **Date**: 2026-05-17
+**Scope**: Recheck whether the minimal YAML shape still permits meaningless or ambiguous configuration states.
 
-### Round 3 Result
+### Claim Under Review
 
-- **Blocking findings**: None.
-- **Non-blocking temp-path nit**: Valid and actionable. Replaced the historical absolute review prompt path with a portable placeholder.
+The approved YAML API is minimal and stable if it keeps only `transport.type` plus optional HTTP listener overrides for Streamable HTTP.
 
-## Reanalysis Review: Origin, Introspection, Scope, Metadata, and Method Coverage
+### Findings
 
-**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
-**Exit code**: 0
-**Mode**: Read-only Codex CLI adversarial review
-**Date**: 2026-05-17
+- **`STDIO` plus `transport.http` was under-specified**: Valid and actionable.
+  Earlier docs said `transport.http` is not required for STDIO, but did not say whether it is forbidden.
+  Because MCP stdio has no HTTP listener, the docs now require `transport.http` to be absent when `transport.type` is `STDIO`.
+- **`endpointPath` needed tighter bounds**: Valid and actionable.
+  MCP Streamable HTTP requires one endpoint path for POST and GET.
+  The docs now reject URL syntax, query strings, fragments, and double leading slashes instead of only checking that the value starts with `/`.
+- **`bindHost` needed product-language precision**: Valid and actionable.
+  It is a local socket bind host/address, not a public URL, Origin, or remote-mode switch.
+  Examples and non-examples are now recorded in the source map.
+- **`port: 0` is a real runtime need but not a distribution default**: Valid trade-off.
+  Current test/runtime patterns use ephemeral HTTP ports to avoid conflicts.
+  The docs now allow it only for explicit test or embedded launches while keeping fixed port `18088` for distribution examples.
+- **Silent unknown-field handling would weaken the API cleanup**: Valid and actionable.
+  Known removed fields and unknown fields under `transport` or `transport.http` must fail loudly so stale YAML cannot appear supported.
 
-### Reanalysis Finding Classifications
+### Closure Result
 
-- **`mcp-builder` treated as current source evidence**: Valid and actionable. Reworded source-map, research, tasks, checklist, and plan so `mcp-builder` is a future implementation gate, not official source evidence for this documentation-only reanalysis.
-- **Missing-Origin requirement overclaim**: Valid and actionable. Clarified that MCP requires rejecting invalid present Origin values, while rejecting a missing Origin is a ShardingSphere hardening or compatibility decision.
-- **Introspection expiration overclaim**: Valid and actionable. Clarified that RFC 7662 requires `active`, while `exp` is optional; future implementation must define active-without-expiration fail-closed and cache behavior.
-- **Scope challenge coupling**: Valid and actionable. Split request-required `WWW-Authenticate` scope challenges from protected resource `scopes_supported` metadata.
-- **Metadata discovery contract incomplete**: Valid and actionable. Added requirements and tasks to test `resource_metadata` challenge URI, metadata endpoint registration, and protected resource identity together.
-- **HTTP method coverage incomplete**: Valid and actionable. Added explicit POST, GET, and DELETE Origin/authorization policy coverage before implementation.
-
-## Reanalysis Closure Review
-
-**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
-**Exit code**: 0
-**Mode**: Read-only Codex CLI adversarial review
-**Date**: 2026-05-17
-
-### Reanalysis Closure Result
-
-- **Blocking findings**: None.
-- **Non-blocking source-map clarity nit**: Valid and actionable. Moved the `mcp-builder` future gate out of Official Sources into a separate Future Review Gates section.
-- **Non-blocking checklist granularity nit**: Valid and actionable. Split metadata URL registration from POST, GET, and DELETE method security coverage in the open-decision checklist.
-- **Non-blocking issuer checklist nit**: Valid and actionable. Added an explicit open decision for `authorizationServers` issuer identifiers and accepted token issuer invariants.
-
-## User-Confirmed Decision Review
-
-**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
-**Exit code**: 0
-**Mode**: Read-only Codex CLI adversarial review
-**Date**: 2026-05-17
-
-### User-Confirmed Finding Classifications
-
-- **`allowRemoteAccess` still allowed as confirmation gate**: Valid and actionable. Removed the remaining alternative wording and made `exposure.mode` the only design target.
-- **`protectedResource.uri` not consistently mandatory**: Valid and actionable. Updated the spec so production OAuth without `protectedResource.uri` fails validation and reverse-proxy deployments use it as the public resource URI.
-- **Endpoint-scoped metadata not locked into spec**: Valid and actionable. Updated the protected resource metadata entity to require endpoint-scoped well-known metadata with root well-known support retained.
-- **Insufficient-scope status missing**: Valid and actionable. Updated bearer failure requirements to require HTTP 403 with `insufficient_scope` and `scope` challenge behavior.
-- **Open-question wording stale**: Valid and actionable. Updated remaining review gate wording to state pre-implementation decisions are resolved for this design package.
-
-## User-Confirmed Decision Closure Review
-
-**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
-**Exit code**: 0
-**Mode**: Read-only Codex CLI adversarial closure review
-**Date**: 2026-05-17
-
-### User-Confirmed Closure Result
-
-- **Blocking findings**: None.
-- **Scope**: Rechecked `allowRemoteAccess` replacement, mandatory `protectedResource.uri`, endpoint-scoped protected resource metadata, HTTP 403 `insufficient_scope`, and stale open-question wording.
-- **Reviewer conclusion**: No blocking issues remain.
-
-## Scope Semantics Closure Review
-
-**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
-**Exit code**: 0
-**Mode**: Read-only Codex CLI adversarial closure review
-**Date**: 2026-05-17
-
-### Scope Semantics Closure Result
-
-- **Blocking findings**: None.
-- **Scope**: Rechecked that `scopesSupported` is described as server-configured protected-resource scope metadata and challenge guidance, not a custom MCP protocol field or a fixed MCP standard scope-name enum.
-- **Reviewer conclusion**: No blocking issues remain.
+- **Blocking findings**: None after adding strict STDIO/HTTP branch validation, listener bounds, and stale-field rejection.
+- **Cross-model note**: No new external CLI review was run in this sub-round; the earlier Codex CLI doubt review already covered the larger package scope, and this pass was a bounded documentation-only refinement.
+- **Final self-question**: Is there another configuration field that still needs to be invented or retained for current MCP compliance?
+  Answer: No. MCP compliance for this slice requires correct transport selection and internal Streamable HTTP behavior, not more public YAML fields.

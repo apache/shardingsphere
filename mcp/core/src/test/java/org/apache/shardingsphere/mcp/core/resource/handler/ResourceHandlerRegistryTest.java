@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.core.resource.handler;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
@@ -94,6 +94,13 @@ class ResourceHandlerRegistryTest {
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}"));
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns"));
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}"));
+    }
+    
+    @Test
+    void assertGetSupportedResourceDescriptors() {
+        Collection<MCPResourceDescriptor> actual = ResourceHandlerRegistry.getSupportedResourceDescriptors();
+        assertThat(actual.size(), is(20));
+        assertTrue(actual.stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.getUriTemplate())));
     }
     
     private static Stream<Arguments> getSupportedResourcesFailureCases() {

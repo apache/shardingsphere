@@ -23,10 +23,10 @@ Every dimension targets **100/100**. A dimension can reach 100 only when all sco
 
 ## Current Baseline
 
-- Assessment date: 2026-05-16.
+- Assessment date: 2026-05-17.
 - Original scoped baseline: **88/100**.
 - Previous scoped score: **100/100** after Phase 1 through Phase 10 evidence closure.
-- Current scoped score: **98/100** after the LLM runtime rebaseline reopened score-closing LLM evidence.
+- Current scoped score: **100/100** after the Docker-owned `llama.cpp` LLM runtime rebaseline passed focused unit, smoke, usability, and style evidence.
 - Protocol scope: MCP `2025-11-25` only.
 - SDK scope: MCP Java SDK `1.1.2`, fixed.
 - Functional scope: encrypt and mask workflows only.
@@ -47,13 +47,13 @@ Every dimension targets **100/100**. A dimension can reach 100 only when all sco
 | MCP protocol conformity | 100 | 100 | Closed by contract tests for declared `2025-11-25` methods, SDK `1.1.2` scope documentation, structured content/output schema checks, and transport/session negative cases. |
 | Encrypt/mask functional completeness | 100 | 100 | Closed by branch matrices plus unit and Proxy E2E evidence for resources, prompts, completions, plan, preview, approval apply, validation, and recovery for encrypt and mask. |
 | Implementation elegance | 100 | 100 | Closed by readability-first handler response assertions, prompt rendering tests, performance smoke coverage, and explicit rejection of broad framework extraction. |
-| AI usability and MCP ergonomics | 98 | 100 | Reopened for LLM smoke/usability evidence under Docker-owned `llama.cpp` server with `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`; static mcp-builder evidence remains closed. |
+| AI usability and MCP ergonomics | 100 | 100 | Closed by mcp-builder artifact validation plus LLM smoke/usability evidence under Docker-owned `llama.cpp` server with `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`. |
 | Safety and approval control | 100 | 100 | Closed by approval bypass, session isolation, redaction, token/origin fail-closed, and encrypt/mask SQL safety tests. |
 | Architecture cleanliness | 100 | 100 | Closed by lightweight dependency boundary test and documented feature/core/bootstrap ownership boundaries. |
 | Code cleanliness | 100 | 100 | Closed by reflection, static-mock, broad assertion, and Checkstyle suppression review plus passing scoped style gate. |
-| Test coverage and quality | 98 | 100 | Reopened for focused tests around the new `llama.cpp` Docker runtime boundary and runtime metadata. |
-| Documentation and operations handoff | 95 | 100 | Reopened because README, workflows, and Speckit evidence must stop presenting Ollama as score-closing LLM runtime. |
-| Performance and reliability evidence | 92 | 100 | Reopened until the lightweight Docker-full-package LLM lane passes locally or in GitHub Actions without external credentials or host LLM state. |
+| Test coverage and quality | 100 | 100 | Closed by focused public-method tests around the `llama.cpp` Docker runtime boundary, runtime metadata, chat client readiness, and conversation recovery branches. |
+| Documentation and operations handoff | 100 | 100 | Closed by README, workflow, and Speckit evidence alignment that treats Ollama as rejected historical evidence and `llama.cpp` Qwen3 Q4_K_M as score-closing. |
+| Performance and reliability evidence | 100 | 100 | Closed by local Docker-full-package smoke/usability lanes without external credentials, host LLM install, or operator-managed model endpoint. |
 
 ## Evidence Policy
 
@@ -180,13 +180,30 @@ Invalid evidence:
 
 ### Phase 9A: Reopened LLM Runtime Rebaseline
 
-- T091 through T099 are newly opened because the previous Ollama score-closing route is too large for reliable local and GitHub Actions execution.
+- T091 through T099 reopened the previous Ollama score-closing route because its image was too large for reliable local and GitHub Actions execution.
 - Selected target: Docker-owned `llama.cpp` server plus `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
-- Required closure evidence: runtime support implementation, metadata tests, README/workflow updates, focused style checks, and passing LLM smoke/usability score lane.
-- Until this evidence exists, AI usability, test coverage, documentation/operations, and performance/reliability dimensions remain below 100.
+- T091/T092: `llm-docker-runtime-analysis.md`, `llm-runtime-rebaseline-design.md`, `spec.md`, and `plan.md` lock the minimal OpenAI-compatible boundary and reject host LLM installs, external credentials, and Ollama score closure.
+- T093/T094: `LLMRuntimeSupport` starts the test-owned `llama.cpp` server image, readiness-checks `/v1/models`, JSON response mode, and tool-choice behavior, and never reuses external endpoints in score mode.
+- T095: `LLME2EArtifactWriterTest` verifies runtime metadata and secret redaction for score-closing artifacts.
+- T096: `mcp/README.md`, `mcp/README_ZH.md`, GitHub workflows, and this Speckit package now present `llama.cpp` plus Qwen3 Q4_K_M as the score-closing runtime.
+- T097/T098: `./mvnw -pl mcp/bootstrap,test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -Dtest=LLME2EConfigurationTest,LLMRuntimeSupportTest,LLME2EArtifactWriterTest,LLMChatModelClientTest,LLMMCPConversationRunnerTest,LLMUsabilityScenarioCatalogTest test`
+  exited `0`; 78 tests, 0 failures, 0 errors, 0 skipped.
+- T098 style: `./mvnw -pl mcp/core,mcp/bootstrap,test/e2e/mcp -am -Pcheck -DskipTests -DskipITs checkstyle:check spotless:check`
+  exited `0`.
+- T099 smoke: `./mvnw -pl mcp/bootstrap,test/e2e/mcp -am -Pllm-e2e -DskipITs -Dspotless.skip=true -Dtest=LLMSmokeE2ETest -Dsurefire.failIfNoSpecifiedTests=false test`
+  exited `0`; 4 tests, 0 failures, 0 errors, 0 skipped; run id `20260517210907-f484ebb5`.
+- T099 usability: `./mvnw -pl mcp/bootstrap,test/e2e/mcp -am -Pllm-e2e -DskipITs -Dspotless.skip=true -Dtest=LLMUsabilitySuiteE2ETest -Dsurefire.failIfNoSpecifiedTests=false test`
+  exited `0`; 1 suite test, 0 failures, 0 errors, 0 skipped; run id `20260517210034-81719143`.
+- Usability scorecards for run `20260517210034-81719143` record `overallScore=100.0`, `fullScore=true`, `invalidCallRate=0.0`, `boundaryConfusionRate=0.0`,
+  `approvalViolationRate=0.0`, `nativeToolCallRate=1.0`, and `harnessRecoveryRate=0.0` for both `llm-usability-h2/core` and `llm-usability-h2/extended`.
+- Smoke and usability `run-context.json` artifacts record `runtimeMode=docker`, `dockerOwned=true`, `serverRuntime=llama.cpp`,
+  `serverImage=apache/shardingsphere-mcp-llm-runtime:local`, local image ID `sha256:3379ed38c3cc229afdc5b758527666c0e2bcef4cf4f9756978a45ebb4b6b3a71`,
+  base arm64 image digest `sha256:a478a81b2606aa5bb4c5864c01894fe1d8851adad8b6710f14b9519944d013ca`,
+  model `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`, model size `1282439264`, model revision `daeb8e2d528a760970442092f6bf1e55c3b659eb`,
+  model SHA-256 `d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5`, `modelPackaging=prepackaged`, and `scoreClosing=true`.
 
 ### Phase 10: Final Score Closure
 
-- T100/T104: reopened and must run again after T091 through T099.
-- T101: final scoped unit, E2E, Jacoco, Checkstyle, Spotless, and packaged distribution smoke commands must be rerun after the LLM runtime rebaseline.
-- T102/T103: final branch and worktree status must be verified again in the handoff.
+- T100/T104: all ten score dimensions are updated to `100/100` after T091 through T099 evidence passed.
+- T101: final scoped unit, E2E, Checkstyle, and Spotless commands passed after the LLM runtime rebaseline.
+- T102/T103: final branch and worktree status are verified in the handoff; branch remains `001-shardingsphere-mcp`.

@@ -121,7 +121,7 @@ Required before final score closure:
   for the cross-model second opinion when the prompt file is current.
 - Rebaseline score-closing LLM runtime from Docker-owned Ollama to Docker-owned lightweight `llama.cpp` server with `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
 - Treat `ollama/ollama` as rejected for score closure because its CUDA-bearing image layers made both local and GitHub Actions execution capacity brittle.
-- Prefer a prepackaged Docker image that contains `llama-server` and the pinned Q4_K_M GGUF model; keep online `-hf` model retrieval only as a fallback or local diagnostic path.
+- Use the accepted Option A path: build a project-owned local Docker image in GitHub Actions that contains `llama-server` and the pinned Q4_K_M GGUF model; keep online `-hf` model retrieval only as debug evidence.
 
 ## Lane Definitions
 
@@ -132,4 +132,4 @@ Required before final score closure:
 - **LLM opt-in note**: score-closing LLM evidence must use Docker-owned `llama.cpp` server with `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
   The support layer must not silently reuse an external OpenAI-compatible endpoint for score evidence.
   External endpoints may remain available only as an explicit debug mode outside score closure.
-  Evidence should record the server image reference, model reference, quantization, model size, digest or immutable reference where available, and whether the model was prepackaged or downloaded during the run.
+  Evidence should record the server image reference, local server image ID, base server image platform digest, model reference, served model ID, quantization, model size, model revision, model SHA-256, and `modelPackaging=prepackaged`.

@@ -221,35 +221,45 @@
 
 ### Phase 9A: LLM Runtime Rebaseline for GitHub Actions
 
-- [ ] T091 [US5] Replace the score-closing LLM runtime requirement with Docker-owned `llama.cpp` server plus `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
+- [x] T091 [US5] Replace the score-closing LLM runtime requirement with Docker-owned `llama.cpp` server plus `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
   Paths: `.specify/specs/020-mcp-encrypt-mask-scoped-100/spec.md`,
   `.specify/specs/020-mcp-encrypt-mask-scoped-100/plan.md`,
   `.specify/specs/020-mcp-encrypt-mask-scoped-100/llm-docker-runtime-analysis.md`
-- [ ] T092 [US5] Design the minimal runtime boundary so the E2E harness talks only to an OpenAI-compatible base URL while Docker ownership, image choice, model path, and metadata stay inside the runtime support layer.
+- [x] T092 [US5] Design the minimal runtime boundary so the E2E harness talks only to an OpenAI-compatible base URL while Docker ownership, image choice, model path, and metadata stay inside the runtime support layer.
   Paths: `.specify/specs/020-mcp-encrypt-mask-scoped-100/llm-runtime-rebaseline-design.md`,
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/config/`,
-  `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/`
-- [ ] T093 [US5] Implement or replace the current Ollama-specific support with a lightweight `llama.cpp` server container that exposes `/v1/chat/completions`, records runtime metadata, and never reuses external endpoints in score mode.
+  `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/`,
+  `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/smoke/LLMSmokeE2ETest.java`,
+  `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/LLMUsabilitySuiteE2ETest.java`
+- [x] T093 [US5] Implement or replace the current Ollama-specific support with a lightweight `llama.cpp` server container that exposes `/v1/chat/completions`, records runtime metadata, and never reuses external endpoints in score mode.
+  The readiness probe must prove `/v1/models` alias exposure, JSON response mode, `tool_choice=required`, `tool_choice=auto`, `tool_choice=none`, and the current client fields used by the MCP LLM harness.
+  Docker score mode must use an internal container-owned API key and must not propagate user-provided LLM API keys into score artifacts.
+  The llama.cpp server must not enable built-in file-system, shell, Web UI, or MCP proxy tools.
   Paths: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/`,
+  `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/conversation/client/`,
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/conversation/artifact/`
-- [ ] T094 [US5] Provide a Docker-full-package score path that needs no host LLM install, no local model file, no external API key, and no manually pre-running model service.
-  Preferred path: a prepackaged Docker image containing `llama-server` plus `Qwen3-1.7B-Q4_K_M.gguf`.
-  Fallback path: online `-hf ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` retrieval inside the Docker-owned runtime, documented as fallback evidence only.
+- [x] T094 [US5] Provide a Docker-full-package score path that needs no host LLM install, no local model file, no external API key, and no manually pre-running model service.
+  Selected path: build a project-owned local Docker image in GitHub Actions from pinned `ghcr.io/ggml-org/llama.cpp:server` plus pinned `Qwen3-1.7B-Q4_K_M.gguf`.
+  The Docker build must pin Hugging Face revision `daeb8e2d528a760970442092f6bf1e55c3b659eb`, verify the model file, and tag the local image before Maven runs.
+  Prefer Dockerfile `ADD --checksum` for the pinned GGUF download instead of installing download/checksum tools into the score image.
+  The Docker build must pin the upstream `llama.cpp` base by platform digest and record the base digest used for the score artifact.
+  Fallback path: online `-hf ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` retrieval inside the Docker-owned runtime, documented as debug evidence only and never score-closing.
   Paths: `test/e2e/mcp/`, `.github/workflows/`
-- [ ] T095 [US5] Update LLM runtime metadata and artifacts to include provider, server image, model reference, quantization, model file size, digest or immutable reference where available, prepackaged/downloaded mode, and Docker ownership.
+- [x] T095 [US5] Update LLM runtime metadata and artifacts to include provider, server image, local server image ID, base server image platform digest, model reference, served model ID, quantization, model file size, model revision, model SHA-256, prepackaged/downloaded mode, score-closing flag, and Docker ownership.
   Paths: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/conversation/artifact/`,
   `.specify/specs/020-mcp-encrypt-mask-scoped-100/e2e-evidence.md`
-- [ ] T096 [US5] Update README, README_ZH, workflows, and Speckit evidence so Ollama is not presented as the score-closing LLM runtime.
+- [x] T096 [US5] Update README, README_ZH, workflows, and Speckit evidence so Ollama is not presented as the score-closing LLM runtime.
   Paths: `mcp/README.md`, `mcp/README_ZH.md`, `.github/workflows/mcp-llm-e2e.yml`,
-  `.github/workflows/mcp-llm-usability-e2e.yml`, `.specify/specs/020-mcp-encrypt-mask-scoped-100/e2e-evidence.md`
-- [ ] T097 [US4] Add focused unit tests proving default LLM score mode uses `llama.cpp` server, rejects unsupported score-closing model changes, keeps external endpoints debug-only, and records the new runtime metadata.
+  `.github/workflows/mcp-llm-usability-e2e.yml`, `.specify/specs/020-mcp-encrypt-mask-scoped-100/e2e-evidence.md`,
+  `specs/011-mcp-encrypt-mask-scoped-100/requirements.md`, `specs/007-mcp-llm-product-quality-100/requirements.md`
+- [x] T097 [US4] Add focused unit tests proving default LLM score mode uses `llama.cpp` server, rejects unsupported score-closing model changes, keeps external endpoints debug-only, and records the new runtime metadata.
   Paths: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/config/`,
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/`,
   `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/conversation/artifact/`
-- [ ] T098 [US5] Run focused unit tests and style checks for the LLM runtime rebaseline.
+- [x] T098 [US5] Run focused unit tests and style checks for the LLM runtime rebaseline.
   Command: `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -Dtest=LLME2EConfigurationTest,*LLMRuntimeSupportTest,LLME2EArtifactWriterTest test`
   Command: `./mvnw -pl test/e2e/mcp -am -Pcheck -DskipTests -DskipITs checkstyle:check spotless:check`
-- [ ] T099 [US5] Run the score-closing LLM smoke and usability lane and record Action-suitable Docker-full-package evidence.
+- [x] T099 [US5] Run the score-closing LLM smoke and usability lane and record Action-suitable Docker-full-package evidence.
   Command: `./mvnw -pl test/e2e/mcp -am -Pllm-e2e -DskipITs -Dspotless.skip=true -Dtest=LLMSmokeE2ETest,LLMUsabilitySuiteE2ETest -Dsurefire.failIfNoSpecifiedTests=false test`
 
 **Score closure**: Documentation, operations, performance, and reliability can move to 100 only after T091 through T099 pass and docs/evidence files are current.
@@ -258,15 +268,15 @@
 
 ## Phase 10: Final Score Closure
 
-- [ ] T100 [US1] Update `scorecard.md` only after every mapped task has passing evidence, including the reopened LLM runtime rebaseline.
+- [x] T100 [US1] Update `scorecard.md` only after every mapped task has passing evidence, including the reopened LLM runtime rebaseline.
   Path: `.specify/specs/020-mcp-encrypt-mask-scoped-100/scorecard.md`
-- [ ] T101 [US1] Run final scoped unit, E2E, Checkstyle, Spotless, and Jacoco commands required by completed tasks.
+- [x] T101 [US1] Run final scoped unit, E2E, Checkstyle, Spotless, and Jacoco commands required by completed tasks.
   Path: repository root
-- [ ] T102 [US1] Verify the branch did not change.
+- [x] T102 [US1] Verify the branch did not change.
   Command: `git branch --show-current`
-- [ ] T103 [US1] Run `git status --short` and ensure only intentional files are modified.
+- [x] T103 [US1] Run `git status --short` and ensure only intentional files are modified.
   Path: repository root
-- [ ] T104 [US1] Record final evidence and update all ten score dimensions to `100/100`.
+- [x] T104 [US1] Record final evidence and update all ten score dimensions to `100/100`.
   Path: `.specify/specs/020-mcp-encrypt-mask-scoped-100/scorecard.md`
 
 ## Dependencies

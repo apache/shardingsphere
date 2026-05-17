@@ -20,16 +20,19 @@
 ## LLM Runtime Evidence
 
 - Score-closing LLM mode: Docker-owned lightweight `llama.cpp` server runtime.
-- Required server runtime: `ghcr.io/ggml-org/llama.cpp:server` or a project-owned image built from that server runtime.
+- Required server runtime: a project-owned local Docker image built in the GitHub Actions job from pinned `ghcr.io/ggml-org/llama.cpp:server`.
 - Required model: `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
+- Required model revision: `daeb8e2d528a760970442092f6bf1e55c3b659eb`.
+- Required model file: `Qwen3-1.7B-Q4_K_M.gguf`.
 - Required quantization: `Q4_K_M`.
-- Required model size reference: about `1.28GB`.
+- Required model size reference: `1282439264` bytes.
+- Required model integrity evidence: SHA-256 `d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5`, verified during Docker build.
 - External endpoints are allowed only with `mcp.llm.runtime-mode=external-debug` or `MCP_LLM_RUNTIME_MODE=external-debug`.
 - External debug endpoints do not count as score-closing evidence.
 - Docker-owned score mode does not reuse an externally configured API key; it talks to the test-owned `llama.cpp` server container.
 - Every LLM conversation writes runtime metadata into `run-context.json` under `runtime`.
-- Score-closing runtime metadata must include `runtimeMode=docker`, `dockerOwned=true`, server image reference, model reference, quantization,
-  model file size, digest or immutable reference where available, and whether the model was prepackaged or downloaded during the run.
+- Score-closing runtime metadata must include `runtimeMode=docker`, `dockerOwned=true`, server image reference, local server image ID, base server image platform digest, model reference,
+  served model ID, quantization, model file size, model revision, model SHA-256, `modelPackaging=prepackaged`, and `scoreClosing=true`.
 - Generated artifacts under `test/e2e/mcp/target/llm-e2e` are valid score-closing evidence only when they were produced after the `llama.cpp` runtime metadata writer change.
 - Any older `run-context.json` without the top-level `runtime` object is stale execution evidence and must be regenerated before it is used to close SC-008.
 
@@ -58,15 +61,18 @@ Verified command:
 
 ```bash
 docker manifest inspect ghcr.io/ggml-org/llama.cpp:server
-docker manifest inspect ghcr.io/ggml-org/llama.cpp@sha256:c950f1c4297c272ea95cf85318bcca42ac6a462fb3161d11047303b1d97f4dab
+docker manifest inspect ghcr.io/ggml-org/llama.cpp@sha256:988d2695631987e28a29d98970aaf0e979e23b843a26824abb790ac4245d1d57
 ```
 
 Observed evidence:
 
-- `ghcr.io/ggml-org/llama.cpp:server` provides linux/amd64 and linux/arm64 manifests.
+- `ghcr.io/ggml-org/llama.cpp:server` provides linux/amd64, linux/arm64, and linux/s390x manifests.
+- Planning recheck observed linux/amd64 digest `sha256:988d2695631987e28a29d98970aaf0e979e23b843a26824abb790ac4245d1d57`.
+- Planning recheck observed linux/arm64 digest `sha256:a478a81b2606aa5bb4c5864c01894fe1d8851adad8b6710f14b9519944d013ca`.
 - linux/amd64 compressed runtime layers total about `47MB`.
 - `llama.cpp` server supports OpenAI-compatible chat completions, schema-constrained JSON response format, and function calling/tool use.
 - `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` is about `1.28GB` and stays in the same Qwen3 1.7B Q4_K_M capability tier as the current Ollama baseline.
+- The accepted score-closing packaging path is the project-owned local Docker build, not runtime `-hf` download.
 
 ## Reproduction Commands
 
@@ -86,7 +92,7 @@ LLM usability lane:
   -Dsurefire.failIfNoSpecifiedTests=false test
 ```
 
-## Local LLM Lane Attempt
+## Historical Local LLM Lane Attempt
 
 Attempted command:
 
@@ -107,12 +113,114 @@ Observed evidence:
   `failed to register layer: write /usr/lib/ollama/cuda_v12/libggml-cuda.so: no space left on device`.
 - `docker system df` showed Docker images using `46.67GB` with `41.27GB` reclaimable on the local machine.
 
-Follow-up to close this lane:
+This follow-up is now complete:
 
-- Replace the score-closing runtime with Docker-owned `llama.cpp` server plus `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
-- Prefer a prepackaged server-plus-model Docker image for GitHub Actions.
-- Rerun the LLM command above after the runtime rebaseline.
-- Confirm generated `run-context.json` files include Docker-owned `llama.cpp` runtime metadata and the selected Qwen3 Q4_K_M model reference.
+- The score-closing runtime was replaced with Docker-owned `llama.cpp` server plus `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
+- GitHub Actions now builds the project-owned local server-plus-model Docker image before Maven tests run.
+- Current smoke and usability evidence below was regenerated after the runtime rebaseline.
+- Generated `run-context.json` files include Docker-owned `llama.cpp` runtime metadata and the selected Qwen3 Q4_K_M model reference.
+
+## Current LLM Score-Closing Evidence
+
+Local server-plus-model image:
+
+```bash
+docker image inspect apache/shardingsphere-mcp-llm-runtime:local --format '{{.Id}} {{.Size}} {{.Architecture}}'
+```
+
+Result: exit code `0`, image ID `sha256:3379ed38c3cc229afdc5b758527666c0e2bcef4cf4f9756978a45ebb4b6b3a71`,
+size `1418953798` bytes, architecture `arm64`.
+
+LLM smoke lane:
+
+```bash
+./mvnw -pl mcp/bootstrap,test/e2e/mcp -am -Pllm-e2e -DskipITs -Dspotless.skip=true \
+  -Dtest=LLMSmokeE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+Result: exit code `0`, `4` tests, `0` failures, `0` errors, `0` skipped, finished at `2026-05-17T21:13:30+08:00`.
+
+Smoke artifact run id:
+
+- `test/e2e/mcp/target/llm-e2e/20260517210907-f484ebb5`
+
+Covered smoke scenarios:
+
+- `minimal-smoke-h2`
+- `minimal-smoke-h2-stdio`
+- `minimal-smoke-mysql`
+- `minimal-smoke-mysql-stdio`
+
+LLM usability lane:
+
+```bash
+./mvnw -pl mcp/bootstrap,test/e2e/mcp -am -Pllm-e2e -DskipITs -Dspotless.skip=true \
+  -Dtest=LLMUsabilitySuiteE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+Result: exit code `0`, `1` suite test, `0` failures, `0` errors, `0` skipped, finished at `2026-05-17T21:07:05+08:00`.
+
+Usability artifact run id:
+
+- `test/e2e/mcp/target/llm-e2e/20260517210034-81719143`
+
+Core scorecard:
+
+- suiteId: `llm-usability-h2/core`
+- overallScore: `100.0`
+- fullScore: `true`
+- taskSuccessRate: `1.0`
+- naturalTaskSuccessRate: `1.0`
+- protocolContractSuccessRate: `1.0`
+- firstCorrectActionRate: `1.0`
+- invalidCallRate: `0.0`
+- boundaryConfusionRate: `0.0`
+- resourceHitRate: `1.0`
+- recoveryRate: `1.0`
+- nextActionFollowRate: `1.0`
+- approvalViolationRate: `0.0`
+- nativeToolCallRate: `1.0`
+- harnessRecoveryRate: `0.0`
+
+Extended scorecard:
+
+- suiteId: `llm-usability-h2/extended`
+- overallScore: `100.0`
+- fullScore: `true`
+- taskSuccessRate: `1.0`
+- naturalTaskSuccessRate: `1.0`
+- protocolContractSuccessRate: `1.0`
+- firstCorrectActionRate: `1.0`
+- invalidCallRate: `0.0`
+- boundaryConfusionRate: `0.0`
+- resourceHitRate: `1.0`
+- recoveryRate: `1.0`
+- nextActionFollowRate: `1.0`
+- approvalViolationRate: `0.0`
+- nativeToolCallRate: `1.0`
+- harnessRecoveryRate: `0.0`
+
+Runtime metadata observed in smoke and usability `run-context.json`:
+
+- `runtimeMode=docker`
+- `dockerOwned=true`
+- `provider=openai-compatible`
+- `serverRuntime=llama.cpp`
+- `serverImage=apache/shardingsphere-mcp-llm-runtime:local`
+- `serverImageId=sha256:3379ed38c3cc229afdc5b758527666c0e2bcef4cf4f9756978a45ebb4b6b3a71`
+- `baseServerImageDigest=sha256:a478a81b2606aa5bb4c5864c01894fe1d8851adad8b6710f14b9519944d013ca`
+- `modelReference=ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`
+- `servedModelId=ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`
+- `modelQuantization=Q4_K_M`
+- `modelSizeBytes=1282439264`
+- `modelRevision=daeb8e2d528a760970442092f6bf1e55c3b659eb`
+- `modelFileName=Qwen3-1.7B-Q4_K_M.gguf`
+- `modelSha256=d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5`
+- `modelPackaging=prepackaged`
+- `baseUrlOwnedByTest=true`
+- `scoreClosing=true`
 
 ## GitHub Actions Evidence
 
@@ -124,26 +232,38 @@ Follow-up to close this lane:
 
 ## Unit Evidence
 
-The focused unit evidence for T086 through T090 is owned by:
+The focused unit evidence for T091 through T098 is owned by:
 
 - `LLME2EConfigurationTest`
-- `OllamaLLMRuntimeSupportTest`
+- `LLMRuntimeSupportTest`
 - `LLME2EArtifactWriterTest`
 - `LLMChatModelClientTest`
+- `LLMMCPConversationRunnerTest`
+- `LLMUsabilityScenarioCatalogTest`
 
 Focused command:
 
 ```bash
 ./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
   -Dsurefire.failIfNoSpecifiedTests=false \
-  -Dtest=MCPBuilderEvaluationArtifactTest,LLME2EArtifactWriterTest,LLME2EConfigurationTest,OllamaLLMRuntimeSupportTest test
+  -Dtest=LLME2EConfigurationTest,LLMRuntimeSupportTest,LLME2EArtifactWriterTest,LLMChatModelClientTest,LLMMCPConversationRunnerTest,LLMUsabilityScenarioCatalogTest test
 ```
 
-Result: exit code `0`, `24` tests, `0` failures, `0` errors, `0` skipped.
+Result: exit code `0`, focused LLM harness tests passed with `0` failures, `0` errors, `0` skipped.
+
+Final focused unit command:
+
+```bash
+./mvnw -pl mcp/bootstrap,test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
+  -Dsurefire.failIfNoSpecifiedTests=false \
+  -Dtest=LLME2EConfigurationTest,LLMRuntimeSupportTest,LLME2EArtifactWriterTest,LLMChatModelClientTest,LLMMCPConversationRunnerTest,LLMUsabilityScenarioCatalogTest test
+```
+
+Result: exit code `0`, `78` tests, `0` failures, `0` errors, `0` skipped, finished at `2026-05-17T21:15:07+08:00`.
 
 Mocking note:
 
-- `OllamaLLMRuntimeSupportTest` uses one bounded `mockStatic(MySQLRuntimeTestSupport.class)` try-with-resources block.
+- `LLMRuntimeSupportTest` uses one bounded `mockStatic(MySQLRuntimeTestSupport.class)` try-with-resources block.
 - The exception is kept local because `test/e2e/mcp` does not depend on `shardingsphere-test-infra-framework`,
   and adding that dependency only for this static Docker availability probe would be broader than the LLM runtime boundary change.
 
@@ -221,7 +341,7 @@ Opt-in lanes:
 - Testcontainers must be able to pull images and allocate loopback ports.
 - The Proxy/MySQL lane must wait for MySQL readiness before JDBC or Proxy workflow calls.
 - The LLM lane must not use `MCP_LLM_BASE_URL`, `MCP_LLM_API_KEY`, or external endpoint settings as score evidence.
-- The LLM lane should use a prepackaged server-plus-model image when closing score evidence in GitHub Actions.
+- The LLM lane must use the locally built server-plus-model image when closing score evidence in GitHub Actions.
 - The distribution lane expects the MCP package under `distribution/mcp/target` or builds it through Maven with `-am`.
 - The STDIO lane expects the runtime config to enable stdio only, with HTTP disabled for that process.
 

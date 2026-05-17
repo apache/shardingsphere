@@ -20,11 +20,10 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration.RuntimeMode;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
+import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeSupport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Fixture;
-import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.OllamaLLMRuntimeSupport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUsabilityScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUsabilityScenarioCatalog;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
@@ -54,7 +53,7 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
     
-    private static OllamaLLMRuntimeSupport.ModelRuntime llmRuntime;
+    private static LLMRuntimeSupport.ModelRuntime llmRuntime;
     
     private final LLMRuntimeFixtureFactory runtimeFixtureFactory = new LLMRuntimeFixtureFactory();
     
@@ -66,7 +65,7 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     @BeforeAll
     static void prepareLLMRuntime() throws InterruptedException {
-        llmRuntime = OllamaLLMRuntimeSupport.prepare(LLME2EConfiguration.load());
+        llmRuntime = LLMRuntimeSupport.prepare(LLME2EConfiguration.load());
     }
     
     @AfterAll
@@ -121,15 +120,10 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     private static Map<String, Object> getRequiredLLMRuntimeEvidence() {
-        OllamaLLMRuntimeSupport.ModelRuntime runtime = getRequiredLLMRuntime();
-        return Map.of(
-                "runtimeMode", runtime.getRuntimeMode().getValue(),
-                "dockerOwned", RuntimeMode.DOCKER == runtime.getRuntimeMode(),
-                "imageName", runtime.getImageName(),
-                "imageDigest", runtime.getImageDigest());
+        return getRequiredLLMRuntime().getEvidence();
     }
     
-    private static OllamaLLMRuntimeSupport.ModelRuntime getRequiredLLMRuntime() {
+    private static LLMRuntimeSupport.ModelRuntime getRequiredLLMRuntime() {
         if (null == llmRuntime) {
             throw new IllegalStateException("LLM runtime was not initialized.");
         }

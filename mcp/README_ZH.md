@@ -1196,7 +1196,7 @@ docker run --rm -i \
 ## 开发参考
 
 - `test/e2e/mcp` 现在也包含一条真实模型驱动的 MCP smoke：
-  - 默认模型栈：`Ollama + qwen3:1.7b`
+  - 默认模型栈：Docker-owned `llama.cpp` server + `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`
   - runtime 覆盖：file-backed H2 runtime，加上一条 Testcontainers 拉起的 MySQL runtime
   - runtime 形态：测试会在进程内拉起 production bootstrap HTTP 和 STDIO runtime
   - 最终判定：结构化 JSON 和 MCP tool trace
@@ -1204,6 +1204,16 @@ docker run --rm -i \
 
 ```bash
 ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+```
+
+- 在 Maven 启动 LLM lane 前，先构建本地 score-closing LLM runtime image：
+
+```bash
+docker build \
+  --build-arg BASE_IMAGE=ghcr.io/ggml-org/llama.cpp@sha256:988d2695631987e28a29d98970aaf0e979e23b843a26824abb790ac4245d1d57 \
+  -t apache/shardingsphere-mcp-llm-runtime:local \
+  -f test/e2e/mcp/src/test/resources/docker/llm-runtime/Dockerfile \
+  test/e2e/mcp/src/test/resources/docker/llm-runtime
 ```
 
 - 本地复现这条 LLM smoke：
@@ -1214,7 +1224,7 @@ docker run --rm -i \
   -Dsurefire.failIfNoSpecifiedTests=true
 ```
 
-- Score-closing LLM lane 会启动测试自己拥有的 `ollama/ollama:0.23.1` 容器，并在本地缓存为空时拉取 `qwen3:1.7b`。
+- Score-closing LLM lane 会通过 Testcontainers 启动本地 `apache/shardingsphere-mcp-llm-runtime:local` image。Maven 不下载模型；Docker build 会预打包固定 GGUF 文件，并用 `ADD --checksum` 校验。
 
 - 本地复现 LLM usability lane：
 
@@ -1224,7 +1234,7 @@ docker run --rm -i \
   -Dsurefire.failIfNoSpecifiedTests=true
 ```
 
-- 仅本地调试时，可以用 `-Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:11434/v1`
+- 仅本地调试时，可以用 `-Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:8080/v1`
   连接已经运行的 OpenAI-compatible endpoint。External debug endpoint 不能作为 score-closing evidence。
 - LLM smoke 的 artifact 会落到 `test/e2e/mcp/target/llm-e2e/`。
 - 对应的 GitHub Actions 入口是 `.github/workflows/mcp-llm-e2e.yml`，第一轮按 `workflow_dispatch` 和 nightly schedule 交付，不进 PR gate。

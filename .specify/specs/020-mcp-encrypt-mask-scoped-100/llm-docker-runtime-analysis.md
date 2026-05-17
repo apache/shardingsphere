@@ -25,15 +25,17 @@ Score-closing LLM evidence must move from Docker-owned Ollama to a lightweight D
 - The score-closing runtime serves `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
 - The lane does not require external model credentials, host-level LLM installs, host model files, or a pre-running external model endpoint.
 - External OpenAI-compatible endpoints may remain available only as explicit debug mode and cannot close score evidence.
-- A prepackaged Docker image containing `llama-server` plus `Qwen3-1.7B-Q4_K_M.gguf` is the preferred CI path.
-- Online `-hf ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` retrieval inside the Docker-owned runtime may remain as a documented fallback, not the preferred score-closing GitHub Actions path.
+- The accepted CI path is a project-owned local Docker image built in GitHub Actions before the LLM tests run.
+- Online `-hf ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` retrieval inside the Docker-owned runtime may remain as a documented debug fallback, not score-closing evidence.
 
 ## Source-Driven Evidence
 
 - Ollama `qwen3:1.7b` is `qwen3`, about `2.03B` parameters, `Q4_K_M`, and about `1.4GB`.
-- `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` is also the Qwen3 1.7B capability tier with `Q4_K_M` quantization and about `1.28GB`.
+- `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` is also the Qwen3 1.7B capability tier with `Q4_K_M` quantization and `1282439264` bytes for `Qwen3-1.7B-Q4_K_M.gguf`.
+- Hugging Face model API evidence records revision `daeb8e2d528a760970442092f6bf1e55c3b659eb`, LFS SHA-256 `d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5`, and Apache 2.0 model card metadata.
 - `llama.cpp` server supports OpenAI-compatible chat completions, schema-constrained JSON response format, and function calling/tool use.
 - Local manifest inspection showed `ghcr.io/ggml-org/llama.cpp:server` linux/amd64 compressed runtime layers total about `47MB`.
+- Reinspection showed the mutable `server` tag moved to linux/amd64 platform digest `sha256:988d2695631987e28a29d98970aaf0e979e23b843a26824abb790ac4245d1d57`, so implementation must pin a platform digest instead of relying on the tag.
 - Local manifest inspection showed `ollama/ollama:0.23.1` linux/amd64 compressed runtime layers total about `4.01GB`, including a CUDA-bearing layer of about `3.86GB`.
 
 ## Rebaseline Rationale
@@ -63,10 +65,10 @@ The lane must be redesigned so Docker ownership remains strict while the runtime
 1. Keep an explicit runtime mode with Docker as the default score mode and external debug as non-score evidence.
 2. Replace the Ollama-specific score runtime with a `llama.cpp` server runtime that exposes the existing OpenAI-compatible `/v1/chat/completions` contract.
 3. Use `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` as the fixed score-closing model.
-4. Prefer a prepackaged Docker image containing the server binary and pinned GGUF model so GitHub Actions can run without runtime model download.
-5. Keep online Hugging Face model retrieval only as a documented fallback when the prepackaged image is not available.
+4. Build a project-owned local Docker image in GitHub Actions containing the server binary and pinned GGUF model so Maven tests run without runtime model download.
+5. Keep online Hugging Face model retrieval only as a documented debug fallback and never as score-closing evidence.
 6. Reject unsupported score-closing model changes in Docker mode so the lane cannot silently downgrade capability.
-7. Record runtime metadata: provider, server image, model reference, quantization, model file size, digest or immutable reference where available, prepackaged/downloaded mode, runtime mode, and Docker ownership.
+7. Record runtime metadata: provider, server image, local server image ID, base server image platform digest, model reference, served model ID, quantization, model file size, model revision, model SHA-256, prepackaged/downloaded mode, runtime mode, score-closing flag, and Docker ownership.
 8. Update README, README_ZH, workflows, and E2E evidence so Ollama is no longer presented as score-closing LLM evidence.
 
 ## Implementation Status
@@ -83,7 +85,7 @@ The lane must be redesigned so Docker ownership remains strict while the runtime
 - Unit test that external debug mode can return an external runtime.
 - Unit test that non-default provider or model is rejected for Docker score mode.
 - Unit test or artifact assertion that the score-closing server is `llama.cpp` and the model is `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
-- Unit test that runtime metadata records model reference, quantization, model size, and prepackaged/downloaded mode.
+- Unit test that runtime metadata records model reference, served model ID, revision, SHA-256, quantization, model size, and prepackaged/downloaded mode.
 - LLM smoke E2E evidence must record Docker-owned `llama.cpp` runtime metadata.
 - LLM usability E2E evidence must record Docker-owned `llama.cpp` runtime metadata.
 

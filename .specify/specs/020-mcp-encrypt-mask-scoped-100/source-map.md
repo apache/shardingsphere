@@ -29,7 +29,10 @@
 - Ollama qwen3 baseline: `https://ollama.com/library/qwen3:1.7b`
 - llama.cpp server documentation: `https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md`
 - llama.cpp Docker documentation: `https://github.com/ggml-org/llama.cpp/blob/master/docs/docker.md`
+- Dockerfile `ADD --checksum` reference: `https://docs.docker.com/reference/dockerfile/#add---checksum`
 - ggml-org Qwen3 GGUF model card: `https://huggingface.co/ggml-org/Qwen3-1.7B-GGUF`
+- ggml-org Qwen3 GGUF model API: `https://huggingface.co/api/models/ggml-org/Qwen3-1.7B-GGUF`
+- Qwen3 base model API: `https://huggingface.co/api/models/Qwen/Qwen3-1.7B`
 
 ## Local Version Sources
 
@@ -70,9 +73,15 @@
 
 - Selected score-closing runtime: Docker-owned `llama.cpp` server.
 - Selected score-closing model: `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
+- Selected packaging path: project-owned local Docker image built in GitHub Actions before the LLM tests run.
+- Selected GGUF revision: `daeb8e2d528a760970442092f6bf1e55c3b659eb`.
+- Selected GGUF file: `Qwen3-1.7B-Q4_K_M.gguf`.
+- Observed GGUF size: `1282439264` bytes.
+- Observed GGUF LFS SHA-256: `d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5`.
 - Docker manifest inspected locally for `ghcr.io/ggml-org/llama.cpp:server`.
-- Resolved linux/amd64 digest during planning: `sha256:c950f1c4297c272ea95cf85318bcca42ac6a462fb3161d11047303b1d97f4dab`.
-- Resolved linux/arm64 digest during planning: `sha256:bbb33c86d3b4dff468aca416859c889f3b0844c3590f0b9c33125b745e5791e0`.
+- Rechecked linux/amd64 platform digest during planning: `sha256:988d2695631987e28a29d98970aaf0e979e23b843a26824abb790ac4245d1d57`.
+- Rechecked linux/arm64 platform digest during planning: `sha256:a478a81b2606aa5bb4c5864c01894fe1d8851adad8b6710f14b9519944d013ca`.
+- Earlier planning digests for the mutable `server` tag drifted; implementation must pin the current accepted platform digest instead of using the tag alone.
 - Rejected previous score-closing runtime: `ollama/ollama:0.23.1`, because the linux/amd64 image includes about `4.01GB` compressed runtime layers, including about `3.86GB` of CUDA-bearing content.
 
 ## Non-Goal Evidence

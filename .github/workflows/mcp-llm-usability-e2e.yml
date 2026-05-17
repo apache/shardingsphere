@@ -51,6 +51,8 @@ env:
   MCP_LLM_READY_TIMEOUT_SECONDS: '900'
   MCP_LLM_REQUEST_TIMEOUT_SECONDS: '300'
   MCP_LLM_ARTIFACT_ROOT: test/e2e/mcp/target/llm-e2e
+  MCP_LLM_SERVER_IMAGE: apache/shardingsphere-mcp-llm-runtime:local
+  MCP_LLM_BASE_SERVER_IMAGE_DIGEST: sha256:988d2695631987e28a29d98970aaf0e979e23b843a26824abb790ac4245d1d57
 
 jobs:
   global-environment:
@@ -76,6 +78,13 @@ jobs:
           enable-docker-setup: 'true'
       - name: Build MCP E2E Test Dependencies
         run: ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+      - name: Build MCP LLM Runtime Image
+        run: >-
+          docker build
+          --build-arg BASE_IMAGE=ghcr.io/ggml-org/llama.cpp@${MCP_LLM_BASE_SERVER_IMAGE_DIGEST}
+          -t ${MCP_LLM_SERVER_IMAGE}
+          -f test/e2e/mcp/src/test/resources/docker/llm-runtime/Dockerfile
+          test/e2e/mcp/src/test/resources/docker/llm-runtime
       - name: Verify MCP LLM Usability Selector
         run: test -f test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/LLMUsabilitySuiteE2ETest.java
       - name: Run MCP LLM Usability Suite

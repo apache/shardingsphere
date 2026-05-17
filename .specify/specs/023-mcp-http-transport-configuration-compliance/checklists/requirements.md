@@ -17,8 +17,8 @@
 
 # Requirements Checklist: MCP HTTP Transport Configuration Compliance
 
-**Purpose**: Validate the Speckit package before any implementation starts.  
-**Created**: 2026-05-17  
+**Purpose**: Validate the Speckit package before any implementation starts.
+**Created**: 2026-05-17
 **Package**: `.specify/specs/023-mcp-http-transport-configuration-compliance/`
 
 ## Governance
@@ -27,35 +27,42 @@
 - [x] Package created manually without branch-changing Speckit commands.
 - [x] Documentation-only work performed before implementation authorization.
 - [x] Repository rules from `AGENTS.md` and `CODE_OF_CONDUCT.md` considered.
-- [x] Source-driven official guidance recorded, with `mcp-builder` kept as a future implementation review gate.
+- [x] Source-driven official guidance recorded, with `mcp-builder` used as a design sanity check and kept as a future implementation review gate.
 - [x] Doubt-driven Codex CLI review rounds completed and findings classified in `doubt-review.md`.
 
 ## Requirement Quality
 
 - [x] Every current `HttpTransportConfiguration` field has a future action category.
-- [x] Static `accessToken` is confirmed for deletion, not assumed to stay.
-- [x] Production static-token authorization is rejected.
-- [x] Remote HTTP exposure keeps exact Origin allowlist protection.
-- [x] OAuth metadata is separated from static token behavior.
-- [x] Protected resource URI canonicalization is required when configured.
-- [x] Scope metadata and challenge semantics use MCP-standard `scopes_supported` and `scope`; no custom `requiredScopes` field is added.
-- [x] RFC 6750 challenge behavior is required.
-- [x] RFC 7662 introspection security is required.
-- [x] RFC 8707 resource/audience context is required.
-- [x] RFC 9728 metadata fields and endpoint placement are required.
-- [x] Reverse-proxy public resource URI risk is called out.
+- [x] `transport.type` is the only approved transport selector.
+- [x] MCP Authorization is recorded as optional and not part of the current package.
+- [x] Static `accessToken` is not retained as production authorization.
+- [x] `bindHost`, `port`, and `endpointPath` are optional and default to `127.0.0.1`, `18088`, and `/mcp`.
+- [x] `transport.http` is valid only for `transport.type: STREAMABLE_HTTP`; `STDIO` configs do not carry HTTP listener fields.
+- [x] `bindHost`, `port`, and `endpointPath` listener validation boundaries are recorded.
+- [x] `endpointPath` rejects URL/query/fragment or ambiguous double-slash forms.
+- [x] Remote HTTP exposure is expressed only by non-loopback `bindHost`.
+- [x] User-configurable Origin allowlist is removed from YAML.
+- [x] MCP-required Origin protection remains an internal runtime requirement.
+- [x] Internal Origin matrix is recorded: missing Origin accepted for non-browser clients; malformed, `null`, or non-loopback present Origin rejected; loopback Origin accepted only for loopback-bound local HTTP.
+- [x] OAuth, token validation, protected resource metadata, bearer metadata, and scope configuration are deferred to future work.
 - [x] Migration behavior is included as a requirement.
-- [x] Missing remote Origin is allowed only after OAuth Bearer authorization succeeds.
-- [x] Active introspection responses without `exp` are accepted for the current request but not cached.
-- [x] Scope challenge policy uses configured `scopesSupported` as the first-version server-configured basic functionality scope set.
-- [x] Protected resource metadata URL placement is treated as a discovery contract.
-- [x] POST, GET, and DELETE security coverage is mapped to future implementation decisions.
+- [x] POST, GET, and DELETE Origin coverage is mapped to future implementation decisions.
+- [x] `allowRemoteAccess`, `remote`, `exposure`, and `allowedOrigins` are removed from the approved YAML shape.
+- [x] Current YAML shape contains no `authorization`, `oauth`, `tokenValidation`, `introspection`, `protectedResource`, `authorizationServers`, `scopesSupported`, `requiredScopes`, or `bearerMethodsSupported` subtree.
+- [x] Known removed fields and unknown fields under `transport` or `transport.http` are required to fail loudly rather than be silently ignored.
 
 ## Testability
 
 - [x] YAML validation branches are mapped to future test tasks.
-- [x] HTTP authorization and metadata behavior are mapped to future test tasks.
+- [x] `STDIO` with forbidden `transport.http` is mapped to future validator tests.
+- [x] `port: 0` is mapped as ephemeral-port test or embedded usage, not a distribution example.
+- [x] HTTP listener defaulting and internal Origin behavior are mapped to future test tasks.
 - [x] Remote HTTP E2E security behavior is mapped to future test tasks.
+- [x] Static-token and OAuth introspection E2E success paths are mapped for deletion, not retention.
+- [x] Shared E2E fixtures and distribution helper tests are mapped to the minimal `transport.type` shape.
+- [x] mcp-builder LLM evaluation XML and validator constants are mapped for replacement where they currently require OAuth challenge behavior.
+- [x] Valid GET behavior on the single Streamable HTTP endpoint is mapped to future E2E coverage.
+- [x] Unrelated external LLM provider authorization redaction and SQL metadata introspection tests are explicitly preserved.
 - [x] Dedicated HTTP transport configuration validator coverage is mapped to future tasks.
 - [x] Documentation/distribution examples are mapped to future tasks.
 - [x] mcp-builder review is a future verification task for implementation.
@@ -63,13 +70,15 @@
 
 ## Confirmed Decisions Before Code
 
-- [x] Delete `transport.http.accessToken`; do not retain production `static-token` mode.
-- [x] Replace `allowRemoteAccess` with `exposure.mode`.
-- [x] Use targeted validation errors and migration docs for removed or renamed flat YAML fields.
-- [x] Do not add custom `requiredScopes`; use configured `scopesSupported` with MCP-standard metadata and challenge semantics.
-- [x] Require `protectedResource.uri` for production OAuth deployments.
-- [x] Allow missing Origin on non-loopback HTTP only after OAuth Bearer authorization succeeds.
-- [x] Accept active introspection responses without `exp` for the current request, but do not cache successful validation without expiration.
-- [x] Serve endpoint-scoped protected resource metadata, keep root well-known support, and ensure `resource_metadata` challenge resolution.
-- [x] Apply identical Origin and authorization gates to POST, GET, and DELETE on the MCP endpoint.
-- [x] Define `authorizationServers` as issuer identifiers that must remain consistent with accepted token issuers.
+- [x] Do not add HTTP authorization in this slice.
+- [x] Do not retain `transport.http.accessToken` as production `static-token` mode.
+- [x] Replace `transport.http.enabled` and `transport.stdio.enabled` with `transport.type`.
+- [x] Make the `transport.http` subtree optional for default local Streamable HTTP.
+- [x] Reject the `transport.http` subtree when the selected transport is STDIO.
+- [x] Do not replace `allowRemoteAccess` with another remote mode field.
+- [x] Use targeted validation errors and migration docs for removed, renamed, or deferred flat YAML fields.
+- [x] Remove `allowedOrigins` from YAML and keep MCP-required Origin handling internal.
+- [x] Apply MCP-required HTTP safeguards to POST, GET, and DELETE on the MCP endpoint.
+- [x] Defer MCP OAuth Authorization, token introspection, protected resource metadata, bearer challenges, and scope policy to a future independent Speckit package.
+- [x] Document that remote HTTP in this slice has no built-in identity enforcement and needs an external trust boundary when deployed beyond a trusted environment.
+- [x] Do not delete by broad `Authorization` or `introspection` keyword search; classify each hit by purpose and path.

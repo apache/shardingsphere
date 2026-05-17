@@ -28,7 +28,7 @@
 - Search command: `rg "mockStatic|mockConstruction" mcp test/e2e/mcp`.
 - Direct constructor mocking remains in `MCPRuntimeLauncherTest` because the public behavior is server selection, startup failure cleanup, and startup log generation; adding a new factory seam only for the test would over-design the launcher.
 - Direct static mocking remains only where the owning test uses try-with-resources or a cleanup method. No touched test added static mocking.
-- `OllamaLLMRuntimeSupportTest` keeps one local `mockStatic(MySQLRuntimeTestSupport.class)` because importing the shared AutoMock extension into `test/e2e/mcp` only for Docker availability probing would broaden the module boundary.
+- `LLMRuntimeSupportTest` keeps one local `mockStatic(MySQLRuntimeTestSupport.class)` because importing the shared AutoMock extension into `test/e2e/mcp` only for Docker availability probing would broaden the module boundary.
 
 ## String Assertions
 

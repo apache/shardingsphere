@@ -126,7 +126,7 @@ class StreamableHttpMCPServerTest {
             inOrder.verify(syncServer).closeGracefully();
         }
     }
-
+    
     private StreamableHttpMCPServer createServer(final int port) {
         return createServer(createConfig(port), mock(MCPSyncServerFactory.class), createTransportServlet());
     }

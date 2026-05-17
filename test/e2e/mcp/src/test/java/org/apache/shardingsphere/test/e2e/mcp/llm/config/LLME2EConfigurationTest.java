@@ -32,32 +32,60 @@ class LLME2EConfigurationTest {
     
     private String originalRuntimeMode;
     
+    private String originalModel;
+    
+    private String originalApiKey;
+    
+    private String originalServerImage;
+    
+    private String originalBaseServerImageDigest;
+    
+    private String originalArchitecture;
+    
     @BeforeEach
     void setUp() {
         originalRuntimeMode = System.getProperty("mcp.llm.runtime-mode");
+        originalModel = System.getProperty("mcp.llm.model");
+        originalApiKey = System.getProperty("mcp.llm.api-key");
+        originalServerImage = System.getProperty("mcp.llm.server-image");
+        originalBaseServerImageDigest = System.getProperty("mcp.llm.base-server-image-digest");
+        originalArchitecture = System.getProperty("os.arch");
+        System.clearProperty("mcp.llm.model");
+        System.clearProperty("mcp.llm.api-key");
+        System.clearProperty("mcp.llm.server-image");
+        System.clearProperty("mcp.llm.base-server-image-digest");
     }
     
     @AfterEach
     void tearDown() {
-        if (null == originalRuntimeMode) {
-            System.clearProperty("mcp.llm.runtime-mode");
-        } else {
-            System.setProperty("mcp.llm.runtime-mode", originalRuntimeMode);
-        }
+        restoreProperty("mcp.llm.runtime-mode", originalRuntimeMode);
+        restoreProperty("mcp.llm.model", originalModel);
+        restoreProperty("mcp.llm.api-key", originalApiKey);
+        restoreProperty("mcp.llm.server-image", originalServerImage);
+        restoreProperty("mcp.llm.base-server-image-digest", originalBaseServerImageDigest);
+        restoreProperty("os.arch", originalArchitecture);
     }
     
     @Test
     void assertLoadWithDockerRuntimeMode() {
         System.setProperty("mcp.llm.runtime-mode", "docker");
+        System.setProperty("os.arch", "arm64");
         LLME2EConfiguration actual = LLME2EConfiguration.load();
         assertThat(actual.getRuntimeMode(), is(RuntimeMode.DOCKER));
+        assertThat(actual.getBaseUrl(), is("http://127.0.0.1:8080/v1"));
+        assertThat(actual.getModelName(), is("ggml-org/Qwen3-1.7B-GGUF:Q4_K_M"));
+        assertThat(actual.getApiKey(), is("mcp-llm-score"));
+        assertThat(actual.getServerImage(), is("apache/shardingsphere-mcp-llm-runtime:local"));
+        assertThat(actual.getBaseServerImageDigest(), is("sha256:a478a81b2606aa5bb4c5864c01894fe1d8851adad8b6710f14b9519944d013ca"));
     }
     
     @Test
     void assertLoadWithExternalDebugRuntimeMode() {
         System.setProperty("mcp.llm.runtime-mode", "external-debug");
+        System.setProperty("os.arch", "riscv64");
         LLME2EConfiguration actual = LLME2EConfiguration.load();
         assertThat(actual.getRuntimeMode(), is(RuntimeMode.EXTERNAL_DEBUG));
+        assertThat(actual.getBaseServerImageDigest(), is(""));
     }
     
     @Test
@@ -68,10 +96,37 @@ class LLME2EConfigurationTest {
     }
     
     @Test
+    void assertLoadWithConfiguredServerImage() {
+        System.setProperty("mcp.llm.runtime-mode", "docker");
+        System.setProperty("mcp.llm.server-image", "foo/mcp-llm-runtime:bar");
+        System.setProperty("mcp.llm.base-server-image-digest", "sha256:foo");
+        LLME2EConfiguration actual = LLME2EConfiguration.load();
+        assertThat(actual.getServerImage(), is("foo/mcp-llm-runtime:bar"));
+        assertThat(actual.getBaseServerImageDigest(), is("sha256:foo"));
+    }
+    
+    @Test
+    void assertLoadWithUnsupportedArchitecture() {
+        System.setProperty("mcp.llm.runtime-mode", "docker");
+        System.setProperty("os.arch", "riscv64");
+        IllegalStateException actualException = assertThrows(IllegalStateException.class, LLME2EConfiguration::load);
+        assertThat(actualException.getMessage(), is("Unsupported local architecture for MCP LLM Docker score mode: riscv64"));
+    }
+    
+    @Test
     void assertWithBaseUrl() {
-        LLME2EConfiguration actual = createConfiguration(RuntimeMode.EXTERNAL_DEBUG).withBaseUrl("http://127.0.0.1:11434/v1/");
-        assertThat(actual.getBaseUrl(), is("http://127.0.0.1:11434/v1"));
+        LLME2EConfiguration actual = createConfiguration(RuntimeMode.EXTERNAL_DEBUG).withBaseUrl("http://127.0.0.1:8080/v1/");
+        assertThat(actual.getBaseUrl(), is("http://127.0.0.1:8080/v1"));
+        assertThat(actual.getApiKey(), is("mcp-llm-score"));
         assertThat(actual.getRuntimeMode(), is(RuntimeMode.EXTERNAL_DEBUG));
+    }
+    
+    @Test
+    void assertWithModelEndpoint() {
+        LLME2EConfiguration actual = createConfiguration(RuntimeMode.DOCKER).withModelEndpoint("http://127.0.0.1:8081/v1/", "foo-key");
+        assertThat(actual.getBaseUrl(), is("http://127.0.0.1:8081/v1"));
+        assertThat(actual.getApiKey(), is("foo-key"));
+        assertThat(actual.getServerImage(), is("apache/shardingsphere-mcp-llm-runtime:local"));
     }
     
     @Test
@@ -83,7 +138,16 @@ class LLME2EConfigurationTest {
     }
     
     private LLME2EConfiguration createConfiguration(final RuntimeMode runtimeMode) {
-        return new LLME2EConfiguration("http://127.0.0.1:11434/v1", "openai-compatible", "qwen3:1.7b", "ollama", 600, 240, 10,
-                Path.of("target/llm-e2e"), "run-id", runtimeMode);
+        return new LLME2EConfiguration("http://127.0.0.1:8080/v1", "openai-compatible", "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M", "mcp-llm-score", 600, 240, 10,
+                Path.of("target/llm-e2e"), "run-id", runtimeMode, "apache/shardingsphere-mcp-llm-runtime:local",
+                "sha256:a478a81b2606aa5bb4c5864c01894fe1d8851adad8b6710f14b9519944d013ca");
+    }
+    
+    private void restoreProperty(final String name, final String value) {
+        if (null == value) {
+            System.clearProperty(name);
+        } else {
+            System.setProperty(name, value);
+        }
     }
 }

@@ -46,6 +46,10 @@ public final class LLMChatModelClient {
     
     private static final long MAX_READINESS_INTERVAL_MILLIS = 2000L;
     
+    private static final int COMPLETION_MAX_TOKENS = 512;
+    
+    private static final int READINESS_MAX_TOKENS = 64;
+    
     private final LLME2EConfiguration config;
     
     private final HttpClient httpClient;
@@ -65,19 +69,7 @@ public final class LLMChatModelClient {
         while (System.currentTimeMillis() < deadline) {
             attemptCount++;
             try {
-                if (isModelListReady()) {
-                    return;
-                }
-            } catch (final IOException ex) {
-                lastFailure = ex;
-            } catch (final IllegalStateException ex) {
-                lastFailure = ex;
-                if (isNonRetryableReadinessFailure(ex)) {
-                    throw createReadinessException(lastFailure, attemptCount, startTime);
-                }
-            }
-            try {
-                if (isCompletionProbeReady()) {
+                if (isReadinessContractReady()) {
                     return;
                 }
             } catch (final IOException ex) {
@@ -104,7 +96,7 @@ public final class LLMChatModelClient {
     
     private boolean isNonRetryableReadinessFailure(final Exception cause) {
         String message = Objects.toString(cause.getMessage(), "");
-        return message.contains("HTTP 401");
+        return message.contains("HTTP 400") || message.contains("HTTP 401");
     }
     
     private IllegalStateException createReadinessException(final Exception cause, final int attemptCount, final long startTimeMillis) {
@@ -131,12 +123,42 @@ public final class LLMChatModelClient {
         return containsModel(response.body());
     }
     
+    private boolean isReadinessContractReady() throws IOException, InterruptedException {
+        return isModelListReady() && isCompletionProbeReady() && isRequiredToolProbeReady() && isAutoToolProbeReady() && isFinalAnswerProbeReady();
+    }
+    
     private boolean isCompletionProbeReady() throws IOException, InterruptedException {
-        HttpResponse<String> response = sendReadinessCompletionRequest();
+        HttpResponse<String> response = sendReadinessCompletionRequest(List.of(LLMChatMessage.user("Return ok.")), List.of(), "", false);
         if (200 != response.statusCode()) {
             throw new IllegalStateException(createHttpReadinessFailure("completion", response));
         }
         return hasCompletionChoice(response.body());
+    }
+    
+    private boolean isRequiredToolProbeReady() throws IOException, InterruptedException {
+        HttpResponse<String> response = sendReadinessCompletionRequest(List.of(LLMChatMessage.user("Call mcp_read_resource with uri mcp://readiness.")),
+                createReadinessTools(), "required", false);
+        if (200 != response.statusCode()) {
+            throw new IllegalStateException(createHttpReadinessFailure("tool-choice-required", response));
+        }
+        return hasToolCallChoice(response.body());
+    }
+    
+    private boolean isAutoToolProbeReady() throws IOException, InterruptedException {
+        HttpResponse<String> response = sendReadinessCompletionRequest(List.of(LLMChatMessage.user("Return ok without calling tools.")), createReadinessTools(), "auto", false);
+        if (200 != response.statusCode()) {
+            throw new IllegalStateException(createHttpReadinessFailure("tool-choice-auto", response));
+        }
+        return hasCompletionChoice(response.body());
+    }
+    
+    private boolean isFinalAnswerProbeReady() throws IOException, InterruptedException {
+        HttpResponse<String> response = sendReadinessCompletionRequest(List.of(LLMChatMessage.user(
+                "Respond with exactly {\"status\":\"ok\"} and no Markdown fences.")), List.of(), "none", true);
+        if (200 != response.statusCode()) {
+            throw new IllegalStateException(createHttpReadinessFailure("tool-choice-none-json", response));
+        }
+        return hasJsonCompletionChoice(response.body());
     }
     
     private String createHttpReadinessFailure(final String requestKind, final HttpResponse<String> response) {
@@ -167,6 +189,20 @@ public final class LLMChatModelClient {
      */
     public LLMChatCompletion complete(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
                                       final String toolChoice, final boolean jsonResponse) throws IOException, InterruptedException {
+        HttpResponse<String> response = sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse, COMPLETION_MAX_TOKENS), config.getRequestTimeoutSeconds());
+        if (200 != response.statusCode()) {
+            throw new IllegalStateException(String.format("Model completion request failed with status %d%s.", response.statusCode(), createErrorCodeSuffix(response.body())));
+        }
+        Map<String, Object> payload = parseJsonObject(response.body(), "Failed to parse model completion response.");
+        List<Map<String, Object>> choices = castToList(payload.get("choices"));
+        Preconditions.checkState(!choices.isEmpty(), "Model completion response does not contain choices.");
+        Map<String, Object> message = castToMap(choices.get(0).get("message"));
+        Preconditions.checkState(!message.isEmpty(), "Model completion response does not contain one assistant message.");
+        return new LLMChatCompletion(Objects.toString(message.get("content"), "").trim(), createToolCalls(message.get("tool_calls")), response.body());
+    }
+    
+    private Map<String, Object> createCompletionRequestPayload(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
+                                                               final String toolChoice, final boolean jsonResponse, final int maxTokens) {
         Map<String, Object> requestPayload = new LinkedHashMap<>(16, 1F);
         requestPayload.put("model", config.getModelName());
         requestPayload.put("messages", createMessages(messages));
@@ -174,7 +210,7 @@ public final class LLMChatModelClient {
         requestPayload.put("temperature", 0);
         requestPayload.put("seed", 1);
         requestPayload.put("reasoning_effort", "none");
-        requestPayload.put("max_tokens", 512);
+        requestPayload.put("max_tokens", maxTokens);
         if (!tools.isEmpty()) {
             requestPayload.put("tools", tools);
         }
@@ -184,22 +220,17 @@ public final class LLMChatModelClient {
         if (jsonResponse) {
             requestPayload.put("response_format", Map.of("type", "json_object"));
         }
+        return requestPayload;
+    }
+    
+    private HttpResponse<String> sendCompletionRequest(final Map<String, Object> requestPayload, final int timeoutSeconds) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder(URI.create(config.getChatCompletionsUrl()))
-                .timeout(Duration.ofSeconds(config.getRequestTimeoutSeconds()))
+                .timeout(Duration.ofSeconds(timeoutSeconds))
                 .header("Authorization", "Bearer " + config.getApiKey())
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(requestPayload)))
                 .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        if (200 != response.statusCode()) {
-            throw new IllegalStateException("Model completion request failed with status " + response.statusCode() + ".");
-        }
-        Map<String, Object> payload = parseJsonObject(response.body(), "Failed to parse model completion response.");
-        List<Map<String, Object>> choices = castToList(payload.get("choices"));
-        Preconditions.checkState(!choices.isEmpty(), "Model completion response does not contain choices.");
-        Map<String, Object> message = castToMap(choices.get(0).get("message"));
-        Preconditions.checkState(!message.isEmpty(), "Model completion response does not contain one assistant message.");
-        return new LLMChatCompletion(Objects.toString(message.get("content"), "").trim(), createToolCalls(message.get("tool_calls")), response.body());
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
     private HttpResponse<String> sendModelListRequest() throws IOException, InterruptedException {
@@ -211,20 +242,9 @@ public final class LLMChatModelClient {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
-    private HttpResponse<String> sendReadinessCompletionRequest() throws IOException, InterruptedException {
-        Map<String, Object> requestPayload = new LinkedHashMap<>(8, 1F);
-        requestPayload.put("model", config.getModelName());
-        requestPayload.put("messages", List.of(Map.of("role", "user", "content", "Return ok.")));
-        requestPayload.put("stream", false);
-        requestPayload.put("temperature", 0);
-        requestPayload.put("max_tokens", 8);
-        HttpRequest request = HttpRequest.newBuilder(URI.create(config.getChatCompletionsUrl()))
-                .timeout(Duration.ofSeconds(Math.min(config.getRequestTimeoutSeconds(), 30)))
-                .header("Authorization", "Bearer " + config.getApiKey())
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(requestPayload)))
-                .build();
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    private HttpResponse<String> sendReadinessCompletionRequest(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
+                                                                final String toolChoice, final boolean jsonResponse) throws IOException, InterruptedException {
+        return sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse, READINESS_MAX_TOKENS), Math.min(config.getRequestTimeoutSeconds(), 30));
     }
     
     private boolean containsModel(final String responseBody) {
@@ -234,6 +254,36 @@ public final class LLMChatModelClient {
     
     private boolean hasCompletionChoice(final String responseBody) {
         return !castToList(parseJsonObject(responseBody, "Failed to parse readiness completion response.").get("choices")).isEmpty();
+    }
+    
+    private boolean hasToolCallChoice(final String responseBody) {
+        return !createToolCalls(getFirstAssistantMessage(responseBody, "Failed to parse readiness tool-call response.").get("tool_calls")).isEmpty();
+    }
+    
+    private boolean hasJsonCompletionChoice(final String responseBody) {
+        String content = Objects.toString(getFirstAssistantMessage(responseBody, "Failed to parse readiness JSON response.").get("content"), "").trim();
+        if (content.isEmpty()) {
+            return false;
+        }
+        parseJsonObject(content, "Failed to parse readiness JSON completion content.");
+        return true;
+    }
+    
+    private Map<String, Object> getFirstAssistantMessage(final String responseBody, final String errorMessage) {
+        List<Map<String, Object>> choices = castToList(parseJsonObject(responseBody, errorMessage).get("choices"));
+        return choices.isEmpty() ? Map.of() : castToMap(choices.get(0).get("message"));
+    }
+    
+    private List<Map<String, Object>> createReadinessTools() {
+        return List.of(Map.of(
+                "type", "function",
+                "function", Map.of(
+                        "name", "mcp_read_resource",
+                        "description", "Read one MCP resource.",
+                        "parameters", Map.of(
+                                "type", "object",
+                                "properties", Map.of("uri", Map.of("type", "string")),
+                                "required", List.of("uri")))));
     }
     
     private List<Map<String, Object>> createMessages(final List<LLMChatMessage> messages) {

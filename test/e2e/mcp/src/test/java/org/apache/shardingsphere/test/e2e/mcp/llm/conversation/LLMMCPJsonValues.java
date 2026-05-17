@@ -51,6 +51,14 @@ final class LLMMCPJsonValues {
         });
     }
     
+    static <T> List<T> castToList(final Object value) {
+        if (null == value) {
+            return List.of();
+        }
+        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
+        });
+    }
+    
     static Map<String, String> castToStringMap(final Object value) {
         return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
         });

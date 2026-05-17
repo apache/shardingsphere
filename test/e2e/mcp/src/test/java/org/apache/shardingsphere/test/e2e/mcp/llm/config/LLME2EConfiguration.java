@@ -38,6 +38,18 @@ public final class LLME2EConfiguration {
     
     private static final DateTimeFormatter RUN_ID_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss", Locale.ENGLISH);
     
+    private static final String DEFAULT_BASE_URL = "http://127.0.0.1:8080/v1";
+    
+    private static final String DEFAULT_MODEL_NAME = "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M";
+    
+    private static final String DEFAULT_API_KEY = "mcp-llm-score";
+    
+    private static final String DEFAULT_SERVER_IMAGE = "apache/shardingsphere-mcp-llm-runtime:local";
+    
+    private static final String BASE_SERVER_IMAGE_DIGEST_AMD64 = "sha256:988d2695631987e28a29d98970aaf0e979e23b843a26824abb790ac4245d1d57";
+    
+    private static final String BASE_SERVER_IMAGE_DIGEST_ARM64 = "sha256:a478a81b2606aa5bb4c5864c01894fe1d8851adad8b6710f14b9519944d013ca";
+    
     private final String baseUrl;
     
     private final String modelProvider;
@@ -58,23 +70,30 @@ public final class LLME2EConfiguration {
     
     private final RuntimeMode runtimeMode;
     
+    private final String serverImage;
+    
+    private final String baseServerImageDigest;
+    
     /**
      * Load LLM E2E configuration.
      *
      * @return LLM E2E configuration
      */
     public static LLME2EConfiguration load() {
+        final RuntimeMode runtimeMode = RuntimeMode.from(readString("mcp.llm.runtime-mode", "MCP_LLM_RUNTIME_MODE", RuntimeMode.DOCKER.getValue()));
         return new LLME2EConfiguration(
-                normalizeBaseUrl(readString("mcp.llm.base-url", "MCP_LLM_BASE_URL", "http://127.0.0.1:11434/v1")),
+                normalizeBaseUrl(readString("mcp.llm.base-url", "MCP_LLM_BASE_URL", DEFAULT_BASE_URL)),
                 readString("mcp.llm.provider", "MCP_LLM_PROVIDER", "openai-compatible"),
-                readString("mcp.llm.model", "MCP_LLM_MODEL", "qwen3:1.7b"),
-                readString("mcp.llm.api-key", "MCP_LLM_API_KEY", "ollama"),
+                readString("mcp.llm.model", "MCP_LLM_MODEL", DEFAULT_MODEL_NAME),
+                readString("mcp.llm.api-key", "MCP_LLM_API_KEY", DEFAULT_API_KEY),
                 readInteger("mcp.llm.ready-timeout-seconds", "MCP_LLM_READY_TIMEOUT_SECONDS", 600),
                 readInteger("mcp.llm.request-timeout-seconds", "MCP_LLM_REQUEST_TIMEOUT_SECONDS", 240),
                 readInteger("mcp.llm.max-turns", "MCP_LLM_MAX_TURNS", 10),
                 Paths.get(readString("mcp.llm.artifact-root", "MCP_LLM_ARTIFACT_ROOT", "target/llm-e2e")),
                 readString("mcp.llm.run-id", "MCP_LLM_RUN_ID", createDefaultRunId()),
-                RuntimeMode.from(readString("mcp.llm.runtime-mode", "MCP_LLM_RUNTIME_MODE", RuntimeMode.DOCKER.getValue())));
+                runtimeMode,
+                readString("mcp.llm.server-image", "MCP_LLM_SERVER_IMAGE", DEFAULT_SERVER_IMAGE),
+                readString("mcp.llm.base-server-image-digest", "MCP_LLM_BASE_SERVER_IMAGE_DIGEST", getDefaultBaseServerImageDigest(runtimeMode)));
     }
     
     /**
@@ -97,7 +116,20 @@ public final class LLME2EConfiguration {
      * @return copied configuration
      */
     public LLME2EConfiguration withBaseUrl(final String baseUrl) {
-        return new LLME2EConfiguration(normalizeBaseUrl(baseUrl), modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId, runtimeMode);
+        return new LLME2EConfiguration(normalizeBaseUrl(baseUrl), modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId,
+                runtimeMode, serverImage, baseServerImageDigest);
+    }
+    
+    /**
+     * Create a copy with another model endpoint and API key.
+     *
+     * @param baseUrl model endpoint base URL
+     * @param apiKey API key
+     * @return copied configuration
+     */
+    public LLME2EConfiguration withModelEndpoint(final String baseUrl, final String apiKey) {
+        return new LLME2EConfiguration(normalizeBaseUrl(baseUrl), modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId,
+                runtimeMode, serverImage, baseServerImageDigest);
     }
     
     /**
@@ -108,7 +140,8 @@ public final class LLME2EConfiguration {
      * @return copied configuration
      */
     public LLME2EConfiguration withReadinessTimeouts(final int readyTimeoutSeconds, final int requestTimeoutSeconds) {
-        return new LLME2EConfiguration(baseUrl, modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId, runtimeMode);
+        return new LLME2EConfiguration(baseUrl, modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId, runtimeMode,
+                serverImage, baseServerImageDigest);
     }
     
     /**
@@ -153,6 +186,20 @@ public final class LLME2EConfiguration {
     
     private static String createDefaultRunId() {
         return RUN_ID_FORMATTER.format(LocalDateTime.now()) + "-" + UUID.randomUUID().toString().substring(0, 8);
+    }
+    
+    private static String getDefaultBaseServerImageDigest(final RuntimeMode runtimeMode) {
+        return RuntimeMode.DOCKER == runtimeMode ? getDefaultBaseServerImageDigest(System.getProperty("os.arch", "")) : "";
+    }
+    
+    static String getDefaultBaseServerImageDigest(final String architecture) {
+        if ("amd64".equals(architecture) || "x86_64".equals(architecture)) {
+            return BASE_SERVER_IMAGE_DIGEST_AMD64;
+        }
+        if ("aarch64".equals(architecture) || "arm64".equals(architecture)) {
+            return BASE_SERVER_IMAGE_DIGEST_ARM64;
+        }
+        throw new IllegalStateException(String.format("Unsupported local architecture for MCP LLM Docker score mode: %s", architecture));
     }
     
     /**

@@ -49,9 +49,9 @@ public final class ResourceHandlerRegistry {
     
     private static final Map<MCPUriPattern, MCPResourceHandler<?>> REGISTERED_RESOURCES;
     
-    private static final Collection<String> SUPPORTED_RESOURCES;
+    private static final List<String> SUPPORTED_RESOURCES;
     
-    private static final Collection<MCPResourceDescriptor> SUPPORTED_RESOURCE_DESCRIPTORS;
+    private static final List<MCPResourceDescriptor> SUPPORTED_RESOURCE_DESCRIPTORS;
     
     static {
         REGISTERED_RESOURCES = createRegisteredResources(
@@ -62,6 +62,7 @@ public final class ResourceHandlerRegistry {
     }
     
     private static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources(final Collection<MCPResourceHandler<?>> handlers) {
+        ShardingSpherePreconditions.checkState(!handlers.isEmpty(), () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPResourceHandler<?> each : handlers) {
             String uriOrTemplate = each.getResourceDescriptor().getUriTemplate();

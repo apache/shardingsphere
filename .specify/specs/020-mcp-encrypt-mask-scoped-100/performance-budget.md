@@ -27,7 +27,7 @@
 - SQL classifier: 1000 iterations within 5 seconds.
 - Default MCP E2E lane: must finish without hangs; target remains below 60 seconds for background unit-style runs where infrastructure is not started.
 - Distribution smoke and Docker/Testcontainers lanes: opt-in evidence, recorded separately from the default unit lane because they depend on local Docker runtime startup.
-- LLM score lane: must avoid heavyweight runtime images; score-closing CI should use Docker-owned `llama.cpp` server with prepackaged `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` model evidence.
+- LLM score lane: must avoid heavyweight runtime images; score-closing CI must use a project-owned local Docker image built from `llama.cpp` server with prepackaged `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` model evidence.
 
 ## Owning Tests
 
