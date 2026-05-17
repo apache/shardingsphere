@@ -63,10 +63,13 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
     
     @Override
     public void start() throws IOException {
-        if (null != syncServer) {
-            return;
+        if (null == syncServer) {
+            syncServer = syncServerFactory.create(transportServlet);
+            startEmbeddedTomcat();
         }
-        syncServer = syncServerFactory.create(transportServlet);
+    }
+    
+    private void startEmbeddedTomcat() throws IOException {
         try {
             tomcat = new Tomcat();
             connector = new Connector();
