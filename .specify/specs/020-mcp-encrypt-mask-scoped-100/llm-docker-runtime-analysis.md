@@ -19,51 +19,62 @@
 
 ## Decision
 
-Score-closing LLM evidence must use online Docker full package mode:
+Score-closing LLM evidence must move from Docker-owned Ollama to a lightweight Docker-owned `llama.cpp` server runtime:
 
-- The E2E support layer starts and owns an Ollama container.
-- The container serves `qwen3:1.7b`.
-- The lane does not require external model credentials or a pre-running external model endpoint.
-- The container may pull `ollama/ollama:0.23.1` and `qwen3:1.7b` online when local caches are empty.
+- The E2E support layer starts and owns the model server container.
+- The score-closing runtime serves `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
+- The lane does not require external model credentials, host-level LLM installs, host model files, or a pre-running external model endpoint.
 - External OpenAI-compatible endpoints may remain available only as explicit debug mode and cannot close score evidence.
+- A prepackaged Docker image containing `llama-server` plus `Qwen3-1.7B-Q4_K_M.gguf` is the preferred CI path.
+- Online `-hf ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` retrieval inside the Docker-owned runtime may remain as a documented fallback, not the preferred score-closing GitHub Actions path.
 
-## Baseline Before T086 Through T090
+## Source-Driven Evidence
 
-Before this implementation, the LLM E2E support was close to Docker full package mode but was not strict enough.
+- Ollama `qwen3:1.7b` is `qwen3`, about `2.03B` parameters, `Q4_K_M`, and about `1.4GB`.
+- `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` is also the Qwen3 1.7B capability tier with `Q4_K_M` quantization and about `1.28GB`.
+- `llama.cpp` server supports OpenAI-compatible chat completions, schema-constrained JSON response format, and function calling/tool use.
+- Local manifest inspection showed `ghcr.io/ggml-org/llama.cpp:server` linux/amd64 compressed runtime layers total about `47MB`.
+- Local manifest inspection showed `ollama/ollama:0.23.1` linux/amd64 compressed runtime layers total about `4.01GB`, including a CUDA-bearing layer of about `3.86GB`.
 
-- `LLMSmokeE2ETest` and `LLMUsabilitySuiteE2ETest` call `OllamaLLMRuntimeSupport.prepare(LLME2EConfiguration.load())`.
-- `OllamaLLMRuntimeSupport` can start an Ollama container and pull `qwen3:1.7b` inside the container.
-- It used a floating Ollama image tag, which was not stable enough for score-closing evidence.
-- `LLME2EConfiguration` allows `MCP_LLM_BASE_URL`, `MCP_LLM_MODEL`, and `MCP_LLM_API_KEY` overrides.
-- `OllamaLLMRuntimeSupport.prepare()` first probed the configured endpoint.
-  If the endpoint was ready, it returned an external runtime instead of starting Docker.
-- `mcp/README.md` and `mcp/README_ZH.md` documented manual Ollama startup and the obsolete LLM enable environment flag.
-  The E2E gate is the Maven `llm-e2e` profile or `mcp.e2e.llm.enabled`, so those README steps were stale.
+## Rebaseline Rationale
+
+The current Docker-owned Ollama implementation proved that the LLM lane can avoid external credentials and operator-managed endpoints, but it is not acceptable as the final score-closing runtime.
+It failed locally during image registration with `no space left on device` while writing `/usr/lib/ollama/cuda_v12/libggml-cuda.so`.
+That is not just a local cleanup problem: the large runtime layer makes GitHub Actions execution brittle and slow.
+
+Switching to `llama.cpp` server keeps the model tier aligned with the current Ollama baseline while removing the heavy runtime image.
+This is a runtime replacement, not a downgrade from Qwen3 1.7B Q4_K_M.
+
+## Baseline Before Rebaseline
+
+- `LLMSmokeE2ETest` and `LLMUsabilitySuiteE2ETest` call the LLM runtime support through `LLME2EConfiguration.load()`.
+- The current implementation can start a Docker-owned Ollama container and reject external endpoints for score mode.
+- It pins `ollama/ollama:0.23.1` and records a platform image digest.
+- `LLME2EConfiguration` allows explicit external debug mode for operator-managed OpenAI-compatible endpoints.
+- Existing LLM artifacts can record runtime metadata, but the metadata is Ollama-specific.
 
 ## Gap
 
-The baseline behavior could produce valid LLM E2E results from an operator-managed model service.
-That remains useful for debugging, but it is not valid score-closing evidence under this package.
+The score-closing lane still depends on a runtime image that is too large for reliable local and GitHub Actions execution.
+The lane must be redesigned so Docker ownership remains strict while the runtime becomes lightweight and Action-suitable.
 
 ## Required Implementation
 
-1. Add an explicit runtime mode, with Docker as the default score mode.
-   Suggested values: `docker` and `external-debug`.
-2. In Docker mode, `OllamaLLMRuntimeSupport.prepare()` must always start or reuse a Docker-owned container runtime.
-3. In Docker mode, ignore external endpoint readiness for score evidence.
-4. In external debug mode, allow the existing endpoint probing behavior but mark the runtime as debug-only.
-5. Expose enough runtime metadata for tests and evidence to distinguish Docker-owned from external debug runtime.
-6. Pin the score-closing image to `ollama/ollama:0.23.1` and record the resolved image digest in evidence.
-7. Update README and README_ZH so LLM score reproduction uses the test-owned Docker path, `-Pllm-e2e`, and no score-closing external endpoint variables.
+1. Keep an explicit runtime mode with Docker as the default score mode and external debug as non-score evidence.
+2. Replace the Ollama-specific score runtime with a `llama.cpp` server runtime that exposes the existing OpenAI-compatible `/v1/chat/completions` contract.
+3. Use `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` as the fixed score-closing model.
+4. Prefer a prepackaged Docker image containing the server binary and pinned GGUF model so GitHub Actions can run without runtime model download.
+5. Keep online Hugging Face model retrieval only as a documented fallback when the prepackaged image is not available.
+6. Reject unsupported score-closing model changes in Docker mode so the lane cannot silently downgrade capability.
+7. Record runtime metadata: provider, server image, model reference, quantization, model file size, digest or immutable reference where available, prepackaged/downloaded mode, runtime mode, and Docker ownership.
+8. Update README, README_ZH, workflows, and E2E evidence so Ollama is no longer presented as score-closing LLM evidence.
 
 ## Implementation Status
 
-- Default runtime mode is `docker`.
-- Docker mode starts or reuses test-owned Ollama and does not treat a ready external endpoint as score evidence.
-- External endpoint probing is available only with explicit `external-debug` runtime mode.
-- Score-closing image is pinned to `ollama/ollama:0.23.1`.
-- Score-closing model is fixed to `qwen3:1.7b`.
-- README, README_ZH, and E2E evidence now describe the Maven `llm-e2e` profile path and the debug-only external endpoint path separately.
+- Rebaseline requirements are documented.
+- Runtime implementation is still pending.
+- Docker-owned external-endpoint isolation from the prior Ollama baseline should be preserved.
+- Final score closure is reopened until `llama.cpp` server smoke and usability lanes pass and artifacts record the new runtime metadata.
 
 ## Test Plan
 
@@ -71,13 +82,15 @@ That remains useful for debugging, but it is not valid score-closing evidence un
 - Unit test that Docker mode does not return an external runtime when a configured endpoint is ready.
 - Unit test that external debug mode can return an external runtime.
 - Unit test that non-default provider or model is rejected for Docker score mode.
-- Unit test or evidence assertion that the score-closing image is `ollama/ollama:0.23.1`.
-- LLM smoke E2E evidence must record Docker-owned runtime metadata.
-- LLM usability E2E evidence must record Docker-owned runtime metadata.
+- Unit test or artifact assertion that the score-closing server is `llama.cpp` and the model is `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
+- Unit test that runtime metadata records model reference, quantization, model size, and prepackaged/downloaded mode.
+- LLM smoke E2E evidence must record Docker-owned `llama.cpp` runtime metadata.
+- LLM usability E2E evidence must record Docker-owned `llama.cpp` runtime metadata.
 
 ## Non-Goals
 
-- Offline model bundling.
-- Persistent model cache management beyond Docker/Ollama defaults.
-- Supporting arbitrary model providers for score evidence.
+- Using `ollama/ollama` as score-closing LLM runtime.
+- Upgrading the score-closing model above Qwen3 1.7B Q4_K_M unless LLM usability evidence proves Q4_K_M cannot satisfy the MCP scenarios.
 - Requiring external API keys for score evidence.
+- Supporting arbitrary model providers for score evidence.
+- Host-level installation of llama.cpp, Ollama, Python inference stacks, or local model files for score evidence.

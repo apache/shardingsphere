@@ -23,12 +23,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.LongSupplier;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -126,7 +129,7 @@ class OAuthTokenValidatorTest {
         AtomicLong currentTimeMillis = new AtomicLong(NOW_MILLIS);
         CountingOAuthTokenIntrospector introspector = new CountingOAuthTokenIntrospector(response(true, "https://auth.example.test", resource(), NOW_SECONDS + 1L,
                 NOW_SECONDS - 1L, "mcp.read"));
-        OAuthTokenValidator validator = new OAuthTokenValidator(createConfig(30000L), introspector, currentTimeMillis::get);
+        OAuthTokenValidator validator = createValidator(introspector, 30000L, currentTimeMillis::get);
         assertTrue(validator.validate("foo_token", mock(HttpServletRequest.class)).isValid());
         currentTimeMillis.addAndGet(2000L);
         OAuthTokenValidationResult actual = validator.validate("foo_token", mock(HttpServletRequest.class));
@@ -140,7 +143,18 @@ class OAuthTokenValidatorTest {
     }
     
     private OAuthTokenValidator createValidator(final OAuthTokenIntrospector introspector, final long cacheTtlMillis) {
-        return new OAuthTokenValidator(createConfig(cacheTtlMillis), introspector, () -> NOW_MILLIS);
+        return createValidator(introspector, cacheTtlMillis, () -> NOW_MILLIS);
+    }
+    
+    private OAuthTokenValidator createValidator(final OAuthTokenIntrospector introspector, final long cacheTtlMillis, final LongSupplier currentTimeMillisSupplier) {
+        OAuthTokenValidator result = new OAuthTokenValidator(createConfig(cacheTtlMillis));
+        try {
+            setField(result, "introspector", introspector);
+            setField(result, "currentTimeMillisSupplier", currentTimeMillisSupplier);
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
     }
     
     private HttpTransportConfiguration createConfig(final long cacheTtlMillis) {
@@ -158,6 +172,11 @@ class OAuthTokenValidatorTest {
     
     private String resource() {
         return "https://gateway.example.test/mcp";
+    }
+    
+    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        Plugins.getMemberAccessor().set(field, target, value);
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

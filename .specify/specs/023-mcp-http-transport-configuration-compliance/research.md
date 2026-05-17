@@ -39,29 +39,27 @@
   - Keep the flat class and only add comments: rejected because the main problem is mixed ownership, not missing comments.
   - Add more booleans to the flat class: rejected because it would increase ambiguity.
 
-## Decision 2: Prefer Deleting Static `accessToken`
+## Decision 2: Delete Static `accessToken`
 
-- **Decision**: The preferred implementation path removes `transport.http.accessToken`.
+- **Decision**: The implementation path removes `transport.http.accessToken`.
 - **Rationale**:
   - MCP Authorization is OAuth-oriented when the MCP server acts as a protected resource.
   - The current static token path compares a shared secret but also forces `authorizationServers` and emits OAuth protected resource metadata, creating a misleading OAuth shape.
   - Static shared secrets are weaker than OAuth introspection for remote HTTP and redundant for loopback-only local mode.
-- **Possible retention exception**:
-  - No production retention reason is accepted by this package.
-  - A temporary test fixture may keep static-token coverage only long enough to prove migration failure or deletion behavior.
-  - Production retention requires a new user-confirmed decision and must be modeled as non-OAuth `static-token`.
-  - If retained, it must not publish OAuth protected resource metadata, must not require `authorizationServers`, and must be clearly named as non-OAuth.
+- **Compatibility behavior**:
+  - No production static-token mode is retained by this package.
+  - A temporary test fixture may reference the old field only to prove migration failure or deletion behavior.
+  - Old `accessToken` YAML must fail with migration guidance to OAuth Bearer authorization.
 - **Alternatives considered**:
   - Keep `accessToken` unchanged for convenience: rejected because it preserves the semantic mismatch.
   - Keep `accessToken` and call it OAuth: rejected because a static string comparison cannot validate issuer, resource, expiration, or scope.
 
-## Decision 3: Replace Or Justify `allowRemoteAccess`
+## Decision 3: Replace `allowRemoteAccess`
 
-- **Decision**: Replace `allowRemoteAccess` with an explicit exposure mode unless reviewers prefer keeping it as an operator confirmation gate.
+- **Decision**: Replace `allowRemoteAccess` with an explicit exposure mode.
 - **Rationale**:
   - The field does not affect runtime request behavior; it only validates that non-loopback binding was intentional.
   - `exposure.mode: local|remote` expresses the same intent while grouping it with `allowedOrigins`.
-  - A confirmation gate is still a valid safety mechanism if the team wants a low-churn migration.
 - **Alternatives considered**:
   - Delete it with no replacement: rejected because accidental `0.0.0.0` exposure should remain hard to configure.
   - Keep it unchanged forever: rejected because its name suggests runtime access control that it does not perform.
@@ -77,7 +75,8 @@
 - **Alternatives considered**:
   - Allow wildcard origins: rejected because it weakens DNS rebinding protection.
   - Rely only on OAuth authorization: rejected because Origin protection and token authorization address different threats.
-  - Accept missing Origin for all remote requests: possible for non-browser clients only if OAuth authorization is required and the risk is explicitly accepted.
+  - Reject every missing remote Origin: rejected because MCP requires rejecting invalid present Origin values but does not require breaking non-browser clients that cannot send Origin.
+  - Accept missing Origin for all remote requests: rejected because missing Origin is allowed only after OAuth Bearer authorization succeeds.
 
 ## Decision 5: Canonicalize Protected Resource Metadata
 
@@ -90,15 +89,16 @@
   - Always infer from request URL: rejected because reverse proxies and local bindings make this unreliable.
   - Make `protectedResource` mandatory for all HTTP: rejected because local non-OAuth HTTP does not need metadata.
 
-## Decision 6: Split Supported Scopes From Required Scopes
+## Decision 6: Use MCP-Standard Scope Fields Only
 
-- **Decision**: Treat `scopesSupported` as metadata and introduce or document separate required scopes for token validation.
+- **Decision**: Keep `scopesSupported` as the only configured scope list for this slice. It maps to MCP/OAuth `scopes_supported`; do not add a custom `requiredScopes` configuration field.
 - **Rationale**:
-  - Metadata advertisement and enforcement policy are related but not identical.
-  - Current validation requires all `scopesSupported`, which can over-constrain clients if supported scopes are broader than the protected endpoint's requirements.
-  - A split makes token validation intent reviewable.
+  - MCP and RFC 9728 standardize `scopes_supported` metadata and `WWW-Authenticate` `scope` challenge behavior, not a `requiredScopes` configuration name.
+  - MCP says clients use `WWW-Authenticate` `scope` challenge guidance first, and fall back to `scopes_supported` when the challenge omits scope.
+  - For this first configuration cleanup, the configured `scopesSupported` value is the server-configured basic functionality scope set used for metadata, token scope validation, and challenge guidance.
 - **Alternatives considered**:
-  - Keep one field and document it as both supported and required: acceptable only as a conscious compatibility trade-off, but not the preferred design.
+  - Add `requiredScopes`: rejected because it is not an MCP protocol field and adds product-specific configuration before operation-specific authorization exists.
+  - Keep `scopesSupported` for metadata only with no scope validation: rejected because protected remote HTTP would lose a useful OAuth authorization check.
 
 ## Decision 7: Preserve Bearer Challenge And Metadata Discovery Semantics
 
@@ -122,15 +122,15 @@
   - Keep the existing cache behavior as an implementation detail: rejected because this package changes the authorization contract.
   - Require `exp` for every introspection response: rejected as the default because it is stricter than RFC 7662; acceptable only if documented as a ShardingSphere policy.
 
-## Decision 10: Separate Scope Metadata From Scope Challenge
+## Decision 10: Keep Challenge Scope Standard And Simple
 
-- **Decision**: `scopesSupported`, required scopes, and `WWW-Authenticate scope` challenge values must be modeled as related but separate policies.
+- **Decision**: `WWW-Authenticate scope` uses the configured `scopesSupported` values as the server-configured basic functionality scope set for this slice, without adding a custom required-scope field.
 - **Rationale**:
   - RFC 9728 defines `scopes_supported` as scopes used in authorization requests for the protected resource.
   - MCP Authorization says insufficient-scope responses should include scopes needed for the current request.
-  - Mirroring all supported scopes in every challenge can over-request access and increase authorization friction.
+  - The current MCP endpoint does not yet define per-tool or per-operation scope rules, so a separate configuration would be speculative.
 - **Alternatives considered**:
-  - Use `scopesSupported` everywhere: rejected because it conflates metadata breadth with request-specific minimum access.
+  - Invent operation-specific scope rules in this package: rejected as out of scope for HTTP transport configuration cleanup.
 
 ## Decision 11: Treat Metadata URL Placement As A Runtime Contract
 
@@ -170,13 +170,13 @@
 
 ## Doubt-Driven Claims To Review
 
-- Static `accessToken` should be deleted by default.
-- `allowRemoteAccess` should be replaced by `exposure.mode` or justified as a confirmation gate.
+- Static `accessToken` should be deleted.
+- `allowRemoteAccess` should be replaced by `exposure.mode`.
 - Protected resource metadata should only be emitted for OAuth-backed authorization.
-- `scopesSupported` should not be used as the required scope list without an explicit trade-off.
+- `scopesSupported` is the only configured scope list for this slice and should map to MCP-standard metadata and challenge behavior.
 - `WWW-Authenticate`, metadata endpoint placement, and bearer metadata fields must be reviewed together.
 - Introspection cache and reverse-proxy public URI policy must be reviewed before implementation.
-- Missing Origin rejection for remote HTTP must be treated as a product hardening decision, not a protocol requirement.
-- Introspection responses without `exp` require an explicit accept/reject/cache policy.
-- Scope challenge contents must be request-specific and not blindly copied from supported-scope metadata.
+- Missing remote Origin may be accepted only after OAuth Bearer authorization succeeds.
+- Introspection responses without `exp` are accepted for the current request but not cached.
+- Scope challenge contents use the configured basic functionality scope set until operation-specific scope policy exists.
 - POST, GET, and DELETE method coverage must be verified under the same approved security policy.

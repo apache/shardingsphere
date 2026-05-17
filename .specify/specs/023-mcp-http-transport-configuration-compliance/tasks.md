@@ -42,18 +42,18 @@
 
 ## Phase 3 - Pre-Implementation Decisions
 
-- [ ] T014 Confirm deletion of `transport.http.accessToken` as the default path; retain a renamed non-OAuth `static-token` mode only after new explicit user approval.
-- [ ] T015 Decide whether `allowRemoteAccess` becomes `exposure.mode` or remains as a safety confirmation field.
-- [ ] T016 Decide the migration behavior for old flat YAML fields.
-- [ ] T017 Decide whether `scopesSupported` is split from `requiredScopes`.
-- [ ] T018 Decide when `protectedResource.uri` is mandatory for production OAuth deployments.
-- [ ] T019 Decide OAuth introspection HTTPS, timeout, client authentication, fail-closed, redaction, and cache-key rules.
-- [ ] T020 Decide RFC 6750 and RFC 9728 challenge/metadata endpoint behavior.
-- [ ] T049 Decide whether missing Origin on non-loopback HTTP is rejected as ShardingSphere hardening or allowed for OAuth-authenticated non-browser clients.
-- [ ] T050 Decide introspection behavior for active tokens without `exp`, including accept/reject policy and whether successful results may be cached.
-- [ ] T051 Decide request-required scope challenge strategy separately from `scopesSupported` metadata.
-- [ ] T052 Decide exact protected resource metadata URL registration strategy and prove `resource_metadata` challenge URIs resolve to served metadata.
-- [ ] T053 Decide whether POST, GET, and DELETE all require identical Origin and authorization gates, or document method-specific exceptions.
+- [x] T014 Delete `transport.http.accessToken`; do not retain production `static-token` authorization.
+- [x] T015 Replace `allowRemoteAccess` with `exposure.mode`.
+- [x] T016 Use targeted validation errors and migration docs for removed or renamed flat YAML fields.
+- [x] T017 Do not add custom `requiredScopes`; use MCP-standard `scopesSupported` / `scopes_supported` and challenge `scope` semantics.
+- [x] T018 Require `protectedResource.uri` for production OAuth deployments.
+- [x] T019 Require HTTPS introspection endpoints except loopback tests, Basic client authentication, fail-closed errors, credential redaction, cache keys including token plus issuer/resource/scope policy, and no caching when `exp` is absent.
+- [x] T020 Use RFC 6750 `WWW-Authenticate` and RFC 9728 `resource_metadata`; challenge URI must resolve to served protected resource metadata.
+- [x] T049 Allow missing Origin on non-loopback HTTP only for OAuth-authenticated non-browser clients; reject invalid present Origin and reject missing Origin without valid OAuth.
+- [x] T050 Accept active introspection responses without `exp` for the current request, but do not cache the successful validation result.
+- [x] T051 Use configured `scopesSupported` as the first-version server-configured basic functionality scope set for metadata, scope validation, and challenge guidance.
+- [x] T052 Serve protected resource metadata at the endpoint-scoped well-known URI, keep root well-known support, and ensure `resource_metadata` challenge URIs resolve to the served metadata.
+- [x] T053 Require identical Origin and authorization gates for POST, GET, and DELETE on the MCP endpoint.
 
 ## Phase 4 - Config Model Implementation
 
@@ -65,7 +65,7 @@
 ## Phase 5 - Authorization And Metadata Runtime
 
 - [ ] T025 Remove or isolate static token handling in `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/HttpBearerAuthorizationHandler.java`.
-- [ ] T026 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthTokenValidator.java` to use explicit required scopes and the approved active-without-expiration policy if scope splitting is approved.
+- [ ] T026 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthTokenValidator.java` to use configured `scopesSupported` as the server-configured basic functionality scope set and apply the approved active-without-expiration policy.
 - [ ] T027 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthProtectedResourceMetadataServlet.java` to emit metadata only for OAuth-backed authorization, include `bearer_methods_supported`, and derive RFC 9728 well-known URLs.
 - [ ] T028 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/HttpOAuthTokenIntrospector.java` for HTTPS, timeout, client-auth, fail-closed, and credential-redaction decisions.
 - [ ] T029 Update `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/StreamableHttpMCPServer.java` and servlet wiring only as needed for the approved metadata registration and method security rules.
@@ -74,11 +74,11 @@
 
 - [ ] T030 Add `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/validator/HttpTransportConfigurationValidatorTest.java` for every config validation branch, or keep equivalent coverage in `MCPLaunchConfigurationTest` only if the reason is documented.
 - [ ] T031 Update `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlHttpTransportConfigurationSwapperTest.java` for mapping and migration behavior.
-- [ ] T032 Update `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/HttpBearerAuthorizationHandlerTest.java` for deleted or isolated static-token behavior and RFC 6750 challenges.
+- [ ] T032 Update `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/HttpBearerAuthorizationHandlerTest.java` for deleted static-token behavior and RFC 6750 challenges.
 - [ ] T033 Update `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthProtectedResourceMetadataServletTest.java` for OAuth-only metadata, `bearer_methods_supported`, and RFC 9728 endpoint placement.
-- [ ] T034 Update `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthTokenValidatorTest.java` for canonical resource, issuer invariants, cache behavior, active-without-expiration behavior, and required-scope behavior.
+- [ ] T034 Update `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/authorization/OAuthTokenValidatorTest.java` for canonical resource, issuer invariants, cache behavior, active-without-expiration behavior, and configured scope behavior.
 - [ ] T035 Update `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportSecurityE2ETest.java` for remote exposure and Origin behavior, including invalid present Origin on loopback and the approved missing-Origin policy.
-- [ ] T036 Update or remove `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportAccessTokenE2ETest.java` based on the static-token decision.
+- [ ] T036 Remove or replace `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportAccessTokenE2ETest.java` because static `accessToken` is deleted.
 - [ ] T037 Update `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/HttpTransportOAuthIntrospectionE2ETest.java` for OAuth-backed remote authorization and challenge coverage.
 
 ## Phase 7 - Docs, Distribution, And Migration
@@ -93,7 +93,7 @@
 - [ ] T042 Run scoped `mcp/bootstrap` tests for config, HTTP transport, authorization, and metadata changes.
 - [ ] T043 Run focused `test/e2e/mcp` HTTP security/OAuth tests.
 - [ ] T044 Run scoped Checkstyle and Spotless for touched modules.
-- [ ] T045 Run reverse searches for stale `accessToken`, `allowRemoteAccess`, `authorizationServers`, and metadata references.
+- [ ] T045 Run reverse searches for stale `accessToken`, `allowRemoteAccess`, `requiredScopes`, `authorizationServers`, and metadata references.
 - [ ] T046 Run mcp-builder design and implementation reasonableness review and record findings/classification/evidence.
 - [ ] T047 Run final doubt-driven review using Codex CLI and classify findings.
 - [ ] T048 Confirm no unresolved user questions remain before final handoff.
@@ -101,7 +101,7 @@
 ## Dependencies And Execution Order
 
 - Phase 1 and Phase 2 are documentation setup and may complete before implementation authorization.
-- Phase 3 plus reanalysis tasks T049-T053 block all code changes.
+- Phase 3 decisions are complete; code changes remain blocked until the user gives an explicit implementation command.
 - Phase 4 blocks Phase 5 because runtime behavior depends on the approved config model.
 - Phase 6 should be written alongside Phase 4 and Phase 5 changes.
 - Phase 7 follows the final field decision and migration behavior.

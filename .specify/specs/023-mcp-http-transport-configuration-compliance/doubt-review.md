@@ -25,7 +25,7 @@
 ## Finding Classifications
 
 - **Doubt review placed too late**: Valid and actionable. Moved initial doubt review into the design baseline and kept a final implementation review gate.
-- **Static token retention too broad**: Valid and actionable. Removed production retention as an accepted reason; only temporary test-fixture migration coverage remains unless the user explicitly approves production retention.
+- **Static token design too broad**: Valid and actionable. User-confirmed decisions now delete static `accessToken` entirely; only migration-failure documentation remains.
 - **OAuth source grounding incomplete**: Valid and actionable. Added RFC 6750, RFC 7662, and RFC 8707 to source inventory and requirements.
 - **Protected resource validation too weak**: Valid and actionable. Strengthened OAuth resource identifier requirement to HTTPS URL without fragment, with query rejected unless justified.
 - **Authorization servers not required when metadata emitted**: Valid and actionable. Added MCP-mandatory non-empty `authorization_servers` requirement for OAuth protected resource metadata.
@@ -45,7 +45,7 @@
 
 ## Remaining Review Gates
 
-- Pre-implementation decisions must still resolve the open questions in `tasks.md`.
+- Pre-implementation decisions in `tasks.md` are resolved for this design package.
 - Any future implementation touching MCP runtime or E2E code must run mcp-builder review and a final doubt-driven review.
 
 ## Round 2 Review
@@ -60,7 +60,7 @@
 - **MCP `authorization_servers` non-enumerable exception**: Valid and actionable. Removed the exception and required non-empty `authorization_servers` for MCP OAuth protected resource metadata.
 - **Dirty worktree disclosure**: Valid and actionable for handoff. Existing modified files under `mcp/**` and `test/e2e/mcp/**` are outside this documentation-only package and must be disclosed in the final response.
 - **Validator paths inaccurate**: Valid and actionable. Corrected production path to `config/yaml/validator/HttpTransportConfigurationValidator.java` and moved the missing validator test to a candidate new test path.
-- **`accessToken` deletion phrased symmetrically**: Valid and actionable. Reworded open decisions so deletion is the default and retention requires new explicit user approval.
+- **`accessToken` deletion phrased symmetrically**: Valid and actionable. Reworded the decision path; later user-confirmed decisions delete static `accessToken` entirely.
 
 ## Round 3 Closure Review
 
@@ -103,3 +103,44 @@
 - **Non-blocking source-map clarity nit**: Valid and actionable. Moved the `mcp-builder` future gate out of Official Sources into a separate Future Review Gates section.
 - **Non-blocking checklist granularity nit**: Valid and actionable. Split metadata URL registration from POST, GET, and DELETE method security coverage in the open-decision checklist.
 - **Non-blocking issuer checklist nit**: Valid and actionable. Added an explicit open decision for `authorizationServers` issuer identifiers and accepted token issuer invariants.
+
+## User-Confirmed Decision Review
+
+**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
+**Exit code**: 0
+**Mode**: Read-only Codex CLI adversarial review
+**Date**: 2026-05-17
+
+### User-Confirmed Finding Classifications
+
+- **`allowRemoteAccess` still allowed as confirmation gate**: Valid and actionable. Removed the remaining alternative wording and made `exposure.mode` the only design target.
+- **`protectedResource.uri` not consistently mandatory**: Valid and actionable. Updated the spec so production OAuth without `protectedResource.uri` fails validation and reverse-proxy deployments use it as the public resource URI.
+- **Endpoint-scoped metadata not locked into spec**: Valid and actionable. Updated the protected resource metadata entity to require endpoint-scoped well-known metadata with root well-known support retained.
+- **Insufficient-scope status missing**: Valid and actionable. Updated bearer failure requirements to require HTTP 403 with `insufficient_scope` and `scope` challenge behavior.
+- **Open-question wording stale**: Valid and actionable. Updated remaining review gate wording to state pre-implementation decisions are resolved for this design package.
+
+## User-Confirmed Decision Closure Review
+
+**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
+**Exit code**: 0
+**Mode**: Read-only Codex CLI adversarial closure review
+**Date**: 2026-05-17
+
+### User-Confirmed Closure Result
+
+- **Blocking findings**: None.
+- **Scope**: Rechecked `allowRemoteAccess` replacement, mandatory `protectedResource.uri`, endpoint-scoped protected resource metadata, HTTP 403 `insufficient_scope`, and stale open-question wording.
+- **Reviewer conclusion**: No blocking issues remain.
+
+## Scope Semantics Closure Review
+
+**Review command**: `codex exec --ephemeral --sandbox read-only -C <repo-root> - <<'EOF' ... EOF`
+**Exit code**: 0
+**Mode**: Read-only Codex CLI adversarial closure review
+**Date**: 2026-05-17
+
+### Scope Semantics Closure Result
+
+- **Blocking findings**: None.
+- **Scope**: Rechecked that `scopesSupported` is described as server-configured protected-resource scope metadata and challenge guidance, not a custom MCP protocol field or a fixed MCP standard scope-name enum.
+- **Reviewer conclusion**: No blocking issues remain.

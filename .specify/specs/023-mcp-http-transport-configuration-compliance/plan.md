@@ -26,7 +26,7 @@
 ## Summary
 
 Reduce and clarify MCP HTTP transport configuration.
-The primary design move is to separate HTTP listener configuration from security and OAuth metadata configuration, and to remove static `accessToken` unless a narrow non-OAuth compatibility case is explicitly accepted.
+The primary design move is to separate HTTP listener configuration from security and OAuth metadata configuration, remove static `accessToken`, and rely on MCP-standard OAuth Bearer authorization for protected remote HTTP.
 
 ## Technical Context
 
@@ -43,10 +43,10 @@ The primary design move is to separate HTTP listener configuration from security
 ## Source-Driven Framework Basis
 
 - MCP Streamable HTTP requires a single HTTP endpoint and Origin validation for incoming HTTP connections, and recommends localhost binding for local servers.
-- MCP Streamable HTTP requires Origin validation when the header is present; rejecting missing Origin is a stricter product policy that must be justified for non-browser clients.
+- MCP Streamable HTTP requires Origin validation when the header is present; this design allows missing Origin only for OAuth-authenticated non-browser clients.
 - MCP Authorization treats MCP servers as OAuth resource servers when authorization is implemented; access tokens must be validated for the protected resource.
 - OAuth Protected Resource Metadata exposes resource identity and authorization server metadata; these fields should not be emitted for a non-OAuth static shared secret.
-- MCP Authorization scope challenges describe scopes needed for the current failed request, while RFC 9728 `scopes_supported` describes scopes clients may request for the protected resource.
+- MCP Authorization scope challenges describe scopes needed for the current failed request, while RFC 9728 `scopes_supported` describes scopes clients may request for the protected resource. This design does not add a custom `requiredScopes` configuration field.
 - OAuth introspection, bearer challenges, and resource indicators are also grounded in RFC 7662, RFC 6750, and RFC 8707.
 
 ## Constitution Check
@@ -64,13 +64,13 @@ The primary design move is to separate HTTP listener configuration from security
 
 - `enabled`: keep. Required to choose HTTP vs STDIO.
 - `bindHost`: keep. Required listener binding and loopback/remote security input.
-- `allowRemoteAccess`: merge candidate. Replace with `exposure: local|remote` or justify as explicit confirmation.
-- `accessToken`: preferred delete. If retained, rename/model as non-OAuth `static-token` mode with no OAuth metadata.
+- `allowRemoteAccess`: replace with explicit `exposure.mode`.
+- `accessToken`: delete. Static shared-secret HTTP authorization is not retained.
 - `port`: keep. Required listener binding.
 - `endpointPath`: keep. Required Streamable HTTP endpoint and metadata path input.
 - `allowedOrigins`: keep but move under Origin/exposure policy. Required for non-loopback exposure.
-- `authorizationServers`: keep only for OAuth metadata. Remove static-token coupling.
-- `scopesSupported`: split candidate. Keep for metadata, add separate required scopes if token validation needs it.
+- `authorizationServers`: keep only for OAuth metadata and issuer validation invariants.
+- `scopesSupported`: keep for MCP/OAuth `scopes_supported` metadata and use as the first-version server-configured basic functionality scope set for authorization challenges and scope validation; do not add `requiredScopes`.
 - `protectedResource`: keep but validate. Require HTTPS URL without fragment for OAuth metadata, reject query components unless justified, and avoid internal URI leakage.
 - `oauthIntrospection`: keep for standards-aligned OAuth resource-server validation.
 
@@ -95,10 +95,8 @@ transport:
         clientSecret: ""
         expectedIssuer: ""
         cacheTtlMillis: 0
-      requiredScopes: []
     protectedResource:
       uri: ""
-      publicBaseUri: ""
       authorizationServers:
         - https://auth.example.test
       scopesSupported: []
@@ -106,18 +104,18 @@ transport:
         - header
 ```
 
-This shape is a design target, not an approved code contract yet.
-Backward compatibility and YAML migration behavior must be decided before implementation.
-For OAuth mode, `protectedResource.uri` is the canonical HTTPS resource identifier. `publicBaseUri` is only a migration/design placeholder for reverse-proxy deployments and should collapse into a single approved public resource URI before code is written.
+This shape is the approved design target for the next implementation slice, but code changes still require an explicit user command.
+For OAuth mode, `protectedResource.uri` is mandatory and is the canonical public HTTPS resource identifier, including reverse-proxy deployments.
+Legacy flat fields fail with targeted migration guidance rather than being silently bridged.
 
 ## Implementation Phases
 
 ### Phase 1 - Design Baseline
 
 1. Run and reconcile doubt-driven review before finalizing design decisions.
-2. Confirm the default deletion path for static `accessToken`; retention requires a new explicit user approval and a renamed non-OAuth compatibility mode.
-3. Decide whether `allowRemoteAccess` becomes `exposure.mode` or remains a confirmation field.
-4. Decide migration behavior for old flat YAML fields.
+2. Confirm static `accessToken` deletion and remove static-token production authorization from the design.
+3. Replace `allowRemoteAccess` with `exposure.mode`.
+4. Use targeted validation errors and migration docs for removed or renamed flat YAML fields.
 5. Record official source map and `mcp-builder` future-gate notes.
 
 ### Phase 2 - Validation Model
@@ -125,17 +123,17 @@ For OAuth mode, `protectedResource.uri` is the canonical HTTPS resource identifi
 1. Refactor YAML validation around listener, exposure, authorization, and metadata groups.
 2. Add branch-specific validation for loopback local use, remote OAuth use, and invalid legacy fields.
 3. Validate OAuth `protectedResource` as an HTTPS URL without fragment and reject query components unless justified.
-4. Split `scopesSupported` from required scopes if OAuth validation enforces scope requirements.
+4. Keep `scopesSupported` as the only configured scope list for this slice; map it to `scopes_supported` metadata and MCP challenge `scope` guidance without adding `requiredScopes`.
 5. Define `authorizationServers` and accepted issuer invariants.
-6. Define introspection HTTPS, client authentication, timeout, fail-closed, credential redaction, absent-expiration policy, and cache-key behavior.
-7. Decide whether missing Origin on remote HTTP is rejected as hardening or accepted for OAuth-authenticated non-browser clients.
-8. Define scope challenge policy separately from `scopes_supported` metadata.
+6. Require HTTPS introspection endpoints except loopback tests, Basic client authentication from configured client credentials, bounded timeout, fail-closed errors, credential redaction, and cache keys that include token plus issuer/resource/scope policy.
+7. Allow missing remote Origin only for OAuth-authenticated non-browser clients; reject invalid present Origin and reject missing Origin when OAuth is absent or invalid.
+8. Use configured `scopesSupported` as the first-version server-configured basic functionality scope set for both metadata and challenge guidance.
 
 ### Phase 3 - Runtime Wiring
 
 1. Keep Tomcat binding behavior equivalent for listener fields.
 2. Keep Origin validation equivalent or stricter for remote access.
-3. Remove static token authorization path if deletion is selected.
+3. Remove static token authorization path.
 4. Ensure protected resource metadata is registered only when OAuth metadata is valid.
 5. Preserve RFC 6750-compatible `WWW-Authenticate` challenges and RFC 9728 `resource_metadata` behavior.
 6. Ensure `resource_metadata` challenge URIs, well-known endpoint registration, and protected resource `resource` values stay mutually consistent.
@@ -170,12 +168,12 @@ For OAuth mode, `protectedResource.uri` is the canonical HTTPS resource identifi
 - **Breaking YAML compatibility**: Removing `accessToken` or reshaping fields breaks existing examples. Mitigate with explicit validation messages and migration docs.
 - **OAuth over-modeling**: Adding too many OAuth knobs can make local MCP hard to start. Mitigate by keeping loopback local mode simple.
 - **Reverse proxy URI leakage**: Auto-derived metadata may advertise internal URLs. Mitigate with explicit `protectedResource.uri` for production OAuth deployments.
-- **Scope ambiguity**: One field currently means both supported and required scopes. Mitigate by splitting or documenting a conscious trade-off.
-- **Static-token convenience pressure**: Retaining static token may preserve an attractive insecure pattern. Mitigate by deleting it unless a narrow exception is approved.
+- **Scope ambiguity**: MCP allows challenge scopes to differ from `scopes_supported`, but this slice keeps one configured scope list for simplicity. Mitigate by documenting that operation-specific scope policies are out of scope and can be added later.
+- **Static-token convenience pressure**: Retaining static token may preserve an attractive insecure pattern. Mitigate by deleting it and rejecting legacy `accessToken` with targeted migration guidance.
 - **Challenge drift**: Metadata may be correct while `WWW-Authenticate` points clients to stale metadata. Mitigate with RFC 6750 and RFC 9728 challenge tests.
 - **Issuer drift**: Advertised authorization servers and accepted token issuers can diverge. Mitigate with a documented invariant and tests.
-- **Missing Origin compatibility**: Strict rejection improves DNS rebinding posture but can block non-browser clients. Mitigate by documenting the policy and testing both selected and rejected behavior.
-- **Absent expiration ambiguity**: RFC 7662 makes `active` mandatory while `exp` is optional. Mitigate by defining whether active tokens without `exp` are accepted without cache, accepted with bounded cache, or rejected.
+- **Missing Origin compatibility**: Strict rejection can block non-browser clients. Mitigate by allowing missing Origin only after OAuth Bearer authorization succeeds.
+- **Absent expiration ambiguity**: RFC 7662 makes `active` mandatory while `exp` is optional. Mitigate by accepting active tokens without `exp` for the current request but not caching that successful validation result.
 
 ## Complexity Tracking
 

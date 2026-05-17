@@ -36,22 +36,18 @@ public final class WorkflowSynchronizationSupport {
     
     private static final long DEFAULT_POLL_INTERVAL_MILLIS = 1000L;
     
-    private final WorkflowValidationSupport validationSupport;
+    private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
     private final int maxAttempts;
     
     private final long pollIntervalMillis;
     
     public WorkflowSynchronizationSupport() {
-        this(new WorkflowValidationSupport(), DEFAULT_MAX_ATTEMPTS, DEFAULT_POLL_INTERVAL_MILLIS);
+        maxAttempts = DEFAULT_MAX_ATTEMPTS;
+        pollIntervalMillis = DEFAULT_POLL_INTERVAL_MILLIS;
     }
     
     public WorkflowSynchronizationSupport(final int maxAttempts, final long pollIntervalMillis) {
-        this(new WorkflowValidationSupport(), maxAttempts, pollIntervalMillis);
-    }
-    
-    WorkflowSynchronizationSupport(final WorkflowValidationSupport validationSupport, final int maxAttempts, final long pollIntervalMillis) {
-        this.validationSupport = validationSupport;
         this.maxAttempts = Math.max(maxAttempts, 1);
         this.pollIntervalMillis = Math.max(pollIntervalMillis, 0L);
     }

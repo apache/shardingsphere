@@ -36,12 +36,8 @@ public final class MCPToolController {
     private final MCPToolCallLimiter toolCallLimiter;
     
     public MCPToolController(final MCPRuntimeContext runtimeContext) {
-        this(runtimeContext, new MCPToolCallLimiter());
-    }
-    
-    MCPToolController(final MCPRuntimeContext runtimeContext, final MCPToolCallLimiter toolCallLimiter) {
         this.runtimeContext = runtimeContext;
-        this.toolCallLimiter = toolCallLimiter;
+        toolCallLimiter = new MCPToolCallLimiter();
         runtimeContext.getSessionManager().addSessionCloseListener(toolCallLimiter::releaseSession);
     }
     

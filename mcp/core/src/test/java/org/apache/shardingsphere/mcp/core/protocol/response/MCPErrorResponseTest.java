@@ -23,20 +23,32 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPErrorResponseTest {
     
     @Test
     void assertToPayload() {
-        Map<String, Object> actual = new MCPErrorResponse("invalid_request", "foo_message", Map.of(), "request-1").toPayload();
-        assertThat(actual, is(Map.of("response_mode", "recovery", "request_id", "request-1", "error_code", "invalid_request", "message", "foo_message")));
+        Map<String, Object> actual = new MCPErrorResponse("invalid_request", "foo_message").toPayload();
+        assertNotNull(actual.get("request_id"));
+        assertFalse(actual.containsKey("recovery"));
+        assertThat(actual.get("response_mode"), is("recovery"));
+        assertThat(actual.get("error_code"), is("invalid_request"));
+        assertThat(actual.get("message"), is("foo_message"));
     }
     
     @Test
     void assertToPayloadWithRecovery() {
-        Map<String, Object> actual = new MCPErrorResponse("invalid_request", "foo_message", Map.of("recoverable", true), "request-1").toPayload();
-        assertThat(actual, is(Map.of("response_mode", "recovery", "request_id", "request-1", "error_code", "invalid_request", "message", "foo_message", "recovery",
-                Map.of("recoverable", true, "request_id", "request-1"))));
+        Map<String, Object> actual = new MCPErrorResponse("invalid_request", "foo_message", Map.of("recoverable", true)).toPayload();
+        assertNotNull(actual.get("request_id"));
+        assertThat(actual.get("response_mode"), is("recovery"));
+        assertThat(actual.get("error_code"), is("invalid_request"));
+        assertThat(actual.get("message"), is("foo_message"));
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertTrue((Boolean) actualRecovery.get("recoverable"));
+        assertThat(actualRecovery.get("request_id"), is(actual.get("request_id")));
     }
     
     @Test

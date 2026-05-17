@@ -46,13 +46,9 @@ final class HttpOAuthTokenIntrospector implements OAuthTokenIntrospector {
     private final String basicAuthorization;
     
     HttpOAuthTokenIntrospector(final OAuthIntrospectionConfiguration config) {
-        this(HttpClient.newHttpClient(), URI.create(config.getEndpoint()), config.getClientId(), config.getClientSecret());
-    }
-    
-    HttpOAuthTokenIntrospector(final HttpClient httpClient, final URI endpoint, final String clientId, final String clientSecret) {
-        this.httpClient = httpClient;
-        this.endpoint = endpoint;
-        basicAuthorization = "Basic " + Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8));
+        httpClient = HttpClient.newHttpClient();
+        endpoint = URI.create(config.getEndpoint());
+        basicAuthorization = "Basic " + Base64.getEncoder().encodeToString((config.getClientId() + ":" + config.getClientSecret()).getBytes(StandardCharsets.UTF_8));
     }
     
     @Override

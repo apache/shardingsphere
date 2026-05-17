@@ -19,7 +19,14 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio;
 
 import io.modelcontextprotocol.server.McpSyncServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFactory;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
+
+import java.lang.reflect.Field;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
@@ -35,7 +42,7 @@ class StdioMCPServerTest {
         SessionManagedStdioTransportProvider transportProvider = mock(SessionManagedStdioTransportProvider.class);
         McpSyncServer syncServer = mock(McpSyncServer.class);
         when(syncServerFactory.create(transportProvider)).thenReturn(syncServer);
-        new StdioMCPServer(syncServerFactory, transportProvider).start();
+        createServer(syncServerFactory, transportProvider).start();
         verify(syncServerFactory).create(transportProvider);
     }
     
@@ -45,7 +52,7 @@ class StdioMCPServerTest {
         SessionManagedStdioTransportProvider transportProvider = mock(SessionManagedStdioTransportProvider.class);
         McpSyncServer syncServer = mock(McpSyncServer.class);
         when(syncServerFactory.create(transportProvider)).thenReturn(syncServer);
-        StdioMCPServer actual = new StdioMCPServer(syncServerFactory, transportProvider);
+        StdioMCPServer actual = createServer(syncServerFactory, transportProvider);
         actual.start();
         actual.start();
         verify(syncServerFactory).create(transportProvider);
@@ -57,7 +64,7 @@ class StdioMCPServerTest {
         SessionManagedStdioTransportProvider transportProvider = mock(SessionManagedStdioTransportProvider.class);
         McpSyncServer syncServer = mock(McpSyncServer.class);
         when(syncServerFactory.create(transportProvider)).thenReturn(syncServer);
-        StdioMCPServer actual = new StdioMCPServer(syncServerFactory, transportProvider);
+        StdioMCPServer actual = createServer(syncServerFactory, transportProvider);
         actual.start();
         actual.stop();
         verify(syncServer).closeGracefully();
@@ -70,7 +77,7 @@ class StdioMCPServerTest {
         McpSyncServer firstSyncServer = mock(McpSyncServer.class);
         McpSyncServer secondSyncServer = mock(McpSyncServer.class);
         when(syncServerFactory.create(transportProvider)).thenReturn(firstSyncServer, secondSyncServer);
-        StdioMCPServer actual = new StdioMCPServer(syncServerFactory, transportProvider);
+        StdioMCPServer actual = createServer(syncServerFactory, transportProvider);
         actual.start();
         actual.stop();
         actual.start();
@@ -80,6 +87,26 @@ class StdioMCPServerTest {
     
     @Test
     void assertStopWithoutStart() {
-        assertDoesNotThrow(() -> new StdioMCPServer(mock(MCPSyncServerFactory.class), mock(SessionManagedStdioTransportProvider.class)).stop());
+        assertDoesNotThrow(() -> new StdioMCPServer(createRuntimeContext()).stop());
+    }
+    
+    private StdioMCPServer createServer(final MCPSyncServerFactory syncServerFactory, final SessionManagedStdioTransportProvider transportProvider) {
+        StdioMCPServer result = new StdioMCPServer(createRuntimeContext());
+        try {
+            setField(result, "syncServerFactory", syncServerFactory);
+            setField(result, "transportProvider", transportProvider);
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
+    }
+    
+    private MCPRuntimeContext createRuntimeContext() {
+        return new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), new MCPDatabaseCapabilityProvider(Collections.emptyMap()), "stdio");
+    }
+    
+    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        Plugins.getMemberAccessor().set(field, target, value);
     }
 }

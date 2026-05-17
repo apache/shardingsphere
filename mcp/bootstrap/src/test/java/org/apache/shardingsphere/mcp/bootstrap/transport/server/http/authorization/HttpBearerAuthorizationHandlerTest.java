@@ -22,11 +22,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.LongSupplier;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -92,7 +95,7 @@ class HttpBearerAuthorizationHandlerTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader("Authorization")).thenReturn(null);
         HttpServletResponse response = mock(HttpServletResponse.class);
-        boolean actual = new HttpBearerAuthorizationHandler("test-token", "/mcp", List.of(), false).authorize(request, response);
+        boolean actual = new HttpBearerAuthorizationHandler(createPlainTokenConfig("test-token")).authorize(request, response);
         assertFalse(actual);
         verify(response).setHeader("WWW-Authenticate", "Bearer");
     }
@@ -143,15 +146,37 @@ class HttpBearerAuthorizationHandlerTest {
                         new OAuthIntrospectionConfiguration());
     }
     
+    private HttpTransportConfiguration createPlainTokenConfig(final String accessToken) {
+        return new HttpTransportConfiguration(true, "127.0.0.1", false, accessToken, 18088, "/mcp", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "",
+                new OAuthIntrospectionConfiguration());
+    }
+    
     private HttpBearerAuthorizationHandler createOAuthHandler(final Map<String, Object> introspectionResponse) {
         HttpTransportConfiguration config = new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp", Collections.emptyList(), List.of("https://auth.example.test"),
                 List.of("mcp.read"), "http://127.0.0.1:18088/mcp", new OAuthIntrospectionConfiguration("https://auth.example.test/introspect", "foo_client", "foo_secret", "", 0L));
-        return new HttpBearerAuthorizationHandler("", "/mcp", List.of("mcp.read"), true, new OAuthTokenValidator(config, token -> introspectionResponse,
-                () -> 1800000000000L));
+        HttpBearerAuthorizationHandler result = new HttpBearerAuthorizationHandler(config);
+        try {
+            setField(result, "oauthTokenValidator", createOAuthTokenValidator(config, introspectionResponse));
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
+    }
+    
+    private OAuthTokenValidator createOAuthTokenValidator(final HttpTransportConfiguration config, final Map<String, Object> introspectionResponse) throws ReflectiveOperationException {
+        OAuthTokenValidator result = new OAuthTokenValidator(config);
+        setField(result, "introspector", (OAuthTokenIntrospector) token -> introspectionResponse);
+        setField(result, "currentTimeMillisSupplier", (LongSupplier) () -> 1800000000000L);
+        return result;
     }
     
     private Map<String, Object> createOAuthResponse(final String scope) {
         return Map.of("active", true, "iss", "https://auth.example.test", "aud", List.of("http://127.0.0.1:18088/mcp"), "exp", 1800000060L, "nbf", 1799999999L,
                 "scope", scope);
+    }
+    
+    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        Plugins.getMemberAccessor().set(field, target, value);
     }
 }

@@ -53,11 +53,7 @@ final class OAuthTokenValidator {
     private final Map<String, CachedValidationResult> cache;
     
     OAuthTokenValidator(final HttpTransportConfiguration config) {
-        this(config, new HttpOAuthTokenIntrospector(config.getOauthIntrospection()), System::currentTimeMillis);
-    }
-    
-    OAuthTokenValidator(final HttpTransportConfiguration config, final OAuthTokenIntrospector introspector, final LongSupplier currentTimeMillisSupplier) {
-        this.introspector = introspector;
+        introspector = new HttpOAuthTokenIntrospector(config.getOauthIntrospection());
         expectedIssuers = config.getOauthIntrospection().getExpectedIssuer().isEmpty()
                 ? config.getAuthorizationServers()
                 : List.of(config.getOauthIntrospection().getExpectedIssuer());
@@ -65,7 +61,7 @@ final class OAuthTokenValidator {
         protectedResource = config.getProtectedResource();
         endpointPath = config.getEndpointPath();
         cacheTtlMillis = config.getOauthIntrospection().getCacheTtlMillis();
-        this.currentTimeMillisSupplier = currentTimeMillisSupplier;
+        currentTimeMillisSupplier = System::currentTimeMillis;
         cache = new ConcurrentHashMap<>();
     }
     

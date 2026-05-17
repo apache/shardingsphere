@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import io.modelcontextprotocol.server.McpSyncServer;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
@@ -41,7 +39,6 @@ import java.util.Comparator;
 /**
  * Streamable HTTP MCP server.
  */
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class StreamableHttpMCPServer implements MCPRuntimeServer {
     
     private final HttpTransportConfiguration config;
@@ -59,8 +56,9 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
     private Path baseDirectory;
     
     public StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPRuntimeContext runtimeContext) {
-        this(config, new MCPSyncServerFactory(runtimeContext, MCPTransportJsonMapperFactory.create()),
-                new StreamableHttpMCPServlet(runtimeContext.getSessionManager(), MCPTransportJsonMapperFactory.create(), config));
+        this.config = config;
+        syncServerFactory = new MCPSyncServerFactory(runtimeContext, MCPTransportJsonMapperFactory.create());
+        transportServlet = new StreamableHttpMCPServlet(runtimeContext.getSessionManager(), MCPTransportJsonMapperFactory.create(), config);
     }
     
     @Override

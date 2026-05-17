@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
+import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -81,7 +82,7 @@ class MCPToolControllerTest {
         try (MockedStatic<ToolHandlerRegistry> mocked = mockStatic(ToolHandlerRegistry.class)) {
             mocked.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-1"), eq("database_gateway_search_metadata"), eq(Map.of("query", "order"))))
                     .thenReturn(Optional.of(response));
-            MCPToolController controller = new MCPToolController(ResourceTestDataFactory.createRuntimeContext(), new MCPToolCallLimiter(1));
+            MCPToolController controller = createController(1);
             controller.handle("session-1", "database_gateway_search_metadata", Map.of("query", "order"));
             Map<String, Object> actual = controller.handle("session-1", "database_gateway_search_metadata", Map.of("query", "order")).toPayload();
             Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
@@ -93,5 +94,23 @@ class MCPToolControllerTest {
     
     private MCPToolController createController() {
         return new MCPToolController(ResourceTestDataFactory.createRuntimeContext());
+    }
+    
+    private MCPToolController createController(final int maxToolCallsPerSession) {
+        String previous = System.getProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
+        try {
+            System.setProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, String.valueOf(maxToolCallsPerSession));
+            return createController();
+        } finally {
+            resetMaxToolCallsPerSessionProperty(previous);
+        }
+    }
+    
+    private void resetMaxToolCallsPerSessionProperty(final String previous) {
+        if (null == previous) {
+            System.clearProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
+        } else {
+            System.setProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, previous);
+        }
     }
 }

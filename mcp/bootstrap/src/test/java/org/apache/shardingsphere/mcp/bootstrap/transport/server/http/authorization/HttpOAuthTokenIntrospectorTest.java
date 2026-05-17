@@ -19,13 +19,13 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.authorizat
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,7 +47,7 @@ class HttpOAuthTokenIntrospectorTest {
     @Test
     void assertIntrospectWithMalformedResponse() throws IOException {
         startIntrospectionServer("not-json");
-        HttpOAuthTokenIntrospector introspector = new HttpOAuthTokenIntrospector(HttpClient.newHttpClient(), createIntrospectionEndpoint(), "foo_client", "foo_secret");
+        HttpOAuthTokenIntrospector introspector = new HttpOAuthTokenIntrospector(new OAuthIntrospectionConfiguration(createIntrospectionEndpoint().toString(), "foo_client", "foo_secret", "", 0L));
         IOException actual = assertThrows(IOException.class, () -> introspector.introspect("foo_token"));
         assertThat(actual.getMessage(), is("OAuth introspection endpoint returned invalid JSON."));
     }

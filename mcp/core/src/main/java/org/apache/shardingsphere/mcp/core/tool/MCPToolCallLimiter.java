@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.tool;
 
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
 import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
 
@@ -36,12 +35,7 @@ public final class MCPToolCallLimiter {
     private final Map<String, AtomicInteger> sessionToolCallCounts = new ConcurrentHashMap<>();
     
     public MCPToolCallLimiter() {
-        this(MCPClientSafetyPolicy.getMaxToolCallsPerSession());
-    }
-    
-    MCPToolCallLimiter(final int maxToolCallsPerSession) {
-        ShardingSpherePreconditions.checkState(0 < maxToolCallsPerSession, () -> new IllegalArgumentException("Maximum tool calls per MCP session must be positive."));
-        this.maxToolCallsPerSession = maxToolCallsPerSession;
+        maxToolCallsPerSession = MCPClientSafetyPolicy.getMaxToolCallsPerSession();
     }
     
     /**

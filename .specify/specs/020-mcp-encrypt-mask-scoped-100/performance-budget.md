@@ -27,6 +27,7 @@
 - SQL classifier: 1000 iterations within 5 seconds.
 - Default MCP E2E lane: must finish without hangs; target remains below 60 seconds for background unit-style runs where infrastructure is not started.
 - Distribution smoke and Docker/Testcontainers lanes: opt-in evidence, recorded separately from the default unit lane because they depend on local Docker runtime startup.
+- LLM score lane: must avoid heavyweight runtime images; score-closing CI should use Docker-owned `llama.cpp` server with prepackaged `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` model evidence.
 
 ## Owning Tests
 
@@ -41,7 +42,7 @@
 
 - Workflow apply must not execute side effects during preview.
 - HTTP session cleanup must close the target session without deleting other sessions.
-- Docker-owned LLM lanes must start their own Ollama runtime and must not count external debug endpoints as score evidence.
+- Docker-owned LLM lanes must start their own `llama.cpp` server runtime and must not count external debug endpoints as score evidence.
 - MySQL/Proxy product-path lanes must wait for database readiness before attempting JDBC or Proxy workflow calls.
 
 ## Verification Commands

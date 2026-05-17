@@ -25,7 +25,8 @@ Every dimension targets **100/100**. A dimension can reach 100 only when all sco
 
 - Assessment date: 2026-05-16.
 - Original scoped baseline: **88/100**.
-- Current scoped score: **100/100** after Phase 1 through Phase 10 evidence closure.
+- Previous scoped score: **100/100** after Phase 1 through Phase 10 evidence closure.
+- Current scoped score: **98/100** after the LLM runtime rebaseline reopened score-closing LLM evidence.
 - Protocol scope: MCP `2025-11-25` only.
 - SDK scope: MCP Java SDK `1.1.2`, fixed.
 - Functional scope: encrypt and mask workflows only.
@@ -46,13 +47,13 @@ Every dimension targets **100/100**. A dimension can reach 100 only when all sco
 | MCP protocol conformity | 100 | 100 | Closed by contract tests for declared `2025-11-25` methods, SDK `1.1.2` scope documentation, structured content/output schema checks, and transport/session negative cases. |
 | Encrypt/mask functional completeness | 100 | 100 | Closed by branch matrices plus unit and Proxy E2E evidence for resources, prompts, completions, plan, preview, approval apply, validation, and recovery for encrypt and mask. |
 | Implementation elegance | 100 | 100 | Closed by readability-first handler response assertions, prompt rendering tests, performance smoke coverage, and explicit rejection of broad framework extraction. |
-| AI usability and MCP ergonomics | 100 | 100 | Closed by ten mcp-builder evaluation questions, stable answer keys, negative artifact validation, stable `next_actions`, resource links, and prompt coverage. |
+| AI usability and MCP ergonomics | 98 | 100 | Reopened for LLM smoke/usability evidence under Docker-owned `llama.cpp` server with `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`; static mcp-builder evidence remains closed. |
 | Safety and approval control | 100 | 100 | Closed by approval bypass, session isolation, redaction, token/origin fail-closed, and encrypt/mask SQL safety tests. |
 | Architecture cleanliness | 100 | 100 | Closed by lightweight dependency boundary test and documented feature/core/bootstrap ownership boundaries. |
 | Code cleanliness | 100 | 100 | Closed by reflection, static-mock, broad assertion, and Checkstyle suppression review plus passing scoped style gate. |
-| Test coverage and quality | 100 | 100 | Closed by public-method coverage map, branch ownership matrix, scoped unit/E2E commands, Jacoco report, and artifact validation tests. |
-| Documentation and operations handoff | 100 | 100 | Closed by README/Speckit/validator alignment, encrypt/mask quickstart, default/opt-in lane separation, and Docker-owned LLM reproduction notes. |
-| Performance and reliability evidence | 100 | 100 | Closed by descriptor/request/metadata/workflow/completion/SQL budgets and packaged HTTP/STDIO distribution smoke. |
+| Test coverage and quality | 98 | 100 | Reopened for focused tests around the new `llama.cpp` Docker runtime boundary and runtime metadata. |
+| Documentation and operations handoff | 95 | 100 | Reopened because README, workflows, and Speckit evidence must stop presenting Ollama as score-closing LLM runtime. |
+| Performance and reliability evidence | 92 | 100 | Reopened until the lightweight Docker-full-package LLM lane passes locally or in GitHub Actions without external credentials or host LLM state. |
 
 ## Evidence Policy
 
@@ -60,7 +61,7 @@ Valid evidence:
 
 - Scoped Maven command with exit code.
 - Checkstyle, Spotless, or Jacoco report.
-- E2E or LLM evaluation artifact. LLM score evidence must record Docker-owned `ollama/ollama:0.23.1` runtime usage.
+- E2E or LLM evaluation artifact. LLM score evidence must record Docker-owned `llama.cpp` server runtime usage with `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
 - Source map to official MCP `2025-11-25` documentation or local SDK `1.1.2` behavior.
 - Explicit non-goal decision captured in `spec.md`, `scorecard.md`, and README.
 
@@ -175,10 +176,17 @@ Invalid evidence:
 - T081: `quickstart.md`, `mcp/README.md`, and `mcp/README_ZH.md` point encrypt/mask workflow reproduction to discover, plan, preview, approve apply, validate, and recover.
 - T082: `performance-budget.md` records budgets for descriptor loading, metadata search, workflow planning, completion, default E2E, and distribution smoke.
 - T083: `./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dmcp.e2e.distribution.enabled=true -Dtest=PackagedDistributionSmokeE2ETest -Dsurefire.failIfNoSpecifiedTests=false test` exited `0`; 2 tests, 0 failures, 0 errors, 0 skipped.
-- T084/T085: `e2e-evidence.md` separates default and opt-in lanes and documents Docker/Testcontainers prerequisites for Proxy/MySQL, STDIO, distribution, and Docker-owned Ollama LLM lanes.
+- T084/T085: `e2e-evidence.md` separates default and opt-in lanes and documents Docker/Testcontainers prerequisites for Proxy/MySQL, STDIO, distribution, and LLM lanes.
+
+### Phase 9A: Reopened LLM Runtime Rebaseline
+
+- T091 through T099 are newly opened because the previous Ollama score-closing route is too large for reliable local and GitHub Actions execution.
+- Selected target: Docker-owned `llama.cpp` server plus `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
+- Required closure evidence: runtime support implementation, metadata tests, README/workflow updates, focused style checks, and passing LLM smoke/usability score lane.
+- Until this evidence exists, AI usability, test coverage, documentation/operations, and performance/reliability dimensions remain below 100.
 
 ### Phase 10: Final Score Closure
 
-- T100/T104: all ten dimensions are updated to `100/100` only after the evidence above.
-- T101: final scoped unit, E2E, Jacoco, Checkstyle, Spotless, and packaged distribution smoke commands exited `0`.
-- T102/T103: final branch and worktree status are verified in the handoff.
+- T100/T104: reopened and must run again after T091 through T099.
+- T101: final scoped unit, E2E, Jacoco, Checkstyle, Spotless, and packaged distribution smoke commands must be rerun after the LLM runtime rebaseline.
+- T102/T103: final branch and worktree status must be verified again in the handoff.

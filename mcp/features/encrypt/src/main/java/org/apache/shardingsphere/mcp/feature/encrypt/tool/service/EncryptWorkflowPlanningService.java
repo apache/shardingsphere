@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
@@ -50,7 +48,6 @@ import java.util.Set;
 /**
  * Encrypt workflow planning service.
  */
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class EncryptWorkflowPlanningService {
     
     private static final List<String> INTERACTION_STEPS = List.of(
@@ -87,9 +84,15 @@ public final class EncryptWorkflowPlanningService {
      * Create encrypt workflow planning service.
      */
     public EncryptWorkflowPlanningService() {
-        this(new WorkflowPlanningSupport(), new EncryptWorkflowIntentResolver(), new EncryptRuleInspectionService(),
-                new EncryptAlgorithmRecommendationService(), new EncryptAlgorithmPropertyTemplateService(), new DerivedColumnNamingService(),
-                new PhysicalDDLPlanningService(), new IndexPlanningService(), new EncryptRuleDistSQLPlanningService());
+        planningSupport = new WorkflowPlanningSupport();
+        intentResolver = new EncryptWorkflowIntentResolver();
+        ruleInspectionService = new EncryptRuleInspectionService();
+        algorithmRecommendationService = new EncryptAlgorithmRecommendationService();
+        algorithmPropertyTemplateService = new EncryptAlgorithmPropertyTemplateService();
+        derivedColumnNamingService = new DerivedColumnNamingService();
+        physicalDDLPlanningService = new PhysicalDDLPlanningService();
+        indexPlanningService = new IndexPlanningService();
+        ruleDistSQLPlanningService = new EncryptRuleDistSQLPlanningService();
     }
     
     /**

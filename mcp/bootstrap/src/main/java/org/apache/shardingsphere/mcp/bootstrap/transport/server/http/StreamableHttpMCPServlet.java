@@ -67,20 +67,9 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     private final AtomicBoolean closed;
     
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final HttpTransportConfiguration config) {
-        this(sessionManager, jsonMapper, config.getBindHost(), getDelegateAccessToken(config), config.getEndpointPath(), config.getAllowedOrigins(),
-                new HttpBearerAuthorizationHandler(config));
-    }
-    
-    StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String accessToken, final String endpointPath) {
-        this(sessionManager, jsonMapper, bindHost, accessToken, endpointPath, List.of(),
-                new HttpBearerAuthorizationHandler(accessToken, endpointPath, List.of(), false));
-    }
-    
-    private StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String accessToken,
-                                     final String endpointPath, final List<String> allowedOrigins, final HttpBearerAuthorizationHandler authorizationHandler) {
-        delegate = createDelegate(sessionManager, jsonMapper, bindHost, accessToken, endpointPath, allowedOrigins);
+        delegate = createDelegate(sessionManager, jsonMapper, config.getBindHost(), getDelegateAccessToken(config), config.getEndpointPath(), config.getAllowedOrigins());
         this.sessionManager = sessionManager;
-        this.authorizationHandler = authorizationHandler;
+        authorizationHandler = new HttpBearerAuthorizationHandler(config);
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         sessionProtocolVersions = new ConcurrentHashMap<>();
         sessionManager.addSessionCloseListener(sessionProtocolVersions::remove);

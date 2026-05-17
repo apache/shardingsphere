@@ -33,21 +33,21 @@
 ## Requirement Quality
 
 - [x] Every current `HttpTransportConfiguration` field has a future action category.
-- [x] Static `accessToken` is treated as preferred-delete, not assumed to stay.
-- [x] Retaining static token requires an explicit non-OAuth exception.
+- [x] Static `accessToken` is confirmed for deletion, not assumed to stay.
+- [x] Production static-token authorization is rejected.
 - [x] Remote HTTP exposure keeps exact Origin allowlist protection.
 - [x] OAuth metadata is separated from static token behavior.
 - [x] Protected resource URI canonicalization is required when configured.
-- [x] Scope metadata and required-scope validation ambiguity is called out.
+- [x] Scope metadata and challenge semantics use MCP-standard `scopes_supported` and `scope`; no custom `requiredScopes` field is added.
 - [x] RFC 6750 challenge behavior is required.
 - [x] RFC 7662 introspection security is required.
 - [x] RFC 8707 resource/audience context is required.
 - [x] RFC 9728 metadata fields and endpoint placement are required.
 - [x] Reverse-proxy public resource URI risk is called out.
 - [x] Migration behavior is included as a requirement.
-- [x] Missing Origin behavior is classified as product hardening or compatibility policy rather than a direct MCP requirement.
-- [x] Active introspection responses without `exp` are called out for explicit accept/reject/cache policy.
-- [x] Scope challenge policy is separated from supported-scope metadata.
+- [x] Missing remote Origin is allowed only after OAuth Bearer authorization succeeds.
+- [x] Active introspection responses without `exp` are accepted for the current request but not cached.
+- [x] Scope challenge policy uses configured `scopesSupported` as the first-version server-configured basic functionality scope set.
 - [x] Protected resource metadata URL placement is treated as a discovery contract.
 - [x] POST, GET, and DELETE security coverage is mapped to future implementation decisions.
 
@@ -61,16 +61,15 @@
 - [x] mcp-builder review is a future verification task for implementation.
 - [x] Commands and evidence are required before completion.
 
-## Open Decisions Before Code
+## Confirmed Decisions Before Code
 
-- [ ] Confirm default deletion of `transport.http.accessToken`; retain a renamed non-OAuth `static-token` mode only after new explicit user approval.
-- [ ] Replace `allowRemoteAccess` with `exposure.mode` or keep it as confirmation.
-- [ ] Choose legacy YAML migration behavior.
-- [ ] Split `scopesSupported` from required scopes or document one-field trade-off.
-- [ ] Define when `protectedResource.uri` is mandatory.
-- [ ] Choose missing-Origin policy for non-loopback HTTP.
-- [ ] Choose active-without-expiration introspection policy.
-- [ ] Choose request-required scope challenge policy.
-- [ ] Choose exact metadata URL registration and `resource_metadata` challenge resolution.
-- [ ] Choose POST, GET, and DELETE method security coverage.
-- [ ] Define `authorizationServers` issuer identifiers and accepted token issuer invariants.
+- [x] Delete `transport.http.accessToken`; do not retain production `static-token` mode.
+- [x] Replace `allowRemoteAccess` with `exposure.mode`.
+- [x] Use targeted validation errors and migration docs for removed or renamed flat YAML fields.
+- [x] Do not add custom `requiredScopes`; use configured `scopesSupported` with MCP-standard metadata and challenge semantics.
+- [x] Require `protectedResource.uri` for production OAuth deployments.
+- [x] Allow missing Origin on non-loopback HTTP only after OAuth Bearer authorization succeeds.
+- [x] Accept active introspection responses without `exp` for the current request, but do not cache successful validation without expiration.
+- [x] Serve endpoint-scoped protected resource metadata, keep root well-known support, and ensure `resource_metadata` challenge resolution.
+- [x] Apply identical Origin and authorization gates to POST, GET, and DELETE on the MCP endpoint.
+- [x] Define `authorizationServers` as issuer identifiers that must remain consistent with accepted token issuers.

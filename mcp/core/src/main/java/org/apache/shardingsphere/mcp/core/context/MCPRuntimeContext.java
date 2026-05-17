@@ -42,18 +42,9 @@ public final class MCPRuntimeContext {
     private final String activeTransport;
     
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final String activeTransport) {
-        this(sessionManager, databaseCapabilityProvider, new InMemoryWorkflowSessionContext(), activeTransport);
-    }
-    
-    public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final WorkflowSessionContext workflowSessionContext) {
-        this(sessionManager, databaseCapabilityProvider, workflowSessionContext, UNKNOWN_TRANSPORT);
-    }
-    
-    public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final WorkflowSessionContext workflowSessionContext,
-                             final String activeTransport) {
         this.sessionManager = sessionManager;
         this.databaseCapabilityProvider = databaseCapabilityProvider;
-        this.workflowSessionContext = workflowSessionContext;
+        workflowSessionContext = new InMemoryWorkflowSessionContext();
         this.activeTransport = Objects.toString(activeTransport, UNKNOWN_TRANSPORT);
         sessionManager.addSessionCloseListener(workflowSessionContext::removeBySessionId);
     }

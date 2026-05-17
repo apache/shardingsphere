@@ -22,7 +22,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -49,22 +48,11 @@ public final class HttpBearerAuthorizationHandler {
     private final OAuthTokenValidator oauthTokenValidator;
     
     public HttpBearerAuthorizationHandler(final HttpTransportConfiguration config) {
-        this(config.getAccessToken(), config.getEndpointPath(), config.getScopesSupported(), config.isProtectedResourceMetadataEnabled(),
-                config.getOauthIntrospection().isEnabled() ? new OAuthTokenValidator(config) : null);
-    }
-    
-    public HttpBearerAuthorizationHandler(final String accessToken, final String endpointPath, final Collection<String> scopesSupported,
-                                          final boolean protectedResourceMetadataEnabled) {
-        this(accessToken, endpointPath, scopesSupported, protectedResourceMetadataEnabled, null);
-    }
-    
-    HttpBearerAuthorizationHandler(final String accessToken, final String endpointPath, final Collection<String> scopesSupported,
-                                   final boolean protectedResourceMetadataEnabled, final OAuthTokenValidator oauthTokenValidator) {
-        this.accessToken = Objects.toString(accessToken, "").trim();
-        this.endpointPath = endpointPath;
-        this.scopesSupported = scopesSupported.stream().map(each -> Objects.toString(each, "").trim()).filter(each -> !each.isEmpty()).toList();
-        this.protectedResourceMetadataEnabled = protectedResourceMetadataEnabled;
-        this.oauthTokenValidator = oauthTokenValidator;
+        accessToken = Objects.toString(config.getAccessToken(), "").trim();
+        endpointPath = config.getEndpointPath();
+        scopesSupported = config.getScopesSupported().stream().map(each -> Objects.toString(each, "").trim()).filter(each -> !each.isEmpty()).toList();
+        protectedResourceMetadataEnabled = config.isProtectedResourceMetadataEnabled();
+        oauthTokenValidator = config.getOauthIntrospection().isEnabled() ? new OAuthTokenValidator(config) : null;
     }
     
     /**

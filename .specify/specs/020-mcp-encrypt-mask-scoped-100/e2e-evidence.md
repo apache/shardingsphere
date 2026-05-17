@@ -19,19 +19,21 @@
 
 ## LLM Runtime Evidence
 
-- Score-closing LLM mode: Docker-owned Ollama runtime.
-- Runtime image: `ollama/ollama:0.23.1`.
-- Required model: `qwen3:1.7b`.
+- Score-closing LLM mode: Docker-owned lightweight `llama.cpp` server runtime.
+- Required server runtime: `ghcr.io/ggml-org/llama.cpp:server` or a project-owned image built from that server runtime.
+- Required model: `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
+- Required quantization: `Q4_K_M`.
+- Required model size reference: about `1.28GB`.
 - External endpoints are allowed only with `mcp.llm.runtime-mode=external-debug` or `MCP_LLM_RUNTIME_MODE=external-debug`.
 - External debug endpoints do not count as score-closing evidence.
-- Docker-owned score mode does not reuse an externally configured API key; it talks to the test-owned Ollama container with the local default key.
+- Docker-owned score mode does not reuse an externally configured API key; it talks to the test-owned `llama.cpp` server container.
 - Every LLM conversation writes runtime metadata into `run-context.json` under `runtime`.
-- Score-closing runtime metadata includes `runtimeMode=docker`, `dockerOwned=true`,
-  `imageName=ollama/ollama:0.23.1`, and the current platform `imageDigest`.
-- Generated artifacts under `test/e2e/mcp/target/llm-e2e` are valid score-closing evidence only when they were produced after the Docker-owned runtime metadata writer change.
+- Score-closing runtime metadata must include `runtimeMode=docker`, `dockerOwned=true`, server image reference, model reference, quantization,
+  model file size, digest or immutable reference where available, and whether the model was prepackaged or downloaded during the run.
+- Generated artifacts under `test/e2e/mcp/target/llm-e2e` are valid score-closing evidence only when they were produced after the `llama.cpp` runtime metadata writer change.
 - Any older `run-context.json` without the top-level `runtime` object is stale execution evidence and must be regenerated before it is used to close SC-008.
 
-## Pinned Image Manifest
+## Rejected Ollama Manifest Evidence
 
 Verified command:
 
@@ -44,11 +46,27 @@ Resolved platform digests:
 - linux/amd64: `sha256:133a0539e836688c7cb88e318e31232f344a84cff7aab0cf6ac90476bc99c8ed`
 - linux/arm64: `sha256:fcaa568338a6b0993c82f259a5072f46814d6de276cf3dea5b91e281b7f9d149`
 
-Runtime implementation note:
+Rebaseline note:
 
-- Score evidence still reports the stable tag `ollama/ollama:0.23.1`.
-- The Docker pull reference uses `ollama/ollama:0.23.1@<platform digest>` for the current local architecture,
-  so score runs do not depend on a mutable `latest` tag and avoid unnecessary multi-architecture layer pulls.
+- `ollama/ollama:0.23.1` is no longer accepted as score-closing LLM runtime evidence.
+- Local manifest inspection showed the linux/amd64 compressed image layers total about `4.01GB`, including a CUDA-bearing layer of about `3.86GB`.
+- This image size made the lane fail locally during Docker layer registration and is considered too brittle for GitHub Actions.
+
+## Selected Lightweight Runtime Evidence
+
+Verified command:
+
+```bash
+docker manifest inspect ghcr.io/ggml-org/llama.cpp:server
+docker manifest inspect ghcr.io/ggml-org/llama.cpp@sha256:c950f1c4297c272ea95cf85318bcca42ac6a462fb3161d11047303b1d97f4dab
+```
+
+Observed evidence:
+
+- `ghcr.io/ggml-org/llama.cpp:server` provides linux/amd64 and linux/arm64 manifests.
+- linux/amd64 compressed runtime layers total about `47MB`.
+- `llama.cpp` server supports OpenAI-compatible chat completions, schema-constrained JSON response format, and function calling/tool use.
+- `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` is about `1.28GB` and stays in the same Qwen3 1.7B Q4_K_M capability tier as the current Ollama baseline.
 
 ## Reproduction Commands
 
@@ -91,17 +109,18 @@ Observed evidence:
 
 Follow-up to close this lane:
 
-- Reclaim Docker disk space locally.
-- Rerun the LLM command above after this digest-pinned implementation change.
-- Confirm generated `run-context.json` files include `runtimeMode=docker`, `dockerOwned=true`,
-  `imageName=ollama/ollama:0.23.1`, and the platform `imageDigest`.
+- Replace the score-closing runtime with Docker-owned `llama.cpp` server plus `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
+- Prefer a prepackaged server-plus-model Docker image for GitHub Actions.
+- Rerun the LLM command above after the runtime rebaseline.
+- Confirm generated `run-context.json` files include Docker-owned `llama.cpp` runtime metadata and the selected Qwen3 Q4_K_M model reference.
 
 ## GitHub Actions Evidence
 
 - `.github/workflows/mcp-llm-e2e.yml` uses the Maven `llm-e2e` profile.
 - `.github/workflows/mcp-llm-usability-e2e.yml` uses the Maven `llm-e2e` profile.
-- The workflows do not pre-start an external Ollama container.
+- The workflows must not pre-start an external model container.
 - The workflows do not pass `MCP_LLM_BASE_URL`, `MCP_LLM_API_KEY`, or an external model endpoint as score evidence.
+- The workflows must use the Docker-owned `llama.cpp` runtime path after T091 through T099 are implemented.
 
 ## Unit Evidence
 
@@ -194,7 +213,7 @@ Opt-in lanes:
 - Proxy/MySQL product-path lane: starts Testcontainers MySQL and embedded ShardingSphere-Proxy before HTTP MCP workflow calls.
 - STDIO lane: starts the packaged or classpath runtime over stdio and reserves stdout for MCP protocol frames.
 - Distribution lane: builds or resolves the packaged MCP distribution and verifies packaged HTTP/STDIO startup behavior.
-- LLM lane: starts Docker-owned `ollama/ollama:0.23.1` and pulls or uses `qwen3:1.7b`.
+- LLM lane: starts Docker-owned `llama.cpp` server and serves `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
 
 ## Local Prerequisites for Opt-In Lanes
 
@@ -202,6 +221,7 @@ Opt-in lanes:
 - Testcontainers must be able to pull images and allocate loopback ports.
 - The Proxy/MySQL lane must wait for MySQL readiness before JDBC or Proxy workflow calls.
 - The LLM lane must not use `MCP_LLM_BASE_URL`, `MCP_LLM_API_KEY`, or external endpoint settings as score evidence.
+- The LLM lane should use a prepackaged server-plus-model image when closing score evidence in GitHub Actions.
 - The distribution lane expects the MCP package under `distribution/mcp/target` or builds it through Maven with `-am`.
 - The STDIO lane expects the runtime config to enable stdio only, with HTTP disabled for that process.
 

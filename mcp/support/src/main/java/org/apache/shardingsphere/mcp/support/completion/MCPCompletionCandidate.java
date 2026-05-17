@@ -42,10 +42,6 @@ public final class MCPCompletionCandidate {
         this(value, label, source, null, "");
     }
     
-    public MCPCompletionCandidate(final String value, final String label, final String source, final Instant updateTime) {
-        this(value, label, source, updateTime, "");
-    }
-    
     public MCPCompletionCandidate(final String value, final String label, final String source, final Instant updateTime, final String rankingReason) {
         this.value = value;
         this.label = label;

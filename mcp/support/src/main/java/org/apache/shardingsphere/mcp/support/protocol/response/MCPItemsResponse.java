@@ -51,15 +51,11 @@ public final class MCPItemsResponse implements MCPResponse {
     }
     
     public MCPItemsResponse(final List<?> items, final String nextPageToken) {
-        this(items, nextPageToken, Collections.emptyMap());
+        this(items, nextPageToken, Collections.emptyMap(), MCPResponseMode.LIST);
     }
     
     public MCPItemsResponse(final List<?> items, final Map<String, Object> navigation) {
-        this(items, "", navigation);
-    }
-    
-    public MCPItemsResponse(final List<?> items, final String nextPageToken, final Map<String, Object> navigation) {
-        this(items, nextPageToken, navigation, MCPResponseMode.LIST);
+        this(items, "", navigation, MCPResponseMode.LIST);
     }
     
     public MCPItemsResponse(final List<?> items, final String nextPageToken, final Map<String, Object> navigation, final String responseMode) {

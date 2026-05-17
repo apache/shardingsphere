@@ -22,7 +22,9 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.lang.reflect.Field;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -70,7 +72,7 @@ class InMemoryWorkflowSessionContextTest {
     @Test
     void assertFindKeepsSnapshotForActiveSessionLifetime() {
         MutableClock clock = new MutableClock(Instant.parse("2026-04-25T00:00:00Z"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext(clock);
+        WorkflowSessionContext workflowSessionContext = createWorkflowSessionContext(clock);
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         workflowSessionContext.save(snapshot);
@@ -155,7 +157,7 @@ class InMemoryWorkflowSessionContextTest {
     @Test
     void assertListReturnsOnlyCurrentSessionSnapshots() {
         MutableClock clock = new MutableClock(Instant.parse("2026-04-25T00:00:00Z"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext(clock);
+        WorkflowSessionContext workflowSessionContext = createWorkflowSessionContext(clock);
         WorkflowContextSnapshot firstSnapshot = createSnapshot("plan-1", "session-1");
         workflowSessionContext.save(firstSnapshot);
         WorkflowContextSnapshot secondSnapshot = createSnapshot("plan-2", "session-2");
@@ -189,6 +191,17 @@ class InMemoryWorkflowSessionContextTest {
         WorkflowContextSnapshot result = createSnapshot(planId);
         result.setSessionId(sessionId);
         return result;
+    }
+    
+    private WorkflowSessionContext createWorkflowSessionContext(final Clock clock) {
+        InMemoryWorkflowSessionContext result = new InMemoryWorkflowSessionContext();
+        try {
+            Field field = InMemoryWorkflowSessionContext.class.getDeclaredField("clock");
+            Plugins.getMemberAccessor().set(field, result, clock);
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
     }
     
     private static final class MutableClock extends Clock {

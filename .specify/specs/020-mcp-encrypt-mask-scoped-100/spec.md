@@ -19,7 +19,7 @@
 
 **Feature Branch**: `001-shardingsphere-mcp`
 **Created**: 2026-05-16
-**Status**: Completed
+**Status**: Reopened for LLM runtime rebaseline
 **Input**: User description: "Use Speckit to restate the scoped requirements and split concrete tasks to raise every score dimension to 100, without switching branches."
 
 ## Scope Calibration
@@ -129,8 +129,10 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - Existing code may still contain compatibility support for other protocol revisions; this package only requires tests and documentation for `2025-11-25`.
 - LLM score evidence must not depend on external model credentials or an operator-managed model endpoint.
 - External LLM endpoints are allowed only as an explicit debug mode and cannot close scorecard evidence.
-- Docker/Testcontainers can provide the local opt-in runtime for MySQL, Proxy workflow, Docker image STDIO, and Ollama-backed LLM lanes.
-- LLM opt-in must start a Docker-owned Ollama runtime and may pull `ollama/ollama:0.23.1` and `qwen3:1.7b` online when local caches are empty.
+- Docker/Testcontainers can provide the local opt-in runtime for MySQL, Proxy workflow, Docker image STDIO, and the lightweight LLM lane.
+- LLM opt-in must start a Docker-owned lightweight runtime based on `llama.cpp` server and `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
+- `ollama/ollama` full images are not acceptable score-closing LLM runtime evidence because their large CUDA-bearing layers make local and GitHub Actions execution brittle.
+- Runtime-time model download from public registries is acceptable only as an implementation fallback; score-closing CI should prefer a prepackaged Docker image that already contains the server binary and pinned GGUF model.
 - Performance optimizations must not reduce readability or introduce broad abstractions.
 
 ## Requirements
@@ -156,10 +158,14 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - **FR-017**: Opt-in verification lanes MUST be documented separately from default required lanes and must not block default-lane closure when external infrastructure is unavailable.
 - **FR-018**: Opt-in lanes SHOULD run locally through Docker/Testcontainers when Docker, network, and machine resources are available.
 - **FR-019**: Cross-model second opinion MUST use Codex CLI when invoked, after confirming the exact read-only command.
-- **FR-020**: LLM score evidence MUST use a Docker-owned Ollama runtime started by the E2E support layer.
+- **FR-020**: LLM score evidence MUST use a Docker-owned lightweight `llama.cpp` server runtime started by the E2E support layer.
 - **FR-021**: LLM score evidence MUST NOT require `MCP_LLM_BASE_URL`, `MCP_LLM_API_KEY`, or a pre-running external model service.
 - **FR-022**: External LLM endpoints MAY remain available only through an explicit debug mode and MUST NOT count as score-closing evidence.
-- **FR-023**: LLM score evidence MUST use `ollama/ollama:0.23.1`, not `latest`, and SHOULD record the resolved image digest.
+- **FR-023**: LLM score evidence MUST use `ghcr.io/ggml-org/llama.cpp:server` or a project-owned image built from that server runtime, and MUST NOT use `ollama/ollama` as the score-closing runtime.
+- **FR-024**: LLM score evidence MUST use `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` as the model baseline because it matches the current Ollama `qwen3:1.7b` Q4_K_M capability tier while removing the heavy Ollama runtime cost.
+- **FR-025**: The score-closing LLM image or runtime metadata MUST record the server image reference, model reference, model quantization, model file size, digest or immutable reference where available, and whether the model was prepackaged or downloaded during the run.
+- **FR-026**: The GitHub Actions LLM lane MUST be runnable from Docker without host-level LLM installs, local model files, external credentials, or a manually pre-running model server.
+- **FR-027**: A prepackaged Docker image containing `llama-server` plus `Qwen3-1.7B-Q4_K_M.gguf` SHOULD be the preferred score-closing CI path; an online `-hf` pull path MAY remain only as a documented fallback when the prepackaged image is unavailable.
 
 ### Key Entities
 
@@ -167,7 +173,8 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - **Closing Evidence**: A command result, source map, test artifact, E2E artifact, Jacoco report, style gate, or explicit non-goal decision.
 - **Workflow Capability**: An encrypt or mask capability spanning resources, prompts, completions, tools, approval, validation, and recovery.
 - **Evidence Lane**: A verification route such as unit tests, default H2/HTTP E2E, Proxy/MySQL opt-in E2E, STDIO, distribution smoke, LLM evaluation, or performance budget.
-- **Docker-Owned LLM Runtime**: An Ollama container started and owned by the E2E support layer for the duration of the LLM lane.
+- **Docker-Owned LLM Runtime**: A lightweight `llama.cpp` server container started and owned by the E2E support layer for the duration of the LLM lane.
+- **Score-Closing LLM Model**: `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`, selected to preserve the current Qwen3 1.7B Q4_K_M capability tier while reducing runtime size.
 
 ## Success Criteria
 
@@ -180,7 +187,7 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - **SC-005**: The mcp-builder evaluation artifact contains ten read-only, independent, complex, realistic, verifiable, and stable questions.
 - **SC-006**: README and Speckit documents state the narrowed protocol and feature scope without presenting non-goals as future blockers.
 - **SC-007**: `git branch --show-current` reports `001-shardingsphere-mcp` at final verification.
-- **SC-008**: LLM smoke and usability score evidence records Docker-owned Ollama runtime usage rather than external endpoint reuse.
+- **SC-008**: LLM smoke and usability score evidence records Docker-owned `llama.cpp` server runtime usage, the `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` model reference, and no external endpoint reuse.
 
 ## Assumptions
 
@@ -191,3 +198,4 @@ As a release reviewer, I need repeatable E2E, distribution, and performance evid
 - The user approved the recommended execution order on 2026-05-16.
 - The user authorized a fresh-context doubt-driven review before the next implementation round.
 - The user selected Codex CLI for cross-model second opinion.
+- The user selected the best cost-performance no-regression LLM target as `llama.cpp:server + ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.

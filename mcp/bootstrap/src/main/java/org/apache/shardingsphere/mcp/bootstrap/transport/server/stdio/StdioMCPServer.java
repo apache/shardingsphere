@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import io.modelcontextprotocol.server.McpSyncServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFactory;
@@ -28,7 +26,6 @@ import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 /**
  * SDK-backed STDIO MCP server.
  */
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class StdioMCPServer implements MCPRuntimeServer {
     
     private final MCPSyncServerFactory syncServerFactory;
@@ -38,8 +35,8 @@ public final class StdioMCPServer implements MCPRuntimeServer {
     private McpSyncServer syncServer;
     
     public StdioMCPServer(final MCPRuntimeContext runtimeContext) {
-        this(new MCPSyncServerFactory(runtimeContext, MCPTransportJsonMapperFactory.create()),
-                new SessionManagedStdioTransportProvider(runtimeContext.getSessionManager(), MCPTransportJsonMapperFactory.create()));
+        syncServerFactory = new MCPSyncServerFactory(runtimeContext, MCPTransportJsonMapperFactory.create());
+        transportProvider = new SessionManagedStdioTransportProvider(runtimeContext.getSessionManager(), MCPTransportJsonMapperFactory.create());
     }
     
     @Override

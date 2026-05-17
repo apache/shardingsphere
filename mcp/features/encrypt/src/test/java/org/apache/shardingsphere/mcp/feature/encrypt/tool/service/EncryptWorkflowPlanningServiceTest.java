@@ -34,13 +34,14 @@ import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -356,9 +357,24 @@ class EncryptWorkflowPlanningServiceTest {
                                                          final PhysicalDDLPlanningService physicalDDLPlanningService,
                                                          final IndexPlanningService indexPlanningService,
                                                          final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService) {
-        return new EncryptWorkflowPlanningService(new WorkflowPlanningSupport(), new EncryptWorkflowIntentResolver(), ruleInspectionService,
-                algorithmRecommendationService, algorithmPropertyTemplateService, derivedColumnNamingService, physicalDDLPlanningService,
-                indexPlanningService, ruleDistSQLPlanningService);
+        EncryptWorkflowPlanningService result = new EncryptWorkflowPlanningService();
+        try {
+            setField(result, "ruleInspectionService", ruleInspectionService);
+            setField(result, "algorithmRecommendationService", algorithmRecommendationService);
+            setField(result, "algorithmPropertyTemplateService", algorithmPropertyTemplateService);
+            setField(result, "derivedColumnNamingService", derivedColumnNamingService);
+            setField(result, "physicalDDLPlanningService", physicalDDLPlanningService);
+            setField(result, "indexPlanningService", indexPlanningService);
+            setField(result, "ruleDistSQLPlanningService", ruleDistSQLPlanningService);
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
+    }
+    
+    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        Plugins.getMemberAccessor().set(field, target, value);
     }
     
     private static Stream<Arguments> assertPlanWithNaturalLanguageInferenceArguments() {

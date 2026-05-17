@@ -26,8 +26,10 @@ import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration
 import org.apache.shardingsphere.mcp.bootstrap.config.OAuthIntrospectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFactory;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.MockedConstruction;
@@ -61,7 +63,7 @@ class StreamableHttpMCPServerTest {
         McpSyncServer syncServer = mock(McpSyncServer.class);
         StreamableHttpMCPServlet transportServlet = createTransportServlet();
         when(syncServerFactory.create(transportServlet)).thenReturn(syncServer);
-        StreamableHttpMCPServer actual = new StreamableHttpMCPServer(createConfig(0), syncServerFactory, transportServlet);
+        StreamableHttpMCPServer actual = createServer(createConfig(0), syncServerFactory, transportServlet);
         actual.start();
         assertThat(actual.getLocalPort(), greaterThan(0));
         actual.stop();
@@ -76,7 +78,7 @@ class StreamableHttpMCPServerTest {
         McpSyncServer syncServer = mock(McpSyncServer.class);
         StreamableHttpMCPServlet transportServlet = createTransportServlet();
         when(syncServerFactory.create(transportServlet)).thenReturn(syncServer);
-        StreamableHttpMCPServer actual = new StreamableHttpMCPServer(createConfig(0), syncServerFactory, transportServlet);
+        StreamableHttpMCPServer actual = createServer(createConfig(0), syncServerFactory, transportServlet);
         actual.start();
         actual.start();
         actual.stop();
@@ -89,11 +91,11 @@ class StreamableHttpMCPServerTest {
         McpSyncServer syncServer = mock(McpSyncServer.class);
         StreamableHttpMCPServlet transportServlet = createTransportServlet();
         when(syncServerFactory.create(transportServlet)).thenReturn(syncServer);
-        try (MockedConstruction<Tomcat> mockedTomcat = mockConstruction(Tomcat.class, (mock, context) -> {
+        try (MockedConstruction<Tomcat> ignoredMockedTomcat = mockConstruction(Tomcat.class, (mock, context) -> {
             when(mock.addContext(anyString(), anyString())).thenReturn(new StandardContext());
             doThrow(new LifecycleException("mocked lifecycle failure")).when(mock).start();
         })) {
-            StreamableHttpMCPServer actual = new StreamableHttpMCPServer(createConfig(0), syncServerFactory, transportServlet);
+            StreamableHttpMCPServer actual = createServer(createConfig(0), syncServerFactory, transportServlet);
             IOException ex = assertThrows(IOException.class, actual::start);
             assertThat(ex.getMessage(), is("Failed to start embedded Tomcat runtime."));
         }
@@ -106,7 +108,19 @@ class StreamableHttpMCPServerTest {
     }
     
     private StreamableHttpMCPServer createServer(final int port) {
-        return new StreamableHttpMCPServer(createConfig(port), mock(MCPSyncServerFactory.class), createTransportServlet());
+        return createServer(createConfig(port), mock(MCPSyncServerFactory.class), createTransportServlet());
+    }
+    
+    private StreamableHttpMCPServer createServer(final HttpTransportConfiguration config, final MCPSyncServerFactory syncServerFactory,
+                                                 final StreamableHttpMCPServlet transportServlet) {
+        StreamableHttpMCPServer result = new StreamableHttpMCPServer(config, createRuntimeContext());
+        try {
+            setField(result, "syncServerFactory", syncServerFactory);
+            setField(result, "transportServlet", transportServlet);
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
     }
     
     private HttpTransportConfiguration createConfig(final int port) {
@@ -117,13 +131,17 @@ class StreamableHttpMCPServerTest {
     private StreamableHttpMCPServlet createTransportServlet() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         try {
-            StreamableHttpMCPServlet result = new StreamableHttpMCPServlet(sessionManager, MCPTransportJsonMapperFactory.create(), "127.0.0.1", "", "/mcp");
+            StreamableHttpMCPServlet result = new StreamableHttpMCPServlet(sessionManager, MCPTransportJsonMapperFactory.create(), createConfig(0));
             setField(result, "delegate", mock(HttpServletStreamableServerTransportProvider.class));
             setField(result, "sessionExecutionCoordinator", new MCPSessionExecutionCoordinator(sessionManager));
             return result;
         } catch (final ReflectiveOperationException ex) {
             throw new AssertionError(ex);
         }
+    }
+    
+    private MCPRuntimeContext createRuntimeContext() {
+        return new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), new MCPDatabaseCapabilityProvider(Collections.emptyMap()), "http");
     }
     
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {

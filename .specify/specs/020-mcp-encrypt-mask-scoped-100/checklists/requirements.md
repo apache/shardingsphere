@@ -34,10 +34,13 @@
 - [x] Requirements are testable without branch switching.
 - [x] Requirements distinguish default evidence from opt-in infrastructure evidence.
 - [x] Requirements avoid hidden dependency upgrades or package-management changes.
+- [x] LLM score evidence now rejects heavyweight Ollama runtime closure and requires Docker-owned `llama.cpp` server plus Qwen3 Q4_K_M.
+- [x] LLM score evidence requires a GitHub Actions-suitable Docker-full-package path without host LLM installs, local model files, external credentials, or a manually pre-running model server.
 
 ## Implementation Readiness
 
 - [x] Tasks name exact source paths or commands.
 - [x] Tasks are grouped by dependency order and score dimension.
-- [x] Final closure requires tests, style checks, evidence recording, and branch verification.
+- [x] Final closure requires tests, style checks, evidence recording, branch verification, and LLM runtime rebaseline evidence.
 - [x] Historical Speckit evidence is not treated as automatic closure.
+- [x] Previously completed Ollama LLM tasks are documented as historical evidence and do not close the reopened LLM score path.

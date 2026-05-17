@@ -26,8 +26,10 @@
 - MCP completions: `https://modelcontextprotocol.io/specification/2025-11-25/server/utilities/completion`
 - MCP transports: `https://modelcontextprotocol.io/specification/2025-11-25/basic/transports`
 - MCP Registry server metadata schema: `https://modelcontextprotocol.io/registry/versioning`
-- Ollama releases: `https://github.com/ollama/ollama/releases`
-- Ollama Docker tags: `https://hub.docker.com/r/ollama/ollama/tags`
+- Ollama qwen3 baseline: `https://ollama.com/library/qwen3:1.7b`
+- llama.cpp server documentation: `https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md`
+- llama.cpp Docker documentation: `https://github.com/ggml-org/llama.cpp/blob/master/docs/docker.md`
+- ggml-org Qwen3 GGUF model card: `https://huggingface.co/ggml-org/Qwen3-1.7B-GGUF`
 
 ## Local Version Sources
 
@@ -59,16 +61,19 @@
 ## LLM Docker Runtime Sources
 
 - LLM E2E configuration: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/config/LLME2EConfiguration.java`
-- Dockerized Ollama support: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/OllamaLLMRuntimeSupport.java`
+- Dockerized LLM runtime support: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/fixture/`
 - LLM smoke E2E entry: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/smoke/LLMSmokeE2ETest.java`
 - LLM usability E2E entry: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/LLMUsabilitySuiteE2ETest.java`
+- LLM runtime rebaseline design: `.specify/specs/020-mcp-encrypt-mask-scoped-100/llm-runtime-rebaseline-design.md`
 
-## Pinned LLM Runtime
+## Reopened LLM Runtime Target
 
-- Ollama image tag for score evidence: `ollama/ollama:0.23.1`.
-- Docker manifest inspected locally for `ollama/ollama:0.23.1`.
-- Resolved linux/amd64 digest during planning: `sha256:133a0539e836688c7cb88e318e31232f344a84cff7aab0cf6ac90476bc99c8ed`.
-- Resolved linux/arm64 digest during planning: `sha256:fcaa568338a6b0993c82f259a5072f46814d6de276cf3dea5b91e281b7f9d149`.
+- Selected score-closing runtime: Docker-owned `llama.cpp` server.
+- Selected score-closing model: `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
+- Docker manifest inspected locally for `ghcr.io/ggml-org/llama.cpp:server`.
+- Resolved linux/amd64 digest during planning: `sha256:c950f1c4297c272ea95cf85318bcca42ac6a462fb3161d11047303b1d97f4dab`.
+- Resolved linux/arm64 digest during planning: `sha256:bbb33c86d3b4dff468aca416859c889f3b0844c3590f0b9c33125b745e5791e0`.
+- Rejected previous score-closing runtime: `ollama/ollama:0.23.1`, because the linux/amd64 image includes about `4.01GB` compressed runtime layers, including about `3.86GB` of CUDA-bearing content.
 
 ## Non-Goal Evidence
 
@@ -76,6 +81,7 @@
 - Compatibility with protocol revisions other than `2025-11-25` is not part of the coverage target.
 - Non-encrypt/mask ShardingSphere MCP features are not part of functional completeness scoring.
 - External LLM endpoints are debug-only and are not valid score-closing evidence for this package.
+- Ollama full images are no longer valid score-closing evidence for this package.
 
 ## Protocol Closure Evidence
 

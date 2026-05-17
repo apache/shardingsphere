@@ -66,13 +66,13 @@
 
 - `enabled`: launcher and launch configuration validator.
 - `bindHost`: Tomcat connector address, loopback validation, startup log, Origin validation.
-- `allowRemoteAccess`: YAML validator only; remote exposure confirmation.
-- `accessToken`: static bearer authorization and startup authorization status.
+- `allowRemoteAccess`: replaced by explicit exposure mode.
+- `accessToken`: removed static shared-secret authorization field; future references are migration failures only.
 - `port`: Tomcat connector port and startup log.
 - `endpointPath`: MCP endpoint mapping, servlet delegate endpoint, metadata endpoint path, default resource URI.
 - `allowedOrigins`: remote Origin validation.
 - `authorizationServers`: protected resource metadata and default expected issuer list.
-- `scopesSupported`: protected resource metadata, challenge scope, and required scope validation.
+- `scopesSupported`: protected resource metadata `scopes_supported` plus the first-version server-configured basic functionality scope set for token scope validation and `WWW-Authenticate` `scope` guidance.
 - `protectedResource`: metadata `resource` and OAuth resource/audience validation.
 - `oauthIntrospection`: OAuth token introspection endpoint, client credentials, issuer override, and validation cache TTL.
 

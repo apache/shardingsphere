@@ -21,9 +21,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -42,9 +40,8 @@ class WorkflowPlanHandlerTest {
     
     @Test
     void assertHandle() {
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(createSnapshot());
-        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()), new MCPDatabaseCapabilityProvider(Map.of()), workflowSessionContext);
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()), new MCPDatabaseCapabilityProvider(Map.of()), "unknown");
+        runtimeContext.getWorkflowSessionContext().save(createSnapshot());
         try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
             Map<String, Object> actual = new WorkflowPlanHandler().handle(requestScope, new MCPUriVariables(Map.of("plan_id", "plan-1"))).toPayload();
             assertThat(actual.get("plan_id"), is("plan-1"));

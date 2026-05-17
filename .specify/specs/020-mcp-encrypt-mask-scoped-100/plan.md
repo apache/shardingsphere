@@ -34,7 +34,7 @@ The plan intentionally excludes MCP icons, SDK upgrades, non-`2025-11-25` compat
 **Protocol Target**: MCP `2025-11-25` only.
 **Testing**: Focused Maven unit tests, default MCP E2E, opt-in Proxy/MySQL/STDIO/distribution/LLM lanes, Checkstyle, Spotless, Jacoco where coverage is asserted.
 **Target Runtime**: ShardingSphere MCP over Streamable HTTP and STDIO, focused on encrypt/mask workflows through ShardingSphere-Proxy.
-**Constraints**: No branch switching, no SDK upgrade, no package-management changes, no generated `target/` edits, no broad abstractions for their own sake.
+**Constraints**: No branch switching, no SDK upgrade, no package-management changes except a reviewed Docker-only LLM test image path, no generated `target/` edits, no broad abstractions for their own sake.
 
 ## Constitution Check
 
@@ -119,6 +119,9 @@ Required before final score closure:
 - Run a fresh-context doubt-driven review before the next implementation round.
 - Use `codex exec --ephemeral --sandbox read-only -C /Users/zhangliang/IdeaProjects/shardingsphere - < /tmp/mcp-doubt-review.md`
   for the cross-model second opinion when the prompt file is current.
+- Rebaseline score-closing LLM runtime from Docker-owned Ollama to Docker-owned lightweight `llama.cpp` server with `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
+- Treat `ollama/ollama` as rejected for score closure because its CUDA-bearing image layers made both local and GitHub Actions execution capacity brittle.
+- Prefer a prepackaged Docker image that contains `llama-server` and the pinned Q4_K_M GGUF model; keep online `-hf` model retrieval only as a fallback or local diagnostic path.
 
 ## Lane Definitions
 
@@ -126,7 +129,7 @@ Required before final score closure:
   and default H2/HTTP MCP E2E that does not require external services or credentials.
 - **Opt-in lane**: MySQL E2E, Proxy encrypt/mask workflow E2E, Docker image STDIO, packaged distribution smoke, and LLM evaluation.
   These lanes are local when Docker/Testcontainers can start required containers and pull required images/models.
-- **LLM opt-in note**: score-closing LLM evidence must use Docker-owned `ollama/ollama:0.23.1` with `qwen3:1.7b`.
+- **LLM opt-in note**: score-closing LLM evidence must use Docker-owned `llama.cpp` server with `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.
   The support layer must not silently reuse an external OpenAI-compatible endpoint for score evidence.
   External endpoints may remain available only as an explicit debug mode outside score closure.
-  Evidence should record the resolved image digest for reproducibility.
+  Evidence should record the server image reference, model reference, quantization, model size, digest or immutable reference where available, and whether the model was prepackaged or downloaded during the run.
