@@ -87,7 +87,7 @@ class ToolHandlerRegistryTest {
     void assertFindRegisteredTool() {
         Optional<MCPToolHandler<?>> actual = ToolHandlerRegistry.findRegisteredTool("database_gateway_search_metadata");
         assertTrue(actual.isPresent());
-        assertThat(actual.orElseThrow().getToolDescriptor().getName(), is("database_gateway_search_metadata"));
+        assertThat(actual.orElseThrow().getToolName(), is("database_gateway_search_metadata"));
     }
     
     @Test

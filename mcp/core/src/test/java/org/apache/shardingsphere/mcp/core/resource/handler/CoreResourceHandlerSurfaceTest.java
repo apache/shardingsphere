@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedExcept
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMe
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.support.database.response.MCPDatabaseCapabilityResponse;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.junit.jupiter.api.Test;
@@ -66,8 +68,9 @@ class CoreResourceHandlerSurfaceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertGetResourceDescriptor(final HandlerCase handlerCase) {
-        assertThat(handlerCase.getHandler().getResourceDescriptor().getUriTemplate(), is(handlerCase.getExpectedUriOrTemplate()));
-        assertFalse(handlerCase.getHandler().getResourceDescriptor().getDescription().isBlank());
+        MCPResourceDescriptor actual = MCPHandlerDescriptorUtils.getRequiredResourceDescriptor(handlerCase.getHandler());
+        assertThat(actual.getUriTemplate(), is(handlerCase.getExpectedUriOrTemplate()));
+        assertFalse(actual.getDescription().isBlank());
     }
     
     @ParameterizedTest(name = "{0}")

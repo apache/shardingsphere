@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.api.tool;
 
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 
 /**
  * MCP tool handler.
@@ -36,11 +35,11 @@ public interface MCPToolHandler<T extends MCPHandlerContext> {
     Class<T> getContextType();
     
     /**
-     * Get tool descriptor.
+     * Get tool name.
      *
-     * @return tool descriptor
+     * @return tool name
      */
-    MCPToolDescriptor getToolDescriptor();
+    String getToolName();
     
     /**
      * Handle one tool call.

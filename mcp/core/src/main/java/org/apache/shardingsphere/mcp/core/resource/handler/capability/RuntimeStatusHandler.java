@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
@@ -50,8 +49,8 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     }
     
     @Override
-    public MCPResourceDescriptor getResourceDescriptor() {
-        return MCPDescriptorRegistry.getRequiredResourceDescriptor(URI_PATTERN);
+    public String getResourceUriTemplate() {
+        return URI_PATTERN;
     }
     
     @Override
@@ -69,7 +68,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("readiness", createReadiness(hasConfiguredDatabase));
         result.put("redaction_summary", Map.of("categories", List.of(), "redacted_count", 0, "marker", "******"));
         result.put("diagnostics", createDiagnostics(hasConfiguredDatabase));
-        result.put("capability_fingerprint", MCPDescriptorRegistry.getDescriptorCatalogFingerprint());
+        result.put("capability_fingerprint", MCPDescriptorCatalogIndex.getDescriptorCatalogFingerprint());
         result.put("resources_to_read", createResourcesToRead(hasConfiguredDatabase));
         result.put("next_actions", createNextActions(hasConfiguredDatabase));
         return new MCPMapResponse(result);

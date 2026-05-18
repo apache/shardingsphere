@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestExc
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
@@ -46,11 +44,11 @@ import java.util.Set;
  */
 public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
     
+    private static final String TOOL_NAME = "database_gateway_search_metadata";
+    
     private static final Set<SupportedMCPMetadataObjectType> SUPPORTED_OBJECT_TYPES = Set.of(
             SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
             SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX, SupportedMCPMetadataObjectType.SEQUENCE);
-    
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPDescriptorRegistry.getRequiredToolDescriptor("database_gateway_search_metadata");
     
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
@@ -58,8 +56,8 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     }
     
     @Override
-    public MCPToolDescriptor getToolDescriptor() {
-        return TOOL_DESCRIPTOR;
+    public String getToolName() {
+        return TOOL_NAME;
     }
     
     @Override
@@ -79,7 +77,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         try {
             return toolArguments.getIntegerArgument("page_size", SearchMetadataToolService.DEFAULT_PAGE_SIZE, 1, SearchMetadataToolService.MAX_PAGE_SIZE);
         } catch (final MCPInvalidRequestException ex) {
-            throw new MCPInvalidToolArgumentException("database_gateway_search_metadata", "database_gateway_search_metadata", "page_size", 1, SearchMetadataToolService.MAX_PAGE_SIZE,
+            throw new MCPInvalidToolArgumentException(TOOL_NAME, TOOL_NAME, "page_size", 1, SearchMetadataToolService.MAX_PAGE_SIZE,
                     SearchMetadataToolService.DEFAULT_PAGE_SIZE, ex);
         }
     }
@@ -107,7 +105,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     private List<Map<String, Object>> createResultNextActions(final MetadataSearchRequest request, final MetadataSearchResult searchResult, final List<String> duplicatedNames) {
         List<Map<String, Object>> result = new LinkedList<>();
         if (!searchResult.getNextPageToken().isEmpty()) {
-            result.add(MCPNextActionUtils.callTool("database_gateway_search_metadata", "Continue this metadata search with next_page_token.",
+            result.add(MCPNextActionUtils.callTool(TOOL_NAME, "Continue this metadata search with next_page_token.",
                     createNextPageArguments(request, searchResult.getNextPageToken()), false));
         }
         if (isBroadSearchGuarded(searchResult)) {
@@ -236,7 +234,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     
     private Map<String, Object> createEmptySearchNextAction(final MetadataSearchRequest request) {
         if (!request.getQuery().isEmpty() || !request.getSchema().isEmpty()) {
-            return MCPNextActionUtils.callTool("database_gateway_search_metadata", "Retry database_gateway_search_metadata with a broader scope.", createBroadenedSearchArguments(request), false);
+            return MCPNextActionUtils.callTool(TOOL_NAME, "Retry database_gateway_search_metadata with a broader scope.", createBroadenedSearchArguments(request), false);
         }
         return MCPNextActionUtils.readResource("shardingsphere://databases", "Read configured databases before choosing a narrower metadata search.");
     }

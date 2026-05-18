@@ -30,6 +30,8 @@ import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescript
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
 import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,21 +51,33 @@ public final class ResourceHandlerRegistry {
     
     private static final Map<MCPUriPattern, MCPResourceHandler<?>> REGISTERED_RESOURCES;
     
+    private static final Map<MCPUriPattern, MCPResourceDescriptor> REGISTERED_RESOURCE_DESCRIPTORS;
+    
     static {
         REGISTERED_RESOURCES = createRegisteredResources(
                 ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class).stream().flatMap(each -> each.getResourceHandlers().stream()).collect(Collectors.toList()));
         validateRegisteredResources();
+        REGISTERED_RESOURCE_DESCRIPTORS = createRegisteredResourceDescriptors();
+        validateRegisteredResourceDescriptors();
     }
     
     private static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources(final Collection<MCPResourceHandler<?>> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPResourceHandler<?> each : handlers) {
-            String uriOrTemplate = each.getResourceDescriptor().getUriTemplate();
+            String uriOrTemplate = each.getResourceUriTemplate();
             ShardingSpherePreconditions.checkState(null != uriOrTemplate && !uriOrTemplate.isBlank(),
                     () -> new IllegalArgumentException(String.format("Resource URI or URI template is required for `%s`.", each.getClass().getName())));
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
             result.put(new MCPUriPattern(uriOrTemplate), each);
+        }
+        return result;
+    }
+    
+    private static Map<MCPUriPattern, MCPResourceDescriptor> createRegisteredResourceDescriptors() {
+        Map<MCPUriPattern, MCPResourceDescriptor> result = new LinkedHashMap<>(REGISTERED_RESOURCES.size(), 1F);
+        for (Entry<MCPUriPattern, MCPResourceHandler<?>> entry : REGISTERED_RESOURCES.entrySet()) {
+            result.put(entry.getKey(), MCPHandlerDescriptorUtils.getRequiredResourceDescriptor(entry.getValue()));
         }
         return result;
     }
@@ -87,6 +101,22 @@ public final class ResourceHandlerRegistry {
                                 current.getKey().getPattern(), current.getValue().getClass().getName(), other.getValue().getClass().getName())));
             }
         }
+    }
+    
+    private static void validateRegisteredResourceDescriptors() {
+        for (MCPResourceDescriptor each : MCPDescriptorCatalogIndex.getResourceDescriptors()) {
+            ShardingSpherePreconditions.checkState(isRegisteredResourceDescriptor(each),
+                    () -> new IllegalStateException(String.format("MCP resource descriptor `%s` has no registered handler.", each.getUriTemplate())));
+        }
+    }
+    
+    private static boolean isRegisteredResourceDescriptor(final MCPResourceDescriptor descriptor) {
+        for (MCPUriPattern each : REGISTERED_RESOURCES.keySet()) {
+            if (descriptor.getUriTemplate().equals(each.getPattern())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
@@ -125,6 +155,6 @@ public final class ResourceHandlerRegistry {
      * @return supported resource descriptors
      */
     public static Collection<MCPResourceDescriptor> getSupportedResourceDescriptors() {
-        return REGISTERED_RESOURCES.values().stream().map(MCPResourceHandler::getResourceDescriptor).toList();
+        return REGISTERED_RESOURCE_DESCRIPTORS.values().stream().toList();
     }
 }

@@ -23,7 +23,8 @@ import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -44,13 +45,13 @@ class MaskResourceHandlerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertGetUriOrTemplateArguments")
     void assertGetUriOrTemplate(final String name, final MCPResourceHandler<MCPDatabaseHandlerContext> handler, final String expectedUriOrTemplate) {
-        assertThat(handler.getResourceDescriptor().getUriTemplate(), is(expectedUriOrTemplate));
+        assertThat(MCPHandlerDescriptorUtils.getRequiredResourceDescriptor(handler).getUriTemplate(), is(expectedUriOrTemplate));
     }
     
     @Test
     void assertGetMaskRuleResourceKind() {
-        String actualUriTemplate = new MaskRuleHandler().getResourceDescriptor().getUriTemplate();
-        assertThat(MCPDescriptorRegistry.getRequiredResourceExtensionDescriptor(actualUriTemplate).getResourceKind(), is("list"));
+        String actualUriTemplate = MCPHandlerDescriptorUtils.getRequiredResourceDescriptor(new MaskRuleHandler()).getUriTemplate();
+        assertThat(MCPDescriptorCatalogIndex.getRequiredResourceExtensionDescriptor(actualUriTemplate).getResourceKind(), is("list"));
     }
     
     @ParameterizedTest(name = "{0}")

@@ -19,12 +19,10 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,7 +33,7 @@ import java.util.Map;
  */
 public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPDescriptorRegistry.getRequiredToolDescriptor("database_gateway_execute_query");
+    private static final String TOOL_NAME = "database_gateway_execute_query";
     
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
@@ -43,8 +41,8 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
     }
     
     @Override
-    public MCPToolDescriptor getToolDescriptor() {
-        return TOOL_DESCRIPTOR;
+    public String getToolName() {
+        return TOOL_NAME;
     }
     
     @Override
@@ -52,9 +50,9 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         String sql = toolArguments.getStringArgument("sql");
         checkReadOnlyQuery(toolArguments, sql);
-        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, "database_gateway_execute_query");
+        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
         return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments,
-                resolveSchema(databaseContext, toolArguments), sql, "database_gateway_execute_query"));
+                resolveSchema(databaseContext, toolArguments), sql, TOOL_NAME));
     }
     
     private String resolveSchema(final MCPDatabaseHandlerContext databaseContext, final MCPToolArguments toolArguments) {
@@ -75,7 +73,7 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
         if (!SQLExecutionToolHandlerSupport.isReadOnlyStatement(classificationResult.getStatementClass())) {
             throw new SQLToolMismatchException(
                     "database_gateway_execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL.",
-                    "database_gateway_execute_query", "database_gateway_execute_update", classificationResult,
+                    TOOL_NAME, "database_gateway_execute_update", classificationResult,
                     createSuggestedArguments(toolArguments, classificationResult));
         }
     }

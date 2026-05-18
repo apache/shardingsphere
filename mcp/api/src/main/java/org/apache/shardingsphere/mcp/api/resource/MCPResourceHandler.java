@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.api.resource;
 
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 
 /**
  * MCP resource handler.
@@ -36,11 +35,11 @@ public interface MCPResourceHandler<T extends MCPHandlerContext> {
     Class<T> getContextType();
     
     /**
-     * Get model-facing resource descriptor.
+     * Get resource URI template.
      *
-     * @return resource descriptor
+     * @return resource URI template
      */
-    MCPResourceDescriptor getResourceDescriptor();
+    String getResourceUriTemplate();
     
     /**
      * Handle one resource request.

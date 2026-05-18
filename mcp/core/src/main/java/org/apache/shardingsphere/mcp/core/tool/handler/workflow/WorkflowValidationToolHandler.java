@@ -20,13 +20,12 @@ package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowSessionSnapshotResolver;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
@@ -47,8 +46,8 @@ public final class WorkflowValidationToolHandler implements MCPToolHandler<MCPWo
     }
     
     @Override
-    public MCPToolDescriptor getToolDescriptor() {
-        return WorkflowToolDescriptors.createValidation();
+    public String getToolName() {
+        return WorkflowToolDescriptors.VALIDATE_TOOL_NAME;
     }
     
     @Override

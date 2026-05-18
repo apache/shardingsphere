@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -52,7 +52,7 @@ final class MCPToolClarificationPolicy {
     private static final List<String> SENSITIVE_FIELD_NAME_MARKERS = List.of("password", "token", "secret", "credential", "key");
     
     boolean isPlanningTool(final MCPToolDescriptor toolDescriptor) {
-        return MCPDescriptorRegistry.findToolRuntimeDescriptor(toolDescriptor.getName())
+        return MCPDescriptorCatalogIndex.findToolRuntimeDescriptor(toolDescriptor.getName())
                 .map(runtimeDescriptor -> PLANNING_WORKFLOW_ROLE.equals(runtimeDescriptor.getWorkflowRole())).orElse(false);
     }
     

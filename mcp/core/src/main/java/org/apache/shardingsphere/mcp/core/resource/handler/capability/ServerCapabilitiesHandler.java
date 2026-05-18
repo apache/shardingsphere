@@ -19,14 +19,13 @@ package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 
 import java.util.Set;
 
@@ -43,13 +42,13 @@ public final class ServerCapabilitiesHandler implements MCPResourceHandler<MCPSe
     }
     
     @Override
-    public MCPResourceDescriptor getResourceDescriptor() {
-        return MCPDescriptorRegistry.getRequiredResourceDescriptor(URI_PATTERN);
+    public String getResourceUriTemplate() {
+        return URI_PATTERN;
     }
     
     @Override
     public MCPResponse handle(final MCPServiceHandlerContext handlerContext, final MCPUriVariables uriVariables) {
-        return new MCPMapResponse(MCPDescriptorRegistry.createCapabilityPayload(
+        return new MCPMapResponse(MCPDescriptorCatalogIndex.createCapabilityPayload(
                 ResourceHandlerRegistry.getSupportedResources(), ToolHandlerRegistry.getSupportedTools(), Set.of(SupportedMCPStatement.values())));
     }
 }

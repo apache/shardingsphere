@@ -32,10 +32,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * MCP descriptor registry.
+ * MCP descriptor catalog index.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MCPDescriptorRegistry {
+public final class MCPDescriptorCatalogIndex {
     
     private static final MCPDescriptorCatalog CATALOG = MCPDescriptorCatalogLoader.load();
     
@@ -84,7 +84,7 @@ public final class MCPDescriptorRegistry {
     
     private static Map<String, MCPCompletionTargetDescriptor> createCompletionTargetDescriptors() {
         return CATALOG.getCompletionTargetDescriptors().stream()
-                .collect(Collectors.toMap(MCPDescriptorRegistry::createCompletionTargetDescriptorKey, each -> each, (a, b) -> b,
+                .collect(Collectors.toMap(MCPDescriptorCatalogIndex::createCompletionTargetDescriptorKey, each -> each, (a, b) -> b,
                         () -> new LinkedHashMap<>(CATALOG.getCompletionTargetDescriptors().size(), 1F)));
     }
     
@@ -111,6 +111,15 @@ public final class MCPDescriptorRegistry {
     }
     
     /**
+     * Get resource descriptors.
+     *
+     * @return resource descriptors
+     */
+    public static Collection<MCPResourceDescriptor> getResourceDescriptors() {
+        return RESOURCE_DESCRIPTORS.values().stream().toList();
+    }
+    
+    /**
      * Get required resource descriptor.
      *
      * @param uriOrTemplate resource URI or resource template URI template
@@ -132,6 +141,15 @@ public final class MCPDescriptorRegistry {
     }
     
     /**
+     * Get tool descriptors.
+     *
+     * @return tool descriptors
+     */
+    public static Collection<MCPToolDescriptor> getToolDescriptors() {
+        return TOOL_DESCRIPTORS.values().stream().toList();
+    }
+    
+    /**
      * Get required tool descriptor.
      *
      * @param toolName tool name
@@ -147,7 +165,7 @@ public final class MCPDescriptorRegistry {
      * @return prompt descriptors
      */
     public static Collection<MCPPromptDescriptor> getPromptDescriptors() {
-        return PROMPT_DESCRIPTORS.values();
+        return PROMPT_DESCRIPTORS.values().stream().toList();
     }
     
     /**
@@ -177,7 +195,7 @@ public final class MCPDescriptorRegistry {
      * @return completion target descriptors
      */
     public static Collection<MCPCompletionTargetDescriptor> getCompletionTargetDescriptors() {
-        return COMPLETION_TARGET_DESCRIPTORS.values();
+        return COMPLETION_TARGET_DESCRIPTORS.values().stream().toList();
     }
     
     /**
@@ -196,7 +214,7 @@ public final class MCPDescriptorRegistry {
      * @return resource navigation descriptors
      */
     public static Collection<MCPResourceNavigationDescriptor> getResourceNavigationDescriptors(final String from) {
-        return RESOURCE_NAVIGATION_DESCRIPTORS_BY_FROM.getOrDefault(from, List.of());
+        return RESOURCE_NAVIGATION_DESCRIPTORS_BY_FROM.getOrDefault(from, List.of()).stream().toList();
     }
     
     /**

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.descriptor;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
@@ -33,12 +33,12 @@ class CoreToolDescriptorValidatorTest {
     
     @Test
     void assertSupports() {
-        assertTrue(new CoreToolDescriptorValidator().supports(MCPDescriptorRegistry.getRequiredToolDescriptor("database_gateway_search_metadata")));
+        assertTrue(new CoreToolDescriptorValidator().supports(MCPDescriptorCatalogIndex.getRequiredToolDescriptor("database_gateway_search_metadata")));
     }
     
     @Test
     void assertSearchMetadataDocumentsApplicationPagination() {
-        MCPToolDescriptor descriptor = MCPDescriptorRegistry.getRequiredToolDescriptor("database_gateway_search_metadata");
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor("database_gateway_search_metadata");
         assertThat(findOutputProperty(descriptor, "next_page_token").get("description"),
                 is("ShardingSphere application pagination token for the next tool result page; not an MCP list cursor or nextCursor."));
         assertThat(findOutputProperty(descriptor, "has_more").get("description"),
@@ -50,7 +50,7 @@ class CoreToolDescriptorValidatorTest {
     @Test
     @SuppressWarnings("unchecked")
     void assertValidateRejectsMissingSearchMetadataItemField() {
-        MCPToolDescriptor descriptor = MCPDescriptorRegistry.getRequiredToolDescriptor("database_gateway_search_metadata");
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor("database_gateway_search_metadata");
         Map<String, Object> outputSchema = new LinkedHashMap<>(descriptor.getOutputSchema());
         Map<String, Object> properties = new LinkedHashMap<>((Map<String, Object>) outputSchema.get("properties"));
         Map<String, Object> items = new LinkedHashMap<>((Map<String, Object>) properties.get("items"));
@@ -69,7 +69,7 @@ class CoreToolDescriptorValidatorTest {
     @Test
     @SuppressWarnings("unchecked")
     void assertValidateRejectsMissingExecuteUpdateMode() {
-        MCPToolDescriptor descriptor = MCPDescriptorRegistry.getRequiredToolDescriptor("database_gateway_execute_update");
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor("database_gateway_execute_update");
         Map<String, Object> inputSchema = new LinkedHashMap<>(descriptor.getInputSchema());
         Map<String, Object> properties = new LinkedHashMap<>((Map<String, Object>) inputSchema.get("properties"));
         properties.remove("execution_mode");

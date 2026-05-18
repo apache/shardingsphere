@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
@@ -132,20 +131,15 @@ class ResourceHandlerRegistryTest {
     private static MCPResourceHandler<?> createResourceHandler(final String uriTemplate) {
         MCPResourceHandler<MCPServiceHandlerContext> result = mock(MCPResourceHandler.class);
         when(result.getContextType()).thenReturn(MCPServiceHandlerContext.class);
-        when(result.getResourceDescriptor()).thenReturn(createResourceDescriptor(uriTemplate, "foo", "Foo"));
+        when(result.getResourceUriTemplate()).thenReturn(uriTemplate);
         return result;
     }
     
     private static MCPResourceHandler<?> createUnsupportedResourceHandler() {
         MCPResourceHandler<MCPHandlerContext> result = mock(MCPResourceHandler.class);
         when(result.getContextType()).thenReturn(MCPHandlerContext.class);
-        when(result.getResourceDescriptor()).thenReturn(createResourceDescriptor("shardingsphere://unsupported", "unsupported", "Unsupported"));
+        when(result.getResourceUriTemplate()).thenReturn("shardingsphere://unsupported");
         return result;
-    }
-    
-    private static MCPResourceDescriptor createResourceDescriptor(final String uriOrTemplate, final String name, final String title) {
-        return new MCPResourceDescriptor(uriOrTemplate, name, title, String.format("Read the %s fixture resource.", name), "application/json", MCPResourceAnnotations.EMPTY,
-                Collections.emptyMap());
     }
     
     private static MCPHandlerProvider createHandlerProvider(final Collection<MCPResourceHandler<?>> resourceHandlers) {

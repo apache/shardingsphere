@@ -19,10 +19,8 @@ package org.apache.shardingsphere.mcp.core.resource.handler.workflow;
 
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
@@ -40,8 +38,8 @@ public final class WorkflowPlanHandler implements MCPResourceHandler<MCPWorkflow
     }
     
     @Override
-    public MCPResourceDescriptor getResourceDescriptor() {
-        return MCPDescriptorRegistry.getRequiredResourceDescriptor(URI_PATTERN);
+    public String getResourceUriTemplate() {
+        return URI_PATTERN;
     }
     
     @Override

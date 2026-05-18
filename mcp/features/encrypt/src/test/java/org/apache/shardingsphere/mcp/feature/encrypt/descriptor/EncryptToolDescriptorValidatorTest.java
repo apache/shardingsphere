@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +39,7 @@ class EncryptToolDescriptorValidatorTest {
     
     @Test
     void assertSupports() {
-        assertTrue(new EncryptToolDescriptorValidator().supports(MCPDescriptorRegistry.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME)));
+        assertTrue(new EncryptToolDescriptorValidator().supports(MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME)));
     }
     
     @Test
@@ -47,18 +47,18 @@ class EncryptToolDescriptorValidatorTest {
         MCPPromptDescriptor actual = findPrompt(EncryptFeatureDefinition.PLAN_PROMPT_NAME);
         assertThat((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.RELATED_TOOLS),
                 is(List.of(EncryptFeatureDefinition.PLAN_TOOL_NAME, "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
-        assertFalse(MCPDescriptorRegistry.getPromptDescriptors().stream().anyMatch(each -> EncryptFeatureDefinition.PLAN_TOOL_NAME.equals(each.getName())));
+        assertFalse(MCPDescriptorCatalogIndex.getPromptDescriptors().stream().anyMatch(each -> EncryptFeatureDefinition.PLAN_TOOL_NAME.equals(each.getName())));
     }
     
     @Test
     void assertCompletionTargetUsesPromptName() {
-        assertTrue(MCPDescriptorRegistry.getCompletionTargetDescriptors().stream().anyMatch(this::isEncryptPlanningPromptCompletionTarget));
+        assertTrue(MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream().anyMatch(this::isEncryptPlanningPromptCompletionTarget));
     }
     
     @Test
     @SuppressWarnings("unchecked")
     void assertValidateRejectsMissingOutputField() {
-        MCPToolDescriptor descriptor = MCPDescriptorRegistry.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
         Map<String, Object> outputSchema = new LinkedHashMap<>(descriptor.getOutputSchema());
         Map<String, Object> properties = new LinkedHashMap<>((Map<String, Object>) outputSchema.get("properties"));
         properties.remove("resources_to_read");
@@ -69,7 +69,7 @@ class EncryptToolDescriptorValidatorTest {
     }
     
     private MCPPromptDescriptor findPrompt(final String promptName) {
-        return MCPDescriptorRegistry.getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
+        return MCPDescriptorCatalogIndex.getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
     }
     
     private boolean isEncryptPlanningPromptCompletionTarget(final MCPCompletionTargetDescriptor descriptor) {

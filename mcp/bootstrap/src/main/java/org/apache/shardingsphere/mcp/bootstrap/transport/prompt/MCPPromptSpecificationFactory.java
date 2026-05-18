@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestExc
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateBinding;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateLoader;
 
@@ -42,7 +42,7 @@ public final class MCPPromptSpecificationFactory {
     private final Collection<MCPPromptDescriptor> promptDescriptors;
     
     public MCPPromptSpecificationFactory() {
-        promptDescriptors = MCPDescriptorRegistry.getPromptDescriptors();
+        promptDescriptors = MCPDescriptorCatalogIndex.getPromptDescriptors();
     }
     
     /**
@@ -66,7 +66,7 @@ public final class MCPPromptSpecificationFactory {
     private McpSchema.GetPromptResult handle(final McpSchema.GetPromptRequest request, final MCPPromptDescriptor descriptor) {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
         validateRequiredArguments(descriptor, arguments);
-        MCPPromptTemplateBinding binding = MCPDescriptorRegistry.getRequiredPromptTemplateBinding(descriptor.getName());
+        MCPPromptTemplateBinding binding = MCPDescriptorCatalogIndex.getRequiredPromptTemplateBinding(descriptor.getName());
         String text = MCPPromptTemplateLoader.render(MCPPromptTemplateLoader.load(binding.getTemplateResource()), arguments);
         return new McpSchema.GetPromptResult(descriptor.getDescription(), List.of(new McpSchema.PromptMessage(McpSchema.Role.USER, new McpSchema.TextContent(text))), descriptor.getMeta());
     }

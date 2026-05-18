@@ -33,7 +33,7 @@ class CoreHandlerProviderTest {
     @Test
     void assertGetToolHandlers() {
         Collection<MCPToolHandler<?>> actual = new CoreHandlerProvider().getToolHandlers();
-        assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(),
+        assertThat(actual.stream().map(MCPToolHandler::getToolName).toList(),
                 is(List.of("database_gateway_search_metadata", "database_gateway_execute_query", "database_gateway_execute_update",
                         "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
     }
@@ -42,7 +42,7 @@ class CoreHandlerProviderTest {
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new CoreHandlerProvider().getResourceHandlers();
         assertThat(actual.size(), is(20));
-        List<String> actualUris = actual.stream().map(each -> each.getResourceDescriptor().getUriTemplate()).toList();
+        List<String> actualUris = actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList();
         assertTrue(actualUris.contains("shardingsphere://capabilities"));
         assertTrue(actualUris.contains("shardingsphere://runtime"));
         assertTrue(actualUris.contains("shardingsphere://workflows/{plan_id}"));

@@ -19,13 +19,12 @@ package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
 
 /**
@@ -41,13 +40,13 @@ public final class EncryptRuleHandler implements MCPResourceHandler<MCPDatabaseH
     }
     
     @Override
-    public MCPResourceDescriptor getResourceDescriptor() {
-        return MCPDescriptorRegistry.getRequiredResourceDescriptor(EncryptFeatureDefinition.RULE_RESOURCE_URI);
+    public String getResourceUriTemplate() {
+        return EncryptFeatureDefinition.RULE_RESOURCE_URI;
     }
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(ruleInspectionService.queryEncryptRules(databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue("table")),
-                MCPResourceNavigationPayloadBuilder.create(getResourceDescriptor(), uriVariables, EncryptFeatureDefinition.RULES_RESOURCE_URI));
+                MCPResourceNavigationPayloadBuilder.create(MCPHandlerDescriptorUtils.getRequiredResourceDescriptor(this), uriVariables, EncryptFeatureDefinition.RULES_RESOURCE_URI));
     }
 }

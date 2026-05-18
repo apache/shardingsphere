@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.support.workflow.descriptor;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 
 /**
  * Shared workflow tool descriptors.
@@ -39,7 +39,7 @@ public final class WorkflowToolDescriptors {
      * @return MCP tool descriptor
      */
     public static MCPToolDescriptor createPlanning(final String toolName) {
-        return MCPDescriptorRegistry.getRequiredToolDescriptor(toolName);
+        return MCPDescriptorCatalogIndex.getRequiredToolDescriptor(toolName);
     }
     
     /**
@@ -48,7 +48,7 @@ public final class WorkflowToolDescriptors {
      * @return MCP tool descriptor
      */
     public static MCPToolDescriptor createExecution() {
-        return MCPDescriptorRegistry.getRequiredToolDescriptor(APPLY_TOOL_NAME);
+        return MCPDescriptorCatalogIndex.getRequiredToolDescriptor(APPLY_TOOL_NAME);
     }
     
     /**
@@ -57,6 +57,6 @@ public final class WorkflowToolDescriptors {
      * @return MCP tool descriptor
      */
     public static MCPToolDescriptor createValidation() {
-        return MCPDescriptorRegistry.getRequiredToolDescriptor(VALIDATE_TOOL_NAME);
+        return MCPDescriptorCatalogIndex.getRequiredToolDescriptor(VALIDATE_TOOL_NAME);
     }
 }

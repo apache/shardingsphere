@@ -394,8 +394,9 @@ If you want to add another feature beyond encrypt and mask, keep the implementat
 
 - Create `mcp/features/<feature>` and depend on `mcp/api`, `mcp/support` for database metadata, execution, or workflow handlers, `mcp/core` only when service-level handler context is needed, plus the required domain modules only; do not depend on `mcp/bootstrap`
 - If this is a new feature module, wire it into both the build and the runtime classpath: add it under `mcp/features/pom.xml`, then either add it to `distribution/mcp/pom.xml` when it should ship in the official packaged runtime or place the built jar under `plugins/` before startup when it should stay optional
-- For each public tool, implement `MCPToolHandler<T extends MCPHandlerContext>` with the required context type and add its canonical descriptor under `META-INF/shardingsphere-mcp/mcp-descriptors`
-- For each public resource, implement `MCPResourceHandler<T extends MCPHandlerContext>` with the required context type and return a descriptor that resolves to the same canonical YAML metadata
+- For each public tool, implement `MCPToolHandler<T extends MCPHandlerContext>` with the required context type and canonical tool name, and add its descriptor under `META-INF/shardingsphere-mcp/mcp-descriptors`
+- For each public resource, implement `MCPResourceHandler<T extends MCPHandlerContext>` with the required context type and canonical URI template, and add its descriptor under `META-INF/shardingsphere-mcp/mcp-descriptors`
+- Resolve handler-owned descriptor metadata through `MCPHandlerDescriptorUtils` when runtime code needs the catalog descriptor; do not duplicate descriptor fields inside handlers
 - Use `MCPServiceHandlerContext` for service-level handlers, `MCPDatabaseHandlerContext` for database metadata or execution handlers, and `MCPWorkflowHandlerContext` for workflow handlers
 - Implement one `MCPHandlerProvider` that returns the feature-owned handlers through `getToolHandlers()` and `getResourceHandlers()`
 - If the feature owns workflow definitions, implement `MCPWorkflowDefinitionProvider` on the same provider

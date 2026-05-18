@@ -23,7 +23,8 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceExtensionDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
@@ -60,15 +61,15 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     }
     
     @Override
-    public MCPResourceDescriptor getResourceDescriptor() {
-        return MCPDescriptorRegistry.getRequiredResourceDescriptor(uriTemplate);
+    public String getResourceUriTemplate() {
+        return uriTemplate;
     }
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         List<?> items = metadataLoader.apply(databaseContext, uriVariables);
-        MCPResourceDescriptor descriptor = getResourceDescriptor();
-        MCPResourceExtensionDescriptor extension = MCPDescriptorRegistry.getRequiredResourceExtensionDescriptor(descriptor.getUriTemplate());
+        MCPResourceDescriptor descriptor = MCPHandlerDescriptorUtils.getRequiredResourceDescriptor(this);
+        MCPResourceExtensionDescriptor extension = MCPDescriptorCatalogIndex.getRequiredResourceExtensionDescriptor(descriptor.getUriTemplate());
         Map<String, Object> navigationPayload = createNavigationPayload(descriptor, uriVariables);
         if (isDetailResource(extension)) {
             if (items.isEmpty()) {
@@ -226,7 +227,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
             result.put("parent_resource", MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent",
                     "Read the parent metadata resource before broadening or correcting the request.", "parent_resource"));
         }
-        List<Map<String, Object>> nextResources = MCPDescriptorRegistry.getResourceNavigationDescriptors(uriOrTemplate).stream()
+        List<Map<String, Object>> nextResources = MCPDescriptorCatalogIndex.getResourceNavigationDescriptors(uriOrTemplate).stream()
                 .filter(each -> each.getTo().startsWith("shardingsphere://"))
                 .map(each -> createNextResourceHint(each.getTo(), each.getDescription(), uriVariables)).flatMap(Optional::stream).toList();
         if (!nextResources.isEmpty()) {
