@@ -129,9 +129,6 @@ tools:
               title:
                 type: string
                 description: "Short model-facing action title."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
               reason:
                 type: string
                 description: "Why the model should take this action."
@@ -148,7 +145,6 @@ tools:
               type: tool_call
               title: Call database_gateway_apply_workflow
               reason: Preview generated workflow artifacts.
-              requires_user_approval: false
     annotations:
       title: Plan Encrypt Rule
       readOnlyHint: false

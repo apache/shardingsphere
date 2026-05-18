@@ -194,7 +194,7 @@ Descriptors must describe what the model should use the surface for, not just re
 - Item-list responses always include `items`, `count`, and `has_more`. The fields `has_more`, `next_page_token`, and `continuation_mode`
   are ShardingSphere application pagination fields inside structured payloads; they are not MCP list-method `cursor` or `nextCursor`.
   Resource reads also include `self_uri`, and include typed `parent_resource` or typed `next_resources` when applicable.
-- Workflow tool responses include `missing_required_inputs`, `clarification_questions`, `resources_to_read`, `next_actions`, and `requires_user_approval`
+- Workflow tool responses include `missing_required_inputs`, `clarification_questions`, `resources_to_read`, `review_summary`, and `next_actions`
   so a model can continue the workflow without guessing or relying on legacy recommendation fields.
 - Recoverable error payloads keep the original `error_code` and `message`, and add `recovery` hints for missing arguments,
   unsupported tools or resources, invalid enum values, workflow state errors, and unsafe SQL tool selection.
@@ -205,7 +205,7 @@ Descriptor annotations follow the MCP `2025-11-25` schema and are developer-main
 - Resource `audience` values must be MCP roles `user` or `assistant`; `priority` must be finite and between `0.0` and `1.0`; `lastModified` must include an ISO 8601 UTC marker or offset.
 - Tool annotations use MCP `ToolAnnotations`. MCP defines effective defaults of `readOnlyHint=false`, `destructiveHint=true`, `idempotentHint=false`, and `openWorldHint=true`.
 - ShardingSphere public tool descriptors must still declare all four tool boolean hints explicitly in YAML, so reviewers can see the safety decision before primitive defaults are applied.
-- Tool annotations are client hints only. They do not replace runtime validation, SQL safety checks, user approval, or server-side authorization.
+- Tool annotations are client hints only. They do not replace runtime validation, SQL safety checks, or server-side authorization.
 
 ### MCP Protocol Capability Scope
 
@@ -226,14 +226,14 @@ ShardingSphere MCP targets MCP protocol revision `2025-11-25`. The public protoc
 The runtime exposes ShardingSphere through logical database metadata, safe SQL tools, and selected workflow helpers. Current V1 scope:
 
 - Supported: logical database discovery; schemas, tables, views, columns, indexes, and sequences where JDBC metadata and dialect capability permit;
-  read-only query; side-effecting SQL preview or execute with explicit approval; encrypt and mask planning, apply, and validation workflows against
+  read-only query; side-effecting SQL preview or execute with explicit execution mode; encrypt and mask planning, apply, and validation workflows against
   ShardingSphere-Proxy; encrypt and mask algorithm and rule resources.
 - Partially supported: dialect-specific SQL and metadata capability discovery through `shardingsphere://databases/{database}/capabilities`;
   unsupported statement classes and metadata object types return structured MCP errors.
 - Future scope: direct MCP management for sharding rules, readwrite-splitting, shadow, traffic governance, database discovery rule configuration,
   mode governance or registry operations, and observability metrics, tracing, or dashboards.
-- Unsupported in V1: using encrypt or mask workflows against physical storage databases directly, applying workflow changes without preview and explicit
-  user approval, or treating MCP as a general ShardingSphere administration shell.
+- Unsupported in V1: using encrypt or mask workflows against physical storage databases directly, applying workflow changes without preview,
+  or treating MCP as a general ShardingSphere administration shell.
 
 ### Read `shardingsphere://databases/orders/schemas/public/sequences`
 
@@ -348,7 +348,7 @@ Reference:
 - If `shardingsphere://runtime` reports `server_status=configuration_required`, configure at least one `runtimeDatabases` entry before metadata discovery or SQL execution.
 - If JDBC metadata or SQL execution fails with a driver error, add the target JDBC driver jar under `plugins/` or the embedding classpath.
 - In STDIO mode, keep stdout reserved for MCP protocol frames. Send diagnostics to stderr or `logs/mcp.log`.
-- Workflow tools plan ShardingSphere logical rule changes; preview before apply and confirm the user approved side effects.
+- Workflow tools plan ShardingSphere logical rule changes; preview before apply so side effects are visible.
 
 ## Runtime Notes
 
@@ -476,7 +476,7 @@ If you want one encrypt or mask workflow to run end to end without ambiguity, us
    collect sensitive values through the approved secret channels above, and call the same feature-specific `plan_*_rule` again with the same `plan_id`.
 3. If the response is `status = planned`, review `derived_column_plan`, `ddl_artifacts`, `distsql_artifacts`, and `index_plan`.
 4. Call `database_gateway_apply_workflow` with `execution_mode=preview` so MCP shows the artifacts and side-effect scope without changing runtime state.
-5. After user approval, call `database_gateway_apply_workflow` with `execution_mode=review-then-execute` and `approved_by_user=true`, or use `manual-only` when the artifacts should be exported.
+5. After reviewing the preview, call `database_gateway_apply_workflow` with `execution_mode=review-then-execute`, or use `manual-only` when the artifacts should be exported.
 6. If apply returns `awaiting-manual-execution`, execute the returned `manual_artifact_package` against ShardingSphere-Proxy first, then continue.
 7. Call `database_gateway_validate_workflow` and make sure the returned validation layers pass.
 8. If validation fails, inspect `issues` and `mismatches`, then either finish the remaining apply steps or re-plan after fixing the environment.
@@ -513,7 +513,7 @@ In addition:
   - MCP echoes the selected mode in the plan response so the client can decide whether to present the whole plan at once or drive the conversation step by step
 - Planning `execution_mode` supports `review-then-execute` and `manual-only` as the preferred final apply mode.
 - `database_gateway_apply_workflow` requires explicit `execution_mode`
-  - use `preview` first, then `review-then-execute` with `approved_by_user=true` after approval, or `manual-only` to export a manual artifact package only
+  - use `preview` first, then `review-then-execute` after reviewing the preview, or `manual-only` to export a manual artifact package only
 
 ### What to do next for each status
 
@@ -751,7 +751,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
 ```
 
 Typical response snippet:
@@ -817,7 +817,7 @@ or an operator-controlled channel before retrying.
 
 #### Apply and validate
 
-The planned default final mode is `review-then-execute`, but `database_gateway_apply_workflow` requires `preview` first and `approved_by_user=true` for real side effects.
+The planned default final mode is `review-then-execute`, but `database_gateway_apply_workflow` should be previewed first so the side-effect scope is visible before execution.
 Preview first:
 
 ```bash
@@ -829,7 +829,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"preview\"}}}"
 ```
 
-After reviewing the preview with the user, execute approved artifacts:
+After reviewing the preview, execute the artifacts:
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
@@ -837,7 +837,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
 ```
 
 If you want MCP to export the artifacts without executing them, switch to `manual-only`:
@@ -858,7 +858,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 - `distsql_artifacts`
 
 If you need partial execution, `approved_steps` can be used as an execution filter with only `ddl`, `index_ddl`, or `rule_distsql`.
-It is not an approval token; copy values from `preview_artifacts[].approval_step` after the user approves the preview.
+It is not an approval token; copy values from `preview_artifacts[].approval_step` after reviewing the preview.
 Unknown values are rejected instead of silently skipped.
 Partial execution is mainly for reviewed or staged rollouts. Until every required step has been executed, `database_gateway_validate_workflow` may fail as expected.
 
@@ -1073,7 +1073,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
 ```
 
 Step 4: validate the final rule state

@@ -90,9 +90,9 @@ prompts:
         - shardingsphere://databases/{database}/capabilities
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_execute_query returns the requested read-only result."
-        - "Stop after database_gateway_execute_update preview until the user approves the reviewed side effects."
+        - "Stop after database_gateway_execute_update preview unless execution is still intended."
       org.apache.shardingsphere/ask-user-conditions:
-        - "Ask before database_gateway_execute_update execution when the preview has not been approved."
+        - "Ask before database_gateway_execute_update execution when the previewed side effects are ambiguous."
         - "Ask when the SQL intent cannot be classified as read-only or side-effecting."
   - name: recover_workflow
     title: Recover Workflow
@@ -163,7 +163,7 @@ resourceNavigation:
 tools:
   - name: database_gateway_apply_workflow
     title: Apply Workflow
-    description: "Preview or apply a previously planned ShardingSphere MCP workflow. Use execution_mode=preview before side effects unless the user has already reviewed and approved the plan."
+    description: "Preview or apply a previously planned ShardingSphere MCP workflow. Use execution_mode=preview before side effects unless the plan has already been reviewed."
     inputSchema:
       type: object
       properties:
@@ -172,14 +172,14 @@ tools:
           description: "Workflow plan identifier returned by a planning tool."
         execution_mode:
           type: string
-          description: "Required safety gate. Use preview to inspect generated side effects without applying artifacts, or use an execution mode approved by the user."
+          description: "Required safety gate. Use preview to inspect generated side effects without applying artifacts, or use review-then-execute after review."
           enum:
             - preview
             - review-then-execute
             - manual-only
         approved_steps:
           type: array
-          description: "Optional execution filter, not an approval token. Omit to apply every artifact after user approval, or pass only visible preview_artifacts.approval_step values."
+          description: "Optional execution filter. Omit to apply every artifact after review, or pass only visible preview_artifacts.approval_step values."
           items:
             type: string
             description: "Allowed workflow artifact step: ddl, index_ddl, or rule_distsql."
@@ -187,9 +187,6 @@ tools:
               - ddl
               - index_ddl
               - rule_distsql
-        approved_by_user:
-          type: boolean
-          description: "Must be true when execution_mode=review-then-execute. Preview and manual-only calls do not require this field."
       required:
         - plan_id
         - execution_mode
@@ -273,7 +270,7 @@ tools:
             properties:
               approval_step:
                 type: string
-                description: "Step value that can be copied into approved_steps after user approval."
+                description: "Step value that can be copied into approved_steps after review."
               artifact_type:
                 type: string
                 description: "Artifact type that would be applied."
@@ -285,19 +282,16 @@ tools:
                 description: "Side-effect scope such as physical-structure or rule-metadata."
         review_focus:
           type: object
-          description: "Compact preview review focus: artifact categories, side-effect scope, manual-only mode, and approval requirement."
+          description: "Compact preview review focus: artifact categories, side-effect scope, and manual-only mode."
         would_apply:
           type: boolean
           description: "False when execution_mode=preview, proving workflow artifacts were not applied."
-        approval_summary:
+        review_summary:
           type: string
           description: "Preview-only natural-language summary that confirms workflow artifacts were not applied."
-        approval_question:
-          type: string
-          description: "Preview-only approval question the model can ask before applying artifacts."
         skipped_artifacts:
           type: array
-          description: "Artifacts intentionally skipped by policy or approval."
+          description: "Artifacts intentionally skipped by policy or approved_steps."
         manual_artifacts:
           type: array
           description: "Artifacts returned for manual execution."
@@ -328,9 +322,6 @@ tools:
               title:
                 type: string
                 description: "Short model-facing action title."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
               tool_name:
                 type: string
                 description: "Canonical tool name when type is tool_call."
@@ -346,9 +337,6 @@ tools:
               depends_on:
                 type: array
                 description: "Action order values that must complete before this action."
-        requires_user_approval:
-          type: boolean
-          description: "Whether the next manual or retry action requires user approval."
       examples:
         - response_mode: preview
           plan_id: encrypt-rule-20260505-001
@@ -356,18 +344,18 @@ tools:
           applied_artifacts: []
           preview_artifacts: []
           would_apply: false
-          approval_summary: Previewed 0 workflow artifacts. Nothing has been applied.
-          approval_question: No workflow artifacts are available to apply. Do you want to continue reviewing this workflow?
           skipped_artifacts: []
           manual_artifacts: []
+          review_summary: Previewed 0 workflow artifacts. Nothing has been applied.
           next_actions:
             - order: 1
-              type: ask_user
-              title: Ask user for approval
-              question: Ask the user to approve the previewed artifacts before execution.
-              reason: Ask the user to approve the previewed artifacts before execution.
-              requires_user_approval: true
-          requires_user_approval: true
+              type: tool_call
+              title: Call database_gateway_apply_workflow
+              tool_name: database_gateway_apply_workflow
+              arguments:
+                plan_id: encrypt-rule-20260505-001
+                execution_mode: review-then-execute
+              reason: Apply workflow artifacts after reviewing the previewed side effects.
     annotations:
       title: Apply Workflow
       readOnlyHint: false
@@ -376,7 +364,6 @@ tools:
       openWorldHint: true
     runtime:
       workflowRole: apply
-      requiresUserApproval: true
       sideEffectScope:
         - rule-metadata
         - physical-structure
@@ -499,9 +486,6 @@ tools:
               title:
                 type: string
                 description: "Short model-facing action title."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
               tool_name:
                 type: string
                 description: "Canonical tool name when type is tool_call."
@@ -517,9 +501,6 @@ tools:
               depends_on:
                 type: array
                 description: "Action order values that must complete before this action."
-        requires_user_approval:
-          type: boolean
-          description: "Whether the next action requires user approval."
       examples:
         - response_mode: validation
           plan_id: encrypt-rule-20260505-001
@@ -532,8 +513,6 @@ tools:
               type: terminal
               title: Stop
               reason: Validation passed. Report the confirmed workflow result to the user.
-              requires_user_approval: false
-          requires_user_approval: false
     annotations:
       title: Validate Workflow
       readOnlyHint: true

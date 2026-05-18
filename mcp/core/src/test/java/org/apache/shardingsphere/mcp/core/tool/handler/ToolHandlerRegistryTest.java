@@ -55,13 +55,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 class ToolHandlerRegistryTest {
-    
+
     @Test
     void assertGetSupportedTools() {
         assertThat(ToolHandlerRegistry.getSupportedTools(), contains("database_gateway_search_metadata", "database_gateway_execute_query",
                 "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow"));
     }
-    
+
     @Test
     void assertGetSupportedToolDescriptors() {
         List<MCPToolDescriptor> actual = ToolHandlerRegistry.getSupportedToolDescriptors();
@@ -70,26 +70,24 @@ class ToolHandlerRegistryTest {
                         "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
         assertToolFields(actual.get(1), List.of("database", "schema", "sql", "max_rows", "timeout_ms"));
         assertRequiredFields(actual.get(1), List.of("database", "sql"));
-        assertToolFields(actual.get(2), List.of("database", "schema", "sql", "execution_mode", "approved_by_user", "max_rows", "timeout_ms"));
+        assertToolFields(actual.get(2), List.of("database", "schema", "sql", "execution_mode", "max_rows", "timeout_ms"));
         assertRequiredFields(actual.get(2), List.of("database", "sql", "execution_mode"));
         assertField(actual.get(2), "execution_mode", "string", List.of("execute", "preview"), true);
-        assertField(actual.get(2), "approved_by_user", "boolean", List.of(), false);
         assertField(actual.get(2), "max_rows", "integer", List.of(), false);
         assertField(actual.get(2), "timeout_ms", "integer", List.of(), false);
-        assertToolFields(actual.get(3), List.of("plan_id", "execution_mode", "approved_steps", "approved_by_user"));
+        assertToolFields(actual.get(3), List.of("plan_id", "execution_mode", "approved_steps"));
         assertRequiredFields(actual.get(3), List.of("plan_id", "execution_mode"));
         assertField(actual.get(3), "execution_mode", "string", List.of("preview", "review-then-execute", "manual-only"), true);
         assertField(actual.get(3), "approved_steps", "array", List.of(), false);
-        assertField(actual.get(3), "approved_by_user", "boolean", List.of(), false);
     }
-    
+
     @Test
     void assertFindRegisteredTool() {
         Optional<MCPToolHandler<?>> actual = ToolHandlerRegistry.findRegisteredTool("database_gateway_search_metadata");
         assertTrue(actual.isPresent());
         assertThat(actual.orElseThrow().getToolName(), is("database_gateway_search_metadata"));
     }
-    
+
     @Test
     void assertDispatch() {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
@@ -100,17 +98,17 @@ class ToolHandlerRegistryTest {
             assertThat(((List<?>) actual.orElseThrow().toPayload().get("items")).size(), is(1));
         }
     }
-    
+
     @Test
     void assertFindRegisteredToolWithUnknownToolName() {
         assertFalse(ToolHandlerRegistry.findRegisteredTool("unknown_tool").isPresent());
     }
-    
+
     @Test
     void assertDispatchWithUnknownToolName() {
         assertFalse(ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "unknown_tool", Map.of()).isPresent());
     }
-    
+
     @Test
     void assertDispatchWithMissingRequiredArgument() {
         MCPInvalidRequestException actual =
@@ -118,14 +116,14 @@ class ToolHandlerRegistryTest {
                         mock(MCPRequestScope.class), "session-1", "database_gateway_execute_query", Map.of("database", "logic_db")));
         assertThat(actual.getMessage(), is("sql is required."));
     }
-    
+
     @Test
     void assertDispatchWithBlankRequiredTextArgument() {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
                 () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "database_gateway_execute_query", Map.of("database", "logic_db", "sql", "   ")));
         assertThat(actual.getMessage(), is("sql is required."));
     }
-    
+
     @Test
     void assertDispatchWithMissingExecutionMode() {
         MCPExecutionModeRequiredException actual = assertThrows(MCPExecutionModeRequiredException.class,
@@ -137,7 +135,7 @@ class ToolHandlerRegistryTest {
         assertThat(actual.getSuggestedArguments(), is(Map.of("database", "logic_db", "schema", "public",
                 "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview")));
     }
-    
+
     @Test
     void assertDispatchWithInvalidArgumentType() {
         MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
@@ -150,7 +148,7 @@ class ToolHandlerRegistryTest {
         assertThat(actual.getExpectedType(), is("array"));
         assertThat(actual.getSuggestedArguments(), is(Map.of("query", "order")));
     }
-    
+
     @Test
     void assertDispatchWithInvalidEnumArgument() {
         MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
@@ -162,7 +160,7 @@ class ToolHandlerRegistryTest {
         assertThat(actual.getAllowedValues(), is(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
         assertThat(actual.getSuggestedArguments(), is(Map.of("query", "order")));
     }
-    
+
     @Test
     void assertDispatchWithInvalidExecutionMode() {
         MCPInvalidExecutionModeException actual = assertThrows(MCPInvalidExecutionModeException.class,
@@ -172,7 +170,7 @@ class ToolHandlerRegistryTest {
         assertThat(actual.getAllowedValues(), is(List.of("execute", "preview")));
         assertThat(actual.getSuggestedArguments(), is(Map.of("database", "logic_db", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview")));
     }
-    
+
     @Test
     void assertDispatchWithInvalidApprovedSteps() {
         MCPInvalidApprovedStepsException actual = assertThrows(MCPInvalidApprovedStepsException.class,
@@ -182,7 +180,7 @@ class ToolHandlerRegistryTest {
         assertThat(actual.getAllowedValues(), is(List.of("ddl", "index_ddl", "rule_distsql")));
         assertThat(actual.getSuggestedArguments(), is(Map.of("plan_id", "plan-1", "execution_mode", "preview")));
     }
-    
+
     @Test
     void assertDispatchWithUnknownArgument() {
         MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
@@ -193,7 +191,7 @@ class ToolHandlerRegistryTest {
         assertThat(actual.getArgumentPath(), is("limit"));
         assertThat(actual.getSuggestedArguments(), is(Map.of("database", "logic_db", "sql", "SELECT 1")));
     }
-    
+
     @Test
     void assertValidateWithUnknownNestedArgument() {
         MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
@@ -204,7 +202,7 @@ class ToolHandlerRegistryTest {
         assertThat(actual.getCategory(), is("unknown_argument"));
         assertThat(actual.getSuggestedArguments(), is(Map.of()));
     }
-    
+
     @Test
     void assertGetSupportedToolsWithNoToolHandlers() {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
@@ -218,21 +216,21 @@ class ToolHandlerRegistryTest {
             assertThat(actualCause.getMessage(), is("No tool handlers are registered."));
         }
     }
-    
+
     private static MCPToolDescriptor createNestedFixtureToolDescriptor() {
         Map<String, Object> optionSchema = Map.of("type", "object", "properties", Map.of("mode", Map.of("type", "string")), "required", List.of(), "additionalProperties", false);
         return new MCPToolDescriptor("fixture_tool", "Fixture Tool", "Fixture tool.", Map.of("type", "object", "properties", Map.of("options", optionSchema), "required", List.of(),
                 "additionalProperties", false), Collections.emptyMap(), new MCPToolAnnotations("Fixture Tool", true, false, true, true), Collections.emptyMap());
     }
-    
+
     private static void assertToolFields(final MCPToolDescriptor descriptor, final List<String> expectedFieldNames) {
         assertThat(getInputProperties(descriptor).keySet().stream().map(Object::toString).toList(), is(expectedFieldNames));
     }
-    
+
     private static void assertRequiredFields(final MCPToolDescriptor descriptor, final List<String> expectedRequiredFieldNames) {
         assertThat((List<?>) descriptor.getInputSchema().get("required"), is(expectedRequiredFieldNames));
     }
-    
+
     private static void assertField(final MCPToolDescriptor descriptor, final String fieldName, final String expectedType, final List<String> expectedEnumValues, final boolean expectedRequired) {
         Map<?, ?> actual = findField(descriptor, fieldName);
         Object enumValues = actual.get("enum");
@@ -240,18 +238,18 @@ class ToolHandlerRegistryTest {
         assertThat(enumValues instanceof List<?> ? (List<?>) enumValues : List.of(), is(expectedEnumValues));
         assertThat(((List<?>) descriptor.getInputSchema().get("required")).contains(fieldName), is(expectedRequired));
     }
-    
+
     private static Map<?, ?> findField(final MCPToolDescriptor descriptor, final String fieldName) {
         return (Map<?, ?>) getInputProperties(descriptor).get(fieldName);
     }
-    
+
     private static Map<?, ?> getInputProperties(final MCPToolDescriptor descriptor) {
         return (Map<?, ?>) descriptor.getInputSchema().get("properties");
     }
-    
+
     private static ClassLoader createIsolatedToolHandlerRegistryClassLoader() {
         return new ClassLoader(ToolHandlerRegistry.class.getClassLoader()) {
-            
+
             @Override
             protected Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
                 if (!ToolHandlerRegistry.class.getName().equals(name)) {
@@ -271,7 +269,7 @@ class ToolHandlerRegistryTest {
             }
         };
     }
-    
+
     private static byte[] readToolHandlerRegistryClass(final String name) throws ClassNotFoundException {
         String resourceName = name.replace('.', '/') + ".class";
         try (InputStream inputStream = ToolHandlerRegistry.class.getClassLoader().getResourceAsStream(resourceName)) {

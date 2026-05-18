@@ -310,9 +310,6 @@ tools:
               title:
                 type: string
                 description: "Short model-facing action title."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
               tool_name:
                 type: string
                 description: "Canonical tool name when type is tool_call."
@@ -331,9 +328,6 @@ tools:
         resources_to_read:
           type: array
           description: "Typed resources the model should read when more metadata or algorithm context is useful."
-        requires_user_approval:
-          type: boolean
-          description: "Whether the preferred next action needs visible user approval before side effects."
       examples:
         - response_mode: planning
           plan_id: mask-rule-20260505-001
@@ -367,8 +361,6 @@ tools:
               tool_name: database_gateway_apply_workflow
               arguments: {}
               reason: Preview generated workflow artifacts.
-              requires_user_approval: false
-          requires_user_approval: false
     annotations:
       title: Plan Mask Rule
       readOnlyHint: false

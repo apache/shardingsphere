@@ -40,19 +40,19 @@ import java.util.Optional;
  * Handler for runtime status resource URI.
  */
 public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
-    
+
     private static final String URI_PATTERN = "shardingsphere://runtime";
-    
+
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
     }
-    
+
     @Override
     public String getResourceUriTemplate() {
         return URI_PATTERN;
     }
-    
+
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext handlerContext, final MCPUriVariables uriVariables) {
         List<MCPDatabaseMetadata> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
@@ -73,7 +73,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("next_actions", createNextActions(hasConfiguredDatabase));
         return new MCPMapResponse(result);
     }
-    
+
     private Map<String, Object> createReadiness(final boolean hasConfiguredDatabase) {
         Map<String, Object> result = new LinkedHashMap<>(hasConfiguredDatabase ? 3 : 4, 1F);
         result.put("ready", hasConfiguredDatabase);
@@ -85,7 +85,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("reason", "No runtime databases are configured.");
         return result;
     }
-    
+
     private Map<String, Object> createDiagnostics(final boolean hasConfiguredDatabase) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("current_category", hasConfiguredDatabase ? "ready" : RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION);
@@ -94,7 +94,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("secret_policy", "Expose only categories and operator actions; never expose JDBC URLs, credentials, raw environment variables, or stack traces.");
         return result;
     }
-    
+
     private List<String> createSafeRuntimeCategories() {
         return List.of(
                 RuntimeDatabaseConnectionException.CATEGORY_MISSING_JDBC_DRIVER,
@@ -104,7 +104,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
                 RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE,
                 RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED);
     }
-    
+
     private List<Map<String, Object>> createDiagnosticOperatorActions() {
         return List.of(
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_MISSING_JDBC_DRIVER, "Install the configured runtime database JDBC driver."),
@@ -114,7 +114,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE, "Check database service availability and network access."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED, "Inspect runtime database connection settings outside MCP."));
     }
-    
+
     private Map<String, Object> createDiagnosticOperatorAction(final String category, final String operatorAction) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("category", category);
@@ -122,7 +122,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("secret_safe", true);
         return result;
     }
-    
+
     private List<Map<String, Object>> createResourcesToRead(final boolean hasConfiguredDatabase) {
         Map<String, Object> capabilitiesResource = MCPResourceHintUtils.create("shardingsphere://capabilities", "capability", "read_first",
                 "Read full MCP capabilities before choosing tools.", "resources_to_read");
@@ -132,16 +132,16 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         return List.of(capabilitiesResource, MCPResourceHintUtils.create("shardingsphere://databases", "logical-database", "read_first",
                 "Read logical databases before choosing a database scope.", "resources_to_read"));
     }
-    
+
     private List<Map<String, Object>> createNextActions(final boolean hasConfiguredDatabase) {
         Map<String, Object> capabilityAction = MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read the full capability catalog before choosing tools.");
         if (hasConfiguredDatabase) {
             return List.of();
         }
         return MCPNextActionUtils.ordered(capabilityAction, MCPNextActionUtils.dependsOn(MCPNextActionUtils.askUser(
-                "Ask the operator to configure at least one runtimeDatabases entry before metadata discovery or SQL execution.", List.of("runtimeDatabases"), false), 1));
+                "Ask the operator to configure at least one runtimeDatabases entry before metadata discovery or SQL execution.", List.of("runtimeDatabases")), 1));
     }
-    
+
     private Map<String, Object> createDatabaseStatus(final MCPDatabaseHandlerContext handlerContext, final MCPDatabaseMetadata database) {
         Optional<MCPDatabaseCapability> capability = handlerContext.getCapabilityFacade().provide(database.getDatabase());
         Map<String, Object> result = new LinkedHashMap<>(10, 1F);
@@ -157,7 +157,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
                 "logical-database", "inspect_detail", "Read this logical database resource for metadata details.", "databases"));
         return result;
     }
-    
+
     private Map<String, Object> createCapabilityStatus(final MCPDatabaseCapability capability) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("available", true);
@@ -166,7 +166,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("supported_metadata_object_types", capability.getSupportedMetadataObjectTypes().stream().map(Enum::name).toList());
         return result;
     }
-    
+
     private Map<String, Object> createUnavailableCapabilityStatus() {
         Map<String, Object> result = new LinkedHashMap<>(1, 1F);
         result.put("available", false);

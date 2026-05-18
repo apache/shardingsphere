@@ -621,8 +621,7 @@ tools:
             - 50
         page_token:
           type: string
-          description: "Non-negative pagination offset token returned by a previous database_gateway_search_metadata call."
-          pattern: "^[0-9]*$"
+          description: "Opaque pagination token returned by a previous database_gateway_search_metadata call."
       required: []
       additionalProperties: false
     outputSchema:
@@ -703,7 +702,7 @@ tools:
             - pagination
         search_context:
           type: object
-          description: "Applied search scope, query, object types, page size, and page offset used for this page."
+          description: "Applied search scope, query, object types, and page size used for this page."
         total_match_count:
           type: integer
           description: "Total matched metadata objects before pagination for this search scope."
@@ -744,9 +743,6 @@ tools:
               title:
                 type: string
                 description: "Short model-facing action title."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
               tool_name:
                 type: string
                 description: "Canonical tool name when type is tool_call."
@@ -805,7 +801,6 @@ tools:
             object_types:
               - table
             page_size: 50
-            page_offset: 0
     annotations:
       title: Search Metadata
       readOnlyHint: true
@@ -920,9 +915,6 @@ tools:
               title:
                 type: string
                 description: "Short model-facing action title."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
               tool_name:
                 type: string
                 description: "Canonical tool name when type is tool_call."
@@ -957,7 +949,6 @@ tools:
               type: terminal
               title: Stop
               reason: Return the result rows to the user.
-              requires_user_approval: false
     annotations:
       title: Execute Read-Only SQL
       readOnlyHint: true
@@ -978,7 +969,7 @@ tools:
     title: Execute Update SQL
     description: >-
       Execute or preview exactly one supported SQL statement that may mutate data, metadata, rules, or transaction state.
-      Use execution_mode=preview first when the user has not explicitly approved side effects.
+      Use execution_mode=preview first when the side-effect scope has not been reviewed.
     inputSchema:
       type: object
       properties:
@@ -993,13 +984,10 @@ tools:
           description: "One SQL statement. The server contract rejects banned commands and multiple statements."
         execution_mode:
           type: string
-          description: "Required safety gate. Use preview to classify side effects without execution, or execute only after explicit user approval of the preview."
+          description: "Required safety gate. Use preview to classify side effects without execution, or execute after reviewing the preview."
           enum:
             - execute
             - preview
-        approved_by_user:
-          type: boolean
-          description: "Must be true when execution_mode=execute. Preview calls do not require this field."
         max_rows:
           type: integer
           description: "Optional maximum row count when the statement returns rows, for example dialect-specific RETURNING. Omit or pass 0 to use the server default of 100."
@@ -1040,8 +1028,9 @@ tools:
             - statement_ack
         statement_class:
           type: string
-          description: "Statement class such as dml, ddl, dcl, transaction_control, or savepoint."
+          description: "Statement class such as dml, ddl, dcl, transaction_control, savepoint, or explain_analyze."
           enum:
+            - explain_analyze
             - dml
             - ddl
             - dcl
@@ -1100,30 +1089,21 @@ tools:
         savepoint:
           type: string
           description: "Preview-only savepoint name when the classifier can identify one."
-        requires_user_approval:
-          type: boolean
-          description: "Whether continuing from this response requires explicit user approval."
-        approval_guidance:
+        review_guidance:
           type: string
-          description: "Preview-only user approval guidance before execution."
-        approval_summary:
+          description: "Preview-only guidance before execution."
+        review_summary:
           type: string
           description: "Preview-only natural-language summary that confirms the statement was not executed."
-        approval_question:
-          type: string
-          description: "Preview-only approval question the model can ask before execution."
         suggested_arguments:
           type: object
-          description: "Preview-only arguments to reuse when the user approves execution."
+          description: "Preview-only arguments to reuse for execution after review."
         argument_provenance:
           type: object
           description: "Source of suggested argument values, such as user_provided, server_generated, or server_defaulted."
         resources_to_read:
           type: array
           description: "Typed resource hints to read before retrying when metadata context is missing."
-        ask_user_when_uncertain:
-          type: boolean
-          description: "Whether the model should ask the user before continuing."
         next_actions:
           type: array
           description: "Ordered structured model-facing recommendations after preview or execution."
@@ -1139,9 +1119,6 @@ tools:
               title:
                 type: string
                 description: "Short model-facing action title."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
               tool_name:
                 type: string
                 description: "Canonical tool name when type is tool_call."
@@ -1170,21 +1147,20 @@ tools:
           preview_semantics: classification_only
           statement_class: dml
           statement_type: UPDATE
-          status: AWAITING_APPROVAL
+          status: PREVIEWED
           would_execute: false
           affected_rows_estimated: false
-          approval_summary: Previewed UPDATE statement with side-effect scope physical-data. It has not been executed.
-          approval_question: Do you approve executing this UPDATE statement with side-effect scope physical-data?
+          review_summary: Previewed UPDATE statement with side-effect scope physical-data. It has not been executed.
           suggested_arguments:
             execution_mode: execute
-            approved_by_user: true
           next_actions:
             - order: 1
-              type: ask_user
-              title: Ask user for approval
-              question: Ask the user to approve the previewed side effects before execution.
-              reason: Ask the user to approve the previewed side effects before execution.
-              requires_user_approval: true
+              type: tool_call
+              title: Call database_gateway_execute_update
+              tool_name: database_gateway_execute_update
+              arguments:
+                execution_mode: execute
+              reason: Execute after reviewing normalized_sql and side_effect_scope.
     annotations:
       title: Execute Update SQL
       readOnlyHint: false
@@ -1192,7 +1168,6 @@ tools:
       idempotentHint: false
       openWorldHint: true
     runtime:
-      requiresUserApproval: true
       sideEffectScope:
         - physical-data
         - physical-structure

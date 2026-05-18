@@ -33,17 +33,16 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
 class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
-    
+
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();
     }
-    
+
     @Test
-    void assertRejectExecuteUpdateExecutionWithoutApproval() throws IOException, InterruptedException {
+    void assertExecuteUpdateWithoutApprovalArgument() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
@@ -51,34 +50,26 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "execute"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
-        Map<String, Object> recovery = castToMap(payload.get("recovery"));
-        assertThat(String.valueOf(recovery.get("category")), is("approval_required"));
-        assertTrue((Boolean) recovery.get("requires_user_approval"));
-        List<Map<String, Object>> nextActions = castToMapList(recovery.get("next_actions"));
-        assertThat(String.valueOf(nextActions.get(0).get("type")), is("ask_user"));
-        assertThat(String.valueOf(nextActions.get(1).get("tool_name")), is("database_gateway_execute_update"));
-        assertTrue((Boolean) nextActions.get(1).get("requires_user_approval"));
+        assertThat(String.valueOf(payload.get("response_mode")), is("executed"));
+        assertThat(String.valueOf(payload.get("result_kind")), is("update_count"));
+        assertThat(String.valueOf(payload.get("affected_rows")), is("0"));
         assertModelFacingPayloadContract(payload);
     }
-    
+
     @Test
-    void assertExecuteUpdateWithExplicitClientApproval() throws IOException, InterruptedException {
+    void assertExecuteUpdateReturnsExecutionMode() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1",
-                        "execution_mode", "execute", "approved_by_user", true));
+                        "execution_mode", "execute"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("response_mode")), is("executed"));
-        assertThat(String.valueOf(payload.get("result_kind")), is("update_count"));
         assertThat(String.valueOf(payload.get("execution_mode")), is("execute"));
-        assertThat(String.valueOf(payload.get("affected_rows")), is("0"));
         assertModelFacingPayloadContract(payload);
     }
-    
+
     @Test
     void assertPreviewExecuteUpdateWithoutExecution() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -90,67 +81,52 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("result_kind")), is("preview"));
         assertFalse((Boolean) payload.get("would_execute"));
-        assertTrue((Boolean) payload.get("requires_user_approval"));
         List<Map<String, Object>> nextActions = castToMapList(payload.get("next_actions"));
-        assertThat(String.valueOf(nextActions.get(0).get("type")), is("ask_user"));
-        assertThat(String.valueOf(nextActions.get(1).get("tool_name")), is("database_gateway_execute_update"));
-        assertTrue((Boolean) nextActions.get(1).get("requires_user_approval"));
+        assertThat(nextActions.size(), is(1));
+        assertThat(String.valueOf(nextActions.get(0).get("type")), is("tool_call"));
+        assertThat(String.valueOf(nextActions.get(0).get("tool_name")), is("database_gateway_execute_update"));
+        assertThat(String.valueOf(castToMap(nextActions.get(0).get("arguments")).get("execution_mode")), is("execute"));
+        assertFalse(payload.containsKey("requires_user_approval"));
+        assertFalse(nextActions.get(0).containsKey("requires_user_approval"));
         assertModelFacingPayloadContract(payload);
     }
-    
+
     @Test
-    void assertRejectWorkflowExecutionWithoutApproval() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        String planId = createMaskRulePlan(httpClient, sessionId);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME,
-                Map.of("plan_id", planId, "execution_mode", "review-then-execute"));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
-        Map<String, Object> recovery = castToMap(payload.get("recovery"));
-        assertThat(String.valueOf(recovery.get("category")), is("approval_required"));
-        assertTrue((Boolean) recovery.get("requires_user_approval"));
-        assertModelFacingPayloadContract(payload);
-    }
-    
-    @Test
-    void assertApplyWorkflowSafeAndApprovedModes() throws IOException, InterruptedException {
+    void assertApplyWorkflowPreviewManualAndExecuteModes() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         Map<String, Object> previewPayload = callApplyWorkflow(httpClient, sessionId, createMaskRulePlan(httpClient, sessionId), Map.of("execution_mode", "preview"));
         assertThat(String.valueOf(previewPayload.get("status")), is("preview"));
         assertFalse((Boolean) previewPayload.get("would_apply"));
-        assertTrue((Boolean) previewPayload.get("requires_user_approval"));
+        assertFalse(previewPayload.containsKey("requires_user_approval"));
         Map<String, Object> manualPayload = callApplyWorkflow(httpClient, sessionId, createMaskRulePlan(httpClient, sessionId), Map.of("execution_mode", "manual-only"));
         assertThat(String.valueOf(manualPayload.get("status")), is("awaiting-manual-execution"));
         assertThat(String.valueOf(manualPayload.get("execution_mode")), is("manual-only"));
-        Map<String, Object> approvedPayload = callApplyWorkflow(httpClient, sessionId, createMaskRulePlan(httpClient, sessionId),
-                Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl"), "approved_by_user", true));
-        assertThat(String.valueOf(approvedPayload.get("status")), is("completed"));
-        assertThat(String.valueOf(approvedPayload.get("execution_mode")), is("review-then-execute"));
-        assertThat(((List<?>) approvedPayload.get("skipped_artifacts")).size(), is(1));
+        Map<String, Object> executionPayload = callApplyWorkflow(httpClient, sessionId, createMaskRulePlan(httpClient, sessionId),
+                Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl")));
+        assertThat(String.valueOf(executionPayload.get("status")), is("completed"));
+        assertThat(String.valueOf(executionPayload.get("execution_mode")), is("review-then-execute"));
+        assertThat(((List<?>) executionPayload.get("skipped_artifacts")).size(), is(1));
         assertModelFacingPayloadContract(previewPayload);
         assertModelFacingPayloadContract(manualPayload);
-        assertModelFacingPayloadContract(approvedPayload);
+        assertModelFacingPayloadContract(executionPayload);
     }
-    
+
     @Test
-    void assertRejectWorkflowApprovalFromOtherSession() throws IOException, InterruptedException {
+    void assertRejectWorkflowExecutionFromOtherSession() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String ownerSessionId = initializeSession(httpClient);
         String otherSessionId = initializeSession(httpClient);
         String planId = createMaskRulePlan(httpClient, ownerSessionId);
         Map<String, Object> actual = callApplyWorkflow(httpClient, otherSessionId, planId,
-                Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl"), "approved_by_user", true));
+                Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl")));
         assertThat(String.valueOf(actual.get("error_code")), is("invalid_request"));
         assertThat(String.valueOf(castToMap(actual.get("recovery")).get("recovery_category")), is("stale_workflow"));
         assertModelFacingPayloadContract(actual);
     }
-    
+
     private Map<String, Object> callApplyWorkflow(final HttpClient httpClient, final String sessionId, final String planId,
                                                   final Map<String, Object> arguments) throws IOException, InterruptedException {
         Map<String, Object> actualArguments = new LinkedHashMap<>(arguments.size() + 1, 1F);
@@ -160,7 +136,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         assertThat(actual.statusCode(), is(200));
         return getStructuredContent(actual.body());
     }
-    
+
     private String createMaskRulePlan(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_mask_rule", Map.of(
                 "database", "logic_db",
@@ -175,12 +151,12 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         assertThat(String.valueOf(payload.get("status")), is("planned"));
         return String.valueOf(payload.get("plan_id"));
     }
-    
+
     private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
         MCPModelContractAssertions.assertNoBannedPublicFields(payload);
         MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
     }
-    
+
     private List<Map<String, Object>> castToMapList(final Object value) {
         return ((List<?>) value).stream().map(this::castToMap).toList();
     }

@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMultipleSQLState
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
-import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUserApprovalRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
@@ -47,7 +46,7 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MCPRecoveryPayloadFactory {
-    
+
     static Map<String, Object> create(final Throwable cause) {
         if (cause instanceof SQLToolMismatchException) {
             return MCPSQLRecoveryPayloadFactory.createSQLToolMismatchRecovery((SQLToolMismatchException) cause);
@@ -72,9 +71,6 @@ final class MCPRecoveryPayloadFactory {
         }
         if (cause instanceof MCPInvalidApprovedStepsException) {
             return MCPWorkflowRecoveryPayloadFactory.createInvalidApprovedStepsRecovery((MCPInvalidApprovedStepsException) cause);
-        }
-        if (cause instanceof MCPUserApprovalRequiredException) {
-            return MCPWorkflowRecoveryPayloadFactory.createUserApprovalRequiredRecovery((MCPUserApprovalRequiredException) cause);
         }
         if (cause instanceof WorkflowArgumentConflictException) {
             return MCPWorkflowRecoveryPayloadFactory.createWorkflowArgumentConflictRecovery((WorkflowArgumentConflictException) cause);

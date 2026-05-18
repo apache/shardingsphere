@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
 import java.util.Optional;
@@ -26,20 +25,54 @@ import java.util.Optional;
 /**
  * Statement classification result.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ClassificationResult {
-    
+
     private final SupportedMCPStatement statementClass;
-    
+
     private final String statementType;
-    
+
     private final String normalizedSql;
-    
+
     private final String targetObjectName;
-    
+
     private final String savepointName;
-    
+
+    private final Optional<SupportedMCPStatement> analyzedStatementClass;
+
+    /**
+     * Create statement classification result.
+     *
+     * @param statementClass statement class
+     * @param statementType statement type
+     * @param normalizedSql normalized SQL
+     * @param targetObjectName target object name
+     * @param savepointName savepoint name
+     */
+    public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName) {
+        this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, null);
+    }
+
+    /**
+     * Create statement classification result with the inner statement class analyzed by EXPLAIN ANALYZE.
+     *
+     * @param statementClass statement class
+     * @param statementType statement type
+     * @param normalizedSql normalized SQL
+     * @param targetObjectName target object name
+     * @param savepointName savepoint name
+     * @param analyzedStatementClass inner statement class analyzed by EXPLAIN ANALYZE
+     */
+    public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName,
+                                final SupportedMCPStatement analyzedStatementClass) {
+        this.statementClass = statementClass;
+        this.statementType = statementType;
+        this.normalizedSql = normalizedSql;
+        this.targetObjectName = targetObjectName;
+        this.savepointName = savepointName;
+        this.analyzedStatementClass = Optional.ofNullable(analyzedStatementClass);
+    }
+
     /**
      * Get the target object name when one exists.
      *
@@ -48,7 +81,7 @@ public final class ClassificationResult {
     public Optional<String> getTargetObjectName() {
         return targetObjectName.isEmpty() ? Optional.empty() : Optional.of(targetObjectName);
     }
-    
+
     /**
      * Get the savepoint name when one exists.
      *
@@ -57,7 +90,7 @@ public final class ClassificationResult {
     public Optional<String> getSavepointName() {
         return savepointName.isEmpty() ? Optional.empty() : Optional.of(savepointName);
     }
-    
+
     String getAuditMarker() {
         return SupportedMCPStatement.TRANSACTION_CONTROL == statementClass || SupportedMCPStatement.SAVEPOINT == statementClass ? statementType : statementClass.name();
     }

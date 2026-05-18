@@ -32,7 +32,7 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPNextActionUtils {
-    
+
     /**
      * Create a read-resource action.
      *
@@ -41,45 +41,43 @@ public final class MCPNextActionUtils {
      * @return action payload
      */
     public static Map<String, Object> readResource(final String resourceUri, final String reason) {
-        Map<String, Object> result = createBaseAction("resource_read", "Read resource", reason, false);
+        Map<String, Object> result = createBaseAction("resource_read", "Read resource", reason);
         result.put("resource_uri", resourceUri);
         return result;
     }
-    
+
     /**
      * Create a tool-call action.
      *
      * @param toolName tool name
      * @param reason action reason
      * @param arguments tool arguments
-     * @param requiresUserApproval requires user approval
      * @return action payload
      */
-    public static Map<String, Object> callTool(final String toolName, final String reason, final Map<String, Object> arguments, final boolean requiresUserApproval) {
-        Map<String, Object> result = createBaseAction("tool_call", "Call " + toolName, reason, requiresUserApproval);
+    public static Map<String, Object> callTool(final String toolName, final String reason, final Map<String, Object> arguments) {
+        Map<String, Object> result = createBaseAction("tool_call", "Call " + toolName, reason);
         result.put("tool_name", toolName);
         result.put("arguments", arguments);
         return result;
     }
-    
+
     /**
      * Create a retry-tool action.
      *
      * @param toolName tool name
      * @param reason action reason
      * @param arguments tool arguments
-     * @param requiresUserApproval requires user approval
      * @return action payload
      * @throws IllegalArgumentException when tool name is blank
      */
-    public static Map<String, Object> retryTool(final String toolName, final String reason, final Map<String, Object> arguments, final boolean requiresUserApproval) {
+    public static Map<String, Object> retryTool(final String toolName, final String reason, final Map<String, Object> arguments) {
         ShardingSpherePreconditions.checkState(!toolName.isBlank(), () -> new IllegalArgumentException("Tool name is required for a retry action."));
-        Map<String, Object> result = createBaseAction("tool_call", "Retry " + toolName, reason, requiresUserApproval);
+        Map<String, Object> result = createBaseAction("tool_call", "Retry " + toolName, reason);
         result.put("arguments", arguments);
         result.put("tool_name", toolName);
         return result;
     }
-    
+
     /**
      * Create a completion action.
      *
@@ -98,7 +96,7 @@ public final class MCPNextActionUtils {
     public static Map<String, Object> completeArgument(final String referenceType, final String reference, final String argumentName, final String argumentPrefix,
                                                        final Map<String, ?> contextArguments, final Collection<String> missingContextArguments, final String resumeTargetType,
                                                        final String resumeTarget, final Map<String, ?> resumeArguments, final String reason) {
-        Map<String, Object> result = createBaseAction("completion", "Complete " + argumentName, reason, false);
+        Map<String, Object> result = createBaseAction("completion", "Complete " + argumentName, reason);
         result.put("reference_type", toCompletionReferenceType(referenceType));
         result.put("reference", reference);
         result.put("argument_name", argumentName);
@@ -116,7 +114,7 @@ public final class MCPNextActionUtils {
         }
         return result;
     }
-    
+
     private static String toCompletionReferenceType(final String referenceType) {
         if ("prompt".equals(referenceType)) {
             return "ref/prompt";
@@ -126,22 +124,21 @@ public final class MCPNextActionUtils {
         }
         return referenceType;
     }
-    
+
     /**
      * Create an ask-user action.
      *
      * @param reason action reason
      * @param requiredInputs required user inputs
-     * @param requiresUserApproval requires user approval
      * @return action payload
      */
-    public static Map<String, Object> askUser(final String reason, final List<String> requiredInputs, final boolean requiresUserApproval) {
-        Map<String, Object> result = createBaseAction("ask_user", requiresUserApproval ? "Ask user for approval" : "Ask user", reason, requiresUserApproval);
+    public static Map<String, Object> askUser(final String reason, final List<String> requiredInputs) {
+        Map<String, Object> result = createBaseAction("ask_user", "Ask user", reason);
         result.put("question", reason);
         result.put("required_inputs", requiredInputs);
         return result;
     }
-    
+
     /**
      * Create a stop action.
      *
@@ -149,19 +146,18 @@ public final class MCPNextActionUtils {
      * @return action payload
      */
     public static Map<String, Object> stop(final String reason) {
-        return createBaseAction("terminal", "Stop", reason, false);
+        return createBaseAction("terminal", "Stop", reason);
     }
-    
-    private static Map<String, Object> createBaseAction(final String type, final String title, final String reason, final boolean requiresUserApproval) {
+
+    private static Map<String, Object> createBaseAction(final String type, final String title, final String reason) {
         Map<String, Object> result = new LinkedHashMap<>(10, 1F);
         result.put("order", 1);
         result.put("type", type);
         result.put("title", title);
-        result.put("requires_user_approval", requiresUserApproval);
         result.put("reason", reason);
         return result;
     }
-    
+
     /**
      * Add 1-based order values to actions.
      *
@@ -178,7 +174,7 @@ public final class MCPNextActionUtils {
         }
         return result;
     }
-    
+
     /**
      * Add action dependencies by 1-based order.
      *

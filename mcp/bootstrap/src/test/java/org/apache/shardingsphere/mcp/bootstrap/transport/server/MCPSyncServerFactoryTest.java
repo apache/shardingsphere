@@ -31,7 +31,6 @@ import io.modelcontextprotocol.spec.McpStreamableServerSession;
 import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.completion.MCPCompletionSpecificationFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.prompt.MCPPromptSpecificationFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.resource.MCPResourceSpecificationFactory;
@@ -57,7 +56,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MCPSyncServerFactoryTest {
-    
+
     @Test
     void assertCreateWithTransportProvider() throws ReflectiveOperationException {
         TestServerTransportProvider transportProvider = new TestServerTransportProvider();
@@ -72,7 +71,7 @@ class MCPSyncServerFactoryTest {
         assertThat(actual.listPrompts().stream().map(McpSchema.Prompt::name).toList(), is(List.of("inspect_metadata")));
         actual.closeGracefully();
     }
-    
+
     @Test
     void assertCreateWithStreamableTransportProvider() throws ReflectiveOperationException {
         TestStreamableTransportProvider transportProvider = new TestStreamableTransportProvider();
@@ -83,7 +82,7 @@ class MCPSyncServerFactoryTest {
         assertThat(actual.listResourceTemplates().size(), is(1));
         actual.closeGracefully();
     }
-    
+
     @Test
     void assertCreateExposesOfficialDiscoveryDescriptors() throws ReflectiveOperationException {
         TestServerTransportProvider transportProvider = new TestServerTransportProvider();
@@ -94,7 +93,7 @@ class MCPSyncServerFactoryTest {
         assertPromptDiscoveryDescriptor(actual.listPrompts().get(0));
         actual.closeGracefully();
     }
-    
+
     @Test
     void assertCreateAdvertisesImplementedCapabilitiesAndSdkLoggingOnly() throws ReflectiveOperationException {
         TestServerTransportProvider transportProvider = new TestServerTransportProvider();
@@ -112,7 +111,7 @@ class MCPSyncServerFactoryTest {
         assertNotNull(actualCapabilities.completions());
         actual.closeGracefully();
     }
-    
+
     private MCPSyncServerFactory createFactory() throws ReflectiveOperationException {
         MCPToolSpecificationFactory toolSpecificationFactory = mock(MCPToolSpecificationFactory.class);
         MCPResourceSpecificationFactory resourceSpecificationFactory = mock(MCPResourceSpecificationFactory.class);
@@ -120,13 +119,13 @@ class MCPSyncServerFactoryTest {
         MCPCompletionSpecificationFactory completionSpecificationFactory = mock(MCPCompletionSpecificationFactory.class);
         when(toolSpecificationFactory.createToolSpecifications()).thenReturn(List.of(new SyncToolSpecification(
                 createToolDiscoveryDescriptor(),
-                (exchange, request) -> MCPTransportPayloadUtils.createCallToolResult(Map.of("status", "ok")))));
+                (exchange, request) -> createFixtureToolResult())));
         when(resourceSpecificationFactory.createResourceSpecifications()).thenReturn(List.of(new SyncResourceSpecification(
                 createResourceDiscoveryDescriptor(),
-                (exchange, request) -> MCPTransportPayloadUtils.createReadResourceResult(request.uri(), Map.of("status", "ok")))));
+                (exchange, request) -> createFixtureReadResourceResult(request.uri()))));
         when(resourceSpecificationFactory.createResourceTemplateSpecifications()).thenReturn(List.of(new SyncResourceTemplateSpecification(
                 createResourceTemplateDiscoveryDescriptor(),
-                (exchange, request) -> MCPTransportPayloadUtils.createReadResourceResult(request.uri(), Map.of("status", "ok")))));
+                (exchange, request) -> createFixtureReadResourceResult(request.uri()))));
         when(promptSpecificationFactory.createPromptSpecifications()).thenReturn(List.of(new SyncPromptSpecification(
                 createPromptDiscoveryDescriptor(),
                 (exchange, request) -> new McpSchema.GetPromptResult("Inspect metadata", List.of()))));
@@ -142,7 +141,15 @@ class MCPSyncServerFactoryTest {
         setField(result, "completionSpecificationFactory", completionSpecificationFactory);
         return result;
     }
-    
+
+    private McpSchema.CallToolResult createFixtureToolResult() {
+        return McpSchema.CallToolResult.builder().addTextContent("ok").build();
+    }
+
+    private McpSchema.ReadResourceResult createFixtureReadResourceResult(final String uri) {
+        return new McpSchema.ReadResourceResult(List.of(new McpSchema.TextResourceContents(uri, "application/json", "ok")));
+    }
+
     private McpSchema.Tool createToolDiscoveryDescriptor() {
         return McpSchema.Tool.builder()
                 .name("database_gateway_search_metadata")
@@ -154,7 +161,7 @@ class MCPSyncServerFactoryTest {
                 .meta(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "metadata-discovery"))
                 .build();
     }
-    
+
     private McpSchema.Resource createResourceDiscoveryDescriptor() {
         return McpSchema.Resource.builder()
                 .uri("shardingsphere://capabilities")
@@ -166,7 +173,7 @@ class MCPSyncServerFactoryTest {
                 .meta(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "catalog-guidance"))
                 .build();
     }
-    
+
     private McpSchema.ResourceTemplate createResourceTemplateDiscoveryDescriptor() {
         return McpSchema.ResourceTemplate.builder()
                 .uriTemplate("shardingsphere://databases/{database}")
@@ -178,12 +185,12 @@ class MCPSyncServerFactoryTest {
                 .meta(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "database-detail"))
                 .build();
     }
-    
+
     private McpSchema.Prompt createPromptDiscoveryDescriptor() {
         return new McpSchema.Prompt("inspect_metadata", "Inspect Metadata", "Inspect metadata",
                 List.of(new McpSchema.PromptArgument("database", "Database", "Logical database", true)), Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "metadata-inspection"));
     }
-    
+
     private void assertToolDiscoveryDescriptor(final McpSchema.Tool actual) {
         assertThat(actual.name(), is("database_gateway_search_metadata"));
         assertThat(actual.title(), is("Search Metadata"));
@@ -193,67 +200,67 @@ class MCPSyncServerFactoryTest {
         assertTrue(actual.annotations().readOnlyHint());
         assertThat(actual.meta(), is(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "metadata-discovery")));
     }
-    
+
     private void assertResourceDiscoveryDescriptor(final McpSchema.Resource actual) {
         assertThat(actual.uri(), is("shardingsphere://capabilities"));
         assertThat(actual.title(), is("Capabilities"));
         assertThat(actual.annotations().priority(), is(0.5D));
         assertThat(actual.meta(), is(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "catalog-guidance")));
     }
-    
+
     private void assertResourceTemplateDiscoveryDescriptor(final McpSchema.ResourceTemplate actual) {
         assertThat(actual.uriTemplate(), is("shardingsphere://databases/{database}"));
         assertThat(actual.title(), is("Database Resource"));
         assertThat(actual.annotations().priority(), is(0.4D));
         assertThat(actual.meta(), is(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "database-detail")));
     }
-    
+
     private void assertPromptDiscoveryDescriptor(final McpSchema.Prompt actual) {
         assertThat(actual.name(), is("inspect_metadata"));
         assertThat(actual.title(), is("Inspect Metadata"));
         assertThat(actual.arguments().get(0).name(), is("database"));
         assertThat(actual.meta(), is(Map.of(MCPShardingSphereMetadataKeys.PURPOSE, "metadata-inspection")));
     }
-    
+
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField(fieldName);
         Plugins.getMemberAccessor().set(field, target, value);
     }
-    
+
     private static final class TestServerTransportProvider implements McpServerTransportProvider {
-        
+
         private McpServerSession.Factory sessionFactory;
-        
+
         @Override
         public void setSessionFactory(final McpServerSession.Factory sessionFactory) {
             this.sessionFactory = sessionFactory;
         }
-        
+
         @Override
         public Mono<Void> notifyClients(final String method, final Object params) {
             return Mono.empty();
         }
-        
+
         @Override
         public Mono<Void> closeGracefully() {
             return Mono.empty();
         }
     }
-    
+
     private static final class TestStreamableTransportProvider implements McpStreamableServerTransportProvider {
-        
+
         private McpStreamableServerSession.Factory sessionFactory;
-        
+
         @Override
         public void setSessionFactory(final McpStreamableServerSession.Factory sessionFactory) {
             this.sessionFactory = sessionFactory;
         }
-        
+
         @Override
         public Mono<Void> notifyClients(final String method, final Object params) {
             return Mono.empty();
         }
-        
+
         @Override
         public Mono<Void> closeGracefully() {
             return Mono.empty();

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport;
+package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.AccessLevel;
@@ -29,6 +29,8 @@ import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MCPResourceLinkContract {
+    
+    private static final String JSON_CONTENT_TYPE = "application/json";
     
     static ResourceLinks createResourceLinks(final Map<String, Object> payload, final int limit) {
         MCPResourceLinkCandidateCollector.ResourceLinkCandidates candidates = new MCPResourceLinkCandidateCollector(limit).collect(payload);
@@ -45,7 +47,7 @@ final class MCPResourceLinkContract {
                 .title(candidate.title())
                 .uri(candidate.uri())
                 .description(candidate.description())
-                .mimeType(MCPTransportPayloadUtils.JSON_CONTENT_TYPE)
+                .mimeType(JSON_CONTENT_TYPE)
                 .meta(createResourceLinkMeta(candidate))
                 .build();
     }

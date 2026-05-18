@@ -29,9 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPModelFirstContractPayloadBuilderTest {
-    
+
     private final MCPModelFirstContractPayloadBuilder builder = new MCPModelFirstContractPayloadBuilder(MCPDescriptorCatalogLoader.load());
-    
+
     @Test
     void assertCreateModelFirstSummary() {
         Map<String, Object> actual = builder.createModelFirstSummary();
@@ -40,13 +40,13 @@ class MCPModelFirstContractPayloadBuilderTest {
         assertThat(actual.get("catalog_resource_role"), is("shardingsphere://capabilities is an optional ShardingSphere domain catalog resource, not the MCP protocol discovery source."));
         assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
         assertFalse(actual.containsKey("safe_first_resource"));
-        assertThat(castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting")).get("execute_requires"), is("approved_by_user=true"));
+        assertThat(castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting")).get("execute_requires"), is("execution_mode=execute"));
         Map<?, ?> actualWorkflowRule = castToMap(actual.get("workflow_rule"));
         assertThat(actualWorkflowRule.get("planning_tools"), is(List.of("database_gateway_plan_encrypt_rule")));
         assertThat(castToMap(actualWorkflowRule.get("preview_tool")).get("execution_mode"), is("preview"));
         assertThat(actualWorkflowRule.get("validate_tool"), is("database_gateway_validate_workflow"));
     }
-    
+
     @Test
     void assertCreateModelContract() {
         Map<String, Object> actual = builder.createModelContract();
@@ -55,19 +55,19 @@ class MCPModelFirstContractPayloadBuilderTest {
         assertThat(actual.get("argument_completion_method"), is("completion/complete"));
         assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
-        assertThat(actual.get("side_effect_rule"), is("Preview before side effects and continue only after explicit user approval with approved_by_user=true."));
+        assertThat(actual.get("side_effect_rule"), is("Preview before side effects and continue only when the requested side effect is still intended."));
     }
-    
+
     @Test
     void assertCreateNextActionContract() {
         List<Map<String, Object>> actual = builder.createNextActionContract();
         assertThat(actual.size(), is(5));
         Map<?, ?> actualToolCall = findByType(actual, "tool_call");
         assertTrue(((Collection<?>) actualToolCall.get("required_fields")).contains("tool_name"));
-        assertTrue(((Collection<?>) actualToolCall.get("required_fields")).contains("requires_user_approval"));
+        assertFalse(((Collection<?>) actualToolCall.get("required_fields")).contains("requires_user_approval"));
         assertTrue(((Collection<?>) findByType(actual, "completion").get("optional_fields")).contains("resume_arguments"));
     }
-    
+
     @Test
     void assertCreateCommonFlows() {
         List<Map<String, Object>> actual = builder.createCommonFlows();
@@ -77,7 +77,7 @@ class MCPModelFirstContractPayloadBuilderTest {
         assertThat(actualSideEffectingSql.get("referenced_tools"), is(List.of("database_gateway_execute_update")));
         assertTrue(((Collection<?>) actualSideEffectingSql.get("steps")).contains("call_tool database_gateway_execute_update execution_mode=preview"));
     }
-    
+
     @Test
     void assertCreateSecurityHints() {
         Map<String, Object> actual = builder.createSecurityHints();
@@ -89,19 +89,19 @@ class MCPModelFirstContractPayloadBuilderTest {
         assertThat(castToMap(actualClientSafetyPolicy.get("tool_call_limit")).get("scope"), is("session"));
         assertTrue(String.valueOf(actualClientSafetyPolicy.get("external_model_boundary")).contains("never calls external model providers"));
     }
-    
+
     private Map<?, ?> findByType(final List<Map<String, Object>> values, final String type) {
         return findByKey(values, "type", type);
     }
-    
+
     private Map<?, ?> findByKey(final List<Map<String, Object>> values, final String key, final String value) {
         return values.stream().filter(each -> value.equals(each.get(key))).findFirst().orElseThrow();
     }
-    
+
     private Map<?, ?> castToMap(final Object value) {
         return (Map<?, ?>) value;
     }
-    
+
     private Map<String, Object> createOfficialDiscoveryMethods() {
         return Map.of("tools", "tools/list", "resources", "resources/list", "resource_templates", "resources/templates/list", "prompts", "prompts/list");
     }

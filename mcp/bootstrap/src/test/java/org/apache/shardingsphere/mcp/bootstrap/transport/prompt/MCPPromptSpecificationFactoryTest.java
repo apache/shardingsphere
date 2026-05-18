@@ -94,7 +94,7 @@ class MCPPromptSpecificationFactoryTest {
                 "- column: phone",
                 "- algorithm_type: AES",
                 "2. Read shardingsphere://features/encrypt/algorithms before choosing algorithm_type.",
-                "4. Call database_gateway_plan_encrypt_rule with gathered logical names and any user-approved algorithm choices."));
+                "4. Call database_gateway_plan_encrypt_rule with gathered logical names and any reviewed algorithm choices."));
     }
     
     @Test
@@ -106,7 +106,7 @@ class MCPPromptSpecificationFactoryTest {
                 "- column: phone",
                 "- algorithm_type: KEEP_FIRST_N_LAST_M",
                 "2. Read shardingsphere://features/mask/algorithms before choosing algorithm_type.",
-                "4. Call database_gateway_plan_mask_rule with gathered logical names and any user-approved algorithm choice."));
+                "4. Call database_gateway_plan_mask_rule with gathered logical names and any reviewed algorithm choice."));
     }
     
     @Test

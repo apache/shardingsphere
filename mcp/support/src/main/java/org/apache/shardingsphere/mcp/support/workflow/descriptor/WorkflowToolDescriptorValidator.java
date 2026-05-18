@@ -29,19 +29,19 @@ import java.util.Set;
  * Workflow tool descriptor validator.
  */
 public final class WorkflowToolDescriptorValidator implements MCPToolDescriptorValidator {
-    
+
     private static final Set<String> SUPPORTED_TOOLS = Set.of(WorkflowToolDescriptors.APPLY_TOOL_NAME, WorkflowToolDescriptors.VALIDATE_TOOL_NAME);
-    
+
     @Override
     public boolean supports(final MCPToolDescriptor toolDescriptor) {
         return SUPPORTED_TOOLS.contains(toolDescriptor.getName());
     }
-    
+
     @Override
     public void validate(final MCPToolDescriptor toolDescriptor) {
         if (WorkflowToolDescriptors.APPLY_TOOL_NAME.equals(toolDescriptor.getName())) {
             MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor,
-                    List.of("response_mode", WorkflowFieldNames.PLAN_ID, "status", WorkflowFieldNames.EXECUTION_MODE, "next_actions", "requires_user_approval", "manual_artifact_summary"));
+                    List.of("response_mode", WorkflowFieldNames.PLAN_ID, "status", WorkflowFieldNames.EXECUTION_MODE, "next_actions", "manual_artifact_summary"));
         } else {
             MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor,
                     List.of("response_mode", WorkflowFieldNames.PLAN_ID, "status", "overall_status", "issues", "next_actions"));

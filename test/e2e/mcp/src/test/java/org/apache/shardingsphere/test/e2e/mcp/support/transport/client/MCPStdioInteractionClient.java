@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -31,38 +30,22 @@ import java.nio.file.Paths;
 @SuppressWarnings("UseOfProcessBuilder")
 @RequiredArgsConstructor
 public final class MCPStdioInteractionClient extends AbstractProcessMCPStdioInteractionClient {
-    
+
     private static final String CLIENT_NAME = "mcp-e2e-stdio";
-    
+
     private static final String LOGBACK_CONFIG_FILE_NAME = "mcp-e2e-stdio-logback.xml";
-    
+
     private final Path configFile;
-    
+
     @Override
     protected ProcessBuilder createProcessBuilder() throws IOException {
-        Path logbackConfigFile = createLogbackConfigurationFile();
+        Path logbackConfigFile = MCPStdioLogbackConfiguration.createForConfig(configFile, LOGBACK_CONFIG_FILE_NAME);
         return new ProcessBuilder(Paths.get(System.getProperty("java.home"), "bin", "java").toString(),
                 "-Dlogback.configurationFile=" + logbackConfigFile, "-cp", System.getProperty("java.class.path"), MCPBootstrap.class.getName(), configFile.toString());
     }
-    
+
     @Override
     protected String getClientName() {
         return CLIENT_NAME;
-    }
-    
-    private Path createLogbackConfigurationFile() throws IOException {
-        Path result = configFile.resolveSibling(LOGBACK_CONFIG_FILE_NAME);
-        Files.writeString(result, "<configuration>\n"
-                + "    <appender name=\"STDERR\" class=\"ch.qos.logback.core.ConsoleAppender\">\n"
-                + "        <target>System.err</target>\n"
-                + "        <encoder>\n"
-                + "            <pattern>%msg%n</pattern>\n"
-                + "        </encoder>\n"
-                + "    </appender>\n"
-                + "    <root level=\"WARN\">\n"
-                + "        <appender-ref ref=\"STDERR\" />\n"
-                + "    </root>\n"
-                + "</configuration>\n");
-        return result;
     }
 }

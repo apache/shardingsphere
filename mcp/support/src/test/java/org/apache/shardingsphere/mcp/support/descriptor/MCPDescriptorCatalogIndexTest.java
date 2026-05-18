@@ -33,82 +33,82 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPDescriptorCatalogIndexTest {
-    
+
     @Test
     void assertGetResourceDescriptors() {
         Collection<MCPResourceDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getResourceDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "shardingsphere://workflows/{plan_id}".equals(each.getUriTemplate())));
     }
-    
+
     @Test
     void assertGetRequiredResourceDescriptor() {
         MCPResourceDescriptor actual = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor("shardingsphere://workflows/{plan_id}");
         assertThat(actual.getName(), is("workflow-plan"));
     }
-    
+
     @Test
     void assertGetRequiredResourceDescriptorWithUnknownResource() {
         assertThrows(IllegalStateException.class, () -> MCPDescriptorCatalogIndex.getRequiredResourceDescriptor("shardingsphere://unknown"));
     }
-    
+
     @Test
     void assertGetRequiredResourceExtensionDescriptor() {
         MCPResourceExtensionDescriptor actual = MCPDescriptorCatalogIndex.getRequiredResourceExtensionDescriptor("shardingsphere://workflows/{plan_id}");
         assertThat(actual.getResourceKind(), is("detail"));
     }
-    
+
     @Test
     void assertGetToolDescriptors() {
         Collection<MCPToolDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getToolDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "database_gateway_apply_workflow".equals(each.getName())));
     }
-    
+
     @Test
     void assertGetRequiredToolDescriptor() {
         MCPToolDescriptor actual = MCPDescriptorCatalogIndex.getRequiredToolDescriptor("database_gateway_apply_workflow");
         assertThat(actual.getTitle(), is("Apply Workflow"));
     }
-    
+
     @Test
     void assertGetRequiredToolDescriptorWithUnknownTool() {
         assertThrows(IllegalStateException.class, () -> MCPDescriptorCatalogIndex.getRequiredToolDescriptor("unknown_tool"));
     }
-    
+
     @Test
     void assertGetPromptDescriptors() {
         Collection<MCPPromptDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getPromptDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "inspect_metadata".equals(each.getName())));
     }
-    
+
     @Test
     void assertGetRequiredPromptTemplateBinding() {
         MCPPromptTemplateBinding actual = MCPDescriptorCatalogIndex.getRequiredPromptTemplateBinding("inspect_metadata");
         assertThat(actual.getTemplateResource(), is("META-INF/shardingsphere-mcp/prompts/inspect-metadata.md"));
     }
-    
+
     @Test
     void assertFindToolRuntimeDescriptor() {
         assertTrue(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor("database_gateway_apply_workflow")
-                .filter(each -> "apply".equals(each.getWorkflowRole()) && each.isRequiresUserApproval()).isPresent());
+                .filter(each -> "apply".equals(each.getWorkflowRole()) && each.getSideEffectScope().contains("rule-metadata")).isPresent());
     }
-    
+
     @Test
     void assertFindToolRuntimeDescriptorWithUnknownTool() {
         assertFalse(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor("unknown_tool").isPresent());
     }
-    
+
     @Test
     void assertGetCompletionTargetDescriptors() {
         Collection<MCPCompletionTargetDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getCompletionTargetDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "prompt".equals(each.getReferenceType()) && "inspect_metadata".equals(each.getReference())));
     }
-    
+
     @Test
     void assertGetResourceNavigationDescriptors() {
         Collection<MCPResourceNavigationDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getResourceNavigationDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "database_gateway_apply_workflow".equals(each.getFrom()) && "database_gateway_validate_workflow".equals(each.getTo())));
     }
-    
+
     @Test
     void assertGetResourceNavigationDescriptorsByFrom() {
         Collection<MCPResourceNavigationDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getResourceNavigationDescriptors("database_gateway_apply_workflow");
@@ -116,13 +116,13 @@ class MCPDescriptorCatalogIndexTest {
         assertTrue(actualDescriptors.stream().allMatch(each -> "database_gateway_apply_workflow".equals(each.getFrom())));
         assertTrue(actualDescriptors.stream().anyMatch(each -> "database_gateway_validate_workflow".equals(each.getTo())));
     }
-    
+
     @Test
     void assertGetResourceNavigationDescriptorsByUnknownFrom() {
         Collection<MCPResourceNavigationDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getResourceNavigationDescriptors("shardingsphere://unknown");
         assertTrue(actualDescriptors.isEmpty());
     }
-    
+
     @Test
     void assertCreateCapabilityPayload() {
         Map<String, Object> actual = MCPDescriptorCatalogIndex.createCapabilityPayload(List.of("shardingsphere://workflows/{plan_id}"), List.of("database_gateway_apply_workflow"), List.of("SELECT"));
@@ -130,7 +130,7 @@ class MCPDescriptorCatalogIndexTest {
         assertThat(actual.get("supportedTools"), is(List.of("database_gateway_apply_workflow")));
         assertThat(actual.get("supportedStatementClasses"), is(List.of("SELECT")));
     }
-    
+
     @Test
     void assertGetDescriptorCatalogFingerprint() {
         assertFalse(MCPDescriptorCatalogIndex.getDescriptorCatalogFingerprint().isEmpty());

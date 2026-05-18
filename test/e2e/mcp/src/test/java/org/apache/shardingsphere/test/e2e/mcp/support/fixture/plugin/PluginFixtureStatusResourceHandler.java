@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -33,20 +30,19 @@ import java.util.Map;
  * Test-only resource handler used to prove packaged distribution plugin discovery.
  */
 public final class PluginFixtureStatusResourceHandler implements MCPResourceHandler<MCPServiceHandlerContext> {
-    
+
     private static final String URI_PATTERN = "shardingsphere://features/test-fixture/status";
-    
+
     @Override
     public Class<MCPServiceHandlerContext> getContextType() {
         return MCPServiceHandlerContext.class;
     }
-    
+
     @Override
-    public MCPResourceDescriptor getResourceDescriptor() {
-        return new MCPResourceDescriptor(URI_PATTERN, "test-fixture-status", "Test Fixture Status",
-                "Read the packaged MCP test fixture status used by e2e plugin discovery tests.", "application/json", MCPResourceAnnotations.EMPTY, Collections.emptyMap());
+    public String getResourceUriTemplate() {
+        return URI_PATTERN;
     }
-    
+
     @Override
     public MCPResponse handle(final MCPServiceHandlerContext handlerContext, final MCPUriVariables uriVariables) {
         return new MCPMapResponse(Map.of("items", List.of(Map.of("feature", "test-fixture", "status", "ready"))));

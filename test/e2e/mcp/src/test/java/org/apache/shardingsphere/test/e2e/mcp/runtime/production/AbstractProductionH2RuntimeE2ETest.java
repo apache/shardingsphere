@@ -42,9 +42,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
 abstract class AbstractProductionH2RuntimeE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
-    
+
     private String jdbcUrl;
-    
+
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
@@ -54,16 +54,16 @@ abstract class AbstractProductionH2RuntimeE2ETest extends AbstractTransportParam
             throw new IOException(ex);
         }
     }
-    
+
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
         return H2RuntimeConfigurationTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
     }
-    
+
     protected void assertOfficialToolNames(final List<String> actualToolNames) {
         assertThat(actualToolNames, containsInAnyOrder(OfficialMCPToolNames.getAll().toArray()));
     }
-    
+
     protected void assertAiNativeCapabilities(final Map<String, Object> capabilities) {
         assertTrue(capabilities.containsKey("model_first_summary"));
         assertTrue(capabilities.containsKey("model_contract"));
@@ -85,7 +85,7 @@ abstract class AbstractProductionH2RuntimeE2ETest extends AbstractTransportParam
         assertThat(surfaceSummary.get("read_only_sql_tool"), is("database_gateway_execute_query"));
         assertThat(surfaceSummary.get("side_effect_sql_tool"), is("database_gateway_execute_update"));
     }
-    
+
     protected void assertAiNativeDiscovery(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
         Map<String, Object> runtimeStatus = interactionClient.readResource("shardingsphere://runtime");
         assertThat(String.valueOf(runtimeStatus.get("status")), is("available"));
@@ -99,7 +99,7 @@ abstract class AbstractProductionH2RuntimeE2ETest extends AbstractTransportParam
         Map<String, Object> completionPayload = interactionClient.complete(Map.of("type", "ref/prompt", "name", "inspect_metadata"), "schema", "pub", Map.of("database", "logic_db"));
         assertTrue(((List<?>) getMap(completionPayload.get("completion")).get("values")).contains("public"));
     }
-    
+
     protected void assertAiNativeSqlPreview(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
         Map<String, Object> actual = interactionClient.call("database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "preview"));
@@ -109,9 +109,9 @@ abstract class AbstractProductionH2RuntimeE2ETest extends AbstractTransportParam
         assertFalse((Boolean) actual.get("would_execute"));
         List<Map<String, Object>> nextActions = getMapList(actual.get("next_actions"));
         assertThat(nextActions.stream().map(each -> String.valueOf(each.get("type"))).toList(), is(List.of("ask_user", "tool_call")));
-        assertTrue((Boolean) nextActions.get(1).get("requires_user_approval"));
+        assertFalse(nextActions.get(1).containsKey("requires_user_approval"));
     }
-    
+
     protected void assertAiNativeSqlResult(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
         Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT order_id, status FROM orders ORDER BY order_id", "max_rows", 1));
@@ -121,23 +121,23 @@ abstract class AbstractProductionH2RuntimeE2ETest extends AbstractTransportParam
         assertThat(String.valueOf(actual.get("truncated")), is("true"));
         assertThat(String.valueOf(getMapList(actual.get("next_actions")).get(0).get("type")), is("ask_user"));
     }
-    
+
     protected Map<String, Object> getMap(final Object value) {
         return MCPPayloadAssertions.getMap(value);
     }
-    
+
     protected List<Map<String, Object>> getMapList(final Object value) {
         return MCPPayloadAssertions.getMapList(value);
     }
-    
+
     protected static boolean isEnabled() {
         return MCPE2ECondition.isProductionH2Enabled() || MCPE2ECondition.isProductionH2StdioEnabled();
     }
-    
+
     protected static Stream<Arguments> transports() {
         return runtimeTransports().map(each -> Arguments.of(getTransportName(each), each));
     }
-    
+
     protected static Stream<Arguments> assertReadSingleMetadataResourceCases() {
         return runtimeTransports().flatMap(each -> Stream.of(
                 Arguments.of(getTransportName(each) + " database detail", each, "shardingsphere://databases/logic_db", "database", "logic_db"),
@@ -150,7 +150,7 @@ abstract class AbstractProductionH2RuntimeE2ETest extends AbstractTransportParam
                         "idx_orders_status"),
                 Arguments.of(getTransportName(each) + " sequence detail", each, "shardingsphere://databases/logic_db/schemas/public/sequences/order_seq", "sequence", "order_seq")));
     }
-    
+
     protected static Stream<Arguments> assertReadCollectionMetadataResourceCases() {
         return runtimeTransports().flatMap(each -> Stream.of(
                 Arguments.of(getTransportName(each) + " schemas list", each, "shardingsphere://databases/logic_db/schemas", "schema", List.of("public")),
@@ -160,15 +160,15 @@ abstract class AbstractProductionH2RuntimeE2ETest extends AbstractTransportParam
                 Arguments.of(getTransportName(each) + " view columns list", each,
                         "shardingsphere://databases/logic_db/schemas/public/views/active_orders/columns", "column", List.of("order_id", "status"))));
     }
-    
+
     protected static Map<String, Object> createExecuteUpdateArguments(final String sql) {
-        return Map.of("database", "logic_db", "schema", "public", "sql", sql, "execution_mode", "execute", "approved_by_user", true);
+        return Map.of("database", "logic_db", "schema", "public", "sql", sql, "execution_mode", "execute");
     }
-    
+
     protected String getJdbcUrl() {
         return jdbcUrl;
     }
-    
+
     protected static Stream<RuntimeTransport> runtimeTransports() {
         Stream.Builder<RuntimeTransport> result = Stream.builder();
         if (MCPE2ECondition.isProductionH2Enabled()) {
@@ -179,11 +179,11 @@ abstract class AbstractProductionH2RuntimeE2ETest extends AbstractTransportParam
         }
         return result.build();
     }
-    
+
     protected static String getTransportName(final RuntimeTransport transport) {
         return RuntimeTransport.HTTP == transport ? "http" : "stdio";
     }
-    
+
     protected void assertToolDefinition(final List<Map<String, Object>> tools, final String toolName, final String expectedTitle,
                                         final String expectedRequiredField, final String expectedPropertyField, final String expectedPropertyType) {
         MCPPayloadAssertions.assertToolDefinition(tools, toolName, expectedTitle, expectedRequiredField, expectedPropertyField, expectedPropertyType);

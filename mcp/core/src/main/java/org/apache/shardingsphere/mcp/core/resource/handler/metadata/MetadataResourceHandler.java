@@ -46,25 +46,25 @@ import java.util.stream.Stream;
  */
 @RequiredArgsConstructor
 public final class MetadataResourceHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
-    
+
     private static final int LARGE_RESULT_THRESHOLD = 100;
-    
+
     private static final int NARROW_SEARCH_PAGE_SIZE = 50;
-    
+
     private final String uriTemplate;
-    
+
     private final BiFunction<MCPDatabaseHandlerContext, MCPUriVariables, List<?>> metadataLoader;
-    
+
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
     }
-    
+
     @Override
     public String getResourceUriTemplate() {
         return uriTemplate;
     }
-    
+
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         List<?> items = metadataLoader.apply(databaseContext, uriVariables);
@@ -86,25 +86,25 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         }
         return new MCPItemsResponse(returnedItems, navigationPayload);
     }
-    
+
     private boolean isDetailResource(final MCPResourceExtensionDescriptor descriptor) {
         return "detail".equals(descriptor.getResourceKind());
     }
-    
+
     private List<?> capListItems(final List<?> items) {
         return items.size() <= LARGE_RESULT_THRESHOLD ? items : items.subList(0, LARGE_RESULT_THRESHOLD);
     }
-    
+
     private void appendListSizeMetadata(final Map<String, Object> payload, final int totalCount, final int returnedCount) {
         payload.put("total_count", totalCount);
         payload.put("returned_count", returnedCount);
         payload.put("truncated", returnedCount < totalCount);
     }
-    
+
     private boolean isTruncated(final List<?> items, final List<?> returnedItems) {
         return returnedItems.size() < items.size();
     }
-    
+
     private Map<String, Object> createDetailPayload(final MCPResourceExtensionDescriptor descriptor, final List<?> items, final Map<String, Object> navigationPayload) {
         Map<String, Object> result = new LinkedHashMap<>(navigationPayload.size() + 6, 1F);
         result.put("response_mode", MCPResponseMode.DETAIL);
@@ -121,7 +121,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         result.putAll(navigationPayload);
         return result;
     }
-    
+
     private void appendEmptyStateGuidance(final Map<String, Object> payload, final MCPResourceExtensionDescriptor descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> emptyState = new LinkedHashMap<>(3, 1F);
         String resourceKind = null == descriptor.getObjectScope() ? "metadata" : descriptor.getObjectScope();
@@ -145,7 +145,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
                 ? List.of(MCPNextActionUtils.stop("No metadata items are available in this scope."))
                 : List.of(MCPNextActionUtils.readResource(parentUri, "Read the parent metadata resource before broadening or correcting the request.")));
     }
-    
+
     private Map<String, Object> createRecovery(final String category, final String resourceKind, final String parentUri, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("response_mode", MCPResponseMode.RECOVERY);
@@ -162,11 +162,11 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         }
         return result;
     }
-    
+
     private String createRequestedToken(final MCPUriVariables uriVariables) {
         return Stream.of("column", "index", "sequence", "view", "table", "schema", "database").filter(uriVariables::containsVariable).findFirst().map(uriVariables::getValue).orElse("");
     }
-    
+
     private void appendLargeResultGuidance(final Map<String, Object> payload, final MCPResourceExtensionDescriptor descriptor, final MCPUriVariables uriVariables, final int itemCount) {
         Map<String, Object> largeResult = new LinkedHashMap<>(4, 1F);
         largeResult.put("state", "broad_metadata_list");
@@ -178,9 +178,9 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         payload.put("large_result_guidance", largeResult);
         payload.put("next_actions", List.of(MCPNextActionUtils.callTool("database_gateway_search_metadata",
                 String.format("Narrow the broad %s metadata list before reading detail resources.", resolveGuidanceScope(descriptor)),
-                createNarrowSearchArguments(descriptor, uriVariables), false)));
+                createNarrowSearchArguments(descriptor, uriVariables))));
     }
-    
+
     private Map<String, Object> createNarrowSearchArguments(final MCPResourceExtensionDescriptor descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         if (uriVariables.containsVariable("database")) {
@@ -193,7 +193,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         result.put("page_size", NARROW_SEARCH_PAGE_SIZE);
         return result;
     }
-    
+
     private String resolveSearchObjectType(final MCPResourceExtensionDescriptor descriptor) {
         String objectScope = descriptor.getObjectScope();
         if ("logical-database".equals(objectScope)) {
@@ -204,11 +204,11 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         }
         return null == objectScope ? "database" : objectScope;
     }
-    
+
     private String resolveGuidanceScope(final MCPResourceExtensionDescriptor descriptor) {
         return null == descriptor.getObjectScope() ? "logical" : descriptor.getObjectScope();
     }
-    
+
     private String getResourceHintUri(final Object value) {
         if (!(value instanceof Map)) {
             return "";
@@ -216,7 +216,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         Object uri = ((Map<?, ?>) value).get("uri");
         return null == uri ? "" : uri.toString();
     }
-    
+
     private Map<String, Object> createNavigationPayload(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         String uriOrTemplate = descriptor.getUriTemplate();
@@ -235,12 +235,12 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         }
         return result;
     }
-    
+
     private Optional<Map<String, Object>> createNextResourceHint(final String uriTemplate, final String description, final MCPUriVariables variables) {
         return MCPUriTemplateUtils.expandIfComplete(uriTemplate, variables)
                 .map(uri -> MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_detail", description, "next_resources"));
     }
-    
+
     private String resolveResourceKind(final String uri) {
         if (uri.contains("/columns")) {
             return "column";
@@ -262,7 +262,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         }
         return "logical-database";
     }
-    
+
     private String createParentUri(final Optional<String> selfUri) {
         if (selfUri.isEmpty()) {
             return "";

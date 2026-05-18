@@ -39,13 +39,13 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowPlanPayloadBuilder {
-    
+
     private static final String DELIVERY_MODE_ALL_AT_ONCE = "all-at-once";
-    
+
     private static final String EXECUTION_MODE_REVIEW_THEN_EXECUTE = "review-then-execute";
-    
+
     private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
-    
+
     /**
      * Build one workflow-plan payload map.
      *
@@ -72,11 +72,11 @@ public final class WorkflowPlanPayloadBuilder {
         WorkflowGuidancePayloadBuilder.appendPlanningGuidance(result, snapshot);
         return result;
     }
-    
+
     private static String resolveResponseMode(final WorkflowContextSnapshot snapshot) {
         return WorkflowLifecycle.STATUS_FAILED.equals(snapshot.getStatus()) ? "terminal" : "planning";
     }
-    
+
     private static Map<String, Object> createIntentInference(final ClarifiedIntent clarifiedIntent) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put(WorkflowFieldNames.OPERATION_TYPE, clarifiedIntent.getOperationType());
@@ -86,18 +86,17 @@ public final class WorkflowPlanPayloadBuilder {
         result.put("reasoning_notes", clarifiedIntent.getReasoningNotes());
         return result;
     }
-    
+
     private static Map<String, Object> createReviewFocus(final WorkflowContextSnapshot snapshot) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         boolean manualOnly = EXECUTION_MODE_MANUAL_ONLY.equals(snapshot.getInteractionPlan().getExecutionMode());
         result.put("artifact_categories", createReviewArtifactCategories(snapshot));
         result.put("side_effect_scope", createReviewSideEffectScope(snapshot));
         result.put("manual_only", manualOnly);
-        result.put("requires_user_approval", WorkflowLifecycle.STATUS_PLANNED.equals(snapshot.getStatus()) && !manualOnly);
         result.put("next_review_action", createNextReviewAction(snapshot));
         return result;
     }
-    
+
     private static Map<String, Object> createArgumentProvenance(final WorkflowContextSnapshot snapshot) {
         WorkflowRequest request = snapshot.getRequest();
         if (null == request) {
@@ -120,7 +119,7 @@ public final class WorkflowPlanPayloadBuilder {
         putUserProvided(result, WorkflowFieldNames.ALGORITHM_TYPE, request.getAlgorithmType());
         return result;
     }
-    
+
     private static String resolveModeProvenance(final String fieldName, final String value, final Map<String, Object> inferredValues) {
         if (inferredValues.containsKey(fieldName)) {
             return "inferred_from_intent";
@@ -130,25 +129,25 @@ public final class WorkflowPlanPayloadBuilder {
         }
         return "user_provided";
     }
-    
+
     private static boolean isDefaultMode(final String fieldName, final String value) {
         return WorkflowFieldNames.DELIVERY_MODE.equals(fieldName) ? DELIVERY_MODE_ALL_AT_ONCE.equals(value) : EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(value);
     }
-    
+
     private static Map<String, Object> getInferredValues(final WorkflowContextSnapshot snapshot) {
         return null == snapshot.getClarifiedIntent() ? Map.of() : snapshot.getClarifiedIntent().getInferredValues();
     }
-    
+
     private static void putUserProvided(final Map<String, Object> target, final String key, final String value) {
         putArgumentProvenance(target, key, value, "user_provided");
     }
-    
+
     private static void putArgumentProvenance(final Map<String, Object> target, final String key, final String value, final String provenance) {
         if (!value.isEmpty()) {
             target.put(key, provenance);
         }
     }
-    
+
     private static List<String> createReviewArtifactCategories(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
         if (!snapshot.getDdlArtifacts().isEmpty()) {
@@ -165,7 +164,7 @@ public final class WorkflowPlanPayloadBuilder {
         }
         return result;
     }
-    
+
     private static List<String> createReviewSideEffectScope(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
         if (!snapshot.getDdlArtifacts().isEmpty() || !snapshot.getIndexPlans().isEmpty()) {
@@ -176,7 +175,7 @@ public final class WorkflowPlanPayloadBuilder {
         }
         return result;
     }
-    
+
     private static String createNextReviewAction(final WorkflowContextSnapshot snapshot) {
         if (WorkflowLifecycle.STATUS_CLARIFYING.equals(snapshot.getStatus())) {
             return "answer_clarification_questions";

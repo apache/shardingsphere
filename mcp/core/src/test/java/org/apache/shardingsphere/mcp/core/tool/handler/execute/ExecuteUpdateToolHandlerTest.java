@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedExcept
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
@@ -34,7 +35,6 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ExecuteUpdateToolHandlerTest {
-    
+
     @Test
     void assertHandleUpdateStatement() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -51,7 +51,7 @@ class ExecuteUpdateToolHandlerTest {
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "execute", "approved_by_user", true)));
+                Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "execute")));
         assertThat(actual.toPayload().get("response_mode"), is("executed"));
         assertThat(actual.toPayload().get("execution_mode"), is("execute"));
         assertThat(actual.toPayload().get("statement_class"), is("dml"));
@@ -63,18 +63,19 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(requestCaptor.getValue().getMaxRows(), is(100));
         assertThat(requestCaptor.getValue().getTimeoutMs(), is(0));
     }
-    
+
     @Test
-    void assertRejectUnapprovedExecution() {
+    void assertHandleExecutionWithoutApprovalArgument() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.updateCount("UPDATE", 1));
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "execute"))));
-        assertThat(actual.getMessage(), is("database_gateway_execute_update approved_by_user=true is required for real side effects."));
-        verifyNoInteractions(executionFacade);
+        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
+                Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "execute")));
+        assertThat(actual.toPayload().get("execution_mode"), is("execute"));
+        verify(executionFacade).execute(any());
     }
-    
+
     @Test
     void assertRejectMissingExecutionMode() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -85,7 +86,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.getMessage(), is("database_gateway_execute_update execution_mode is required."));
         verifyNoInteractions(executionFacade);
     }
-    
+
     @Test
     void assertRejectReadOnlyQuery() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -96,7 +97,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.getMessage(), is("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL."));
         verifyNoInteractions(executionFacade);
     }
-    
+
     @Test
     void assertPreviewUpdateStatementWithoutExecuting() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -109,32 +110,30 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.toPayload().get("preview_semantics"), is("classification_only"));
         assertFalse((boolean) actual.toPayload().get("affected_rows_estimated"));
         assertFalse((boolean) actual.toPayload().get("would_execute"));
-        assertThat(actual.toPayload().get("status"), is("AWAITING_APPROVAL"));
+        assertThat(actual.toPayload().get("status"), is("PREVIEWED"));
         assertThat(actual.toPayload().get("statement_class"), is("dml"));
         assertThat(actual.toPayload().get("side_effect_scope"), is(List.of("physical-data")));
-        assertThat(actual.toPayload().get("approval_summary"), is("Previewed UPDATE statement with side-effect scope physical-data. It has not been executed."));
-        assertThat(actual.toPayload().get("approval_question"), is("Do you approve executing this UPDATE statement with side-effect scope physical-data?"));
+        assertThat(actual.toPayload().get("review_summary"), is("Previewed UPDATE statement with side-effect scope physical-data. It has not been executed."));
         assertFalse(actual.toPayload().containsKey("suggested_next_tool"));
         assertThat(((Map<?, ?>) actual.toPayload().get("suggested_arguments")).get("execution_mode"), is("execute"));
-        assertTrue((Boolean) ((Map<?, ?>) actual.toPayload().get("suggested_arguments")).get("approved_by_user"));
+        assertFalse(((Map<?, ?>) actual.toPayload().get("suggested_arguments")).containsKey("approved_by_user"));
         assertThat(((Map<?, ?>) actual.toPayload().get("argument_provenance")).get("sql"), is("server_generated"));
         assertThat(((Map<?, ?>) actual.toPayload().get("argument_provenance")).get("execution_mode"), is("server_defaulted"));
-        assertThat(((Map<?, ?>) actual.toPayload().get("argument_provenance")).get("approved_by_user"), is("user_provided"));
+        assertFalse(((Map<?, ?>) actual.toPayload().get("argument_provenance")).containsKey("approved_by_user"));
         List<?> actualNextActions = (List<?>) actual.toPayload().get("next_actions");
-        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("ask_user"));
+        assertThat(actualNextActions.size(), is(1));
+        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("tool_call"));
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("order"), is(1));
-        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("required_inputs"), is(List.of("approved_by_user")));
-        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("tool_name"), is("database_gateway_execute_update"));
-        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("depends_on"), is(List.of(1)));
-        assertThat(((Map<?, ?>) ((Map<?, ?>) actualNextActions.get(1)).get("arguments")).get("execution_mode"), is("execute"));
-        assertTrue((Boolean) ((Map<?, ?>) ((Map<?, ?>) actualNextActions.get(1)).get("arguments")).get("approved_by_user"));
-        assertTrue((Boolean) ((Map<?, ?>) actualNextActions.get(1)).get("requires_user_approval"));
+        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("tool_name"), is("database_gateway_execute_update"));
+        assertThat(((Map<?, ?>) ((Map<?, ?>) actualNextActions.get(0)).get("arguments")).get("execution_mode"), is("execute"));
+        assertFalse(((Map<?, ?>) ((Map<?, ?>) actualNextActions.get(0)).get("arguments")).containsKey("approved_by_user"));
+        assertFalse(((Map<?, ?>) actualNextActions.get(0)).containsKey("requires_user_approval"));
         assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("resources_to_read")).get(0)).get("uri"), is("shardingsphere://databases/logic_db/capabilities"));
-        assertTrue((boolean) actual.toPayload().get("ask_user_when_uncertain"));
+        assertFalse(actual.toPayload().containsKey("ask_user_when_uncertain"));
         assertFalse(actual.toPayload().containsKey("recommended_next_call"));
         verifyNoInteractions(executionFacade);
     }
-    
+
     @Test
     void assertRejectUnknownExecutionMode() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -145,7 +144,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.getMessage(), is("database_gateway_execute_update execution_mode must be one of [execute, preview]."));
         verifyNoInteractions(executionFacade);
     }
-    
+
     @Test
     void assertRejectExplainAnalyze() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -155,5 +154,19 @@ class ExecuteUpdateToolHandlerTest {
                 Map.of("database", "logic_db", "sql", "EXPLAIN ANALYZE SELECT * FROM orders", "execution_mode", "execute"))));
         assertThat(actual.getMessage(), is("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL."));
         verifyNoInteractions(executionFacade);
+    }
+
+    @Test
+    void assertHandleSideEffectingExplainAnalyze() {
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(SupportedMCPStatement.EXPLAIN_ANALYZE,
+                "EXPLAIN ANALYZE", List.of(), List.of(), false));
+        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
+                Map.of("database", "logic_db", "sql", "EXPLAIN ANALYZE UPDATE orders SET status = 'PAID'", "execution_mode", "execute")));
+        assertThat(actual.toPayload().get("execution_mode"), is("execute"));
+        assertThat(actual.toPayload().get("statement_class"), is("explain_analyze"));
+        verify(executionFacade).execute(any());
     }
 }

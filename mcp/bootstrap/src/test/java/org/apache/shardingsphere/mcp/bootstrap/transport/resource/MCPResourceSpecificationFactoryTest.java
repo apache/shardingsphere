@@ -43,6 +43,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -54,7 +55,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPResourceSpecificationFactoryTest {
-    
+
     @Test
     void assertCreateResourceSpecifications() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
@@ -70,7 +71,7 @@ class MCPResourceSpecificationFactoryTest {
             assertNotNull(actual.get(0).readHandler());
         }
     }
-    
+
     @Test
     void assertCreateResourceSpecificationsMapAnnotationPriority() {
         MCPResourceAnnotations priorityZeroAnnotations = new MCPResourceAnnotations(List.of("assistant"), 0D, null);
@@ -83,7 +84,7 @@ class MCPResourceSpecificationFactoryTest {
             assertThat(actual.get(1).resource().annotations().priority(), is(0D));
         }
     }
-    
+
     @Test
     void assertCreateResourceSpecificationsHandleReadResource() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
@@ -94,10 +95,14 @@ class MCPResourceSpecificationFactoryTest {
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncResourceSpecification actualSpecification = new MCPResourceSpecificationFactory(runtimeContext).createResourceSpecifications().get(0);
             ReadResourceResult actual = actualSpecification.readHandler().apply(mock(McpSyncServerExchange.class), new ReadResourceRequest("shardingsphere://capabilities"));
-            assertThat(((TextResourceContents) actual.contents().get(0)).text(), is("{\"status\":\"ok\"}"));
+            assertThat(actual.contents().get(0), isA(TextResourceContents.class));
+            TextResourceContents actualContents = (TextResourceContents) actual.contents().get(0);
+            assertThat(actualContents.uri(), is("shardingsphere://capabilities"));
+            assertThat(actualContents.mimeType(), is("application/json"));
+            assertThat(actualContents.text(), is("{\"status\":\"ok\"}"));
         }
     }
-    
+
     @Test
     void assertCreateResourceSpecificationsHandleReadResourceError() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
@@ -112,7 +117,7 @@ class MCPResourceSpecificationFactoryTest {
             assertThat(actual.getJsonRpcError().message(), is("Resource not found"));
         }
     }
-    
+
     @Test
     void assertCreateResourceSpecificationsHandleUnsupportedResourcePayload() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
@@ -123,12 +128,16 @@ class MCPResourceSpecificationFactoryTest {
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncResourceSpecification actualSpecification = new MCPResourceSpecificationFactory(runtimeContext).createResourceSpecifications().get(0);
             ReadResourceResult actual = actualSpecification.readHandler().apply(mock(McpSyncServerExchange.class), new ReadResourceRequest("shardingsphere://capabilities"));
-            String actualText = ((TextResourceContents) actual.contents().get(0)).text();
+            assertThat(actual.contents().get(0), isA(TextResourceContents.class));
+            TextResourceContents actualContents = (TextResourceContents) actual.contents().get(0);
+            assertThat(actualContents.uri(), is("shardingsphere://capabilities"));
+            assertThat(actualContents.mimeType(), is("application/json"));
+            String actualText = actualContents.text();
             assertThat(actualText, containsString("\"error_code\":\"unsupported\""));
             assertThat(actualText, containsString("\"message\":\"Sequence resources are not supported for the current database.\""));
         }
     }
-    
+
     @Test
     void assertCreateResourceTemplateSpecifications() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
@@ -144,12 +153,12 @@ class MCPResourceSpecificationFactoryTest {
             assertNotNull(actual.get(0).readHandler());
         }
     }
-    
+
     private MCPResourceDescriptor createResourceDescriptor() {
         return new MCPResourceDescriptor("shardingsphere://capabilities", "server-capability-catalog", "Server Capability Catalog",
                 "Read the model-facing capability catalog.", "application/json", MCPResourceAnnotations.EMPTY, Collections.emptyMap());
     }
-    
+
     private MCPResourceDescriptor createResourceTemplateDescriptor() {
         return new MCPResourceDescriptor("shardingsphere://databases/{database}", "logical-database-detail", "Logical Database Detail",
                 "Read one logical database detail.", "application/json", MCPResourceAnnotations.EMPTY, Collections.emptyMap());

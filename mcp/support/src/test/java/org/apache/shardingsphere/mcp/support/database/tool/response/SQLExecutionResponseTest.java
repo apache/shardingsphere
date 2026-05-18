@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLExecutionResponseTest {
-    
+
     @Test
     void assertResultSet() {
         SQLExecutionResponse actual = SQLExecutionResponse.resultSet(List.of(new ExecuteQueryColumnDefinition("order_id", "INT", "INT", false)), List.of(List.of(1)), true);
@@ -54,7 +54,7 @@ class SQLExecutionResponseTest {
         assertThat(actual.getAppliedMaxRows(), is(0));
         assertThat(actual.getAppliedTimeoutMs(), is(0));
     }
-    
+
     @Test
     void assertUpdateCount() {
         SQLExecutionResponse actual = SQLExecutionResponse.updateCount("UPDATE", 2);
@@ -68,7 +68,7 @@ class SQLExecutionResponseTest {
         assertThat(actual.getMessage(), is(""));
         assertFalse(actual.isTruncated());
     }
-    
+
     @Test
     void assertStatementAck() {
         SQLExecutionResponse actual = SQLExecutionResponse.statementAck(SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", "Transaction committed.");
@@ -80,33 +80,33 @@ class SQLExecutionResponseTest {
         assertThat(actual.getMessage(), is("Transaction committed."));
         assertFalse(actual.isTruncated());
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertToPayloadCases")
     void assertToPayload(final String name, final Supplier<SQLExecutionResponse> responseSupplier, final Map<String, Object> expectedPayload) {
         SQLExecutionResponse actual = responseSupplier.get();
         assertThat(actual.toPayload(), is(expectedPayload));
     }
-    
+
     @Test
     void assertResultSetWithNullRows() {
         assertThat(SQLExecutionResponse.resultSet(List.of(), null, false).getRows(), is(List.of()));
     }
-    
+
     @Test
     void assertToPayloadWithUnnamedColumns() {
         Map<String, Object> actual = SQLExecutionResponse.resultSet(List.of(), List.of(List.of(1)), false).toPayload();
         assertThat(actual.get("row_object_status"), is("unnamed_columns"));
         assertFalse(actual.containsKey("row_objects"));
     }
-    
+
     @Test
     void assertToPayloadWithBlankColumnName() {
         Map<String, Object> actual = SQLExecutionResponse.resultSet(List.of(new ExecuteQueryColumnDefinition("", "INT", "INT", false)), List.of(List.of(1)), false).toPayload();
         assertThat(actual.get("row_object_status"), is("unnamed_columns"));
         assertFalse(actual.containsKey("row_objects"));
     }
-    
+
     @Test
     void assertToPayloadWithDuplicateColumnLabels() {
         List<ExecuteQueryColumnDefinition> columns = List.of(
@@ -115,7 +115,7 @@ class SQLExecutionResponseTest {
         assertThat(actual.get("row_object_status"), is("duplicate_column_labels"));
         assertFalse(actual.containsKey("row_objects"));
     }
-    
+
     @Test
     void assertToPayloadOmitsLargeRowObjects() {
         List<ExecuteQueryColumnDefinition> columns = List.of(new ExecuteQueryColumnDefinition("order_id", "INT", "INT", false));
@@ -127,7 +127,7 @@ class SQLExecutionResponseTest {
         assertThat(actual.get("row_object_status"), is("omitted_large_result"));
         assertFalse(actual.containsKey("row_objects"));
     }
-    
+
     @Test
     void assertResultSetWithDmlStatementClass() {
         SQLExecutionResponse actual = SQLExecutionResponse.resultSet(SupportedMCPStatement.DML, "SELECT", List.of(), List.of(List.of(1)), false);
@@ -135,20 +135,20 @@ class SQLExecutionResponseTest {
         assertThat(actual.getStatementType(), is("SELECT"));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
     }
-    
+
     @Test
     void assertUpdateCountWithZeroAffectedRows() {
         SQLExecutionResponse actual = SQLExecutionResponse.updateCount("UPDATE", 0);
         assertThat(actual.toPayload().get("affected_rows"), is(0));
     }
-    
+
     @Test
     void assertWithNormalizedSql() {
         SQLExecutionResponse actual = SQLExecutionResponse.updateCount("UPDATE", 1).withNormalizedSql("UPDATE orders SET status = 'DONE'");
         assertThat(actual.getNormalizedSql(), is("UPDATE orders SET status = 'DONE'"));
         assertThat(actual.toPayload().get("normalized_sql"), is("UPDATE orders SET status = 'DONE'"));
     }
-    
+
     @Test
     void assertWithExecutionMode() {
         SQLExecutionResponse actual = SQLExecutionResponse.updateCount("UPDATE", 1).withExecutionMode("execute");
@@ -157,7 +157,7 @@ class SQLExecutionResponseTest {
         assertThat(actual.toPayload().get("response_mode"), is("executed"));
         assertThat(actual.toPayload().get("execution_mode"), is("execute"));
     }
-    
+
     private static Stream<Arguments> assertToPayloadCases() {
         ExecuteQueryColumnDefinition orderIdColumn = new ExecuteQueryColumnDefinition("order_id", "INT", "INT", false);
         List<ExecuteQueryColumnDefinition> columns = List.of(orderIdColumn);
@@ -191,13 +191,13 @@ class SQLExecutionResponseTest {
                                 Map.entry("statement_type", "COMMIT"), Map.entry("status", "OK"), Map.entry("message", "Transaction committed."), Map.entry("truncated", false),
                                 Map.entry("applied_max_rows", 0), Map.entry("applied_timeout_ms", 0), Map.entry("next_actions", executionNextActions))));
     }
-    
+
     private static List<Map<String, Object>> createNextActions(final String reason) {
         return List.of(MCPNextActionUtils.stop(reason));
     }
-    
+
     private static List<Map<String, Object>> createTruncatedResultSetNextActions() {
         return List.of(MCPNextActionUtils.askUser("The result was truncated by max_rows. Ask for a narrower SELECT, stronger WHERE clause, or smaller projection before retrying.",
-                List.of("sql"), false));
+                List.of("sql")));
     }
 }

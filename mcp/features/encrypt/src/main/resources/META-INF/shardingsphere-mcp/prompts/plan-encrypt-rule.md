@@ -29,8 +29,8 @@ Model path:
 1. Complete or read database, schema, table, and column metadata before calling database_gateway_plan_encrypt_rule.
 2. Read shardingsphere://features/encrypt/algorithms before choosing algorithm_type.
 3. Read existing encrypt rules for the database or table when database and table are known.
-4. Call database_gateway_plan_encrypt_rule with gathered logical names and any user-approved algorithm choices.
-5. Use database_gateway_apply_workflow with execution_mode=preview before applying generated DDL or DistSQL unless the user already approved the plan.
+4. Call database_gateway_plan_encrypt_rule with gathered logical names and any reviewed algorithm choices.
+5. Use database_gateway_apply_workflow with execution_mode=preview before applying generated DDL or DistSQL.
 6. Before choosing uncertain database, schema, table, column, algorithm, or plan_id values, use completion/complete or read the nearest MCP resource; do not guess identifiers.
 
 Ask-user conditions:

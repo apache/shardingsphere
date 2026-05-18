@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowToolDescriptorsTest {
-    
+
     @Test
     void assertCreatePlanningLoadsDescriptor() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createPlanning("database_gateway_plan_encrypt_rule");
@@ -45,23 +45,22 @@ class WorkflowToolDescriptorsTest {
         assertThat(findInputProperty(actual, "execution_mode").get("enum"), is(List.of("review-then-execute", "manual-only")));
         assertTrue(findInputProperty(actual, "structured_intent_evidence").containsKey("properties"));
     }
-    
+
     @Test
     void assertCreateExecutionBuildsExpectedFields() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createExecution();
         assertThat(actual.getName(), is("database_gateway_apply_workflow"));
         assertThat(actual.getTitle(), is("Apply Workflow"));
-        assertThat(getInputFieldNames(actual), is(List.of("plan_id", "execution_mode", "approved_steps", "approved_by_user")));
+        assertThat(getInputFieldNames(actual), is(List.of("plan_id", "execution_mode", "approved_steps")));
         assertTrue(getRequiredInputNames(actual).contains("execution_mode"));
         assertThat(findInputProperty(actual, "execution_mode").get("enum"), is(List.of("preview", "review-then-execute", "manual-only")));
         assertThat(findInputProperty(actual, "approved_steps"), is(Map.of(
                 "type", "array",
-                "description", "Optional execution filter, not an approval token. Omit to apply every artifact after user approval, or pass only visible preview_artifacts.approval_step values.",
+                "description", "Optional execution filter. Omit to apply every artifact after review, or pass only visible preview_artifacts.approval_step values.",
                 "items", Map.of("type", "string", "description", "Allowed workflow artifact step: ddl, index_ddl, or rule_distsql.", "enum", List.of("ddl", "index_ddl", "rule_distsql")))));
-        assertThat(findInputProperty(actual, "approved_by_user").get("type"), is("boolean"));
         assertTrue(actual.getAnnotations().isDestructiveHint());
     }
-    
+
     @Test
     void assertCreateValidationBuildsExpectedFields() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createValidation();
@@ -71,7 +70,7 @@ class WorkflowToolDescriptorsTest {
         assertTrue(getRequiredInputNames(actual).contains("plan_id"));
         assertTrue(actual.getAnnotations().isReadOnlyHint());
     }
-    
+
     @Test
     @SuppressWarnings("unchecked")
     void assertWorkflowValidatorRejectsMissingOutputField() {
@@ -84,19 +83,19 @@ class WorkflowToolDescriptorsTest {
                 descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), outputSchema, descriptor.getAnnotations(), descriptor.getMeta())));
         assertThat(actual.getMessage(), is("Tool `database_gateway_apply_workflow` outputSchema must declare `manual_artifact_summary`."));
     }
-    
+
     private List<String> getInputFieldNames(final MCPToolDescriptor descriptor) {
         return getInputProperties(descriptor).keySet().stream().map(Object::toString).toList();
     }
-    
+
     private List<?> getRequiredInputNames(final MCPToolDescriptor descriptor) {
         return (List<?>) descriptor.getInputSchema().get("required");
     }
-    
+
     private Map<?, ?> findInputProperty(final MCPToolDescriptor descriptor, final String fieldName) {
         return (Map<?, ?>) getInputProperties(descriptor).get(fieldName);
     }
-    
+
     private Map<?, ?> getInputProperties(final MCPToolDescriptor descriptor) {
         return (Map<?, ?>) descriptor.getInputSchema().get("properties");
     }

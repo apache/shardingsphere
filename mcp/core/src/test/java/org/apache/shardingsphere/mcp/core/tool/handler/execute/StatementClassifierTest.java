@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPLockingReadStatementException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMultipleSQLStatementsException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -32,9 +34,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StatementClassifierTest {
-    
+
     private final StatementClassifier statementClassifier = new StatementClassifier();
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertClassifyCases")
     void assertClassify(final String name, final String sql, final SupportedMCPStatement expectedStatementClass, final String expectedStatementType,
@@ -46,14 +48,22 @@ class StatementClassifierTest {
         assertThat(actualResult.getTargetObjectName().orElse(""), is(expectedTargetObjectName));
         assertThat(actualResult.getSavepointName().orElse(""), is(expectedSavepointName));
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertClassifyWithInvalidStatementCases")
     void assertClassifyWithInvalidStatement(final String name, final String sql, final Class<? extends RuntimeException> expectedExceptionClass, final String expectedMessage) {
         RuntimeException actualException = assertThrows(expectedExceptionClass, () -> statementClassifier.classify(sql));
         assertThat(actualException.getMessage(), is(expectedMessage));
     }
-    
+
+    @Test
+    void assertClassifyExplainAnalyzeInnerStatementClass() {
+        ClassificationResult actualResult = statementClassifier.classify("EXPLAIN ANALYZE UPDATE foo_orders SET status = 'DONE'");
+        assertThat(actualResult.getStatementClass(), is(SupportedMCPStatement.EXPLAIN_ANALYZE));
+        assertThat(actualResult.getAnalyzedStatementClass().orElseThrow(), is(SupportedMCPStatement.DML));
+        assertThat(actualResult.getTargetObjectName().orElse(""), is("foo_orders"));
+    }
+
     private static Stream<Arguments> assertClassifyCases() {
         return Stream.of(
                 Arguments.of("trim trailing semicolon query", "  SELECT * FROM foo_orders ;  ", SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM foo_orders", "foo_orders", ""),
@@ -125,7 +135,7 @@ class StatementClassifierTest {
                 Arguments.of("explain analyze", "EXPLAIN ANALYZE SELECT * FROM foo_orders", SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE",
                         "EXPLAIN ANALYZE SELECT * FROM foo_orders", "foo_orders", ""));
     }
-    
+
     private static Stream<Arguments> assertClassifyWithInvalidStatementCases() {
         return Stream.of(
                 Arguments.of("blank sql", "   ", IllegalArgumentException.class, "sql cannot be empty."),
@@ -142,6 +152,14 @@ class StatementClassifierTest {
                 Arguments.of("banned alter system", "ALTER SYSTEM SET shared_buffers = '128MB'", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned create user", "CREATE USER foo_user IDENTIFIED BY 'pwd'", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned alter role", "ALTER ROLE foo_role SET search_path = public", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("locking read for update", "SELECT * FROM foo_orders FOR UPDATE", MCPLockingReadStatementException.class,
+                        "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract."),
+                Arguments.of("locking read for no key update", "SELECT * FROM foo_orders FOR NO KEY UPDATE", MCPLockingReadStatementException.class,
+                        "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract."),
+                Arguments.of("locking read lock in share mode", "SELECT * FROM foo_orders LOCK IN SHARE MODE", MCPLockingReadStatementException.class,
+                        "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract."),
+                Arguments.of("explain analyze locking read", "EXPLAIN ANALYZE SELECT * FROM foo_orders FOR SHARE", MCPLockingReadStatementException.class,
+                        "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract."),
                 Arguments.of("metadata show", "SHOW", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
                 Arguments.of("metadata show tables", "SHOW TABLES", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
                 Arguments.of("metadata describe", "DESCRIBE", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),

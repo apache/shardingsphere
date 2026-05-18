@@ -39,7 +39,7 @@ import java.util.Objects;
  * Workflow validation support.
  */
 public final class WorkflowValidationSupport {
-    
+
     /**
      * Check whether workflow validation can proceed.
      *
@@ -59,7 +59,7 @@ public final class WorkflowValidationSupport {
         }
         return Map.of();
     }
-    
+
     /**
      * Resolve overall validation status from validation sections.
      *
@@ -74,7 +74,7 @@ public final class WorkflowValidationSupport {
         }
         return WorkflowLifecycle.STATUS_PASSED;
     }
-    
+
     /**
      * Validate logical metadata visibility for the planned logical column.
      *
@@ -95,7 +95,7 @@ public final class WorkflowValidationSupport {
                 "Logical column is not visible from Proxy metadata.", "Refresh metadata or investigate the logical schema."));
         return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Logical column is not visible from Proxy metadata.");
     }
-    
+
     /**
      * Create the baseline projection SQL used by workflow validation.
      *
@@ -107,7 +107,7 @@ public final class WorkflowValidationSupport {
         WorkflowSQLUtils.checkSafeIdentifier(WorkflowFieldNames.COLUMN, snapshot.getRequest().getColumn());
         return String.format("SELECT %s FROM %s", snapshot.getRequest().getColumn(), snapshot.getRequest().getTable());
     }
-    
+
     /**
      * Validate whether planned SQLs are executable from the logical view.
      *
@@ -135,7 +135,7 @@ public final class WorkflowValidationSupport {
         }
         return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, validationSqls, successDetails);
     }
-    
+
     /**
      * Persist validation result and create response payload.
      *
@@ -158,7 +158,7 @@ public final class WorkflowValidationSupport {
         WorkflowGuidancePayloadBuilder.appendValidationGuidance(result, snapshot, validationReport);
         return result;
     }
-    
+
     /**
      * Create one validation mismatch entry.
      *
@@ -181,7 +181,7 @@ public final class WorkflowValidationSupport {
         result.put("remediation", remediation);
         return result;
     }
-    
+
     private List<Map<String, Object>> createValidationIssues(final ValidationReport validationReport) {
         if (!WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus())) {
             return List.of();
@@ -189,7 +189,7 @@ public final class WorkflowValidationSupport {
         return List.of(new WorkflowIssue(resolveValidationIssueCode(validationReport), "error", "validating",
                 "Validation detected mismatches between the plan and the current state.", "Inspect mismatches and re-run the workflow after fixes.", true, Map.of()).toMap());
     }
-    
+
     private List<Map<String, Object>> createValidationSections(final ValidationReport validationReport) {
         List<Map<String, Object>> result = new LinkedList<>();
         addValidationSection(result, "ddl", validationReport.getDdlValidation());
@@ -198,7 +198,7 @@ public final class WorkflowValidationSupport {
         addValidationSection(result, "sql_executability", validationReport.getSqlExecutabilityValidation());
         return result;
     }
-    
+
     private void addValidationSection(final List<Map<String, Object>> result, final String layer, final ValidationSection section) {
         if (null == section) {
             return;
@@ -208,11 +208,11 @@ public final class WorkflowValidationSupport {
         sectionPayload.putAll(section.toMap());
         result.add(sectionPayload);
     }
-    
+
     private String resolveValidationStatus(final ValidationReport validationReport) {
         return WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus()) ? WorkflowLifecycle.STATUS_FAILED : WorkflowLifecycle.STATUS_VALIDATED;
     }
-    
+
     private boolean isValidatableStatus(final WorkflowContextSnapshot snapshot) {
         String actualStatus = null == snapshot.getStatus() ? "" : snapshot.getStatus();
         if (WorkflowLifecycle.STATUS_VALIDATED.equalsIgnoreCase(actualStatus)
@@ -228,7 +228,7 @@ public final class WorkflowValidationSupport {
                 || WorkflowLifecycle.STEP_FAILED.equalsIgnoreCase(currentStep)
                 || WorkflowLifecycle.STEP_EXECUTED.equalsIgnoreCase(currentStep);
     }
-    
+
     private Map<String, Object> createRejectedResponse(final WorkflowContextSnapshot snapshot, final String issueCode, final String message, final String userAction) {
         Map<String, Object> result = new LinkedHashMap<>(9, 1F);
         result.put("response_mode", "terminal");
@@ -239,10 +239,9 @@ public final class WorkflowValidationSupport {
         result.put("mismatches", List.of());
         result.put("recovery_guidance", userAction);
         result.put("next_actions", List.of());
-        result.put("requires_user_approval", false);
         return result;
     }
-    
+
     /**
      * Resolve validation issue code from mismatches.
      *

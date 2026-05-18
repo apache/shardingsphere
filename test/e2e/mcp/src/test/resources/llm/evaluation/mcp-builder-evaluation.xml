@@ -99,31 +99,31 @@
     <answer>execute_update_preview|execute_query_verify|no_execute_without_approval</answer>
     <expected_answer>
       The model should treat the UPDATE as a preview-only, non-mutating operation by using database_gateway_execute_update with execution_mode
-      set to preview and approved_by_user left false or absent. It should explain the planned side-effect scope from the preview response,
+      set to preview. It should explain the planned side-effect scope from the preview response,
       then run an independent SELECT through database_gateway_execute_query to confirm the current state. It must not switch to execution_mode
-      execute or claim approval on behalf of the user.
+      execute in this read-only review path.
     </expected_answer>
     <verification>
       <step>Confirm the answer uses execution_mode preview as a non-mutating review path.</step>
       <step>Confirm the answer performs independent read-only verification with database_gateway_execute_query.</step>
-      <step>Confirm the answer forbids execute mode and forged user approval.</step>
+      <step>Confirm the answer forbids execute mode in the read-only review path.</step>
     </verification>
   </qa_pair>
   <qa_pair id="q06" category="workflow" read_only="true">
     <question>
       A model has created a mask workflow plan and needs reviewable artifacts for manual execution, not a database change through MCP. Explain
-      the sequence it should use with plan identifiers, approval gates, and validation timing.
+      the sequence it should use with plan identifiers, preview/manual modes, and validation timing.
     </question>
     <answer>plan_id|apply_workflow_preview_or_manual|validate_after_external_execution</answer>
     <expected_answer>
-      The model should keep the plan_id returned by database_gateway_plan_mask_rule, call database_gateway_apply_workflow only in a preview or
-      manual-artifact export mode unless explicit user approval is present, and report the returned DistSQL or review artifact for the human
+      The model should keep the plan_id returned by database_gateway_plan_mask_rule, call database_gateway_apply_workflow in preview or
+      manual-artifact export mode for human-run changes, and report the returned DistSQL or review artifact for the human
       operator. It should not validate the workflow as successful until the manual artifacts have actually been executed outside MCP and the
       runtime metadata can be checked afterward.
     </expected_answer>
     <verification>
       <step>Confirm the answer preserves the exact plan_id from the planning response.</step>
-      <step>Confirm the answer uses database_gateway_apply_workflow only with preview or manual-artifact behavior unless approved.</step>
+      <step>Confirm the answer uses database_gateway_apply_workflow with preview or manual-artifact behavior for externally executed changes.</step>
       <step>Confirm the answer delays success validation until after external manual execution is complete.</step>
     </verification>
   </qa_pair>

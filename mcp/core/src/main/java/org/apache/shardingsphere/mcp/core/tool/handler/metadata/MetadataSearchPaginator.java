@@ -26,6 +26,8 @@ import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.exception.InvalidPageTokenException;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -37,16 +39,18 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class MetadataSearchPaginator {
-    
+
     private static final Map<String, Integer> OBJECT_TYPE_ORDERS = Map.of(
             "database", 0, "schema", 1, "table", 2, "view", 3, "column", 4, "index", 5, "sequence", 6);
-    
+
+    private static final String PAGE_TOKEN_PREFIX = "offset:";
+
     private final MetadataSearchMatcher matcher = new MetadataSearchMatcher();
-    
+
     private final int defaultPageSize;
-    
+
     private final int maxPageSize;
-    
+
     MetadataSearchResult paginate(final List<MetadataSearchHit> metadataItems, final MetadataSearchRequest request,
                                   final Set<SupportedMCPMetadataObjectType> searchObjectTypes, final boolean broadSearchGuarded) {
         int actualOffset = resolvePageOffset(request.getPageToken());
@@ -58,13 +62,33 @@ final class MetadataSearchPaginator {
             return new MetadataSearchResult(Collections.emptyList(), "", searchContext, filteredItems.size(), filteredItems);
         }
         int actualEndIndex = Math.min(actualOffset + actualPageSize, filteredItems.size());
-        String nextPageToken = actualEndIndex < filteredItems.size() ? String.valueOf(actualEndIndex) : "";
+        String nextPageToken = actualEndIndex < filteredItems.size() ? encodePageToken(actualEndIndex) : "";
         return new MetadataSearchResult(new LinkedList<>(filteredItems.subList(actualOffset, actualEndIndex)), nextPageToken, searchContext, filteredItems.size(), filteredItems);
     }
-    
+
     private int resolvePageOffset(final String pageToken) {
+        if (pageToken.isEmpty()) {
+            return 0;
+        }
+        if (pageToken.chars().allMatch(Character::isDigit)) {
+            return parseLegacyPageOffset(pageToken);
+        }
         try {
-            int result = pageToken.isEmpty() ? 0 : Integer.parseInt(pageToken);
+            String decoded = new String(Base64.getUrlDecoder().decode(pageToken), StandardCharsets.UTF_8);
+            if (decoded.startsWith(PAGE_TOKEN_PREFIX)) {
+                int result = Integer.parseInt(decoded.substring(PAGE_TOKEN_PREFIX.length()));
+                if (0 <= result) {
+                    return result;
+                }
+            }
+        } catch (final IllegalArgumentException ignored) {
+        }
+        throw new InvalidPageTokenException();
+    }
+
+    private int parseLegacyPageOffset(final String pageToken) {
+        try {
+            int result = Integer.parseInt(pageToken);
             if (0 <= result) {
                 return result;
             }
@@ -72,7 +96,11 @@ final class MetadataSearchPaginator {
         }
         throw new InvalidPageTokenException();
     }
-    
+
+    private String encodePageToken(final int offset) {
+        return Base64.getUrlEncoder().withoutPadding().encodeToString((PAGE_TOKEN_PREFIX + offset).getBytes(StandardCharsets.UTF_8));
+    }
+
     private int resolvePageSize(final int pageSize) {
         int result = 0 == pageSize ? defaultPageSize : pageSize;
         if (1 <= result && result <= maxPageSize) {
@@ -80,7 +108,7 @@ final class MetadataSearchPaginator {
         }
         throw new MCPInvalidRequestException(String.format("page_size must be an integer between 1 and %d.", maxPageSize));
     }
-    
+
     private Map<String, Object> createSearchContext(final MetadataSearchRequest request, final Set<SupportedMCPMetadataObjectType> searchObjectTypes,
                                                     final int actualPageSize, final int actualOffset, final boolean broadSearchGuarded) {
         Map<String, Object> result = new LinkedHashMap<>(10, 1F);
@@ -90,7 +118,6 @@ final class MetadataSearchPaginator {
         result.put("schema", request.getSchema());
         result.put("object_types", createObjectTypeNames(searchObjectTypes));
         result.put("page_size", actualPageSize);
-        result.put("page_offset", actualOffset);
         if (broadSearchGuarded) {
             result.put("broad_search_guarded", true);
             result.put("guard_reason", "Blank cross-database metadata search lists databases only instead of expanding every object type.");
@@ -98,15 +125,15 @@ final class MetadataSearchPaginator {
         }
         return result;
     }
-    
+
     private List<String> createObjectTypeNames(final Set<SupportedMCPMetadataObjectType> searchObjectTypes) {
         return searchObjectTypes.stream().map(each -> each.name().toLowerCase(Locale.ENGLISH)).sorted(this::compareObjectTypeNames).collect(Collectors.toList());
     }
-    
+
     private int compareObjectTypeNames(final String left, final String right) {
         return Integer.compare(getObjectTypeOrder(left), getObjectTypeOrder(right));
     }
-    
+
     private int compareSearchHits(final MetadataSearchHit left, final MetadataSearchHit right) {
         int result = left.getDatabase().compareTo(right.getDatabase());
         if (0 != result) {
@@ -130,7 +157,7 @@ final class MetadataSearchPaginator {
         }
         return left.getName().compareTo(right.getName());
     }
-    
+
     private int getObjectTypeOrder(final String objectType) {
         return OBJECT_TYPE_ORDERS.getOrDefault(objectType, Integer.MAX_VALUE);
     }

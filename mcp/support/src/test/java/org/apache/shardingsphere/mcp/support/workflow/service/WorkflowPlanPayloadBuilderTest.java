@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowPlanPayloadBuilderTest {
-    
+
     @Test
     void assertBuildIncludesIntentInference() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -80,7 +80,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(actualReviewFocus.get("artifact_categories"), is(List.of("algorithm_properties")));
         assertThat(actualReviewFocus.get("side_effect_scope"), is(List.of()));
         assertFalse((Boolean) actualReviewFocus.get("manual_only"));
-        assertFalse((Boolean) actualReviewFocus.get("requires_user_approval"));
+        assertFalse(actualReviewFocus.containsKey("requires_user_approval"));
         assertThat(actualReviewFocus.get("next_review_action"), is("answer_clarification_questions"));
         List<?> actualClarificationQuestions = (List<?>) actual.get("clarification_questions");
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(0)).get("input_type"), is("boolean"));
@@ -89,12 +89,12 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(1)).get("input_type"), is("secret"));
         assertTrue((Boolean) ((Map<?, ?>) actualClarificationQuestions.get(1)).get("secret"));
         assertFalse(actual.containsKey("recommended_next_tool"));
-        assertFalse((Boolean) actual.get("requires_user_approval"));
+        assertFalse(actual.containsKey("requires_user_approval"));
         assertThat(((Map<?, ?>) actual.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_logical_database"));
         assertTrue(extractResourceUris((List<?>) actual.get("resources_to_read")).contains("shardingsphere://features/encrypt/algorithms"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("type"), is("ask_user"));
     }
-    
+
     @Test
     void assertBuildUsesPublicAlgorithmPropertyInputs() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -119,7 +119,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(2)).get("field"), is("like_query_algorithm_properties.token"));
         assertTrue((Boolean) ((Map<?, ?>) actualClarificationQuestions.get(0)).get("secret"));
     }
-    
+
     @Test
     void assertBuildIncludesMaskResources() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -140,16 +140,16 @@ class WorkflowPlanPayloadBuilderTest {
         assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
         assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes"));
         assertFalse(actual.containsKey("recommended_next_tool"));
-        assertFalse((Boolean) actual.get("requires_user_approval"));
+        assertFalse(actual.containsKey("requires_user_approval"));
         Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
-        assertTrue((Boolean) actualReviewFocus.get("requires_user_approval"));
+        assertFalse(actualReviewFocus.containsKey("requires_user_approval"));
         assertThat(actualReviewFocus.get("next_review_action"), is("call_database_gateway_apply_workflow_preview"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
-        assertFalse((Boolean) actualNextAction.get("requires_user_approval"));
+        assertFalse(actualNextAction.containsKey("requires_user_approval"));
     }
-    
+
     @Test
     void assertBuildKeepsManualOnlyPlanFreeOfRuntimeApproval() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -166,14 +166,14 @@ class WorkflowPlanPayloadBuilderTest {
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
         assertTrue((Boolean) actualReviewFocus.get("manual_only"));
-        assertFalse((Boolean) actualReviewFocus.get("requires_user_approval"));
+        assertFalse(actualReviewFocus.containsKey("requires_user_approval"));
         assertThat(((Map<?, ?>) actual.get("argument_provenance")).get("execution_mode"), is("inferred_from_intent"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
-        assertFalse((Boolean) actualNextAction.get("requires_user_approval"));
+        assertFalse(actualNextAction.containsKey("requires_user_approval"));
     }
-    
+
     @Test
     void assertBuildRecommendsPlanningToolAfterFailure() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -191,7 +191,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(actualNextAction.get("type"), is("tool_call"));
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_plan_encrypt_rule"));
     }
-    
+
     private List<String> extractResourceUris(final List<?> resources) {
         return resources.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
     }

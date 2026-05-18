@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport;
+package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;

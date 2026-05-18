@@ -193,8 +193,8 @@ Descriptor 必须说明模型该如何使用这个 surface，而不是只重复 
 - item-list 响应总会包含 `items`、`count` 和 `has_more`。`has_more`、`next_page_token` 和 `continuation_mode`
   是 structured payload 内的 ShardingSphere application pagination 字段，不是 MCP list 方法的 `cursor` 或 `nextCursor`。
   resource read 还会包含 `self_uri`，并在适用时包含 typed `parent_resource` 或 typed `next_resources`。
-- Workflow tool 响应包含 `missing_required_inputs`、`clarification_questions`、`resources_to_read`、`next_actions`
-  和 `requires_user_approval`，让模型不用依赖旧推荐字段也可以继续下一步。
+- Workflow tool 响应包含 `missing_required_inputs`、`clarification_questions`、`resources_to_read` 和 `next_actions`，
+  让模型可以按结构化提示继续补问、预览、执行或校验。
 - 可恢复错误 payload 保留原有 `error_code` 和 `message`，并为缺失参数、不支持的 tool/resource、非法枚举、
   workflow 状态错误以及 SQL tool 选错场景增加 `recovery` 提示。
 
@@ -319,7 +319,7 @@ bin\start.bat conf\mcp-stdio.yaml
 - 如果 `shardingsphere://runtime` 返回 `server_status=configuration_required`，先配置至少一个 `runtimeDatabases` 条目，再做 metadata discovery 或 SQL execution。
 - 如果 JDBC metadata 或 SQL 执行因为驱动失败，请把目标 JDBC driver jar 放入 `plugins/`，或加入嵌入式运行时 classpath。
 - STDIO 模式下 stdout 只用于 MCP 协议帧，诊断信息应写到 stderr 或 `logs/mcp.log`。
-- Workflow tools 规划的是 ShardingSphere 逻辑规则变更；apply 前先 preview，并确认用户已批准副作用。
+- Workflow tools 规划的是 ShardingSphere 逻辑规则变更；apply 前先 preview，并确认副作用仍然需要执行。
 
 ## Runtime 说明
 
@@ -448,7 +448,7 @@ Workflow 同时补充了以下 feature resources：
    敏感参数必须通过上面的安全通道取得，然后带上同一个 `plan_id` 再次调用同一个 `plan_*_rule`。
 3. 如果返回 `status = planned`，重点 review `derived_column_plan`、`ddl_artifacts`、`distsql_artifacts`、`index_plan`。
 4. 调用 `database_gateway_apply_workflow` 并显式设置 `execution_mode=preview`，先查看 artifacts 和副作用范围，不改变运行时状态。
-5. 用户确认后，再用 `execution_mode=review-then-execute` 和 `approved_by_user=true` 调用 `database_gateway_apply_workflow`，或者用 `manual-only` 导出人工执行包。
+5. 确认预览结果后，再用 `execution_mode=review-then-execute` 调用 `database_gateway_apply_workflow`，或者用 `manual-only` 导出人工执行包。
 6. 如果 `apply` 返回 `awaiting-manual-execution`，先把 `manual_artifact_package` 里的 SQL / DistSQL 在 Proxy 上手工执行完，再进入下一步。
 7. 调用 `database_gateway_validate_workflow`，确认返回中的校验层级都通过。
 8. 如果 `validate` 失败，优先看 `issues` 和 `mismatches`，修复后再继续补执行或重新规划。
@@ -485,7 +485,7 @@ Workflow 同时补充了以下 feature resources：
   - MCP 会把选定模式写回 plan 响应，便于 client 决定一次展示完整计划还是按步骤组织对话。
 - 规划阶段的 `execution_mode` 支持 `review-then-execute` 和 `manual-only`，表示最终 apply 的偏好。
 - `database_gateway_apply_workflow` 必须显式传入 `execution_mode`
-  - 先用 `preview` 预览，再在用户确认后使用带 `approved_by_user=true` 的 `review-then-execute`，或者用 `manual-only` 只导出人工执行包。
+  - 先用 `preview` 预览，再在确认后使用 `review-then-execute`，或者用 `manual-only` 只导出人工执行包。
 
 ### 看到不同状态时，下一步该做什么
 
@@ -722,7 +722,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
 ```
 
 典型响应片段如下：
@@ -787,7 +787,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 #### 执行与校验
 
-规划阶段默认的最终模式是 `review-then-execute`，但 `database_gateway_apply_workflow` 必须先 `preview`，真实副作用执行必须显式传入 `approved_by_user=true`。
+规划阶段默认的最终模式是 `review-then-execute`，但 `database_gateway_apply_workflow` 必须先 `preview`，真实副作用执行必须显式传入 `execution_mode=review-then-execute`。
 先预览：
 
 ```bash
@@ -799,7 +799,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"preview\"}}}"
 ```
 
-用户确认预览结果后，执行已确认的 artifacts：
+确认预览结果后，执行已确认的 artifacts：
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
@@ -807,7 +807,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
 ```
 
 如果只想让 MCP 生成 SQL 和 DistSQL，不自动执行，可以改为：
@@ -828,7 +828,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 - `distsql_artifacts`
 
 如果要分步执行，可以把 `approved_steps` 作为执行过滤器，只允许 `ddl`、`index_ddl` 或 `rule_distsql`。
-它不是 approval token；应在用户批准 preview 后，从 `preview_artifacts[].approval_step` 复制取值。
+它不是 approval token；应在 review preview 后，从 `preview_artifacts[].approval_step` 复制取值。
 未知值会被拒绝，不会静默跳过。
 这类分步执行主要用于 review 或灰度流程；如果只执行了一部分，`database_gateway_validate_workflow` 很可能会先失败，直到剩余步骤也补执行完成。
 
@@ -1043,7 +1043,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"database_gateway_apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
 ```
 
 第 4 步：校验脱敏规则

@@ -35,17 +35,65 @@ import java.util.stream.Stream;
  * Test support for packaged distribution plugin discovery fixtures.
  */
 public final class PackagedDistributionPluginFixtureSupport {
-    
+
     private static final String HANDLER_PROVIDER_SERVICE_ENTRY = "META-INF/services/org.apache.shardingsphere.mcp.api.MCPHandlerProvider";
-    
+
+    private static final String DESCRIPTOR_ENTRY = "META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-test-fixture.yaml";
+
     private static final List<String> OFFICIAL_FEATURE_ARTIFACT_IDS = List.of("shardingsphere-mcp-feature-encrypt", "shardingsphere-mcp-feature-mask");
-    
+
     private static final List<Class<?>> FIXTURE_PLUGIN_CLASSES = List.of(
             PluginFixtureHandlerProvider.class, PluginFixturePingToolHandler.class, PluginFixtureStatusResourceHandler.class);
-    
+
+    private static final String DESCRIPTOR_CONTENT = """
+            resources:
+              - uri: shardingsphere://features/test-fixture/status
+                name: test-fixture-status
+                title: Test Fixture Status
+                description: "Read the packaged MCP test fixture status used by e2e plugin discovery tests."
+                mimeType: application/json
+                extension:
+                  resourceKind: detail
+                  objectScope: test-fixture
+            tools:
+              - name: fixture_ping
+                title: Fixture Ping
+                description: "Return a fixture ping response for packaged plugin discovery."
+                inputSchema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: "Fixture message."
+                  required:
+                    - message
+                  additionalProperties: false
+                outputSchema:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      enum:
+                        - ready
+                    echo:
+                      type: string
+                  required:
+                    - status
+                    - echo
+                  additionalProperties: false
+                annotations:
+                  title: Fixture Ping
+                  readOnlyHint: true
+                  destructiveHint: false
+                  idempotentHint: true
+                  openWorldHint: true
+                meta:
+                  org.apache.shardingsphere/purpose: test-fixture-plugin
+            """;
+
     private PackagedDistributionPluginFixtureSupport() {
     }
-    
+
     /**
      * Create one fixture plugin jar under packaged distribution plugins directory.
      *
@@ -58,13 +106,14 @@ public final class PackagedDistributionPluginFixtureSupport {
         Path result = pluginsDirectory.resolve("shardingsphere-mcp-test-fixture-plugin.jar");
         try (JarOutputStream output = new JarOutputStream(Files.newOutputStream(result))) {
             writeEntry(output, HANDLER_PROVIDER_SERVICE_ENTRY, (PluginFixtureHandlerProvider.class.getName() + '\n').getBytes(StandardCharsets.UTF_8));
+            writeEntry(output, DESCRIPTOR_ENTRY, DESCRIPTOR_CONTENT.getBytes(StandardCharsets.UTF_8));
             for (Class<?> each : FIXTURE_PLUGIN_CLASSES) {
                 writeClassEntry(output, each);
             }
         }
         return result;
     }
-    
+
     /**
      * Remove official feature jars from packaged distribution libraries.
      *
@@ -81,12 +130,12 @@ public final class PackagedDistributionPluginFixtureSupport {
             return result.stream().map(each -> each.getFileName().toString()).toList();
         }
     }
-    
+
     private static boolean isOfficialFeatureJar(final Path path) {
         String jarName = path.getFileName().toString();
         return OFFICIAL_FEATURE_ARTIFACT_IDS.stream().anyMatch(jarName::contains);
     }
-    
+
     private static void writeClassEntry(final JarOutputStream output, final Class<?> classType) throws IOException {
         String resourcePath = classType.getName().replace('.', '/') + ".class";
         try (InputStream input = classType.getClassLoader().getResourceAsStream(resourcePath)) {
@@ -96,7 +145,7 @@ public final class PackagedDistributionPluginFixtureSupport {
             writeEntry(output, resourcePath, input.readAllBytes());
         }
     }
-    
+
     private static void writeEntry(final JarOutputStream output, final String entryName, final byte[] content) throws IOException {
         output.putNextEntry(new JarEntry(entryName));
         output.write(content);

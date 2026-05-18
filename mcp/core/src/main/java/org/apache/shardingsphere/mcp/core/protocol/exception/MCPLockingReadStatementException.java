@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.descriptor.yaml;
+package org.apache.shardingsphere.mcp.core.protocol.exception;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 
 /**
- * YAML MCP tool runtime descriptor.
+ * Exception for locking reads rejected by the MCP read-only SQL contract.
  */
-@Getter
-@Setter
-public final class YamlMCPToolRuntimeDescriptor {
-
-    private String workflowRole;
-
-    private Collection<String> sideEffectScope = new LinkedList<>();
+public final class MCPLockingReadStatementException extends MCPUnsupportedException {
+    
+    private static final long serialVersionUID = 7156903819043022869L;
+    
+    public MCPLockingReadStatementException() {
+        super("Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract.");
+    }
 }
