@@ -20,27 +20,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-database-connector</artifactId>
-        <version>5.5.4-SNAPSHOT</version>
+        <artifactId>shardingsphere-database-connector-dialect</artifactId>
+        <version>5.5.3</version>
     </parent>
-    <artifactId>shardingsphere-database-connector-dialect</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-database-connector-xugu</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>mysql</module>
-        <module>mariadb</module>
-        <module>postgresql</module>
-        <module>opengauss</module>
-        <module>oracle</module>
-        <module>sqlserver</module>
-        <module>clickhouse</module>
-        <module>doris</module>
-        <module>hive</module>
-        <module>presto</module>
-        <module>firebird</module>
-        <module>h2</module>
-        <module>sql92</module>
-        <module>xugu</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-database-connector-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

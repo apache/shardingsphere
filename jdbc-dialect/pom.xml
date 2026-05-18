@@ -39,5 +39,6 @@
         <module>clickhouse</module>
         <module>doris</module>
         <module>mariadb</module>
+        <module>xugu</module>
     </modules>
 </project>
