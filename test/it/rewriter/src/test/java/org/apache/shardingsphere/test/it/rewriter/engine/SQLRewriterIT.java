@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.rewriter.engine;
 
+import lombok.RequiredArgsConstructor;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
@@ -63,6 +64,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.test.it.rewriter.engine.mocker.DialectStorageUnitMetaDataMocker;
 import org.apache.shardingsphere.test.it.rewriter.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.test.it.rewriter.engine.parameter.SQLRewriteEngineTestParametersBuilder;
@@ -87,6 +89,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -96,6 +99,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public abstract class SQLRewriterIT {
+    
+    private static final Map<String, RewriteScenarioContext> REWRITE_SCENARIO_CONTEXT_CACHE = new ConcurrentHashMap<>();
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
@@ -114,22 +119,18 @@ public abstract class SQLRewriterIT {
     }
     
     private Collection<SQLRewriteUnit> createSQLRewriteUnits(final SQLRewriteEngineTestParameters testParams) throws IOException, SQLException {
-        YamlRootConfiguration rootConfig = loadRootConfiguration(testParams);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
         String sql = SQLHintUtils.removeHint(testParams.getInputSQL());
         SQLParserEngine sqlParserEngine = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).getSQLParserEngine(databaseType);
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
-        ShardingSphereDatabase database = createDatabase(rootConfig, sqlStatement, databaseType);
-        RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(Collections.emptyList(), Collections.emptyList(), new ConfigurationProperties(new Properties())));
-        ConfigurationProperties props = createConfigurationProperties(rootConfig);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), globalRuleMetaData, props);
+        RewriteScenarioContext scenarioContext = getCachedRewriteScenarioContext(testParams, databaseType, sqlStatement);
         HintValueContext hintValueContext = SQLHintUtils.extractHint(testParams.getInputSQL());
-        SQLStatementContext sqlStatementContext = bind(testParams, metaData, database.getName(), hintValueContext, sqlStatement, sqlParserEngine);
-        ConnectionContext connectionContext = createConnectionContext(database.getName());
-        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, testParams.getInputParameters(), hintValueContext, connectionContext, metaData);
-        Collection<ShardingSphereRule> rules = database.getRuleMetaData().getRules();
-        RouteContext routeContext = new SQLRouteEngine(rules, props).route(queryContext, globalRuleMetaData, database);
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(database, globalRuleMetaData, props).rewrite(queryContext, routeContext);
+        SQLStatementContext sqlStatementContext = bind(testParams, scenarioContext.metaData, scenarioContext.database.getName(), hintValueContext, sqlStatement, sqlParserEngine);
+        ConnectionContext connectionContext = createConnectionContext(scenarioContext.database.getName());
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, testParams.getInputParameters(), hintValueContext, connectionContext, scenarioContext.metaData);
+        Collection<ShardingSphereRule> rules = scenarioContext.database.getRuleMetaData().getRules();
+        RouteContext routeContext = new SQLRouteEngine(rules, scenarioContext.props).route(queryContext, scenarioContext.globalRuleMetaData, scenarioContext.database);
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(scenarioContext.database, scenarioContext.globalRuleMetaData, scenarioContext.props).rewrite(queryContext, routeContext);
         return createSQLRewriteUnits(sqlRewriteResult);
     }
     
@@ -139,13 +140,43 @@ public abstract class SQLRewriterIT {
                 : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
     
-    protected final YamlRootConfiguration loadRootConfiguration(final SQLRewriteEngineTestParameters testParams) throws IOException {
+    private RewriteScenarioContext getCachedRewriteScenarioContext(final SQLRewriteEngineTestParameters testParams, final DatabaseType databaseType,
+                                                                   final SQLStatement sqlStatement) throws IOException, SQLException {
+        String cacheKey = getRewriteScenarioCacheKey(testParams, sqlStatement);
+        RewriteScenarioContext result = REWRITE_SCENARIO_CONTEXT_CACHE.get(cacheKey);
+        if (null != result) {
+            return result;
+        }
+        RewriteScenarioContext created = createRewriteScenarioContext(testParams, databaseType, sqlStatement);
+        REWRITE_SCENARIO_CONTEXT_CACHE.put(cacheKey, created);
+        return created;
+    }
+    
+    private RewriteScenarioContext createRewriteScenarioContext(final SQLRewriteEngineTestParameters testParams, final DatabaseType databaseType,
+                                                                final SQLStatement sqlStatement) throws IOException, SQLException {
+        YamlRootConfiguration rootConfig = loadRootConfiguration(testParams);
+        ShardingSphereDatabase database = createDatabase(rootConfig, sqlStatement, databaseType);
+        RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(Collections.emptyList(), Collections.emptyList(), new ConfigurationProperties(new Properties())));
+        ConfigurationProperties props = createConfigurationProperties(rootConfig);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), globalRuleMetaData, props);
+        return new RewriteScenarioContext(database, globalRuleMetaData, props, metaData);
+    }
+    
+    private YamlRootConfiguration loadRootConfiguration(final SQLRewriteEngineTestParameters testParams) throws IOException {
         return loadRootConfiguration(testParams.getRuleFile());
     }
     
-    protected final YamlRootConfiguration loadRootConfiguration(final String ruleFile) throws IOException {
+    private YamlRootConfiguration loadRootConfiguration(final String ruleFile) throws IOException {
         URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(ruleFile), String.format("Can not find configuration file `%s`", ruleFile));
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
+    }
+    
+    private String getRewriteScenarioCacheKey(final SQLRewriteEngineTestParameters testParams, final SQLStatement sqlStatement) {
+        return getClass().getName() + ':' + testParams.getDatabaseType() + ':' + testParams.getRuleFile() + ':' + testParams.getFileName() + ':' + getRewriteSQLType(sqlStatement);
+    }
+    
+    private String getRewriteSQLType(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof CreateTableStatement ? "create_table" : "other";
     }
     
     private ShardingSphereDatabase createDatabase(final YamlRootConfiguration rootConfig, final SQLStatement sqlStatement, final DatabaseType databaseType) throws SQLException {
@@ -219,6 +250,18 @@ public abstract class SQLRewriterIT {
     protected abstract Collection<ShardingSphereSchema> mockSchemas(String schemaName);
     
     protected abstract void mockDatabaseRules(Collection<ShardingSphereRule> rules, String schemaName, SQLStatement sqlStatement);
+    
+    @RequiredArgsConstructor
+    private static final class RewriteScenarioContext {
+        
+        private final ShardingSphereDatabase database;
+        
+        private final RuleMetaData globalRuleMetaData;
+        
+        private final ConfigurationProperties props;
+        
+        private final ShardingSphereMetaData metaData;
+    }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
