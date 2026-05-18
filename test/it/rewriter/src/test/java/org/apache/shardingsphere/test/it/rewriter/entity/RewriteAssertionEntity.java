@@ -37,6 +37,9 @@ public final class RewriteAssertionEntity {
     @XmlAttribute(required = true)
     private String id;
     
+    @XmlAttribute(name = "yaml-rule")
+    private String yamlRule;
+    
     @XmlElement(required = true)
     private RewriteInputEntity input;
     
