@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.rewriter.entity;
+package org.apache.shardingsphere.test.it.rewriter.engine.mocker;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 
 /**
- * Rewrite input entity for JAXB.
+ * Dialect storage unit meta data mocker.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
-public final class RewriteInputEntity {
+public interface DialectStorageUnitMetaDataMocker extends DatabaseTypedSPI {
     
-    @XmlAttribute(required = true)
-    private String sql;
-    
-    @XmlAttribute(name = "sql-file")
-    private String sqlFile;
-    
-    @XmlAttribute
-    private String parameters;
+    /**
+     * Mock storage unit meta data.
+     *
+     * @param connection connection
+     * @param databaseMetaData database meta data
+     */
+    void mockStorageUnitMetaData(Connection connection, DatabaseMetaData databaseMetaData);
 }
