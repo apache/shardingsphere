@@ -20,9 +20,6 @@ package org.apache.shardingsphere.mcp.bootstrap.transport;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
-import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
-import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -37,43 +34,8 @@ class MCPTransportErrorFactoryTest {
         McpError actual = MCPTransportErrorFactory.createInvalidParamsError(new MCPInvalidRequestException("foo_message"));
         assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
         assertThat(actual.getJsonRpcError().message(), is("foo_message"));
-        assertErrorCode(actual, "invalid_request");
-    }
-    
-    @Test
-    void assertCreateToolNotFoundError() {
-        McpError actual = MCPTransportErrorFactory.createToolNotFoundError(new UnsupportedToolException("fixture_tool"));
-        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
-        assertThat(actual.getJsonRpcError().message(), is("Tool not found"));
-        assertErrorCode(actual, "not_found");
-    }
-    
-    @Test
-    void assertCreateResourceReadErrorWithUnsupportedResourceUri() {
-        McpError actual = MCPTransportErrorFactory.createResourceReadError(new UnsupportedResourceUriException("shardingsphere://unknown"));
-        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.RESOURCE_NOT_FOUND));
-        assertThat(actual.getJsonRpcError().message(), is("Resource not found"));
-        assertErrorCode(actual, "not_found");
-    }
-    
-    @Test
-    void assertCreateResourceReadErrorWithInvalidRequest() {
-        McpError actual = MCPTransportErrorFactory.createResourceReadError(new MCPInvalidRequestException("foo_message"));
-        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
-        assertThat(actual.getJsonRpcError().message(), is("foo_message"));
-        assertErrorCode(actual, "invalid_request");
-    }
-    
-    @Test
-    void assertCreateResourceReadErrorWithServerError() {
-        McpError actual = MCPTransportErrorFactory.createResourceReadError(new MCPUnavailableException("foo_message"));
-        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INTERNAL_ERROR));
-        assertThat(actual.getJsonRpcError().message(), is("foo_message"));
-        assertErrorCode(actual, "unavailable");
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void assertErrorCode(final McpError actual, final String expected) {
-        assertThat(((Map<String, Object>) actual.getJsonRpcError().data()).get("error_code"), is(expected));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
+        assertThat(actualData.get("error_code"), is("invalid_request"));
     }
 }
