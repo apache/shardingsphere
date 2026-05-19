@@ -20,6 +20,9 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql;
 import org.apache.calcite.sql.util.ReflectiveSqlOperatorTable;
 import org.apache.calcite.sql.validate.SqlUserDefinedFunction;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLBitCountFunction;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLBitLengthFunction;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLLengthFunction;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLLocateFunction;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLNotFunction;
 
 /**
@@ -31,6 +34,14 @@ public final class MySQLOperatorTable extends ReflectiveSqlOperatorTable {
     public static final SqlUserDefinedFunction NOT = new MySQLNotFunction();
     
     public static final SqlUserDefinedFunction BIT_COUNT = new MySQLBitCountFunction();
+    
+    public static final SqlUserDefinedFunction LENGTH = new MySQLLengthFunction();
+    
+    public static final SqlUserDefinedFunction BIT_LENGTH = new MySQLBitLengthFunction();
+    
+    public static final SqlUserDefinedFunction LOCATE = new MySQLLocateFunction(false);
+    
+    public static final SqlUserDefinedFunction LOCATE_WITH_POSITION = new MySQLLocateFunction(true);
     
     public MySQLOperatorTable() {
         init();
