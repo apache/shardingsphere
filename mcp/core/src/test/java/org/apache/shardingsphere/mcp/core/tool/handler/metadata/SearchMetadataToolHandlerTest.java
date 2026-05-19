@@ -43,12 +43,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SearchMetadataToolHandlerTest {
-
+    
     @Test
     void assertGetSearchMetadataToolDescriptor() {
         MCPToolDescriptor actual = MCPHandlerDescriptorUtils.getRequiredToolDescriptor(new SearchMetadataToolHandler());
         assertThat(actual.getName(), is("database_gateway_search_metadata"));
-        assertThat(((Map<?, ?>) actual.getInputSchema().get("properties")).size(), is(6));
+        assertThat(((Map<?, ?>) actual.getInputSchema().get("properties")).size(), is(4));
         Map<?, ?> actualProperties = (Map<?, ?>) actual.getOutputSchema().get("properties");
         Map<?, ?> actualItems = (Map<?, ?>) ((Map<?, ?>) actualProperties.get("items")).get("items");
         Map<?, ?> actualItemProperties = (Map<?, ?>) actualItems.get("properties");
@@ -65,7 +65,7 @@ class SearchMetadataToolHandlerTest {
         assertTrue(actualProperties.containsKey("ambiguity_state"));
         assertTrue(actualProperties.containsKey("next_actions"));
     }
-
+    
     @Test
     void assertHandleSearchMetadata() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -76,11 +76,14 @@ class SearchMetadataToolHandlerTest {
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
             assertThat(actualPayload.get("total_match_count"), is(1));
+            assertFalse(actualPayload.containsKey("next_page_token"));
+            assertFalse((Boolean) actualPayload.get("has_more"));
+            assertThat(actualPayload.get("continuation_mode"), is("none"));
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_idx"));
             assertThat(((Map<?, ?>) actualPayload.get("search_context")).get("object_types"), is(List.of("index")));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithSequence() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -92,7 +95,7 @@ class SearchMetadataToolHandlerTest {
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_seq"));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataIgnoresQueryInObjectTypes() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -104,7 +107,7 @@ class SearchMetadataToolHandlerTest {
             assertThat(((Map<?, ?>) actualPayload.get("search_context")).get("object_types"), is(List.of("table")));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithEmptyQuery() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -121,7 +124,7 @@ class SearchMetadataToolHandlerTest {
             assertTrue(actualNames.contains("order_idx"));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithBlankAllDatabaseGuard() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -141,7 +144,7 @@ class SearchMetadataToolHandlerTest {
             assertThat(actualNextAction.get("required_inputs"), is(List.of("database", "query", "object_types")));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithEmptyResultGuidance() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -155,23 +158,7 @@ class SearchMetadataToolHandlerTest {
             assertFalse(((Map<?, ?>) actualNextAction.get("arguments")).containsKey("database"));
         }
     }
-
-    @Test
-    void assertHandleSearchMetadataWithPaginationGuidance() {
-        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("query", "order", "page_size", 1)));
-            Map<String, Object> actualPayload = actual.toPayload();
-            String actualNextPageToken = String.valueOf(actualPayload.get("next_page_token"));
-            assertFalse(actualNextPageToken.isEmpty());
-            assertFalse(actualNextPageToken.matches("\\d+"));
-            Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
-            assertThat(actualNextAction.get("type"), is("tool_call"));
-            assertThat(actualNextAction.get("tool_name"), is("database_gateway_search_metadata"));
-            assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("page_token"), is(actualNextPageToken));
-            assertThat(actualNextAction.get("order"), is(1));
-        }
-    }
-
+    
     @Test
     void assertHandleSearchMetadataWithAmbiguityGuidance() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext(createDuplicatedTableMetadata()))) {
@@ -189,7 +176,7 @@ class SearchMetadataToolHandlerTest {
             assertThat(actualNextAction.get("order"), is(1));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithPrefixNameAmbiguity() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext(createDuplicatedTableMetadata()))) {
@@ -200,7 +187,7 @@ class SearchMetadataToolHandlerTest {
             assertThat(actualAmbiguityState.get("duplicated_names"), is(List.of("orders")));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithoutUnrelatedChildAmbiguity() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -212,51 +199,38 @@ class SearchMetadataToolHandlerTest {
             assertFalse(actualPayload.containsKey("next_actions"));
         }
     }
-
+    
     @Test
-    void assertHandleSearchMetadataWithPaginationAndAmbiguityOrder() {
+    void assertHandleSearchMetadataWithAmbiguityAcrossCompleteResult() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext(createDuplicatedTableMetadata()))) {
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("query", "orders", "page_size", 2)));
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("query", "orders")));
             Map<String, Object> actualPayload = actual.toPayload();
-            assertFalse(String.valueOf(actualPayload.get("next_page_token")).matches("\\d+"));
-            List<?> actualNextActions = (List<?>) actualPayload.get("next_actions");
-            assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("tool_call"));
-            assertThat(((Map<?, ?>) actualNextActions.get(0)).get("order"), is(1));
-            assertThat(((Map<?, ?>) actualNextActions.get(1)).get("type"), is("ask_user"));
-            assertThat(((Map<?, ?>) actualNextActions.get(1)).get("order"), is(2));
-        }
-    }
-
-    @Test
-    void assertHandleSearchMetadataWithAmbiguityAcrossPages() {
-        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext(createDuplicatedTableMetadata()))) {
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("query", "orders", "page_size", 1)));
-            Map<String, Object> actualPayload = actual.toPayload();
-            Map<?, ?> actualAmbiguityState = (Map<?, ?>) actualPayload.get("ambiguity_state");
-            assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
+            assertThat(((List<?>) actualPayload.get("items")).size(), is(3));
             assertThat(actualPayload.get("total_match_count"), is(3));
+            assertFalse(actualPayload.containsKey("next_page_token"));
+            Map<?, ?> actualAmbiguityState = (Map<?, ?>) actualPayload.get("ambiguity_state");
             assertThat(actualAmbiguityState.get("candidate_count"), is(2));
             assertThat(actualAmbiguityState.get("duplicated_names"), is(List.of("orders")));
             List<?> actualNextActions = (List<?>) actualPayload.get("next_actions");
-            assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("tool_call"));
-            assertThat(((Map<?, ?>) actualNextActions.get(1)).get("type"), is("ask_user"));
+            assertThat(actualNextActions.size(), is(1));
+            assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("ask_user"));
         }
     }
-
+    
     private MCPRuntimeContext createSearchRuntimeContext() {
         return createSearchRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata());
     }
-
+    
     private MCPRuntimeContext createSearchRuntimeContext(final List<MCPDatabaseMetadata> databaseMetadata) {
         MCPRuntimeContext result = ResourceTestDataFactory.createRuntimeContext(databaseMetadata);
         result.getSessionManager().createSession("session-1");
         return result;
     }
-
+    
     private List<MCPDatabaseMetadata> createDuplicatedTableMetadata() {
         return List.of(createDatabaseMetadata("bar_db", "orders"), createDatabaseMetadata("baz_db", "orders"), createDatabaseMetadata("foo_db", "orders_archive"));
     }
-
+    
     private MCPDatabaseMetadata createDatabaseMetadata(final String databaseName, final String tableName) {
         return new MCPDatabaseMetadata(databaseName, "MySQL", "", List.of(
                 new MCPSchemaMetadata(databaseName, "public", List.of(new MCPTableMetadata(databaseName, "public", tableName, List.of(), List.of())), List.of(), List.of())));

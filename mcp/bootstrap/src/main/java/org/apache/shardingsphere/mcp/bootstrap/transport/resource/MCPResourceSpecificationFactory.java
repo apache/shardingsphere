@@ -44,18 +44,18 @@ import java.util.stream.Collectors;
  * MCP resource specification factory.
  */
 public final class MCPResourceSpecificationFactory {
-
+    
     private static final String JSON_CONTENT_TYPE = "application/json";
-
+    
     private final Collection<MCPResourceDescriptor> resourceDescriptors;
-
+    
     private final MCPResourceController controller;
-
+    
     public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         resourceDescriptors = ResourceHandlerRegistry.getSupportedResourceDescriptors();
         controller = new MCPResourceController(runtimeContext);
     }
-
+    
     /**
      * Create MCP resource specifications.
      *
@@ -66,7 +66,7 @@ public final class MCPResourceSpecificationFactory {
                 .filter(each -> !each.isTemplated())
                 .map(each -> new SyncResourceSpecification(createResource(each), (exchange, request) -> readResource(request))).collect(Collectors.toList());
     }
-
+    
     private McpSchema.Resource createResource(final MCPResourceDescriptor descriptor) {
         McpSchema.Resource.Builder result = McpSchema.Resource.builder()
                 .uri(descriptor.getUriTemplate())
@@ -82,7 +82,7 @@ public final class MCPResourceSpecificationFactory {
         }
         return result.build();
     }
-
+    
     /**
      * Create MCP resource template specifications.
      *
@@ -93,7 +93,7 @@ public final class MCPResourceSpecificationFactory {
                 .filter(MCPResourceDescriptor::isTemplated)
                 .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), (exchange, request) -> readResource(request))).collect(Collectors.toList());
     }
-
+    
     private McpSchema.ResourceTemplate createResourceTemplate(final MCPResourceDescriptor descriptor) {
         McpSchema.ResourceTemplate.Builder result = McpSchema.ResourceTemplate.builder()
                 .uriTemplate(descriptor.getUriTemplate())
@@ -109,12 +109,12 @@ public final class MCPResourceSpecificationFactory {
         }
         return result.build();
     }
-
+    
     private McpSchema.Annotations createAnnotations(final MCPResourceAnnotations annotations) {
         List<McpSchema.Role> audience = annotations.getAudience().stream().map(each -> McpSchema.Role.valueOf(each.toUpperCase(Locale.ENGLISH))).toList();
         return new McpSchema.Annotations(audience, annotations.getPriority(), annotations.getLastModified());
     }
-
+    
     private McpSchema.ReadResourceResult readResource(final McpSchema.ReadResourceRequest request) {
         try {
             return createReadResourceResult(request.uri(), controller.handle(request.uri()).toPayload());
@@ -124,11 +124,11 @@ public final class MCPResourceSpecificationFactory {
             throw createReadResourceError(ex);
         }
     }
-
+    
     private McpSchema.ReadResourceResult createReadResourceResult(final String uri, final Map<String, Object> payload) {
         return new McpSchema.ReadResourceResult(Collections.singletonList(new McpSchema.TextResourceContents(uri, JSON_CONTENT_TYPE, JsonUtils.toJsonString(payload))));
     }
-
+    
     private McpError createReadResourceError(final RuntimeException cause) {
         return MCPTransportErrorFactory.createResourceReadError(cause);
     }

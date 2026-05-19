@@ -34,9 +34,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StatementClassifierTest {
-
+    
     private final StatementClassifier statementClassifier = new StatementClassifier();
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertClassifyCases")
     void assertClassify(final String name, final String sql, final SupportedMCPStatement expectedStatementClass, final String expectedStatementType,
@@ -48,14 +48,14 @@ class StatementClassifierTest {
         assertThat(actualResult.getTargetObjectName().orElse(""), is(expectedTargetObjectName));
         assertThat(actualResult.getSavepointName().orElse(""), is(expectedSavepointName));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertClassifyWithInvalidStatementCases")
     void assertClassifyWithInvalidStatement(final String name, final String sql, final Class<? extends RuntimeException> expectedExceptionClass, final String expectedMessage) {
         RuntimeException actualException = assertThrows(expectedExceptionClass, () -> statementClassifier.classify(sql));
         assertThat(actualException.getMessage(), is(expectedMessage));
     }
-
+    
     @Test
     void assertClassifyExplainAnalyzeInnerStatementClass() {
         ClassificationResult actualResult = statementClassifier.classify("EXPLAIN ANALYZE UPDATE foo_orders SET status = 'DONE'");
@@ -63,7 +63,7 @@ class StatementClassifierTest {
         assertThat(actualResult.getAnalyzedStatementClass().orElseThrow(), is(SupportedMCPStatement.DML));
         assertThat(actualResult.getTargetObjectName().orElse(""), is("foo_orders"));
     }
-
+    
     private static Stream<Arguments> assertClassifyCases() {
         return Stream.of(
                 Arguments.of("trim trailing semicolon query", "  SELECT * FROM foo_orders ;  ", SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM foo_orders", "foo_orders", ""),
@@ -135,7 +135,7 @@ class StatementClassifierTest {
                 Arguments.of("explain analyze", "EXPLAIN ANALYZE SELECT * FROM foo_orders", SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE",
                         "EXPLAIN ANALYZE SELECT * FROM foo_orders", "foo_orders", ""));
     }
-
+    
     private static Stream<Arguments> assertClassifyWithInvalidStatementCases() {
         return Stream.of(
                 Arguments.of("blank sql", "   ", IllegalArgumentException.class, "sql cannot be empty."),

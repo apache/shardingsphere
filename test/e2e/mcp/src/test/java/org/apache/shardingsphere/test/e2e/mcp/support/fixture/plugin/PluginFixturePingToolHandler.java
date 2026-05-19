@@ -29,19 +29,19 @@ import java.util.Map;
  * Test-only tool handler used to prove packaged distribution plugin discovery.
  */
 public final class PluginFixturePingToolHandler implements MCPToolHandler<MCPServiceHandlerContext> {
-
+    
     private static final String TOOL_NAME = "fixture_ping";
-
+    
     @Override
     public Class<MCPServiceHandlerContext> getContextType() {
         return MCPServiceHandlerContext.class;
     }
-
+    
     @Override
     public String getToolName() {
         return TOOL_NAME;
     }
-
+    
     @Override
     public MCPResponse handle(final MCPServiceHandlerContext handlerContext, final MCPToolCall toolCall) {
         return new MCPMapResponse(Map.of("status", "ready", "echo", String.valueOf(toolCall.getArguments().get("message"))));

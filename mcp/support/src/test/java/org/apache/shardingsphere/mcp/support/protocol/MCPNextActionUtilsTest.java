@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MCPNextActionUtilsTest {
-
+    
     @Test
     void assertReadResource() {
         Map<String, Object> actual = MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read capabilities.");
@@ -40,19 +40,19 @@ class MCPNextActionUtilsTest {
         assertFalse(actual.containsKey("requires_user_approval"));
         assertNoLegacyAliases(actual);
     }
-
+    
     @Test
     void assertCallTool() {
-        Map<String, Object> actual = MCPNextActionUtils.callTool("database_gateway_search_metadata", "Search metadata.", Map.of("page_size", 100));
+        Map<String, Object> actual = MCPNextActionUtils.callTool("database_gateway_search_metadata", "Search metadata.", Map.of("query", "orders"));
         assertThat(actual.get("order"), is(1));
         assertThat(actual.get("type"), is("tool_call"));
         assertThat(actual.get("title"), is("Call database_gateway_search_metadata"));
         assertThat(actual.get("tool_name"), is("database_gateway_search_metadata"));
-        assertThat(actual.get("arguments"), is(Map.of("page_size", 100)));
+        assertThat(actual.get("arguments"), is(Map.of("query", "orders")));
         assertFalse(actual.containsKey("requires_user_approval"));
         assertNoLegacyAliases(actual);
     }
-
+    
     @Test
     void assertRetryTool() {
         Map<String, Object> actual = MCPNextActionUtils.retryTool("database_gateway_execute_update", "Retry in preview mode.", Map.of("execution_mode", "preview"));
@@ -63,12 +63,12 @@ class MCPNextActionUtilsTest {
         assertFalse(actual.containsKey("requires_user_approval"));
         assertNoLegacyAliases(actual);
     }
-
+    
     @Test
     void assertRetryToolWithoutToolName() {
         assertThrows(IllegalArgumentException.class, () -> MCPNextActionUtils.retryTool("", "Retry after choosing a tool.", Map.of("execution_mode", "preview")));
     }
-
+    
     @Test
     void assertCompleteArgument() {
         Map<String, Object> actual = MCPNextActionUtils.completeArgument("ref/prompt", "inspect_metadata", "schema", "pub", Map.of("database", "logic_db"),
@@ -87,7 +87,7 @@ class MCPNextActionUtilsTest {
         assertFalse(actual.containsKey("requires_user_approval"));
         assertNoLegacyAliases(actual);
     }
-
+    
     @Test
     void assertCompleteArgumentNormalizesReferenceTypes() {
         Map<String, Object> actual = MCPNextActionUtils.completeArgument("prompt", "inspect_metadata", "schema", "pub", Map.of("database", "logic_db"),
@@ -95,7 +95,7 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("reference_type"), is("ref/prompt"));
         assertThat(actual.get("resume_target_type"), is("ref/resource"));
     }
-
+    
     @Test
     void assertCompleteArgumentWithoutResumeTarget() {
         Map<String, Object> actual = MCPNextActionUtils.completeArgument("ref/resource", "shardingsphere://databases/{database}", "database", "", Map.of(), List.of(), "", "", Map.of(),
@@ -106,7 +106,7 @@ class MCPNextActionUtilsTest {
         assertFalse(actual.containsKey("resume_arguments"));
         assertNoLegacyAliases(actual);
     }
-
+    
     @Test
     void assertAskUser() {
         Map<String, Object> actual = MCPNextActionUtils.askUser("Choose execution mode.", List.of("execution_mode"));
@@ -117,7 +117,7 @@ class MCPNextActionUtilsTest {
         assertFalse(actual.containsKey("requires_user_approval"));
         assertNoLegacyAliases(actual);
     }
-
+    
     @Test
     void assertStop() {
         Map<String, Object> actual = MCPNextActionUtils.stop("Done.");
@@ -127,7 +127,7 @@ class MCPNextActionUtilsTest {
         assertFalse(actual.containsKey("requires_user_approval"));
         assertNoLegacyAliases(actual);
     }
-
+    
     @Test
     void assertOrderedCopiesActions() {
         Map<String, Object> action = Map.of("type", "terminal");
@@ -136,7 +136,7 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get(1).get("order"), is(2));
         assertFalse(action.containsKey("order"));
     }
-
+    
     @Test
     void assertDependsOnCopiesAction() {
         Map<String, Object> action = Map.of("type", "tool_call");
@@ -144,7 +144,7 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("depends_on"), is(List.of(1)));
         assertFalse(action.containsKey("depends_on"));
     }
-
+    
     private void assertNoLegacyAliases(final Map<String, Object> action) {
         assertFalse(action.containsKey("target_tool"));
         assertFalse(action.containsKey("target_resource"));

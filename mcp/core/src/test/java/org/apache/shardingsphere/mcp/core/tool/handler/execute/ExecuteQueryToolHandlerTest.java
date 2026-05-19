@@ -44,7 +44,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ExecuteQueryToolHandlerTest {
-
+    
     @Test
     void assertHandleReadOnlyQuery() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -62,7 +62,7 @@ class ExecuteQueryToolHandlerTest {
         assertThat(requestCaptor.getValue().getMaxRows(), is(100));
         assertThat(requestCaptor.getValue().getTimeoutMs(), is(0));
     }
-
+    
     @Test
     void assertHandleReadOnlyQueryWithSingleSchemaDefault() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -77,7 +77,7 @@ class ExecuteQueryToolHandlerTest {
         verify(executionFacade).execute(requestCaptor.capture());
         assertThat(requestCaptor.getValue().getSchema(), is("public"));
     }
-
+    
     @Test
     void assertHandleExplainAnalyze() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -89,7 +89,7 @@ class ExecuteQueryToolHandlerTest {
         assertThat(actual.toPayload().get("statement_class"), is("explain_analyze"));
         verify(executionFacade).execute(any());
     }
-
+    
     @Test
     void assertRejectSideEffectingExplainAnalyze() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -100,7 +100,7 @@ class ExecuteQueryToolHandlerTest {
         assertThat(actual.getMessage(), is("database_gateway_execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL."));
         verifyNoInteractions(executionFacade);
     }
-
+    
     @Test
     void assertRejectLockingRead() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -111,7 +111,7 @@ class ExecuteQueryToolHandlerTest {
         assertThat(actual.getMessage(), is("Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract."));
         verifyNoInteractions(executionFacade);
     }
-
+    
     @Test
     void assertRejectUpdateStatement() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -122,7 +122,7 @@ class ExecuteQueryToolHandlerTest {
         assertThat(actual.getMessage(), is("database_gateway_execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL."));
         verifyNoInteractions(executionFacade);
     }
-
+    
     @Test
     void assertRejectOutOfRangeMaxRows() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -133,7 +133,7 @@ class ExecuteQueryToolHandlerTest {
         assertThat(actual.getMessage(), is("max_rows must be an integer between 0 and 5000."));
         verifyNoInteractions(executionFacade);
     }
-
+    
     @Test
     void assertHandleZeroMaxRowsAsDefault() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);

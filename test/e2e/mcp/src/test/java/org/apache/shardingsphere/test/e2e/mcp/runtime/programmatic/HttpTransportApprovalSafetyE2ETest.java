@@ -36,11 +36,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @EnabledIf("isEnabled")
 class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
-
+    
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();
     }
-
+    
     @Test
     void assertExecuteUpdateWithoutApprovalArgument() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -55,7 +55,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         assertThat(String.valueOf(payload.get("affected_rows")), is("0"));
         assertModelFacingPayloadContract(payload);
     }
-
+    
     @Test
     void assertExecuteUpdateReturnsExecutionMode() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -69,7 +69,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         assertThat(String.valueOf(payload.get("execution_mode")), is("execute"));
         assertModelFacingPayloadContract(payload);
     }
-
+    
     @Test
     void assertPreviewExecuteUpdateWithoutExecution() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -90,7 +90,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         assertFalse(nextActions.get(0).containsKey("requires_user_approval"));
         assertModelFacingPayloadContract(payload);
     }
-
+    
     @Test
     void assertApplyWorkflowPreviewManualAndExecuteModes() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -112,7 +112,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         assertModelFacingPayloadContract(manualPayload);
         assertModelFacingPayloadContract(executionPayload);
     }
-
+    
     @Test
     void assertRejectWorkflowExecutionFromOtherSession() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -126,7 +126,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         assertThat(String.valueOf(castToMap(actual.get("recovery")).get("recovery_category")), is("stale_workflow"));
         assertModelFacingPayloadContract(actual);
     }
-
+    
     private Map<String, Object> callApplyWorkflow(final HttpClient httpClient, final String sessionId, final String planId,
                                                   final Map<String, Object> arguments) throws IOException, InterruptedException {
         Map<String, Object> actualArguments = new LinkedHashMap<>(arguments.size() + 1, 1F);
@@ -136,7 +136,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         assertThat(actual.statusCode(), is(200));
         return getStructuredContent(actual.body());
     }
-
+    
     private String createMaskRulePlan(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_mask_rule", Map.of(
                 "database", "logic_db",
@@ -151,12 +151,12 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         assertThat(String.valueOf(payload.get("status")), is("planned"));
         return String.valueOf(payload.get("plan_id"));
     }
-
+    
     private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
         MCPModelContractAssertions.assertNoBannedPublicFields(payload);
         MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
     }
-
+    
     private List<Map<String, Object>> castToMapList(final Object value) {
         return ((List<?>) value).stream().map(this::castToMap).toList();
     }

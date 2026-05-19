@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.support.database.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMet
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,11 +47,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SearchMetadataToolServiceTest {
-
+    
     @Test
     void assertExecuteSearchAcrossDatabases() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("", "", "order",
-                Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.INDEX), 20, ""));
+                Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.INDEX)));
         Set<String> actualNames = actual.getItems().stream().map(MetadataSearchHit::getName).collect(Collectors.toSet());
         assertTrue(actualNames.contains("orders"));
         assertTrue(actualNames.contains("order_items"));
@@ -63,11 +61,11 @@ class SearchMetadataToolServiceTest {
         assertFalse(actualNames.contains("mv_orders"));
         assertFalse(actualNames.contains("order_seq"));
     }
-
+    
     @Test
     void assertExecuteSearchAcrossDatabasesWithDatabaseObjectType() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("", "", "", Set.of(SupportedMCPMetadataObjectType.DATABASE), 10, ""));
+                new MetadataSearchRequest("", "", "", Set.of(SupportedMCPMetadataObjectType.DATABASE)));
         assertThat(actual.getItems().size(), is(4));
         assertThat(actual.getItems().get(0).getName(), is("analytics_db"));
         assertThat(actual.getItems().get(1).getName(), is("logic_db"));
@@ -77,12 +75,11 @@ class SearchMetadataToolServiceTest {
         assertThat(actual.getItems().get(1).getDerivationStatus(), is("derived"));
         assertThat(actual.getItems().get(2).getName(), is("runtime_db"));
         assertThat(actual.getItems().get(3).getName(), is("warehouse"));
-        assertThat(actual.getNextPageToken(), is(""));
     }
-
+    
     @Test
     void assertExecuteBlankAllDatabaseSearchGuardsObjectExpansion() {
-        MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("", "", "", Set.of(), 10, ""));
+        MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("", "", "", Set.of()));
         assertThat(actual.getItems().size(), is(4));
         assertThat(actual.getTotalMatchCount(), is(4));
         assertThat(actual.getSearchContext().get("object_types"), is(List.of("database")));
@@ -90,36 +87,34 @@ class SearchMetadataToolServiceTest {
         assertThat(actual.getSearchContext().get("recommended_narrowing_arguments"), is(List.of("database", "query", "object_types")));
         assertFalse(actual.getItems().stream().map(MetadataSearchHit::getName).collect(Collectors.toSet()).contains("orders"));
     }
-
+    
     @Test
-    void assertExecuteSearchWithPagination() {
-        Set<SupportedMCPMetadataObjectType> objectTypes = new LinkedHashSet<>(Arrays.asList(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW));
+    void assertExecuteSearchWithCompleteResult() {
+        Set<SupportedMCPMetadataObjectType> objectTypes = new LinkedHashSet<>(List.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW));
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("logic_db", "", "order", objectTypes, 1, ""));
-        assertThat(actual.getItems().size(), is(1));
+                new MetadataSearchRequest("logic_db", "", "order", objectTypes));
+        assertThat(actual.getItems().size(), is(4));
         assertThat(actual.getItems().get(0).getName(), is("order_items"));
         assertThat(actual.getItems().get(0).getMatchKind(), is("prefix"));
         assertThat(actual.getItems().get(0).getMatchedFields(), is(List.of("name", "table")));
         assertThat(actual.getItems().get(0).getMatchedValue(), is("order_items"));
+        assertThat(actual.getItems().get(1).getName(), is("orders"));
+        assertThat(actual.getItems().get(2).getName(), is("active_orders"));
+        assertThat(actual.getItems().get(3).getName(), is("archived_orders"));
         Map<?, ?> actualSearchContext = actual.getSearchContext();
         assertThat(actualSearchContext.get("query"), is("order"));
         assertThat(actualSearchContext.get("database"), is("logic_db"));
         assertThat(actualSearchContext.get("database_scope"), is("single_database"));
         assertThat(actualSearchContext.get("schema"), is(""));
         assertThat(actualSearchContext.get("object_types"), is(List.of("table", "view")));
-        assertThat(actualSearchContext.get("page_size"), is(1));
-        assertFalse(actualSearchContext.containsKey("page_offset"));
+        assertFalse(actualSearchContext.containsKey("page_size"));
+        assertFalse(actualSearchContext.containsKey("page_token"));
         assertThat(actual.getTotalMatchCount(), is(4));
-        assertFalse(actual.getNextPageToken().isEmpty());
-        assertFalse(actual.getNextPageToken().matches("\\d+"));
-        MetadataSearchResult actualNextPage = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("logic_db", "", "order", objectTypes, 1, actual.getNextPageToken()));
-        assertThat(actualNextPage.getItems().get(0).getName(), is("orders"));
     }
-
+    
     @Test
-    void assertExecuteSearchWithDefaultPageSize() {
-        MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("runtime_db", "", "", Set.of(), 0, ""));
+    void assertExecuteSearchWithDefaultObjectTypes() {
+        MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("runtime_db", "", "", Set.of()));
         assertThat(actual.getItems().size(), is(3));
         assertThat(actual.getItems().get(0).getObjectType(), is("database"));
         assertThat(actual.getItems().get(1).getObjectType(), is("schema"));
@@ -128,31 +123,30 @@ class SearchMetadataToolServiceTest {
         assertThat(extractResourceHintUri(actual.getItems().get(2)), is("shardingsphere://databases/runtime_db/schemas/public/sequences/order_seq"));
         assertThat(extractParentResourceHintUri(actual.getItems().get(2)), is("shardingsphere://databases/runtime_db/schemas/public/sequences"));
         assertThat(actual.getItems().get(2).getMatchKind(), is("all"));
-        assertThat(actual.getSearchContext().get("page_size"), is(50));
-        assertThat(actual.getNextPageToken(), is(""));
+        assertFalse(actual.getSearchContext().containsKey("page_size"));
     }
-
+    
     @Test
     void assertExecuteSearchWithSchemaWithoutDatabase() {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> execute(createDatabaseMetadata(), new MetadataSearchRequest("", "public", "order", Set.of(), 10, "")));
+                () -> execute(createDatabaseMetadata(), new MetadataSearchRequest("", "public", "order", Set.of())));
         assertThat(actual.getMessage(), is("Schema cannot be provided without database."));
     }
-
+    
     @Test
     void assertExecuteSearchWithSchemaObjectTypeAndSchemaFilter() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("logic_db", "public", "public", Set.of(SupportedMCPMetadataObjectType.SCHEMA), 10, ""));
+                new MetadataSearchRequest("logic_db", "public", "public", Set.of(SupportedMCPMetadataObjectType.SCHEMA)));
         assertThat(actual.getItems().size(), is(1));
         assertThat(actual.getItems().get(0).getObjectType(), is("schema"));
         assertThat(actual.getItems().get(0).getName(), is("public"));
         assertThat(extractResourceHintUri(actual.getItems().get(0)), is("shardingsphere://databases/logic_db/schemas/public"));
     }
-
+    
     @Test
     void assertExecuteSearchWithTableObjectTypeAndSchemaFilter() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("logic_db", "public", "order", Set.of(SupportedMCPMetadataObjectType.TABLE), 10, ""));
+                new MetadataSearchRequest("logic_db", "public", "order", Set.of(SupportedMCPMetadataObjectType.TABLE)));
         assertThat(actual.getItems().size(), is(2));
         assertThat(actual.getItems().get(0).getName(), is("order_items"));
         assertThat(actual.getItems().get(1).getName(), is("orders"));
@@ -160,22 +154,22 @@ class SearchMetadataToolServiceTest {
         assertThat(extractNextResourceHintUris(actual.getItems().get(1)), is(List.of("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns",
                 "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes")));
     }
-
+    
     @Test
     void assertExecuteSearchWithViewObjectTypeAndSchemaFilter() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("logic_db", "public", "orders", Set.of(SupportedMCPMetadataObjectType.VIEW), 10, ""));
+                new MetadataSearchRequest("logic_db", "public", "orders", Set.of(SupportedMCPMetadataObjectType.VIEW)));
         assertThat(actual.getItems().size(), is(2));
         assertThat(actual.getItems().get(0).getName(), is("active_orders"));
         assertThat(extractResourceHintUri(actual.getItems().get(0)), is("shardingsphere://databases/logic_db/schemas/public/views/active_orders"));
         assertThat(extractNextResourceHintUris(actual.getItems().get(0)), is(List.of("shardingsphere://databases/logic_db/schemas/public/views/active_orders/columns")));
         assertThat(actual.getItems().get(1).getName(), is("archived_orders"));
     }
-
+    
     @Test
     void assertExecuteSearchWithColumnObjectTypeMatchedByViewName() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("logic_db", "", "active", Set.of(SupportedMCPMetadataObjectType.COLUMN), 10, ""));
+                new MetadataSearchRequest("logic_db", "", "active", Set.of(SupportedMCPMetadataObjectType.COLUMN)));
         assertThat(actual.getItems().size(), is(2));
         assertThat(actual.getItems().get(0).getName(), is("order_id"));
         assertThat(actual.getItems().get(0).getView(), is("active_orders"));
@@ -183,11 +177,11 @@ class SearchMetadataToolServiceTest {
         assertThat(actual.getItems().get(1).getName(), is("order_status"));
         assertThat(actual.getItems().get(1).getView(), is("active_orders"));
     }
-
+    
     @Test
     void assertExecuteSearchWithDatabaseAndTableInEmptySchema() {
         MetadataSearchResult actual = execute(createDatabaseMetadataWithEmptySchema(),
-                new MetadataSearchRequest("schema_less_db", "", "", Set.of(), 10, ""));
+                new MetadataSearchRequest("schema_less_db", "", "", Set.of()));
         assertThat(actual.getItems().size(), is(2));
         assertThat(actual.getItems().get(0).getObjectType(), is("database"));
         assertThat(actual.getItems().get(1).getObjectType(), is("table"));
@@ -196,11 +190,11 @@ class SearchMetadataToolServiceTest {
         assertThat(actual.getItems().get(1).getDerivationStatus(), is("not_safe_to_derive"));
         assertThat(actual.getItems().get(1).getDerivationReason(), is("Metadata hit does not include database, schema, and table names safe for resource URI derivation."));
     }
-
+    
     @Test
     void assertExecuteSearchWithEncodedUriCharacter() {
         MetadataSearchResult actual = execute(createDatabaseMetadataWithUnsafeUriName(),
-                new MetadataSearchRequest("逻辑 库", "public/main", "orders", Set.of(SupportedMCPMetadataObjectType.TABLE), 10, ""));
+                new MetadataSearchRequest("逻辑 库", "public/main", "orders", Set.of(SupportedMCPMetadataObjectType.TABLE)));
         assertThat(actual.getItems().size(), is(1));
         assertThat(actual.getItems().get(0).getName(), is("orders?archive%2026"));
         assertThat(extractResourceHintUri(actual.getItems().get(0)),
@@ -209,110 +203,78 @@ class SearchMetadataToolServiceTest {
         assertThat(actual.getItems().get(0).getMatchKind(), is("prefix"));
         assertThat(actual.getItems().get(0).getMatchedFields(), is(List.of("name", "table")));
     }
-
+    
     @Test
     void assertExecuteSearchWithNullViewValueInColumnMetadata() {
         MetadataSearchResult actual = execute(createDatabaseMetadataWithNullViewColumn(),
-                new MetadataSearchRequest("null_view_db", "", "missing", Set.of(SupportedMCPMetadataObjectType.COLUMN), 10, ""));
+                new MetadataSearchRequest("null_view_db", "", "missing", Set.of(SupportedMCPMetadataObjectType.COLUMN)));
         assertThat(actual.getItems().size(), is(0));
-        assertThat(actual.getNextPageToken(), is(""));
     }
-
+    
     @Test
     void assertExecuteSearchWithEmptyQuery() {
-        MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("logic_db", "", "", Set.of(), 10, ""));
-        assertThat(actual.getItems().size(), is(10));
-        assertFalse(actual.getNextPageToken().isEmpty());
-        assertFalse(actual.getNextPageToken().matches("\\d+"));
+        MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("logic_db", "", "", Set.of()));
+        assertThat(actual.getItems().size(), is(11));
+        assertThat(actual.getTotalMatchCount(), is(11));
         Set<String> actualNames = actual.getItems().stream().map(MetadataSearchHit::getName).collect(Collectors.toSet());
         assertTrue(actualNames.contains("logic_db"));
         assertTrue(actualNames.contains("active_orders"));
-        assertFalse(actualNames.contains("idx_orders_status"));
+        assertTrue(actualNames.contains("idx_orders_status"));
     }
-
+    
     @Test
     void assertExecuteSearchWithSequenceObjectType() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("runtime_db", "", "order",
-                Set.of(SupportedMCPMetadataObjectType.SEQUENCE), 10, ""));
+                Set.of(SupportedMCPMetadataObjectType.SEQUENCE)));
         assertThat(actual.getItems().size(), is(1));
         assertThat(actual.getItems().get(0).getName(), is("order_seq"));
         assertThat(extractResourceHintUri(actual.getItems().get(0)), is("shardingsphere://databases/runtime_db/schemas/public/sequences/order_seq"));
     }
-
+    
     @Test
     void assertExecuteSearchWithSchemaScopedSequenceObjectType() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("runtime_db", "public", "order", Set.of(SupportedMCPMetadataObjectType.SEQUENCE), 10, ""));
+                new MetadataSearchRequest("runtime_db", "public", "order", Set.of(SupportedMCPMetadataObjectType.SEQUENCE)));
         assertThat(actual.getItems().size(), is(1));
         assertThat(actual.getItems().get(0).getName(), is("order_seq"));
     }
-
+    
     @Test
     void assertExecuteSearchWithUnsupportedIndexObjectType() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("warehouse", "", "", Set.of(SupportedMCPMetadataObjectType.INDEX), 10, ""));
+                new MetadataSearchRequest("warehouse", "", "", Set.of(SupportedMCPMetadataObjectType.INDEX)));
         assertThat(actual.getItems().size(), is(0));
-        assertThat(actual.getNextPageToken(), is(""));
     }
-
+    
     @Test
     void assertExecuteSearchWithUnsupportedSequenceObjectType() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("logic_db", "", "", Set.of(SupportedMCPMetadataObjectType.SEQUENCE), 10, ""));
+                new MetadataSearchRequest("logic_db", "", "", Set.of(SupportedMCPMetadataObjectType.SEQUENCE)));
         assertThat(actual.getItems().size(), is(0));
-        assertThat(actual.getNextPageToken(), is(""));
     }
-
-    @Test
-    void assertExecuteSearchWithInvalidPageToken() {
-        InvalidPageTokenException actual = assertThrows(InvalidPageTokenException.class,
-                () -> execute(createDatabaseMetadata(), new MetadataSearchRequest("logic_db", "", "order", Set.of(), 10, "invalid")));
-        assertThat(actual.getMessage(), is("Invalid page token."));
-    }
-
-    @Test
-    void assertExecuteSearchWithNegativePageToken() {
-        InvalidPageTokenException actual = assertThrows(InvalidPageTokenException.class,
-                () -> execute(createDatabaseMetadata(), new MetadataSearchRequest("logic_db", "", "order", Set.of(), 10, "-1")));
-        assertThat(actual.getMessage(), is("Invalid page token."));
-    }
-
-    @Test
-    void assertExecuteSearchWithInvalidPageSize() {
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> execute(createDatabaseMetadata(), new MetadataSearchRequest("logic_db", "", "order", Set.of(), 501, "")));
-        assertThat(actual.getMessage(), is("page_size must be an integer between 1 and 500."));
-    }
-
-    @Test
-    void assertExecuteSearchWithPageOffsetBeyondResultSize() {
-        MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("logic_db", "", "order", Set.of(), 10, "99"));
-        assertThat(actual.getItems().size(), is(0));
-        assertThat(actual.getNextPageToken(), is(""));
-    }
-
+    
     private MetadataSearchResult execute(final List<MCPDatabaseMetadata> databaseMetadata, final MetadataSearchRequest request) {
         try (MCPRequestScope requestScope = ResourceTestDataFactory.createRequestScope(databaseMetadata)) {
             return new SearchMetadataToolService(requestScope.getMetadataQueryFacade()).execute(request);
         }
     }
-
+    
     private MetadataSearchHit findHit(final MetadataSearchResult searchResult, final String name) {
         return searchResult.getItems().stream().filter(each -> name.equals(each.getName())).findFirst().orElseThrow();
     }
-
+    
     private String extractResourceHintUri(final MetadataSearchHit hit) {
         return String.valueOf(hit.getResource().getOrDefault("uri", ""));
     }
-
+    
     private String extractParentResourceHintUri(final MetadataSearchHit hit) {
         return String.valueOf(hit.getParentResource().getOrDefault("uri", ""));
     }
-
+    
     private List<String> extractNextResourceHintUris(final MetadataSearchHit hit) {
         return hit.getNextResources().stream().map(each -> String.valueOf(each.get("uri"))).toList();
     }
-
+    
     private List<MCPDatabaseMetadata> createDatabaseMetadata() {
         List<MCPDatabaseMetadata> result = new LinkedList<>();
         result.add(new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
@@ -342,18 +304,18 @@ class SearchMetadataToolServiceTest {
                 new MCPSchemaMetadata("runtime_db", "public", List.of(), List.of(), List.of(new MCPSequenceMetadata("runtime_db", "public", "order_seq"))))));
         return result;
     }
-
+    
     private List<MCPDatabaseMetadata> createDatabaseMetadataWithEmptySchema() {
         return List.of(new MCPDatabaseMetadata("schema_less_db", "H2", "",
                 List.of(new MCPSchemaMetadata("schema_less_db", "", List.of(new MCPTableMetadata("schema_less_db", "", "schema_less_orders", List.of(), List.of())), List.of(), List.of()))));
     }
-
+    
     private List<MCPDatabaseMetadata> createDatabaseMetadataWithUnsafeUriName() {
         return List.of(new MCPDatabaseMetadata("逻辑 库", "MySQL", "",
                 List.of(new MCPSchemaMetadata("逻辑 库", "public/main",
                         List.of(new MCPTableMetadata("逻辑 库", "public/main", "orders?archive%2026", List.of(), List.of())), List.of(), List.of()))));
     }
-
+    
     private List<MCPDatabaseMetadata> createDatabaseMetadataWithNullViewColumn() {
         return List.of(new MCPDatabaseMetadata("null_view_db", "H2", "",
                 List.of(new MCPSchemaMetadata("null_view_db", "public", List.of(),

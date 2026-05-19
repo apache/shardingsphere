@@ -20,11 +20,16 @@ package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
+import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -32,13 +37,12 @@ import java.util.Set;
  */
 public final class SearchMetadataToolService {
     
-    static final int DEFAULT_PAGE_SIZE = 50;
-    
-    static final int MAX_PAGE_SIZE = 500;
+    private static final Map<String, Integer> OBJECT_TYPE_ORDERS = Map.of(
+            "database", 0, "schema", 1, "table", 2, "view", 3, "column", 4, "index", 5, "sequence", 6);
     
     private final MetadataSearchCollector collector;
     
-    private final MetadataSearchPaginator paginator = new MetadataSearchPaginator(DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
+    private final MetadataSearchMatcher matcher = new MetadataSearchMatcher();
     
     public SearchMetadataToolService(final MCPMetadataQueryFacade metadataQueryFacade) {
         collector = new MetadataSearchCollector(metadataQueryFacade, new MetadataSearchResourceUriFactory());
@@ -56,7 +60,7 @@ public final class SearchMetadataToolService {
         if (isBlankAllDatabaseSearch(request)) {
             return executeBlankAllDatabaseSearch(request);
         }
-        return paginator.paginate(collector.collect(request, searchObjectTypes), request, searchObjectTypes, false);
+        return createSearchResult(collector.collect(request, searchObjectTypes), request, searchObjectTypes, false);
     }
     
     private boolean isBlankAllDatabaseSearch(final MetadataSearchRequest request) {
@@ -65,7 +69,65 @@ public final class SearchMetadataToolService {
     
     private MetadataSearchResult executeBlankAllDatabaseSearch(final MetadataSearchRequest request) {
         Set<SupportedMCPMetadataObjectType> searchObjectTypes = Set.of(SupportedMCPMetadataObjectType.DATABASE);
-        return paginator.paginate(collector.collectDatabases(), request, searchObjectTypes, true);
+        return createSearchResult(collector.collectDatabases(), request, searchObjectTypes, true);
+    }
+    
+    private MetadataSearchResult createSearchResult(final List<MetadataSearchHit> metadataItems, final MetadataSearchRequest request,
+                                                    final Set<SupportedMCPMetadataObjectType> searchObjectTypes, final boolean broadSearchGuarded) {
+        List<MetadataSearchHit> filteredItems = matcher.filterByQuery(metadataItems, request.getQuery());
+        filteredItems.sort(this::compareSearchHits);
+        return new MetadataSearchResult(filteredItems, createSearchContext(request, searchObjectTypes, broadSearchGuarded), filteredItems.size(), filteredItems);
+    }
+    
+    private Map<String, Object> createSearchContext(final MetadataSearchRequest request, final Set<SupportedMCPMetadataObjectType> searchObjectTypes, final boolean broadSearchGuarded) {
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+        result.put("query", request.getQuery());
+        result.put("database", request.getDatabase());
+        result.put("database_scope", request.getDatabase().isEmpty() ? "all_query_databases" : "single_database");
+        result.put("schema", request.getSchema());
+        result.put("object_types", createObjectTypeNames(searchObjectTypes));
+        if (broadSearchGuarded) {
+            result.put("broad_search_guarded", true);
+            result.put("guard_reason", "Blank cross-database metadata search lists databases only instead of expanding every object type.");
+            result.put("recommended_narrowing_arguments", List.of("database", "query", "object_types"));
+        }
+        return result;
+    }
+    
+    private List<String> createObjectTypeNames(final Set<SupportedMCPMetadataObjectType> searchObjectTypes) {
+        return searchObjectTypes.stream().map(each -> each.name().toLowerCase(Locale.ENGLISH)).sorted(this::compareObjectTypeNames).toList();
+    }
+    
+    private int compareObjectTypeNames(final String left, final String right) {
+        return Integer.compare(getObjectTypeOrder(left), getObjectTypeOrder(right));
+    }
+    
+    private int compareSearchHits(final MetadataSearchHit left, final MetadataSearchHit right) {
+        int result = left.getDatabase().compareTo(right.getDatabase());
+        if (0 != result) {
+            return result;
+        }
+        result = left.getSchema().compareTo(right.getSchema());
+        if (0 != result) {
+            return result;
+        }
+        result = Integer.compare(getObjectTypeOrder(left.getObjectType()), getObjectTypeOrder(right.getObjectType()));
+        if (0 != result) {
+            return result;
+        }
+        result = left.getTable().compareTo(right.getTable());
+        if (0 != result) {
+            return result;
+        }
+        result = left.getView().compareTo(right.getView());
+        if (0 != result) {
+            return result;
+        }
+        return left.getName().compareTo(right.getName());
+    }
+    
+    private int getObjectTypeOrder(final String objectType) {
+        return OBJECT_TYPE_ORDERS.getOrDefault(objectType, Integer.MAX_VALUE);
     }
     
     private Set<SupportedMCPMetadataObjectType> getSearchObjectTypes(final Set<SupportedMCPMetadataObjectType> objectTypes) {

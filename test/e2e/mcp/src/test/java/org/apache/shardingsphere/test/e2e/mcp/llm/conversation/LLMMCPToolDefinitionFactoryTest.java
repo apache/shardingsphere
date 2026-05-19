@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class LLMMCPToolDefinitionFactoryTest {
-
+    
     @Test
     void assertOfficialToolDefinitionsUseProductionDescriptors() {
         List<MCPToolDescriptor> toolDescriptors = ToolHandlerRegistry.getSupportedToolDescriptors();
@@ -41,7 +41,7 @@ class LLMMCPToolDefinitionFactoryTest {
             assertOfficialToolDefinition(findTool(actual, each.getName()), each);
         }
     }
-
+    
     @Test
     void assertProtocolBridgeToolDefinitionsKeepBridgeSchemas() {
         List<String> bridgeToolNames = List.of(
@@ -58,7 +58,7 @@ class LLMMCPToolDefinitionFactoryTest {
         assertGetPromptBridgeSchema(getParameters(findTool(actual, MCPInteractionActionNames.GET_PROMPT)));
         assertCompleteBridgeSchema(getParameters(findTool(actual, MCPInteractionActionNames.COMPLETE)));
     }
-
+    
     private void assertOfficialToolDefinition(final Map<?, ?> toolDefinition, final MCPToolDescriptor toolDescriptor) {
         assertThat(toolDefinition.get("type"), is("function"));
         Map<?, ?> function = getFunction(toolDefinition);
@@ -67,20 +67,20 @@ class LLMMCPToolDefinitionFactoryTest {
         Map<?, ?> parameters = getParameters(toolDefinition);
         assertThat(parameters, is(toolDescriptor.getInputSchema()));
     }
-
+    
     private void assertEmptyObjectSchema(final Map<?, ?> parameters) {
         assertThat(parameters.get("type"), is("object"));
         assertThat(parameters.get("properties"), is(Map.of()));
         assertFalse((Boolean) parameters.get("additionalProperties"));
     }
-
+    
     private void assertReadResourceBridgeSchema(final Map<?, ?> parameters) {
         assertThat(parameters.get("type"), is("object"));
         assertThat(getFieldType(parameters, "uri"), is("string"));
         assertThat(parameters.get("required"), is(List.of("uri")));
         assertFalse((Boolean) parameters.get("additionalProperties"));
     }
-
+    
     private void assertGetPromptBridgeSchema(final Map<?, ?> parameters) {
         assertThat(parameters.get("type"), is("object"));
         assertThat(getFieldType(parameters, "name"), is("string"));
@@ -88,7 +88,7 @@ class LLMMCPToolDefinitionFactoryTest {
         assertThat(parameters.get("required"), is(List.of("name")));
         assertFalse((Boolean) parameters.get("additionalProperties"));
     }
-
+    
     private void assertCompleteBridgeSchema(final Map<?, ?> parameters) {
         assertThat(parameters.get("type"), is("object"));
         Map<?, ?> reference = getField(parameters, "reference");
@@ -105,31 +105,31 @@ class LLMMCPToolDefinitionFactoryTest {
         assertThat(parameters.get("required"), is(List.of("reference", "argument_name")));
         assertFalse((Boolean) parameters.get("additionalProperties"));
     }
-
+    
     private Map<?, ?> getParameters(final Map<?, ?> toolDefinition) {
         return (Map<?, ?>) getFunction(toolDefinition).get("parameters");
     }
-
+    
     private Map<?, ?> getFunction(final Map<?, ?> toolDefinition) {
         return (Map<?, ?>) toolDefinition.get("function");
     }
-
+    
     private Map<?, ?> getProperties(final Map<?, ?> schema) {
         return (Map<?, ?>) schema.get("properties");
     }
-
+    
     private Map<?, ?> getField(final Map<?, ?> schema, final String fieldName) {
         return (Map<?, ?>) getProperties(schema).get(fieldName);
     }
-
+    
     private Object getFieldType(final Map<?, ?> schema, final String fieldName) {
         return getField(schema, fieldName).get("type");
     }
-
+    
     private List<String> getToolNames(final List<Map<String, Object>> toolDefinitions) {
         return toolDefinitions.stream().map(each -> String.valueOf(getFunction(each).get("name"))).toList();
     }
-
+    
     private Map<?, ?> findTool(final List<Map<String, Object>> toolDefinitions, final String toolName) {
         return toolDefinitions.stream()
                 .filter(each -> toolName.equals(((Map<?, ?>) each.get("function")).get("name")))

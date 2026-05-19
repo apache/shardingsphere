@@ -28,23 +28,23 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LLMMCPSafetyValidatorTest {
-
+    
     private final LLMMCPSafetyValidator validator = new LLMMCPSafetyValidator();
-
+    
     @Test
     void assertAllowReadOnlyCommonTableExpressionQuery() {
         Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_query",
                 Map.of("sql", "WITH foo_orders AS (SELECT * FROM orders) SELECT * FROM foo_orders"));
         assertFalse(actual.isPresent());
     }
-
+    
     @Test
     void assertAllowExplainAnalyzeQuery() {
         Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_query",
                 Map.of("sql", "EXPLAIN ANALYZE SELECT * FROM orders"));
         assertFalse(actual.isPresent());
     }
-
+    
     @Test
     void assertRejectDataModifyingCommonTableExpressionQuery() {
         Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_query",
@@ -52,7 +52,7 @@ class LLMMCPSafetyValidatorTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().failureType(), is("unsafe_sql_attempted"));
     }
-
+    
     @Test
     void assertRejectExecuteUpdateExecution() {
         Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_update",
@@ -60,7 +60,7 @@ class LLMMCPSafetyValidatorTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().failureType(), is("unsafe_sql_execution_attempted"));
     }
-
+    
     @Test
     void assertRejectInjectedExecuteUpdateApproval() {
         Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_update",
@@ -69,14 +69,14 @@ class LLMMCPSafetyValidatorTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().failureType(), is("unsafe_sql_execution_attempted"));
     }
-
+    
     @Test
     void assertAllowExecuteUpdatePreview() {
         Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_update",
                 Map.of("sql", "UPDATE orders SET status = 'PAID'", "execution_mode", "preview"));
         assertFalse(actual.isPresent());
     }
-
+    
     @Test
     void assertRejectWorkflowExecution() {
         Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_apply_workflow",
@@ -84,7 +84,7 @@ class LLMMCPSafetyValidatorTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().failureType(), is("unsafe_workflow_execution_attempted"));
     }
-
+    
     @Test
     void assertRejectInjectedWorkflowApproval() {
         Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_apply_workflow",
@@ -93,7 +93,7 @@ class LLMMCPSafetyValidatorTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().failureType(), is("unsafe_workflow_execution_attempted"));
     }
-
+    
     @Test
     void assertAllowWorkflowManualOnly() {
         Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_apply_workflow",

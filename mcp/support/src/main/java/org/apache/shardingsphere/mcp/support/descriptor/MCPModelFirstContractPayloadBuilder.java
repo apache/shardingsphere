@@ -31,17 +31,17 @@ import java.util.Map;
  */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class MCPModelFirstContractPayloadBuilder {
-
+    
     private static final String PLANNING_TOOL_NAME_PREFIX = "database_gateway_plan_";
-
+    
     private static final String CATALOG_RESOURCE_URI = "shardingsphere://capabilities";
-
+    
     private static final String ARGUMENT_COMPLETION_METHOD = "completion/complete";
-
+    
     private static final String OFFICIAL_DISCOVERY_SOURCE = "Official MCP list methods: tools/list, resources/list, resources/templates/list, prompts/list.";
-
+    
     private final MCPDescriptorCatalog catalog;
-
+    
     Map<String, Object> createModelFirstSummary() {
         Map<String, Object> result = new LinkedHashMap<>(10, 1F);
         result.put("official_discovery_methods", createOfficialDiscoveryMethods());
@@ -56,7 +56,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("recovery_rule", "Follow structured recovery.next_actions before inventing a replacement call.");
         return result;
     }
-
+    
     Map<String, Object> createModelContract() {
         Map<String, Object> result = new LinkedHashMap<>(11, 1F);
         result.put("public_surface_source", OFFICIAL_DISCOVERY_SOURCE);
@@ -74,7 +74,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("recovery_rule", "When a call fails with recovery.next_actions, follow those structured actions before inventing a new call.");
         return result;
     }
-
+    
     Map<String, Object> createSurfaceSummary() {
         Map<String, Object> result = new LinkedHashMap<>(10, 1F);
         result.put("official_discovery_methods", createOfficialDiscoveryMethods());
@@ -89,7 +89,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("completion_rule", "Use local completion hints on fields, prompts, and resources before guessing identifiers.");
         return result;
     }
-
+    
     Map<String, Object> createFieldNamingContract() {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("official_discovery_methods", List.of("tools/list", "resources/list", "resources/templates/list", "prompts/list"));
@@ -101,7 +101,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("cleanup_rule", "Prefer one canonical ShardingSphere payload field over parallel compatibility aliases.");
         return result;
     }
-
+    
     List<Map<String, Object>> createNextActionContract() {
         return List.of(
                 createNextActionContractEntry("resource_read", List.of("order", "type", "title", "resource_uri"),
@@ -117,7 +117,7 @@ final class MCPModelFirstContractPayloadBuilder {
                 createNextActionContractEntry("terminal", List.of("order", "type", "title"),
                         List.of("reason", "depends_on"), "Stop the current MCP flow and report the result."));
     }
-
+    
     List<Map<String, Object>> createCommonFlows() {
         return List.of(
                 createCommonFlow("inspect_metadata", List.of("resources/list", "resources/templates/list", "read_resource shardingsphere://databases",
@@ -138,7 +138,7 @@ final class MCPModelFirstContractPayloadBuilder {
                         "read_resource shardingsphere://capabilities only when the server suggests the catalog resource", "ask_user only when uncertain"),
                         "Do not invent replacement calls while structured recovery actions are present.", List.of(), List.of(CATALOG_RESOURCE_URI)));
     }
-
+    
     Map<String, Object> createSecurityHints() {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("http_transport", "Streamable HTTP is unauthenticated by default; prefer loopback binding or put remote exposure behind a trusted gateway.");
@@ -147,7 +147,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("client_safety_policy", MCPClientSafetyPolicy.createModelFacingPayload());
         return result;
     }
-
+    
     private Map<String, Object> createOfficialDiscoveryMethods() {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("tools", "tools/list");
@@ -156,7 +156,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("prompts", "prompts/list");
         return result;
     }
-
+    
     private Map<String, Object> createNextActionContractEntry(final String actionType, final List<String> requiredFields, final List<String> optionalFields, final String description) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("type", actionType);
@@ -165,7 +165,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("description", description);
         return result;
     }
-
+    
     private Map<String, Object> createMetadataRule() {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("first_resource", "shardingsphere://databases");
@@ -173,7 +173,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("detail_rule", "Read the returned resource.uri when the list or search response points to a detail resource.");
         return result;
     }
-
+    
     private Map<String, Object> createSqlToolSelection() {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         Map<String, Object> readOnly = new LinkedHashMap<>(2, 1F);
@@ -187,7 +187,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("side_effecting", sideEffecting);
         return result;
     }
-
+    
     private Map<String, Object> createWorkflowRule() {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("planning_tools", catalog.getToolDescriptors().stream().map(MCPToolDescriptor::getName).filter(each -> each.startsWith(PLANNING_TOOL_NAME_PREFIX)).toList());
@@ -203,7 +203,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("validate_tool", "database_gateway_validate_workflow");
         return result;
     }
-
+    
     private Map<String, Object> createCommonFlow(final String flowId, final List<String> steps, final String stopCondition, final List<String> referencedTools,
                                                  final List<String> referencedResources) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);

@@ -34,15 +34,15 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MCPWorkflowRecoveryPayloadFactory {
-
+    
     static Map<String, Object> createMissingExecutionModeRecovery(final MCPExecutionModeRequiredException cause) {
         return "database_gateway_apply_workflow".equals(cause.getToolName()) ? createMissingWorkflowExecutionModeRecovery(cause) : createMissingUpdateExecutionModeRecovery(cause);
     }
-
+    
     static Map<String, Object> createInvalidExecutionModeRecovery(final MCPInvalidExecutionModeException cause) {
         return "database_gateway_apply_workflow".equals(cause.getToolName()) ? createInvalidWorkflowExecutionModeRecovery(cause) : createInvalidUpdateExecutionModeRecovery(cause);
     }
-
+    
     static Map<String, Object> createInvalidApprovedStepsRecovery(final MCPInvalidApprovedStepsException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "invalid_enum_value", "Retry database_gateway_apply_workflow with approved_steps copied from preview_artifacts.approval_step, or omit approved_steps to apply every artifact.");
@@ -55,7 +55,7 @@ final class MCPWorkflowRecoveryPayloadFactory {
         result.put("ask_user_when_uncertain", true);
         return result;
     }
-
+    
     static Map<String, Object> createWorkflowArgumentConflictRecovery(final WorkflowArgumentConflictException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "workflow_argument_conflict", "Ask the user which public workflow argument value to keep, then retry with only one value.");
@@ -66,7 +66,7 @@ final class MCPWorkflowRecoveryPayloadFactory {
         result.put("ask_user_when_uncertain", true);
         return result;
     }
-
+    
     static Map<String, Object> createWorkflowStateRecovery(final MCPWorkflowStateException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "stale_workflow", "Use current-session completion to select an available plan_id, or re-run the matching planning tool.");
@@ -82,30 +82,30 @@ final class MCPWorkflowRecoveryPayloadFactory {
         result.put("ask_user_when_uncertain", false);
         return result;
     }
-
+    
     private static Map<String, Object> createMissingUpdateExecutionModeRecovery(final MCPExecutionModeRequiredException cause) {
         return createExecutionModeRecovery("missing_execution_mode",
                 "Retry the same side-effecting tool with execution_mode=preview, then execute only when the requested side effect is still intended.",
                 cause.getToolName(), cause.getAllowedValues(), cause.getSuggestedArguments(), "Retry the same side-effecting tool in preview mode.", true, true);
     }
-
+    
     private static Map<String, Object> createMissingWorkflowExecutionModeRecovery(final MCPExecutionModeRequiredException cause) {
         return createExecutionModeRecovery("missing_execution_mode",
                 "Retry database_gateway_apply_workflow with execution_mode=preview, then use review-then-execute or manual-only after review.",
                 cause.getToolName(), cause.getAllowedValues(), cause.getSuggestedArguments(), "Retry database_gateway_apply_workflow with execution_mode=preview first.", true, true);
     }
-
+    
     private static Map<String, Object> createInvalidUpdateExecutionModeRecovery(final MCPInvalidExecutionModeException cause) {
         return createExecutionModeRecovery("invalid_enum_value", "Retry with execution_mode=preview or execution_mode=execute.", cause.getToolName(), cause.getAllowedValues(),
                 cause.getSuggestedArguments(), "Retry database_gateway_execute_update with execution_mode=preview first.", false, false);
     }
-
+    
     private static Map<String, Object> createInvalidWorkflowExecutionModeRecovery(final MCPInvalidExecutionModeException cause) {
         return createExecutionModeRecovery("invalid_enum_value",
                 "Retry database_gateway_apply_workflow with execution_mode=preview, then use review-then-execute or manual-only after review.",
                 cause.getToolName(), cause.getAllowedValues(), cause.getSuggestedArguments(), "Retry database_gateway_apply_workflow with execution_mode=preview first.", false, false);
     }
-
+    
     private static Map<String, Object> createExecutionModeRecovery(final String category, final String modelAction, final String toolName, final List<String> allowedValues,
                                                                    final Map<String, Object> sourceSuggestedArguments, final String retryReason, final boolean missingField,
                                                                    final boolean retryTool) {
@@ -125,15 +125,15 @@ final class MCPWorkflowRecoveryPayloadFactory {
         result.put("ask_user_when_uncertain", true);
         return result;
     }
-
+    
     private static List<String> createWorkflowArgumentConflictFields(final List<String> conflictingArguments) {
         return conflictingArguments.stream().map(MCPWorkflowRecoveryPayloadFactory::getWorkflowArgumentConflictField).distinct().toList();
     }
-
+    
     private static List<Map<String, Object>> createWorkflowArgumentConflictQuestions(final List<String> conflictingArguments) {
         return conflictingArguments.stream().map(MCPWorkflowRecoveryPayloadFactory::createWorkflowArgumentConflictQuestion).toList();
     }
-
+    
     private static Map<String, Object> createWorkflowArgumentConflictQuestion(final String conflict) {
         String field = getWorkflowArgumentConflictField(conflict);
         return Map.of(
@@ -142,7 +142,7 @@ final class MCPWorkflowRecoveryPayloadFactory {
                 "input_type", "string",
                 "display_message", String.format("Choose one value for `%s`, or remove the duplicate path.", field));
     }
-
+    
     private static String getWorkflowArgumentConflictField(final String conflict) {
         int conflictSeparatorIndex = conflict.indexOf(" conflicts with ");
         return 0 < conflictSeparatorIndex ? conflict.substring(0, conflictSeparatorIndex) : conflict;

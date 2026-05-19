@@ -32,7 +32,7 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPNextActionUtils {
-
+    
     /**
      * Create a read-resource action.
      *
@@ -45,7 +45,7 @@ public final class MCPNextActionUtils {
         result.put("resource_uri", resourceUri);
         return result;
     }
-
+    
     /**
      * Create a tool-call action.
      *
@@ -60,7 +60,7 @@ public final class MCPNextActionUtils {
         result.put("arguments", arguments);
         return result;
     }
-
+    
     /**
      * Create a retry-tool action.
      *
@@ -77,7 +77,7 @@ public final class MCPNextActionUtils {
         result.put("tool_name", toolName);
         return result;
     }
-
+    
     /**
      * Create a completion action.
      *
@@ -114,7 +114,7 @@ public final class MCPNextActionUtils {
         }
         return result;
     }
-
+    
     private static String toCompletionReferenceType(final String referenceType) {
         if ("prompt".equals(referenceType)) {
             return "ref/prompt";
@@ -124,7 +124,7 @@ public final class MCPNextActionUtils {
         }
         return referenceType;
     }
-
+    
     /**
      * Create an ask-user action.
      *
@@ -138,7 +138,7 @@ public final class MCPNextActionUtils {
         result.put("required_inputs", requiredInputs);
         return result;
     }
-
+    
     /**
      * Create a stop action.
      *
@@ -148,7 +148,7 @@ public final class MCPNextActionUtils {
     public static Map<String, Object> stop(final String reason) {
         return createBaseAction("terminal", "Stop", reason);
     }
-
+    
     private static Map<String, Object> createBaseAction(final String type, final String title, final String reason) {
         Map<String, Object> result = new LinkedHashMap<>(10, 1F);
         result.put("order", 1);
@@ -157,7 +157,7 @@ public final class MCPNextActionUtils {
         result.put("reason", reason);
         return result;
     }
-
+    
     /**
      * Add 1-based order values to actions.
      *
@@ -174,7 +174,7 @@ public final class MCPNextActionUtils {
         }
         return result;
     }
-
+    
     /**
      * Add action dependencies by 1-based order.
      *

@@ -27,6 +27,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CoreToolDescriptorValidatorTest {
@@ -37,14 +38,15 @@ class CoreToolDescriptorValidatorTest {
     }
     
     @Test
-    void assertSearchMetadataDocumentsApplicationPagination() {
+    void assertSearchMetadataDocumentsCompleteSearchResult() {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor("database_gateway_search_metadata");
-        assertThat(findOutputProperty(descriptor, "next_page_token").get("description"),
-                is("ShardingSphere application pagination token for the next tool result page; not an MCP list cursor or nextCursor."));
+        assertFalse(getInputProperties(descriptor).containsKey("page_size"));
+        assertFalse(getInputProperties(descriptor).containsKey("page_token"));
+        assertFalse(getOutputProperties(descriptor).containsKey("next_page_token"));
         assertThat(findOutputProperty(descriptor, "has_more").get("description"),
-                is("Whether another ShardingSphere application page or continuation action is available; not MCP list pagination."));
+                is("Whether an application-level continuation mode is active. Metadata search returns false; not MCP list pagination."));
         assertThat(findOutputProperty(descriptor, "continuation_mode").get("description"),
-                is("ShardingSphere application continuation mode for this result: none or pagination for database_gateway_search_metadata; not MCP cursor or nextCursor semantics."));
+                is("ShardingSphere application continuation mode for this metadata search result; not MCP cursor or nextCursor semantics."));
     }
     
     @Test
@@ -80,6 +82,14 @@ class CoreToolDescriptorValidatorTest {
     }
     
     private Map<?, ?> findOutputProperty(final MCPToolDescriptor toolDescriptor, final String fieldName) {
-        return (Map<?, ?>) ((Map<?, ?>) toolDescriptor.getOutputSchema().get("properties")).get(fieldName);
+        return (Map<?, ?>) getOutputProperties(toolDescriptor).get(fieldName);
+    }
+    
+    private Map<?, ?> getInputProperties(final MCPToolDescriptor toolDescriptor) {
+        return (Map<?, ?>) toolDescriptor.getInputSchema().get("properties");
+    }
+    
+    private Map<?, ?> getOutputProperties(final MCPToolDescriptor toolDescriptor) {
+        return (Map<?, ?>) toolDescriptor.getOutputSchema().get("properties");
     }
 }

@@ -30,19 +30,19 @@ import java.util.Map;
  * Test-only resource handler used to prove packaged distribution plugin discovery.
  */
 public final class PluginFixtureStatusResourceHandler implements MCPResourceHandler<MCPServiceHandlerContext> {
-
+    
     private static final String URI_PATTERN = "shardingsphere://features/test-fixture/status";
-
+    
     @Override
     public Class<MCPServiceHandlerContext> getContextType() {
         return MCPServiceHandlerContext.class;
     }
-
+    
     @Override
     public String getResourceUriTemplate() {
         return URI_PATTERN;
     }
-
+    
     @Override
     public MCPResponse handle(final MCPServiceHandlerContext handlerContext, final MCPUriVariables uriVariables) {
         return new MCPMapResponse(Map.of("items", List.of(Map.of("feature", "test-fixture", "status", "ready"))));

@@ -37,11 +37,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @EnabledIf("isEnabled")
 class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
-
+    
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();
     }
-
+    
     @Test
     void assertExecuteSelectOverHttpSession() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -53,7 +53,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("result_kind")), is("result_set"));
     }
-
+    
     @Test
     void assertExecuteReadOnlyCommonTableExpression() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -66,7 +66,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(String.valueOf(payload.get("result_kind")), is("result_set"));
         assertThat(String.valueOf(payload.get("statement_class")), is("query"));
     }
-
+    
     @Test
     void assertRecoverDataModifyingCommonTableExpressionQuery() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -83,7 +83,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_update"));
         assertThat(String.valueOf(castToMap(nextAction.get("arguments")).get("execution_mode")), is("preview"));
     }
-
+    
     @Test
     void assertRejectCrossDatabaseTransactionSwitch() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -96,7 +96,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("transaction_state_error"));
     }
-
+    
     @Test
     void assertTransactionsAreSessionScoped() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -108,7 +108,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertTransactionMessage(httpClient, firstSessionId, "logic_db", "ROLLBACK", "Transaction rolled back.");
         assertTransactionMessage(httpClient, secondSessionId, "analytics_db", "ROLLBACK", "Transaction rolled back.");
     }
-
+    
     @Test
     void assertDeleteRollsBackTransaction() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -127,7 +127,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(((List<?>) ((List<?>) payload.get("rows")).get(0)).get(0)), is("NEW"));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertPreviewSideEffectStatementCases")
     void assertPreviewSideEffectStatement(final String name, final String sql, final String expectedStatementClass,
@@ -145,7 +145,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(payload.get("side_effect_scope"), is(List.of("transaction-state")));
         assertFalse((Boolean) payload.get("would_execute"));
     }
-
+    
     @Test
     void assertExecuteSingleStatementValidation() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -157,7 +157,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
     }
-
+    
     @Test
     void assertRejectMetadataIntrospectionSql() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -171,7 +171,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         Map<String, Object> recovery = castToMap(payload.get("recovery"));
         assertThat(String.valueOf(recovery.get("category")), is("metadata_introspection_sql"));
     }
-
+    
     @Test
     void assertRejectBannedSql() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -186,7 +186,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(String.valueOf(recovery.get("category")), is("banned_sql_statement"));
         assertThat(String.valueOf(recovery.get("recovery_category")), is("terminal_operator_action"));
     }
-
+    
     @Test
     void assertRejectMissingRequiredSqlArgument() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -198,7 +198,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
         assertThat(String.valueOf(payload.get("message")), is("sql is required."));
     }
-
+    
     @Test
     void assertRejectUnsupportedTool() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -210,32 +210,32 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(String.valueOf(payload.get("error_code")), is("json_rpc_error"));
         assertFalse(String.valueOf(payload.get("message")).isEmpty());
     }
-
+    
     private Map<String, Object> createExecuteSQLArguments(final String databaseName, final String schemaName, final String sql) {
         return Map.of("database", databaseName, "schema", schemaName, "sql", sql, "execution_mode", "execute");
     }
-
+    
     private void assertTransactionMessage(final HttpClient httpClient, final String sessionId, final String databaseName, final String sql,
                                           final String expectedMessage) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", createExecuteSQLArguments(databaseName, "public", sql));
         assertThat(actual.statusCode(), is(200));
         assertThat(String.valueOf(getStructuredContent(actual.body()).get("message")), is(expectedMessage));
     }
-
+    
     private Map<String, Object> createExecuteQueryArguments(final String databaseName, final String schemaName, final String sql) {
         return createExecuteQueryArguments(databaseName, schemaName, sql, -1);
     }
-
+    
     private Map<String, Object> createExecuteQueryArguments(final String databaseName, final String schemaName, final String sql, final int maxRows) {
         return -1 == maxRows
                 ? Map.of("database", databaseName, "schema", schemaName, "sql", sql)
                 : Map.of("database", databaseName, "schema", schemaName, "sql", sql, "max_rows", maxRows);
     }
-
+    
     private List<Map<String, Object>> castToMapList(final Object value) {
         return ((List<?>) value).stream().map(this::castToMap).toList();
     }
-
+    
     private static Stream<Arguments> assertPreviewSideEffectStatementCases() {
         return Stream.of(
                 Arguments.of("transaction control", "BEGIN", "transaction_control", "BEGIN"),

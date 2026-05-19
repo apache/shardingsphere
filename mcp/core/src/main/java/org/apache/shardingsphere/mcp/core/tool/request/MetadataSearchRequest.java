@@ -37,8 +37,4 @@ public final class MetadataSearchRequest {
     private final String query;
     
     private final Set<SupportedMCPMetadataObjectType> objectTypes;
-    
-    private final int pageSize;
-    
-    private final String pageToken;
 }

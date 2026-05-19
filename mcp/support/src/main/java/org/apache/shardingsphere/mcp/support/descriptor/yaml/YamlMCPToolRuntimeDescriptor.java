@@ -29,8 +29,8 @@ import java.util.LinkedList;
 @Getter
 @Setter
 public final class YamlMCPToolRuntimeDescriptor {
-
+    
     private String workflowRole;
-
+    
     private Collection<String> sideEffectScope = new LinkedList<>();
 }

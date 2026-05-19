@@ -61,13 +61,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class EncryptToolHandlerTest {
-
+    
     @Test
     void assertGetPlanEncryptRuleToolDescriptor() {
         MCPToolDescriptor actual = MCPHandlerDescriptorUtils.getRequiredToolDescriptor(new PlanEncryptRuleToolHandler());
         assertThat(actual.getName(), is("database_gateway_plan_encrypt_rule"));
     }
-
+    
     @Test
     void assertHandlePlanEncryptRule() throws ReflectiveOperationException {
         PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
@@ -93,7 +93,7 @@ class EncryptToolHandlerTest {
         assertThat(actualRequest.getFieldSemantics(), is("phone"));
         assertThat(actualRequest.getOptions().getCipherColumnName(), is("phone_cipher"));
     }
-
+    
     @Test
     void assertHandlePlanEncryptRuleWithMaskedArtifacts() throws ReflectiveOperationException {
         PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
@@ -124,7 +124,7 @@ class EncryptToolHandlerTest {
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("plan_id"), is("plan-1"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
     }
-
+    
     private WorkflowContextSnapshot createSnapshot(final String planId, final String status) {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId(planId);
@@ -136,7 +136,7 @@ class EncryptToolHandlerTest {
         result.setInteractionPlan(createInteractionPlan());
         return result;
     }
-
+    
     private WorkflowContextSnapshot createDetailedSnapshot() {
         WorkflowRequest request = new WorkflowRequest();
         request.setDatabase("logic_db");
@@ -155,7 +155,7 @@ class EncryptToolHandlerTest {
         result.setInteractionPlan(createInteractionPlan());
         return result;
     }
-
+    
     private DerivedColumnPlan createDerivedColumnPlan() {
         DerivedColumnPlan result = new DerivedColumnPlan();
         result.setLogicalColumn("phone");
@@ -163,7 +163,7 @@ class EncryptToolHandlerTest {
         result.setCipherColumnRequired(true);
         return result;
     }
-
+    
     private InteractionPlan createInteractionPlan() {
         InteractionPlan result = new InteractionPlan();
         result.setCurrentStep("review");
@@ -171,16 +171,16 @@ class EncryptToolHandlerTest {
         result.setExecutionMode("review-then-execute");
         return result;
     }
-
+    
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField(fieldName);
         Plugins.getMemberAccessor().set(field, target, value);
     }
-
+    
     private List<String> extractResourceUris(final List<?> resources) {
         return resources.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
     }
-
+    
     private WorkflowContextFixture createWorkflowContextFixture() {
         MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
@@ -195,7 +195,7 @@ class EncryptToolHandlerTest {
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         return new WorkflowContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
     }
-
+    
     private record WorkflowContextFixture(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,
                                           MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade,
                                           MCPFeatureExecutionFacade executionFacade) {

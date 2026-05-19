@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowToolDescriptorsTest {
-
+    
     @Test
     void assertCreatePlanningLoadsDescriptor() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createPlanning("database_gateway_plan_encrypt_rule");
@@ -45,7 +45,7 @@ class WorkflowToolDescriptorsTest {
         assertThat(findInputProperty(actual, "execution_mode").get("enum"), is(List.of("review-then-execute", "manual-only")));
         assertTrue(findInputProperty(actual, "structured_intent_evidence").containsKey("properties"));
     }
-
+    
     @Test
     void assertCreateExecutionBuildsExpectedFields() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createExecution();
@@ -60,7 +60,7 @@ class WorkflowToolDescriptorsTest {
                 "items", Map.of("type", "string", "description", "Allowed workflow artifact step: ddl, index_ddl, or rule_distsql.", "enum", List.of("ddl", "index_ddl", "rule_distsql")))));
         assertTrue(actual.getAnnotations().isDestructiveHint());
     }
-
+    
     @Test
     void assertCreateValidationBuildsExpectedFields() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createValidation();
@@ -70,7 +70,7 @@ class WorkflowToolDescriptorsTest {
         assertTrue(getRequiredInputNames(actual).contains("plan_id"));
         assertTrue(actual.getAnnotations().isReadOnlyHint());
     }
-
+    
     @Test
     @SuppressWarnings("unchecked")
     void assertWorkflowValidatorRejectsMissingOutputField() {
@@ -83,19 +83,19 @@ class WorkflowToolDescriptorsTest {
                 descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), outputSchema, descriptor.getAnnotations(), descriptor.getMeta())));
         assertThat(actual.getMessage(), is("Tool `database_gateway_apply_workflow` outputSchema must declare `manual_artifact_summary`."));
     }
-
+    
     private List<String> getInputFieldNames(final MCPToolDescriptor descriptor) {
         return getInputProperties(descriptor).keySet().stream().map(Object::toString).toList();
     }
-
+    
     private List<?> getRequiredInputNames(final MCPToolDescriptor descriptor) {
         return (List<?>) descriptor.getInputSchema().get("required");
     }
-
+    
     private Map<?, ?> findInputProperty(final MCPToolDescriptor descriptor, final String fieldName) {
         return (Map<?, ?>) getInputProperties(descriptor).get(fieldName);
     }
-
+    
     private Map<?, ?> getInputProperties(final MCPToolDescriptor descriptor) {
         return (Map<?, ?>) descriptor.getInputSchema().get("properties");
     }

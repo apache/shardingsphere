@@ -32,9 +32,9 @@ import java.util.Objects;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class LLMMCPActionExecutor {
-
+    
     private final MCPInteractionClient mcpInteractionClient;
-
+    
     Map<String, Object> executeSafely(final String actionName, final Map<String, Object> args) throws InterruptedException {
         try {
             return execute(actionName, args);
@@ -42,7 +42,7 @@ final class LLMMCPActionExecutor {
             throw new IllegalStateException(String.format("MCP action `%s` failed: %s", actionName, ex.getMessage()), ex);
         }
     }
-
+    
     private Map<String, Object> execute(final String actionName, final Map<String, Object> args) throws IOException, InterruptedException {
         if (MCPInteractionActionNames.LIST_RESOURCES.equals(actionName)) {
             return mcpInteractionClient.listResources();
@@ -58,7 +58,7 @@ final class LLMMCPActionExecutor {
         }
         return MCPInteractionActionNames.COMPLETE.equals(actionName) ? complete(args) : mcpInteractionClient.call(actionName, args);
     }
-
+    
     private Map<String, Object> readResource(final Map<String, Object> args) throws IOException, InterruptedException {
         String resourceUri = Objects.toString(args.get("uri"), "").trim();
         if (resourceUri.isEmpty()) {
@@ -66,7 +66,7 @@ final class LLMMCPActionExecutor {
         }
         return mcpInteractionClient.readResource(resourceUri);
     }
-
+    
     private Map<String, Object> complete(final Map<String, Object> args) throws IOException, InterruptedException {
         Map<String, Object> reference = normalizeCompletionReference(args);
         String argumentName = normalizeCompletionArgumentName(args);
@@ -77,7 +77,7 @@ final class LLMMCPActionExecutor {
                 Objects.toString(args.getOrDefault("argument_value", ""), ""),
                 LLMMCPJsonValues.castToStringMap(args.getOrDefault("context_arguments", Map.of())));
     }
-
+    
     private Map<String, Object> normalizeCompletionReference(final Map<String, Object> args) {
         Object reference = args.get("reference");
         if (!(reference instanceof Map)) {
@@ -87,7 +87,7 @@ final class LLMMCPActionExecutor {
         normalizeCompletionReferenceType(result);
         return result;
     }
-
+    
     private Map<String, Object> normalizeInlineCompletionReference(final Map<String, Object> args) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         String referenceType = Objects.toString(args.get("reference_type"), "").trim();
@@ -109,7 +109,7 @@ final class LLMMCPActionExecutor {
         normalizeCompletionReferenceType(result);
         return result;
     }
-
+    
     private String normalizeCompletionArgumentName(final Map<String, Object> args) {
         String result = Objects.toString(args.get("argument_name"), "").trim();
         if (!result.isEmpty()) {
@@ -125,7 +125,7 @@ final class LLMMCPActionExecutor {
         }
         return "";
     }
-
+    
     private void normalizeCompletionReferenceType(final Map<String, Object> result) {
         String referenceType = Objects.toString(result.get("type"), "").trim().toLowerCase(Locale.ENGLISH);
         if ("prompt".equals(referenceType)) {
@@ -134,7 +134,7 @@ final class LLMMCPActionExecutor {
             result.put("type", "ref/resource");
         }
     }
-
+    
     private Map<String, Object> createCompletionRecovery(final Map<String, Object> args, final Map<String, Object> reference, final String argumentName) {
         Map<String, Object> retryArguments = new LinkedHashMap<>(4, 1F);
         if (!reference.isEmpty()) {

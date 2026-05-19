@@ -35,7 +35,6 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResource
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
-import org.apache.shardingsphere.mcp.support.database.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArgumentConflictException;
 
@@ -46,7 +45,7 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MCPRecoveryPayloadFactory {
-
+    
     static Map<String, Object> create(final Throwable cause) {
         if (cause instanceof SQLToolMismatchException) {
             return MCPSQLRecoveryPayloadFactory.createSQLToolMismatchRecovery((SQLToolMismatchException) cause);
@@ -101,9 +100,6 @@ final class MCPRecoveryPayloadFactory {
         }
         if (cause instanceof MCPInvalidMetadataObjectTypesException) {
             return MCPBasicRecoveryPayloadFactory.createInvalidObjectTypesRecovery((MCPInvalidMetadataObjectTypesException) cause);
-        }
-        if (cause instanceof InvalidPageTokenException) {
-            return MCPBasicRecoveryPayloadFactory.createInvalidPageTokenRecovery();
         }
         return Map.of();
     }

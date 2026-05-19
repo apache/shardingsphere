@@ -39,27 +39,27 @@ import java.util.Map;
  * Execute side-effecting SQL tool handler.
  */
 public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
-
+    
     private static final String TOOL_NAME = "database_gateway_execute_update";
-
+    
     private static final String EXECUTION_MODE_EXECUTE = "execute";
-
+    
     private static final String EXECUTION_MODE_PREVIEW = "preview";
-
+    
     private static final List<String> EXECUTION_MODES = List.of(EXECUTION_MODE_EXECUTE, EXECUTION_MODE_PREVIEW);
-
+    
     private static final String RESULT_KIND_PREVIEW = "preview";
-
+    
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
     }
-
+    
     @Override
     public String getToolName() {
         return TOOL_NAME;
     }
-
+    
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
@@ -72,7 +72,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql, TOOL_NAME))
                 .withExecutionMode(EXECUTION_MODE_EXECUTE);
     }
-
+    
     private ClassificationResult checkUpdateStatement(final MCPToolArguments toolArguments, final String sql) {
         ClassificationResult classificationResult = new StatementClassifier().classify(sql);
         if (SQLExecutionToolHandlerSupport.isReadOnlyStatement(classificationResult)) {
@@ -82,7 +82,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         }
         return classificationResult;
     }
-
+    
     private String resolveExecutionMode(final MCPToolArguments toolArguments) {
         String result = toolArguments.getStringArgument("execution_mode");
         if (result.isEmpty()) {
@@ -93,7 +93,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         }
         throw new MCPInvalidExecutionModeException(TOOL_NAME, EXECUTION_MODES, createPreviewSuggestedArguments(toolArguments));
     }
-
+    
     private MCPResponse createPreviewResponse(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         result.put("response_mode", MCPResponseMode.PREVIEW);
@@ -119,12 +119,12 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
                 "Execute after reviewing normalized_sql and side_effect_scope.", suggestedArguments)));
         return new MCPMapResponse(result);
     }
-
+    
     private String createReviewSummary(final ClassificationResult classificationResult) {
         return String.format("Previewed %s statement with side-effect scope %s. It has not been executed.", classificationResult.getStatementType(),
                 String.join(", ", createSideEffectScope(classificationResult)));
     }
-
+    
     private List<String> createSideEffectScope(final ClassificationResult classificationResult) {
         return switch (classificationResult.getAnalyzedStatementClass().orElse(classificationResult.getStatementClass())) {
             case DML -> List.of("physical-data");
@@ -134,7 +134,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
             default -> List.of("unknown-side-effect");
         };
     }
-
+    
     private Map<String, Object> createSuggestedArguments(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
         Map<String, Object> arguments = new LinkedHashMap<>(6, 1F);
         arguments.put("database", toolArguments.getStringArgument("database"));
@@ -146,7 +146,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         arguments.put("execution_mode", EXECUTION_MODE_EXECUTE);
         return arguments;
     }
-
+    
     private Map<String, Object> createPreviewSuggestedArguments(final MCPToolArguments toolArguments) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         SQLExecutionToolHandlerSupport.putIfNotEmpty(result, "database", toolArguments.getStringArgument("database"));
@@ -155,7 +155,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         result.put("execution_mode", EXECUTION_MODE_PREVIEW);
         return result;
     }
-
+    
     private Map<String, Object> createArgumentProvenance(final Map<String, Object> suggestedArguments) {
         Map<String, Object> result = new LinkedHashMap<>(suggestedArguments.size(), 1F);
         if (suggestedArguments.containsKey("database")) {
@@ -168,7 +168,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         result.put("execution_mode", "server_defaulted");
         return result;
     }
-
+    
     private Map<String, Object> createQuerySuggestedArguments(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         SQLExecutionToolHandlerSupport.putIfNotEmpty(result, "database", toolArguments.getStringArgument("database"));
@@ -176,7 +176,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         result.put("sql", classificationResult.getNormalizedSql());
         return result;
     }
-
+    
     private List<Map<String, Object>> createResourcesToRead(final MCPToolArguments toolArguments) {
         String database = toolArguments.getStringArgument("database");
         if (database.isEmpty()) {
@@ -185,5 +185,5 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         return List.of(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/capabilities", MCPUriTemplateUtils.encodePathSegment(database)), "logical-database-capability",
                 "read_first", "Read logical database capabilities before execution.", "resources_to_read"));
     }
-
+    
 }

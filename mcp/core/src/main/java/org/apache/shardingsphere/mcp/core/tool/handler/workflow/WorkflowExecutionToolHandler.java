@@ -41,26 +41,26 @@ import java.util.Map;
  * Generic workflow execution tool handler.
  */
 public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
-
+    
     private final WorkflowExecutionService executionService;
-
+    
     private final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry;
-
+    
     public WorkflowExecutionToolHandler(final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) {
         executionService = new WorkflowExecutionService();
         this.workflowRuntimeDefinitionRegistry = workflowRuntimeDefinitionRegistry;
     }
-
+    
     @Override
     public Class<MCPWorkflowHandlerContext> getContextType() {
         return MCPWorkflowHandlerContext.class;
     }
-
+    
     @Override
     public String getToolName() {
         return WorkflowToolDescriptors.APPLY_TOOL_NAME;
     }
-
+    
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
@@ -77,14 +77,14 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
                 databaseContext.getExecutionFacade(), workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getApplySynchronizationHandler(), toolCall.getSessionId(), snapshot,
                 toolArguments.getStringCollectionArgument("approved_steps"), executionMode));
     }
-
+    
     private WorkflowKind getRequiredWorkflowKind(final WorkflowContextSnapshot snapshot) {
         if (null != snapshot.getWorkflowKind()) {
             return snapshot.getWorkflowKind();
         }
         throw new MCPWorkflowStateException(String.format("Workflow kind is required for plan_id `%s`.", snapshot.getPlanId()), snapshot.getPlanId());
     }
-
+    
     private static Map<String, Object> createPreviewSuggestedArguments(final Map<String, Object> arguments) {
         Map<String, Object> result = new LinkedHashMap<>(arguments);
         result.remove("execution_mode");

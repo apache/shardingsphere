@@ -611,17 +611,6 @@ tools:
               - column
               - index
               - sequence
-        page_size:
-          type: integer
-          description: "Requested page size for search results."
-          default: 50
-          minimum: 1
-          maximum: 500
-          examples:
-            - 50
-        page_token:
-          type: string
-          description: "Opaque pagination token returned by a previous database_gateway_search_metadata call."
       required: []
       additionalProperties: false
     outputSchema:
@@ -687,25 +676,21 @@ tools:
                 description: "First metadata value that matched the query."
         count:
           type: integer
-          description: "Number of items returned in this page."
-        next_page_token:
-          type: string
-          description: "ShardingSphere application pagination token for the next tool result page; not an MCP list cursor or nextCursor."
+          description: "Number of matched metadata items returned in this response."
         has_more:
           type: boolean
-          description: "Whether another ShardingSphere application page or continuation action is available; not MCP list pagination."
+          description: "Whether an application-level continuation mode is active. Metadata search returns false; not MCP list pagination."
         continuation_mode:
           type: string
-          description: "ShardingSphere application continuation mode for this result: none or pagination for database_gateway_search_metadata; not MCP cursor or nextCursor semantics."
+          description: "ShardingSphere application continuation mode for this metadata search result; not MCP cursor or nextCursor semantics."
           enum:
             - none
-            - pagination
         search_context:
           type: object
-          description: "Applied search scope, query, object types, and page size used for this page."
+          description: "Applied search scope, query, and object types used for this response."
         total_match_count:
           type: integer
-          description: "Total matched metadata objects before pagination for this search scope."
+          description: "Total matched metadata objects for this search scope."
         empty_state:
           type: object
           description: "Structured empty state when no metadata hits were returned."
@@ -721,16 +706,16 @@ tools:
               description: "Metadata dimensions that distinguish duplicate hits, such as name, database, schema, or object_type."
             candidate_count:
               type: integer
-              description: "Number of returned candidates that share duplicated names."
+              description: "Number of matched candidates that share duplicated names."
             duplicated_names:
               type: array
-              description: "Metadata names that appear more than once in the returned page."
+              description: "Metadata names that appear more than once in the matched result."
             narrowing_arguments:
               type: array
               description: "Public database_gateway_search_metadata arguments the model can ask for or set to narrow the search."
         next_actions:
           type: array
-          description: "Structured follow-up actions for empty, paginated, or duplicate-name search results."
+          description: "Structured follow-up actions for empty, broad, or duplicate-name search results."
           items:
             type: object
             properties:
@@ -800,7 +785,6 @@ tools:
             schema: public
             object_types:
               - table
-            page_size: 50
     annotations:
       title: Search Metadata
       readOnlyHint: true

@@ -27,19 +27,19 @@ import java.util.Optional;
  */
 @Getter
 public final class ClassificationResult {
-
+    
     private final SupportedMCPStatement statementClass;
-
+    
     private final String statementType;
-
+    
     private final String normalizedSql;
-
+    
     private final String targetObjectName;
-
+    
     private final String savepointName;
-
+    
     private final Optional<SupportedMCPStatement> analyzedStatementClass;
-
+    
     /**
      * Create statement classification result.
      *
@@ -52,7 +52,7 @@ public final class ClassificationResult {
     public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName) {
         this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, null);
     }
-
+    
     /**
      * Create statement classification result with the inner statement class analyzed by EXPLAIN ANALYZE.
      *
@@ -72,7 +72,7 @@ public final class ClassificationResult {
         this.savepointName = savepointName;
         this.analyzedStatementClass = Optional.ofNullable(analyzedStatementClass);
     }
-
+    
     /**
      * Get the target object name when one exists.
      *
@@ -81,7 +81,7 @@ public final class ClassificationResult {
     public Optional<String> getTargetObjectName() {
         return targetObjectName.isEmpty() ? Optional.empty() : Optional.of(targetObjectName);
     }
-
+    
     /**
      * Get the savepoint name when one exists.
      *
@@ -90,7 +90,7 @@ public final class ClassificationResult {
     public Optional<String> getSavepointName() {
         return savepointName.isEmpty() ? Optional.empty() : Optional.of(savepointName);
     }
-
+    
     String getAuditMarker() {
         return SupportedMCPStatement.TRANSACTION_CONTROL == statementClass || SupportedMCPStatement.SAVEPOINT == statementClass ? statementType : statementClass.name();
     }

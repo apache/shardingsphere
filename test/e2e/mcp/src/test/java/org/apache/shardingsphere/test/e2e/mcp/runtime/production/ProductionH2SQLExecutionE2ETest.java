@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @EnabledIf("isEnabled")
 class ProductionH2SQLExecutionE2ETest extends AbstractProductionH2RuntimeE2ETest {
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteSelect(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -47,7 +47,7 @@ class ProductionH2SQLExecutionE2ETest extends AbstractProductionH2RuntimeE2ETest
             assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteSelectWithTruncation(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -60,7 +60,7 @@ class ProductionH2SQLExecutionE2ETest extends AbstractProductionH2RuntimeE2ETest
             assertThat(String.valueOf(actual.get("truncated")), is("true"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteUpdate(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
@@ -73,7 +73,7 @@ class ProductionH2SQLExecutionE2ETest extends AbstractProductionH2RuntimeE2ETest
             assertThat(H2RuntimeTestSupport.querySingleString(getJdbcUrl(), "SELECT status FROM public.orders WHERE order_id = 1"), is("PENDING"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteUpdateWithoutApprovalArgument(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -85,7 +85,7 @@ class ProductionH2SQLExecutionE2ETest extends AbstractProductionH2RuntimeE2ETest
             assertThat(String.valueOf(actual.get("affected_rows")), is("0"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteExplainAnalyze(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -98,7 +98,7 @@ class ProductionH2SQLExecutionE2ETest extends AbstractProductionH2RuntimeE2ETest
             assertFalse(((List<?>) actual.get("rows")).isEmpty());
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteQueryTimeout(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -110,7 +110,7 @@ class ProductionH2SQLExecutionE2ETest extends AbstractProductionH2RuntimeE2ETest
             assertThat(String.valueOf(actual.get("error_code")), is("timeout"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertRejectExecuteMultiStatement(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -122,7 +122,7 @@ class ProductionH2SQLExecutionE2ETest extends AbstractProductionH2RuntimeE2ETest
             assertThat(String.valueOf(actual.get("message")), is("Only one SQL statement is allowed."));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertRejectBlankSavepointName(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -134,7 +134,7 @@ class ProductionH2SQLExecutionE2ETest extends AbstractProductionH2RuntimeE2ETest
             assertThat(String.valueOf(actual.get("message")), is("Savepoint name is required."));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteSavepointFlow(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
@@ -157,7 +157,7 @@ class ProductionH2SQLExecutionE2ETest extends AbstractProductionH2RuntimeE2ETest
             assertThat(H2RuntimeTestSupport.querySingleString(getJdbcUrl(), "SELECT status FROM public.orders WHERE order_id = 1"), is("PENDING"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteReleaseSavepoint(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -175,7 +175,7 @@ class ProductionH2SQLExecutionE2ETest extends AbstractProductionH2RuntimeE2ETest
             assertThat(String.valueOf(commitResponse.get("message")), is("Transaction committed."));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteTransactionalDdlRefreshesMetadataOnCommit(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -192,7 +192,7 @@ class ProductionH2SQLExecutionE2ETest extends AbstractProductionH2RuntimeE2ETest
             assertThat(String.valueOf(actualItem.get("table")), is("orders_archive"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertCloseRollsBackPendingTransaction(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {

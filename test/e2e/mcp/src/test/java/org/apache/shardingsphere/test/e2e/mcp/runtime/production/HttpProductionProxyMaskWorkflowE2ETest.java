@@ -32,21 +32,21 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWorkflowE2ETest {
-
+    
     private static final String PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
-
+    
     private static final String PLAN_PROMPT_NAME = "plan_mask_rule";
-
+    
     private static final String APPLY_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
-
+    
     private static final String VALIDATE_TOOL_NAME = WorkflowToolDescriptors.VALIDATE_TOOL_NAME;
-
+    
     private static final String ALGORITHMS_RESOURCE_URI = "shardingsphere://features/mask/algorithms";
-
+    
     private static final String RULES_RESOURCE_URI = "shardingsphere://features/mask/databases/%s/rules";
-
+    
     private static final String TABLE_RULES_RESOURCE_URI = "shardingsphere://features/mask/databases/%s/tables/%s/rules";
-
+    
     @Test
     void assertCompleteMaskAlgorithmThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -54,7 +54,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(getStringList(getMap(actual.get("completion")).get("values")), hasItem("KEEP_FIRST_N_LAST_M"));
         }
     }
-
+    
     @Test
     void assertPlanApplyAndValidateMaskCreateAlterWorkflowThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -84,7 +84,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
                     is("KEEP_FIRST_N_LAST_M"));
         }
     }
-
+    
     @Test
     void assertPlanApplyAndValidateMaskDropWorkflowThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -100,7 +100,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(String.valueOf(getMap(actualValidationResponse.get("rule_validation")).get("details")), is("Mask rule has been removed."));
         }
     }
-
+    
     @Test
     void assertPlanKeepsSiblingMaskRulesWhenDroppingOneColumnThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -130,7 +130,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(String.valueOf(actualRemainingMaskRules.get(0).get("column")), is("status"));
         }
     }
-
+    
     @Test
     void assertPlanRecommendApplyAndValidateMaskWorkflowFromNaturalLanguageThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -154,7 +154,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
                     is("MASK_FROM_X_TO_Y"));
         }
     }
-
+    
     @Test
     void assertApplySupportsApprovedStepsThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -179,7 +179,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
         }
     }
-
+    
     @Test
     void assertPlanApplyValidateAndReadMaskResourcesWithCustomAlgorithmThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -202,7 +202,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(String.valueOf(actualSingleRuleItems.get(0).get("column")), is("status"));
         }
     }
-
+    
     private void createMaskRule(final MCPInteractionClient interactionClient) throws Exception {
         Map<String, Object> actualCreatePlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                 Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -213,15 +213,15 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
         assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId)).get("status")), is("completed"));
         assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
     }
-
+    
     private Map<String, Object> createApplyArguments(final String planId) {
         return Map.of("plan_id", planId, "execution_mode", "review-then-execute");
     }
-
+    
     private Map<String, Object> createApplyArguments(final String planId, final List<String> approvedSteps) {
         return Map.of("plan_id", planId, "execution_mode", "review-then-execute", "approved_steps", approvedSteps);
     }
-
+    
     private Map<String, Object> findItemByField(final List<Map<String, Object>> items, final String fieldName, final String expectedValue) {
         return items.stream().filter(each -> expectedValue.equalsIgnoreCase(String.valueOf(each.get(fieldName)))).findFirst()
                 .orElseThrow(() -> new AssertionError(String.format("Failed to find item by %s=%s in %s", fieldName, expectedValue, items)));

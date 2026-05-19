@@ -28,10 +28,10 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class MCPToolRuntimeDescriptor {
-
+    
     private final String toolName;
-
+    
     private final String workflowRole;
-
+    
     private final Collection<String> sideEffectScope;
 }

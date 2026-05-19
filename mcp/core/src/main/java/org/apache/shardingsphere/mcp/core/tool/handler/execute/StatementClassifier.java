@@ -29,15 +29,15 @@ import java.util.Locale;
  * Classify one SQL statement into the MCP statement classes.
  */
 public final class StatementClassifier {
-
+    
     private final SQLStatementScanner scanner = new SQLStatementScanner();
-
+    
     private final SQLStatementStructureResolver structureResolver = new SQLStatementStructureResolver(scanner);
-
+    
     private final SQLStatementClassResolver statementClassResolver = new SQLStatementClassResolver();
-
+    
     private final SQLStatementTargetResolver targetResolver = new SQLStatementTargetResolver(scanner, statementClassResolver);
-
+    
     /**
      * Classify one SQL statement.
      *
@@ -78,7 +78,7 @@ public final class StatementClassifier {
         checkLockingRead(statementClass, scanner.tokenize(actualSql));
         return new ClassificationResult(statementClass, statementStructure.statementType(), actualSql, targetResolver.resolve(statementStructure, statementClass), "");
     }
-
+    
     private boolean isBannedCommand(final String upperSql, final String sql) {
         return upperSql.startsWith("USE ")
                 || upperSql.startsWith("SET ")
@@ -87,7 +87,7 @@ public final class StatementClassifier {
                 || upperSql.startsWith("CALL ")
                 || containsBannedDialectPattern(scanner.tokenize(sql));
     }
-
+    
     private boolean isMetadataIntrospectionStatement(final String upperSql) {
         return "SHOW".equals(upperSql)
                 || upperSql.startsWith("SHOW ")
@@ -96,11 +96,11 @@ public final class StatementClassifier {
                 || "DESC".equals(upperSql)
                 || upperSql.startsWith("DESC ");
     }
-
+    
     private boolean containsBannedDialectPattern(final List<SQLStatementToken> tokens) {
         return containsSelectIntoFile(tokens) || containsKeywordSequence(tokens, "ALTER", "SYSTEM") || containsUserOrRoleManagement(tokens);
     }
-
+    
     private boolean containsSelectIntoFile(final List<SQLStatementToken> tokens) {
         for (int index = 0; index + 1 < tokens.size(); index++) {
             if (!scanner.isKeyword(tokens.get(index), "INTO")) {
@@ -112,7 +112,7 @@ public final class StatementClassifier {
         }
         return false;
     }
-
+    
     private boolean containsUserOrRoleManagement(final List<SQLStatementToken> tokens) {
         return containsKeywordSequence(tokens, "CREATE", "USER")
                 || containsKeywordSequence(tokens, "ALTER", "USER")
@@ -121,7 +121,7 @@ public final class StatementClassifier {
                 || containsKeywordSequence(tokens, "ALTER", "ROLE")
                 || containsKeywordSequence(tokens, "DROP", "ROLE");
     }
-
+    
     private boolean containsKeywordSequence(final List<SQLStatementToken> tokens, final String firstKeyword, final String secondKeyword) {
         for (int index = 0; index + 1 < tokens.size(); index++) {
             if (scanner.isKeyword(tokens.get(index), firstKeyword) && scanner.isKeyword(tokens.get(index + 1), secondKeyword)) {
@@ -130,13 +130,13 @@ public final class StatementClassifier {
         }
         return false;
     }
-
+    
     private void checkLockingRead(final SupportedMCPStatement statementClass, final List<SQLStatementToken> tokens) {
         if (SupportedMCPStatement.QUERY == statementClass && containsLockingReadClause(tokens)) {
             throw new MCPLockingReadStatementException();
         }
     }
-
+    
     private boolean containsLockingReadClause(final List<SQLStatementToken> tokens) {
         for (int index = 0; index < tokens.size(); index++) {
             if (containsLockingReadForClause(tokens, index) || containsLockInShareModeClause(tokens, index)) {
@@ -145,7 +145,7 @@ public final class StatementClassifier {
         }
         return false;
     }
-
+    
     private boolean containsLockingReadForClause(final List<SQLStatementToken> tokens, final int index) {
         if (!scanner.isKeyword(tokens.get(index), "FOR") || index + 1 >= tokens.size()) {
             return false;
@@ -155,7 +155,7 @@ public final class StatementClassifier {
                 || index + 3 < tokens.size() && scanner.isKeyword(tokens.get(index + 1), "NO") && scanner.isKeyword(tokens.get(index + 2), "KEY")
                         && scanner.isKeyword(tokens.get(index + 3), "UPDATE");
     }
-
+    
     private boolean containsLockInShareModeClause(final List<SQLStatementToken> tokens, final int index) {
         return index + 3 < tokens.size()
                 && scanner.isKeyword(tokens.get(index), "LOCK")
@@ -163,21 +163,21 @@ public final class StatementClassifier {
                 && scanner.isKeyword(tokens.get(index + 2), "SHARE")
                 && scanner.isKeyword(tokens.get(index + 3), "MODE");
     }
-
+    
     private boolean isTransactionControlStatement(final String upperSql) {
         return "BEGIN".equals(upperSql)
                 || upperSql.startsWith("START TRANSACTION")
                 || "COMMIT".equals(upperSql)
                 || "ROLLBACK".equals(upperSql);
     }
-
+    
     private boolean isSavepointStatement(final String upperSql) {
         return "SAVEPOINT".equals(upperSql)
                 || upperSql.startsWith("SAVEPOINT ")
                 || upperSql.startsWith("ROLLBACK TO SAVEPOINT")
                 || upperSql.startsWith("RELEASE SAVEPOINT");
     }
-
+    
     private String extractStatementType(final String upperSql) {
         if (upperSql.startsWith("START TRANSACTION")) {
             return "START TRANSACTION";
@@ -190,7 +190,7 @@ public final class StatementClassifier {
         }
         return upperSql.split("\\s+")[0];
     }
-
+    
     private String extractSavepointName(final String sql) {
         String[] tokens = sql.split("\\s+");
         if ("SAVEPOINT".equalsIgnoreCase(tokens[0]) && tokens.length >= 2) {
@@ -204,7 +204,7 @@ public final class StatementClassifier {
         }
         return "";
     }
-
+    
     private void validateSavepointName(final String statementType, final String savepointName) {
         if (!savepointName.isEmpty()) {
             return;

@@ -47,9 +47,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class WorkflowValidationSupportTest {
-
+    
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
-
+    
     @Test
     void assertCheckValidatePreconditionsRejectsDifferentSession() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -63,7 +63,7 @@ class WorkflowValidationSupportTest {
         assertFalse(actualResult.containsKey("requires_user_approval"));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
     }
-
+    
     @Test
     void assertCheckValidatePreconditionsRejectsInvalidLifecycleStatus() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -76,7 +76,7 @@ class WorkflowValidationSupportTest {
         assertThat(actualResult.get("recovery_guidance"), is("Execute the workflow first or continue from a validatable status."));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
     }
-
+    
     @Test
     void assertCheckValidatePreconditionsAcceptsFailedWorkflowInValidatedStep() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -87,7 +87,7 @@ class WorkflowValidationSupportTest {
         snapshot.setInteractionPlan(interactionPlan);
         assertTrue(validationSupport.checkValidatePreconditions("session-1", snapshot).isEmpty());
     }
-
+    
     @Test
     void assertResolveOverallStatusReturnsFailedWhenAnySectionFails() {
         String actualStatus = validationSupport.resolveOverallStatus(
@@ -96,7 +96,7 @@ class WorkflowValidationSupportTest {
                 new ValidationSection("passed", List.of(), ""));
         assertThat(actualStatus, is("failed"));
     }
-
+    
     @Test
     void assertValidateLogicalMetadataWhenColumnExists() {
         WorkflowContextSnapshot snapshot = createSnapshot();
@@ -108,7 +108,7 @@ class WorkflowValidationSupportTest {
         assertThat(actualValidationSection.getStatus(), is("passed"));
         assertThat(validationReport.getMismatches(), is(List.of()));
     }
-
+    
     @Test
     void assertValidateLogicalMetadataWhenColumnMissing() {
         WorkflowContextSnapshot snapshot = createSnapshot();
@@ -117,12 +117,12 @@ class WorkflowValidationSupportTest {
         assertThat(actualValidationSection.getStatus(), is("failed"));
         assertThat(((Map<?, ?>) validationReport.getMismatches().get(0)).get("code"), is(WorkflowIssueCode.LOGICAL_METADATA_MISMATCH));
     }
-
+    
     @Test
     void assertCreateProjectionValidationSql() {
         assertThat(validationSupport.createProjectionValidationSql(createSnapshot()), is("SELECT phone FROM orders"));
     }
-
+    
     @Test
     void assertValidateSqlExecutability() {
         ValidationReport validationReport = new ValidationReport();
@@ -135,7 +135,7 @@ class WorkflowValidationSupportTest {
         assertThat(validationReport.getMismatches(), is(List.of()));
         verify(executionFacade, times(2)).execute(any());
     }
-
+    
     @Test
     void assertValidateSqlExecutabilityWhenExecutionFails() {
         ValidationReport validationReport = new ValidationReport();
@@ -147,7 +147,7 @@ class WorkflowValidationSupportTest {
         assertThat(validationReport.getMismatches().size(), is(1));
         assertThat(validationReport.getMismatches().get(0).get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
     }
-
+    
     @Test
     void assertFinalizeValidationMarksValidatedStatus() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -173,7 +173,7 @@ class WorkflowValidationSupportTest {
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("validated"));
         assertThat(workflowSessionContext.getRequired("plan-1").getInteractionPlan().getCurrentStep(), is("validated"));
     }
-
+    
     @Test
     void assertFinalizeValidationReturnsMismatchIssueWhenFailed() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -192,7 +192,7 @@ class WorkflowValidationSupportTest {
         assertThat(actualResult.get("recovery_guidance"), is("Inspect mismatches, adjust the plan or runtime state, then run database_gateway_validate_workflow again."));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("next_actions")).get(0)).get("type"), is("ask_user"));
     }
-
+    
     @Test
     void assertFinalizeValidationRecommendsPlanningToolWhenWorkflowKindExists() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -207,7 +207,7 @@ class WorkflowValidationSupportTest {
         assertFalse(actualResult.containsKey("recommended_next_tool"));
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("tool_name"), is("database_gateway_plan_encrypt_rule"));
     }
-
+    
     @Test
     void assertFinalizeValidationRequiresManualConfirmation() {
         WorkflowContextSnapshot snapshot = createSnapshot();
@@ -227,7 +227,7 @@ class WorkflowValidationSupportTest {
         assertFalse(actualNextAction.containsKey("requires_user_approval"));
         assertFalse(actualNextAction.containsKey("tool_name"));
     }
-
+    
     @Test
     void assertCreateMismatchBuildsExpectedPayload() {
         Map<String, Object> actualMismatch = validationSupport.createMismatch("code", "rule", "expected", "actual", "impact", "fix it");
@@ -239,7 +239,7 @@ class WorkflowValidationSupportTest {
         assertThat(actualMismatch.get("remediation"), is("fix it"));
         assertFalse(actualMismatch.containsKey("suggested_next_action"));
     }
-
+    
     private WorkflowContextSnapshot createSnapshot() {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setSessionId("session-1");

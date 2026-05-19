@@ -35,16 +35,16 @@ import java.util.stream.Stream;
  * Test support for packaged distribution plugin discovery fixtures.
  */
 public final class PackagedDistributionPluginFixtureSupport {
-
+    
     private static final String HANDLER_PROVIDER_SERVICE_ENTRY = "META-INF/services/org.apache.shardingsphere.mcp.api.MCPHandlerProvider";
-
+    
     private static final String DESCRIPTOR_ENTRY = "META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-test-fixture.yaml";
-
+    
     private static final List<String> OFFICIAL_FEATURE_ARTIFACT_IDS = List.of("shardingsphere-mcp-feature-encrypt", "shardingsphere-mcp-feature-mask");
-
+    
     private static final List<Class<?>> FIXTURE_PLUGIN_CLASSES = List.of(
             PluginFixtureHandlerProvider.class, PluginFixturePingToolHandler.class, PluginFixtureStatusResourceHandler.class);
-
+    
     private static final String DESCRIPTOR_CONTENT = """
             resources:
               - uri: shardingsphere://features/test-fixture/status
@@ -90,10 +90,10 @@ public final class PackagedDistributionPluginFixtureSupport {
                 meta:
                   org.apache.shardingsphere/purpose: test-fixture-plugin
             """;
-
+    
     private PackagedDistributionPluginFixtureSupport() {
     }
-
+    
     /**
      * Create one fixture plugin jar under packaged distribution plugins directory.
      *
@@ -113,7 +113,7 @@ public final class PackagedDistributionPluginFixtureSupport {
         }
         return result;
     }
-
+    
     /**
      * Remove official feature jars from packaged distribution libraries.
      *
@@ -130,12 +130,12 @@ public final class PackagedDistributionPluginFixtureSupport {
             return result.stream().map(each -> each.getFileName().toString()).toList();
         }
     }
-
+    
     private static boolean isOfficialFeatureJar(final Path path) {
         String jarName = path.getFileName().toString();
         return OFFICIAL_FEATURE_ARTIFACT_IDS.stream().anyMatch(jarName::contains);
     }
-
+    
     private static void writeClassEntry(final JarOutputStream output, final Class<?> classType) throws IOException {
         String resourcePath = classType.getName().replace('.', '/') + ".class";
         try (InputStream input = classType.getClassLoader().getResourceAsStream(resourcePath)) {
@@ -145,7 +145,7 @@ public final class PackagedDistributionPluginFixtureSupport {
             writeEntry(output, resourcePath, input.readAllBytes());
         }
     }
-
+    
     private static void writeEntry(final JarOutputStream output, final String entryName, final byte[] content) throws IOException {
         output.putNextEntry(new JarEntry(entryName));
         output.write(content);

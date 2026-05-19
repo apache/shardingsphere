@@ -69,7 +69,7 @@ class MetadataResourceHandlerTest {
         assertThat(((Map<?, ?>) actualPayload.get("large_result_guidance")).get("threshold"), is(100));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_search_metadata"));
-        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("page_size"), is(50));
+        assertFalse(((Map<?, ?>) actualNextAction.get("arguments")).containsKey("page_size"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("object_types"), is(List.of("database")));
     }
     

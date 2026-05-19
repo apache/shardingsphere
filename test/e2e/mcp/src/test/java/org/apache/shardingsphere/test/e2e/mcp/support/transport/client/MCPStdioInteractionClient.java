@@ -30,20 +30,20 @@ import java.nio.file.Paths;
 @SuppressWarnings("UseOfProcessBuilder")
 @RequiredArgsConstructor
 public final class MCPStdioInteractionClient extends AbstractProcessMCPStdioInteractionClient {
-
+    
     private static final String CLIENT_NAME = "mcp-e2e-stdio";
-
+    
     private static final String LOGBACK_CONFIG_FILE_NAME = "mcp-e2e-stdio-logback.xml";
-
+    
     private final Path configFile;
-
+    
     @Override
     protected ProcessBuilder createProcessBuilder() throws IOException {
         Path logbackConfigFile = MCPStdioLogbackConfiguration.createForConfig(configFile, LOGBACK_CONFIG_FILE_NAME);
         return new ProcessBuilder(Paths.get(System.getProperty("java.home"), "bin", "java").toString(),
                 "-Dlogback.configurationFile=" + logbackConfigFile, "-cp", System.getProperty("java.class.path"), MCPBootstrap.class.getName(), configFile.toString());
     }
-
+    
     @Override
     protected String getClientName() {
         return CLIENT_NAME;

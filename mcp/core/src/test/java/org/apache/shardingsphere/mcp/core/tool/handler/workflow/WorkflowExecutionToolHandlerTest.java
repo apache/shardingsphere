@@ -44,14 +44,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class WorkflowExecutionToolHandlerTest {
-
+    
     @Test
     void assertGetExecutionToolDescriptor() {
         WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(WorkflowHandlerTestFixture.createDefinition("encrypt.rule"))));
         MCPToolDescriptor actual = MCPHandlerDescriptorUtils.getRequiredToolDescriptor(handler);
         assertThat(actual.getName(), is("database_gateway_apply_workflow"));
     }
-
+    
     @Test
     void assertHandleExecution() throws ReflectiveOperationException {
         WorkflowExecutionService executionService = mock(WorkflowExecutionService.class);
@@ -67,7 +67,7 @@ class WorkflowExecutionToolHandlerTest {
                 eq(workflowApplySynchronizationHandler), eq("session-1"), eq(snapshot), eq(List.of("ddl")), eq("manual-only"));
         assertThat(actual.toPayload().get("status"), is("completed"));
     }
-
+    
     @Test
     void assertHandleExecutionWithMissingWorkflowKind() {
         WorkflowContextSnapshot snapshot = WorkflowHandlerTestFixture.createSnapshotWithoutWorkflowKind();
@@ -77,7 +77,7 @@ class WorkflowExecutionToolHandlerTest {
                 () -> handler.handle(fixture.workflowContext(), new MCPToolCall("session-1", Map.of("plan_id", "plan-1", "execution_mode", "manual-only"))));
         assertThat(actual.getMessage(), is("Workflow kind is required for plan_id `plan-1`."));
     }
-
+    
     @Test
     void assertHandleExecutionWithMissingExecutionMode() {
         WorkflowContextSnapshot snapshot = WorkflowHandlerTestFixture.createSnapshot();
@@ -87,14 +87,14 @@ class WorkflowExecutionToolHandlerTest {
                 () -> handler.handle(fixture.workflowContext(), new MCPToolCall("session-1", Map.of("plan_id", "plan-1"))));
         assertThat(actual.getMessage(), is("database_gateway_apply_workflow execution_mode is required."));
     }
-
+    
     private WorkflowExecutionToolHandler createExecutionToolHandler(final WorkflowExecutionService executionService,
                                                                     final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) throws ReflectiveOperationException {
         WorkflowExecutionToolHandler result = new WorkflowExecutionToolHandler(workflowRuntimeDefinitionRegistry);
         setField(result, "executionService", executionService);
         return result;
     }
-
+    
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField(fieldName);
         Plugins.getMemberAccessor().set(field, target, value);
