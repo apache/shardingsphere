@@ -19,8 +19,9 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.resource;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpecification;
-import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
+import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
+import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
@@ -117,19 +118,13 @@ public final class MCPResourceSpecificationFactory {
     
     private McpSchema.ReadResourceResult readResource(final McpSchema.ReadResourceRequest request) {
         try {
-            return createReadResourceResult(request.uri(), controller.handle(request.uri()).toPayload());
+            Map<String, Object> payload = controller.handle(request.uri()).toPayload();
+            return new ReadResourceResult(Collections.singletonList(new TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(payload))));
         } catch (final MCPUnsupportedException ex) {
-            return createReadResourceResult(request.uri(), MCPErrorConverter.convert(ex).toPayload());
+            Map<String, Object> payload = MCPErrorConverter.convert(ex).toPayload();
+            return new ReadResourceResult(Collections.singletonList(new TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(payload))));
         } catch (final ShardingSphereMCPException | RuntimeDatabaseConnectionException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException ex) {
-            throw createReadResourceError(ex);
+            throw MCPTransportErrorFactory.createResourceReadError(ex);
         }
-    }
-    
-    private McpSchema.ReadResourceResult createReadResourceResult(final String uri, final Map<String, Object> payload) {
-        return new McpSchema.ReadResourceResult(Collections.singletonList(new McpSchema.TextResourceContents(uri, JSON_CONTENT_TYPE, JsonUtils.toJsonString(payload))));
-    }
-    
-    private McpError createReadResourceError(final RuntimeException cause) {
-        return MCPTransportErrorFactory.createResourceReadError(cause);
     }
 }
