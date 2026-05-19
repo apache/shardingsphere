@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPErrorCode;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
@@ -67,7 +66,7 @@ class MCPSQLExecutionFacadeTest {
         when(coordinator.executeWithSessionLock(eq("session-1"), any())).thenThrow(new MCPSessionNotExistedException());
         MCPSessionNotExistedException actual = assertThrows(MCPSessionNotExistedException.class, () -> facade.execute(request));
         assertThat(actual.getMessage(), is("Session does not exist."));
-        verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, MCPErrorCode.NOT_FOUND, "QUERY");
+        verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(capabilityProvider, transactionExecutor, statementExecutor);
     }
     
@@ -84,7 +83,7 @@ class MCPSQLExecutionFacadeTest {
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.empty());
         DatabaseCapabilityNotFoundException actual = assertThrows(DatabaseCapabilityNotFoundException.class, () -> facade.execute(request));
         assertThat(actual.getMessage(), is("Database capability does not exist."));
-        verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, MCPErrorCode.NOT_FOUND, "QUERY");
+        verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
@@ -107,7 +106,7 @@ class MCPSQLExecutionFacadeTest {
             assertThat(actual.getMessage(), is("Statement is banned by the MCP contract."));
             assertThat(mocked.constructed().size(), is(1));
         }
-        verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, MCPErrorCode.UNSUPPORTED, "QUERY");
+        verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
@@ -129,7 +128,7 @@ class MCPSQLExecutionFacadeTest {
             assertThat(actual.getMessage(), is("Statement class is not supported."));
             assertThat(mocked.constructed().size(), is(1));
         }
-        verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, MCPErrorCode.UNSUPPORTED, "QUERY");
+        verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
@@ -201,7 +200,7 @@ class MCPSQLExecutionFacadeTest {
             assertThat(actual.getMessage(), is("EXPLAIN ANALYZE is not supported."));
             assertThat(mocked.constructed().size(), is(1));
         }
-        verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "EXPLAIN ANALYZE SELECT 1", false, MCPErrorCode.UNSUPPORTED, "EXPLAIN_ANALYZE");
+        verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "EXPLAIN ANALYZE SELECT 1", false, "EXPLAIN_ANALYZE");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
@@ -224,7 +223,7 @@ class MCPSQLExecutionFacadeTest {
             assertThat(actual.getMessage(), is("bad query"));
             assertThat(mocked.constructed().size(), is(1));
         }
-        verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, MCPErrorCode.INVALID_REQUEST, "QUERY");
+        verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(transactionExecutor);
     }
     

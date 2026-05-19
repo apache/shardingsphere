@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.core.protocol.error;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPErrorCode;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPNotFoundException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
@@ -53,64 +52,64 @@ public final class MCPErrorConverter {
      */
     public static MCPErrorResponse convert(final Throwable cause) {
         if (cause instanceof UnsupportedToolException) {
-            return createError(MCPErrorCode.NOT_FOUND, cause, "Unsupported tool.");
+            return createError(cause, "Unsupported tool.");
         }
         if (cause instanceof UnsupportedResourceUriException) {
-            return createError(MCPErrorCode.NOT_FOUND, cause, "Unsupported resource URI.");
+            return createError(cause, "Unsupported resource URI.");
         }
         if (cause instanceof MCPInvalidRequestException) {
-            return createError(MCPErrorCode.INVALID_REQUEST, cause, "Invalid request.");
+            return createError(cause, "Invalid request.");
         }
         if (cause instanceof MCPNotFoundException) {
-            return createError(MCPErrorCode.NOT_FOUND, cause, "MCP operation not found.");
+            return createError(cause, "MCP operation not found.");
         }
         if (cause instanceof MCPUnsupportedException) {
-            return createError(MCPErrorCode.UNSUPPORTED, cause, "Unsupported MCP operation.");
+            return createError(cause, "Unsupported MCP operation.");
         }
         if (cause instanceof MCPTimeoutException) {
-            return createError(MCPErrorCode.TIMEOUT, cause, "MCP operation timeout.");
+            return createError(cause, "MCP operation timeout.");
         }
         if (cause instanceof MCPTransactionStateException) {
-            return createError(MCPErrorCode.TRANSACTION_STATE_ERROR, cause, "MCP transaction operation failed.");
+            return createError(cause, "MCP transaction operation failed.");
         }
         if (cause instanceof MCPQueryFailedException) {
-            return createError(MCPErrorCode.QUERY_FAILED, cause, "MCP query failed.");
+            return createError(cause, "MCP query failed.");
         }
         if (cause instanceof MCPToolCallLimitExceededException) {
-            return createError(MCPErrorCode.RATE_LIMITED, cause, "MCP tool call limit exceeded.");
+            return createError(cause, "MCP tool call limit exceeded.");
         }
         if (cause instanceof MCPUnavailableException) {
-            return createError(MCPErrorCode.UNAVAILABLE, cause, "Service is temporarily unavailable.");
+            return createError(cause, "Service is temporarily unavailable.");
         }
         if (cause instanceof RuntimeDatabaseConnectionException) {
-            return createError(MCPErrorCode.UNAVAILABLE, cause, "Runtime database connection failed.");
+            return createError(cause, "Runtime database connection failed.");
         }
         if (cause instanceof SQLSyntaxErrorException) {
-            return createError(MCPErrorCode.INVALID_REQUEST, cause, "Invalid request.");
+            return createError(cause, "Invalid request.");
         }
         if (cause instanceof SQLTimeoutException) {
-            return createError(MCPErrorCode.TIMEOUT, cause, "MCP operation timeout.");
+            return createError(cause, "MCP operation timeout.");
         }
         if (cause instanceof SQLFeatureNotSupportedException) {
-            return createError(MCPErrorCode.UNSUPPORTED, cause, "Unsupported MCP operation.");
+            return createError(cause, "Unsupported MCP operation.");
         }
         if (cause instanceof UnsupportedOperationException) {
-            return createError(MCPErrorCode.UNSUPPORTED, cause, "Unsupported MCP operation.");
+            return createError(cause, "Unsupported MCP operation.");
         }
         if (cause instanceof SQLException) {
-            return createError(MCPErrorCode.QUERY_FAILED, cause, "MCP query failed.");
+            return createError(cause, "MCP query failed.");
         }
         if (cause instanceof IllegalArgumentException) {
-            return createError(MCPErrorCode.INVALID_REQUEST, cause, "Invalid request.");
+            return createError(cause, "Invalid request.");
         }
         if (cause instanceof IllegalStateException) {
-            return createError(MCPErrorCode.TRANSACTION_STATE_ERROR, cause, "MCP transaction operation failed.");
+            return createError(cause, "MCP transaction operation failed.");
         }
-        return createError(MCPErrorCode.UNAVAILABLE, cause, "Service is temporarily unavailable.");
+        return createError(cause, "Service is temporarily unavailable.");
     }
     
-    private static MCPErrorResponse createError(final MCPErrorCode errorCode, final Throwable cause, final String defaultMessage) {
+    private static MCPErrorResponse createError(final Throwable cause, final String defaultMessage) {
         String message = Objects.toString(cause.getMessage(), defaultMessage).trim();
-        return new MCPErrorResponse(errorCode, message, MCPRecoveryPayloadFactory.create(cause));
+        return new MCPErrorResponse(message, MCPRecoveryPayloadFactory.create(cause));
     }
 }

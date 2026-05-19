@@ -24,14 +24,12 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPErrorCode;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
-import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.resource.MCPResourceController;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
@@ -119,33 +117,13 @@ public final class MCPResourceSpecificationFactory {
         return new McpSchema.Annotations(audience, annotations.getPriority(), annotations.getLastModified());
     }
     
-    private McpSchema.ReadResourceResult readResource(final McpSchema.ReadResourceRequest request) {
+    private ReadResourceResult readResource(final McpSchema.ReadResourceRequest request) {
         try {
-            return createReadResourceResult(request.uri(), controller.handle(request.uri()).toPayload());
-        } catch (final MCPUnsupportedException ex) {
-            return createReadResourceResult(request.uri(), MCPErrorConverter.convert(ex).toPayload());
+            Map<String, Object> payload = controller.handle(request.uri()).toPayload();
+            return new ReadResourceResult(Collections.singletonList(new TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(payload))));
         } catch (final ShardingSphereMCPException | RuntimeDatabaseConnectionException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException ex) {
-            throw createReadResourceError(ex);
+            MCPErrorResponse errorResponse = MCPErrorConverter.convert(ex);
+            throw McpError.builder(MCPTransportErrorFactory.getProtocolErrorCode(ex)).message(errorResponse.getMessage()).data(errorResponse.toPayload()).build();
         }
-    }
-    
-    private McpSchema.ReadResourceResult createReadResourceResult(final String uri, final Map<String, Object> payload) {
-        return new ReadResourceResult(Collections.singletonList(new TextResourceContents(uri, JSON_CONTENT_TYPE, JsonUtils.toJsonString(payload))));
-    }
-    
-    private McpError createReadResourceError(final RuntimeException cause) {
-        MCPErrorResponse errorResponse = MCPErrorConverter.convert(cause);
-        return McpError.builder(getResourceEnvelopeCode(cause, errorResponse.getErrorCode())).message(getResourceErrorMessage(cause, errorResponse)).data(errorResponse.toPayload()).build();
-    }
-    
-    private int getResourceEnvelopeCode(final RuntimeException cause, final MCPErrorCode errorCode) {
-        if (cause instanceof UnsupportedResourceUriException) {
-            return McpSchema.ErrorCodes.RESOURCE_NOT_FOUND;
-        }
-        return MCPErrorCode.INVALID_REQUEST == errorCode ? McpSchema.ErrorCodes.INVALID_PARAMS : McpSchema.ErrorCodes.INTERNAL_ERROR;
-    }
-    
-    private String getResourceErrorMessage(final RuntimeException cause, final MCPErrorResponse errorResponse) {
-        return cause instanceof UnsupportedResourceUriException ? "Resource not found" : errorResponse.getMessage();
     }
 }

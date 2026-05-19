@@ -70,7 +70,6 @@ class MCPToolControllerTest {
             mocked.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-1"), eq("database_gateway_search_metadata"), eq(Map.of("query", "order"))))
                     .thenThrow(new MCPUnsupportedException("Search is not supported."));
             Map<String, Object> actual = createController().handle("session-1", "database_gateway_search_metadata", Map.of("query", "order")).toPayload();
-            assertThat(actual.get("error_code"), is("unsupported"));
             assertThat(actual.get("message"), is("Search is not supported."));
         }
     }
@@ -86,7 +85,6 @@ class MCPToolControllerTest {
             controller.handle("session-1", "database_gateway_search_metadata", Map.of("query", "order"));
             Map<String, Object> actual = controller.handle("session-1", "database_gateway_search_metadata", Map.of("query", "order")).toPayload();
             Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
-            assertThat(actual.get("error_code"), is("rate_limited"));
             assertThat(actual.get("message"), is("MCP session exceeded the maximum tool call quota of 1."));
             assertThat(actualRecovery.get("category"), is("tool_call_limit_exceeded"));
         }

@@ -195,9 +195,8 @@ Descriptor 必须说明模型该如何使用这个 surface，而不是只重复 
   resource read 还会包含 `self_uri`，并在适用时包含 typed `parent_resource` 或 typed `next_resources`。
 - Workflow tool 响应包含 `missing_required_inputs`、`clarification_questions`、`resources_to_read` 和 `next_actions`，
   让模型可以按结构化提示继续补问、预览、执行或校验。
-- 可恢复错误 payload 保留原有 `error_code` 和 `message`，并为缺失参数、不支持的 tool/resource、非法枚举、
-  workflow 状态错误以及 SQL tool 选错场景增加 `recovery` 提示。
-  `error_code` 是唯一的 ShardingSphere MCP 错误码契约；JSON-RPC 数字错误码只作为传输 envelope。
+- 可恢复错误 payload 保留 `message`，并为缺失参数、不支持的 tool/resource、非法枚举、workflow 状态错误以及 SQL tool 选错场景增加 `recovery` 提示。
+  JSON-RPC 数字错误码是 MCP 协议错误契约。
 
 Descriptor annotations 遵循 MCP `2025-11-25` schema，并且属于开发者维护的协议 surface 元数据，不是终端用户运行时配置：
 

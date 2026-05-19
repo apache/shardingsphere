@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute.audit;
 
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPErrorCode;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AuditRecorderTest {
@@ -37,11 +37,11 @@ class AuditRecorderTest {
     }
     
     @Test
-    void assertRecordQueryExecutionWithErrorCode() {
+    void assertRecordFailedQueryExecution() {
         AuditRecorder auditRecorder = new AuditRecorder();
-        AuditRecord actual = auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", false, MCPErrorCode.INVALID_REQUEST, "QUERY");
+        AuditRecord actual = auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", false, "QUERY");
         assertThat(actual.getOperationClass(), is(OperationClass.QUERY_EXECUTION));
-        assertTrue(actual.getErrorCode().isPresent());
-        assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
+        assertThat(actual.getStatementMarker(), is("QUERY"));
+        assertFalse(actual.isSuccess());
     }
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.core.protocol.response;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPErrorCode;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
@@ -27,12 +26,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Response for resource errors.
+ * Response for MCP errors.
  */
 public final class MCPErrorResponse implements MCPResponse {
-    
-    @Getter
-    private final MCPErrorCode errorCode;
     
     @Getter
     private final String message;
@@ -41,12 +37,11 @@ public final class MCPErrorResponse implements MCPResponse {
     
     private final String requestId;
     
-    public MCPErrorResponse(final MCPErrorCode errorCode, final String message) {
-        this(errorCode, message, Map.of());
+    public MCPErrorResponse(final String message) {
+        this(message, Map.of());
     }
     
-    public MCPErrorResponse(final MCPErrorCode errorCode, final String message, final Map<String, Object> recovery) {
-        this.errorCode = errorCode;
+    public MCPErrorResponse(final String message, final Map<String, Object> recovery) {
         this.message = message;
         this.recovery = recovery;
         requestId = UUID.randomUUID().toString();
@@ -54,10 +49,9 @@ public final class MCPErrorResponse implements MCPResponse {
     
     @Override
     public Map<String, Object> toPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("response_mode", MCPResponseMode.RECOVERY);
         result.put("request_id", requestId);
-        result.put("error_code", errorCode.getCode());
         result.put("message", message);
         if (!recovery.isEmpty()) {
             result.put("recovery", createRecoveryPayload());

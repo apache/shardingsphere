@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -114,15 +113,15 @@ class MCPResourceSpecificationFactoryTest {
             McpError actual = assertThrows(McpError.class,
                     () -> actualSpecification.readHandler().apply(mock(McpSyncServerExchange.class), new ReadResourceRequest("shardingsphere://capabilities")));
             assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.RESOURCE_NOT_FOUND));
-            assertThat(actual.getJsonRpcError().message(), is("Resource not found"));
+            assertThat(actual.getJsonRpcError().message(), is("Unsupported resource URI `shardingsphere://capabilities`."));
             @SuppressWarnings("unchecked")
             Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
-            assertThat(actualData.get("error_code"), is("not_found"));
+            assertThat(actualData.get("message"), is("Unsupported resource URI `shardingsphere://capabilities`."));
         }
     }
     
     @Test
-    void assertCreateResourceSpecificationsHandleUnsupportedResourcePayload() {
+    void assertCreateResourceSpecificationsHandleUnsupportedResourceError() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
             mockedResourceHandlerRegistry.when(ResourceHandlerRegistry::getSupportedResourceDescriptors).thenReturn(List.of(createResourceDescriptor()));
             mockedResourceHandlerRegistry.when(() -> ResourceHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://capabilities")))
@@ -130,14 +129,13 @@ class MCPResourceSpecificationFactoryTest {
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncResourceSpecification actualSpecification = new MCPResourceSpecificationFactory(runtimeContext).createResourceSpecifications().get(0);
-            ReadResourceResult actual = actualSpecification.readHandler().apply(mock(McpSyncServerExchange.class), new ReadResourceRequest("shardingsphere://capabilities"));
-            assertThat(actual.contents().get(0), isA(TextResourceContents.class));
-            TextResourceContents actualContents = (TextResourceContents) actual.contents().get(0);
-            assertThat(actualContents.uri(), is("shardingsphere://capabilities"));
-            assertThat(actualContents.mimeType(), is("application/json"));
-            String actualText = actualContents.text();
-            assertThat(actualText, containsString("\"error_code\":\"unsupported\""));
-            assertThat(actualText, containsString("\"message\":\"Sequence resources are not supported for the current database.\""));
+            McpError actual = assertThrows(McpError.class,
+                    () -> actualSpecification.readHandler().apply(mock(McpSyncServerExchange.class), new ReadResourceRequest("shardingsphere://capabilities")));
+            assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+            assertThat(actual.getJsonRpcError().message(), is("Sequence resources are not supported for the current database."));
+            @SuppressWarnings("unchecked")
+            Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
+            assertThat(actualData.get("message"), is("Sequence resources are not supported for the current database."));
         }
     }
     

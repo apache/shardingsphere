@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute.audit;
 
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPErrorCode;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -40,28 +38,11 @@ public final class AuditRecorder {
      * @return recorded audit entry
      */
     public AuditRecord recordQueryExecution(final String sessionId, final String databaseName, final String sql, final boolean success, final String statementMarker) {
-        return record(sessionId, databaseName, sql, success, null, statementMarker);
+        return record(sessionId, databaseName, sql, success, statementMarker);
     }
     
-    /**
-     * Record one query-execution audit event with one error code.
-     *
-     * @param sessionId session identifier
-     * @param databaseName logical database name
-     * @param sql SQL text
-     * @param success success flag
-     * @param errorCode error code
-     * @param statementMarker optional statement marker
-     * @return recorded audit entry
-     */
-    public AuditRecord recordQueryExecution(final String sessionId, final String databaseName, final String sql, final boolean success,
-                                            final MCPErrorCode errorCode, final String statementMarker) {
-        return record(sessionId, databaseName, sql, success, errorCode, statementMarker);
-    }
-    
-    private AuditRecord record(final String sessionId, final String databaseName, final String operationSource,
-                               final boolean success, final MCPErrorCode errorCode, final String statementMarker) {
-        return new AuditRecord(sessionId, databaseName, OperationClass.QUERY_EXECUTION, digest(operationSource), success, errorCode, statementMarker, Instant.now().toString());
+    private AuditRecord record(final String sessionId, final String databaseName, final String operationSource, final boolean success, final String statementMarker) {
+        return new AuditRecord(sessionId, databaseName, OperationClass.QUERY_EXECUTION, digest(operationSource), success, statementMarker, Instant.now().toString());
     }
     
     private String digest(final String value) {

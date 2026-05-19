@@ -22,7 +22,9 @@ import io.modelcontextprotocol.spec.McpSchema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
+import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 
 /**
@@ -40,5 +42,19 @@ public final class MCPTransportErrorFactory {
     public static McpError createInvalidParamsError(final MCPInvalidRequestException cause) {
         MCPErrorResponse errorResponse = MCPErrorConverter.convert(cause);
         return McpError.builder(McpSchema.ErrorCodes.INVALID_PARAMS).message(errorResponse.getMessage()).data(errorResponse.toPayload()).build();
+    }
+    
+    /**
+     * Get MCP protocol error code.
+     *
+     * @param cause error cause
+     * @return MCP protocol error code
+     */
+    public static int getProtocolErrorCode(final Throwable cause) {
+        if (cause instanceof UnsupportedResourceUriException) {
+            return McpSchema.ErrorCodes.RESOURCE_NOT_FOUND;
+        }
+        return cause instanceof MCPInvalidRequestException || cause instanceof MCPUnsupportedException || cause instanceof IllegalArgumentException
+                || cause instanceof UnsupportedOperationException ? McpSchema.ErrorCodes.INVALID_PARAMS : McpSchema.ErrorCodes.INTERNAL_ERROR;
     }
 }

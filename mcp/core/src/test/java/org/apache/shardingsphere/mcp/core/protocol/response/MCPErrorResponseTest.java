@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.protocol.response;
 
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPErrorCode;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -32,28 +31,21 @@ class MCPErrorResponseTest {
     
     @Test
     void assertToPayload() {
-        Map<String, Object> actual = new MCPErrorResponse(MCPErrorCode.INVALID_REQUEST, "foo_message").toPayload();
+        Map<String, Object> actual = new MCPErrorResponse("foo_message").toPayload();
         assertNotNull(actual.get("request_id"));
         assertFalse(actual.containsKey("recovery"));
         assertThat(actual.get("response_mode"), is("recovery"));
-        assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actual.get("message"), is("foo_message"));
     }
     
     @Test
     void assertToPayloadWithRecovery() {
-        Map<String, Object> actual = new MCPErrorResponse(MCPErrorCode.INVALID_REQUEST, "foo_message", Map.of("recoverable", true)).toPayload();
+        Map<String, Object> actual = new MCPErrorResponse("foo_message", Map.of("recoverable", true)).toPayload();
         assertNotNull(actual.get("request_id"));
         assertThat(actual.get("response_mode"), is("recovery"));
-        assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actual.get("message"), is("foo_message"));
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertTrue((Boolean) actualRecovery.get("recoverable"));
         assertThat(actualRecovery.get("request_id"), is(actual.get("request_id")));
-    }
-    
-    @Test
-    void assertGetErrorCode() {
-        assertThat(new MCPErrorResponse(MCPErrorCode.INVALID_REQUEST, "foo_message").getErrorCode(), is(MCPErrorCode.INVALID_REQUEST));
     }
 }

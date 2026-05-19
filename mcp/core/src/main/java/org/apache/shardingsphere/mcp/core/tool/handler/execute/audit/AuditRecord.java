@@ -17,12 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute.audit;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPErrorCode;
-
-import java.util.Optional;
 
 /**
  * Audit record projection.
@@ -41,19 +37,7 @@ public final class AuditRecord {
     
     private final boolean success;
     
-    @Getter(AccessLevel.NONE)
-    private final MCPErrorCode errorCode;
-    
     private final String statementMarker;
     
     private final String timestamp;
-    
-    /**
-     * Get the error code when one exists.
-     *
-     * @return optional error code
-     */
-    public Optional<MCPErrorCode> getErrorCode() {
-        return Optional.ofNullable(errorCode);
-    }
 }

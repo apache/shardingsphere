@@ -27,10 +27,10 @@ import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPErrorCode;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
@@ -138,7 +138,7 @@ public final class MCPToolSpecificationFactory {
         if (validation.valid()) {
             return createCallToolResult(payload);
         }
-        return createCallToolResult(new MCPErrorResponse(MCPErrorCode.INVALID_OUTPUT_SCHEMA, String.format(
+        return createCallToolResult(new MCPErrorResponse(String.format(
                 "Tool `%s` structuredContent does not match declared outputSchema: %s", toolDescriptor.getName(), Objects.toString(validation.errorMessage(), "validation failed"))));
     }
     
@@ -174,7 +174,7 @@ public final class MCPToolSpecificationFactory {
     }
     
     private McpError createCallToolError(final UnsupportedToolException cause) {
-        return McpError.builder(McpSchema.ErrorCodes.INVALID_PARAMS).message("Tool not found").data(MCPErrorConverter.convert(cause).toPayload()).build();
+        return McpError.builder(MCPTransportErrorFactory.getProtocolErrorCode(cause)).message("Tool not found").data(MCPErrorConverter.convert(cause).toPayload()).build();
     }
     
     private Optional<MCPToolDescriptor> findToolDescriptor(final String toolName) {

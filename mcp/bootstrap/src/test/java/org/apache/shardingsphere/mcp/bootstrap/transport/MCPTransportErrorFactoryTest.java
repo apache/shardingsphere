@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.bootstrap.transport;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -36,6 +38,26 @@ class MCPTransportErrorFactoryTest {
         assertThat(actual.getJsonRpcError().message(), is("foo_message"));
         @SuppressWarnings("unchecked")
         Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
-        assertThat(actualData.get("error_code"), is("invalid_request"));
+        assertThat(actualData.get("message"), is("foo_message"));
+    }
+    
+    @Test
+    void assertGetProtocolErrorCodeWithUnsupportedResourceUri() {
+        assertThat(MCPTransportErrorFactory.getProtocolErrorCode(new UnsupportedResourceUriException("shardingsphere://foo")), is(McpSchema.ErrorCodes.RESOURCE_NOT_FOUND));
+    }
+    
+    @Test
+    void assertGetProtocolErrorCodeWithInvalidRequest() {
+        assertThat(MCPTransportErrorFactory.getProtocolErrorCode(new MCPInvalidRequestException("foo_message")), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+    }
+    
+    @Test
+    void assertGetProtocolErrorCodeWithUnsupportedOperation() {
+        assertThat(MCPTransportErrorFactory.getProtocolErrorCode(new MCPUnsupportedException("foo_message")), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+    }
+    
+    @Test
+    void assertGetProtocolErrorCodeWithUnexpectedError() {
+        assertThat(MCPTransportErrorFactory.getProtocolErrorCode(new IllegalStateException("foo_message")), is(McpSchema.ErrorCodes.INTERNAL_ERROR));
     }
 }
