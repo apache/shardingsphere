@@ -34,16 +34,6 @@ import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 public final class MCPTransportErrorFactory {
     
     /**
-     * Create invalid parameters error.
-     *
-     * @param cause invalid request exception
-     * @return MCP transport error
-     */
-    public static McpError createInvalidParamsError(final MCPInvalidRequestException cause) {
-        return createError(cause);
-    }
-    
-    /**
      * Create MCP transport error.
      *
      * @param cause error cause
@@ -51,22 +41,7 @@ public final class MCPTransportErrorFactory {
      */
     public static McpError createError(final Throwable cause) {
         MCPErrorResponse errorResponse = MCPErrorConverter.convert(cause);
-        return createError(cause, errorResponse, errorResponse.getMessage());
-    }
-    
-    /**
-     * Create MCP transport error.
-     *
-     * @param cause error cause
-     * @param message transport error message
-     * @return MCP transport error
-     */
-    public static McpError createError(final Throwable cause, final String message) {
-        return createError(cause, MCPErrorConverter.convert(cause), message);
-    }
-    
-    private static McpError createError(final Throwable cause, final MCPErrorResponse errorResponse, final String message) {
-        return McpError.builder(getProtocolErrorCode(cause)).message(message).data(errorResponse.toPayload()).build();
+        return McpError.builder(getProtocolErrorCode(cause)).message(errorResponse.getMessage()).data(errorResponse.toPayload()).build();
     }
     
     private static int getProtocolErrorCode(final Throwable cause) {

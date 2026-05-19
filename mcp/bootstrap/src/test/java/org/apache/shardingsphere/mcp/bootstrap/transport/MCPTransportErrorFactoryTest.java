@@ -32,8 +32,8 @@ import static org.hamcrest.Matchers.is;
 class MCPTransportErrorFactoryTest {
     
     @Test
-    void assertCreateInvalidParamsError() {
-        McpError actual = MCPTransportErrorFactory.createInvalidParamsError(new MCPInvalidRequestException("foo_message"));
+    void assertCreateErrorWithInvalidRequest() {
+        McpError actual = MCPTransportErrorFactory.createError(new MCPInvalidRequestException("foo_message"));
         assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
         assertThat(actual.getJsonRpcError().message(), is("foo_message"));
         @SuppressWarnings("unchecked")
@@ -49,10 +49,10 @@ class MCPTransportErrorFactoryTest {
     }
     
     @Test
-    void assertCreateErrorWithCustomMessage() {
-        McpError actual = MCPTransportErrorFactory.createError(new UnsupportedToolException("foo_tool"), "Tool not found");
+    void assertCreateErrorWithUnsupportedTool() {
+        McpError actual = MCPTransportErrorFactory.createError(new UnsupportedToolException("foo_tool"));
         assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
-        assertThat(actual.getJsonRpcError().message(), is("Tool not found"));
+        assertThat(actual.getJsonRpcError().message(), is("Unsupported tool `foo_tool`."));
         @SuppressWarnings("unchecked")
         Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
         assertThat(actualData.get("message"), is("Unsupported tool `foo_tool`."));

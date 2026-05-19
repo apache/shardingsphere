@@ -254,7 +254,7 @@ class MCPToolSpecificationFactoryTest {
             when(exchange.sessionId()).thenReturn("session-id");
             McpError actual = assertThrows(McpError.class, () -> actualSpecification.callHandler().apply(exchange, new CallToolRequest("database_gateway_search_metadata", Map.of())));
             assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
-            assertThat(actual.getJsonRpcError().message(), is("Tool not found"));
+            assertThat(actual.getJsonRpcError().message(), is("Unsupported tool `database_gateway_search_metadata`."));
             @SuppressWarnings("unchecked")
             Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
             assertThat(actualData.get("message"), is("Unsupported tool `database_gateway_search_metadata`."));

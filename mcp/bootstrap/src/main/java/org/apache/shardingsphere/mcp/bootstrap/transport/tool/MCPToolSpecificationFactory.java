@@ -23,7 +23,6 @@ import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification.Builder;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
-import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
@@ -121,7 +120,7 @@ public final class MCPToolSpecificationFactory {
             }
             return toolDescriptor.map(each -> createCallToolResult(each, response)).orElseGet(() -> createCallToolResult(response));
         } catch (final UnsupportedToolException ex) {
-            throw createCallToolError(ex);
+            throw MCPTransportErrorFactory.createError(ex);
         }
     }
     
@@ -170,10 +169,6 @@ public final class MCPToolSpecificationFactory {
                 MCPShardingSphereMetadataKeys.RESOURCE_LINKS_EMITTED, resourceLinks.links().size(),
                 MCPShardingSphereMetadataKeys.RESOURCE_LINKS_OMITTED, resourceLinks.omittedCount(),
                 MCPShardingSphereMetadataKeys.RESOURCE_LINK_LIMIT, RESOURCE_LINK_LIMIT);
-    }
-    
-    private McpError createCallToolError(final UnsupportedToolException cause) {
-        return MCPTransportErrorFactory.createError(cause, "Tool not found");
     }
     
     private Optional<MCPToolDescriptor> findToolDescriptor(final String toolName) {

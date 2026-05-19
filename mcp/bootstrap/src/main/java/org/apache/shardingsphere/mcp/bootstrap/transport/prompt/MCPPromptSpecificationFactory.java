@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.prompt;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncPromptSpecification;
-import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
@@ -74,12 +73,8 @@ public final class MCPPromptSpecificationFactory {
     private void validateRequiredArguments(final MCPPromptDescriptor descriptor, final Map<String, Object> arguments) {
         for (MCPPromptArgumentDescriptor each : descriptor.getArguments()) {
             if (each.isRequired() && Objects.toString(arguments.get(each.getName()), "").trim().isEmpty()) {
-                throw createInvalidParamsError(new MCPInvalidRequestException(String.format("Required prompt argument `%s` is missing.", each.getName())));
+                throw MCPTransportErrorFactory.createError(new MCPInvalidRequestException(String.format("Required prompt argument `%s` is missing.", each.getName())));
             }
         }
-    }
-    
-    private McpError createInvalidParamsError(final MCPInvalidRequestException cause) {
-        return MCPTransportErrorFactory.createInvalidParamsError(cause);
     }
 }
