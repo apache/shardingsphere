@@ -24,10 +24,10 @@ import io.modelcontextprotocol.spec.McpSchema.ServerCapabilities;
 import io.modelcontextprotocol.spec.McpServerTransportProvider;
 import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.bootstrap.transport.completion.MCPCompletionSpecificationFactory;
-import org.apache.shardingsphere.mcp.bootstrap.transport.prompt.MCPPromptSpecificationFactory;
-import org.apache.shardingsphere.mcp.bootstrap.transport.resource.MCPResourceSpecificationFactory;
-import org.apache.shardingsphere.mcp.bootstrap.transport.tool.MCPToolSpecificationFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.capability.completion.MCPCompletionSpecificationFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.capability.prompt.MCPPromptSpecificationFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.capability.resource.MCPResourceSpecificationFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool.MCPToolSpecificationFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.support.markdown.MCPMarkdownResourceLoader;
 

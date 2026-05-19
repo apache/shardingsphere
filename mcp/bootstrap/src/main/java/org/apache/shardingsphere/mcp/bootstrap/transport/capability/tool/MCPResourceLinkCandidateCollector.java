@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
+package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

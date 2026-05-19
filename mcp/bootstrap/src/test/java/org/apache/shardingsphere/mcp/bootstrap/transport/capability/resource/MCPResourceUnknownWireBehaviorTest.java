@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
+package org.apache.shardingsphere.mcp.bootstrap.transport.capability.resource;
 
 import org.apache.shardingsphere.mcp.bootstrap.transport.AbstractMCPWireBehaviorTest;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,16 +25,16 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class MCPToolUnknownWireBehaviorTest extends AbstractMCPWireBehaviorTest {
+class MCPResourceUnknownWireBehaviorTest extends AbstractMCPWireBehaviorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
-    void assertUnknownToolUsesJsonRpcError(final String name, final MCPWireClientFactory clientFactory) throws Exception {
-        String requestId = "tools-call-unknown-1";
+    void assertUnknownResourceUsesJsonRpcError(final String name, final MCPWireClientFactory clientFactory) throws Exception {
+        String requestId = "resources-read-unknown-1";
         try (MCPWireClient client = clientFactory.create()) {
-            Map<String, Object> actual = client.sendRawRequest(requestId, "tools/call", Map.of("name", "unsupported_tool", "arguments", Map.of()));
+            Map<String, Object> actual = client.sendRawRequest(requestId, "resources/read", Map.of("uri", "unsupported://resource"));
             assertJsonRpcErrorWithoutResult(actual, requestId);
-            assertFalse(getMap(actual.get("result")).containsKey("isError"));
+            assertFalse(getMap(actual.get("result")).containsKey("contents"));
         }
     }
 }
