@@ -19,12 +19,6 @@ package org.apache.shardingsphere.infra.metadata.identifier;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Objects;
 
@@ -44,39 +38,6 @@ public final class ShardingSphereIdentifier {
         this.value = null == value ? null : CaseInsensitiveString.of(value);
         standardizeValue = value;
         caseSensitive = false;
-    }
-    
-    public ShardingSphereIdentifier(final String value, final DatabaseType databaseType) {
-        this.value = null == value ? null : CaseInsensitiveString.of(value);
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        standardizeValue = standardizeValue(value, dialectDatabaseMetaData, false);
-        caseSensitive = dialectDatabaseMetaData.isCaseSensitive();
-    }
-    
-    public ShardingSphereIdentifier(final IdentifierValue identifierValue, final DatabaseType databaseType) {
-        value = null == identifierValue.getValue() ? null : CaseInsensitiveString.of(identifierValue.getValue());
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        standardizeValue = standardizeValue(identifierValue.getValue(), dialectDatabaseMetaData, QuoteCharacter.NONE != identifierValue.getQuoteCharacter());
-        caseSensitive = dialectDatabaseMetaData.isCaseSensitive();
-    }
-    
-    private static String standardizeValue(final String value, final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean quoted) {
-        if (null == value) {
-            return null;
-        }
-        if (quoted) {
-            return value;
-        }
-        IdentifierPatternType patternType = dialectDatabaseMetaData.getIdentifierPatternType();
-        switch (patternType) {
-            case UPPER_CASE:
-                return value.toUpperCase();
-            case LOWER_CASE:
-                return value.toLowerCase();
-            case KEEP_ORIGIN:
-            default:
-                return value;
-        }
     }
     
     /**
