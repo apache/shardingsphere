@@ -46,12 +46,12 @@ public final class MCPResourceSpecificationFactory {
     
     private static final String JSON_CONTENT_TYPE = "application/json";
     
-    private final Collection<MCPResourceDescriptor> resourceDescriptors;
+    private final Collection<MCPResourceDescriptor> descriptors;
     
     private final MCPResourceController controller;
     
     public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        resourceDescriptors = ResourceHandlerRegistry.getSupportedResourceDescriptors();
+        descriptors = ResourceHandlerRegistry.getSupportedResourceDescriptors();
         controller = new MCPResourceController(runtimeContext);
     }
     
@@ -61,7 +61,7 @@ public final class MCPResourceSpecificationFactory {
      * @return resource specifications
      */
     public List<SyncResourceSpecification> createResourceSpecifications() {
-        return resourceDescriptors.stream()
+        return descriptors.stream()
                 .filter(each -> !each.isTemplated())
                 .map(each -> new SyncResourceSpecification(createResource(each), (exchange, request) -> readResource(request))).collect(Collectors.toList());
     }
@@ -88,7 +88,7 @@ public final class MCPResourceSpecificationFactory {
      * @return resource template specifications
      */
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
-        return resourceDescriptors.stream()
+        return descriptors.stream()
                 .filter(MCPResourceDescriptor::isTemplated)
                 .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), (exchange, request) -> readResource(request))).collect(Collectors.toList());
     }

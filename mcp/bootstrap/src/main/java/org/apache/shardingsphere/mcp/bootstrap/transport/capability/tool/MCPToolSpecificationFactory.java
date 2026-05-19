@@ -50,9 +50,9 @@ public final class MCPToolSpecificationFactory {
     
     private static final int RESOURCE_LINK_LIMIT = 24;
     
-    private final List<MCPToolDescriptor> toolDescriptors;
+    private final List<MCPToolDescriptor> descriptors;
     
-    private final MCPToolController toolController;
+    private final MCPToolController controller;
     
     private final MCPToolElicitationHandler elicitationHandler;
     
@@ -64,9 +64,9 @@ public final class MCPToolSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        toolDescriptors = ToolHandlerRegistry.getSupportedToolDescriptors();
-        toolController = new MCPToolController(runtimeContext);
-        elicitationHandler = new MCPToolElicitationHandler(toolController);
+        descriptors = ToolHandlerRegistry.getSupportedToolDescriptors();
+        controller = new MCPToolController(runtimeContext);
+        elicitationHandler = new MCPToolElicitationHandler(controller);
         outputSchemaValidator = new DefaultJsonSchemaValidator();
     }
     
@@ -76,7 +76,7 @@ public final class MCPToolSpecificationFactory {
      * @return tool specifications
      */
     public List<SyncToolSpecification> createToolSpecifications() {
-        return toolDescriptors.stream().map(each -> new Builder().tool(createTool(each)).callHandler(this::handle).build()).toList();
+        return descriptors.stream().map(each -> new Builder().tool(createTool(each)).callHandler(this::handle).build()).toList();
     }
     
     private McpSchema.Tool createTool(final MCPToolDescriptor toolDescriptor) {
@@ -112,7 +112,7 @@ public final class MCPToolSpecificationFactory {
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
         try {
             Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
-            MCPResponse response = toolController.handle(exchange.sessionId(), request.name(), arguments);
+            MCPResponse response = controller.handle(exchange.sessionId(), request.name(), arguments);
             Map<String, Object> payload = response.toPayload();
             Optional<MCPToolDescriptor> toolDescriptor = findToolDescriptor(request.name());
             if (toolDescriptor.isPresent() && elicitationHandler.shouldElicit(exchange, toolDescriptor.get(), payload)) {
@@ -172,7 +172,7 @@ public final class MCPToolSpecificationFactory {
     }
     
     private Optional<MCPToolDescriptor> findToolDescriptor(final String toolName) {
-        for (MCPToolDescriptor each : toolDescriptors) {
+        for (MCPToolDescriptor each : descriptors) {
             if (toolName.equals(each.getName())) {
                 return Optional.of(each);
             }
