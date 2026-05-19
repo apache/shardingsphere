@@ -23,7 +23,7 @@ import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateBinding;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateLoader;
@@ -80,9 +80,6 @@ public final class MCPPromptSpecificationFactory {
     }
     
     private McpError createInvalidParamsError(final MCPInvalidRequestException cause) {
-        return McpError.builder(McpSchema.ErrorCodes.INVALID_PARAMS)
-                .message(cause.getMessage())
-                .data(MCPErrorConverter.convert(cause).toPayload())
-                .build();
+        return MCPTransportErrorFactory.createInvalidParamsError(cause);
     }
 }

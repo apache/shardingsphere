@@ -198,6 +198,7 @@ Descriptors must describe what the model should use the surface for, not just re
   so a model can continue the workflow without guessing or relying on legacy recommendation fields.
 - Recoverable error payloads keep the original `error_code` and `message`, and add `recovery` hints for missing arguments,
   unsupported tools or resources, invalid enum values, workflow state errors, and unsafe SQL tool selection.
+  `error_code` is the single ShardingSphere MCP error code contract; JSON-RPC numeric error codes are transport envelopes only.
 
 Descriptor annotations follow the MCP `2025-11-25` schema and are developer-maintained surface metadata, not end-user runtime configuration:
 

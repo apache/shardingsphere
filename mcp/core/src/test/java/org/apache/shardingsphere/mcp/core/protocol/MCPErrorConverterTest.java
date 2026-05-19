@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.protocol;
 
+import org.apache.shardingsphere.mcp.api.protocol.error.MCPErrorCode;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTimeoutException;
@@ -70,11 +71,12 @@ class MCPErrorConverterTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertConvertCases")
-    void assertConvert(final String name, final Throwable cause, final String expectedErrorCode, final String expectedMessage) {
+    void assertConvert(final String name, final Throwable cause, final MCPErrorCode expectedErrorCode, final String expectedMessage) {
         MCPErrorResponse actual = MCPErrorConverter.convert(cause);
         Map<String, Object> actualPayload = actual.toPayload();
+        assertThat(actual.getErrorCode(), is(expectedErrorCode));
         assertThat(actualPayload.get("response_mode"), is("recovery"));
-        assertThat(actualPayload.get("error_code"), is(expectedErrorCode));
+        assertThat(actualPayload.get("error_code"), is(expectedErrorCode.getCode()));
         assertThat(actualPayload.get("message"), is(expectedMessage));
         assertTrue(String.valueOf(actualPayload.get("request_id")).matches("[0-9a-f\\-]{36}"));
         assertFalse(actualPayload.containsKey("recovery"));
@@ -84,7 +86,7 @@ class MCPErrorConverterTest {
     void assertConvertUnsupportedToolWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new UnsupportedToolException("missing_tool")).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
-        assertThat(actual.get("error_code"), is("invalid_request"));
+        assertThat(actual.get("error_code"), is("not_found"));
         assertThat(actualRecovery.get("category"), is("unsupported_tool"));
         assertThat(actualRecovery.get("recovery_category"), is("unsupported_target"));
         assertThat(actualRecovery.get("tool_name"), is("missing_tool"));
@@ -97,7 +99,7 @@ class MCPErrorConverterTest {
     void assertConvertUnsupportedResourceWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new UnsupportedResourceUriException("shardingsphere://unknown")).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
-        assertThat(actual.get("error_code"), is("invalid_request"));
+        assertThat(actual.get("error_code"), is("not_found"));
         assertThat(actualRecovery.get("category"), is("unsupported_resource"));
         assertThat(actualRecovery.get("recovery_category"), is("unsupported_target"));
         assertThat(((Map<?, ?>) actualRecovery.get("resource")).get("uri"), is("shardingsphere://unknown"));
@@ -436,22 +438,22 @@ class MCPErrorConverterTest {
 
     static Stream<Arguments> assertConvertCases() {
         return Stream.of(
-                Arguments.of("invalid request exception", new MCPInvalidRequestException("Invalid request."), "invalid_request", "Invalid request."),
-                Arguments.of("not found exception", new DatabaseCapabilityNotFoundException(), "not_found", "Database capability does not exist."),
-                Arguments.of("unsupported exception", new MCPUnsupportedException("Unsupported."), "unsupported", "Unsupported."),
-                Arguments.of("timeout exception", new MCPTimeoutException("Timed out.", new SQLTimeoutException("Timed out.")), "timeout", "Timed out."),
-                Arguments.of("transaction state exception", new MCPTransactionStateException("Transaction already active.", new IllegalStateException()), "transaction_state_error",
+                Arguments.of("invalid request exception", new MCPInvalidRequestException("Invalid request."), MCPErrorCode.INVALID_REQUEST, "Invalid request."),
+                Arguments.of("not found exception", new DatabaseCapabilityNotFoundException(), MCPErrorCode.NOT_FOUND, "Database capability does not exist."),
+                Arguments.of("unsupported exception", new MCPUnsupportedException("Unsupported."), MCPErrorCode.UNSUPPORTED, "Unsupported."),
+                Arguments.of("timeout exception", new MCPTimeoutException("Timed out.", new SQLTimeoutException("Timed out.")), MCPErrorCode.TIMEOUT, "Timed out."),
+                Arguments.of("transaction state exception", new MCPTransactionStateException("Transaction already active.", new IllegalStateException()), MCPErrorCode.TRANSACTION_STATE_ERROR,
                         "Transaction already active."),
-                Arguments.of("query failed exception", new MCPQueryFailedException("Query failed."), "query_failed", "Query failed."),
-                Arguments.of("unavailable exception", new MCPUnavailableException("Unavailable."), "unavailable", "Unavailable."),
-                Arguments.of("sql syntax exception", new SQLSyntaxErrorException("Bad SQL."), "invalid_request", "Bad SQL."),
-                Arguments.of("sql timeout exception", new SQLTimeoutException("Timed out."), "timeout", "Timed out."),
-                Arguments.of("sql unsupported feature exception", new SQLFeatureNotSupportedException("Unsupported feature."), "unsupported", "Unsupported feature."),
-                Arguments.of("unsupported operation exception", new UnsupportedOperationException("Unsupported operation."), "unsupported", "Unsupported operation."),
-                Arguments.of("sql exception", new SQLException("Query failed."), "query_failed", "Query failed."),
-                Arguments.of("illegal argument exception", new IllegalArgumentException("Illegal argument."), "invalid_request", "Illegal argument."),
-                Arguments.of("illegal state exception", new IllegalStateException(" Transaction already active. "), "transaction_state_error", "Transaction already active."),
-                Arguments.of("unknown exception", new RuntimeException(), "unavailable", "Service is temporarily unavailable."));
+                Arguments.of("query failed exception", new MCPQueryFailedException("Query failed."), MCPErrorCode.QUERY_FAILED, "Query failed."),
+                Arguments.of("unavailable exception", new MCPUnavailableException("Unavailable."), MCPErrorCode.UNAVAILABLE, "Unavailable."),
+                Arguments.of("sql syntax exception", new SQLSyntaxErrorException("Bad SQL."), MCPErrorCode.INVALID_REQUEST, "Bad SQL."),
+                Arguments.of("sql timeout exception", new SQLTimeoutException("Timed out."), MCPErrorCode.TIMEOUT, "Timed out."),
+                Arguments.of("sql unsupported feature exception", new SQLFeatureNotSupportedException("Unsupported feature."), MCPErrorCode.UNSUPPORTED, "Unsupported feature."),
+                Arguments.of("unsupported operation exception", new UnsupportedOperationException("Unsupported operation."), MCPErrorCode.UNSUPPORTED, "Unsupported operation."),
+                Arguments.of("sql exception", new SQLException("Query failed."), MCPErrorCode.QUERY_FAILED, "Query failed."),
+                Arguments.of("illegal argument exception", new IllegalArgumentException("Illegal argument."), MCPErrorCode.INVALID_REQUEST, "Illegal argument."),
+                Arguments.of("illegal state exception", new IllegalStateException(" Transaction already active. "), MCPErrorCode.TRANSACTION_STATE_ERROR, "Transaction already active."),
+                Arguments.of("unknown exception", new RuntimeException(), MCPErrorCode.UNAVAILABLE, "Service is temporarily unavailable."));
     }
 
     private String getFirstResourceToReadUri(final Map<?, ?> recovery) {

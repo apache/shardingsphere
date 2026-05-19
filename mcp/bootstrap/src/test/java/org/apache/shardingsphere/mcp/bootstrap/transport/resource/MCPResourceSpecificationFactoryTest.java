@@ -115,6 +115,9 @@ class MCPResourceSpecificationFactoryTest {
                     () -> actualSpecification.readHandler().apply(mock(McpSyncServerExchange.class), new ReadResourceRequest("shardingsphere://capabilities")));
             assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.RESOURCE_NOT_FOUND));
             assertThat(actual.getJsonRpcError().message(), is("Resource not found"));
+            @SuppressWarnings("unchecked")
+            Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
+            assertThat(actualData.get("error_code"), is("not_found"));
         }
     }
 

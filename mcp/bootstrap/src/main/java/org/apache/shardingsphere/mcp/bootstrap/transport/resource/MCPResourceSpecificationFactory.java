@@ -26,10 +26,9 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedExcept
 import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
-import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
-import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.resource.MCPResourceController;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
@@ -131,18 +130,6 @@ public final class MCPResourceSpecificationFactory {
     }
 
     private McpError createReadResourceError(final RuntimeException cause) {
-        MCPErrorResponse errorResponse = MCPErrorConverter.convert(cause);
-        return McpError.builder(getJsonRpcErrorCode(cause, errorResponse)).message(getJsonRpcErrorMessage(cause, errorResponse)).data(errorResponse.toPayload()).build();
-    }
-
-    private int getJsonRpcErrorCode(final RuntimeException cause, final MCPErrorResponse errorResponse) {
-        if (cause instanceof UnsupportedResourceUriException) {
-            return McpSchema.ErrorCodes.RESOURCE_NOT_FOUND;
-        }
-        return "invalid_request".equals(errorResponse.getErrorCode()) ? McpSchema.ErrorCodes.INVALID_PARAMS : McpSchema.ErrorCodes.INTERNAL_ERROR;
-    }
-
-    private String getJsonRpcErrorMessage(final RuntimeException cause, final MCPErrorResponse errorResponse) {
-        return cause instanceof UnsupportedResourceUriException ? "Resource not found" : String.valueOf(errorResponse.toPayload().getOrDefault("message", "Resource read failed."));
+        return MCPTransportErrorFactory.createResourceReadError(cause);
     }
 }

@@ -22,12 +22,13 @@ import io.modelcontextprotocol.json.schema.JsonSchemaValidator.ValidationRespons
 import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
+import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ResourceLink;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
-import io.modelcontextprotocol.spec.McpError;
+import org.apache.shardingsphere.mcp.api.protocol.error.MCPErrorCode;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -133,7 +134,7 @@ class MCPToolSpecificationFactoryTest {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
             mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("database_gateway_search_metadata")));
             mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("database_gateway_search_metadata"), eq(Map.of("query", "foo_query"))))
-                    .thenReturn(Optional.of(new MCPErrorResponse("invalid_request", "")));
+                    .thenReturn(Optional.of(new MCPErrorResponse(MCPErrorCode.INVALID_REQUEST, "")));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
@@ -187,7 +188,7 @@ class MCPToolSpecificationFactoryTest {
     void assertCreateToolSpecificationsHandleRecoveryResourceLinks() {
         Map<String, Object> recovery = Map.of("resources_to_read", List.of(
                 MCPResourceHintUtils.create("shardingsphere://capabilities", "capability", "read_first", "Read capabilities.", "resources_to_read")));
-        CallToolResult actual = createCallToolResult("fixture_ping", new MCPErrorResponse("invalid_request", "", recovery));
+        CallToolResult actual = createCallToolResult("fixture_ping", new MCPErrorResponse(MCPErrorCode.INVALID_REQUEST, "", recovery));
         assertTrue(actual.isError());
         assertThat(actual.content().get(1), isA(ResourceLink.class));
         assertThat(((ResourceLink) actual.content().get(1)).uri(), is("shardingsphere://capabilities"));
@@ -258,7 +259,7 @@ class MCPToolSpecificationFactoryTest {
             assertThat(actual.getJsonRpcError().message(), is("Tool not found"));
             @SuppressWarnings("unchecked")
             Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
-            assertThat(actualData.get("error_code"), is("invalid_request"));
+            assertThat(actualData.get("error_code"), is("not_found"));
             assertThat(actualData.get("message"), is("Unsupported tool `database_gateway_search_metadata`."));
         }
     }

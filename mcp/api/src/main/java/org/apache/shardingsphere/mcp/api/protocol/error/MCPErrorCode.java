@@ -15,45 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.handler.execute.audit;
+package org.apache.shardingsphere.mcp.api.protocol.error;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPErrorCode;
-
-import java.util.Optional;
 
 /**
- * Audit record projection.
+ * MCP error code.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AuditRecord {
+public enum MCPErrorCode {
     
-    private final String sessionId;
+    INVALID_REQUEST("invalid_request"),
     
-    private final String database;
+    NOT_FOUND("not_found"),
     
-    private final OperationClass operationClass;
+    UNSUPPORTED("unsupported"),
     
-    private final String operationDigest;
+    TIMEOUT("timeout"),
     
-    private final boolean success;
+    UNAVAILABLE("unavailable"),
     
-    @Getter(AccessLevel.NONE)
-    private final MCPErrorCode errorCode;
+    TRANSACTION_STATE_ERROR("transaction_state_error"),
     
-    private final String statementMarker;
+    QUERY_FAILED("query_failed"),
     
-    private final String timestamp;
+    RATE_LIMITED("rate_limited"),
     
-    /**
-     * Get the error code when one exists.
-     *
-     * @return optional error code
-     */
-    public Optional<MCPErrorCode> getErrorCode() {
-        return Optional.ofNullable(errorCode);
-    }
+    INVALID_OUTPUT_SCHEMA("invalid_output_schema");
+    
+    private final String code;
 }

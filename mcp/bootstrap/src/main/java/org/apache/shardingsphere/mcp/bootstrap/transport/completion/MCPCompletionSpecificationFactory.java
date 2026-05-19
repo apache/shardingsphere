@@ -22,10 +22,10 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.core.completion.MCPCompletionResult;
 import org.apache.shardingsphere.mcp.core.completion.MCPCompletionService;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 
@@ -76,9 +76,6 @@ public final class MCPCompletionSpecificationFactory {
     }
     
     private McpError createInvalidParamsError(final MCPInvalidRequestException cause) {
-        return McpError.builder(McpSchema.ErrorCodes.INVALID_PARAMS)
-                .message(cause.getMessage())
-                .data(MCPErrorConverter.convert(cause).toPayload())
-                .build();
+        return MCPTransportErrorFactory.createInvalidParamsError(cause);
     }
 }
