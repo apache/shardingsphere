@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.bootstrap.transport;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -42,22 +42,26 @@ class MCPTransportErrorFactoryTest {
     }
     
     @Test
-    void assertGetProtocolErrorCodeWithUnsupportedResourceUri() {
-        assertThat(MCPTransportErrorFactory.getProtocolErrorCode(new UnsupportedResourceUriException("shardingsphere://foo")), is(McpSchema.ErrorCodes.RESOURCE_NOT_FOUND));
+    void assertCreateErrorWithUnsupportedResourceUri() {
+        McpError actual = MCPTransportErrorFactory.createError(new UnsupportedResourceUriException("shardingsphere://foo"));
+        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.RESOURCE_NOT_FOUND));
+        assertThat(actual.getJsonRpcError().message(), is("Unsupported resource URI `shardingsphere://foo`."));
     }
     
     @Test
-    void assertGetProtocolErrorCodeWithInvalidRequest() {
-        assertThat(MCPTransportErrorFactory.getProtocolErrorCode(new MCPInvalidRequestException("foo_message")), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+    void assertCreateErrorWithCustomMessage() {
+        McpError actual = MCPTransportErrorFactory.createError(new UnsupportedToolException("foo_tool"), "Tool not found");
+        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+        assertThat(actual.getJsonRpcError().message(), is("Tool not found"));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
+        assertThat(actualData.get("message"), is("Unsupported tool `foo_tool`."));
     }
     
     @Test
-    void assertGetProtocolErrorCodeWithUnsupportedOperation() {
-        assertThat(MCPTransportErrorFactory.getProtocolErrorCode(new MCPUnsupportedException("foo_message")), is(McpSchema.ErrorCodes.INVALID_PARAMS));
-    }
-    
-    @Test
-    void assertGetProtocolErrorCodeWithUnexpectedError() {
-        assertThat(MCPTransportErrorFactory.getProtocolErrorCode(new IllegalStateException("foo_message")), is(McpSchema.ErrorCodes.INTERNAL_ERROR));
+    void assertCreateErrorWithUnexpectedError() {
+        McpError actual = MCPTransportErrorFactory.createError(new IllegalStateException("foo_message"));
+        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INTERNAL_ERROR));
+        assertThat(actual.getJsonRpcError().message(), is("foo_message"));
     }
 }

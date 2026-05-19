@@ -40,21 +40,43 @@ public final class MCPTransportErrorFactory {
      * @return MCP transport error
      */
     public static McpError createInvalidParamsError(final MCPInvalidRequestException cause) {
-        MCPErrorResponse errorResponse = MCPErrorConverter.convert(cause);
-        return McpError.builder(McpSchema.ErrorCodes.INVALID_PARAMS).message(errorResponse.getMessage()).data(errorResponse.toPayload()).build();
+        return createError(cause);
     }
     
     /**
-     * Get MCP protocol error code.
+     * Create MCP transport error.
      *
      * @param cause error cause
-     * @return MCP protocol error code
+     * @return MCP transport error
      */
-    public static int getProtocolErrorCode(final Throwable cause) {
-        if (cause instanceof UnsupportedResourceUriException) {
-            return McpSchema.ErrorCodes.RESOURCE_NOT_FOUND;
-        }
-        return cause instanceof MCPInvalidRequestException || cause instanceof MCPUnsupportedException || cause instanceof IllegalArgumentException
-                || cause instanceof UnsupportedOperationException ? McpSchema.ErrorCodes.INVALID_PARAMS : McpSchema.ErrorCodes.INTERNAL_ERROR;
+    public static McpError createError(final Throwable cause) {
+        MCPErrorResponse errorResponse = MCPErrorConverter.convert(cause);
+        return createError(cause, errorResponse, errorResponse.getMessage());
+    }
+    
+    /**
+     * Create MCP transport error.
+     *
+     * @param cause error cause
+     * @param message transport error message
+     * @return MCP transport error
+     */
+    public static McpError createError(final Throwable cause, final String message) {
+        return createError(cause, MCPErrorConverter.convert(cause), message);
+    }
+    
+    private static McpError createError(final Throwable cause, final MCPErrorResponse errorResponse, final String message) {
+        return McpError.builder(getProtocolErrorCode(cause)).message(message).data(errorResponse.toPayload()).build();
+    }
+    
+    private static int getProtocolErrorCode(final Throwable cause) {
+        return switch (cause) {
+            case UnsupportedResourceUriException ignored -> McpSchema.ErrorCodes.RESOURCE_NOT_FOUND;
+            case MCPInvalidRequestException ignored -> McpSchema.ErrorCodes.INVALID_PARAMS;
+            case MCPUnsupportedException ignored -> McpSchema.ErrorCodes.INVALID_PARAMS;
+            case IllegalArgumentException ignored -> McpSchema.ErrorCodes.INVALID_PARAMS;
+            case UnsupportedOperationException ignored -> McpSchema.ErrorCodes.INVALID_PARAMS;
+            default -> McpSchema.ErrorCodes.INTERNAL_ERROR;
+        };
     }
 }

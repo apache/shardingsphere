@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.resource;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpecification;
-import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
@@ -29,8 +28,6 @@ import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotati
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
-import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.resource.MCPResourceController;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
@@ -122,8 +119,7 @@ public final class MCPResourceSpecificationFactory {
             Map<String, Object> payload = controller.handle(request.uri()).toPayload();
             return new ReadResourceResult(Collections.singletonList(new TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(payload))));
         } catch (final ShardingSphereMCPException | RuntimeDatabaseConnectionException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException ex) {
-            MCPErrorResponse errorResponse = MCPErrorConverter.convert(ex);
-            throw McpError.builder(MCPTransportErrorFactory.getProtocolErrorCode(ex)).message(errorResponse.getMessage()).data(errorResponse.toPayload()).build();
+            throw MCPTransportErrorFactory.createError(ex);
         }
     }
 }

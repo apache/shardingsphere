@@ -32,7 +32,6 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.MCPToolController;
@@ -174,7 +173,7 @@ public final class MCPToolSpecificationFactory {
     }
     
     private McpError createCallToolError(final UnsupportedToolException cause) {
-        return McpError.builder(MCPTransportErrorFactory.getProtocolErrorCode(cause)).message("Tool not found").data(MCPErrorConverter.convert(cause).toPayload()).build();
+        return MCPTransportErrorFactory.createError(cause, "Tool not found");
     }
     
     private Optional<MCPToolDescriptor> findToolDescriptor(final String toolName) {
