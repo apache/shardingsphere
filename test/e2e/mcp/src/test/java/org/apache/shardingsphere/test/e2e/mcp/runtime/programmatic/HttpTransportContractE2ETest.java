@@ -223,7 +223,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> promptResponse = sendPromptGetRequest(httpClient, sessionId, "inspect_metadata",
-                Map.of("database", "logic_db", "schema", "public", "query", "orders"));
+                Map.of("database", "logic_db", "schema", "logic_db", "query", "orders"));
         assertThat(promptResponse.statusCode(), is(200));
         Map<String, Object> promptPayload = getResultPayload(promptResponse);
         assertTrue(String.valueOf(promptPayload).contains("Stop conditions"));
@@ -300,13 +300,13 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1"));
+                Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> structuredContent = getStructuredContent(actual.body());
         assertThat(String.valueOf(structuredContent.get("error_code")), is("invalid_request"));
         assertModelFacingPayloadContract(structuredContent);
         Map<String, Object> recovery = castToMap(structuredContent.get("recovery"));
-        Map<String, Object> expectedArguments = Map.of("database", "logic_db", "schema", "public",
+        Map<String, Object> expectedArguments = Map.of("database", "logic_db", "schema", "logic_db",
                 "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview");
         assertThat(recovery.get("category"), is("missing_execution_mode"));
         assertThat(recovery.get("suggested_arguments"), is(expectedArguments));
@@ -344,7 +344,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview"));
+                Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> structuredContent = getStructuredContent(actual.body());
         assertThat(String.valueOf(structuredContent.get("result_kind")), is("preview"));
@@ -403,7 +403,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     private Map<String, Object> createMaskRulePlanArguments() {
         return Map.of(
                 "database", "logic_db",
-                "schema", "public",
+                "schema", "logic_db",
                 "table", "orders",
                 "column", "status",
                 "operation_type", "create",

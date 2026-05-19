@@ -50,19 +50,19 @@ class HttpTransportCompletionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         String sessionId = initializeSession(httpClient);
         Map<String, Object> promptReference = Map.of("type", "ref/prompt", "name", "inspect_metadata");
         assertThat(completeValues(httpClient, sessionId, promptReference, "database", "logic", Map.of()), is(List.of("logic_db")));
-        assertThat(completeValues(httpClient, sessionId, promptReference, "schema", "pub", Map.of("database", "logic_db")), is(List.of("public")));
+        assertThat(completeValues(httpClient, sessionId, promptReference, "schema", "logic", Map.of("database", "logic_db")), is(List.of("logic_db")));
         assertThat(completeValues(httpClient, sessionId, createResourceReference("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}"),
-                "table", "ord", Map.of("database", "logic_db", "schema", "public")),
+                "table", "ord", Map.of("database", "logic_db", "schema", "logic_db")),
                 is(List.of("order_items", "orders")));
         assertThat(completeValues(httpClient, sessionId, createResourceReference("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}"),
-                "column", "sta", Map.of("database", "logic_db", "schema", "public", "table", "orders")),
+                "column", "sta", Map.of("database", "logic_db", "schema", "logic_db", "table", "orders")),
                 is(List.of("status")));
         assertThat(completeValues(httpClient, sessionId, createResourceReference("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"),
-                "index", "idx", Map.of("database", "logic_db", "schema", "public", "table", "orders")),
+                "index", "idx", Map.of("database", "logic_db", "schema", "logic_db", "table", "orders")),
                 is(List.of("idx_orders_status")));
         assertThat(completeValues(httpClient, sessionId, createResourceReference("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}"),
-                "sequence", "ord", Map.of("database", "logic_db", "schema", "public")),
-                is(List.of("order_seq")));
+                "sequence", "ord", Map.of("database", "logic_db", "schema", "logic_db")),
+                is(List.of()));
     }
     
     @Test
@@ -127,7 +127,7 @@ class HttpTransportCompletionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     private String createMaskRulePlan(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_mask_rule", Map.of(
                 "database", "logic_db",
-                "schema", "public",
+                "schema", "logic_db",
                 "table", "orders",
                 "column", "status",
                 "operation_type", "create",

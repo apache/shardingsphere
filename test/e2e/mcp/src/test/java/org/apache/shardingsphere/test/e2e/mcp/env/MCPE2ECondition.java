@@ -31,28 +31,12 @@ public final class MCPE2ECondition {
         return config.isContractEnabled();
     }
     
-    public static boolean isProductionH2Enabled() {
-        return isProductionH2Enabled(MCPE2ETestConfiguration.getInstance());
-    }
-    
-    static boolean isProductionH2Enabled(final MCPE2ETestConfiguration config) {
-        return config.isProductionH2Enabled();
-    }
-    
     public static boolean isProductionMySQLEnabled() {
         return isProductionMySQLEnabled(MCPE2ETestConfiguration.getInstance());
     }
     
     static boolean isProductionMySQLEnabled(final MCPE2ETestConfiguration config) {
         return config.isProductionMySQLEnabled();
-    }
-    
-    public static boolean isProductionH2StdioEnabled() {
-        return isProductionH2StdioEnabled(MCPE2ETestConfiguration.getInstance());
-    }
-    
-    static boolean isProductionH2StdioEnabled(final MCPE2ETestConfiguration config) {
-        return config.isProductionH2Enabled() && config.isProductionStdioEnabled();
     }
     
     public static boolean isProductionMySQLStdioEnabled() {

@@ -30,7 +30,6 @@ class MCPE2ETestConfigurationTest {
     void assertDefaultLaneValues() {
         MCPE2ETestConfiguration config = new MCPE2ETestConfiguration(new Properties());
         assertTrue(config.isContractEnabled());
-        assertFalse(config.isProductionH2Enabled());
         assertFalse(config.isProductionMySQLEnabled());
         assertFalse(config.isProductionStdioEnabled());
         assertFalse(config.isDistributionEnabled());
@@ -41,14 +40,12 @@ class MCPE2ETestConfigurationTest {
     void assertExplicitLaneOverrides() {
         Properties props = new Properties();
         props.setProperty("mcp.e2e.contract.enabled", "false");
-        props.setProperty("mcp.e2e.production.h2.enabled", "false");
         props.setProperty("mcp.e2e.production.mysql.enabled", "true");
         props.setProperty("mcp.e2e.production.stdio.enabled", "true");
         props.setProperty("mcp.e2e.distribution.enabled", "true");
         props.setProperty("mcp.e2e.llm.enabled", "true");
         MCPE2ETestConfiguration config = new MCPE2ETestConfiguration(props);
         assertFalse(config.isContractEnabled());
-        assertFalse(config.isProductionH2Enabled());
         assertTrue(config.isProductionMySQLEnabled());
         assertTrue(config.isProductionStdioEnabled());
         assertTrue(config.isDistributionEnabled());
@@ -78,16 +75,4 @@ class MCPE2ETestConfigurationTest {
         assertTrue(MCPE2ECondition.isProductionMySQLStdioEnabled(bothConfig));
     }
     
-    @Test
-    void assertCompositeH2StdioCondition() {
-        Properties stdioOnlyProps = new Properties();
-        stdioOnlyProps.setProperty("mcp.e2e.production.stdio.enabled", "true");
-        MCPE2ETestConfiguration stdioOnlyConfig = new MCPE2ETestConfiguration(stdioOnlyProps);
-        Properties bothProps = new Properties();
-        bothProps.setProperty("mcp.e2e.production.h2.enabled", "true");
-        bothProps.setProperty("mcp.e2e.production.stdio.enabled", "true");
-        MCPE2ETestConfiguration bothConfig = new MCPE2ETestConfiguration(bothProps);
-        assertFalse(MCPE2ECondition.isProductionH2StdioEnabled(stdioOnlyConfig));
-        assertTrue(MCPE2ECondition.isProductionH2StdioEnabled(bothConfig));
-    }
 }

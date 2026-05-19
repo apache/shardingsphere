@@ -46,6 +46,16 @@ public interface MCPInteractionClient extends AutoCloseable {
     Map<String, Object> call(String actionName, Map<String, Object> arguments) throws IOException, InterruptedException;
     
     /**
+     * Get initialize payload.
+     *
+     * @return raw initialize JSON-RPC payload
+     * @throws UnsupportedOperationException unsupported operation exception
+     */
+    default Map<String, Object> getInitializePayload() {
+        throw new UnsupportedOperationException("initialize payload is not available.");
+    }
+    
+    /**
      * List tools.
      *
      * @return MCP tool list payload

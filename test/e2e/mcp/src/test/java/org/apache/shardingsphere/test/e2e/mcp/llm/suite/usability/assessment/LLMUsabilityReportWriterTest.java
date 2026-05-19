@@ -35,7 +35,7 @@ class LLMUsabilityReportWriterTest {
     
     @Test
     void assertWriteScorecardSummary() throws IOException {
-        LLMUsabilityScenarioResult scenarioResult = new LLMUsabilityScenarioResult("scenario-1", LLMUsabilityDimension.TOOL, "h2",
+        LLMUsabilityScenarioResult scenarioResult = new LLMUsabilityScenarioResult("scenario-1", LLMUsabilityDimension.TOOL, "mysql",
                 List.of("natural-task"), false, "wrong_tool", "Expected database_gateway_execute_query.", false, 1, 3, false, false, 0.0D, true,
                 false, false, false, true, List.of());
         LLMUsabilityScorecard scorecard = new LLMUsabilityScorecard("suite-1", "run-1", 75.0D, false, 0.0D, 0.0D, 1.0D, 0.0D,

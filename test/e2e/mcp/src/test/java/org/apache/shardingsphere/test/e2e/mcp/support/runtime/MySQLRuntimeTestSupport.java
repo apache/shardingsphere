@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -59,6 +60,12 @@ public final class MySQLRuntimeTestSupport {
     private static final String USERNAME = "mcp";
     
     private static final String PASSWORD = "mcp";
+    
+    private static final String LOGIC_DATABASE_USERNAME = "mcp_logic";
+    
+    private static final String ANALYTICS_DATABASE_USERNAME = "mcp_analytics";
+    
+    private static final String WAREHOUSE_USERNAME = "mcp_warehouse";
     
     private static final String ROOT_PASSWORD = "root";
     
@@ -130,7 +137,7 @@ public final class MySQLRuntimeTestSupport {
      * @return runtime databases
      */
     public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final GenericContainer<?> container, final String logicalDatabase) {
-        return Map.of(logicalDatabase, new RuntimeDatabaseConfiguration("MySQL", createJdbcUrl(container.getHost(), container.getMappedPort(3306)), USERNAME, PASSWORD, "com.mysql.cj.jdbc.Driver"));
+        return Map.of(logicalDatabase, createRuntimeDatabaseConfiguration(container, DATABASE_NAME));
     }
     
     /**
@@ -141,8 +148,23 @@ public final class MySQLRuntimeTestSupport {
      * @return runtime databases
      */
     public static Map<String, RuntimeDatabaseConfiguration> createDockerHostRuntimeDatabases(final GenericContainer<?> container, final String logicalDatabase) {
-        return Map.of(logicalDatabase, new RuntimeDatabaseConfiguration("MySQL", createJdbcUrl("host.docker.internal", container.getMappedPort(3306)),
-                USERNAME, PASSWORD, "com.mysql.cj.jdbc.Driver"));
+        return Map.of(logicalDatabase, createRuntimeDatabaseConfiguration("host.docker.internal", container.getMappedPort(3306), DATABASE_NAME));
+    }
+    
+    /**
+     * Create prepared runtime databases for MySQL-backed programmatic E2E tests.
+     *
+     * @param container running container
+     * @return prepared runtime databases
+     * @throws SQLException SQL exception
+     */
+    public static Map<String, RuntimeDatabaseConfiguration> createPreparedProgrammaticRuntimeDatabases(final GenericContainer<?> container) throws SQLException {
+        initializeProgrammaticDatabases(container);
+        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(3, 1F);
+        result.put("logic_db", createRuntimeDatabaseConfiguration(container, "logic_db", LOGIC_DATABASE_USERNAME, PASSWORD));
+        result.put("analytics_db", createRuntimeDatabaseConfiguration(container, "analytics_db", ANALYTICS_DATABASE_USERNAME, PASSWORD));
+        result.put("warehouse", createRuntimeDatabaseConfiguration(container, "warehouse", WAREHOUSE_USERNAME, PASSWORD));
+        return result;
     }
     
     /**
@@ -169,7 +191,7 @@ public final class MySQLRuntimeTestSupport {
      * @throws SQLException SQL exception
      */
     public static void initializeDatabase(final GenericContainer<?> container) throws SQLException {
-        executeStatements(container,
+        executeStatements(container, DATABASE_NAME,
                 "CREATE TABLE IF NOT EXISTS orders (order_id INT PRIMARY KEY, status VARCHAR(32), amount INT)",
                 "CREATE TABLE IF NOT EXISTS order_items (item_id INT PRIMARY KEY, order_id INT, sku VARCHAR(64))",
                 "INSERT INTO orders (order_id, status, amount) VALUES (1, 'NEW', 10) ON DUPLICATE KEY UPDATE status = VALUES(status), amount = VALUES(amount)",
@@ -177,6 +199,39 @@ public final class MySQLRuntimeTestSupport {
                 "INSERT INTO order_items (item_id, order_id, sku) VALUES (1, 1, 'sku-1') ON DUPLICATE KEY UPDATE order_id = VALUES(order_id), sku = VALUES(sku)",
                 "CREATE OR REPLACE VIEW active_orders AS SELECT order_id, status FROM orders WHERE status <> 'DONE'",
                 "CREATE INDEX idx_orders_status ON orders(status)");
+    }
+    
+    private static void initializeProgrammaticDatabases(final GenericContainer<?> container) throws SQLException {
+        executeRootStatements(container,
+                "CREATE DATABASE IF NOT EXISTS logic_db",
+                "CREATE DATABASE IF NOT EXISTS analytics_db",
+                "CREATE DATABASE IF NOT EXISTS warehouse",
+                "CREATE USER IF NOT EXISTS 'mcp_logic'@'%' IDENTIFIED BY 'mcp'",
+                "CREATE USER IF NOT EXISTS 'mcp_analytics'@'%' IDENTIFIED BY 'mcp'",
+                "CREATE USER IF NOT EXISTS 'mcp_warehouse'@'%' IDENTIFIED BY 'mcp'",
+                "GRANT ALL PRIVILEGES ON logic_db.* TO 'mcp'@'%'",
+                "GRANT ALL PRIVILEGES ON analytics_db.* TO 'mcp'@'%'",
+                "GRANT ALL PRIVILEGES ON warehouse.* TO 'mcp'@'%'",
+                "GRANT ALL PRIVILEGES ON logic_db.* TO 'mcp_logic'@'%'",
+                "GRANT ALL PRIVILEGES ON analytics_db.* TO 'mcp_analytics'@'%'",
+                "GRANT ALL PRIVILEGES ON warehouse.* TO 'mcp_warehouse'@'%'",
+                "FLUSH PRIVILEGES");
+        executeStatements(container, "logic_db",
+                "CREATE TABLE IF NOT EXISTS orders (order_id INT PRIMARY KEY, status VARCHAR(32), amount INT)",
+                "CREATE TABLE IF NOT EXISTS order_items (item_id INT PRIMARY KEY, order_id INT, sku VARCHAR(64))",
+                "INSERT INTO orders (order_id, status, amount) VALUES (1, 'NEW', 10) ON DUPLICATE KEY UPDATE status = VALUES(status), amount = VALUES(amount)",
+                "INSERT INTO orders (order_id, status, amount) VALUES (2, 'DONE', 20) ON DUPLICATE KEY UPDATE status = VALUES(status), amount = VALUES(amount)",
+                "INSERT INTO order_items (item_id, order_id, sku) VALUES (1, 1, 'sku-1') ON DUPLICATE KEY UPDATE order_id = VALUES(order_id), sku = VALUES(sku)",
+                "CREATE OR REPLACE VIEW active_orders AS SELECT order_id, status FROM orders WHERE status <> 'DONE'",
+                "CREATE INDEX idx_orders_status ON orders(status)");
+        executeStatements(container, "analytics_db",
+                "CREATE TABLE IF NOT EXISTS metrics (metric_id INT PRIMARY KEY, metric_name VARCHAR(32))",
+                "INSERT INTO metrics (metric_id, metric_name) VALUES (10, 'cpu') ON DUPLICATE KEY UPDATE metric_name = VALUES(metric_name)",
+                "INSERT INTO metrics (metric_id, metric_name) VALUES (20, 'memory') ON DUPLICATE KEY UPDATE metric_name = VALUES(metric_name)");
+        executeStatements(container, "warehouse",
+                "CREATE TABLE IF NOT EXISTS facts (fact_id INT PRIMARY KEY, total INT)",
+                "INSERT INTO facts (fact_id, total) VALUES (100, 1) ON DUPLICATE KEY UPDATE total = VALUES(total)",
+                "INSERT INTO facts (fact_id, total) VALUES (200, 2) ON DUPLICATE KEY UPDATE total = VALUES(total)");
     }
     
     /**
@@ -188,7 +243,7 @@ public final class MySQLRuntimeTestSupport {
      */
     public static String detectSchema(final GenericContainer<?> container) throws SQLException {
         try (
-                Connection connection = getConnection(container)) {
+                Connection connection = getConnection(container, DATABASE_NAME)) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             try (ResultSet resultSet = databaseMetaData.getTables(null, null, "orders", new String[]{"TABLE"})) {
                 while (resultSet.next()) {
@@ -212,7 +267,7 @@ public final class MySQLRuntimeTestSupport {
      */
     public static int querySingleInt(final GenericContainer<?> container, final String sql) throws SQLException {
         try (
-                Connection connection = getConnection(container);
+                Connection connection = getConnection(container, DATABASE_NAME);
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
@@ -230,7 +285,7 @@ public final class MySQLRuntimeTestSupport {
      */
     public static String querySingleString(final GenericContainer<?> container, final String sql) throws SQLException {
         try (
-                Connection connection = getConnection(container);
+                Connection connection = getConnection(container, DATABASE_NAME);
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
@@ -238,9 +293,9 @@ public final class MySQLRuntimeTestSupport {
         }
     }
     
-    private static void executeStatements(final GenericContainer<?> container, final String... sqls) throws SQLException {
+    private static void executeStatements(final GenericContainer<?> container, final String databaseName, final String... sqls) throws SQLException {
         try (
-                Connection connection = getConnection(container);
+                Connection connection = getConnection(container, databaseName);
                 Statement statement = connection.createStatement()) {
             for (String each : sqls) {
                 try {
@@ -258,8 +313,8 @@ public final class MySQLRuntimeTestSupport {
         return 1061 == ex.getErrorCode();
     }
     
-    private static Connection getConnection(final GenericContainer<?> container) throws SQLException {
-        String jdbcUrl = createJdbcUrl(container.getHost(), container.getMappedPort(3306));
+    private static Connection getConnection(final GenericContainer<?> container, final String databaseName) throws SQLException {
+        String jdbcUrl = createJdbcUrl(container.getHost(), container.getMappedPort(3306), databaseName);
         long startTime = System.currentTimeMillis();
         long deadline = System.currentTimeMillis() + JDBC_READY_TIMEOUT.toMillis();
         long intervalMillis = JDBC_READY_INITIAL_INTERVAL_MILLIS;
@@ -300,8 +355,35 @@ public final class MySQLRuntimeTestSupport {
     }
     
     private static String createJdbcUrl(final String host, final int port) {
-        return String.format("jdbc:mysql://%s:%d/%s?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&connectTimeout=3000&socketTimeout=3000",
-                host, port, DATABASE_NAME);
+        return createJdbcUrl(host, port, DATABASE_NAME);
+    }
+    
+    private static String createJdbcUrl(final String host, final int port, final String databaseName) {
+        String databasePath = databaseName.isEmpty() ? "/" : "/" + databaseName;
+        return String.format("jdbc:mysql://%s:%d%s?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&connectTimeout=3000&socketTimeout=3000",
+                host, port, databasePath);
+    }
+    
+    private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final GenericContainer<?> container, final String databaseName) {
+        return createRuntimeDatabaseConfiguration(container.getHost(), container.getMappedPort(3306), databaseName);
+    }
+    
+    private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String host, final int port, final String databaseName) {
+        return new RuntimeDatabaseConfiguration("MySQL", createJdbcUrl(host, port, databaseName), USERNAME, PASSWORD, "com.mysql.cj.jdbc.Driver");
+    }
+    
+    private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final GenericContainer<?> container, final String databaseName, final String username, final String password) {
+        return new RuntimeDatabaseConfiguration("MySQL", createJdbcUrl(container.getHost(), container.getMappedPort(3306), databaseName), username, password, "com.mysql.cj.jdbc.Driver");
+    }
+    
+    private static void executeRootStatements(final GenericContainer<?> container, final String... sqls) throws SQLException {
+        try (
+                Connection connection = DriverManager.getConnection(createJdbcUrl(container.getHost(), container.getMappedPort(3306), ""), "root", ROOT_PASSWORD);
+                Statement statement = connection.createStatement()) {
+            for (String each : sqls) {
+                statement.execute(each);
+            }
+        }
     }
     
     @RequiredArgsConstructor

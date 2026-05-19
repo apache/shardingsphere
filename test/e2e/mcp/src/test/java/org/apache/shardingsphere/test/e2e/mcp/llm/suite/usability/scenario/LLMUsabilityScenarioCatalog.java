@@ -166,31 +166,6 @@ public final class LLMUsabilityScenarioCatalog {
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"),
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query")),
                 List.of(MCPInteractionActionNames.READ_RESOURCE), List.of(tableResourceUri), true, true, "not_found"));
-        if ("h2".equals(runtimeKind)) {
-            result.add(createScenario("extended-workflow-context-recovery-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind,
-                    List.of(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG, "extended", "workflow", "recovery"),
-                    new LLME2EScenario("extended-workflow-context-recovery-" + runtimeKind, SYSTEM_PROMPT,
-                            "Read exact runtime resource `shardingsphere://runtime`, plan a MD5 mask workflow for `" + tableName
-                                    + "` column `status` without qualifying the column name, then use the exact plan_id from the planning response to preview "
-                                    + "and export manual artifacts. Do not validate the workflow before manual artifacts are executed. After manual artifacts are exported, "
-                                    + "still call database_gateway_execute_query for the independent "
-                                    + "read-only verification `" + query + "` before the final answer." + toolContext,
-                            new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of(
-                                    MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_execute_query")),
-                            List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_execute_query"),
-                            List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_execute_query")),
-                    List.of(MCPInteractionActionNames.READ_RESOURCE), List.of("shardingsphere://runtime"), true, false));
-            result.add(createScenario("extended-database-disambiguation-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
-                    List.of(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG, "extended", "multi-database"),
-                    new LLME2EScenario("extended-database-disambiguation-" + runtimeKind, SYSTEM_PROMPT,
-                            "Before any metadata search or SQL, read exact database list resource `shardingsphere://databases`, choose the live transactional database instead of the "
-                                    + "analytics snapshot, locate `" + tableName + "` by calling database_gateway_search_metadata with `database`, `schema`, `query`, and "
-                                    + "`object_types` set to `[\"table\"]` only, and verify `" + query + "`. Use tool inputSchema fields only when retrying a tool call." + toolContext,
-                            createAnswer(databaseName, schemaName, tableName, query, totalOrders),
-                            List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_search_metadata", "database_gateway_execute_query"),
-                            List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_search_metadata", "database_gateway_execute_query")),
-                    List.of(MCPInteractionActionNames.READ_RESOURCE), List.of("shardingsphere://databases"), true, false));
-        }
         if ("mysql".equals(runtimeKind)) {
             result.add(createScenario("extended-recovery-unsupported-sequence-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind,
                     List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "extended", "recovery", "unsupported-resource"),

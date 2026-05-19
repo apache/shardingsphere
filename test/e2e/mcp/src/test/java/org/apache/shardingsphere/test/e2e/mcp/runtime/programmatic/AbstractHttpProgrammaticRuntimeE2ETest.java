@@ -19,10 +19,13 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
+import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
 import java.net.URI;
@@ -40,7 +43,18 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     
     private static final String CLIENT_NAME = "mcp-e2e-programmatic";
     
+    private GenericContainer<?> container;
+    
     private Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
+    
+    @AfterEach
+    void tearDownContainer() {
+        if (null != container) {
+            container.stop();
+            container = null;
+        }
+        runtimeDatabases = null;
+    }
     
     protected final void launchHttpTransport() throws IOException {
         prepareRuntime();
@@ -151,8 +165,12 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     
     @Override
     protected final void prepareRuntimeFixture() throws IOException {
+        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(),
+                () -> MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the MySQL-backed MCP programmatic contract E2E test."));
+        container = MySQLRuntimeTestSupport.createContainer();
+        container.start();
         try {
-            runtimeDatabases = H2RuntimeTestSupport.createPreparedProgrammaticRuntimeDatabases(getTempDir(), getTransport());
+            runtimeDatabases = MySQLRuntimeTestSupport.createPreparedProgrammaticRuntimeDatabases(container);
         } catch (final SQLException ex) {
             throw new IOException("Failed to initialize MCP E2E runtime databases.", ex);
         }

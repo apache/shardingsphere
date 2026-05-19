@@ -51,7 +51,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", Map.of("schema", "public", "sql", "SELECT * FROM orders"));
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", Map.of("schema", "logic_db", "sql", "SELECT * FROM orders"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         Map<String, Object> recovery = assertRecoveryCategory(payload, "invalid_request", "missing_context");
@@ -73,7 +73,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders", "execution_mode", "preview"));
+                Map.of("database", "logic_db", "schema", "logic_db", "sql", "SELECT * FROM orders", "execution_mode", "preview"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         Map<String, Object> recovery = assertRecoveryCategory(payload, "unsupported", "unsupported_target");
@@ -91,7 +91,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "run"));
+                Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "run"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         Map<String, Object> recovery = assertRecoveryCategory(payload, "invalid_request", "invalid_enum");
@@ -100,7 +100,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         Map<String, Object> retryArguments = castToMap(nextAction.get("arguments"));
         assertThat(String.valueOf(retryArguments.get("execution_mode")), is("preview"));
         assertThat(String.valueOf(retryArguments.get("database")), is("logic_db"));
-        assertThat(String.valueOf(retryArguments.get("schema")), is("public"));
+        assertThat(String.valueOf(retryArguments.get("schema")), is("logic_db"));
         HttpResponse<String> retry = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", retryArguments);
         assertThat(retry.statusCode(), is(200));
         assertThat(String.valueOf(getStructuredContent(retry.body()).get("result_kind")), is("preview"));
@@ -113,7 +113,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1"));
+                Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         Map<String, Object> recovery = assertRecoveryCategory(payload, "unsupported", "unsafe_sql");
@@ -200,7 +200,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     private Map<String, Object> createEncryptRulePlanArguments() {
         return Map.of(
                 "database", "logic_db",
-                "schema", "public",
+                "schema", "logic_db",
                 "table", "orders",
                 "column", "status",
                 "operation_type", "create",

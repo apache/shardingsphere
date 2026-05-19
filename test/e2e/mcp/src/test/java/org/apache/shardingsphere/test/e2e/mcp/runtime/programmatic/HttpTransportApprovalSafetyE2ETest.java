@@ -47,7 +47,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "execute"));
+                Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "execute"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("response_mode")), is("executed"));
@@ -62,7 +62,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1",
+                Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1",
                         "execution_mode", "execute"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
@@ -76,7 +76,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "preview"));
+                Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "preview"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("result_kind")), is("preview"));
@@ -140,7 +140,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
     private String createMaskRulePlan(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_mask_rule", Map.of(
                 "database", "logic_db",
-                "schema", "public",
+                "schema", "logic_db",
                 "table", "orders",
                 "column", "status",
                 "operation_type", "create",

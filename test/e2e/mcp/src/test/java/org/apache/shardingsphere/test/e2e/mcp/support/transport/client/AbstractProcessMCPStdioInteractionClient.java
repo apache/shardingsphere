@@ -56,6 +56,8 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
     
     private BufferedReader reader;
     
+    private Map<String, Object> initializePayload = Map.of();
+    
     @Override
     public final void open() throws IOException {
         if (null != process) {
@@ -106,15 +108,20 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
         return readResponse(requestId);
     }
     
+    @Override
+    public final Map<String, Object> getInitializePayload() {
+        return initializePayload;
+    }
+    
     private void initializeSession() throws IOException {
-        Map<String, Object> initializeResponse = sendRequest(INITIALIZE_REQUEST_ID, "initialize",
+        initializePayload = sendRequest(INITIALIZE_REQUEST_ID, "initialize",
                 MCPInteractionProtocolSupport.createInitializeRequestParams(getClientName()));
-        if (MCPInteractionPayloads.hasJsonRpcError(initializeResponse)) {
+        if (MCPInteractionPayloads.hasJsonRpcError(initializePayload)) {
             throw createRuntimeFailureException("Failed to initialize STDIO MCP session: "
-                    + MCPInteractionPayloads.getJsonRpcErrorPayload(initializeResponse).get("message")
+                    + MCPInteractionPayloads.getJsonRpcErrorPayload(initializePayload).get("message")
                     + ".");
         }
-        Map<String, Object> initializeResult = MCPInteractionPayloads.getJsonRpcResult(initializeResponse);
+        Map<String, Object> initializeResult = MCPInteractionPayloads.getJsonRpcResult(initializePayload);
         if (!MCPInteractionProtocolSupport.PROTOCOL_VERSION.equals(initializeResult.get("protocolVersion"))) {
             throw createRuntimeFailureException("Unexpected STDIO MCP protocol version: " + initializeResult + ".");
         }
@@ -231,6 +238,7 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
         reader = null;
         writer = null;
         stdErrorCollector = null;
+        initializePayload = Map.of();
         stdErrorMessages.clear();
     }
     

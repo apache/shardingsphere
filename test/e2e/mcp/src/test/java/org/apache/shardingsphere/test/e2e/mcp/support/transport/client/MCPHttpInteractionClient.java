@@ -46,6 +46,8 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
     
     private String actualProtocolVersion;
     
+    private Map<String, Object> initializePayload = Map.of();
+    
     @Override
     public void open() throws IOException, InterruptedException {
         if (null != sessionId) {
@@ -59,7 +61,7 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
         if (200 != response.statusCode()) {
             throw new IllegalStateException("Failed to initialize MCP session.");
         }
-        Map<String, Object> initializePayload = MCPInteractionPayloads.parseJsonPayload(response.body());
+        initializePayload = MCPInteractionPayloads.parseJsonPayload(response.body());
         if (MCPInteractionPayloads.hasJsonRpcError(initializePayload)) {
             throw new IllegalStateException("Failed to initialize MCP session: "
                     + MCPInteractionPayloads.getJsonRpcErrorPayload(initializePayload).get("message"));
@@ -68,6 +70,11 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
                 .orElseThrow(() -> new IllegalStateException("MCP initialize response does not contain MCP-Session-Id header."));
         actualProtocolVersion = response.headers().firstValue("MCP-Protocol-Version").orElse(MCPHttpTransportTestSupport.PROTOCOL_VERSION);
         sendInitializedNotification();
+    }
+    
+    @Override
+    public Map<String, Object> getInitializePayload() {
+        return initializePayload;
     }
     
     @Override
@@ -83,6 +90,7 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
         httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         sessionId = null;
         actualProtocolVersion = null;
+        initializePayload = Map.of();
     }
     
     @Override

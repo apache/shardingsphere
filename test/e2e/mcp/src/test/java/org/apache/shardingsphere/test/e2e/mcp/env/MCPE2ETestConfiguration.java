@@ -39,10 +39,6 @@ final class MCPE2ETestConfiguration {
         return getBoolean("mcp.e2e.contract.enabled", true);
     }
     
-    boolean isProductionH2Enabled() {
-        return getBoolean("mcp.e2e.production.h2.enabled", false);
-    }
-    
     boolean isProductionMySQLEnabled() {
         return getBoolean("mcp.e2e.production.mysql.enabled", false);
     }

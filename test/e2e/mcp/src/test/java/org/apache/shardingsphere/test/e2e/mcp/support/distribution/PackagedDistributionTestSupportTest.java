@@ -48,11 +48,11 @@ class PackagedDistributionTestSupportTest {
               type: STREAMABLE_HTTP
             runtimeDatabases:
               orders:
-                databaseType: H2
-                jdbcUrl: "jdbc:h2:mem:orders"
-                username: ""
-                password: ""
-                driverClassName: org.h2.Driver
+                databaseType: MySQL
+                jdbcUrl: "jdbc:mysql://127.0.0.1:3306/orders"
+                username: mcp
+                password: mcp
+                driverClassName: com.mysql.cj.jdbc.Driver
             """;
     
     private static final String STDIO_CONFIGURATION = """
@@ -60,11 +60,11 @@ class PackagedDistributionTestSupportTest {
               type: STDIO
             runtimeDatabases:
               orders:
-                databaseType: H2
-                jdbcUrl: "jdbc:h2:mem:orders"
-                username: ""
-                password: ""
-                driverClassName: org.h2.Driver
+                databaseType: MySQL
+                jdbcUrl: "jdbc:mysql://127.0.0.1:3306/orders"
+                username: mcp
+                password: mcp
+                driverClassName: com.mysql.cj.jdbc.Driver
             """;
     
     @TempDir
