@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * MCP resource specification factory.
@@ -63,7 +62,7 @@ public final class MCPResourceSpecificationFactory {
     public List<SyncResourceSpecification> createResourceSpecifications() {
         return descriptors.stream()
                 .filter(each -> !each.isTemplated())
-                .map(each -> new SyncResourceSpecification(createResource(each), (exchange, request) -> readResource(request))).collect(Collectors.toList());
+                .map(each -> new SyncResourceSpecification(createResource(each), (exchange, request) -> readResource(request))).toList();
     }
     
     private McpSchema.Resource createResource(final MCPResourceDescriptor descriptor) {
@@ -90,7 +89,7 @@ public final class MCPResourceSpecificationFactory {
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
         return descriptors.stream()
                 .filter(MCPResourceDescriptor::isTemplated)
-                .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), (exchange, request) -> readResource(request))).collect(Collectors.toList());
+                .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), (exchange, request) -> readResource(request))).toList();
     }
     
     private McpSchema.ResourceTemplate createResourceTemplate(final MCPResourceDescriptor descriptor) {

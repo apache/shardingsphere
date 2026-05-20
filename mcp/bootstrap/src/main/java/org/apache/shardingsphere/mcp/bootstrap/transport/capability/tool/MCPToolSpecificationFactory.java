@@ -21,7 +21,6 @@ import io.modelcontextprotocol.json.schema.JsonSchemaValidator;
 import io.modelcontextprotocol.json.schema.JsonSchemaValidator.ValidationResponse;
 import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
-import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification.Builder;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
@@ -76,7 +75,7 @@ public final class MCPToolSpecificationFactory {
      * @return tool specifications
      */
     public List<SyncToolSpecification> createToolSpecifications() {
-        return descriptors.stream().map(each -> new Builder().tool(createTool(each)).callHandler(this::handle).build()).toList();
+        return descriptors.stream().map(each -> new SyncToolSpecification(createTool(each), this::handle)).toList();
     }
     
     private McpSchema.Tool createTool(final MCPToolDescriptor toolDescriptor) {
@@ -100,8 +99,7 @@ public final class MCPToolSpecificationFactory {
         Map<String, Object> properties = (Map<String, Object>) inputSchema.get("properties");
         List<String> required = (List<String>) inputSchema.get("required");
         boolean additionalProperties = Boolean.TRUE.equals(inputSchema.get("additionalProperties"));
-        return new McpSchema.JsonSchema(String.valueOf(inputSchema.get("type")), properties, required, additionalProperties, Collections.emptyMap(),
-                Collections.emptyMap());
+        return new McpSchema.JsonSchema(String.valueOf(inputSchema.get("type")), properties, required, additionalProperties, Collections.emptyMap(), Collections.emptyMap());
     }
     
     private McpSchema.ToolAnnotations createToolAnnotations(final MCPToolAnnotations annotations) {

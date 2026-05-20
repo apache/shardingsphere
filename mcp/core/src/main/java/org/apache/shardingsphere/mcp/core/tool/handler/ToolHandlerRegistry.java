@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Tool handler registry.
@@ -56,7 +55,7 @@ public final class ToolHandlerRegistry {
     
     static {
         REGISTERED_TOOL_HANDLERS = createRegisteredTools(
-                ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class).stream().flatMap(each -> each.getToolHandlers().stream()).collect(Collectors.toList()));
+                ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class).stream().flatMap(each -> each.getToolHandlers().stream()).toList());
         REGISTERED_TOOL_DESCRIPTORS = createRegisteredToolDescriptors();
         validateRegisteredToolDescriptors();
         SUPPORTED_TOOLS = REGISTERED_TOOL_HANDLERS.keySet().stream().toList();

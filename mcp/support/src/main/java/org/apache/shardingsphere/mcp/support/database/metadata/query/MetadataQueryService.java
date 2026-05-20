@@ -40,7 +40,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Metadata query service.
@@ -60,7 +59,7 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
     @Override
     public List<MCPDatabaseMetadata> queryDatabases() {
         return databaseCapabilityProvider.getDatabaseProfiles().stream()
-                .map(this::createDatabaseSummary).sorted(Comparator.comparing(MCPDatabaseMetadata::getDatabase)).collect(Collectors.toList());
+                .map(this::createDatabaseSummary).sorted(Comparator.comparing(MCPDatabaseMetadata::getDatabase)).toList();
     }
     
     /**
@@ -86,7 +85,7 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
             return Collections.emptyList();
         }
         return metadataContext.loadDatabaseMetadata(databaseName).map(optional -> optional.getSchemas().stream()
-                .map(MCPSchemaMetadata::createSummary).sorted(Comparator.comparing(MCPSchemaMetadata::getSchema)).collect(Collectors.toList())).orElse(Collections.emptyList());
+                .map(MCPSchemaMetadata::createSummary).sorted(Comparator.comparing(MCPSchemaMetadata::getSchema)).toList()).orElse(Collections.emptyList());
     }
     
     /**
@@ -119,7 +118,7 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return findSchema(databaseName, schemaName).map(optional -> optional.getTables().stream()
                 .map(MCPTableMetadata::createSummary)
                 .sorted(Comparator.comparing(MCPTableMetadata::getTable))
-                .collect(Collectors.toList())).orElse(Collections.emptyList());
+                .toList()).orElse(Collections.emptyList());
     }
     
     /**
@@ -153,7 +152,7 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return findSchema(databaseName, schemaName).map(optional -> optional.getViews().stream()
                 .map(MCPViewMetadata::createSummary)
                 .sorted(Comparator.comparing(MCPViewMetadata::getView))
-                .collect(Collectors.toList())).orElse(Collections.emptyList());
+                .toList()).orElse(Collections.emptyList());
     }
     
     /**

@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * MCP URI template utilities.
@@ -66,14 +65,11 @@ public final class MCPUriTemplateUtils {
      */
     public static Optional<String> expandIfComplete(final String uriTemplate, final MCPUriVariables variables) {
         List<String> missingVariableNames = getMissingVariableNames(uriTemplate, variables);
-        if (!missingVariableNames.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(expandKnownVariables(uriTemplate, variables));
+        return missingVariableNames.isEmpty() ? Optional.of(expandKnownVariables(uriTemplate, variables)) : Optional.empty();
     }
     
     private static List<String> getMissingVariableNames(final String uriTemplate, final MCPUriVariables variables) {
-        return extractVariableNames(uriTemplate).stream().filter(each -> !variables.containsVariable(each)).collect(Collectors.toList());
+        return extractVariableNames(uriTemplate).stream().filter(each -> !variables.containsVariable(each)).toList();
     }
     
     private static String expandKnownVariables(final String uriTemplate, final MCPUriVariables variables) {

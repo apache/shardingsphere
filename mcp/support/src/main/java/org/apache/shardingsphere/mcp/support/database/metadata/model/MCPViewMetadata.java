@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * MCP view metadata.
@@ -55,6 +54,6 @@ public final class MCPViewMetadata {
      * @return view metadata summary
      */
     public MCPViewMetadata createDetail() {
-        return new MCPViewMetadata(database, schema, view, columns.stream().sorted(Comparator.comparing(MCPColumnMetadata::getColumn)).collect(Collectors.toList()));
+        return new MCPViewMetadata(database, schema, view, columns.stream().sorted(Comparator.comparing(MCPColumnMetadata::getColumn)).toList());
     }
 }

@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * MCP database metadata.
@@ -56,6 +55,6 @@ public final class MCPDatabaseMetadata {
      */
     public MCPDatabaseMetadata createDetail() {
         return new MCPDatabaseMetadata(database, databaseType, databaseVersion,
-                schemas.stream().map(MCPSchemaMetadata::createDetail).sorted(Comparator.comparing(MCPSchemaMetadata::getSchema)).collect(Collectors.toList()));
+                schemas.stream().map(MCPSchemaMetadata::createDetail).sorted(Comparator.comparing(MCPSchemaMetadata::getSchema)).toList());
     }
 }
