@@ -96,10 +96,11 @@ public final class MCPToolSpecificationFactory {
     
     @SuppressWarnings("unchecked")
     private McpSchema.JsonSchema createInputSchema(final Map<String, Object> inputSchema) {
-        Map<String, Object> properties = (Map<String, Object>) inputSchema.get("properties");
+        String type = String.valueOf(inputSchema.get("type"));
+        Map<String, Object> props = (Map<String, Object>) inputSchema.get("properties");
         List<String> required = (List<String>) inputSchema.get("required");
-        boolean additionalProperties = Boolean.TRUE.equals(inputSchema.get("additionalProperties"));
-        return new McpSchema.JsonSchema(String.valueOf(inputSchema.get("type")), properties, required, additionalProperties, Collections.emptyMap(), Collections.emptyMap());
+        boolean additionalProps = Boolean.TRUE.equals(inputSchema.get("additionalProperties"));
+        return new McpSchema.JsonSchema(type, props, required, additionalProps, Collections.emptyMap(), Collections.emptyMap());
     }
     
     private McpSchema.ToolAnnotations createToolAnnotations(final MCPToolAnnotations annotations) {
@@ -109,7 +110,7 @@ public final class MCPToolSpecificationFactory {
     
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
         try {
-            Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
+            Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Collections.emptyMap());
             MCPResponse response = controller.handle(exchange.sessionId(), request.name(), arguments);
             Map<String, Object> payload = response.toPayload();
             Optional<MCPToolDescriptor> toolDescriptor = findToolDescriptor(request.name());
