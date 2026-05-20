@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.resource.uri;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -134,7 +134,7 @@ public final class MCPUriPattern {
             if (containsRawTemplateMarker(encodedValue)) {
                 return Optional.empty();
             }
-            Optional<String> decodedValue = MCPUriTemplateUtils.decodePathSegment(encodedValue);
+            Optional<String> decodedValue = MCPUriPathSegmentUtils.decodePathSegment(encodedValue);
             if (decodedValue.isEmpty()) {
                 return Optional.empty();
             }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.support.resource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
@@ -27,58 +26,13 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
- * MCP URI template utilities.
+ * MCP URI path segment utilities.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MCPUriTemplateUtils {
-    
-    private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{([^}]+)}");
-    
-    /**
-     * Extract URI template variable names.
-     *
-     * @param uriTemplate URI template
-     * @return variable names
-     */
-    public static List<String> extractVariableNames(final String uriTemplate) {
-        List<String> result = new LinkedList<>();
-        Matcher matcher = VARIABLE_PATTERN.matcher(uriTemplate);
-        while (matcher.find()) {
-            result.add(matcher.group(1));
-        }
-        return result;
-    }
-    
-    /**
-     * Expand URI template when all variables are present.
-     *
-     * @param uriTemplate URI template
-     * @param variables URI variables
-     * @return expanded URI, or empty when at least one variable is missing
-     */
-    public static Optional<String> expandIfComplete(final String uriTemplate, final MCPUriVariables variables) {
-        List<String> missingVariableNames = getMissingVariableNames(uriTemplate, variables);
-        return missingVariableNames.isEmpty() ? Optional.of(expandKnownVariables(uriTemplate, variables)) : Optional.empty();
-    }
-    
-    private static List<String> getMissingVariableNames(final String uriTemplate, final MCPUriVariables variables) {
-        return extractVariableNames(uriTemplate).stream().filter(each -> !variables.containsVariable(each)).toList();
-    }
-    
-    private static String expandKnownVariables(final String uriTemplate, final MCPUriVariables variables) {
-        String result = uriTemplate;
-        for (String each : extractVariableNames(uriTemplate)) {
-            result = result.replace("{" + each + "}", encodePathSegment(variables.getValue(each)));
-        }
-        return result;
-    }
+public final class MCPUriPathSegmentUtils {
     
     /**
      * Encode one MCP resource URI path segment.

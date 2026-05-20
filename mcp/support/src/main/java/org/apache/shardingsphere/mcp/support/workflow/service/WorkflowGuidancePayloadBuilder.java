@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
-import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
@@ -276,22 +276,22 @@ public final class WorkflowGuidancePayloadBuilder {
         String workflowKind = resolveWorkflowKind(snapshot);
         if ("encrypt.rule".equals(workflowKind)) {
             result.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/encrypt/databases/%s/rules",
-                    MCPUriTemplateUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail",
+                    MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail",
                     "Inspect current encrypt rules before planning changes.", "resources_to_read"));
         } else if ("mask.rule".equals(workflowKind)) {
             result.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/mask/databases/%s/rules",
-                    MCPUriTemplateUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail",
+                    MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail",
                     "Inspect current mask rules before planning changes.", "resources_to_read"));
         }
     }
     
     private static void addTableResources(final Collection<Map<String, Object>> result, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
-        result.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", MCPUriTemplateUtils.encodePathSegment(request.getDatabase()),
-                MCPUriTemplateUtils.encodePathSegment(request.getSchema()), MCPUriTemplateUtils.encodePathSegment(request.getTable())),
+        result.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
+                MCPUriPathSegmentUtils.encodePathSegment(request.getSchema()), MCPUriPathSegmentUtils.encodePathSegment(request.getTable())),
                 "column", "validate_scope", "Read table columns before planning column-level workflow changes.", "resources_to_read"));
         if ("encrypt.rule".equals(resolveWorkflowKind(snapshot))) {
-            result.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", MCPUriTemplateUtils.encodePathSegment(request.getDatabase()),
-                    MCPUriTemplateUtils.encodePathSegment(request.getSchema()), MCPUriTemplateUtils.encodePathSegment(request.getTable())),
+            result.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
+                    MCPUriPathSegmentUtils.encodePathSegment(request.getSchema()), MCPUriPathSegmentUtils.encodePathSegment(request.getTable())),
                     "index", "validate_scope", "Read table indexes before planning assisted-query encrypt rules.", "resources_to_read"));
         }
     }

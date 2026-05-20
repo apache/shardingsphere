@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMet
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
-import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -241,6 +241,6 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
     }
     
     private String encode(final String value) {
-        return MCPUriTemplateUtils.encodePathSegment(value);
+        return MCPUriPathSegmentUtils.encodePathSegment(value);
     }
 }

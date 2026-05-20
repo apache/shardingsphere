@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
-import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplate;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -55,8 +55,8 @@ public final class MCPResourceNavigationPayloadBuilder {
      */
     public static Map<String, Object> create(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables, final String parentUriTemplate) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
-        MCPUriTemplateUtils.expandIfComplete(descriptor.getUriTemplate(), uriVariables).ifPresent(uri -> result.put("self_uri", uri));
-        Optional<String> parentUri = MCPUriTemplateUtils.expandIfComplete(parentUriTemplate, uriVariables);
+        new MCPUriTemplate(descriptor.getUriTemplate()).expandIfComplete(uriVariables).ifPresent(uri -> result.put("self_uri", uri));
+        Optional<String> parentUri = new MCPUriTemplate(parentUriTemplate).expandIfComplete(uriVariables);
         parentUri.filter(uri -> !uri.isEmpty()).ifPresent(uri -> result.put("parent_resource", createParentResourceHint(uri)));
         return result;
     }

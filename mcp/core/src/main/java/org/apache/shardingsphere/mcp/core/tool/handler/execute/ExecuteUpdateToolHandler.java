@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -182,7 +182,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         if (database.isEmpty()) {
             return List.of(MCPResourceHintUtils.create("shardingsphere://databases", "logical-database", "read_first", "Read logical databases before execution.", "resources_to_read"));
         }
-        return List.of(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/capabilities", MCPUriTemplateUtils.encodePathSegment(database)), "logical-database-capability",
+        return List.of(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/capabilities", MCPUriPathSegmentUtils.encodePathSegment(database)), "logical-database-capability",
                 "read_first", "Read logical database capabilities before execution.", "resources_to_read"));
     }
     

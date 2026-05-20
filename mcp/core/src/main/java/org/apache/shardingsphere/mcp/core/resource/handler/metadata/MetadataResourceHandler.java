@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplate;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -217,7 +217,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     private Map<String, Object> createNavigationPayload(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         String uriOrTemplate = descriptor.getUriTemplate();
-        Optional<String> selfUri = MCPUriTemplateUtils.expandIfComplete(uriOrTemplate, uriVariables);
+        Optional<String> selfUri = new MCPUriTemplate(uriOrTemplate).expandIfComplete(uriVariables);
         selfUri.ifPresent(uri -> result.put("self_uri", uri));
         String parentUri = createParentUri(selfUri);
         if (!parentUri.isEmpty()) {
@@ -234,7 +234,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     }
     
     private Optional<Map<String, Object>> createNextResourceHint(final String uriTemplate, final String description, final MCPUriVariables variables) {
-        return MCPUriTemplateUtils.expandIfComplete(uriTemplate, variables)
+        return new MCPUriTemplate(uriTemplate).expandIfComplete(variables)
                 .map(uri -> MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_detail", description, "next_resources"));
     }
     

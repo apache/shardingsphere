@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
-import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplate;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -89,7 +89,7 @@ final class MCPDescriptorCatalogValidator {
     }
     
     private static void validateResourceVariables(final MCPResourceDescriptor descriptor, final MCPResourceExtensionDescriptor extension) {
-        List<String> templateVariables = MCPUriTemplateUtils.extractVariableNames(descriptor.getUriTemplate());
+        List<String> templateVariables = new MCPUriTemplate(descriptor.getUriTemplate()).getVariableNames();
         Set<String> registeredTemplateVariables = new HashSet<>();
         for (String each : templateVariables) {
             ShardingSpherePreconditions.checkState(registeredTemplateVariables.add(each),

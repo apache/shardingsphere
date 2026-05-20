@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
-import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -160,7 +160,7 @@ final class MetadataSearchResourceUriFactory {
     private String createResourceUri(final String... pathSegments) {
         List<String> encodedSegments = new LinkedList<>();
         for (String each : pathSegments) {
-            encodedSegments.add(MCPUriTemplateUtils.encodePathSegment(each));
+            encodedSegments.add(MCPUriPathSegmentUtils.encodePathSegment(each));
         }
         return DATABASES_RESOURCE_URI + "/" + String.join("/", encodedSegments);
     }

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -153,7 +153,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("capabilities", capability.map(this::createCapabilityStatus).orElseGet(this::createUnavailableCapabilityStatus));
         result.put("capability_visibility", capability.isPresent() ? "ready" : "unavailable");
         result.put("feature_visibility", "ready");
-        result.put("resource", MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s", MCPUriTemplateUtils.encodePathSegment(database.getDatabase())),
+        result.put("resource", MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s", MCPUriPathSegmentUtils.encodePathSegment(database.getDatabase())),
                 "logical-database", "inspect_detail", "Read this logical database resource for metadata details.", "databases"));
         return result;
     }
