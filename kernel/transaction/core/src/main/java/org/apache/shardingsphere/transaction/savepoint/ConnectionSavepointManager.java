@@ -60,7 +60,15 @@ public final class ConnectionSavepointManager {
      */
     public void setSavepoint(final Connection connection, final String savepointName) throws SQLException {
         Savepoint result = connection.setSavepoint(savepointName);
-        CONNECTION_SAVEPOINT_MAP.computeIfAbsent(connection, unused -> new LinkedHashMap<>()).put(savepointName, result);
+        getConnectionSavepoints(connection).put(savepointName, result);
+    }
+    
+    private Map<String, Savepoint> getConnectionSavepoints(final Connection connection) {
+        Map<String, Savepoint> result = CONNECTION_SAVEPOINT_MAP.get(connection);
+        if (null == result) {
+            result = CONNECTION_SAVEPOINT_MAP.computeIfAbsent(connection, unused -> new LinkedHashMap<>());
+        }
+        return result;
     }
     
     /**

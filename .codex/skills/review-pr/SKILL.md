@@ -67,6 +67,9 @@ description: >-
     - If official documentation support is missing, ambiguous, or contradicts the PR behavior, bias to `Merge Verdict: Not Mergeable`.
     - If any related dialect remains unresolved, or the review skips the family scan, bias to `Merge Verdict: Not Mergeable`.
     - Do not recommend unsupported or undocumented SQL syntax in review feedback.
+16. If a method reachable from the Proxy or JDBC DML/DQL high-frequency SQL execution path uses `ConcurrentHashMap#computeIfAbsent`,
+    require a preceding `get` lookup and call `computeIfAbsent` only when the value is missing, to avoid the JDK 8 implementation bottleneck.
+    If this pattern is absent and the path is high-frequency, bias to `Merge Verdict: Not Mergeable`.
 
 ## Execution Boundary
 
@@ -142,6 +145,7 @@ When information gaps block mergeability, request at least:
 4. Risk scan:
    - Design: abstraction level, responsibility boundaries, temporary compatibility branches
    - Performance: new loops/remote calls/object allocations on hot paths
+   - Performance: in Proxy/JDBC DML/DQL high-frequency SQL paths, flag direct `ConcurrentHashMap#computeIfAbsent` use without a preceding `get` miss check
    - Compatibility: behavior/config/API-SPI/SQL dialect versions
    - Regression: similar statements, adjacent features, exception branches
    - For parser, binder, routing, and default-schema changes, explicitly compare the new behavior against official dialect semantics and check whether precedence or shadowing rules changed
@@ -189,7 +193,7 @@ If the root-cause chain cannot be fully proven fixed, set `Merge Verdict: Not Me
 ## Risk Checklist (Must Cover)
 
 - Design risk: broken layering, duplicated logic, bypassed SPI/metadata cache, implicit state.
-- Performance risk: complexity increase, extra hot-path allocations, unbounded retries, blocking I/O.
+- Performance risk: complexity increase, extra hot-path allocations, unbounded retries, blocking I/O, or direct `ConcurrentHashMap#computeIfAbsent` in Proxy/JDBC DML/DQL high-frequency SQL paths without a preceding `get` miss check.
 - Compatibility risk:
   - Behavior compatibility
   - Config compatibility
@@ -286,3 +290,4 @@ Use committer tone, gentle wording, no emojis; structure:
 - Do not include emojis in change request text.
 - Do not output `Mergeable` for a shared-code change unless you have checked at least one non-target dialect or feature that also uses the changed path.
 - Do not output `Mergeable` when local verification omitted `-am` on a module-scoped Maven run and dependency freshness matters.
+- Do not output `Mergeable` when Proxy/JDBC DML/DQL high-frequency SQL paths directly call `ConcurrentHashMap#computeIfAbsent` without a preceding `get` miss check.
