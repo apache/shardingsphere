@@ -48,7 +48,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceDefinitionRegistry {
 
-    private static final Map<MCPUriPattern, MCPResourceDefinition> REGISTERED_RESOURCE_DEFINITIONS;
+    private static final List<MCPResourceDefinition> REGISTERED_RESOURCE_DEFINITIONS;
 
     static {
         Map<MCPUriPattern, MCPResourceHandler<?>> resourceHandlers = createRegisteredResourceHandlers(
@@ -92,12 +92,8 @@ public final class ResourceDefinitionRegistry {
         }
     }
 
-    private static Map<MCPUriPattern, MCPResourceDefinition> createRegisteredResourceDefinitions(final Map<MCPUriPattern, MCPResourceHandler<?>> handlers) {
-        Map<MCPUriPattern, MCPResourceDefinition> result = new LinkedHashMap<>(handlers.size(), 1F);
-        for (Entry<MCPUriPattern, MCPResourceHandler<?>> entry : handlers.entrySet()) {
-            result.put(entry.getKey(), createResourceDefinition(entry.getKey(), entry.getValue()));
-        }
-        return result;
+    private static List<MCPResourceDefinition> createRegisteredResourceDefinitions(final Map<MCPUriPattern, MCPResourceHandler<?>> handlers) {
+        return handlers.entrySet().stream().map(entry -> createResourceDefinition(entry.getKey(), entry.getValue())).toList();
     }
 
     private static MCPResourceDefinition createResourceDefinition(final MCPUriPattern uriPattern, final MCPResourceHandler<?> handler) {
@@ -112,7 +108,7 @@ public final class ResourceDefinitionRegistry {
     }
 
     private static boolean isRegisteredResourceDescriptor(final MCPResourceDescriptor descriptor) {
-        for (MCPResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS.values()) {
+        for (MCPResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS) {
             if (descriptor.getUriTemplate().equals(each.getUriPattern().getPattern())) {
                 return true;
             }
@@ -128,10 +124,10 @@ public final class ResourceDefinitionRegistry {
      * @return handled response
      */
     public static Optional<MCPResponse> dispatch(final MCPRequestScope requestScope, final String resourceUri) {
-        for (Entry<MCPUriPattern, MCPResourceDefinition> each : REGISTERED_RESOURCE_DEFINITIONS.entrySet()) {
-            Optional<MCPUriVariables> matchedUriVariables = each.getKey().parse(resourceUri);
+        for (MCPResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS) {
+            Optional<MCPUriVariables> matchedUriVariables = each.getUriPattern().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {
-                return Optional.of(dispatch(requestScope, each.getValue(), matchedUriVariables.get()));
+                return Optional.of(dispatch(requestScope, each, matchedUriVariables.get()));
             }
         }
         return Optional.empty();
@@ -151,7 +147,7 @@ public final class ResourceDefinitionRegistry {
      * @return supported resources
      */
     public static Collection<String> getSupportedResources() {
-        return REGISTERED_RESOURCE_DEFINITIONS.values().stream().map(each -> each.getUriPattern().getPattern()).toList();
+        return REGISTERED_RESOURCE_DEFINITIONS.stream().map(each -> each.getUriPattern().getPattern()).toList();
     }
 
     /**
@@ -160,6 +156,6 @@ public final class ResourceDefinitionRegistry {
      * @return supported resource descriptors
      */
     public static Collection<MCPResourceDescriptor> getSupportedResourceDescriptors() {
-        return REGISTERED_RESOURCE_DEFINITIONS.values().stream().map(MCPResourceDefinition::getDescriptor).toList();
+        return REGISTERED_RESOURCE_DEFINITIONS.stream().map(MCPResourceDefinition::getDescriptor).toList();
     }
 }
