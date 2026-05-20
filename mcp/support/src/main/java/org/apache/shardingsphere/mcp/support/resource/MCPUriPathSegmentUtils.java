@@ -87,10 +87,8 @@ public final class MCPUriPathSegmentUtils {
     
     private static Optional<String> decodeUtf8(final byte[] encodedBytes) {
         try {
-            return Optional.of(StandardCharsets.UTF_8.newDecoder()
-                    .onMalformedInput(CodingErrorAction.REPORT)
-                    .onUnmappableCharacter(CodingErrorAction.REPORT)
-                    .decode(ByteBuffer.wrap(encodedBytes)).toString());
+            return Optional.of(
+                    StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(encodedBytes)).toString());
         } catch (final CharacterCodingException ignored) {
             return Optional.empty();
         }

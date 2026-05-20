@@ -49,17 +49,11 @@ public final class ToolHandlerRegistry {
     
     private static final Map<String, MCPToolDescriptor> REGISTERED_TOOL_DESCRIPTORS;
     
-    private static final Collection<String> SUPPORTED_TOOLS;
-    
-    private static final List<MCPToolDescriptor> SUPPORTED_TOOL_DESCRIPTORS;
-    
     static {
         REGISTERED_TOOL_HANDLERS = createRegisteredTools(
                 ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class).stream().flatMap(each -> each.getToolHandlers().stream()).toList());
         REGISTERED_TOOL_DESCRIPTORS = createRegisteredToolDescriptors();
         validateRegisteredToolDescriptors();
-        SUPPORTED_TOOLS = REGISTERED_TOOL_HANDLERS.keySet().stream().toList();
-        SUPPORTED_TOOL_DESCRIPTORS = REGISTERED_TOOL_DESCRIPTORS.values().stream().toList();
     }
     
     private static Map<String, MCPToolHandler<?>> createRegisteredTools(final Collection<MCPToolHandler<?>> handlers) {
@@ -101,7 +95,7 @@ public final class ToolHandlerRegistry {
      * @return supported tools
      */
     public static Collection<String> getSupportedTools() {
-        return SUPPORTED_TOOLS;
+        return REGISTERED_TOOL_HANDLERS.keySet().stream().toList();
     }
     
     /**
@@ -110,7 +104,7 @@ public final class ToolHandlerRegistry {
      * @return supported tool descriptors
      */
     public static List<MCPToolDescriptor> getSupportedToolDescriptors() {
-        return SUPPORTED_TOOL_DESCRIPTORS;
+        return REGISTERED_TOOL_DESCRIPTORS.values().stream().toList();
     }
     
     /**

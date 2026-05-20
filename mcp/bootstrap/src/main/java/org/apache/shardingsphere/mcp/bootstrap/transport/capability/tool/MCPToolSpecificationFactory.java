@@ -78,18 +78,18 @@ public final class MCPToolSpecificationFactory {
         return descriptors.stream().map(each -> new SyncToolSpecification(createTool(each), this::handle)).toList();
     }
     
-    private McpSchema.Tool createTool(final MCPToolDescriptor toolDescriptor) {
+    private McpSchema.Tool createTool(final MCPToolDescriptor descriptor) {
         McpSchema.Tool.Builder result = McpSchema.Tool.builder()
-                .name(toolDescriptor.getName())
-                .title(toolDescriptor.getTitle())
-                .description(toolDescriptor.getDescription())
-                .inputSchema(createInputSchema(toolDescriptor.getInputSchema()));
-        if (!toolDescriptor.getOutputSchema().isEmpty()) {
-            result.outputSchema(toolDescriptor.getOutputSchema());
+                .name(descriptor.getName())
+                .title(descriptor.getTitle())
+                .description(descriptor.getDescription())
+                .inputSchema(createInputSchema(descriptor.getInputSchema()));
+        if (!descriptor.getOutputSchema().isEmpty()) {
+            result.outputSchema(descriptor.getOutputSchema());
         }
-        result.annotations(createToolAnnotations(toolDescriptor.getAnnotations()));
-        if (!toolDescriptor.getMeta().isEmpty()) {
-            result.meta(toolDescriptor.getMeta());
+        result.annotations(createToolAnnotations(descriptor.getAnnotations()));
+        if (!descriptor.getMeta().isEmpty()) {
+            result.meta(descriptor.getMeta());
         }
         return result.build();
     }
