@@ -26,6 +26,10 @@ on:
         description: 'operation'
         required: true
         default: '[ "transaction", "pipeline", "showprocesslist" ]'
+      docker-image:
+        description: 'docker-image'
+        required: false
+        default: ''
 
 concurrency:
   group: nightly-e2e-operation-${{ github.workflow }}-${{ github.ref }}
@@ -41,6 +45,38 @@ jobs:
   global-environment:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
+
+  prepare-e2e-matrix:
+    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
+    name: Prepare E2E Matrix
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
+    timeout-minutes: 5
+    outputs:
+      images: ${{ steps.prepare.outputs.images }}
+    steps:
+      - id: prepare
+        env:
+          DOCKER_IMAGE: ${{ github.event.inputs['docker-image'] }}
+        run: |
+          if [ -n "$DOCKER_IMAGE" ]; then
+            echo "images=[\"$DOCKER_IMAGE\"]" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          {
+            echo 'images<<EOF'
+            echo '['
+            echo '  "mysql:5.7",'
+            echo '  "mysql:8.0",'
+            echo '  "mariadb:11",'
+            echo '  "postgres:11-alpine",'
+            echo '  "postgres:12-alpine",'
+            echo '  "postgres:13-alpine",'
+            echo '  "postgres:14-alpine",'
+            echo '  "opengauss/opengauss:3.1.0"'
+            echo ']'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
 
   prepare-e2e-artifacts:
     if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
@@ -73,8 +109,8 @@ jobs:
 
   e2e-operation-job:
     if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
-    name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }} with JDK ${{ matrix.java-version }}
-    needs: [ global-environment, prepare-e2e-artifacts ]
+    name: E2E - ${{ matrix.operation }} on ${{ matrix.image }} with JDK ${{ matrix.java-version }}
+    needs: [ global-environment, prepare-e2e-matrix, prepare-e2e-artifacts ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 150
     strategy:
@@ -83,31 +119,22 @@ jobs:
       matrix:
         java-version: [ 21 ]
         operation: ${{ fromJson(github.event.inputs.operation || '[ "transaction", "pipeline", "showprocesslist" ]') }}
-        image: [
-          { type: "e2e.docker.database.mysql.images", version: "mysql:5.7" },
-          { type: "e2e.docker.database.mysql.images", version: "mysql:8.0" },
-          { type: "e2e.docker.database.mariadb.images", version: "mariadb:11" },
-          { type: "e2e.docker.database.postgresql.images", version: "postgres:11-alpine" },
-          { type: "e2e.docker.database.postgresql.images", version: "postgres:12-alpine" },
-          { type: "e2e.docker.database.postgresql.images", version: "postgres:13-alpine" },
-          { type: "e2e.docker.database.postgresql.images", version: "postgres:14-alpine" },
-          { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
-        ]
+        image: ${{ fromJson(needs.prepare-e2e-matrix.outputs.images) }}
         exclude:
           - operation: transaction
-            image: { type: "e2e.docker.database.mariadb.images", version: "mariadb:11" }
+            image: "mariadb:11"
           - operation: showprocesslist
-            image: { type: "e2e.docker.database.mariadb.images", version: "mariadb:11" }
+            image: "mariadb:11"
           - operation: showprocesslist
-            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:11-alpine" }
+            image: "postgres:11-alpine"
           - operation: showprocesslist
-            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:12-alpine" }
+            image: "postgres:12-alpine"
           - operation: showprocesslist
-            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:13-alpine" }
+            image: "postgres:13-alpine"
           - operation: showprocesslist
-            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:14-alpine" }
+            image: "postgres:14-alpine"
           - operation: showprocesslist
-            image: { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
+            image: "opengauss/opengauss:3.1.0"
     steps:
       - name: Logs
         run: |
@@ -130,5 +157,26 @@ jobs:
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
       - uses: ./.github/workflows/resources/actions/download-e2e-artifacts
-      - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
-        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${{ matrix.image.type }}=${{ matrix.image.version }}
+      - name: Run ${{ matrix.operation }} on ${{ matrix.image }}
+        env:
+          DOCKER_IMAGE: ${{ matrix.image }}
+        run: |
+          case "$DOCKER_IMAGE" in
+            mysql:*)
+              DOCKER_IMAGE_PROPERTY="e2e.docker.database.mysql.images"
+              ;;
+            mariadb:*)
+              DOCKER_IMAGE_PROPERTY="e2e.docker.database.mariadb.images"
+              ;;
+            postgres:*)
+              DOCKER_IMAGE_PROPERTY="e2e.docker.database.postgresql.images"
+              ;;
+            opengauss/*)
+              DOCKER_IMAGE_PROPERTY="e2e.docker.database.opengauss.images"
+              ;;
+            *)
+              echo "Unsupported docker image: $DOCKER_IMAGE"
+              exit 1
+              ;;
+          esac
+          ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${DOCKER_IMAGE_PROPERTY}=${DOCKER_IMAGE}
