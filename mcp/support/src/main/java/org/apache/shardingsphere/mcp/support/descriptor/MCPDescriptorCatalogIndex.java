@@ -45,9 +45,9 @@ public final class MCPDescriptorCatalogIndex {
     
     private static final Map<String, MCPToolDescriptor> TOOL_DESCRIPTORS = createToolDescriptors();
     
-    private static final Map<String, MCPPromptDescriptor> PROMPT_DESCRIPTORS = createPromptDescriptors();
+    private static final Collection<MCPPromptDescriptor> PROMPT_DESCRIPTORS = CATALOG.getPromptDescriptors();
     
-    private static final Map<String, MCPCompletionTargetDescriptor> COMPLETION_TARGET_DESCRIPTORS = createCompletionTargetDescriptors();
+    private static final Collection<MCPCompletionTargetDescriptor> COMPLETION_TARGET_DESCRIPTORS = CATALOG.getCompletionTargetDescriptors();
     
     private static final Map<String, Collection<MCPResourceNavigationDescriptor>> RESOURCE_NAVIGATION_DESCRIPTORS_BY_FROM = createResourceNavigationDescriptors();
     
@@ -75,21 +75,6 @@ public final class MCPDescriptorCatalogIndex {
     private static Map<String, MCPToolDescriptor> createToolDescriptors() {
         return CATALOG.getToolDescriptors().stream()
                 .collect(Collectors.toMap(MCPToolDescriptor::getName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getToolDescriptors().size(), 1F)));
-    }
-    
-    private static Map<String, MCPPromptDescriptor> createPromptDescriptors() {
-        return CATALOG.getPromptDescriptors().stream()
-                .collect(Collectors.toMap(MCPPromptDescriptor::getName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getPromptDescriptors().size(), 1F)));
-    }
-    
-    private static Map<String, MCPCompletionTargetDescriptor> createCompletionTargetDescriptors() {
-        return CATALOG.getCompletionTargetDescriptors().stream()
-                .collect(Collectors.toMap(MCPDescriptorCatalogIndex::createCompletionTargetDescriptorKey, each -> each, (a, b) -> b,
-                        () -> new LinkedHashMap<>(CATALOG.getCompletionTargetDescriptors().size(), 1F)));
-    }
-    
-    private static String createCompletionTargetDescriptorKey(final MCPCompletionTargetDescriptor descriptor) {
-        return descriptor.getReferenceType() + ":" + descriptor.getReference();
     }
     
     private static Map<String, Collection<MCPResourceNavigationDescriptor>> createResourceNavigationDescriptors() {
@@ -165,7 +150,7 @@ public final class MCPDescriptorCatalogIndex {
      * @return prompt descriptors
      */
     public static Collection<MCPPromptDescriptor> getPromptDescriptors() {
-        return PROMPT_DESCRIPTORS.values().stream().toList();
+        return PROMPT_DESCRIPTORS.stream().toList();
     }
     
     /**
@@ -195,7 +180,7 @@ public final class MCPDescriptorCatalogIndex {
      * @return completion target descriptors
      */
     public static Collection<MCPCompletionTargetDescriptor> getCompletionTargetDescriptors() {
-        return COMPLETION_TARGET_DESCRIPTORS.values().stream().toList();
+        return COMPLETION_TARGET_DESCRIPTORS.stream().toList();
     }
     
     /**
