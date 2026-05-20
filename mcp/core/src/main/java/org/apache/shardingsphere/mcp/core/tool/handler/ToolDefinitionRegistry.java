@@ -36,105 +36,94 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Tool handler registry.
+ * Tool definition registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ToolHandlerRegistry {
-    
-    private static final Map<String, MCPToolHandler<?>> REGISTERED_TOOL_HANDLERS;
-    
-    private static final Map<String, MCPToolDescriptor> REGISTERED_TOOL_DESCRIPTORS;
-    
+public final class ToolDefinitionRegistry {
+
+    private static final Map<String, MCPToolDefinition> REGISTERED_TOOL_DEFINITIONS;
+
     static {
-        REGISTERED_TOOL_HANDLERS = createRegisteredTools(
+        REGISTERED_TOOL_DEFINITIONS = createRegisteredToolDefinitions(
                 ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class).stream().flatMap(each -> each.getToolHandlers().stream()).toList());
-        REGISTERED_TOOL_DESCRIPTORS = createRegisteredToolDescriptors();
         validateRegisteredToolDescriptors();
     }
-    
-    private static Map<String, MCPToolHandler<?>> createRegisteredTools(final Collection<MCPToolHandler<?>> handlers) {
+
+    private static Map<String, MCPToolDefinition> createRegisteredToolDefinitions(final Collection<MCPToolHandler<?>> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No tool handlers are registered."));
-        Map<String, MCPToolHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
+        Map<String, MCPToolDefinition> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPToolHandler<?> each : handlers) {
             String toolName = each.getToolName();
             ShardingSpherePreconditions.checkState(null != toolName && !toolName.isBlank(),
                     () -> new IllegalArgumentException(String.format("Tool name is required for `%s`.", each.getClass().getName())));
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
-            MCPToolHandler<?> previousHandler = result.putIfAbsent(toolName, each);
-            ShardingSpherePreconditions.checkState(null == previousHandler, () -> new IllegalArgumentException(
-                    String.format("Duplicate tool name `%s` with `%s` and `%s`.", toolName, previousHandler.getClass().getName(), each.getClass().getName())));
+            MCPToolDefinition previousDefinition = result.get(toolName);
+            ShardingSpherePreconditions.checkState(null == previousDefinition, () -> new IllegalArgumentException(
+                    String.format("Duplicate tool name `%s` with `%s` and `%s`.", toolName, previousDefinition.getHandler().getClass().getName(), each.getClass().getName())));
+            result.put(toolName, createToolDefinition(toolName, each));
         }
         return result;
     }
-    
-    private static Map<String, MCPToolDescriptor> createRegisteredToolDescriptors() {
-        Map<String, MCPToolDescriptor> result = new LinkedHashMap<>(REGISTERED_TOOL_HANDLERS.size(), 1F);
-        for (Entry<String, MCPToolHandler<?>> entry : REGISTERED_TOOL_HANDLERS.entrySet()) {
-            MCPToolDescriptor descriptor = MCPHandlerDescriptorUtils.getRequiredToolDescriptor(entry.getValue());
-            ShardingSpherePreconditions.checkState(null != descriptor.getAnnotations(),
-                    () -> new IllegalArgumentException(String.format("Tool `%s` MCP annotations are required for `%s`.", entry.getKey(), entry.getValue().getClass().getName())));
-            result.put(entry.getKey(), descriptor);
-        }
-        return result;
+
+    private static MCPToolDefinition createToolDefinition(final String toolName, final MCPToolHandler<?> handler) {
+        MCPToolDescriptor descriptor = MCPHandlerDescriptorUtils.getRequiredToolDescriptor(handler);
+        ShardingSpherePreconditions.checkState(null != descriptor.getAnnotations(),
+                () -> new IllegalArgumentException(String.format("Tool `%s` MCP annotations are required for `%s`.", toolName, handler.getClass().getName())));
+        return new MCPToolDefinition(descriptor, handler);
     }
-    
+
     private static void validateRegisteredToolDescriptors() {
         for (MCPToolDescriptor each : MCPDescriptorCatalogIndex.getToolDescriptors()) {
-            ShardingSpherePreconditions.checkState(REGISTERED_TOOL_HANDLERS.containsKey(each.getName()),
+            ShardingSpherePreconditions.checkState(REGISTERED_TOOL_DEFINITIONS.containsKey(each.getName()),
                     () -> new IllegalStateException(String.format("MCP tool descriptor `%s` has no registered handler.", each.getName())));
         }
     }
-    
+
     /**
      * Get supported tools.
      *
      * @return supported tools
      */
     public static Collection<String> getSupportedTools() {
-        return REGISTERED_TOOL_HANDLERS.keySet().stream().toList();
+        return REGISTERED_TOOL_DEFINITIONS.keySet().stream().toList();
     }
-    
+
     /**
      * Get supported tool descriptors.
      *
      * @return supported tool descriptors
      */
     public static List<MCPToolDescriptor> getSupportedToolDescriptors() {
-        return REGISTERED_TOOL_DESCRIPTORS.values().stream().toList();
+        return REGISTERED_TOOL_DEFINITIONS.values().stream().map(MCPToolDefinition::getDescriptor).toList();
     }
-    
+
     /**
-     * Find registered tool.
+     * Find tool definition.
      *
      * @param toolName tool name
-     * @return registered tool
+     * @return tool definition
      */
-    public static Optional<MCPToolHandler<?>> findRegisteredTool(final String toolName) {
-        return Optional.ofNullable(REGISTERED_TOOL_HANDLERS.get(toolName));
+    public static Optional<MCPToolDefinition> findToolDefinition(final String toolName) {
+        return Optional.ofNullable(REGISTERED_TOOL_DEFINITIONS.get(toolName));
     }
-    
+
     /**
-     * Dispatch tool call to registered tool.
+     * Dispatch tool call to tool definition.
      *
      * @param requestScope request scope
+     * @param toolDefinition tool definition
      * @param sessionId session identifier
-     * @param toolName tool name
      * @param arguments tool arguments
-     * @return handled response
+     * @return tool response
      */
-    public static Optional<MCPResponse> dispatch(final MCPRequestScope requestScope, final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        Optional<MCPToolHandler<?>> toolHandler = findRegisteredTool(toolName);
-        if (toolHandler.isEmpty()) {
-            return Optional.empty();
-        }
-        MCPToolArgumentContract.create(REGISTERED_TOOL_DESCRIPTORS.get(toolName)).validate(arguments);
-        return Optional.of(dispatch(requestScope, toolHandler.get(), new MCPToolCall(sessionId, arguments)));
+    public static MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolDefinition toolDefinition, final String sessionId, final Map<String, Object> arguments) {
+        MCPToolArgumentContract.create(toolDefinition.getDescriptor()).validate(arguments);
+        return dispatch(requestScope, toolDefinition.getHandler(), new MCPToolCall(sessionId, arguments));
     }
-    
+
     private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolHandler<T> toolHandler, final MCPToolCall toolCall) {
         return toolHandler.handle(toolHandler.getContextType().cast(requestScope), toolCall);
     }

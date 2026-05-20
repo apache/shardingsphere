@@ -51,20 +51,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-class ResourceHandlerRegistryTest {
-    
+class ResourceDefinitionRegistryTest {
+
     @Test
     void assertDispatch() {
-        Optional<MCPResponse> actual = ResourceHandlerRegistry.dispatch(mock(MCPRequestScope.class), "shardingsphere://capabilities");
+        Optional<MCPResponse> actual = ResourceDefinitionRegistry.dispatch(mock(MCPRequestScope.class), "shardingsphere://capabilities");
         assertTrue(actual.isPresent());
         assertTrue(actual.get().toPayload().containsKey("supportedTools"));
     }
-    
+
     @Test
     void assertDispatchWithoutMatchedHandler() {
-        assertFalse(ResourceHandlerRegistry.dispatch(mock(MCPRequestScope.class), "unsupported://resource").isPresent());
+        assertFalse(ResourceDefinitionRegistry.dispatch(mock(MCPRequestScope.class), "unsupported://resource").isPresent());
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("getSupportedResourcesFailureCases")
     void assertGetSupportedResourcesFailure(final String name, final Collection<MCPResourceHandler<?>> handlers,
@@ -72,7 +72,7 @@ class ResourceHandlerRegistryTest {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             MCPHandlerProvider provider = createHandlerProvider(handlers);
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(provider));
-            Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ResourceHandlerRegistry.class.getName(), false, createIsolatedResourceHandlerRegistryClassLoader()));
+            Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ResourceDefinitionRegistry.class.getName(), false, createIsolatedResourceDefinitionRegistryClassLoader()));
             InvocationTargetException actual = assertThrows(InvocationTargetException.class,
                     () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedResources"), null));
             assertThat(actual.getCause().getClass(), is(ExceptionInInitializerError.class));
@@ -81,10 +81,10 @@ class ResourceHandlerRegistryTest {
             assertThat(actualCause.getMessage(), is(expectedMessage));
         }
     }
-    
+
     @Test
     void assertGetSupportedResources() {
-        Collection<String> actual = ResourceHandlerRegistry.getSupportedResources();
+        Collection<String> actual = ResourceDefinitionRegistry.getSupportedResources();
         assertThat(actual.size(), is(20));
         assertTrue(actual.contains("shardingsphere://capabilities"));
         assertTrue(actual.contains("shardingsphere://runtime"));
@@ -94,14 +94,14 @@ class ResourceHandlerRegistryTest {
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns"));
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}"));
     }
-    
+
     @Test
     void assertGetSupportedResourceDescriptors() {
-        Collection<MCPResourceDescriptor> actual = ResourceHandlerRegistry.getSupportedResourceDescriptors();
+        Collection<MCPResourceDescriptor> actual = ResourceDefinitionRegistry.getSupportedResourceDescriptors();
         assertThat(actual.size(), is(20));
         assertTrue(actual.stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.getUriTemplate())));
     }
-    
+
     private static Stream<Arguments> getSupportedResourcesFailureCases() {
         MCPResourceHandler<?> nullUriHandler = createResourceHandler(null);
         MCPResourceHandler<?> emptyUriHandler = createResourceHandler("");
@@ -127,40 +127,40 @@ class ResourceHandlerRegistryTest {
                 Arguments.of("unsupported resource handler context", List.of(createUnsupportedResourceHandler()), IllegalArgumentException.class,
                         getUnsupportedResourceHandlerMessage()));
     }
-    
+
     private static MCPResourceHandler<?> createResourceHandler(final String uriTemplate) {
         MCPResourceHandler<MCPServiceHandlerContext> result = mock(MCPResourceHandler.class);
         when(result.getContextType()).thenReturn(MCPServiceHandlerContext.class);
         when(result.getResourceUriTemplate()).thenReturn(uriTemplate);
         return result;
     }
-    
+
     private static MCPResourceHandler<?> createUnsupportedResourceHandler() {
         MCPResourceHandler<MCPHandlerContext> result = mock(MCPResourceHandler.class);
         when(result.getContextType()).thenReturn(MCPHandlerContext.class);
         when(result.getResourceUriTemplate()).thenReturn("shardingsphere://unsupported");
         return result;
     }
-    
+
     private static MCPHandlerProvider createHandlerProvider(final Collection<MCPResourceHandler<?>> resourceHandlers) {
         MCPHandlerProvider result = mock(MCPHandlerProvider.class);
         when(result.getResourceHandlers()).thenReturn(resourceHandlers);
         return result;
     }
-    
-    private static ClassLoader createIsolatedResourceHandlerRegistryClassLoader() {
-        return new ClassLoader(ResourceHandlerRegistry.class.getClassLoader()) {
-            
+
+    private static ClassLoader createIsolatedResourceDefinitionRegistryClassLoader() {
+        return new ClassLoader(ResourceDefinitionRegistry.class.getClassLoader()) {
+
             @Override
             protected Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
-                if (!ResourceHandlerRegistry.class.getName().equals(name)) {
+                if (!ResourceDefinitionRegistry.class.getName().equals(name)) {
                     return super.loadClass(name, resolve);
                 }
                 synchronized (getClassLoadingLock(name)) {
                     Class<?> result = findLoadedClass(name);
                     if (null == result) {
-                        byte[] bytes = readResourceHandlerRegistryClass(name);
-                        result = defineClass(name, bytes, 0, bytes.length, ResourceHandlerRegistry.class.getProtectionDomain());
+                        byte[] bytes = readResourceDefinitionRegistryClass(name);
+                        result = defineClass(name, bytes, 0, bytes.length, ResourceDefinitionRegistry.class.getProtectionDomain());
                     }
                     if (resolve) {
                         resolveClass(result);
@@ -170,10 +170,10 @@ class ResourceHandlerRegistryTest {
             }
         };
     }
-    
-    private static byte[] readResourceHandlerRegistryClass(final String name) throws ClassNotFoundException {
+
+    private static byte[] readResourceDefinitionRegistryClass(final String name) throws ClassNotFoundException {
         String resourceName = name.replace('.', '/') + ".class";
-        try (InputStream inputStream = ResourceHandlerRegistry.class.getClassLoader().getResourceAsStream(resourceName)) {
+        try (InputStream inputStream = ResourceDefinitionRegistry.class.getClassLoader().getResourceAsStream(resourceName)) {
             if (null == inputStream) {
                 throw new ClassNotFoundException(name);
             }
@@ -182,26 +182,26 @@ class ResourceHandlerRegistryTest {
             throw new ClassNotFoundException(name, ex);
         }
     }
-    
+
     private static String getRequiredUriMessage() {
         MCPResourceHandler<?> handler = createResourceHandler(null);
         return String.format("Resource URI or URI template is required for `%s`.", handler.getClass().getName());
     }
-    
+
     private static String getDuplicateUriTemplateMessage() {
         MCPResourceHandler<?> firstHandler = createResourceHandler("shardingsphere://foo/{id}");
         MCPResourceHandler<?> secondHandler = createResourceHandler("shardingsphere://foo/{id}");
         return String.format("Duplicate resource URI template `shardingsphere://foo/{id}` with `%s` and `%s`.",
                 firstHandler.getClass().getName(), secondHandler.getClass().getName());
     }
-    
+
     private static String getOverlappingUriTemplateMessage() {
         MCPResourceHandler<?> firstHandler = createResourceHandler("shardingsphere://foo/{id}");
         MCPResourceHandler<?> secondHandler = createResourceHandler("shardingsphere://foo/bar");
         return String.format("Overlapping resource URI templates `shardingsphere://foo/{id}` with `%s` and `%s`.",
                 firstHandler.getClass().getName(), secondHandler.getClass().getName());
     }
-    
+
     private static String getUnsupportedResourceHandlerMessage() {
         MCPResourceHandler<?> handler = createUnsupportedResourceHandler();
         return String.format("Unsupported handler context type `%s` for `%s`.", MCPHandlerContext.class.getName(), handler.getClass().getName());

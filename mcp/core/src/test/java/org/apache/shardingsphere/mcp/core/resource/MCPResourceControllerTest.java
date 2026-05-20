@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedExcept
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
-import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
+import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -38,38 +38,38 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPResourceControllerTest {
-    
+
     @Test
     void assertHandle() {
         MCPResponse response = mock(MCPResponse.class);
         Map<String, Object> payload = Map.of("resource", "capabilities");
         when(response.toPayload()).thenReturn(payload);
-        try (MockedStatic<ResourceHandlerRegistry> mocked = mockStatic(ResourceHandlerRegistry.class)) {
-            mocked.when(() -> ResourceHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://capabilities"))).thenReturn(Optional.of(response));
+        try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://capabilities"))).thenReturn(Optional.of(response));
             Map<String, Object> actual = createController().handle("shardingsphere://capabilities").toPayload();
             assertThat(actual, is(payload));
         }
     }
-    
+
     @Test
     void assertHandleWithUnsupportedResourceUri() {
-        try (MockedStatic<ResourceHandlerRegistry> mocked = mockStatic(ResourceHandlerRegistry.class)) {
-            mocked.when(() -> ResourceHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("unsupported://resource"))).thenReturn(Optional.empty());
+        try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("unsupported://resource"))).thenReturn(Optional.empty());
             UnsupportedResourceUriException actual = assertThrows(UnsupportedResourceUriException.class, () -> createController().handle("unsupported://resource"));
             assertThat(actual.getResourceUri(), is("unsupported://resource"));
         }
     }
-    
+
     @Test
     void assertHandleWithHandlerException() {
-        try (MockedStatic<ResourceHandlerRegistry> mocked = mockStatic(ResourceHandlerRegistry.class)) {
-            mocked.when(() -> ResourceHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://indexes")))
+        try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://indexes")))
                     .thenThrow(new MCPUnsupportedException("Index resources are not supported."));
             MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> createController().handle("shardingsphere://indexes"));
             assertThat(actual.getMessage(), is("Index resources are not supported."));
         }
     }
-    
+
     private MCPResourceController createController() {
         return new MCPResourceController(ResourceTestDataFactory.createRuntimeContext());
     }

@@ -22,16 +22,16 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
-import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
+import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
 
 /**
  * MCP resource controller.
  */
 @RequiredArgsConstructor
 public final class MCPResourceController {
-    
+
     private final MCPRuntimeContext runtimeContext;
-    
+
     /**
      * Handle resource URI.
      *
@@ -40,7 +40,7 @@ public final class MCPResourceController {
      */
     public MCPResponse handle(final String resourceUri) {
         try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
-            return ResourceHandlerRegistry.dispatch(requestScope, resourceUri).orElseThrow(() -> new UnsupportedResourceUriException(resourceUri));
+            return ResourceDefinitionRegistry.dispatch(requestScope, resourceUri).orElseThrow(() -> new UnsupportedResourceUriException(resourceUri));
         }
     }
 }

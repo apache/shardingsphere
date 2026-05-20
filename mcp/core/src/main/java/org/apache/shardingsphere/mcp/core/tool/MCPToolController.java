@@ -22,7 +22,8 @@ import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
-import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
+import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
+import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 
 import java.util.Map;
 
@@ -30,33 +31,43 @@ import java.util.Map;
  * MCP tool controller.
  */
 public final class MCPToolController {
-    
+
     private final MCPRuntimeContext runtimeContext;
-    
+
     private final MCPToolCallLimiter toolCallLimiter;
-    
+
     public MCPToolController(final MCPRuntimeContext runtimeContext) {
         this.runtimeContext = runtimeContext;
         toolCallLimiter = new MCPToolCallLimiter();
         runtimeContext.getSessionManager().addSessionCloseListener(toolCallLimiter::releaseSession);
     }
-    
+
     /**
      * Handle tool call.
      *
      * @param sessionId session identifier
      * @param toolName tool name
      * @param arguments tool arguments
-     * @return MCP response
+     * @return tool response
      */
     public MCPResponse handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
+        return handle(sessionId, ToolDefinitionRegistry.findToolDefinition(toolName).orElseThrow(() -> new UnsupportedToolException(toolName)), arguments);
+    }
+
+    /**
+     * Handle tool call.
+     *
+     * @param sessionId session identifier
+     * @param toolDefinition tool definition
+     * @param arguments tool arguments
+     * @return tool response
+     */
+    public MCPResponse handle(final String sessionId, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments) {
         try {
-            toolCallLimiter.acquire(sessionId, toolName);
+            toolCallLimiter.acquire(sessionId, toolDefinition.getDescriptor().getName());
             try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
-                return ToolHandlerRegistry.dispatch(requestScope, sessionId, toolName, arguments).orElseThrow(() -> new UnsupportedToolException(toolName));
+                return ToolDefinitionRegistry.dispatch(requestScope, toolDefinition, sessionId, arguments);
             }
-        } catch (final UnsupportedToolException ex) {
-            throw ex;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
