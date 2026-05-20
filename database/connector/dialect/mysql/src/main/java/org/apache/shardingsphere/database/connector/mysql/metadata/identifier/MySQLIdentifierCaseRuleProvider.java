@@ -66,7 +66,7 @@ public final class MySQLIdentifierCaseRuleProvider implements IdentifierCaseRule
         }
         if (0 == lowerCaseTableNames) {
             Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
-            scopedRules.put(IdentifierScope.SCHEMA, IdentifierCaseRuleSets.newSensitiveRuleSet().getRule(IdentifierScope.SCHEMA));
+            scopedRules.put(IdentifierScope.SCHEMA, IdentifierCaseRuleSets.newMySQLInsensitiveRuleSet().getRule(IdentifierScope.SCHEMA));
             scopedRules.put(IdentifierScope.TABLE, IdentifierCaseRuleSets.newSensitiveRuleSet().getRule(IdentifierScope.TABLE));
             scopedRules.put(IdentifierScope.VIEW, IdentifierCaseRuleSets.newSensitiveRuleSet().getRule(IdentifierScope.VIEW));
             return Optional.of(new IdentifierCaseRuleSet(IdentifierCaseRuleSets.newInsensitiveRuleSet().getRule(IdentifierScope.TABLE), scopedRules));

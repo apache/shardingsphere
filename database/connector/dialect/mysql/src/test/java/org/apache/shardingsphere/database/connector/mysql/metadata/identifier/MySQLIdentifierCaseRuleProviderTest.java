@@ -111,7 +111,7 @@ class MySQLIdentifierCaseRuleProviderTest {
     void assertProvideWithLowerCaseTableNamesZeroUsesScopedRules() throws SQLException {
         IdentifierCaseRuleProviderContext context = new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockDataSource(true, 0));
         IdentifierCaseRuleSet actual = provider.provide(context).orElseThrow(AssertionError::new);
-        assertThat(actual.getRule(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE), is(Boolean.FALSE));
+        assertThat(actual.getRule(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE), is(Boolean.TRUE));
         assertThat(actual.getRule(IdentifierScope.TABLE).matches("foo_tbl", "FOO_TBL", QuoteCharacter.NONE), is(Boolean.FALSE));
         assertThat(actual.getRule(IdentifierScope.VIEW).matches("foo_view", "FOO_VIEW", QuoteCharacter.NONE), is(Boolean.FALSE));
         assertThat(actual.getRule(IdentifierScope.COLUMN).matches("foo_col", "FOO_COL", QuoteCharacter.NONE), is(Boolean.TRUE));
