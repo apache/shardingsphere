@@ -57,8 +57,7 @@ public final class ToolDefinitionRegistry {
         Map<String, MCPToolDefinition> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPToolHandler<?> each : handlers) {
             String toolName = each.getToolName();
-            ShardingSpherePreconditions.checkState(null != toolName && !toolName.isBlank(),
-                    () -> new IllegalArgumentException(String.format("Tool name is required for `%s`.", each.getClass().getName())));
+            ShardingSpherePreconditions.checkNotEmpty(toolName, () -> new IllegalArgumentException(String.format("Tool name is required for `%s`.", each.getClass().getName())));
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
             MCPToolDefinition previousDefinition = result.get(toolName);
             ShardingSpherePreconditions.checkState(null == previousDefinition, () -> new IllegalArgumentException(
@@ -70,7 +69,7 @@ public final class ToolDefinitionRegistry {
 
     private static MCPToolDefinition createToolDefinition(final String toolName, final MCPToolHandler<?> handler) {
         MCPToolDescriptor descriptor = MCPHandlerDescriptorUtils.getRequiredToolDescriptor(handler);
-        ShardingSpherePreconditions.checkState(null != descriptor.getAnnotations(),
+        ShardingSpherePreconditions.checkNotNull(descriptor.getAnnotations(),
                 () -> new IllegalArgumentException(String.format("Tool `%s` MCP annotations are required for `%s`.", toolName, handler.getClass().getName())));
         return new MCPToolDefinition(descriptor, handler);
     }
