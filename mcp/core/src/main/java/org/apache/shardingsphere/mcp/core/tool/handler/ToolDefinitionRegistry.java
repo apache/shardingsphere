@@ -114,17 +114,17 @@ public final class ToolDefinitionRegistry {
      * Dispatch tool call to tool definition.
      *
      * @param requestScope request scope
-     * @param toolDefinition tool definition
+     * @param definition tool definition
      * @param sessionId session identifier
      * @param arguments tool arguments
      * @return tool response
      */
-    public static MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolDefinition toolDefinition, final String sessionId, final Map<String, Object> arguments) {
-        MCPToolArgumentContract.create(toolDefinition.getDescriptor()).validate(arguments);
-        return dispatch(requestScope, toolDefinition.getHandler(), new MCPToolCall(sessionId, arguments));
+    public static MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolDefinition definition, final String sessionId, final Map<String, Object> arguments) {
+        MCPToolArgumentContract.create(definition.getDescriptor()).validate(arguments);
+        return dispatch(requestScope, definition.getHandler(), new MCPToolCall(sessionId, arguments));
     }
 
-    private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolHandler<T> toolHandler, final MCPToolCall toolCall) {
-        return toolHandler.handle(toolHandler.getContextType().cast(requestScope), toolCall);
+    private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolHandler<T> handler, final MCPToolCall toolCall) {
+        return handler.handle(handler.getContextType().cast(requestScope), toolCall);
     }
 }
