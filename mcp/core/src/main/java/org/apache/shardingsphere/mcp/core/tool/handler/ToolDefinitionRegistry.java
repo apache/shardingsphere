@@ -42,15 +42,15 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ToolDefinitionRegistry {
-
+    
     private static final Map<String, MCPToolDefinition> REGISTERED_TOOL_DEFINITIONS;
-
+    
     static {
         REGISTERED_TOOL_DEFINITIONS = createRegisteredToolDefinitions(
                 ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class).stream().flatMap(each -> each.getToolHandlers().stream()).toList());
         validateRegisteredToolDescriptors();
     }
-
+    
     private static Map<String, MCPToolDefinition> createRegisteredToolDefinitions(final Collection<MCPToolHandler<?>> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No tool handlers are registered."));
         Map<String, MCPToolDefinition> result = new LinkedHashMap<>(handlers.size(), 1F);
@@ -65,21 +65,21 @@ public final class ToolDefinitionRegistry {
         }
         return result;
     }
-
+    
     private static MCPToolDefinition createToolDefinition(final String toolName, final MCPToolHandler<?> handler) {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(toolName);
         ShardingSpherePreconditions.checkNotNull(descriptor.getAnnotations(),
                 () -> new IllegalArgumentException(String.format("Tool `%s` MCP annotations are required for `%s`.", toolName, handler.getClass().getName())));
         return new MCPToolDefinition(descriptor, handler);
     }
-
+    
     private static void validateRegisteredToolDescriptors() {
         for (MCPToolDescriptor each : MCPDescriptorCatalogIndex.getToolDescriptors()) {
             ShardingSpherePreconditions.checkState(REGISTERED_TOOL_DEFINITIONS.containsKey(each.getName()),
                     () -> new IllegalStateException(String.format("MCP tool descriptor `%s` has no registered handler.", each.getName())));
         }
     }
-
+    
     /**
      * Get supported tools.
      *
@@ -88,7 +88,7 @@ public final class ToolDefinitionRegistry {
     public static Collection<String> getSupportedTools() {
         return REGISTERED_TOOL_DEFINITIONS.keySet().stream().toList();
     }
-
+    
     /**
      * Get supported tool descriptors.
      *
@@ -97,7 +97,7 @@ public final class ToolDefinitionRegistry {
     public static List<MCPToolDescriptor> getSupportedToolDescriptors() {
         return REGISTERED_TOOL_DEFINITIONS.values().stream().map(MCPToolDefinition::getDescriptor).toList();
     }
-
+    
     /**
      * Find tool definition.
      *
@@ -107,7 +107,7 @@ public final class ToolDefinitionRegistry {
     public static Optional<MCPToolDefinition> findToolDefinition(final String toolName) {
         return Optional.ofNullable(REGISTERED_TOOL_DEFINITIONS.get(toolName));
     }
-
+    
     /**
      * Dispatch tool call to tool definition.
      *
@@ -121,7 +121,7 @@ public final class ToolDefinitionRegistry {
         MCPToolArgumentContract.create(definition.getDescriptor()).validate(arguments);
         return dispatch(requestScope, definition.getHandler(), new MCPToolCall(sessionId, arguments));
     }
-
+    
     private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolHandler<T> handler, final MCPToolCall toolCall) {
         return handler.handle(handler.getContextType().cast(requestScope), toolCall);
     }

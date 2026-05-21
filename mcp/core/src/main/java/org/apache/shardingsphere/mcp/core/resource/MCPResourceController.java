@@ -29,9 +29,9 @@ import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionReg
  */
 @RequiredArgsConstructor
 public final class MCPResourceController {
-
+    
     private final MCPRuntimeContext runtimeContext;
-
+    
     /**
      * Handle resource URI.
      *

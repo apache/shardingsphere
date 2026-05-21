@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPToolControllerTest {
-
+    
     @Test
     void assertHandle() {
         MCPToolDefinition toolDefinition = getToolDefinition("database_gateway_search_metadata");
@@ -57,7 +57,7 @@ class MCPToolControllerTest {
             assertThat(actual.toPayload(), is(payload));
         }
     }
-
+    
     @Test
     void assertHandleWithToolDefinition() {
         MCPToolDefinition toolDefinition = getToolDefinition("database_gateway_search_metadata");
@@ -70,7 +70,7 @@ class MCPToolControllerTest {
             assertThat(createController().handle("session-1", toolDefinition, Map.of("query", "order")).toPayload(), is(payload));
         }
     }
-
+    
     @Test
     void assertHandleWithUnsupportedTool() {
         try (MockedStatic<ToolDefinitionRegistry> mocked = mockStatic(ToolDefinitionRegistry.class)) {
@@ -80,7 +80,7 @@ class MCPToolControllerTest {
             assertThat(actual.getMessage(), is("Unsupported tool `unsupported_tool`."));
         }
     }
-
+    
     @Test
     void assertHandleWithHandlerException() {
         MCPToolDefinition toolDefinition = getToolDefinition("database_gateway_search_metadata");
@@ -94,7 +94,7 @@ class MCPToolControllerTest {
             assertThat(actualPayload.get("message"), is("Search is not supported."));
         }
     }
-
+    
     @Test
     void assertHandleWithToolCallLimitExceeded() {
         MCPToolDefinition toolDefinition = getToolDefinition("database_gateway_search_metadata");
@@ -114,15 +114,15 @@ class MCPToolControllerTest {
             assertThat(actualRecovery.get("category"), is("tool_call_limit_exceeded"));
         }
     }
-
+    
     private MCPToolDefinition getToolDefinition(final String toolName) {
         return ToolDefinitionRegistry.findToolDefinition(toolName).orElseThrow();
     }
-
+    
     private MCPToolController createController() {
         return new MCPToolController(ResourceTestDataFactory.createRuntimeContext());
     }
-
+    
     private MCPToolController createController(final int maxToolCallsPerSession) {
         String previous = System.getProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
         try {
@@ -132,7 +132,7 @@ class MCPToolControllerTest {
             resetMaxToolCallsPerSessionProperty(previous);
         }
     }
-
+    
     private void resetMaxToolCallsPerSessionProperty(final String previous) {
         if (null == previous) {
             System.clearProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);

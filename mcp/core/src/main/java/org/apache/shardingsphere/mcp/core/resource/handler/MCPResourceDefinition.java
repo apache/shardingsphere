@@ -29,10 +29,10 @@ import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
 @RequiredArgsConstructor
 @Getter
 final class MCPResourceDefinition {
-
+    
     private final MCPUriPattern uriPattern;
-
+    
     private final MCPResourceDescriptor descriptor;
-
+    
     private final MCPResourceHandler<?> handler;
 }

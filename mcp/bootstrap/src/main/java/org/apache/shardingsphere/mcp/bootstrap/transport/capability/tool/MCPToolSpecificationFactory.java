@@ -47,17 +47,17 @@ import java.util.Optional;
  * MCP tool specification factory.
  */
 public final class MCPToolSpecificationFactory {
-
+    
     private static final int RESOURCE_LINK_LIMIT = 24;
-
+    
     private final List<MCPToolDescriptor> descriptors;
-
+    
     private final MCPToolController controller;
-
+    
     private final MCPToolElicitationHandler elicitationHandler;
-
+    
     private final JsonSchemaValidator outputSchemaValidator;
-
+    
     /**
      * Create MCP tool specification factory.
      *
@@ -69,7 +69,7 @@ public final class MCPToolSpecificationFactory {
         elicitationHandler = new MCPToolElicitationHandler(controller);
         outputSchemaValidator = new DefaultJsonSchemaValidator();
     }
-
+    
     /**
      * Create MCP tool specifications.
      *
@@ -78,7 +78,7 @@ public final class MCPToolSpecificationFactory {
     public List<SyncToolSpecification> createToolSpecifications() {
         return descriptors.stream().map(each -> new SyncToolSpecification(createTool(each), this::handle)).toList();
     }
-
+    
     private McpSchema.Tool createTool(final MCPToolDescriptor descriptor) {
         McpSchema.Tool.Builder result = McpSchema.Tool.builder()
                 .name(descriptor.getName())
@@ -94,7 +94,7 @@ public final class MCPToolSpecificationFactory {
         }
         return result.build();
     }
-
+    
     @SuppressWarnings("unchecked")
     private McpSchema.JsonSchema createInputSchema(final Map<String, Object> inputSchema) {
         String type = String.valueOf(inputSchema.get("type"));
@@ -103,12 +103,12 @@ public final class MCPToolSpecificationFactory {
         boolean additionalProps = Boolean.TRUE.equals(inputSchema.get("additionalProperties"));
         return new McpSchema.JsonSchema(type, props, required, additionalProps, Collections.emptyMap(), Collections.emptyMap());
     }
-
+    
     private McpSchema.ToolAnnotations createToolAnnotations(final MCPToolAnnotations annotations) {
         return new McpSchema.ToolAnnotations(annotations.getTitle(), annotations.isReadOnlyHint(), annotations.isDestructiveHint(), annotations.isIdempotentHint(),
                 annotations.isOpenWorldHint(), null);
     }
-
+    
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
         try {
             Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Collections.emptyMap());
@@ -124,7 +124,7 @@ public final class MCPToolSpecificationFactory {
             throw MCPTransportErrorFactory.createError(ex);
         }
     }
-
+    
     private McpSchema.CallToolResult createCallToolResult(final MCPToolDescriptor toolDescriptor, final MCPResponse response) {
         if (response instanceof MCPErrorResponse) {
             return createCallToolResult(response);
@@ -140,21 +140,21 @@ public final class MCPToolSpecificationFactory {
         return createCallToolResult(new MCPErrorResponse(String.format(
                 "Tool `%s` structuredContent does not match declared outputSchema: %s", toolDescriptor.getName(), Objects.toString(validation.errorMessage(), "validation failed"))));
     }
-
+    
     private McpSchema.CallToolResult createCallToolResult(final MCPResponse response) {
         return createCallToolResult(response.toPayload(), response instanceof MCPErrorResponse);
     }
-
+    
     private McpSchema.CallToolResult createCallToolResult(final Map<String, Object> payload) {
         return createCallToolResult(payload, false);
     }
-
+    
     private McpSchema.CallToolResult createCallToolResult(final Map<String, Object> payload, final boolean error) {
         CallToolResult.Builder result = CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(error);
         appendResourceLinks(payload, result);
         return result.build();
     }
-
+    
     private void appendResourceLinks(final Map<String, Object> payload, final CallToolResult.Builder result) {
         MCPResourceLinkContract.ResourceLinks resourceLinks = MCPResourceLinkContract.createResourceLinks(payload, RESOURCE_LINK_LIMIT);
         for (McpSchema.ResourceLink each : resourceLinks.links()) {
@@ -164,7 +164,7 @@ public final class MCPToolSpecificationFactory {
             result.meta(createResourceLinksMeta(resourceLinks));
         }
     }
-
+    
     private Map<String, Object> createResourceLinksMeta(final MCPResourceLinkContract.ResourceLinks resourceLinks) {
         return Map.of(
                 MCPShardingSphereMetadataKeys.RESOURCE_LINKS_EMITTED, resourceLinks.links().size(),

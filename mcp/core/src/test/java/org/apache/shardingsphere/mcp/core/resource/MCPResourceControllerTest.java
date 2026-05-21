@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPResourceControllerTest {
-
+    
     @Test
     void assertHandle() {
         MCPResponse response = mock(MCPResponse.class);
@@ -50,7 +50,7 @@ class MCPResourceControllerTest {
             assertThat(actual, is(payload));
         }
     }
-
+    
     @Test
     void assertHandleWithUnsupportedResourceUri() {
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
@@ -59,7 +59,7 @@ class MCPResourceControllerTest {
             assertThat(actual.getResourceUri(), is("unsupported://resource"));
         }
     }
-
+    
     @Test
     void assertHandleWithHandlerException() {
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
@@ -69,7 +69,7 @@ class MCPResourceControllerTest {
             assertThat(actual.getMessage(), is("Index resources are not supported."));
         }
     }
-
+    
     private MCPResourceController createController() {
         return new MCPResourceController(ResourceTestDataFactory.createRuntimeContext());
     }

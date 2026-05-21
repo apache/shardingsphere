@@ -69,7 +69,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MCPToolSpecificationFactoryTest {
-
+    
     @Test
     void assertCreateToolSpecifications() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
@@ -95,7 +95,7 @@ class MCPToolSpecificationFactoryTest {
             assertNotNull(actual.get(0).callHandler());
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsMapAnnotationPresence() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
@@ -110,7 +110,7 @@ class MCPToolSpecificationFactoryTest {
             assertTrue(actual.get(0).tool().annotations().openWorldHint());
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsHandleNullArguments() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
@@ -128,7 +128,7 @@ class MCPToolSpecificationFactoryTest {
             assertFalse(actual.isError());
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsHandleErrorResponse() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
@@ -147,13 +147,13 @@ class MCPToolSpecificationFactoryTest {
             assertTrue(actual.isError());
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsHandlePlainPayload() {
         CallToolResult actual = createCallToolResult("fixture_ping", new MCPMapResponse(Map.of("message", "invalid_request")));
         assertFalse(actual.isError());
     }
-
+    
     @Test
     void assertCreateToolSpecificationsHandleResourceLinks() {
         Map<String, Object> payload = Map.of("resources_to_read", List.of(
@@ -166,7 +166,7 @@ class MCPToolSpecificationFactoryTest {
         assertThat(actualLink.title(), is("logical-database"));
         assertThat(actualLink.mimeType(), is("application/json"));
     }
-
+    
     @Test
     void assertCreateToolSpecificationsHandleItemResourceLinks() {
         Map<String, Object> payload = Map.of("items", List.of(Map.of(
@@ -181,7 +181,7 @@ class MCPToolSpecificationFactoryTest {
         assertThat(((ResourceLink) actual.content().get(3)).uri(), is("shardingsphere://databases/logic_db/tables/t_order/columns"));
         assertThat(((Map<?, ?>) actual.content().get(1).meta()).get(MCPShardingSphereMetadataKeys.SOURCE_FIELD), is("resource"));
     }
-
+    
     @Test
     void assertCreateToolSpecificationsHandleRecoveryResourceLinks() {
         Map<String, Object> recovery = Map.of("resources_to_read", List.of(
@@ -191,7 +191,7 @@ class MCPToolSpecificationFactoryTest {
         assertThat(actual.content().get(1), isA(ResourceLink.class));
         assertThat(((ResourceLink) actual.content().get(1)).uri(), is("shardingsphere://capabilities"));
     }
-
+    
     @Test
     void assertCreateToolSpecificationsHandleBoundedResourceLinks() {
         Map<String, Object> payload = Map.of(
@@ -209,13 +209,13 @@ class MCPToolSpecificationFactoryTest {
         assertThat(((ResourceLink) actual.content().get(3)).uri(), is("shardingsphere://databases"));
         assertThat(((Map<?, ?>) actual.content().get(1).meta()).get(MCPShardingSphereMetadataKeys.SOURCE_FIELD), is("resources_to_read"));
     }
-
+    
     @Test
     void assertCreateToolSpecificationsIgnoreRawUriLink() {
         CallToolResult actual = createCallToolResult("fixture_ping", new MCPMapResponse(Map.of("resource_uri", "shardingsphere://databases/logic_db")));
         assertThat(actual.content().size(), is(1));
     }
-
+    
     @Test
     void assertCreateToolSpecificationsIgnoreArbitraryNestedResourceHint() {
         Map<String, Object> payload = Map.of("debug", Map.of("resource", MCPResourceHintUtils.create(
@@ -223,7 +223,7 @@ class MCPToolSpecificationFactoryTest {
         CallToolResult actual = createCallToolResult("fixture_ping", new MCPMapResponse(payload));
         assertThat(actual.content().size(), is(1));
     }
-
+    
     @Test
     void assertCreateToolSpecificationsHandleToolDefinitionDescriptor() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
@@ -239,7 +239,7 @@ class MCPToolSpecificationFactoryTest {
             assertThat(((TextContent) actual.content().get(0)).text(), is("{\"status\":\"ok\"}"));
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsHandleUnsupportedToolAsProtocolError() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
@@ -258,7 +258,7 @@ class MCPToolSpecificationFactoryTest {
             assertThat(actualData.get("message"), is("Unsupported tool `database_gateway_search_metadata`."));
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsRejectInvalidInputSchema() {
         MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
@@ -278,7 +278,7 @@ class MCPToolSpecificationFactoryTest {
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("query", "order")));
         assertTrue(actual.isError());
     }
-
+    
     @Test
     void assertCreateToolSpecificationsValidateStructuredOutput() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
@@ -296,7 +296,7 @@ class MCPToolSpecificationFactoryTest {
             assertTrue(actual.isError());
         }
     }
-
+    
     @Test
     void assertToolOutputSchemaExamplesMatchSchemas() {
         JsonSchemaValidator validator = new DefaultJsonSchemaValidator();
@@ -307,12 +307,12 @@ class MCPToolSpecificationFactoryTest {
             }
         }
     }
-
+    
     @SuppressWarnings("unchecked")
     private List<Map<String, Object>> getOutputSchemaExamples(final MCPToolDescriptor toolDescriptor) {
         return toolDescriptor.getOutputSchema().containsKey("examples") ? (List<Map<String, Object>>) toolDescriptor.getOutputSchema().get("examples") : List.of();
     }
-
+    
     @Test
     void assertCreateToolSpecificationsHandleInteractiveElicitation() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
@@ -338,22 +338,22 @@ class MCPToolSpecificationFactoryTest {
             mockedToolDefinitionRegistry.verify(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq("session-id"), eq(createElicitedArguments())));
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsSkipElicitationWithSecretQuestion() {
         assertCreateToolSpecificationsSkipUnsafeElicitation(createClarifyingQuestion("custom_properties.display-name", "string", true, "Provide display name."));
     }
-
+    
     @Test
     void assertCreateToolSpecificationsSkipElicitationWithSecretInputType() {
         assertCreateToolSpecificationsSkipUnsafeElicitation(createClarifyingQuestion("custom_properties.display-name", "secret", false, "Provide display name."));
     }
-
+    
     @Test
     void assertCreateToolSpecificationsSkipElicitationWithSensitiveFieldName() {
         assertCreateToolSpecificationsSkipUnsafeElicitation(createClarifyingQuestion("primary_algorithm_properties.access-token", "string", false, "Provide access token."));
     }
-
+    
     private void assertCreateToolSpecificationsSkipUnsafeElicitation(final Map<String, Object> question) {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             String toolName = "database_gateway_plan_encrypt_rule";
@@ -370,7 +370,7 @@ class MCPToolSpecificationFactoryTest {
             verify(exchange, never()).createElicitation(any());
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsSkipElicitationForNonPlanningTool() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
@@ -387,7 +387,7 @@ class MCPToolSpecificationFactoryTest {
             verify(exchange, never()).createElicitation(any());
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsSkipElicitationWithoutRuntimeDescriptor() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
@@ -404,7 +404,7 @@ class MCPToolSpecificationFactoryTest {
             verify(exchange, never()).createElicitation(any());
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsFallbackWithoutElicitation() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
@@ -422,17 +422,17 @@ class MCPToolSpecificationFactoryTest {
             verify(exchange, never()).createElicitation(any());
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsFallbackWhenElicitationDeclined() {
         assertCreateToolSpecificationsFallbackWhenElicitationAction(McpSchema.ElicitResult.Action.DECLINE);
     }
-
+    
     @Test
     void assertCreateToolSpecificationsFallbackWhenElicitationCancelled() {
         assertCreateToolSpecificationsFallbackWhenElicitationAction(McpSchema.ElicitResult.Action.CANCEL);
     }
-
+    
     private void assertCreateToolSpecificationsFallbackWhenElicitationAction(final McpSchema.ElicitResult.Action action) {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             Map<String, Object> expectedPayload = createClarifyingPayload();
@@ -448,7 +448,7 @@ class MCPToolSpecificationFactoryTest {
             verify(exchange).createElicitation(any());
         }
     }
-
+    
     private McpSyncServerExchange createElicitationExchange(final McpSchema.ElicitResult elicitationResult) {
         McpSyncServerExchange result = mock(McpSyncServerExchange.class);
         when(result.sessionId()).thenReturn("session-id");
@@ -456,29 +456,29 @@ class MCPToolSpecificationFactoryTest {
         when(result.createElicitation(any())).thenReturn(elicitationResult);
         return result;
     }
-
+    
     private SyncToolSpecification findToolSpecification(final List<SyncToolSpecification> specifications, final String toolName) {
         return specifications.stream().filter(each -> toolName.equals(each.tool().name())).findFirst().orElseThrow();
     }
-
+    
     private MCPToolDefinition mockSupportedTool(final MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry, final MCPToolDescriptor toolDescriptor) {
         MCPToolDefinition result = createToolDefinition(toolDescriptor);
         mockedToolDefinitionRegistry.when(ToolDefinitionRegistry::getSupportedToolDescriptors).thenReturn(List.of(toolDescriptor));
         mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.findToolDefinition(toolDescriptor.getName())).thenReturn(Optional.of(result));
         return result;
     }
-
+    
     private void mockToolDispatch(final MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry, final MCPToolDefinition toolDefinition,
                                   final Map<String, Object> arguments, final MCPResponse response) {
         mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq("session-id"), eq(arguments)))
                 .thenReturn(response);
     }
-
+    
     @SuppressWarnings("unchecked")
     private MCPToolDefinition createToolDefinition(final MCPToolDescriptor toolDescriptor) {
         return new MCPToolDefinition(toolDescriptor, mock(MCPToolHandler.class));
     }
-
+    
     private CallToolResult createCallToolResult(final String toolName, final MCPResponse response) {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptorWithoutOutputSchema(toolName));
@@ -491,7 +491,7 @@ class MCPToolSpecificationFactoryTest {
             return actualSpecification.callHandler().apply(exchange, new CallToolRequest(toolName, Map.of()));
         }
     }
-
+    
     private Map<String, Object> createClarifyingPayload() {
         return Map.of(
                 "plan_id", "plan-1",
@@ -500,25 +500,25 @@ class MCPToolSpecificationFactoryTest {
                         createClarifyingQuestion("custom_properties.display-name", "string", false, "Provide display name."),
                         createClarifyingQuestion("requires_review", "boolean", false, "Require review?")));
     }
-
+    
     private Map<String, Object> createClarifyingPayload(final Map<String, Object> question) {
         return Map.of(
                 "plan_id", "plan-1",
                 "status", "clarifying",
                 "clarification_questions", List.of(question));
     }
-
+    
     private Map<String, Object> createClarifyingQuestion(final String field, final String inputType, final boolean secret, final String displayMessage) {
         return Map.of("field", field, "input_type", inputType, "secret", secret, "display_message", displayMessage);
     }
-
+    
     private Map<String, Object> createElicitedArguments() {
         return Map.of(
                 "plan_id", "plan-1",
                 "custom_properties", Map.of("display-name", "foo_display"),
                 "intent", Map.of("requires_review", true));
     }
-
+    
     private Map<String, Object> createExpectedElicitRequestedSchema() {
         Map<String, Object> properties = new LinkedHashMap<>(2, 1F);
         properties.put("custom_properties.display-name", Map.of("type", "string", "description", "Provide display name."));
@@ -530,7 +530,7 @@ class MCPToolSpecificationFactoryTest {
         result.put("additionalProperties", false);
         return result;
     }
-
+    
     private MCPToolDescriptor createToolDescriptor(final String toolName) {
         Map<String, Object> properties = new LinkedHashMap<>(2, 1F);
         properties.put("query", Map.of("type", "string", "description", "Search query."));
@@ -540,22 +540,22 @@ class MCPToolSpecificationFactoryTest {
                 Map.of("type", "object"), new MCPToolAnnotations("Search Metadata", true, false, true, true),
                 Map.of(MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS, List.of("shardingsphere://databases")));
     }
-
+    
     private MCPToolDescriptor createToolDescriptor(final String toolName, final MCPToolAnnotations annotations) {
         return new MCPToolDescriptor(toolName, "Fixture Tool", "Run a fixture tool.", createInputSchema(Map.of(), List.of()), Map.of("type", "object"), annotations, Collections.emptyMap());
     }
-
+    
     private MCPToolDescriptor createToolDescriptorWithoutOutputSchema(final String toolName) {
         return new MCPToolDescriptor(toolName, "Fixture Tool", "Run a fixture tool.", createInputSchema(Map.of(), List.of()), Collections.emptyMap(),
                 new MCPToolAnnotations("Fixture Tool", true, false, true, true), Collections.emptyMap());
     }
-
+    
     private MCPToolDescriptor createStrictToolDescriptor(final String toolName) {
         return new MCPToolDescriptor(toolName, "Search Metadata", "Search database metadata.", createInputSchema(Map.of(), List.of()),
                 Map.of("type", "object", "properties", Map.of("status", Map.of("type", "string")), "required", List.of("status")),
                 new MCPToolAnnotations("Search Metadata", true, false, true, true), Collections.emptyMap());
     }
-
+    
     private MCPToolDescriptor createPlanningToolDescriptor(final String toolName) {
         Map<String, Object> properties = new LinkedHashMap<>(2, 1F);
         properties.put("custom_properties", Map.of("type", "object", "description", "Custom properties.", "additionalProperties", true));
@@ -564,7 +564,7 @@ class MCPToolSpecificationFactoryTest {
         return new MCPToolDescriptor(toolName, "Plan Custom Rule", "Plan a custom rule.", createInputSchema(properties, List.of()),
                 Map.of("type", "object"), new MCPToolAnnotations("Plan Custom Rule", false, false, true, true), Collections.emptyMap());
     }
-
+    
     private Map<String, Object> createInputSchema(final Map<String, Object> properties, final List<String> required) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("type", "object");
@@ -573,7 +573,7 @@ class MCPToolSpecificationFactoryTest {
         result.put("additionalProperties", false);
         return result;
     }
-
+    
     private List<Map<String, Object>> createResourceHints(final String uriPrefix, final String sourceField, final int count) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (int i = 0; i < count; i++) {

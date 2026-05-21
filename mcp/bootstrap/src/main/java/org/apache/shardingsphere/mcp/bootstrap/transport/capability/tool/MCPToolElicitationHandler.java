@@ -33,15 +33,15 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 final class MCPToolElicitationHandler {
-
+    
     private final MCPToolController toolController;
-
+    
     private final MCPToolClarificationPolicy clarificationPolicy = new MCPToolClarificationPolicy();
-
+    
     boolean shouldElicit(final McpSyncServerExchange exchange, final MCPToolDescriptor toolDescriptor, final Map<String, Object> payload) {
         return clarificationPolicy.isPlanningTool(toolDescriptor) && supportsFormElicitation(exchange) && clarificationPolicy.hasFormSafeClarificationQuestions(payload);
     }
-
+    
     private boolean supportsFormElicitation(final McpSyncServerExchange exchange) {
         McpSchema.ClientCapabilities clientCapabilities = exchange.getClientCapabilities();
         if (null == clientCapabilities || null == clientCapabilities.elicitation()) {
@@ -50,7 +50,7 @@ final class MCPToolElicitationHandler {
         McpSchema.ClientCapabilities.Elicitation elicitation = clientCapabilities.elicitation();
         return null != elicitation.form() || null == elicitation.url();
     }
-
+    
     MCPResponse handle(final McpSyncServerExchange exchange, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments,
                        final MCPResponse fallbackResponse, final Map<String, Object> payload) {
         MCPToolDescriptor toolDescriptor = toolDefinition.getDescriptor();
@@ -59,7 +59,7 @@ final class MCPToolElicitationHandler {
                 ? toolController.handle(exchange.sessionId(), toolDefinition, clarificationPolicy.mergeArguments(arguments, payload, elicitedResult.content(), toolDescriptor))
                 : fallbackResponse;
     }
-
+    
     private McpSchema.ElicitRequest createElicitRequest(final String toolName, final Map<String, Object> payload) {
         return McpSchema.ElicitRequest.builder()
                 .message(String.format("Provide missing ShardingSphere workflow inputs for `%s`.", toolName))
@@ -67,7 +67,7 @@ final class MCPToolElicitationHandler {
                 .meta(createElicitMeta(toolName, payload))
                 .build();
     }
-
+    
     private Map<String, Object> createElicitMeta(final String toolName, final Map<String, Object> payload) {
         return Map.of(MCPShardingSphereMetadataKeys.TOOL, toolName, MCPShardingSphereMetadataKeys.PLAN_ID, clarificationPolicy.getPlanId(payload));
     }

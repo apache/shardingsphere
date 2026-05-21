@@ -42,18 +42,18 @@ import java.util.Map;
  * MCP resource specification factory.
  */
 public final class MCPResourceSpecificationFactory {
-
+    
     private static final String JSON_CONTENT_TYPE = "application/json";
-
+    
     private final Collection<MCPResourceDescriptor> descriptors;
-
+    
     private final MCPResourceController controller;
-
+    
     public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         descriptors = ResourceDefinitionRegistry.getSupportedResourceDescriptors();
         controller = new MCPResourceController(runtimeContext);
     }
-
+    
     /**
      * Create MCP resource specifications.
      *
@@ -64,7 +64,7 @@ public final class MCPResourceSpecificationFactory {
                 .filter(each -> !each.isTemplated())
                 .map(each -> new SyncResourceSpecification(createResource(each), (exchange, request) -> readResource(request))).toList();
     }
-
+    
     private McpSchema.Resource createResource(final MCPResourceDescriptor descriptor) {
         McpSchema.Resource.Builder result = McpSchema.Resource.builder()
                 .uri(descriptor.getUriTemplate())
@@ -80,7 +80,7 @@ public final class MCPResourceSpecificationFactory {
         }
         return result.build();
     }
-
+    
     /**
      * Create MCP resource template specifications.
      *
@@ -91,7 +91,7 @@ public final class MCPResourceSpecificationFactory {
                 .filter(MCPResourceDescriptor::isTemplated)
                 .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), (exchange, request) -> readResource(request))).toList();
     }
-
+    
     private McpSchema.ResourceTemplate createResourceTemplate(final MCPResourceDescriptor descriptor) {
         McpSchema.ResourceTemplate.Builder result = McpSchema.ResourceTemplate.builder()
                 .uriTemplate(descriptor.getUriTemplate())
@@ -107,12 +107,12 @@ public final class MCPResourceSpecificationFactory {
         }
         return result.build();
     }
-
+    
     private McpSchema.Annotations createAnnotations(final MCPResourceAnnotations annotations) {
         List<McpSchema.Role> audience = annotations.getAudience().stream().map(each -> McpSchema.Role.valueOf(each.toUpperCase(Locale.ENGLISH))).toList();
         return new McpSchema.Annotations(audience, annotations.getPriority(), annotations.getLastModified());
     }
-
+    
     private ReadResourceResult readResource(final McpSchema.ReadResourceRequest request) {
         try {
             Map<String, Object> payload = controller.handle(request.uri()).toPayload();

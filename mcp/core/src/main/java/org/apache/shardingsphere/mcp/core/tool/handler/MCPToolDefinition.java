@@ -28,10 +28,10 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
  */
 @RequiredArgsConstructor
 public final class MCPToolDefinition {
-
+    
     @Getter
     private final MCPToolDescriptor descriptor;
-
+    
     @Getter(AccessLevel.PACKAGE)
     private final MCPToolHandler<?> handler;
 }

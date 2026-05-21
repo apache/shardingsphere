@@ -46,9 +46,9 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceDefinitionRegistry {
-
+    
     private static final List<MCPResourceDefinition> REGISTERED_RESOURCE_DEFINITIONS;
-
+    
     static {
         Map<MCPUriPattern, MCPResourceHandler<?>> resourceHandlers = createRegisteredResourceHandlers(
                 ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class).stream().flatMap(each -> each.getResourceHandlers().stream()).toList());
@@ -56,7 +56,7 @@ public final class ResourceDefinitionRegistry {
         REGISTERED_RESOURCE_DEFINITIONS = createRegisteredResourceDefinitions(resourceHandlers);
         validateRegisteredResourceDescriptors();
     }
-
+    
     private static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResourceHandlers(final Collection<MCPResourceHandler<?>> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
@@ -69,7 +69,7 @@ public final class ResourceDefinitionRegistry {
         }
         return result;
     }
-
+    
     private static void validateRegisteredResourceHandlers(final Map<MCPUriPattern, MCPResourceHandler<?>> resourceHandlers) {
         Map<String, Class<?>> registeredPatterns = new HashMap<>(resourceHandlers.size(), 1F);
         for (Entry<MCPUriPattern, MCPResourceHandler<?>> entry : resourceHandlers.entrySet()) {
@@ -90,22 +90,22 @@ public final class ResourceDefinitionRegistry {
             }
         }
     }
-
+    
     private static List<MCPResourceDefinition> createRegisteredResourceDefinitions(final Map<MCPUriPattern, MCPResourceHandler<?>> handlers) {
         return handlers.entrySet().stream().map(entry -> createResourceDefinition(entry.getKey(), entry.getValue())).toList();
     }
-
+    
     private static MCPResourceDefinition createResourceDefinition(final MCPUriPattern uriPattern, final MCPResourceHandler<?> handler) {
         return new MCPResourceDefinition(uriPattern, MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handler.getResourceUriTemplate()), handler);
     }
-
+    
     private static void validateRegisteredResourceDescriptors() {
         for (MCPResourceDescriptor each : MCPDescriptorCatalogIndex.getResourceDescriptors()) {
             ShardingSpherePreconditions.checkState(isRegisteredResourceDescriptor(each),
                     () -> new IllegalStateException(String.format("MCP resource descriptor `%s` has no registered handler.", each.getUriTemplate())));
         }
     }
-
+    
     private static boolean isRegisteredResourceDescriptor(final MCPResourceDescriptor descriptor) {
         for (MCPResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS) {
             if (descriptor.getUriTemplate().equals(each.getUriPattern().getPattern())) {
@@ -114,7 +114,7 @@ public final class ResourceDefinitionRegistry {
         }
         return false;
     }
-
+    
     /**
      * Dispatch resource URI to registered resource.
      *
@@ -131,15 +131,15 @@ public final class ResourceDefinitionRegistry {
         }
         return Optional.empty();
     }
-
+    
     private static MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceDefinition resourceDefinition, final MCPUriVariables uriVariables) {
         return dispatch(requestScope, resourceDefinition.getHandler(), uriVariables);
     }
-
+    
     private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceHandler<T> resourceHandler, final MCPUriVariables uriVariables) {
         return resourceHandler.handle(resourceHandler.getContextType().cast(requestScope), uriVariables);
     }
-
+    
     /**
      * Get supported resources.
      *
@@ -148,7 +148,7 @@ public final class ResourceDefinitionRegistry {
     public static Collection<String> getSupportedResources() {
         return REGISTERED_RESOURCE_DEFINITIONS.stream().map(each -> each.getUriPattern().getPattern()).toList();
     }
-
+    
     /**
      * Get supported resource descriptors.
      *

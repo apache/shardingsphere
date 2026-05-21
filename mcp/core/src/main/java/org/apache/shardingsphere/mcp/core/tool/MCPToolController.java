@@ -31,17 +31,17 @@ import java.util.Map;
  * MCP tool controller.
  */
 public final class MCPToolController {
-
+    
     private final MCPRuntimeContext runtimeContext;
-
+    
     private final MCPToolCallLimiter toolCallLimiter;
-
+    
     public MCPToolController(final MCPRuntimeContext runtimeContext) {
         this.runtimeContext = runtimeContext;
         toolCallLimiter = new MCPToolCallLimiter();
         runtimeContext.getSessionManager().addSessionCloseListener(toolCallLimiter::releaseSession);
     }
-
+    
     /**
      * Handle tool call.
      *
@@ -53,7 +53,7 @@ public final class MCPToolController {
     public MCPResponse handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
         return handle(sessionId, ToolDefinitionRegistry.findToolDefinition(toolName).orElseThrow(() -> new UnsupportedToolException(toolName)), arguments);
     }
-
+    
     /**
      * Handle tool call.
      *
