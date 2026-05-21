@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceExtensionDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
@@ -66,7 +65,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         List<?> items = metadataLoader.apply(databaseContext, uriVariables);
-        MCPResourceDescriptor descriptor = MCPHandlerDescriptorUtils.getRequiredResourceDescriptor(this);
+        MCPResourceDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(uriTemplate);
         MCPResourceExtensionDescriptor extension = MCPDescriptorCatalogIndex.getRequiredResourceExtensionDescriptor(descriptor.getUriTemplate());
         Map<String, Object> navigationPayload = createNavigationPayload(descriptor, uriVariables);
         if (isDetailResource(extension)) {

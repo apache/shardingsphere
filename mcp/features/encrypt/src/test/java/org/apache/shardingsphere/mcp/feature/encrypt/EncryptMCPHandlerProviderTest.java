@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +47,7 @@ class EncryptMCPHandlerProviderTest {
     @Test
     void assertGetToolHandlers() {
         MCPToolHandler<?> actual = new EncryptMCPHandlerProvider().getToolHandlers().iterator().next();
-        MCPToolDescriptor actualDescriptor = MCPHandlerDescriptorUtils.getRequiredToolDescriptor(actual);
+        MCPToolDescriptor actualDescriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(actual.getToolName());
         assertThat(actual.getToolName(), is("database_gateway_plan_encrypt_rule"));
         assertFalse(actualDescriptor.getAnnotations().isReadOnlyHint());
         assertFalse(actualDescriptor.getAnnotations().isDestructiveHint());

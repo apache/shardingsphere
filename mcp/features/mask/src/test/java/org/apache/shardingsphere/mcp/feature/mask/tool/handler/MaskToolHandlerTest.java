@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
@@ -59,7 +59,7 @@ class MaskToolHandlerTest {
     
     @Test
     void assertGetPlanMaskRuleToolDescriptor() {
-        MCPToolDescriptor actual = MCPHandlerDescriptorUtils.getRequiredToolDescriptor(new PlanMaskRuleToolHandler());
+        MCPToolDescriptor actual = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(new PlanMaskRuleToolHandler().getToolName());
         assertThat(actual.getName(), is("database_gateway_plan_mask_rule"));
     }
     

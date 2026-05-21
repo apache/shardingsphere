@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMet
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +46,7 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertGetSearchMetadataToolDescriptor() {
-        MCPToolDescriptor actual = MCPHandlerDescriptorUtils.getRequiredToolDescriptor(new SearchMetadataToolHandler());
+        MCPToolDescriptor actual = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(new SearchMetadataToolHandler().getToolName());
         assertThat(actual.getName(), is("database_gateway_search_metadata"));
         assertThat(((Map<?, ?>) actual.getInputSchema().get("properties")).size(), is(4));
         Map<?, ?> actualProperties = (Map<?, ?>) actual.getOutputSchema().get("properties");

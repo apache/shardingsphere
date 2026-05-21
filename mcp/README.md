@@ -397,7 +397,8 @@ If you want to add another feature beyond encrypt and mask, keep the implementat
 - If this is a new feature module, wire it into both the build and the runtime classpath: add it under `mcp/features/pom.xml`, then either add it to `distribution/mcp/pom.xml` when it should ship in the official packaged runtime or place the built jar under `plugins/` before startup when it should stay optional
 - For each public tool, implement `MCPToolHandler<T extends MCPHandlerContext>` with the required context type and canonical tool name, and add its descriptor under `META-INF/shardingsphere-mcp/mcp-descriptors`
 - For each public resource, implement `MCPResourceHandler<T extends MCPHandlerContext>` with the required context type and canonical URI template, and add its descriptor under `META-INF/shardingsphere-mcp/mcp-descriptors`
-- Resolve handler-owned descriptor metadata through `MCPHandlerDescriptorUtils` when runtime code needs the catalog descriptor; do not duplicate descriptor fields inside handlers
+- Resolve handler-owned descriptor metadata through `MCPDescriptorCatalogIndex` with the canonical tool name or resource URI template
+  when runtime code needs the catalog descriptor; do not duplicate descriptor fields inside handlers
 - Use `MCPServiceHandlerContext` for service-level handlers, `MCPDatabaseHandlerContext` for database metadata or execution handlers, and `MCPWorkflowHandlerContext` for workflow handlers
 - Implement one `MCPHandlerProvider` that returns the feature-owned handlers through `getToolHandlers()` and `getResourceHandlers()`
 - If the feature owns workflow definitions, implement `MCPWorkflowDefinitionProvider` on the same provider

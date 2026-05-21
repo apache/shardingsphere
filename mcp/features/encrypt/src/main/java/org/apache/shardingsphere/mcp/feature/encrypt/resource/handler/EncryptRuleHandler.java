@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
 
 /**
@@ -47,6 +47,7 @@ public final class EncryptRuleHandler implements MCPResourceHandler<MCPDatabaseH
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(ruleInspectionService.queryEncryptRules(databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue("table")),
-                MCPResourceNavigationPayloadBuilder.create(MCPHandlerDescriptorUtils.getRequiredResourceDescriptor(this), uriVariables, EncryptFeatureDefinition.RULES_RESOURCE_URI));
+                MCPResourceNavigationPayloadBuilder.create(
+                        MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, EncryptFeatureDefinition.RULES_RESOURCE_URI));
     }
 }

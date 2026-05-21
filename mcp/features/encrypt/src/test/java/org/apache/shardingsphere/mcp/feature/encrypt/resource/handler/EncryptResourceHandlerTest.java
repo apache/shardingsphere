@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleIns
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -42,7 +41,8 @@ class EncryptResourceHandlerTest {
     
     @Test
     void assertGetEncryptAlgorithmsUri() {
-        assertThat(MCPHandlerDescriptorUtils.getRequiredResourceDescriptor(new EncryptAlgorithmsHandler()).getUriTemplate(), is("shardingsphere://features/encrypt/algorithms"));
+        assertThat(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(new EncryptAlgorithmsHandler().getResourceUriTemplate()).getUriTemplate(),
+                is("shardingsphere://features/encrypt/algorithms"));
     }
     
     @Test
@@ -61,7 +61,8 @@ class EncryptResourceHandlerTest {
     
     @Test
     void assertGetEncryptRulesUriTemplate() {
-        assertThat(MCPHandlerDescriptorUtils.getRequiredResourceDescriptor(new EncryptRulesHandler()).getUriTemplate(), is("shardingsphere://features/encrypt/databases/{database}/rules"));
+        assertThat(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(new EncryptRulesHandler().getResourceUriTemplate()).getUriTemplate(),
+                is("shardingsphere://features/encrypt/databases/{database}/rules"));
     }
     
     @Test
@@ -79,7 +80,7 @@ class EncryptResourceHandlerTest {
     @Test
     void assertGetEncryptRuleUriTemplate() {
         EncryptRuleHandler actual = new EncryptRuleHandler();
-        String actualUriTemplate = MCPHandlerDescriptorUtils.getRequiredResourceDescriptor(actual).getUriTemplate();
+        String actualUriTemplate = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(actual.getResourceUriTemplate()).getUriTemplate();
         assertThat(actualUriTemplate, is("shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules"));
         assertThat(MCPDescriptorCatalogIndex.getRequiredResourceExtensionDescriptor(actualUriTemplate).getResourceKind(), is("list"));
     }

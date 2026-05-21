@@ -31,7 +31,6 @@ import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
 import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -97,7 +96,7 @@ public final class ResourceDefinitionRegistry {
     }
 
     private static MCPResourceDefinition createResourceDefinition(final MCPUriPattern uriPattern, final MCPResourceHandler<?> handler) {
-        return new MCPResourceDefinition(uriPattern, MCPHandlerDescriptorUtils.getRequiredResourceDescriptor(handler), handler);
+        return new MCPResourceDefinition(uriPattern, MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handler.getResourceUriTemplate()), handler);
     }
 
     private static void validateRegisteredResourceDescriptors() {

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowValidationHandler;
@@ -43,7 +43,7 @@ class WorkflowValidationToolHandlerTest {
     @Test
     void assertGetToolDescriptor() {
         WorkflowValidationToolHandler handler = new WorkflowValidationToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(WorkflowHandlerTestFixture.createDefinition("encrypt.rule"))));
-        MCPToolDescriptor actual = MCPHandlerDescriptorUtils.getRequiredToolDescriptor(handler);
+        MCPToolDescriptor actual = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(handler.getToolName());
         assertThat(actual.getName(), is("database_gateway_validate_workflow"));
     }
     

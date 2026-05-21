@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPHandlerDescriptorUtils;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -68,7 +67,7 @@ public final class ToolDefinitionRegistry {
     }
 
     private static MCPToolDefinition createToolDefinition(final String toolName, final MCPToolHandler<?> handler) {
-        MCPToolDescriptor descriptor = MCPHandlerDescriptorUtils.getRequiredToolDescriptor(handler);
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(toolName);
         ShardingSpherePreconditions.checkNotNull(descriptor.getAnnotations(),
                 () -> new IllegalArgumentException(String.format("Tool `%s` MCP annotations are required for `%s`.", toolName, handler.getClass().getName())));
         return new MCPToolDefinition(descriptor, handler);
