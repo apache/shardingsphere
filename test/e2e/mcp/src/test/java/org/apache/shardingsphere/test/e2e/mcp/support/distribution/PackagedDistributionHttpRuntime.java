@@ -85,8 +85,7 @@ public final class PackagedDistributionHttpRuntime implements AutoCloseable {
     }
     
     private IllegalStateException createStartupFailure(final IllegalStateException cause) {
-        return new IllegalStateException("Packaged MCP HTTP distribution failed to become ready. output: "
-                + String.join(System.lineSeparator(), processSupport.getOutputMessages()), cause);
+        return new IllegalStateException("Packaged MCP HTTP distribution failed to become ready. output: " + ProcessOutputDiagnostics.format(processSupport.getOutputMessages()), cause);
     }
     
     private void closeInteractionClientQuietly(final MCPInteractionClient interactionClient) {

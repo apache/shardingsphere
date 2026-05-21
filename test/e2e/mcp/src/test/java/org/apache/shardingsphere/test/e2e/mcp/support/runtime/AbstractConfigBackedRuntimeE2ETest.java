@@ -33,6 +33,7 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPIntera
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPStdioInteractionClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.IOException;
 import java.net.URI;
@@ -48,6 +49,11 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
     private static final String LOOPBACK_BIND_HOST = "127.0.0.1";
     
     private static final String ENDPOINT_PATH = "/gateway";
+    
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
     
     @Getter
     @TempDir

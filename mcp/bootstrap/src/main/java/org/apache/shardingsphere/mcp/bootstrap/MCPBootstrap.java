@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -43,10 +44,16 @@ public final class MCPBootstrap {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException {
         // CHECKSTYLE:ON
+        installJavaUtilLoggingBridge();
         String configPath = getConfigurationPath(args);
         MCPLaunchConfiguration launchConfig = MCPConfigurationLoader.load(configPath);
         AtomicReference<MCPRuntimeServer> runtimeServerReference = new AtomicReference<>(new MCPRuntimeLauncher(configPath).launch(launchConfig));
         Runtime.getRuntime().addShutdownHook(new Thread(() -> closeRuntimeServer(runtimeServerReference), "shardingsphere-mcp-shutdown"));
+    }
+    
+    private static void installJavaUtilLoggingBridge() {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
     }
     
     private static String getConfigurationPath(final String[] args) {

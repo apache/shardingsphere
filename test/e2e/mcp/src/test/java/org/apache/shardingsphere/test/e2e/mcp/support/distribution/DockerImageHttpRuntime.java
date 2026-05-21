@@ -158,7 +158,7 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
     }
     
     private IllegalStateException createStartupFailure(final IllegalStateException cause) {
-        return new IllegalStateException("Docker MCP HTTP distribution failed to become ready. output: " + String.join(System.lineSeparator(), outputMessages), cause);
+        return new IllegalStateException("Docker MCP HTTP distribution failed to become ready. output: " + ProcessOutputDiagnostics.format(outputMessages), cause);
     }
     
     private void closeInteractionClientQuietly(final MCPInteractionClient interactionClient) {

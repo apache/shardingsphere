@@ -40,7 +40,12 @@
         </encoder>
     </appender>
     
-    <root level="INFO">
+    <logger name="org.apache.shardingsphere" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <root level="WARN">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
     </root>

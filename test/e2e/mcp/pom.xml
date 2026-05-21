@@ -74,6 +74,11 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     
     <build>
@@ -84,7 +89,6 @@
                     <groups>${mcp.e2e.llm.groups}</groups>
                     <excludedGroups>${mcp.e2e.llm.excludedGroups}</excludedGroups>
                     <systemPropertyVariables>
-                        <java.util.logging.config.file>${project.basedir}/src/test/resources/jul-logging.properties</java.util.logging.config.file>
                         <mcp.e2e.llm.enabled>${mcp.e2e.llm.enabled}</mcp.e2e.llm.enabled>
                     </systemPropertyVariables>
                 </configuration>
