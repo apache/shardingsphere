@@ -29,7 +29,7 @@ class MCPE2ETestConfigurationTest {
     @Test
     void assertDefaultLaneValues() {
         MCPE2ETestConfiguration config = new MCPE2ETestConfiguration(new Properties());
-        assertTrue(config.isContractEnabled());
+        assertFalse(config.isContractEnabled());
         assertFalse(config.isProductionMySQLEnabled());
         assertFalse(config.isProductionStdioEnabled());
         assertFalse(config.isDistributionEnabled());
@@ -39,13 +39,13 @@ class MCPE2ETestConfigurationTest {
     @Test
     void assertExplicitLaneOverrides() {
         Properties props = new Properties();
-        props.setProperty("mcp.e2e.contract.enabled", "false");
+        props.setProperty("mcp.e2e.contract.enabled", "true");
         props.setProperty("mcp.e2e.production.mysql.enabled", "true");
         props.setProperty("mcp.e2e.production.stdio.enabled", "true");
         props.setProperty("mcp.e2e.distribution.enabled", "true");
         props.setProperty("mcp.e2e.llm.enabled", "true");
         MCPE2ETestConfiguration config = new MCPE2ETestConfiguration(props);
-        assertFalse(config.isContractEnabled());
+        assertTrue(config.isContractEnabled());
         assertTrue(config.isProductionMySQLEnabled());
         assertTrue(config.isProductionStdioEnabled());
         assertTrue(config.isDistributionEnabled());
@@ -58,7 +58,7 @@ class MCPE2ETestConfigurationTest {
         props.setProperty("mcp.e2e.contract.enabled", "invalid");
         props.setProperty("mcp.e2e.production.mysql.enabled", "invalid");
         MCPE2ETestConfiguration config = new MCPE2ETestConfiguration(props);
-        assertTrue(config.isContractEnabled());
+        assertFalse(config.isContractEnabled());
         assertFalse(config.isProductionMySQLEnabled());
     }
     

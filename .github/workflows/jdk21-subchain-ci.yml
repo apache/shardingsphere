@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: JDK 21 Subchain - CI
+name: JDK 21 Subchain - E2E
 
 on:
   pull_request:
@@ -34,7 +34,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: jdk21-subchain-ci-${{ github.workflow }}-${{ github.ref }}
+  group: jdk21-subchain-e2e-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -63,7 +63,7 @@ jobs:
           cache-suffix: 'mcp'
           enable-docker-setup: 'true'
       - name: Run MCP Default E2E
-        run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
+        run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -Dmcp.e2e.contract.enabled=true -B -ntp
 
   mcp-mysql-e2e:
     name: MCP E2E - MySQL HTTP and STDIO
