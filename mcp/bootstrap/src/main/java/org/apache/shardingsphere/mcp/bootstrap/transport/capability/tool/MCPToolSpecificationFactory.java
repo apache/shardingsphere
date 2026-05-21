@@ -24,6 +24,7 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
+import io.modelcontextprotocol.spec.McpSchema.ToolAnnotations;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
@@ -80,15 +81,13 @@ public final class MCPToolSpecificationFactory {
     }
     
     private McpSchema.Tool createTool(final MCPToolDescriptor descriptor) {
-        McpSchema.Tool.Builder result = McpSchema.Tool.builder()
-                .name(descriptor.getName())
-                .title(descriptor.getTitle())
-                .description(descriptor.getDescription())
-                .inputSchema(createInputSchema(descriptor.getInputSchema()));
+        McpSchema.Tool.Builder result = McpSchema.Tool.builder().name(descriptor.getName()).description(descriptor.getDescription()).inputSchema(createInputSchema(descriptor.getInputSchema()));
         if (!descriptor.getOutputSchema().isEmpty()) {
             result.outputSchema(descriptor.getOutputSchema());
         }
-        result.annotations(createToolAnnotations(descriptor.getAnnotations()));
+        MCPToolAnnotations annotations = descriptor.getAnnotations();
+        result.annotations(
+                new ToolAnnotations(annotations.getTitle(), annotations.isReadOnlyHint(), annotations.isDestructiveHint(), annotations.isIdempotentHint(), annotations.isOpenWorldHint(), null));
         if (!descriptor.getMeta().isEmpty()) {
             result.meta(descriptor.getMeta());
         }
@@ -102,11 +101,6 @@ public final class MCPToolSpecificationFactory {
         List<String> required = (List<String>) inputSchema.get("required");
         boolean additionalProps = Boolean.TRUE.equals(inputSchema.get("additionalProperties"));
         return new McpSchema.JsonSchema(type, props, required, additionalProps, Collections.emptyMap(), Collections.emptyMap());
-    }
-    
-    private McpSchema.ToolAnnotations createToolAnnotations(final MCPToolAnnotations annotations) {
-        return new McpSchema.ToolAnnotations(annotations.getTitle(), annotations.isReadOnlyHint(), annotations.isDestructiveHint(), annotations.isIdempotentHint(),
-                annotations.isOpenWorldHint(), null);
     }
     
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
