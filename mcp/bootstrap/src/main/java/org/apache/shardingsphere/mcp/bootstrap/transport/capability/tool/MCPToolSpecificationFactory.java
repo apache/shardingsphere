@@ -106,14 +106,12 @@ public final class MCPToolSpecificationFactory {
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
         try {
             Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Collections.emptyMap());
-            MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition(request.name());
-            MCPToolDescriptor descriptor = toolDefinition.getDescriptor();
-            MCPResponse response = controller.handle(exchange.sessionId(), toolDefinition, arguments);
+            MCPToolDefinition definition = ToolDefinitionRegistry.getToolDefinition(request.name());
+            MCPResponse response = controller.handle(exchange.sessionId(), definition, arguments);
             Map<String, Object> payload = response.toPayload();
-            if (elicitationHandler.shouldElicit(exchange, descriptor, payload)) {
-                return createCallToolResult(descriptor, elicitationHandler.handle(exchange, toolDefinition, arguments, response, payload));
-            }
-            return createCallToolResult(descriptor, response);
+            return elicitationHandler.shouldElicit(exchange, definition.getDescriptor(), payload)
+                    ? createCallToolResult(definition.getDescriptor(), elicitationHandler.handle(exchange, definition, arguments, response, payload))
+                    : createCallToolResult(definition.getDescriptor(), response);
         } catch (final UnsupportedToolException ex) {
             throw MCPTransportErrorFactory.createError(ex);
         }

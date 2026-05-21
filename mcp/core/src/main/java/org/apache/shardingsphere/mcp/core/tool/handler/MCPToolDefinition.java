@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
@@ -27,11 +26,10 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
  * MCP tool definition.
  */
 @RequiredArgsConstructor
+@Getter
 public final class MCPToolDefinition {
     
-    @Getter
     private final MCPToolDescriptor descriptor;
     
-    @Getter(AccessLevel.PACKAGE)
     private final MCPToolHandler<?> handler;
 }
