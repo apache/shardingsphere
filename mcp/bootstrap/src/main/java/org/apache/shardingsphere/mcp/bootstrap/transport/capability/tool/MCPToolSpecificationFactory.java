@@ -106,7 +106,7 @@ public final class MCPToolSpecificationFactory {
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
         try {
             Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Collections.emptyMap());
-            MCPToolDefinition toolDefinition = ToolDefinitionRegistry.findToolDefinition(request.name()).orElseThrow(() -> new UnsupportedToolException(request.name()));
+            MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition(request.name());
             MCPToolDescriptor descriptor = toolDefinition.getDescriptor();
             MCPResponse response = controller.handle(exchange.sessionId(), toolDefinition, arguments);
             Map<String, Object> payload = response.toPayload();

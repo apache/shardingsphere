@@ -34,6 +34,7 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
@@ -49,7 +50,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -244,7 +244,7 @@ class MCPToolSpecificationFactoryTest {
     void assertCreateToolSpecificationsHandleUnsupportedToolAsProtocolError() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             mockedToolDefinitionRegistry.when(ToolDefinitionRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("database_gateway_search_metadata")));
-            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.findToolDefinition("database_gateway_search_metadata")).thenReturn(Optional.empty());
+            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata")).thenThrow(UnsupportedToolException.class);
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
@@ -462,9 +462,9 @@ class MCPToolSpecificationFactoryTest {
     }
     
     private MCPToolDefinition mockSupportedTool(final MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry, final MCPToolDescriptor toolDescriptor) {
-        MCPToolDefinition result = createToolDefinition(toolDescriptor);
+        MCPToolDefinition result = new MCPToolDefinition(toolDescriptor, mock(MCPToolHandler.class));
         mockedToolDefinitionRegistry.when(ToolDefinitionRegistry::getSupportedToolDescriptors).thenReturn(List.of(toolDescriptor));
-        mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.findToolDefinition(toolDescriptor.getName())).thenReturn(Optional.of(result));
+        mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.getToolDefinition(toolDescriptor.getName())).thenReturn(result);
         return result;
     }
     
@@ -472,11 +472,6 @@ class MCPToolSpecificationFactoryTest {
                                   final Map<String, Object> arguments, final MCPResponse response) {
         mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq("session-id"), eq(arguments)))
                 .thenReturn(response);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private MCPToolDefinition createToolDefinition(final MCPToolDescriptor toolDescriptor) {
-        return new MCPToolDefinition(toolDescriptor, mock(MCPToolHandler.class));
     }
     
     private CallToolResult createCallToolResult(final String toolName, final MCPResponse response) {

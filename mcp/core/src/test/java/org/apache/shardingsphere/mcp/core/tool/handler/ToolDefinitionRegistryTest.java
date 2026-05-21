@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeReq
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidApprovedStepsException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -41,15 +42,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
@@ -82,10 +80,8 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
-    void assertFindToolDefinition() {
-        Optional<MCPToolDefinition> actual = ToolDefinitionRegistry.findToolDefinition("database_gateway_search_metadata");
-        assertTrue(actual.isPresent());
-        assertThat(actual.orElseThrow().getDescriptor().getName(), is("database_gateway_search_metadata"));
+    void assertGetToolDefinition() {
+        assertThat(ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata").getDescriptor().getName(), is("database_gateway_search_metadata"));
     }
     
     @Test
@@ -93,7 +89,7 @@ class ToolDefinitionRegistryTest {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
         runtimeContext.getSessionManager().createSession("session-1");
         try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
-            MCPToolDefinition toolDefinition = getToolDefinition("database_gateway_search_metadata");
+            MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata");
             MCPResponse actual = ToolDefinitionRegistry.dispatch(requestContext, toolDefinition, "session-1", Map.of("query", "order", "object_types", List.of("index")));
             assertThat(toolDefinition.getDescriptor().getName(), is("database_gateway_search_metadata"));
             assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
@@ -101,8 +97,8 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
-    void assertFindToolDefinitionWithUnknownToolName() {
-        assertFalse(ToolDefinitionRegistry.findToolDefinition("unknown_tool").isPresent());
+    void assertGetToolDefinitionWithUnknownToolName() {
+        assertThrows(UnsupportedToolException.class, () -> ToolDefinitionRegistry.getToolDefinition("unknown_tool"));
     }
     
     @Test
@@ -226,11 +222,7 @@ class ToolDefinitionRegistryTest {
     }
     
     private static MCPResponse dispatch(final String toolName, final Map<String, Object> arguments) {
-        return ToolDefinitionRegistry.dispatch(mock(MCPRequestScope.class), getToolDefinition(toolName), "session-1", arguments);
-    }
-    
-    private static MCPToolDefinition getToolDefinition(final String toolName) {
-        return ToolDefinitionRegistry.findToolDefinition(toolName).orElseThrow();
+        return ToolDefinitionRegistry.dispatch(mock(MCPRequestScope.class), ToolDefinitionRegistry.getToolDefinition(toolName), "session-1", arguments);
     }
     
     private static MCPToolDescriptor createNestedFixtureToolDescriptor() {

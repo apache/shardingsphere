@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
+import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 
 import java.util.Collection;
@@ -99,13 +100,13 @@ public final class ToolDefinitionRegistry {
     }
     
     /**
-     * Find tool definition.
+     * Get tool definition.
      *
      * @param toolName tool name
      * @return tool definition
      */
-    public static Optional<MCPToolDefinition> findToolDefinition(final String toolName) {
-        return Optional.ofNullable(REGISTERED_TOOL_DEFINITIONS.get(toolName));
+    public static MCPToolDefinition getToolDefinition(final String toolName) {
+        return Optional.ofNullable(REGISTERED_TOOL_DEFINITIONS.get(toolName)).orElseThrow(() -> new UnsupportedToolException(toolName));
     }
     
     /**
