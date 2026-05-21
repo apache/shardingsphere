@@ -34,11 +34,14 @@ import static org.mockito.Mockito.when;
 
 class JDBCQueryResultMetaDataTest {
     
+    private ResultSetMetaData resultSetMetaData;
+    
     private JDBCQueryResultMetaData queryResultMetaData;
     
     @BeforeEach
     void setUp() throws SQLException {
-        queryResultMetaData = new JDBCQueryResultMetaData(mockResultSetMetaData());
+        resultSetMetaData = mockResultSetMetaData();
+        queryResultMetaData = new JDBCQueryResultMetaData(resultSetMetaData);
     }
     
     private ResultSetMetaData mockResultSetMetaData() throws SQLException {
@@ -55,6 +58,11 @@ class JDBCQueryResultMetaDataTest {
         when(result.isNullable(1)).thenReturn(ResultSetMetaData.columnNoNulls);
         when(result.isAutoIncrement(1)).thenReturn(true);
         return result;
+    }
+    
+    @Test
+    void assertGetResultSetMetaData() throws SQLException {
+        assertThat(queryResultMetaData.getResultSetMetaData(), is(resultSetMetaData));
     }
     
     @Test

@@ -17,18 +17,24 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 
+import java.sql.ResultSetMetaData;
 import java.util.List;
 
 /**
  * Raw query result meta data.
  */
-@RequiredArgsConstructor
 public final class RawQueryResultMetaData implements QueryResultMetaData {
     
     private final List<RawQueryResultColumnMetaData> columns;
+    
+    private final ResultSetMetaData resultSetMetaData;
+    
+    public RawQueryResultMetaData(final List<RawQueryResultColumnMetaData> columns) {
+        this.columns = columns;
+        resultSetMetaData = new RawResultSetMetaData(columns);
+    }
     
     @Override
     public int getColumnCount() {
@@ -83,5 +89,10 @@ public final class RawQueryResultMetaData implements QueryResultMetaData {
     @Override
     public boolean isAutoIncrement(final int columnIndex) {
         return columns.get(columnIndex - 1).isAutoIncrement();
+    }
+    
+    @Override
+    public ResultSetMetaData getResultSetMetaData() {
+        return resultSetMetaData;
     }
 }

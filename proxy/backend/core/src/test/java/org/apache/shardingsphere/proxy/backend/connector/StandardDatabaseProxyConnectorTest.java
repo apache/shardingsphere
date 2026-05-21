@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
@@ -107,6 +108,7 @@ import org.mockito.quality.Strictness;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
@@ -202,7 +204,7 @@ class StandardDatabaseProxyConnectorTest {
         ShardingSphereDatabase database = createDatabaseMetaData();
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(new QueryHeaderBuilderFixture());
-            Plugins.getMemberAccessor().set(queryHeadersField, engine, Collections.singletonList(new QueryHeaderBuilderEngine(databaseType).build(createQueryResultMetaData(), database, 1)));
+            Plugins.getMemberAccessor().set(queryHeadersField, engine, Collections.singletonList(new QueryHeaderBuilderEngine(databaseType).build(createResultSetMetaData(), database, 1)));
             Field mergedResultField = StandardDatabaseProxyConnector.class.getDeclaredField("mergedResult");
             Plugins.getMemberAccessor().set(mergedResultField, engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
                 
@@ -507,9 +509,11 @@ class StandardDatabaseProxyConnectorTest {
         when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         QueryResult queryResult = mock(QueryResult.class);
         QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(queryResultMetaData.getColumnCount()).thenReturn(1);
-        when(queryResultMetaData.getColumnName(1)).thenReturn("order_id");
-        when(queryResultMetaData.getColumnLabel(1)).thenReturn("order_id");
+        when(queryResultMetaData.getResultSetMetaData()).thenReturn(resultSetMetaData);
+        when(resultSetMetaData.getColumnName(1)).thenReturn("order_id");
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("order_id");
         when(queryResult.getMetaData()).thenReturn(queryResultMetaData);
         when(proxySQLExecutor.execute(executionContext)).thenReturn(Collections.singletonList(queryResult));
         MergedResult mergedResult = mock(MergedResult.class);
@@ -722,8 +726,8 @@ class StandardDatabaseProxyConnectorTest {
         return result;
     }
     
-    private QueryResultMetaData createQueryResultMetaData() throws SQLException {
-        QueryResultMetaData result = mock(QueryResultMetaData.class);
+    private ShardingSphereResultSetMetaData createResultSetMetaData() throws SQLException {
+        ShardingSphereResultSetMetaData result = mock(ShardingSphereResultSetMetaData.class);
         when(result.getColumnLabel(1)).thenReturn("order_id");
         when(result.getColumnName(1)).thenReturn("order_id");
         return result;
