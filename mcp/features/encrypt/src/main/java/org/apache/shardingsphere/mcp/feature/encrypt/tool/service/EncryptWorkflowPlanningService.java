@@ -167,6 +167,9 @@ public final class EncryptWorkflowPlanningService {
                 "Please use an encrypt algorithm that is visible in the current Proxy and satisfies the requirements.")) {
             return false;
         }
+        if (!ensureSupportedAlterExpansion(clarifiedIntent, request, existingRules, snapshot)) {
+            return false;
+        }
         planArtifacts(metadataQueryFacade, queryFacade, workflowState, clarifiedIntent, request, existingRules, snapshot);
         return true;
     }
@@ -195,11 +198,38 @@ public final class EncryptWorkflowPlanningService {
         addShrinkAlterCleanupWarning(request, clarifiedIntent, encryptRules, snapshot);
     }
     
+    private boolean ensureSupportedAlterExpansion(final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request,
+                                                  final List<Map<String, Object>> encryptRules, final WorkflowContextSnapshot snapshot) {
+        Optional<Map<String, Object>> existingRule = findEncryptRule(encryptRules, request.getColumn());
+        boolean addsLogicColumn = existingRule.isEmpty() && !encryptRules.isEmpty();
+        if (!addsLogicColumn && !"alter".equalsIgnoreCase(clarifiedIntent.getOperationType())) {
+            return true;
+        }
+        if (!addsLogicColumn && existingRule.isEmpty()) {
+            return true;
+        }
+        boolean addsAssistedQuery = existingRule.isPresent() && Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter())
+                && WorkflowRuleValueUtils.getRuleValue(existingRule.get(), "assisted_query_column").isEmpty();
+        boolean addsLikeQuery = existingRule.isPresent() && Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery())
+                && WorkflowRuleValueUtils.getRuleValue(existingRule.get(), "like_query_column").isEmpty();
+        if (!addsLogicColumn && !addsAssistedQuery && !addsLikeQuery) {
+            return true;
+        }
+        snapshot.getClarifiedIntent().getClarificationMessages().add(
+                "Current Proxy DistSQL cannot automatically expand an existing encrypt table rule with new logic columns, assisted-query bindings, or LIKE-query bindings. "
+                        + "Recreate the rule manually during a maintenance window.");
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ENCRYPT_ALTER_SCOPE_LIMITED, "error", "planning-artifacts",
+                "Encrypt planning cannot expand an existing table rule with new logic columns, assisted-query bindings, or LIKE-query bindings in V1.",
+                "Manually recreate the encrypt rule with the complete column set after reviewing data impact.", true,
+                Map.of("adds_logic_column", addsLogicColumn, "adds_assisted_query", addsAssistedQuery, "adds_like_query", addsLikeQuery)));
+        return false;
+    }
+    
     private void planArtifacts(final MCPMetadataQueryFacade metadataQueryService, final MCPFeatureQueryFacade queryFacade, final EncryptWorkflowState workflowState,
                                final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptRules,
                                final WorkflowContextSnapshot snapshot) {
         if (isDropWorkflow(clarifiedIntent)) {
-            snapshot.getRuleArtifacts().add(ruleDistSQLPlanningService.planEncryptDropRule(request, encryptRules));
+            snapshot.getRuleArtifacts().addAll(ruleDistSQLPlanningService.planEncryptDropRule(request, encryptRules));
             return;
         }
         planEncryptArtifacts(metadataQueryService, queryFacade, workflowState, clarifiedIntent, request, encryptRules, snapshot);
@@ -218,7 +248,7 @@ public final class EncryptWorkflowPlanningService {
         if (!Boolean.FALSE.equals(request.getOptions().getAllowIndexDDL())) {
             snapshot.getIndexPlans().addAll(indexPlanningService.planIndexes(request.getTable(), derivedColumnPlan, createExistingIndexes(metadataQueryService, request)));
         }
-        snapshot.getRuleArtifacts().add(ruleDistSQLPlanningService.planEncryptRule(request, derivedColumnPlan, encryptRules));
+        snapshot.getRuleArtifacts().addAll(ruleDistSQLPlanningService.planEncryptRule(request, derivedColumnPlan, encryptRules));
     }
     
     private void applyRecommendedAlgorithms(final EncryptWorkflowRequest request, final List<AlgorithmCandidate> algorithmCandidates) {

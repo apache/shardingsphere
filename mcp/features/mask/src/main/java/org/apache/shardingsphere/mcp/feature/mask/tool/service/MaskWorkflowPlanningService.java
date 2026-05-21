@@ -24,6 +24,8 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
@@ -130,6 +132,9 @@ public final class MaskWorkflowPlanningService {
         if (!planningSupport.isReadyForArtifactPlanning(request, clarifiedIntent, snapshot, findPropertyRequirements(request), "Please use a mask algorithm visible in the current Proxy.")) {
             return false;
         }
+        if (!ensureSupportedTableRuleExpansion(request, existingRules, snapshot)) {
+            return false;
+        }
         planArtifacts(clarifiedIntent, request, existingRules, snapshot);
         return true;
     }
@@ -145,6 +150,18 @@ public final class MaskWorkflowPlanningService {
     
     private List<AlgorithmPropertyRequirement> findPropertyRequirements(final WorkflowRequest request) {
         return algorithmPropertyTemplateService.findRequirements(request.getAlgorithmType());
+    }
+    
+    private boolean ensureSupportedTableRuleExpansion(final WorkflowRequest request, final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot) {
+        if (maskRules.isEmpty() || maskRules.stream().anyMatch(each -> request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.getRuleValue(each, "column")))) {
+            return true;
+        }
+        snapshot.getClarifiedIntent().getClarificationMessages().add(
+                "Current Proxy DistSQL cannot automatically expand an existing mask table rule with new logic columns. Recreate the rule manually during a maintenance window.");
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED, "error", "planning-artifacts",
+                "Mask planning cannot expand an existing table rule with new logic columns in V1.",
+                "Manually recreate the mask rule with the complete column set after reviewing data impact.", true, Map.of("adds_logic_column", true)));
+        return false;
     }
     
     private void planArtifacts(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,

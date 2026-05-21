@@ -122,8 +122,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         String planId = createMaskRulePlan(httpClient, ownerSessionId);
         Map<String, Object> actual = callApplyWorkflow(httpClient, otherSessionId, planId,
                 Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl")));
-        assertThat(String.valueOf(actual.get("error_code")), is("invalid_request"));
-        assertThat(String.valueOf(castToMap(actual.get("recovery")).get("recovery_category")), is("stale_workflow"));
+        getRecoveryPayload(actual, "stale_workflow");
         assertModelFacingPayloadContract(actual);
     }
     

@@ -58,6 +58,10 @@ public final class WorkflowIssueCode {
     
     public static final String PHYSICAL_CLEANUP_REQUIRED = "WF-LIFE-004";
     
+    public static final String ENCRYPT_ALTER_SCOPE_LIMITED = "WF-LIFE-005";
+    
+    public static final String MASK_ALTER_SCOPE_LIMITED = "WF-LIFE-006";
+    
     public static final String DDL_PERMISSION_DENIED = "WF-DDL-001";
     
     public static final String DDL_EXECUTION_FAILED = "WF-DDL-002";

@@ -303,9 +303,8 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> structuredContent = getStructuredContent(actual.body());
-        assertThat(String.valueOf(structuredContent.get("error_code")), is("invalid_request"));
+        Map<String, Object> recovery = getRecoveryPayload(structuredContent, "missing_context");
         assertModelFacingPayloadContract(structuredContent);
-        Map<String, Object> recovery = castToMap(structuredContent.get("recovery"));
         Map<String, Object> expectedArguments = Map.of("database", "logic_db", "schema", "logic_db",
                 "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview");
         assertThat(recovery.get("category"), is("missing_execution_mode"));
@@ -325,9 +324,8 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 Map.of("query", "order", "object_types", List.of("TABLE")));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> structuredContent = getStructuredContent(actual.body());
-        assertThat(String.valueOf(structuredContent.get("error_code")), is("invalid_request"));
+        Map<String, Object> recovery = getRecoveryPayload(structuredContent, "invalid_enum");
         assertModelFacingPayloadContract(structuredContent);
-        Map<String, Object> recovery = castToMap(structuredContent.get("recovery"));
         assertThat(recovery.get("category"), is("invalid_enum_value"));
         assertThat(recovery.get("field"), is("object_types[0]"));
         assertThat(recovery.get("allowed_values"), is(List.of("database", "schema", "table", "view", "column", "index", "sequence")));

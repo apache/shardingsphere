@@ -76,9 +76,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
                 createExecuteQueryArguments("logic_db", "logic_db", "UPDATE orders SET status = status WHERE order_id = -1"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("error_code")), is("unsupported"));
-        Map<String, Object> recovery = castToMap(payload.get("recovery"));
-        assertThat(String.valueOf(recovery.get("recovery_category")), is("unsafe_sql"));
+        Map<String, Object> recovery = getRecoveryPayload(payload, "unsafe_sql");
         Map<String, Object> nextAction = castToMapList(recovery.get("next_actions")).get(0);
         assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_update"));
         assertThat(String.valueOf(castToMap(nextAction.get("arguments")).get("execution_mode")), is("preview"));
@@ -94,7 +92,8 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
                 createExecuteSQLArguments("analytics_db", "analytics_db", "BEGIN"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("error_code")), is("transaction_state_error"));
+        assertThat(String.valueOf(payload.get("response_mode")), is("recovery"));
+        assertThat(String.valueOf(payload.get("message")), is("Cross-database transaction switching is not supported."));
     }
     
     @Test
@@ -155,7 +154,8 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
                 createExecuteQueryArguments("logic_db", "logic_db", "SELECT 1; SELECT 2"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
+        Map<String, Object> recovery = getRecoveryPayload(payload, "unsafe_sql");
+        assertThat(String.valueOf(recovery.get("category")), is("multiple_sql_statements"));
     }
     
     @Test
@@ -167,8 +167,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
                 createExecuteQueryArguments("logic_db", "logic_db", "SHOW TABLES"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
-        Map<String, Object> recovery = castToMap(payload.get("recovery"));
+        Map<String, Object> recovery = getRecoveryPayload(payload, "validation");
         assertThat(String.valueOf(recovery.get("category")), is("metadata_introspection_sql"));
     }
     
@@ -181,10 +180,8 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
                 createExecuteQueryArguments("logic_db", "logic_db", "USE logic_db"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("error_code")), is("unsupported"));
-        Map<String, Object> recovery = castToMap(payload.get("recovery"));
+        Map<String, Object> recovery = getRecoveryPayload(payload, "terminal_operator_action");
         assertThat(String.valueOf(recovery.get("category")), is("banned_sql_statement"));
-        assertThat(String.valueOf(recovery.get("recovery_category")), is("terminal_operator_action"));
     }
     
     @Test
@@ -195,7 +192,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", Map.of("database", "logic_db", "schema", "logic_db"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
+        getRecoveryPayload(payload, "missing_context");
         assertThat(String.valueOf(payload.get("message")), is("sql is required."));
     }
     

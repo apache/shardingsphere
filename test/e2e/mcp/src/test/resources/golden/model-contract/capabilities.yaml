@@ -30,7 +30,8 @@ model_first_summary:
     read_only: {tool: database_gateway_execute_query, statement_rule: Use for one
         SELECT or EXPLAIN ANALYZE statement.}
     side_effecting: {tool: database_gateway_execute_update, first_mode: preview, execute_requires: execution_mode=execute}
-  side_effect_rule: Preview side effects first; execute only when the requested side effect is still intended.
+  side_effect_rule: Preview side effects first; execute only when the requested side
+    effect is still intended.
   workflow_rule:
     planning_tools: [database_gateway_plan_encrypt_rule, database_gateway_plan_mask_rule]
     preview_tool: {tool: database_gateway_apply_workflow, execution_mode: preview}
@@ -50,8 +51,8 @@ model_contract:
   optional_catalog_resource: shardingsphere://capabilities
   metadata_first_resource: shardingsphere://databases
   sql_tool_selection: {side_effecting: Use database_gateway_execute_update with execution_mode=preview
-      before execution., read_only: Use database_gateway_execute_query
-      for one SELECT or EXPLAIN ANALYZE statement.}
+      before execution., read_only: Use database_gateway_execute_query for one SELECT
+      or EXPLAIN ANALYZE statement.}
   workflow_session_rule: Reuse the current-session plan_id returned by a planning
     tool; re-plan when the plan is unavailable.
   side_effect_rule: Preview before side effects and continue only when the requested
@@ -129,7 +130,7 @@ common_flows:
 - flow_id: side_effecting_sql
   steps: [call_tool database_gateway_execute_update execution_mode=preview, call_tool
       database_gateway_execute_update execution_mode=execute]
-  stop_condition: Preview the SQL and side-effect scope before execution.
+  stop_condition: Execute only after reviewing the previewed SQL and side-effect scope.
   referenced_tools: [database_gateway_execute_update]
   referenced_resources: &id001 []
 - flow_id: workflow_plan_apply_validate
@@ -150,9 +151,9 @@ common_flows:
   referenced_resources: ['shardingsphere://capabilities']
 protocolAvailability: {resources: true, resourceTemplates: true, tools: true, toolAnnotations: true,
   toolOutputSchemas: true, prompts: true, completions: true, resourceNavigation: true}
-fingerprints: {algorithm: sha256, descriptorCatalog: 9b1506ea356bf2c179957833f0a9828dbf6ebb228f329bacc25368790c311078,
-  promptSet: 2eb14a272682c981414ec29f353e75712d429ad6f0356d5640708d1ab817e3bf, resourceNavigation: 64abf531e9c72549a99ab5f23ee2e0f6d769e45e19b56c73f86144e8f2e4799f,
-  modelFacingSchemas: 23e8323392ffce76fda6ea3eed07ac8a12267d0b76953d07641cb094d76365ae}
+fingerprints: {algorithm: sha256, descriptorCatalog: 09f7fcfee19354aa571046bd9eee2f04ec1a49f71d5ee8b4b31fdfd954b4af2f,
+  promptSet: 04c5448b15d7bb057b6170f31f2830867e85207822bf3a00ea2ec34597ce8777, resourceNavigation: 64abf531e9c72549a99ab5f23ee2e0f6d769e45e19b56c73f86144e8f2e4799f,
+  modelFacingSchemas: 417e2757563caa8cb1a03addb89d1ad7b9aef11a9b212968824b9e1df9228003}
 resources:
 - uri: shardingsphere://capabilities
   name: server-capability-catalog

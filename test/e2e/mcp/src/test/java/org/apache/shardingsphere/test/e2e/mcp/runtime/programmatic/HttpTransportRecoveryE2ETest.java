@@ -54,7 +54,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", Map.of("schema", "logic_db", "sql", "SELECT * FROM orders"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = assertRecoveryCategory(payload, "invalid_request", "missing_context");
+        Map<String, Object> recovery = getRecoveryPayload(payload, "missing_context");
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("type")), is("resource_read"));
         assertThat(String.valueOf(nextAction.get("resource_uri")), is("shardingsphere://databases"));
@@ -76,7 +76,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 Map.of("database", "logic_db", "schema", "logic_db", "sql", "SELECT * FROM orders", "execution_mode", "preview"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = assertRecoveryCategory(payload, "unsupported", "unsupported_target");
+        Map<String, Object> recovery = getRecoveryPayload(payload, "unsupported_target");
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_query"));
         HttpResponse<String> followUp = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", castToMap(nextAction.get("arguments")));
@@ -94,7 +94,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "run"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = assertRecoveryCategory(payload, "invalid_request", "invalid_enum");
+        Map<String, Object> recovery = getRecoveryPayload(payload, "invalid_enum");
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_update"));
         Map<String, Object> retryArguments = castToMap(nextAction.get("arguments"));
@@ -116,7 +116,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = assertRecoveryCategory(payload, "unsupported", "unsafe_sql");
+        Map<String, Object> recovery = getRecoveryPayload(payload, "unsafe_sql");
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_update"));
         Map<String, Object> retryArguments = castToMap(nextAction.get("arguments"));
@@ -136,7 +136,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 Map.of("plan_id", "plan-missing", "execution_mode", "preview"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = assertRecoveryCategory(payload, "invalid_request", "stale_workflow");
+        Map<String, Object> recovery = getRecoveryPayload(payload, "stale_workflow");
         assertThat(String.valueOf(recovery.get("plan_id")), is("plan-missing"));
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("type")), is("completion"));
@@ -162,16 +162,9 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(actual.statusCode(), is(200));
         assertFalse(actual.body().contains(RECOVERY_SECRET));
         Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = assertRecoveryCategory(payload, "invalid_request", "missing_context");
+        Map<String, Object> recovery = getRecoveryPayload(payload, "missing_context");
         assertThat(String.valueOf(recovery.get("category")), is("missing_execution_mode"));
         assertModelFacingPayloadContract(payload);
-    }
-    
-    private Map<String, Object> assertRecoveryCategory(final Map<String, Object> payload, final String expectedErrorCode, final String expectedRecoveryCategory) {
-        assertThat(String.valueOf(payload.get("error_code")), is(expectedErrorCode));
-        Map<String, Object> result = castToMap(payload.get("recovery"));
-        assertThat(String.valueOf(result.get("recovery_category")), is(expectedRecoveryCategory));
-        return result;
     }
     
     private Map<String, Object> getFirstNextAction(final Map<String, Object> recovery) {

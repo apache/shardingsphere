@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
+import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 
 import java.util.Collection;
@@ -128,7 +128,7 @@ final class LLMMCPToolDefinitionFactory {
     }
     
     private MCPToolDescriptor getToolDescriptor(final String toolName) {
-        for (MCPToolDescriptor each : ToolHandlerRegistry.getSupportedToolDescriptors()) {
+        for (MCPToolDescriptor each : ToolDefinitionRegistry.getSupportedToolDescriptors()) {
             if (toolName.equals(each.getName())) {
                 return each;
             }

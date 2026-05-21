@@ -84,6 +84,7 @@
                     <groups>${mcp.e2e.llm.groups}</groups>
                     <excludedGroups>${mcp.e2e.llm.excludedGroups}</excludedGroups>
                     <systemPropertyVariables>
+                        <java.util.logging.config.file>${project.basedir}/src/test/resources/jul-logging.properties</java.util.logging.config.file>
                         <mcp.e2e.llm.enabled>${mcp.e2e.llm.enabled}</mcp.e2e.llm.enabled>
                     </systemPropertyVariables>
                 </configuration>

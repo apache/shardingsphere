@@ -36,7 +36,6 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
 class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
@@ -93,37 +92,26 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", Map.of("query", "metric"));
         assertThat(actual.statusCode(), is(200));
-        assertThat(getItemNames(getStructuredContent(actual.body())), is(List.of("metrics", "metric_id", "metric_name")));
+        assertThat(getItemNames(getStructuredContent(actual.body())), is(List.of("metrics", "metric_id", "metric_name", "PRIMARY")));
     }
     
     @Test
-    void assertSearchMetadataWithPagination() throws IOException, InterruptedException {
+    void assertSearchMetadataDoesNotUseApplicationPagination() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        Map<String, Object> firstPageArguments = createSearchArguments("logic_db", "logic_db", "order", List.of("table", "view"));
-        firstPageArguments.put("page_size", 2);
-        HttpResponse<String> firstPage = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", firstPageArguments);
-        assertThat(firstPage.statusCode(), is(200));
-        Map<String, Object> firstPagePayload = getStructuredContent(firstPage.body());
-        assertThat(getItemNames(firstPagePayload), is(List.of("order_items", "orders")));
-        assertTrue((boolean) firstPagePayload.get("has_more"));
-        String nextPageToken = String.valueOf(firstPagePayload.get("next_page_token"));
-        assertFalse(nextPageToken.isEmpty());
-        assertFalse(nextPageToken.matches("\\d+"));
-        Map<String, Object> secondPageArguments = createSearchArguments("logic_db", "logic_db", "order", List.of("table", "view"));
-        secondPageArguments.put("page_size", 2);
-        secondPageArguments.put("page_token", nextPageToken);
-        HttpResponse<String> secondPage = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", secondPageArguments);
-        assertThat(secondPage.statusCode(), is(200));
-        Map<String, Object> secondPagePayload = getStructuredContent(secondPage.body());
-        assertThat(getItemNames(secondPagePayload), is(List.of("active_orders")));
-        assertFalse((boolean) secondPagePayload.get("has_more"));
-        assertFalse(secondPagePayload.containsKey("next_page_token"));
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata",
+                createSearchArguments("logic_db", "logic_db", "order", List.of("table", "view")));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> actualPayload = getStructuredContent(actual.body());
+        assertThat(getItemNames(actualPayload), is(List.of("order_items", "orders", "active_orders")));
+        assertFalse((boolean) actualPayload.get("has_more"));
+        assertThat(String.valueOf(actualPayload.get("continuation_mode")), is("none"));
+        assertFalse(actualPayload.containsKey("next_page_token"));
     }
     
     @Test
-    void assertSearchMetadataWithOutOfRangePageToken() throws IOException, InterruptedException {
+    void assertRejectUnsupportedPageTokenArgument() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
@@ -131,7 +119,10 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         arguments.put("page_token", "99");
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", arguments);
         assertThat(actual.statusCode(), is(200));
-        assertThat(getItemNames(getStructuredContent(actual.body())), is(List.of()));
+        Map<String, Object> recovery = getRecoveryPayload(getStructuredContent(actual.body()), "validation");
+        assertThat(String.valueOf(recovery.get("category")), is("unknown_argument"));
+        assertThat(String.valueOf(recovery.get("field")), is("page_token"));
+        assertThat(recovery.get("suggested_arguments"), is(createSearchArguments("logic_db", "logic_db", "order", List.of("table", "view"))));
     }
     
     @Test
@@ -142,22 +133,23 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", Map.of("schema", "logic_db", "query", "order"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualPayload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(actualPayload.get("error_code")), is("invalid_request"));
+        assertThat(String.valueOf(actualPayload.get("response_mode")), is("recovery"));
         assertThat(String.valueOf(actualPayload.get("message")), is("Schema cannot be provided without database."));
     }
     
     @Test
-    void assertRejectInvalidPageToken() throws IOException, InterruptedException {
+    void assertRejectUnsupportedPageSizeArgument() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         Map<String, Object> arguments = createSearchArguments("logic_db", "logic_db", "order", List.of("table", "view"));
-        arguments.put("page_token", "invalid");
+        arguments.put("page_size", 2);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", arguments);
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> actualPayload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(actualPayload.get("error_code")), is("invalid_request"));
-        assertThat(String.valueOf(actualPayload.get("message")), is("Invalid page token."));
+        Map<String, Object> recovery = getRecoveryPayload(getStructuredContent(actual.body()), "validation");
+        assertThat(String.valueOf(recovery.get("category")), is("unknown_argument"));
+        assertThat(String.valueOf(recovery.get("field")), is("page_size"));
+        assertThat(recovery.get("suggested_arguments"), is(createSearchArguments("logic_db", "logic_db", "order", List.of("table", "view"))));
     }
     
     @Test
@@ -169,9 +161,9 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
                 Map.of("database", "logic_db", "schema", "logic_db", "query", "order",
                         "object_types", List.of("table", "view", "index", "materialized_view", "sequence")));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> actualPayload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(actualPayload.get("error_code")), is("invalid_request"));
-        assertThat(String.valueOf(actualPayload.get("message")), is("object_types[3] must be one of [database, schema, table, view, column, index, sequence]."));
+        Map<String, Object> recovery = getRecoveryPayload(getStructuredContent(actual.body()), "invalid_enum");
+        assertThat(String.valueOf(recovery.get("category")), is("invalid_enum_value"));
+        assertThat(String.valueOf(recovery.get("field")), is("object_types[3]"));
     }
     
     @Test
@@ -215,7 +207,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getFirstResourcePayload(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("json_rpc_error"));
-        assertThat(String.valueOf(payload.get("message")), is("Resource not found"));
+        assertThat(String.valueOf(payload.get("message")), is("Unsupported resource URI `shardingsphere://databases/logic%ZZdb`."));
     }
     
     @Test
@@ -228,7 +220,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getFirstResourcePayload(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("json_rpc_error"));
-        assertThat(String.valueOf(payload.get("message")), is("Resource not found"));
+        assertThat(String.valueOf(payload.get("message")), is("Unsupported resource URI `shardingsphere://databases/logic_db/schemas/logic_db/tables/{table}`."));
     }
     
     private List<String> getItemNames(final Map<String, Object> payload) {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
+import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +33,7 @@ class LLMMCPToolDefinitionFactoryTest {
     
     @Test
     void assertOfficialToolDefinitionsUseProductionDescriptors() {
-        List<MCPToolDescriptor> toolDescriptors = ToolHandlerRegistry.getSupportedToolDescriptors();
+        List<MCPToolDescriptor> toolDescriptors = ToolDefinitionRegistry.getSupportedToolDescriptors();
         List<String> toolNames = toolDescriptors.stream().map(MCPToolDescriptor::getName).toList();
         List<Map<String, Object>> actual = new LLMMCPToolDefinitionFactory().create(toolNames);
         assertThat(getToolNames(actual), is(toolNames));

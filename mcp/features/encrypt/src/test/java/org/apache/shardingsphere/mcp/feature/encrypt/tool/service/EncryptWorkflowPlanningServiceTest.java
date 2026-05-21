@@ -84,11 +84,36 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
+    void assertPlanRejectsExistingTableRuleExpansionForCreate() {
+        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any()))
+                .thenReturn(List.of(Map.of("logic_column", "phone", "cipher_column", "phone_cipher", "encryptor_type", "AES")));
+        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
+        EncryptAlgorithmRecommendationService algorithmRecommendationService = mock(EncryptAlgorithmRecommendationService.class);
+        when(algorithmRecommendationService.recommendEncryptAlgorithms(any(), any(), any()))
+                .thenReturn(List.of(new AlgorithmCandidate("primary", "AES", true, true, false, 100, "reason", "")));
+        EncryptAlgorithmPropertyTemplateService propertyTemplateService = mock(EncryptAlgorithmPropertyTemplateService.class);
+        when(propertyTemplateService.findRequirements(any(), any(), any())).thenReturn(List.of());
+        EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        EncryptWorkflowPlanningService service = createService(ruleInspectionService, algorithmRecommendationService, propertyTemplateService,
+                mock(DerivedColumnNamingService.class), mock(PhysicalDDLPlanningService.class), mock(IndexPlanningService.class), ruleDistSQLPlanningService);
+        EncryptWorkflowRequest request = createRequest("create");
+        request.setColumn("amount");
+        WorkflowContextSnapshot actual = service.plan(workflowSessionContext, createResolvedMetadataQueryFacade("amount"), createQueryFacade(), "session-1", request);
+        assertThat(actual.getStatus(), is("clarifying"));
+        assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.ENCRYPT_ALTER_SCOPE_LIMITED));
+        assertThat(actual.getDdlArtifacts().size(), is(0));
+        assertThat(actual.getRuleArtifacts().size(), is(0));
+        verify(ruleDistSQLPlanningService, never()).planEncryptRule(any(), any(), any());
+    }
+    
+    @Test
     void assertPlanDropWorkflow() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planEncryptDropRule(any(), any())).thenReturn(new RuleArtifact("drop", "DROP ENCRYPT RULE orders"));
+        when(ruleDistSQLPlanningService.planEncryptDropRule(any(), any())).thenReturn(List.of(new RuleArtifact("drop", "DROP ENCRYPT RULE orders")));
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         EncryptWorkflowPlanningService service = createService(ruleInspectionService, mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(DerivedColumnNamingService.class), mock(PhysicalDDLPlanningService.class),
@@ -152,7 +177,7 @@ class EncryptWorkflowPlanningServiceTest {
         DerivedColumnNamingService derivedColumnNamingService = mock(DerivedColumnNamingService.class);
         when(derivedColumnNamingService.createPlan(any(), any(), any())).thenReturn(createDerivedColumnPlan());
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any())).thenReturn(new RuleArtifact("create", "CREATE ENCRYPT RULE orders"));
+        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any())).thenReturn(List.of(new RuleArtifact("create", "CREATE ENCRYPT RULE orders")));
         EncryptWorkflowRequest request = createNaturalLanguageRequest("encrypt phone number, requires reversible and equality query, no like");
         request.setAlgorithmType("AES");
         request.getOptions().setAssistedQueryAlgorithmType("MD5");
@@ -186,7 +211,7 @@ class EncryptWorkflowPlanningServiceTest {
         when(physicalDDLPlanningService.planAddColumnArtifacts(any(), any(), any(), any()))
                 .thenReturn(List.of(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN phone_like_query VARCHAR(32)", 10)));
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any())).thenReturn(new RuleArtifact("create", "CREATE ENCRYPT RULE orders"));
+        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any())).thenReturn(List.of(new RuleArtifact("create", "CREATE ENCRYPT RULE orders")));
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         EncryptWorkflowPlanningService service = createService(ruleInspectionService, new EncryptAlgorithmRecommendationService(),
                 new EncryptAlgorithmPropertyTemplateService(), derivedColumnNamingService, physicalDDLPlanningService, mock(IndexPlanningService.class),
@@ -239,7 +264,7 @@ class EncryptWorkflowPlanningServiceTest {
         when(physicalDDLPlanningService.planAddColumnArtifacts(any(), any(), any(), any()))
                 .thenReturn(List.of(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN phone_cipher VARCHAR(32)", 10)));
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any())).thenReturn(new RuleArtifact("create", "CREATE ENCRYPT RULE orders"));
+        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any())).thenReturn(List.of(new RuleArtifact("create", "CREATE ENCRYPT RULE orders")));
         IndexPlanningService indexPlanningService = mock(IndexPlanningService.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         EncryptWorkflowPlanningService service = createService(ruleInspectionService, algorithmRecommendationService, propertyTemplateService,
@@ -270,7 +295,7 @@ class EncryptWorkflowPlanningServiceTest {
         when(physicalDDLPlanningService.planAddColumnArtifacts(any(), any(), any(), any()))
                 .thenReturn(List.of(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN phone_cipher", 10)));
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any())).thenReturn(new RuleArtifact("create", "CREATE ENCRYPT RULE orders"));
+        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any())).thenReturn(List.of(new RuleArtifact("create", "CREATE ENCRYPT RULE orders")));
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         EncryptWorkflowPlanningService service = createService(ruleInspectionService, algorithmRecommendationService, propertyTemplateService,
                 derivedColumnNamingService, physicalDDLPlanningService, mock(IndexPlanningService.class), ruleDistSQLPlanningService);
@@ -283,11 +308,15 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     private MCPMetadataQueryFacade createResolvedMetadataQueryFacade() {
+        return createResolvedMetadataQueryFacade("phone");
+    }
+    
+    private MCPMetadataQueryFacade createResolvedMetadataQueryFacade(final String columnName) {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
         when(metadataQueryFacade.queryTable("logic_db", "public", "orders")).thenReturn(Optional.of(createTableMetadata()));
-        when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(createColumnMetadata()));
-        when(metadataQueryFacade.queryTableColumns("logic_db", "public", "orders")).thenReturn(List.of(createColumnMetadata()));
+        when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", columnName)).thenReturn(Optional.of(createColumnMetadata(columnName)));
+        when(metadataQueryFacade.queryTableColumns("logic_db", "public", "orders")).thenReturn(List.of(createColumnMetadata(), createColumnMetadata(columnName)));
         return metadataQueryFacade;
     }
     
@@ -333,7 +362,11 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     private MCPColumnMetadata createColumnMetadata() {
-        return new MCPColumnMetadata("logic_db", "public", "orders", "", "phone");
+        return createColumnMetadata("phone");
+    }
+    
+    private MCPColumnMetadata createColumnMetadata(final String columnName) {
+        return new MCPColumnMetadata("logic_db", "public", "orders", "", columnName);
     }
     
     private DerivedColumnPlan createDerivedColumnPlan() {

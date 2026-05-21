@@ -106,7 +106,7 @@ jobs:
           cache-suffix: 'mcp'
           enable-docker-setup: 'true'
       - name: Test MCP Registry Metadata Command
-        run: ./mvnw -pl mcp/registry -am -DskipITs -Dspotless.skip=true -Dtest=MCPRegistryMetadataCommandTest -Dsurefire.failIfNoSpecifiedTests=false test -B -ntp
+        run: ./mvnw -pl mcp/registry -am -DskipITs -Dspotless.skip=true -Dtest=MCPRegistryMetadataCommandTest -Dsurefire.failIfNoSpecifiedTests=false install -B -ntp
       - name: Package MCP Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
       - name: Build MCP Docker Image

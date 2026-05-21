@@ -48,6 +48,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MaskWorkflowPlanningServiceTest {
@@ -72,6 +74,28 @@ class MaskWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = service.plan(workflowSessionContext, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create"));
         assertThat(actual.getStatus(), is("failed"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
+    }
+    
+    @Test
+    void assertPlanRejectsExistingTableRuleExpansionForCreate() {
+        MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
+        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
+        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of());
+        MaskAlgorithmRecommendationService algorithmRecommendationService = mock(MaskAlgorithmRecommendationService.class);
+        when(algorithmRecommendationService.recommendMaskAlgorithms(any(), any(), any(), any()))
+                .thenReturn(List.of(new AlgorithmCandidate("primary", "MD5", null, null, null, 100, "reason", "")));
+        MaskAlgorithmPropertyTemplateService propertyTemplateService = mock(MaskAlgorithmPropertyTemplateService.class);
+        when(propertyTemplateService.findRequirements("MD5")).thenReturn(List.of());
+        MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(MaskRuleDistSQLPlanningService.class);
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        MaskWorkflowPlanningService service = createService(ruleInspectionService, algorithmRecommendationService, propertyTemplateService, ruleDistSQLPlanningService);
+        WorkflowRequest request = createRequest("create");
+        request.setColumn("amount");
+        WorkflowContextSnapshot actual = service.plan(workflowSessionContext, createResolvedMetadataQueryFacade("amount"), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        assertThat(actual.getStatus(), is("clarifying"));
+        assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED));
+        assertThat(actual.getRuleArtifacts().size(), is(0));
+        verify(ruleDistSQLPlanningService, never()).planMaskRule(any(), any());
     }
     
     @Test
@@ -190,10 +214,14 @@ class MaskWorkflowPlanningServiceTest {
     }
     
     private MCPMetadataQueryFacade createResolvedMetadataQueryFacade() {
+        return createResolvedMetadataQueryFacade("phone");
+    }
+    
+    private MCPMetadataQueryFacade createResolvedMetadataQueryFacade(final String columnName) {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
-        when(metadataQueryFacade.queryTable("logic_db", "public", "orders")).thenReturn(Optional.of(createTableMetadata()));
-        when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(createColumnMetadata()));
+        when(metadataQueryFacade.queryTable("logic_db", "public", "orders")).thenReturn(Optional.of(createTableMetadata(columnName)));
+        when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", columnName)).thenReturn(Optional.of(createColumnMetadata(columnName)));
         return metadataQueryFacade;
     }
     
@@ -231,8 +259,16 @@ class MaskWorkflowPlanningServiceTest {
         return new MCPTableMetadata("logic_db", "public", "orders", List.of(createColumnMetadata()), List.of());
     }
     
+    private MCPTableMetadata createTableMetadata(final String columnName) {
+        return new MCPTableMetadata("logic_db", "public", "orders", List.of(createColumnMetadata(columnName)), List.of());
+    }
+    
     private MCPColumnMetadata createColumnMetadata() {
         return new MCPColumnMetadata("logic_db", "public", "orders", "", "phone");
+    }
+    
+    private MCPColumnMetadata createColumnMetadata(final String columnName) {
+        return new MCPColumnMetadata("logic_db", "public", "orders", "", columnName);
     }
     
     private MaskWorkflowPlanningService createService(final MaskRuleInspectionService ruleInspectionService,

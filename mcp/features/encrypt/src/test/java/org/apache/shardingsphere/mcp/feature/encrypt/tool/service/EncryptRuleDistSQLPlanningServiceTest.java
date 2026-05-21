@@ -38,25 +38,27 @@ class EncryptRuleDistSQLPlanningServiceTest {
     @Test
     void assertPlanEncryptRuleWithCreate() {
         EncryptWorkflowRequest request = createRequest("create", true, true);
-        RuleArtifact actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of());
-        assertThat(actual.getOperationType(), is("create"));
-        assertTrue(actual.getSql().startsWith("CREATE ENCRYPT RULE orders"));
-        assertTrue(actual.getSql().contains("NAME=phone"));
-        assertTrue(actual.getSql().contains("ASSISTED_QUERY=phone_assisted_query"));
-        assertTrue(actual.getSql().contains("LIKE_QUERY=phone_like_query"));
+        List<RuleArtifact> actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getOperationType(), is("create"));
+        assertTrue(actual.get(0).getSql().startsWith("CREATE ENCRYPT RULE orders"));
+        assertTrue(actual.get(0).getSql().contains("NAME=phone"));
+        assertTrue(actual.get(0).getSql().contains("ASSISTED_QUERY_COLUMN=phone_assisted_query"));
+        assertTrue(actual.get(0).getSql().contains("LIKE_QUERY_COLUMN=phone_like_query"));
     }
     
     @Test
     void assertPlanEncryptRuleWithExistingRules() {
         EncryptWorkflowRequest request = createRequest("alter", true, false);
-        RuleArtifact actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of(
+        List<RuleArtifact> actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of(
                 Map.of("logic_column", "phone", "cipher_column", "old_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old"),
                 Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")));
-        assertThat(actual.getOperationType(), is("alter"));
-        assertTrue(actual.getSql().startsWith("ALTER ENCRYPT RULE orders"));
-        assertTrue(actual.getSql().contains("NAME=email"));
-        assertTrue(actual.getSql().contains("NAME=phone"));
-        assertTrue(actual.getSql().contains("CIPHER=phone_cipher"));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getOperationType(), is("alter"));
+        assertTrue(actual.get(0).getSql().startsWith("ALTER ENCRYPT RULE orders"));
+        assertTrue(actual.get(0).getSql().contains("NAME=email"));
+        assertTrue(actual.get(0).getSql().contains("NAME=phone"));
+        assertTrue(actual.get(0).getSql().contains("CIPHER=phone_cipher"));
     }
     
     @Test
@@ -64,8 +66,8 @@ class EncryptRuleDistSQLPlanningServiceTest {
         EncryptWorkflowRequest request = createRequest("create", false, false);
         request.setAlgorithmType("AES'X");
         request.getPrimaryAlgorithmProperties().put("aes-key-value", "s'1");
-        RuleArtifact actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of());
-        assertTrue(actual.getSql().contains("TYPE(NAME='aes''x', PROPERTIES('aes-key-value'='s''1'))"));
+        List<RuleArtifact> actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of());
+        assertTrue(actual.get(0).getSql().contains("TYPE(NAME='aes''x', PROPERTIES('aes-key-value'='s''1'))"));
     }
     
     @Test
@@ -79,21 +81,23 @@ class EncryptRuleDistSQLPlanningServiceTest {
     @Test
     void assertPlanEncryptDropRuleWithoutRemainingColumns() {
         EncryptWorkflowRequest request = createRequest("drop", false, false);
-        RuleArtifact actual = service.planEncryptDropRule(request, List.of(Map.of("logic_column", "phone", "cipher_column", "phone_cipher")));
-        assertThat(actual.getOperationType(), is("drop"));
-        assertThat(actual.getSql(), is("DROP ENCRYPT RULE orders"));
+        List<RuleArtifact> actual = service.planEncryptDropRule(request, List.of(Map.of("logic_column", "phone", "cipher_column", "phone_cipher")));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getOperationType(), is("drop"));
+        assertThat(actual.get(0).getSql(), is("DROP ENCRYPT RULE orders"));
     }
     
     @Test
     void assertPlanEncryptDropRuleWithRemainingColumns() {
         EncryptWorkflowRequest request = createRequest("drop", false, false);
-        RuleArtifact actual = service.planEncryptDropRule(request, List.of(
+        List<RuleArtifact> actual = service.planEncryptDropRule(request, List.of(
                 Map.of("logic_column", "phone", "cipher_column", "phone_cipher"),
                 Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")));
-        assertThat(actual.getOperationType(), is("drop"));
-        assertTrue(actual.getSql().startsWith("ALTER ENCRYPT RULE orders"));
-        assertTrue(actual.getSql().contains("NAME=email"));
-        assertTrue(actual.getSql().contains("CIPHER=email_cipher"));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getOperationType(), is("drop"));
+        assertTrue(actual.get(0).getSql().startsWith("ALTER ENCRYPT RULE orders"));
+        assertTrue(actual.get(0).getSql().contains("NAME=email"));
+        assertTrue(actual.get(0).getSql().contains("CIPHER=email_cipher"));
     }
     
     private EncryptWorkflowRequest createRequest(final String operationType, final boolean equalityFilter, final boolean likeQuery) {

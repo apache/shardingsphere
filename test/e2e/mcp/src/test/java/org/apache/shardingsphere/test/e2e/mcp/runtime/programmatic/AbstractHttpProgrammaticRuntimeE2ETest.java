@@ -138,6 +138,13 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
         return MCPInteractionPayloads.castToMap(value);
     }
     
+    protected final Map<String, Object> getRecoveryPayload(final Map<String, Object> payload, final String expectedRecoveryCategory) {
+        assertThat(String.valueOf(payload.get("response_mode")), is("recovery"));
+        Map<String, Object> result = castToMap(payload.get("recovery"));
+        assertThat(String.valueOf(result.get("recovery_category")), is(expectedRecoveryCategory));
+        return result;
+    }
+    
     protected final URI getEndpointUri() throws IOException {
         return getHttpEndpointUri();
     }

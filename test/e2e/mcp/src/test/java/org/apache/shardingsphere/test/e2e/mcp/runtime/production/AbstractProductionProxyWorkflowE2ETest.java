@@ -88,6 +88,10 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
         assertThat(actualValidationResponse.toString(), String.valueOf(actualValidationResponse.get("overall_status")), is("failed"));
     }
     
+    protected final void assertApplyCompleted(final Map<String, Object> actualApplyResponse) {
+        assertThat(actualApplyResponse.toString(), String.valueOf(actualApplyResponse.get("status")), is("completed"));
+    }
+    
     protected final List<String> getIssueCodes(final Map<String, Object> payload) {
         return getMapList(payload.get("issues")).stream().map(each -> String.valueOf(each.get("code"))).toList();
     }

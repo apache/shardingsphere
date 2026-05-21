@@ -341,10 +341,11 @@ class LLMMCPConversationRunnerTest {
         verify(llmChatClient).complete(anyList(), actualTools.capture(), eq("required"), eq(false));
         assertThat(getToolName(actualTools.getValue().get(0)), CoreMatchers.is("database_gateway_search_metadata"));
         assertThat(getRequiredFields(actualTools.getValue().get(0)), CoreMatchers.is(List.of()));
+        assertThat(getPropertyType(actualTools.getValue().get(0), "database"), CoreMatchers.is("string"));
+        assertThat(getPropertyType(actualTools.getValue().get(0), "schema"), CoreMatchers.is("string"));
         assertThat(getPropertyType(actualTools.getValue().get(0), "query"), CoreMatchers.is("string"));
         assertThat(getPropertyType(actualTools.getValue().get(0), "object_types"), CoreMatchers.is("array"));
         assertThat(getNestedPropertyType(actualTools.getValue().get(0), "object_types", "items"), CoreMatchers.is("string"));
-        assertThat(getPropertyType(actualTools.getValue().get(0), "page_size"), CoreMatchers.is("integer"));
     }
     
     @Test
