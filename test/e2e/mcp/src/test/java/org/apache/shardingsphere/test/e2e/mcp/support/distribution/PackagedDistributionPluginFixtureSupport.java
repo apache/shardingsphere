@@ -40,6 +40,8 @@ public final class PackagedDistributionPluginFixtureSupport {
     
     private static final String DESCRIPTOR_ENTRY = "META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-test-fixture.yaml";
     
+    private static final List<String> DIRECTORY_ENTRIES = List.of("META-INF/", "META-INF/services/", "META-INF/shardingsphere-mcp/", "META-INF/shardingsphere-mcp/mcp-descriptors/");
+    
     private static final List<String> OFFICIAL_FEATURE_ARTIFACT_IDS = List.of("shardingsphere-mcp-feature-encrypt", "shardingsphere-mcp-feature-mask");
     
     private static final List<Class<?>> FIXTURE_PLUGIN_CLASSES = List.of(
@@ -81,6 +83,9 @@ public final class PackagedDistributionPluginFixtureSupport {
                     - status
                     - echo
                   additionalProperties: false
+                  examples:
+                    - status: ready
+                      echo: hello
                 annotations:
                   title: Fixture Ping
                   readOnlyHint: true
@@ -105,6 +110,9 @@ public final class PackagedDistributionPluginFixtureSupport {
         Files.createDirectories(pluginsDirectory);
         Path result = pluginsDirectory.resolve("shardingsphere-mcp-test-fixture-plugin.jar");
         try (JarOutputStream output = new JarOutputStream(Files.newOutputStream(result))) {
+            for (String each : DIRECTORY_ENTRIES) {
+                writeDirectoryEntry(output, each);
+            }
             writeEntry(output, HANDLER_PROVIDER_SERVICE_ENTRY, (PluginFixtureHandlerProvider.class.getName() + '\n').getBytes(StandardCharsets.UTF_8));
             writeEntry(output, DESCRIPTOR_ENTRY, DESCRIPTOR_CONTENT.getBytes(StandardCharsets.UTF_8));
             for (Class<?> each : FIXTURE_PLUGIN_CLASSES) {
@@ -149,6 +157,11 @@ public final class PackagedDistributionPluginFixtureSupport {
     private static void writeEntry(final JarOutputStream output, final String entryName, final byte[] content) throws IOException {
         output.putNextEntry(new JarEntry(entryName));
         output.write(content);
+        output.closeEntry();
+    }
+    
+    private static void writeDirectoryEntry(final JarOutputStream output, final String entryName) throws IOException {
+        output.putNextEntry(new JarEntry(entryName));
         output.closeEntry();
     }
 }
