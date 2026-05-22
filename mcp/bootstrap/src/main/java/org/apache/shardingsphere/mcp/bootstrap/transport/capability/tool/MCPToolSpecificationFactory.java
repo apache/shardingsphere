@@ -125,41 +125,34 @@ public final class MCPToolSpecificationFactory {
     
     private McpSchema.CallToolResult createCallToolResult(final MCPToolDescriptor toolDescriptor, final MCPResponse response) {
         if (response instanceof MCPErrorResponse) {
-            return createCallToolResult(response);
+            return createCallToolResult(response.toPayload(), true);
         }
         Map<String, Object> payload = response.toPayload();
         if (toolDescriptor.getOutputSchema().isEmpty()) {
-            return createCallToolResult(payload);
+            return createCallToolResult(payload, false);
         }
         ValidationResponse validation = outputSchemaValidator.validate(toolDescriptor.getOutputSchema(), payload);
         if (validation.valid()) {
-            return createCallToolResult(payload);
+            return createCallToolResult(payload, false);
         }
-        return createCallToolResult(new MCPErrorResponse(String.format(
-                "Tool `%s` structuredContent does not match declared outputSchema: %s", toolDescriptor.getName(), Objects.toString(validation.errorMessage(), "validation failed"))));
+        final MCPResponse response1 = new MCPErrorResponse(String.format(
+                "Tool `%s` structuredContent does not match declared outputSchema: %s", toolDescriptor.getName(), Objects.toString(validation.errorMessage(), "validation failed")));
+        return createCallToolResult(response1.toPayload(), true);
     }
     
-    private McpSchema.CallToolResult createCallToolResult(final MCPResponse response) {
-        return createCallToolResult(response.toPayload(), response instanceof MCPErrorResponse);
+    private McpSchema.CallToolResult createCallToolResult(final Map<String, Object> payload, final boolean isError) {
+        CallToolResult.Builder builder = CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(isError);
+        appendResourceLinks(payload, builder);
+        return builder.build();
     }
     
-    private McpSchema.CallToolResult createCallToolResult(final Map<String, Object> payload) {
-        return createCallToolResult(payload, false);
-    }
-    
-    private McpSchema.CallToolResult createCallToolResult(final Map<String, Object> payload, final boolean error) {
-        CallToolResult.Builder result = CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(error);
-        appendResourceLinks(payload, result);
-        return result.build();
-    }
-    
-    private void appendResourceLinks(final Map<String, Object> payload, final CallToolResult.Builder result) {
+    private void appendResourceLinks(final Map<String, Object> payload, final CallToolResult.Builder builder) {
         MCPResourceLinkContract.ResourceLinks resourceLinks = MCPResourceLinkContract.createResourceLinks(payload, RESOURCE_LINK_LIMIT);
         for (McpSchema.ResourceLink each : resourceLinks.links()) {
-            result.addContent(each);
+            builder.addContent(each);
         }
         if (0 < resourceLinks.totalCount()) {
-            result.meta(createResourceLinksMeta(resourceLinks));
+            builder.meta(createResourceLinksMeta(resourceLinks));
         }
     }
     
