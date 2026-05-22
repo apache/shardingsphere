@@ -81,7 +81,8 @@ public final class MCPToolSpecificationFactory {
     }
     
     private McpSchema.Tool createTool(final MCPToolDescriptor descriptor) {
-        McpSchema.Tool.Builder result = McpSchema.Tool.builder().name(descriptor.getName()).description(descriptor.getDescription()).inputSchema(createInputSchema(descriptor.getInputSchema()));
+        McpSchema.Tool.Builder result = McpSchema.Tool.builder().name(descriptor.getName()).title(descriptor.getTitle()).description(descriptor.getDescription())
+                .inputSchema(createInputSchema(descriptor.getInputSchema()));
         if (!descriptor.getOutputSchema().isEmpty()) {
             result.outputSchema(descriptor.getOutputSchema());
         }
@@ -112,8 +113,8 @@ public final class MCPToolSpecificationFactory {
             return elicitationHandler.shouldElicit(exchange, definition.getDescriptor(), payload)
                     ? createCallToolResult(definition.getDescriptor(), elicitationHandler.handle(exchange, definition, arguments, response, payload))
                     : createCallToolResult(definition.getDescriptor(), response);
-        } catch (final UnsupportedToolException ex) {
-            throw MCPTransportErrorFactory.createError(ex);
+        } catch (final UnsupportedToolException ignored) {
+            throw MCPTransportErrorFactory.createError(new UnsupportedToolException(request.name()));
         }
     }
     

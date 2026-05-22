@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
+import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 
@@ -48,9 +49,14 @@ public final class MCPToolController {
      * @param toolName tool name
      * @param arguments tool arguments
      * @return tool response
+     * @throws UnsupportedToolException unsupported tool exception
      */
     public MCPResponse handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        return handle(sessionId, ToolDefinitionRegistry.getToolDefinition(toolName), arguments);
+        try {
+            return handle(sessionId, ToolDefinitionRegistry.getToolDefinition(toolName), arguments);
+        } catch (final UnsupportedToolException ignored) {
+            throw new UnsupportedToolException(toolName);
+        }
     }
     
     /**
