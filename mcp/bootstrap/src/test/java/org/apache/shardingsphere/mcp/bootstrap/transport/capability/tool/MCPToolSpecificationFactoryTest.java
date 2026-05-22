@@ -587,12 +587,15 @@ class MCPToolSpecificationFactoryTest {
     
     @Test
     void assertCreateToolSpecificationsFallbackWhenElicitationExpires() {
-        try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
+        try (
+                MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class);
+                MockedStatic<Clock> mockedClock = mockStatic(Clock.class)) {
             MutableClock clock = new MutableClock();
+            mockedClock.when(Clock::systemUTC).thenReturn(clock);
             MCPResponse response = new MCPMapResponse(createClarifyingPayload());
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor("database_gateway_plan_encrypt_rule"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
-            SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(createRuntimeContext("stdio"), clock).createToolSpecifications().get(0);
+            SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(createRuntimeContext("stdio")).createToolSpecifications().get(0);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of("field_1", "foo_display", "field_2", true)));
             when(exchange.createElicitation(any())).thenAnswer(invocation -> {
                 clock.advance(Duration.ofMinutes(11L));

@@ -66,13 +66,9 @@ public final class MCPToolSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        this(runtimeContext, Clock.systemUTC());
-    }
-    
-    MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext, final Clock clock) {
         descriptors = ToolDefinitionRegistry.getSupportedToolDescriptors();
         controller = new MCPToolController(runtimeContext);
-        elicitationHandler = new MCPToolElicitationHandler(controller, runtimeContext.getActiveTransport(), clock);
+        elicitationHandler = new MCPToolElicitationHandler(controller, runtimeContext.getActiveTransport(), Clock.systemUTC());
         outputSchemaValidator = new DefaultJsonSchemaValidator();
     }
     
