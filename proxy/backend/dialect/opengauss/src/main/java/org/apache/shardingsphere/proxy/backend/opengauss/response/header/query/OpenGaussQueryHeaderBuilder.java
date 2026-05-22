@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.opengauss.response.header.query;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
@@ -33,9 +33,9 @@ public final class OpenGaussQueryHeaderBuilder implements QueryHeaderBuilder {
     private final PostgreSQLQueryHeaderBuilder delegate = new PostgreSQLQueryHeaderBuilder();
     
     @Override
-    public QueryHeader build(final QueryResultMetaData queryResultMetaData,
-                             final ShardingSphereDatabase database, final String columnName, final String columnLabel, final int columnIndex) throws SQLException {
-        return delegate.build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
+    public QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final String columnName, final String columnLabel,
+                             final int columnIndex) throws SQLException {
+        return delegate.build(resultSetMetaData, database, columnName, columnLabel, columnIndex);
     }
     
     @Override

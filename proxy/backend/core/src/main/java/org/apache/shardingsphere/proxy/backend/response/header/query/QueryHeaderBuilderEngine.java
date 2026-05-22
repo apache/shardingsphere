@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.response.header.query;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.ColumnIndexOutOfRangeException;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.sql.SQLException;
@@ -32,40 +31,48 @@ import java.sql.SQLException;
 /**
  * Query header builder engine.
  */
-@RequiredArgsConstructor
 public final class QueryHeaderBuilderEngine {
     
-    private final DatabaseType databaseType;
+    private final QueryHeaderBuilder queryHeaderBuilder;
+    
+    /**
+     * Create query header builder engine.
+     *
+     * @param databaseType database type
+     */
+    public QueryHeaderBuilderEngine(final DatabaseType databaseType) {
+        queryHeaderBuilder = DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType);
+    }
     
     /**
      * Build query header builder.
      *
-     * @param queryResultMetaData query result meta data
+     * @param resultSetMetaData result set meta data
      * @param database database
      * @param columnIndex column index
      * @return query header
      * @throws SQLException SQL exception
      */
-    public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
-        String columnName = queryResultMetaData.getColumnName(columnIndex);
-        String columnLabel = queryResultMetaData.getColumnLabel(columnIndex);
-        return DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
+    public QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
+        String columnName = resultSetMetaData.getColumnName(columnIndex);
+        String columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
+        return queryHeaderBuilder.build(resultSetMetaData, database, columnName, columnLabel, columnIndex);
     }
     
     /**
      * Build query header builder.
      *
      * @param projectionsContext projections context
-     * @param queryResultMetaData query result meta data
+     * @param resultSetMetaData result set meta data
      * @param database database
      * @param columnIndex column index
      * @return query header
      * @throws SQLException SQL exception
      */
-    public QueryHeader build(final ProjectionsContext projectionsContext,
-                             final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
+    public QueryHeader build(final ProjectionsContext projectionsContext, final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database,
+                             final int columnIndex) throws SQLException {
         ShardingSpherePreconditions.checkState(columnIndex <= projectionsContext.getExpandProjections().size(), () -> new ColumnIndexOutOfRangeException(columnIndex));
         Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
-        return DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType).build(queryResultMetaData, database, projection.getColumnName(), projection.getColumnLabel(), columnIndex);
+        return queryHeaderBuilder.build(resultSetMetaData, database, projection.getColumnName(), projection.getColumnLabel(), columnIndex);
     }
 }

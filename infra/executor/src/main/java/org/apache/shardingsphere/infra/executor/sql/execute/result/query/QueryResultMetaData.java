@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query;
 
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
@@ -121,4 +122,12 @@ public interface QueryResultMetaData {
      * @throws SQLException SQL exception
      */
     boolean isAutoIncrement(int columnIndex) throws SQLException;
+    
+    /**
+     * Get result set meta data.
+     *
+     * @return result set meta data
+     * @throws SQLException SQL exception
+     */
+    ResultSetMetaData getResultSetMetaData() throws SQLException;
 }
