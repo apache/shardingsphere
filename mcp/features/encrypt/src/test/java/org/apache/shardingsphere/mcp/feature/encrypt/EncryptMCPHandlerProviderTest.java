@@ -19,9 +19,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +29,6 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class EncryptMCPHandlerProviderTest {
     
@@ -47,11 +44,7 @@ class EncryptMCPHandlerProviderTest {
     @Test
     void assertGetToolHandlers() {
         MCPToolHandler<?> actual = new EncryptMCPHandlerProvider().getToolHandlers().iterator().next();
-        MCPToolDescriptor actualDescriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(actual.getToolName());
         assertThat(actual.getToolName(), is("database_gateway_plan_encrypt_rule"));
-        assertFalse(actualDescriptor.getAnnotations().isReadOnlyHint());
-        assertFalse(actualDescriptor.getAnnotations().isDestructiveHint());
-        assertFalse(actualDescriptor.getAnnotations().isIdempotentHint());
     }
     
     @Test

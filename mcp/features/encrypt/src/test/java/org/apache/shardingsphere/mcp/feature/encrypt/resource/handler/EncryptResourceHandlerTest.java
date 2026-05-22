@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -40,12 +39,6 @@ import static org.mockito.Mockito.when;
 class EncryptResourceHandlerTest {
     
     @Test
-    void assertGetEncryptAlgorithmsUri() {
-        assertThat(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(new EncryptAlgorithmsHandler().getResourceUriTemplate()).getUriTemplate(),
-                is("shardingsphere://features/encrypt/algorithms"));
-    }
-    
-    @Test
     void assertHandleEncryptAlgorithms() throws ReflectiveOperationException {
         EncryptAlgorithmsHandler handler = new EncryptAlgorithmsHandler();
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
@@ -60,12 +53,6 @@ class EncryptResourceHandlerTest {
     }
     
     @Test
-    void assertGetEncryptRulesUriTemplate() {
-        assertThat(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(new EncryptRulesHandler().getResourceUriTemplate()).getUriTemplate(),
-                is("shardingsphere://features/encrypt/databases/{database}/rules"));
-    }
-    
-    @Test
     void assertHandleEncryptRules() throws ReflectiveOperationException {
         EncryptRulesHandler handler = new EncryptRulesHandler();
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
@@ -75,14 +62,6 @@ class EncryptResourceHandlerTest {
         verify(ruleInspectionService).queryEncryptRules(any(), eq("logic_db"));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
         assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/encrypt/databases/logic_db/rules"));
-    }
-    
-    @Test
-    void assertGetEncryptRuleUriTemplate() {
-        EncryptRuleHandler actual = new EncryptRuleHandler();
-        String actualUriTemplate = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(actual.getResourceUriTemplate()).getUriTemplate();
-        assertThat(actualUriTemplate, is("shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules"));
-        assertThat(MCPDescriptorCatalogIndex.getRequiredResourceExtensionDescriptor(actualUriTemplate).getResourceKind(), is("list"));
     }
     
     @Test

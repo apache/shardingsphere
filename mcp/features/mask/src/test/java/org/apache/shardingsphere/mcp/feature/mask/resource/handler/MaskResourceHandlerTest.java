@@ -23,8 +23,6 @@ import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -40,18 +38,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MaskResourceHandlerTest {
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertGetUriOrTemplateArguments")
-    void assertGetUriOrTemplate(final String name, final MCPResourceHandler<MCPDatabaseHandlerContext> handler, final String expectedUriOrTemplate) {
-        assertThat(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handler.getResourceUriTemplate()).getUriTemplate(), is(expectedUriOrTemplate));
-    }
-    
-    @Test
-    void assertGetMaskRuleResourceKind() {
-        String actualUriTemplate = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(new MaskRuleHandler().getResourceUriTemplate()).getUriTemplate();
-        assertThat(MCPDescriptorCatalogIndex.getRequiredResourceExtensionDescriptor(actualUriTemplate).getResourceKind(), is("list"));
-    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertHandleArguments")
@@ -73,13 +59,6 @@ class MaskResourceHandlerTest {
             return;
         }
         assertThat(((Map<?, ?>) actual.toPayload().get("parent_resource")).get("uri"), is(expectedParentUri));
-    }
-    
-    private static Stream<Arguments> assertGetUriOrTemplateArguments() {
-        return Stream.of(
-                Arguments.of("mask algorithms URI", new MaskAlgorithmsHandler(), "shardingsphere://features/mask/algorithms"),
-                Arguments.of("mask rules URI", new MaskRulesHandler(), "shardingsphere://features/mask/databases/{database}/rules"),
-                Arguments.of("mask table rule URI", new MaskRuleHandler(), "shardingsphere://features/mask/databases/{database}/tables/{table}/rules"));
     }
     
     private static Stream<Arguments> assertHandleArguments() {

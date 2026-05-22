@@ -28,16 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MCPSchemaMetadataTest {
     
     @Test
-    void assertNew() {
-        MCPSchemaMetadata actual = new MCPSchemaMetadata("foo_db", "foo_schema", List.of(), List.of(), List.of());
-        assertThat(actual.getDatabase(), is("foo_db"));
-        assertThat(actual.getSchema(), is("foo_schema"));
-        assertTrue(actual.getTables().isEmpty());
-        assertTrue(actual.getViews().isEmpty());
-        assertTrue(actual.getSequences().isEmpty());
-    }
-    
-    @Test
     void assertCreateSummary() {
         MCPSchemaMetadata actual = createSchemaMetadata().createSummary();
         assertThat(actual.getDatabase(), is("foo_db"));

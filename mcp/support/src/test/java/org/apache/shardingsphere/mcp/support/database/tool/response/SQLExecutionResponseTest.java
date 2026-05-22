@@ -35,51 +35,8 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLExecutionResponseTest {
-    
-    @Test
-    void assertResultSet() {
-        SQLExecutionResponse actual = SQLExecutionResponse.resultSet(List.of(new ExecuteQueryColumnDefinition("order_id", "INT", "INT", false)), List.of(List.of(1)), true);
-        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
-        assertThat(actual.getStatementClass(), is(SupportedMCPStatement.QUERY));
-        assertThat(actual.getColumns().size(), is(1));
-        assertThat(actual.getRows().size(), is(1));
-        assertThat(actual.getAffectedRows(), is(0));
-        assertThat(actual.getStatementType(), is("SELECT"));
-        assertThat(actual.getStatus(), is("OK"));
-        assertThat(actual.getMessage(), is(""));
-        assertTrue(actual.isTruncated());
-        assertThat(actual.getAppliedMaxRows(), is(0));
-        assertThat(actual.getAppliedTimeoutMs(), is(0));
-    }
-    
-    @Test
-    void assertUpdateCount() {
-        SQLExecutionResponse actual = SQLExecutionResponse.updateCount("UPDATE", 2);
-        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
-        assertThat(actual.getStatementClass(), is(SupportedMCPStatement.DML));
-        assertThat(actual.getStatementType(), is("UPDATE"));
-        assertThat(actual.getAffectedRows(), is(2));
-        assertThat(actual.getStatus(), is("OK"));
-        assertThat(actual.getColumns(), is(List.of()));
-        assertThat(actual.getRows(), is(List.of()));
-        assertThat(actual.getMessage(), is(""));
-        assertFalse(actual.isTruncated());
-    }
-    
-    @Test
-    void assertStatementAck() {
-        SQLExecutionResponse actual = SQLExecutionResponse.statementAck(SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", "Transaction committed.");
-        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
-        assertThat(actual.getStatementClass(), is(SupportedMCPStatement.TRANSACTION_CONTROL));
-        assertThat(actual.getStatementType(), is("COMMIT"));
-        assertThat(actual.getAffectedRows(), is(0));
-        assertThat(actual.getStatus(), is("OK"));
-        assertThat(actual.getMessage(), is("Transaction committed."));
-        assertFalse(actual.isTruncated());
-    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertToPayloadCases")

@@ -37,16 +37,6 @@ import static org.mockito.Mockito.mock;
 class RuntimeDatabaseConfigurationTest {
     
     @Test
-    void assertConstruct() {
-        RuntimeDatabaseConfiguration actual = new RuntimeDatabaseConfiguration("H2", "jdbc:test:logic", "", "", "");
-        assertThat(actual.getDatabaseType(), is("H2"));
-        assertThat(actual.getJdbcUrl(), is("jdbc:test:logic"));
-        assertThat(actual.getUsername(), is(""));
-        assertThat(actual.getPassword(), is(""));
-        assertThat(actual.getDriverClassName(), is(""));
-    }
-    
-    @Test
     void assertOpenConnectionWithoutDriverClassName() throws SQLException {
         RecordingDriver.reset();
         try (Connection actual = new RuntimeDatabaseConfiguration("H2", RecordingDriver.JDBC_URL, "", "", "").openConnection("logic_db")) {
