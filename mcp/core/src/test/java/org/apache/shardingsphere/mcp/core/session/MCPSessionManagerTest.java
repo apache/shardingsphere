@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -103,9 +104,10 @@ class MCPSessionManagerTest {
         sessionManager.createSession("session-1");
         sessionManager.getTransactionResourceManager().beginTransaction("session-1", "logic_db");
         doThrow(new SQLException("cleanup failed")).when(connection).rollback();
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> sessionManager.closeSession("session-1"));
-        assertThat(actual.getMessage(), is("cleanup failed"));
+        assertDoesNotThrow(() -> sessionManager.closeSession("session-1"));
         verify(connection).rollback();
+        verify(connection, never()).setAutoCommit(true);
+        verify(connection).close();
         assertFalse(sessionManager.hasSession("session-1"));
     }
     

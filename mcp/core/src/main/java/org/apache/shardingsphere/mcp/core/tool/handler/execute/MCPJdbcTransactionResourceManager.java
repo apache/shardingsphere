@@ -167,7 +167,7 @@ public final class MCPJdbcTransactionResourceManager {
      * @param sessionId session identifier
      */
     public void closeSession(final String sessionId) {
-        findTransactionResourceContext(sessionId).ifPresent(optional -> rollbackAndClose(sessionId, optional));
+        findTransactionResourceContext(sessionId).ifPresent(optional -> closeSessionTransaction(sessionId, optional));
     }
     
     private Optional<TransactionResourceContext> findTransactionResourceContext(final String sessionId) {
@@ -180,9 +180,7 @@ public final class MCPJdbcTransactionResourceManager {
     
     private void rollbackAndClose(final String sessionId, final TransactionResourceContext transactionResource) {
         try {
-            transactionResource.getConnection().rollback();
-            transactionResource.getConnection().setAutoCommit(true);
-            transactionResource.getConnection().close();
+            rollbackAndClose(transactionResource.getConnection());
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex.getMessage(), ex);
         } finally {
@@ -190,14 +188,73 @@ public final class MCPJdbcTransactionResourceManager {
         }
     }
     
+    private void rollbackAndClose(final Connection connection) throws SQLException {
+        SQLException failure = rollback(connection);
+        if (null == failure) {
+            failure = resetAutoCommit(connection);
+        }
+        failure = close(connection, failure);
+        throwIfNecessary(failure);
+    }
+    
+    private void closeSessionTransaction(final String sessionId, final TransactionResourceContext transactionResource) {
+        try {
+            rollbackAndClose(transactionResource.getConnection());
+        } catch (final SQLException ignored) {
+            // Client disconnects can invalidate the connection before session teardown, so cleanup remains best-effort.
+        } finally {
+            transactionResources.remove(sessionId);
+        }
+    }
+    
     private void closeCommittedTransaction(final String sessionId, final Connection connection) {
         try {
-            connection.setAutoCommit(true);
-            connection.close();
+            resetAutoCommitAndClose(connection);
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex.getMessage(), ex);
         } finally {
             transactionResources.remove(sessionId);
+        }
+    }
+    
+    private void resetAutoCommitAndClose(final Connection connection) throws SQLException {
+        throwIfNecessary(close(connection, resetAutoCommit(connection)));
+    }
+    
+    private SQLException rollback(final Connection connection) {
+        try {
+            connection.rollback();
+            return null;
+        } catch (final SQLException ex) {
+            return ex;
+        }
+    }
+    
+    private SQLException resetAutoCommit(final Connection connection) {
+        try {
+            connection.setAutoCommit(true);
+            return null;
+        } catch (final SQLException ex) {
+            return ex;
+        }
+    }
+    
+    private SQLException close(final Connection connection, final SQLException previousFailure) {
+        try {
+            connection.close();
+            return previousFailure;
+        } catch (final SQLException ex) {
+            if (null == previousFailure) {
+                return ex;
+            }
+            previousFailure.addSuppressed(ex);
+            return previousFailure;
+        }
+    }
+    
+    private void throwIfNecessary(final SQLException failure) throws SQLException {
+        if (null != failure) {
+            throw failure;
         }
     }
     

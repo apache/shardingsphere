@@ -235,6 +235,19 @@ class MCPJdbcTransactionResourceManagerTest {
         assertDoesNotThrow(() -> new MCPJdbcTransactionResourceManager(Collections.emptyMap()).closeSession("session-1"));
     }
     
+    @Test
+    void assertCloseSessionSuppressesRollbackFailure() throws SQLException {
+        Connection connection = mock(Connection.class);
+        MCPJdbcTransactionResourceManager manager = createResourceManager(connection);
+        manager.beginTransaction("session-1", "logic_db");
+        doThrow(new SQLException("rollback failed")).when(connection).rollback();
+        assertDoesNotThrow(() -> manager.closeSession("session-1"));
+        verify(connection).rollback();
+        verify(connection, never()).setAutoCommit(true);
+        verify(connection).close();
+        assertTrue(manager.findTransactionConnection("session-1", "logic_db").isEmpty());
+    }
+    
     private MCPJdbcTransactionResourceManager createResourceManager(final Connection connection) throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
