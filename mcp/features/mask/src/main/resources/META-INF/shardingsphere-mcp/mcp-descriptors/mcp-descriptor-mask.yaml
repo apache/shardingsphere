@@ -265,6 +265,36 @@ tools:
         clarification_questions:
           type: array
           description: "Structured questions for missing workflow inputs. Secret-marked questions require out-of-band client or operator handling instead of MCP form elicitation."
+        elicitation_support:
+          type: object
+          description: "Evaluated MCP elicitation capability and the selected interaction path when automatic form continuation cannot be used."
+          properties:
+            form_mode:
+              type: boolean
+              description: "Whether the client advertised MCP form elicitation support."
+            url_mode:
+              type: boolean
+              description: "Whether the client advertised MCP URL elicitation support."
+            selected_interaction:
+              type: string
+              description: "Fallback interaction selected by the server."
+              enum:
+                - structured_fallback
+                - url_fallback
+        fallback_reason:
+          type: string
+          description: "Machine-readable reason explaining why the planner returned structured fallback instead of automatic form continuation."
+          enum:
+            - client_unsupported
+            - remote_identity_required
+            - missing_plan_id
+            - sensitive_form_blocked
+            - url_mode_not_implemented
+            - ambiguous_field_binding
+            - elicitation_failed
+            - malformed_elicitation_result
+            - invalid_elicited_content
+            - stale_elicitation
         issues:
           type: array
           description: "Warnings, conflicts, and validation issues found during planning."

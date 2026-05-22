@@ -38,6 +38,7 @@ import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 
+import java.time.Clock;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -65,9 +66,13 @@ public final class MCPToolSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
+        this(runtimeContext, Clock.systemUTC());
+    }
+    
+    MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext, final Clock clock) {
         descriptors = ToolDefinitionRegistry.getSupportedToolDescriptors();
         controller = new MCPToolController(runtimeContext);
-        elicitationHandler = new MCPToolElicitationHandler(controller);
+        elicitationHandler = new MCPToolElicitationHandler(controller, runtimeContext.getActiveTransport(), clock);
         outputSchemaValidator = new DefaultJsonSchemaValidator();
     }
     
@@ -110,7 +115,7 @@ public final class MCPToolSpecificationFactory {
             MCPToolDefinition definition = ToolDefinitionRegistry.getToolDefinition(request.name());
             MCPResponse response = controller.handle(exchange.sessionId(), definition, arguments);
             Map<String, Object> payload = response.toPayload();
-            return elicitationHandler.shouldElicit(exchange, definition.getDescriptor(), payload)
+            return elicitationHandler.shouldHandle(definition.getDescriptor(), payload)
                     ? createCallToolResult(definition.getDescriptor(), elicitationHandler.handle(exchange, definition, arguments, response, payload))
                     : createCallToolResult(definition.getDescriptor(), response);
         } catch (final UnsupportedToolException ignored) {

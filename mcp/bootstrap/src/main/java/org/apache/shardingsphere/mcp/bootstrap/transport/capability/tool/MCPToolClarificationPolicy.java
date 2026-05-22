@@ -43,26 +43,76 @@ final class MCPToolClarificationPolicy {
     
     private static final String DISPLAY_MESSAGE_FIELD = "display_message";
     
+    private static final String ALLOWED_VALUES_FIELD = "allowed_values";
+    
     private static final String SECRET_FIELD = "secret";
     
     private static final String PROPERTIES_FIELD = "properties";
     
+    private static final String ADDITIONAL_PROPERTIES_FIELD = "additionalProperties";
+    
     private static final String TYPE_FIELD = "type";
     
-    private static final List<String> SENSITIVE_FIELD_NAME_MARKERS = List.of("password", "token", "secret", "credential", "key");
+    private static final String DOT = ".";
+    
+    private static final String FORM_PROPERTY_PREFIX = "field_";
+    
+    private static final String CAMEL_CASE_SEPARATOR_PATTERN = "([a-z])([A-Z])";
+    
+    private static final String NON_ALPHANUMERIC_PATTERN = "[^a-z0-9]+";
+    
+    private static final List<String> SENSITIVE_FIELD_NAME_MARKERS = List.of(
+            "password", "passwd", "passphrase", "secret", "token", "accesstoken", "apikey", "privatekey", "credential", "card", "cvv", "payment", "key");
     
     boolean isPlanningTool(final MCPToolDescriptor toolDescriptor) {
         return MCPDescriptorCatalogIndex.findToolRuntimeDescriptor(toolDescriptor.getName())
                 .map(runtimeDescriptor -> PLANNING_WORKFLOW_ROLE.equals(runtimeDescriptor.getWorkflowRole())).orElse(false);
     }
     
-    boolean hasFormSafeClarificationQuestions(final Map<String, Object> payload) {
+    boolean hasClarificationQuestions(final Map<String, Object> payload) {
         Object clarificationQuestions = payload.get(CLARIFICATION_QUESTIONS_FIELD);
-        return clarificationQuestions instanceof List<?> && !((List<?>) clarificationQuestions).isEmpty() && !hasSensitiveClarificationQuestion((List<?>) clarificationQuestions);
+        return clarificationQuestions instanceof List<?> questions && !questions.isEmpty();
     }
     
-    private boolean hasSensitiveClarificationQuestion(final List<?> clarificationQuestions) {
-        for (Object each : clarificationQuestions) {
+    Optional<ClarificationForm> createClarificationForm(final Map<String, Object> payload, final MCPToolDescriptor toolDescriptor) {
+        String planId = getPlanId(payload).trim();
+        if (planId.isEmpty()) {
+            return Optional.empty();
+        }
+        Object clarificationQuestions = payload.get(CLARIFICATION_QUESTIONS_FIELD);
+        if (!(clarificationQuestions instanceof List<?> questions) || questions.isEmpty()) {
+            return Optional.empty();
+        }
+        Map<String, Object> properties = new LinkedHashMap<>(questions.size(), 1F);
+        List<String> required = new LinkedList<>();
+        Map<String, ArgumentBinding> fieldBindings = new LinkedHashMap<>(questions.size(), 1F);
+        int questionIndex = 1;
+        for (Object each : questions) {
+            if (!(each instanceof Map<?, ?> question) || isSensitiveClarificationQuestion(question)) {
+                return Optional.empty();
+            }
+            Optional<ArgumentBinding> binding = createArgumentBinding(question, toolDescriptor, questionIndex);
+            if (binding.isEmpty()) {
+                return Optional.empty();
+            }
+            ArgumentBinding argumentBinding = binding.get();
+            if (fieldBindings.containsKey(argumentBinding.formPropertyName())) {
+                return Optional.empty();
+            }
+            properties.put(argumentBinding.formPropertyName(), createRequestedPropertySchema(question, argumentBinding));
+            required.add(argumentBinding.formPropertyName());
+            fieldBindings.put(argumentBinding.formPropertyName(), argumentBinding);
+            questionIndex++;
+        }
+        return properties.isEmpty() ? Optional.empty() : Optional.of(new ClarificationForm(createObjectSchema(properties, required), fieldBindings, planId));
+    }
+    
+    boolean hasSensitiveClarificationQuestions(final Map<String, Object> payload) {
+        Object clarificationQuestions = payload.get(CLARIFICATION_QUESTIONS_FIELD);
+        if (!(clarificationQuestions instanceof List<?> questions)) {
+            return false;
+        }
+        for (Object each : questions) {
             if (each instanceof Map<?, ?> question && isSensitiveClarificationQuestion(question)) {
                 return true;
             }
@@ -70,16 +120,26 @@ final class MCPToolClarificationPolicy {
         return false;
     }
     
+    private Optional<ArgumentBinding> createArgumentBinding(final Map<?, ?> question, final MCPToolDescriptor toolDescriptor, final int questionIndex) {
+        String field = getField(question);
+        if (field.isEmpty()) {
+            return Optional.empty();
+        }
+        String formPropertyName = FORM_PROPERTY_PREFIX + questionIndex;
+        return findArgumentBindingTarget(field, toolDescriptor)
+                .map(target -> new ArgumentBinding(formPropertyName, target.argumentName(), target.fieldName(), getInputType(question), getAllowedValues(question)));
+    }
+    
     private boolean isSensitiveClarificationQuestion(final Map<?, ?> question) {
-        return Boolean.TRUE.equals(question.get(SECRET_FIELD)) || isSecretInputType(question) || isSensitiveFieldName(question);
+        return Boolean.TRUE.equals(question.get(SECRET_FIELD)) || isSecretInputType(question) || isSensitiveFieldName(question) || isUnknownAlgorithmPropertySensitivity(question);
     }
     
     private boolean isSecretInputType(final Map<?, ?> question) {
-        return "secret".equals(Objects.toString(question.get(INPUT_TYPE_FIELD), "").trim().toLowerCase(Locale.ENGLISH));
+        return "secret".equals(normalizeInputType(question));
     }
     
     private boolean isSensitiveFieldName(final Map<?, ?> question) {
-        String fieldName = Objects.toString(question.get(FIELD_FIELD), "").trim().toLowerCase(Locale.ENGLISH);
+        String fieldName = normalizeSensitiveName(getField(question));
         for (String each : SENSITIVE_FIELD_NAME_MARKERS) {
             if (fieldName.contains(each)) {
                 return true;
@@ -88,34 +148,25 @@ final class MCPToolClarificationPolicy {
         return false;
     }
     
+    private boolean isUnknownAlgorithmPropertySensitivity(final Map<?, ?> question) {
+        return normalizeSensitiveName(getField(question)).contains("algorithmproperties") && !question.containsKey(SECRET_FIELD);
+    }
+    
+    private String normalizeSensitiveName(final String value) {
+        return value.replaceAll(CAMEL_CASE_SEPARATOR_PATTERN, "$1 $2").toLowerCase(Locale.ENGLISH).replaceAll(NON_ALPHANUMERIC_PATTERN, "");
+    }
+    
     String getPlanId(final Map<String, Object> payload) {
         return Objects.toString(payload.get(PLAN_ID_FIELD), "");
     }
     
-    Map<String, Object> createRequestedSchema(final Map<String, Object> payload) {
-        List<?> clarificationQuestions = (List<?>) payload.get(CLARIFICATION_QUESTIONS_FIELD);
-        Map<String, Object> properties = new LinkedHashMap<>(clarificationQuestions.size(), 1F);
-        List<String> required = new LinkedList<>();
-        for (Object each : clarificationQuestions) {
-            if (each instanceof Map<?, ?> question) {
-                addRequestedProperty(properties, required, question);
-            }
-        }
-        return createObjectSchema(properties, required);
-    }
-    
-    private void addRequestedProperty(final Map<String, Object> properties, final List<String> required, final Map<?, ?> question) {
-        String field = Objects.toString(question.get(FIELD_FIELD), "").trim();
-        if (!field.isEmpty()) {
-            properties.put(field, createRequestedPropertySchema(question));
-            required.add(field);
-        }
-    }
-    
-    private Map<String, Object> createRequestedPropertySchema(final Map<?, ?> question) {
-        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
-        result.put(TYPE_FIELD, "boolean".equals(Objects.toString(question.get(INPUT_TYPE_FIELD), "")) ? "boolean" : "string");
+    private Map<String, Object> createRequestedPropertySchema(final Map<?, ?> question, final ArgumentBinding binding) {
+        Map<String, Object> result = new LinkedHashMap<>(binding.allowedValues().isEmpty() ? 2 : 3, 1F);
+        result.put(TYPE_FIELD, binding.inputType());
         result.put("description", Objects.toString(question.get(DISPLAY_MESSAGE_FIELD), ""));
+        if (!binding.allowedValues().isEmpty()) {
+            result.put("enum", binding.allowedValues());
+        }
         return result;
     }
     
@@ -128,37 +179,63 @@ final class MCPToolClarificationPolicy {
         return result;
     }
     
-    Map<String, Object> mergeArguments(final Map<String, Object> args, final Map<String, Object> payload, final Map<String, Object> elicitedContent,
-                                       final MCPToolDescriptor toolDescriptor) {
-        Map<String, Object> result = new LinkedHashMap<>(args);
-        if (!result.containsKey(PLAN_ID_FIELD) && payload.containsKey(PLAN_ID_FIELD)) {
-            result.put(PLAN_ID_FIELD, payload.get(PLAN_ID_FIELD));
+    boolean isValidElicitedContent(final ClarificationForm form, final Map<String, Object> elicitedContent) {
+        for (String each : elicitedContent.keySet()) {
+            if (!form.fieldBindings().containsKey(each)) {
+                return false;
+            }
         }
-        for (Entry<String, Object> entry : elicitedContent.entrySet()) {
-            putElicitedArgument(result, entry.getKey(), entry.getValue(), toolDescriptor);
+        for (ArgumentBinding each : form.fieldBindings().values()) {
+            if (!elicitedContent.containsKey(each.formPropertyName()) || !isValidElicitedValue(elicitedContent.get(each.formPropertyName()), each)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isValidElicitedValue(final Object value, final ArgumentBinding binding) {
+        if (null == value) {
+            return false;
+        }
+        if (!binding.allowedValues().isEmpty() && !binding.allowedValues().contains(value)) {
+            return false;
+        }
+        return "boolean".equals(binding.inputType()) ? value instanceof Boolean : value instanceof String stringValue && !stringValue.trim().isEmpty();
+    }
+    
+    Map<String, Object> mergeArguments(final Map<String, Object> args, final ClarificationForm form, final Map<String, Object> elicitedContent) {
+        Map<String, Object> result = new LinkedHashMap<>(args);
+        if (!result.containsKey(PLAN_ID_FIELD)) {
+            result.put(PLAN_ID_FIELD, form.planId());
+        }
+        for (ArgumentBinding each : form.fieldBindings().values()) {
+            putElicitedArgument(result, each, elicitedContent.get(each.formPropertyName()));
         }
         return result;
     }
     
-    private void putElicitedArgument(final Map<String, Object> args, final String field, final Object value, final MCPToolDescriptor toolDescriptor) {
-        if (null == value || value instanceof String stringValue && stringValue.trim().isEmpty()) {
+    private void putElicitedArgument(final Map<String, Object> args, final ArgumentBinding binding, final Object value) {
+        if (binding.isTopLevel()) {
+            args.put(binding.argumentName(), value);
             return;
         }
-        int separatorIndex = field.indexOf('.');
-        if (0 < separatorIndex && separatorIndex < field.length() - 1 && isObjectArgument(toolDescriptor, field.substring(0, separatorIndex))) {
-            putNestedArgument(args, field.substring(0, separatorIndex), field.substring(separatorIndex + 1), value);
-            return;
+        putNestedArgument(args, binding.argumentName(), binding.fieldName(), value);
+    }
+    
+    private Optional<ArgumentBindingTarget> findArgumentBindingTarget(final String field, final MCPToolDescriptor toolDescriptor) {
+        int separatorIndex = field.indexOf(DOT);
+        if (0 < separatorIndex && separatorIndex < field.length() - 1 && isBindableObjectProperty(toolDescriptor, field.substring(0, separatorIndex), field.substring(separatorIndex + 1))) {
+            return Optional.of(new ArgumentBindingTarget(field.substring(0, separatorIndex), field.substring(separatorIndex + 1)));
         }
-        if (hasArgument(toolDescriptor, field)) {
-            args.put(field, value);
-            return;
+        if (hasArgument(toolDescriptor, field) && !isObjectArgument(toolDescriptor, field)) {
+            return Optional.of(new ArgumentBindingTarget(field, ""));
         }
-        Optional<String> objectArgumentName = findObjectArgumentName(toolDescriptor, field);
-        if (objectArgumentName.isPresent()) {
-            putNestedArgument(args, objectArgumentName.get(), field, value);
-            return;
-        }
-        args.put(field, value);
+        return findObjectArgumentName(toolDescriptor, field).map(objectArgumentName -> new ArgumentBindingTarget(objectArgumentName, field));
+    }
+    
+    private boolean isBindableObjectProperty(final MCPToolDescriptor toolDescriptor, final String argumentName, final String fieldName) {
+        Object property = getInputProperties(toolDescriptor).get(argumentName);
+        return acceptsObjectProperty(property, fieldName);
     }
     
     private boolean isObjectArgument(final MCPToolDescriptor toolDescriptor, final String argumentName) {
@@ -173,7 +250,7 @@ final class MCPToolClarificationPolicy {
     private Optional<String> findObjectArgumentName(final MCPToolDescriptor toolDescriptor, final String fieldName) {
         String result = null;
         for (Entry<String, Object> entry : getInputProperties(toolDescriptor).entrySet()) {
-            if (!hasObjectProperty(entry.getValue(), fieldName)) {
+            if (!acceptsDeclaredObjectProperty(entry.getValue(), fieldName)) {
                 continue;
             }
             if (null != result) {
@@ -184,12 +261,21 @@ final class MCPToolClarificationPolicy {
         return Optional.ofNullable(result);
     }
     
-    private boolean hasObjectProperty(final Object value, final String fieldName) {
+    private boolean acceptsDeclaredObjectProperty(final Object value, final String fieldName) {
         if (!(value instanceof Map<?, ?> objectProperty) || !"object".equals(objectProperty.get(TYPE_FIELD))) {
             return false;
         }
         Object properties = objectProperty.get(PROPERTIES_FIELD);
         return properties instanceof Map<?, ?> propertyMap && propertyMap.containsKey(fieldName);
+    }
+    
+    private boolean acceptsObjectProperty(final Object value, final String fieldName) {
+        if (!(value instanceof Map<?, ?> objectProperty) || !"object".equals(objectProperty.get(TYPE_FIELD))) {
+            return false;
+        }
+        Object properties = objectProperty.get(PROPERTIES_FIELD);
+        boolean hasDeclaredProperty = properties instanceof Map<?, ?> propertyMap && propertyMap.containsKey(fieldName);
+        return hasDeclaredProperty || Boolean.TRUE.equals(objectProperty.get(ADDITIONAL_PROPERTIES_FIELD));
     }
     
     @SuppressWarnings("unchecked")
@@ -212,5 +298,35 @@ final class MCPToolClarificationPolicy {
             }
         }
         return result;
+    }
+    
+    private String getField(final Map<?, ?> question) {
+        return Objects.toString(question.get(FIELD_FIELD), "").trim();
+    }
+    
+    private String getInputType(final Map<?, ?> question) {
+        return "boolean".equals(normalizeInputType(question)) ? "boolean" : "string";
+    }
+    
+    private List<?> getAllowedValues(final Map<?, ?> question) {
+        Object allowedValues = question.get(ALLOWED_VALUES_FIELD);
+        return allowedValues instanceof List<?> ? (List<?>) allowedValues : List.of();
+    }
+    
+    private String normalizeInputType(final Map<?, ?> question) {
+        return Objects.toString(question.get(INPUT_TYPE_FIELD), "").trim().toLowerCase(Locale.ENGLISH);
+    }
+    
+    record ClarificationForm(Map<String, Object> requestedSchema, Map<String, ArgumentBinding> fieldBindings, String planId) {
+    }
+    
+    private record ArgumentBinding(String formPropertyName, String argumentName, String fieldName, String inputType, List<?> allowedValues) {
+        
+        private boolean isTopLevel() {
+            return fieldName.isEmpty();
+        }
+    }
+    
+    private record ArgumentBindingTarget(String argumentName, String fieldName) {
     }
 }

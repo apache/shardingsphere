@@ -435,9 +435,11 @@ Workflow 同时补充了以下 feature resources：
 - `schema` 是可选的；如果 Proxy 逻辑库下只有一个 schema，MCP 会自动补齐；如果无法唯一定位，MCP 会明确返回 `请明确 schema。`。
 - `delivery_mode` 只影响客户端如何组织对话和展示步骤，不影响最终生成的 artifacts；真正影响执行行为的是 `execution_mode`。
 - 敏感算法属性在 `plan` 和 `apply` 的返回中都只会以脱敏形式展示，不会明文回显。
-- MCP form elicitation 只用于非敏感补问。
+- MCP form elicitation 只用于 STDIO 下的非敏感补问。
+  Streamable HTTP 会返回结构化 fallback，因为当前版本还没有把表单回复强绑定到远程用户身份。
+  当前版本不实现 URL mode；如果客户端不能自动续跑，响应会明确带上 `elicitation_support` 和 `fallback_reason`。
   如果补问带有 `secret: true`、`input_type: "secret"`，或者字段名包含 password、token、key、secret、credential，
-  请保留返回的 `plan_id`，通过可用时的 URL mode、secret manager、受保护环境变量或运维控制通道取得该值，再用同一个 planner 继续。
+  请保留返回的 `plan_id`，通过 secret manager、受保护环境变量或运维控制通道取得该值，再用同一个 planner 继续。
 - 下面所有 `curl` 示例都默认你已经完成了 MCP `initialize`，并持有同一个 `SESSION_ID` 和对应的 `PROTOCOL_VERSION`。
 
 ### 推荐操作顺序
@@ -637,8 +639,19 @@ curl -sS http://127.0.0.1:18088/mcp \
   "plan_id": "plan-xxx",
   "status": "clarifying",
   "clarification_questions": [
-    {"field": "primary_algorithm_properties.aes-key-value", "input_type": "secret", "secret": true, "display_message": "请提供属性 `aes-key-value`。"}
+    {
+      "field": "primary_algorithm_properties.aes-key-value",
+      "input_type": "secret",
+      "secret": true,
+      "message": "Sensitive input must be provided through configured secure channels before continuing the same planner."
+    }
   ],
+  "elicitation_support": {
+    "form_mode": true,
+    "url_mode": false,
+    "selected_interaction": "url_fallback"
+  },
+  "fallback_reason": "sensitive_form_blocked",
   "algorithm_recommendations": [
     {"algorithm_role": "primary", "algorithm_type": "AES"},
     {"algorithm_role": "assisted_query", "algorithm_type": "MD5"}
@@ -647,7 +660,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 ```
 
 这个带有 secret 的补问只会作为工具结构化内容返回，不会转换成 MCP form elicitation。
-请保留 `plan_id`，通过可用时的 URL mode、secret manager、受保护环境变量或运维控制通道取得密钥后，再继续调用 planner。
+请保留 `plan_id`，通过 secret manager、受保护环境变量或运维控制通道取得密钥后，再继续调用 planner。
 
 实际操作时，可以先把上一步返回的 `plan_id` 暂存为 shell 变量：
 
@@ -777,7 +790,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 - `property_requirements`
 
 此时应带上同一个 `plan_id` 再次调用 `database_gateway_plan_encrypt_rule`，把缺失的非敏感参数补齐，而不是重新开一个计划。
-对于敏感字段，必须先通过可用时的 URL mode、secret manager、受保护环境变量或运维控制通道取得值，再继续。
+对于敏感字段，必须先通过 secret manager、受保护环境变量或运维控制通道取得值，再继续。
 
 #### 默认派生列规则
 

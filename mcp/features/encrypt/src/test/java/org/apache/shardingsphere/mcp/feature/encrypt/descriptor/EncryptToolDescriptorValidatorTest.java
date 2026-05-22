@@ -57,6 +57,19 @@ class EncryptToolDescriptorValidatorTest {
     
     @Test
     @SuppressWarnings("unchecked")
+    void assertOutputSchemaDeclaresElicitationFallback() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> properties = (Map<String, Object>) descriptor.getOutputSchema().get("properties");
+        assertTrue(properties.containsKey("elicitation_support"));
+        assertTrue(properties.containsKey("fallback_reason"));
+        Map<String, Object> supportProperties = (Map<String, Object>) ((Map<String, Object>) properties.get("elicitation_support")).get("properties");
+        assertTrue(supportProperties.containsKey("form_mode"));
+        assertTrue(supportProperties.containsKey("url_mode"));
+        assertTrue(supportProperties.containsKey("selected_interaction"));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
     void assertValidateRejectsMissingOutputField() {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
         Map<String, Object> outputSchema = new LinkedHashMap<>(descriptor.getOutputSchema());

@@ -463,10 +463,12 @@ The `features/*/algorithms` resources expose the algorithm plugins visible from 
 - `schema` is optional. MCP auto-fills it when the logical database contains a single schema. If the schema cannot be resolved uniquely, MCP asks for it explicitly.
 - `delivery_mode` only affects how the client presents the workflow. It does not change the generated artifacts. The execution behavior is controlled by `execution_mode`.
 - Sensitive algorithm properties are masked in plan and apply responses and are never echoed back in clear text.
-- MCP form elicitation is only used for non-sensitive clarification questions.
+- MCP form elicitation is only used for non-sensitive clarification questions over STDIO.
+  Streamable HTTP returns structured fallback because this release does not bind form replies to a remote user identity.
+  URL mode is not implemented in this release; when a client cannot continue automatically, the response declares `elicitation_support` and `fallback_reason`.
   If a question has `secret: true`, `input_type: "secret"`, or a field name containing password, token, key, secret, or credential,
-  keep the returned `plan_id`, collect the value through URL mode when available, a secret manager, a protected environment variable,
-  or an operator-controlled channel, and then retry the same planner.
+  keep the returned `plan_id`, collect the value through a secret manager, a protected environment variable, or an operator-controlled channel,
+  and then retry the same planner.
 - Every `curl` example below assumes you have already completed MCP `initialize` and are reusing the same `SESSION_ID` plus its matching `PROTOCOL_VERSION`.
 
 ### Recommended call order
@@ -666,8 +668,19 @@ Typical response snippet:
   "plan_id": "plan-xxx",
   "status": "clarifying",
   "clarification_questions": [
-    {"field": "primary_algorithm_properties.aes-key-value", "input_type": "secret", "secret": true, "display_message": "Please provide property `aes-key-value`."}
+    {
+      "field": "primary_algorithm_properties.aes-key-value",
+      "input_type": "secret",
+      "secret": true,
+      "message": "Sensitive input must be provided through configured secure channels before continuing the same planner."
+    }
   ],
+  "elicitation_support": {
+    "form_mode": true,
+    "url_mode": false,
+    "selected_interaction": "url_fallback"
+  },
+  "fallback_reason": "sensitive_form_blocked",
   "algorithm_recommendations": [
     {"algorithm_role": "primary", "algorithm_type": "AES"},
     {"algorithm_role": "assisted_query", "algorithm_type": "MD5"}
@@ -676,7 +689,7 @@ Typical response snippet:
 ```
 
 This secret-bearing question is returned as tool structured content only; it is not converted into MCP form elicitation.
-Keep the `plan_id`, obtain the key through URL mode when available, a secret manager, a protected environment variable, or an operator-controlled channel,
+Keep the `plan_id`, obtain the key through a secret manager, a protected environment variable, or an operator-controlled channel,
 then retry the planner.
 
 In real usage, store the returned `plan_id` first:
@@ -807,8 +820,7 @@ If natural language does not make the algorithm clear, or if a required property
 - `property_requirements`
 
 Continue with the same `plan_id` and send missing non-sensitive fields back to `database_gateway_plan_encrypt_rule` instead of creating a new plan.
-For secret fields, obtain the value through URL mode when available, a secret manager, a protected environment variable,
-or an operator-controlled channel before retrying.
+For secret fields, obtain the value through a secret manager, a protected environment variable, or an operator-controlled channel before retrying.
 
 #### Default derived-column conventions
 

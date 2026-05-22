@@ -68,6 +68,8 @@ public final class MCPShardingSphereMetadataKeys {
     
     public static final String PLAN_ID = PREFIX + "plan-id";
     
+    public static final String FORM_REQUEST_ID = PREFIX + "form-request-id";
+    
     public static final String RESPONSE_MODE = PREFIX + "response-mode";
     
     public static final String REFERENCE_TYPE = PREFIX + "reference-type";
