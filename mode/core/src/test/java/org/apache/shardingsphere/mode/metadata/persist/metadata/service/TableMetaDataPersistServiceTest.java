@@ -33,16 +33,16 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TableMetaDataPersistEnabledServiceTest {
+class TableMetaDataPersistServiceTest {
     
-    private TableMetaDataPersistEnabledService persistService;
+    private TableMetaDataPersistService persistService;
     
     private FixturePersistRepository repository;
     
     @BeforeEach
     void setUp() {
         repository = new FixturePersistRepository();
-        persistService = new TableMetaDataPersistEnabledService(repository, new VersionPersistService(repository));
+        persistService = new TableMetaDataPersistService(repository, new VersionPersistService(repository));
     }
     
     @Test

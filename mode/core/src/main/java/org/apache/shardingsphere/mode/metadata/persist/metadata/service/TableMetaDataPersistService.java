@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistSer
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
-import org.apache.shardingsphere.mode.persist.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -38,7 +37,7 @@ import java.util.stream.Collectors;
  * Table meta data persist enabled service.
  */
 @RequiredArgsConstructor
-public final class TableMetaDataPersistEnabledService implements TableMetaDataPersistService {
+public final class TableMetaDataPersistService {
     
     private final PersistRepository repository;
     
@@ -46,14 +45,27 @@ public final class TableMetaDataPersistEnabledService implements TableMetaDataPe
     
     private final YamlTableSwapper swapper = new YamlTableSwapper();
     
-    @Override
+    /**
+     * Load table meta data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @return table meta data
+     */
     public Collection<ShardingSphereTable> load(final String databaseName, final String schemaName) {
         return repository.getChildrenKeys(NodePathGenerator.toPath(new TableMetaDataNodePath(databaseName, schemaName, null))).stream()
                 .map(each -> loadByPath(databaseName, schemaName, each))
                 .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
     
-    @Override
+    /**
+     * Load table meta data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return table meta data
+     */
     public Optional<ShardingSphereTable> load(final String databaseName, final String schemaName, final String tableName) {
         return loadByPath(databaseName, schemaName, tableName);
     }
@@ -71,7 +83,13 @@ public final class TableMetaDataPersistEnabledService implements TableMetaDataPe
         return Optional.of(swapper.swapToObject(YamlEngine.unmarshal(tableContent, YamlShardingSphereTable.class)));
     }
     
-    @Override
+    /**
+     * Persist table meta data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tables table meta data
+     */
     public void persist(final String databaseName, final String schemaName, final Collection<ShardingSphereTable> tables) {
         for (ShardingSphereTable each : tables) {
             VersionNodePath versionNodePath = new VersionNodePath(new TableMetaDataNodePath(databaseName, schemaName, each.getName()));
@@ -79,12 +97,24 @@ public final class TableMetaDataPersistEnabledService implements TableMetaDataPe
         }
     }
     
-    @Override
+    /**
+     * Drop table meta data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     */
     public void drop(final String databaseName, final String schemaName, final String tableName) {
         repository.delete(NodePathGenerator.toPath(new TableMetaDataNodePath(databaseName, schemaName, tableName)));
     }
     
-    @Override
+    /**
+     * Drop table meta data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tables table meta data
+     */
     public void drop(final String databaseName, final String schemaName, final Collection<ShardingSphereTable> tables) {
         tables.forEach(each -> drop(databaseName, schemaName, each.getName()));
     }
