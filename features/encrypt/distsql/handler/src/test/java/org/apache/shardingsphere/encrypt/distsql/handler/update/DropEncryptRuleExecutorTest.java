@@ -74,6 +74,18 @@ class DropEncryptRuleExecutorTest {
         metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfiguration));
     }
     
+    @Test
+    void assertBuildToBeDroppedRuleConfigurationUsesOriginalCaseTableName() {
+        EncryptRuleConfiguration ruleConfig = createCurrentRuleConfigurationWithCaseSensitiveTableName();
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        DropEncryptRuleExecutor executor = new DropEncryptRuleExecutor();
+        executor.setRule(rule);
+        EncryptRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("T_ENCRYPT"));
+        assertThat(actual.getTables().size(), is(1));
+        assertThat(actual.getTables().iterator().next().getName(), is("t_Encrypt"));
+    }
+    
     private boolean assertRuleConfiguration(final EncryptRuleConfiguration actual) {
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getEncryptors().size(), is(3));
@@ -136,6 +148,13 @@ class DropEncryptRuleExecutorTest {
         Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("t_encrypt_user_id_MD5", new AlgorithmConfiguration("TEST", new Properties()));
         return new EncryptRuleConfiguration(new LinkedList<>(Arrays.asList(tableRuleConfig,
                 new EncryptTableRuleConfiguration("t_encrypt_another", Collections.singleton(columnRuleConfig)))), encryptors);
+    }
+    
+    private EncryptRuleConfiguration createCurrentRuleConfigurationWithCaseSensitiveTableName() {
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "t_encrypt_user_id_MD5"));
+        EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_Encrypt", Collections.singleton(columnRuleConfig));
+        Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("t_encrypt_user_id_MD5", new AlgorithmConfiguration("TEST", new Properties()));
+        return new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(tableRuleConfig)), encryptors);
     }
     
     private ContextManager mockContextManager(final EncryptRule rule) {
