@@ -60,11 +60,6 @@ public final class MCPToolSpecificationFactory {
     
     private final JsonSchemaValidator outputSchemaValidator;
     
-    /**
-     * Create MCP tool specification factory.
-     *
-     * @param runtimeContext runtime context
-     */
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         descriptors = ToolDefinitionRegistry.getSupportedToolDescriptors();
         controller = new MCPToolController(runtimeContext);
