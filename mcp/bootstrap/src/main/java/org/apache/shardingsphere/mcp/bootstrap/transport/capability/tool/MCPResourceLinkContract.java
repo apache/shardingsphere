@@ -23,9 +23,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MCPResourceLinkContract {
@@ -34,11 +34,7 @@ final class MCPResourceLinkContract {
     
     static ResourceLinks createResourceLinks(final Map<String, Object> payload, final int limit) {
         MCPResourceLinkCandidateCollector.ResourceLinkCandidates candidates = new MCPResourceLinkCandidateCollector(limit).collect(payload);
-        List<McpSchema.ResourceLink> links = new LinkedList<>();
-        for (MCPResourceLinkCandidateCollector.ResourceLinkCandidate each : candidates.candidates()) {
-            links.add(createResourceLink(each));
-        }
-        return new ResourceLinks(links, candidates.totalCount());
+        return new ResourceLinks(candidates.candidates().stream().map(MCPResourceLinkContract::createResourceLink).collect(Collectors.toList()), candidates.totalCount());
     }
     
     private static McpSchema.ResourceLink createResourceLink(final MCPResourceLinkCandidateCollector.ResourceLinkCandidate candidate) {
