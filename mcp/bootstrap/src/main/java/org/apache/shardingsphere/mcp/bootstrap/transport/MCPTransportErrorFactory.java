@@ -45,6 +45,12 @@ public final class MCPTransportErrorFactory {
     }
     
     private static int getProtocolErrorCode(final Throwable cause) {
-        return switch(cause){case UnsupportedResourceUriException ignored->McpSchema.ErrorCodes.RESOURCE_NOT_FOUND;case MCPInvalidRequestException ignored->McpSchema.ErrorCodes.INVALID_PARAMS;case MCPUnsupportedException ignored->McpSchema.ErrorCodes.INVALID_PARAMS;case IllegalArgumentException ignored->McpSchema.ErrorCodes.INVALID_PARAMS;case UnsupportedOperationException ignored->McpSchema.ErrorCodes.INVALID_PARAMS;default->McpSchema.ErrorCodes.INTERNAL_ERROR;};
+        if (cause instanceof UnsupportedResourceUriException) {
+            return McpSchema.ErrorCodes.RESOURCE_NOT_FOUND;
+        }
+        if (cause instanceof MCPInvalidRequestException || cause instanceof MCPUnsupportedException || cause instanceof IllegalArgumentException || cause instanceof UnsupportedOperationException) {
+            return McpSchema.ErrorCodes.INVALID_PARAMS;
+        }
+        return McpSchema.ErrorCodes.INTERNAL_ERROR;
     }
 }

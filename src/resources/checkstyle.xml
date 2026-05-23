@@ -35,7 +35,6 @@
     <module name="LineLength">
         <property name="fileExtensions" value="java" />
         <property name="max" value="200" />
-        <property name="ignorePattern" value="^\s*return switch\([^)]*\)\{(?:case|default).*-\&gt;.*\};$" />
     </module>
     <module name="NewlineAtEndOfFile">
         <property name="lineSeparator" value="lf" />
@@ -47,11 +46,6 @@
         <module name="SuppressionXpathSingleFilter">
             <property name="checks" value="FinalClass" />
             <property name="query" value="//CLASS_DEF[./MODIFIERS/LITERAL_PRIVATE]" />
-        </module>
-        <module name="SuppressionXpathSingleFilter">
-            <property name="checks" value="OneStatementPerLine|WhitespaceAfter|WhitespaceAround" />
-            <property name="query"
-                      value="//LITERAL_RETURN[./EXPR/LITERAL_SWITCH/SWITCH_RULE/LITERAL_CASE/PATTERN_VARIABLE_DEF]/SEMI | //LITERAL_SWITCH[ancestor::LITERAL_RETURN and ./SWITCH_RULE/LITERAL_CASE/PATTERN_VARIABLE_DEF] | //LITERAL_SWITCH[ancestor::LITERAL_RETURN and ./SWITCH_RULE/LITERAL_CASE/PATTERN_VARIABLE_DEF]//*" />
         </module>
         
         <!-- Annotations -->

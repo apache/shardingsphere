@@ -73,12 +73,18 @@ public final class MCPJdbcTransactionResourceManager {
                     () -> new IllegalStateException("Cross-database transaction switching is not supported."));
         }
         ShardingSpherePreconditions.checkState(transactionResource.isEmpty(), () -> new IllegalStateException("Transaction already active."));
+        Connection connection;
         try {
-            Connection connection = openConnection(databaseName);
+            connection = openConnection(databaseName);
+        } catch (final SQLException ex) {
+            throw new IllegalStateException(ex.getMessage(), ex);
+        }
+        try {
             connection.setAutoCommit(false);
             transactionResources.put(sessionId, new TransactionResourceContext(databaseName, connection));
         } catch (final SQLException ex) {
-            throw new IllegalStateException(ex.getMessage(), ex);
+            SQLException failure = close(connection, ex);
+            throw new IllegalStateException(failure.getMessage(), failure);
         }
     }
     

@@ -150,7 +150,7 @@ class ProductionMySQLRuntimeE2ETest extends AbstractTransportParameterizedProduc
             List<Map<String, Object>> actual = interactionClient.listTools();
             assertOfficialToolNames(actual.stream().map(each -> String.valueOf(each.get("name"))).toList());
             assertToolDefinition(actual, "database_gateway_search_metadata", "Search Metadata", "", "object_types", "array");
-            assertToolDefinition(actual, "database_gateway_execute_query", "Execute Read-Only SQL", "sql", "timeout_ms", "integer");
+            assertToolDefinition(actual, "database_gateway_execute_query", "Execute Query SQL", "sql", "timeout_ms", "integer");
             assertToolDefinition(actual, "database_gateway_execute_update", "Execute Update SQL", "sql", "timeout_ms", "integer");
         }
     }
@@ -362,7 +362,7 @@ class ProductionMySQLRuntimeE2ETest extends AbstractTransportParameterizedProduc
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql",
                             "EXPLAIN ANALYZE UPDATE orders SET status = 'DONE' WHERE order_id = 1"));
             assertRecoveryResponse(actual,
-                    "database_gateway_execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL.",
+                    "database_gateway_execute_query only supports classifier-approved QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL.",
                     "unsafe_sql_attempted");
         }
     }

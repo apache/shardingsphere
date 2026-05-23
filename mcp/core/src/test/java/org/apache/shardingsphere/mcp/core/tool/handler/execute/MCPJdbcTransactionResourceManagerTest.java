@@ -94,6 +94,18 @@ class MCPJdbcTransactionResourceManagerTest {
         verify(connection).setAutoCommit(false);
     }
     
+    @Test
+    void assertBeginTransactionClosesConnectionWhenAutoCommitFailure() throws SQLException {
+        Connection connection = mock(Connection.class);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
+        doThrow(new SQLException("set auto commit failed")).when(connection).setAutoCommit(false);
+        MCPJdbcTransactionResourceManager manager = new MCPJdbcTransactionResourceManager(Map.of("logic_db", runtimeDatabaseConfig));
+        assertThat(assertThrows(IllegalStateException.class, () -> manager.beginTransaction("session-1", "logic_db")).getMessage(), is("set auto commit failed"));
+        verify(connection).close();
+        assertTrue(manager.findTransactionConnection("session-1", "logic_db").isEmpty());
+    }
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertCommitTransactionCases")
     void assertCommitTransaction(final String name, final boolean active, final String commitFailureMessage, final String expectedMessage) throws SQLException {
