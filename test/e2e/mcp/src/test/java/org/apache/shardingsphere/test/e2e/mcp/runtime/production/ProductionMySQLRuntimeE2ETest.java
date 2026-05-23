@@ -404,6 +404,12 @@ class ProductionMySQLRuntimeE2ETest extends AbstractTransportParameterizedProduc
                     "operation_type", "create",
                     "algorithm_type", "MASK_FROM_X_TO_Y")));
             Map<String, Object> actualPayload = castStructuredContent(actual.structuredContent());
+            if (RuntimeTransport.HTTP == transport) {
+                assertThat(String.valueOf(actualPayload.get("status")), is("clarifying"));
+                assertThat(String.valueOf(actualPayload.get("fallback_reason")), is("remote_identity_required"));
+                assertTrue(actualElicitationRequests.isEmpty());
+                return;
+            }
             assertThat(String.valueOf(actualPayload.get("status")), is("planned"));
             assertThat(String.valueOf(actualPayload.get("current_step")), is("review"));
             assertThat(String.valueOf(castToMap(castToMap(actualPayload.get("masked_property_preview")).get("primary")).get("from-x")), is("1"));
@@ -825,9 +831,10 @@ class ProductionMySQLRuntimeE2ETest extends AbstractTransportParameterizedProduc
     private McpSchema.ElicitResult createElicitationResult(final List<McpSchema.ElicitRequest> elicitationRequests,
                                                            final McpSchema.ElicitRequest request) {
         elicitationRequests.add(request);
+        List<String> requiredFields = getStringList(request.requestedSchema().get("required"));
         return new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of(
-                "primary_algorithm_properties.from-x", "1",
-                "primary_algorithm_properties.to-y", "3"));
+                requiredFields.get(0), "1",
+                requiredFields.get(1), "3"));
     }
     
     private void assertElicitationRequest(final List<McpSchema.ElicitRequest> actualRequests) {
@@ -839,10 +846,12 @@ class ProductionMySQLRuntimeE2ETest extends AbstractTransportParameterizedProduc
         assertThat(actualRequestedSchema.get("type"), is("object"));
         assertFalse((Boolean) actualRequestedSchema.get("additionalProperties"));
         Map<String, Object> actualProperties = castToMap(actualRequestedSchema.get("properties"));
-        assertTrue(actualProperties.containsKey("primary_algorithm_properties.from-x"));
-        assertTrue(actualProperties.containsKey("primary_algorithm_properties.to-y"));
+        assertTrue(actualProperties.containsKey("field_1"));
+        assertTrue(actualProperties.containsKey("field_2"));
+        assertThat(String.valueOf(castToMap(actualProperties.get("field_1")).get("description")), is("Please provide property `from-x`."));
+        assertThat(String.valueOf(castToMap(actualProperties.get("field_2")).get("description")), is("Please provide property `to-y`."));
         assertFalse(actualProperties.keySet().stream().map(String::valueOf).anyMatch(each -> each.contains("secret") || each.contains("password") || each.contains("token")));
-        assertThat(getStringList(actualRequestedSchema.get("required")), hasItems("primary_algorithm_properties.from-x", "primary_algorithm_properties.to-y"));
+        assertThat(getStringList(actualRequestedSchema.get("required")), hasItems("field_1", "field_2"));
     }
     
     @SuppressWarnings("unchecked")

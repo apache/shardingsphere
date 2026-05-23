@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
@@ -115,7 +116,13 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
                             "natural_language_intent", "encrypt status with reversible encryption, requires equality, no like"));
             assertThat(String.valueOf(actualClarifyingResponse.get("status")), is("clarifying"));
             assertThat(getIssueCodes(actualClarifyingResponse), hasItem(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
-            assertThat(getClarificationMessages(actualClarifyingResponse), is(List.of("Please provide property `aes-key-value`.")));
+            Map<String, Object> actualClarificationQuestion = getMapList(actualClarifyingResponse.get("clarification_questions")).get(0);
+            assertThat(String.valueOf(actualClarificationQuestion.get("field")), is("primary_algorithm_properties.aes-key-value"));
+            assertThat(String.valueOf(actualClarificationQuestion.get("input_type")), is("secret"));
+            assertTrue((Boolean) actualClarificationQuestion.get("secret"));
+            assertThat(String.valueOf(actualClarificationQuestion.get("message")),
+                    is("Sensitive input must be provided through configured secure channels before continuing the same planner."));
+            assertFalse(actualClarificationQuestion.containsKey("display_message"));
             List<Map<String, Object>> actualRecommendations = getMapList(actualClarifyingResponse.get("algorithm_recommendations"));
             assertThat(actualRecommendations.size(), is(2));
             assertThat(String.valueOf(actualRecommendations.get(0).get("algorithm_role")), is("primary"));
