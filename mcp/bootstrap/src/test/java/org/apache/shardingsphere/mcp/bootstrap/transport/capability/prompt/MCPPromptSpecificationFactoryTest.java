@@ -21,10 +21,10 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncPromptSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +67,7 @@ class MCPPromptSpecificationFactoryTest {
     void assertRenderSafeSQLExecutionPromptTemplate() {
         McpSchema.GetPromptResult actual = renderPrompt("safe_sql_execution", Map.of("database", "logic_db", "schema", "public", "sql_intent", "count orders"));
         String actualText = readText(actual);
-        assertFirstRenderedLine(actualText, "Choose the safest MCP SQL path.");
+        assertThat(actualText.lines().findFirst().orElse(""), is("Choose the safest MCP SQL path."));
         assertRenderedLines(actualText, List.of(
                 "- database: logic_db",
                 "- sql_intent: count orders",
@@ -135,10 +135,7 @@ class MCPPromptSpecificationFactoryTest {
     
     @Test
     void assertRejectNullRequiredPromptArgument() {
-        Map<String, Object> arguments = new LinkedHashMap<>();
-        arguments.put("database", null);
-        arguments.put("sql_intent", "count orders");
-        McpError actual = assertThrows(McpError.class, () -> renderPrompt("safe_sql_execution", arguments));
+        McpError actual = assertThrows(McpError.class, () -> renderPrompt("safe_sql_execution", Maps.of("database", null, "sql_intent", "count orders")));
         assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
         assertThat(actual.getJsonRpcError().message(), is("Required prompt argument `database` is missing."));
     }
@@ -164,10 +161,6 @@ class MCPPromptSpecificationFactoryTest {
         for (String each : expectedLines) {
             assertTrue(actualLines.contains(each), () -> "Missing rendered line: " + each);
         }
-    }
-    
-    private void assertFirstRenderedLine(final String text, final String expectedLine) {
-        assertThat(text.lines().findFirst().orElse(""), is(expectedLine));
     }
     
     private SyncPromptSpecification findPrompt(final List<SyncPromptSpecification> specifications, final String name) {
