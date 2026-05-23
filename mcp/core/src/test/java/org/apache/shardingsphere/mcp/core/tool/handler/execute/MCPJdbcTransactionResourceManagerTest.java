@@ -105,7 +105,7 @@ class MCPJdbcTransactionResourceManagerTest {
         verify(connection).close();
         assertTrue(manager.findTransactionConnection("session-1", "logic_db").isEmpty());
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertCommitTransactionCases")
     void assertCommitTransaction(final String name, final boolean active, final String commitFailureMessage, final String expectedMessage) throws SQLException {

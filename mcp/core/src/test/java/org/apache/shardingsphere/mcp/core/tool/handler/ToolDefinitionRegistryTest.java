@@ -198,8 +198,9 @@ class ToolDefinitionRegistryTest {
     
     @Test
     void assertValidateWithUnknownNestedArgument() {
+        MCPToolDescriptor descriptor = createNestedFixtureToolDescriptor();
         MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
-                () -> MCPToolArgumentContract.create(createNestedFixtureToolDescriptor()).validate(Map.of("options", Map.of("mode", "preview", "limit", 10))));
+                () -> new MCPToolArgumentContract(descriptor.getName(), descriptor.getInputSchema()).validate(Map.of("options", Map.of("mode", "preview", "limit", 10))));
         assertThat(actual.getMessage(), is("options.limit is not a supported argument for fixture_tool."));
         assertThat(actual.getToolName(), is("fixture_tool"));
         assertThat(actual.getArgumentPath(), is("options.limit"));

@@ -114,20 +114,20 @@ public final class MCPToolSpecificationFactory {
         }
     }
     
-    private McpSchema.CallToolResult createCallToolResult(final MCPToolDescriptor toolDescriptor, final MCPResponse response) {
+    private McpSchema.CallToolResult createCallToolResult(final MCPToolDescriptor descriptor, final MCPResponse response) {
         if (response instanceof MCPErrorResponse) {
             return createCallToolResult(response.toPayload(), true);
         }
         Map<String, Object> payload = response.toPayload();
-        if (toolDescriptor.getOutputSchema().isEmpty()) {
+        if (descriptor.getOutputSchema().isEmpty()) {
             return createCallToolResult(payload, false);
         }
-        ValidationResponse validation = outputSchemaValidator.validate(toolDescriptor.getOutputSchema(), payload);
+        ValidationResponse validation = outputSchemaValidator.validate(descriptor.getOutputSchema(), payload);
         if (validation.valid()) {
             return createCallToolResult(payload, false);
         }
         final MCPResponse response1 = new MCPErrorResponse(String.format(
-                "Tool `%s` structuredContent does not match declared outputSchema: %s", toolDescriptor.getName(), Objects.toString(validation.errorMessage(), "validation failed")));
+                "Tool `%s` structuredContent does not match declared outputSchema: %s", descriptor.getName(), Objects.toString(validation.errorMessage(), "validation failed")));
         return createCallToolResult(response1.toPayload(), true);
     }
     

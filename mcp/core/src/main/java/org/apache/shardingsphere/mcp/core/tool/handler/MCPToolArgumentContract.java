@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.core.tool.handler;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidApprovedStepsException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
@@ -35,7 +34,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class MCPToolArgumentContract {
     
     private static final String EXECUTION_MODE = "execution_mode";
@@ -69,10 +68,6 @@ final class MCPToolArgumentContract {
     private final String toolName;
     
     private final Map<String, Object> inputSchema;
-    
-    static MCPToolArgumentContract create(final MCPToolDescriptor toolDescriptor) {
-        return new MCPToolArgumentContract(toolDescriptor.getName(), toolDescriptor.getInputSchema());
-    }
     
     void validate(final Map<String, Object> arguments) {
         validateObject(arguments, inputSchema, "", arguments);

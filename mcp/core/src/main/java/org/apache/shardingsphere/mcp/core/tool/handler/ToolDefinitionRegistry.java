@@ -119,7 +119,8 @@ public final class ToolDefinitionRegistry {
      * @return tool response
      */
     public static MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolDefinition definition, final String sessionId, final Map<String, Object> arguments) {
-        MCPToolArgumentContract.create(definition.getDescriptor()).validate(arguments);
+        MCPToolDescriptor descriptor = definition.getDescriptor();
+        new MCPToolArgumentContract(descriptor.getName(), descriptor.getInputSchema()).validate(arguments);
         return dispatch(requestScope, definition.getHandler(), new MCPToolCall(sessionId, arguments));
     }
     
