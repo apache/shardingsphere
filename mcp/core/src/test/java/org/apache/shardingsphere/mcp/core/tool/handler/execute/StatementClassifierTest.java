@@ -78,6 +78,26 @@ class StatementClassifierTest {
         assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
     }
     
+    @Test
+    void assertClassifySubqueryReferencedObjectNames() {
+        ClassificationResult actualResult = statementClassifier.classify(
+                "SELECT * FROM logic_db.foo_orders WHERE EXISTS (SELECT 1 FROM other_db.foo_order_items)");
+        assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
+    }
+    
+    @Test
+    void assertClassifyDerivedTableReferencedObjectNames() {
+        ClassificationResult actualResult = statementClassifier.classify("SELECT * FROM (SELECT * FROM other_db.foo_order_items) foo_items");
+        assertThat(actualResult.getReferencedObjectNames(), contains("other_db.foo_order_items"));
+    }
+    
+    @Test
+    void assertClassifyDMLSubqueryReferencedObjectNames() {
+        ClassificationResult actualResult = statementClassifier.classify(
+                "UPDATE logic_db.foo_orders SET status = 'DONE' WHERE EXISTS (SELECT 1 FROM other_db.foo_order_items)");
+        assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
+    }
+    
     private static Stream<Arguments> assertClassifyCases() {
         return Stream.of(
                 Arguments.of("trim trailing semicolon query", "  SELECT * FROM foo_orders ;  ", SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM foo_orders", "foo_orders", ""),

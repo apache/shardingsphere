@@ -34,6 +34,8 @@ final class SQLStatementTargetResolver {
     
     private final SQLStatementScanner scanner;
     
+    private final SQLStatementStructureResolver structureResolver;
+    
     private final SQLStatementClassResolver statementClassResolver;
     
     String resolve(final SQLStatementStructure statementStructure, final SupportedMCPStatement statementClass) {
@@ -70,6 +72,25 @@ final class SQLStatementTargetResolver {
             if (!objectName.isEmpty()) {
                 collectObjectName(statementStructure, objectName, visitedAliases, result);
             }
+        }
+        collectNestedQueryObjectNames(tokens, visitedAliases, result);
+    }
+    
+    private void collectNestedQueryObjectNames(final List<SQLStatementToken> tokens, final Collection<String> visitedAliases, final Collection<String> result) {
+        int index = 0;
+        while (index < tokens.size()) {
+            if (!"(".equals(tokens.get(index).text())) {
+                index++;
+                continue;
+            }
+            int closingParenthesisIndex = findClosingParenthesis(tokens, index);
+            if (isNestedQuery(tokens, index + 1, closingParenthesisIndex)) {
+                SQLStatementStructure statementStructure = structureResolver.resolve(reconstructSql(tokens, index + 1, closingParenthesisIndex));
+                collect(statementStructure, statementClassResolver.resolve(statementStructure), visitedAliases, result);
+                index = closingParenthesisIndex + 1;
+                continue;
+            }
+            index++;
         }
     }
     
@@ -217,5 +238,37 @@ final class SQLStatementTargetResolver {
             }
         }
         return result;
+    }
+    
+    private int findClosingParenthesis(final List<SQLStatementToken> tokens, final int startIndex) {
+        int parenthesesDepth = 0;
+        for (int index = startIndex; index < tokens.size(); index++) {
+            if ("(".equals(tokens.get(index).text())) {
+                parenthesesDepth++;
+                continue;
+            }
+            if (")".equals(tokens.get(index).text())) {
+                parenthesesDepth--;
+                if (0 == parenthesesDepth) {
+                    return index;
+                }
+            }
+        }
+        return tokens.size();
+    }
+    
+    private boolean isNestedQuery(final List<SQLStatementToken> tokens, final int startIndex, final int stopIndex) {
+        return startIndex < stopIndex && scanner.isKeyword(tokens.get(startIndex), "SELECT", "WITH");
+    }
+    
+    private String reconstructSql(final List<SQLStatementToken> tokens, final int startIndex, final int stopIndex) {
+        StringBuilder result = new StringBuilder();
+        for (int index = startIndex; index < stopIndex; index++) {
+            if (!result.isEmpty()) {
+                result.append(' ');
+            }
+            result.append(tokens.get(index).text());
+        }
+        return result.toString();
     }
 }

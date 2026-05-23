@@ -207,6 +207,24 @@ class MCPSQLExecutionFacadeTest {
     }
     
     @Test
+    void assertExecuteWithCrossSchemaSubqueryDisabled() {
+        MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
+        MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
+        MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
+        MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
+        AuditRecorder auditRecorder = mock(AuditRecorder.class);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY), false);
+        SQLExecutionRequest request = createExecutionRequest("SELECT * FROM logic_db.orders WHERE EXISTS (SELECT 1 FROM other_db.items)");
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, auditRecorder);
+        mockSessionLock(coordinator);
+        when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> facade.execute(request));
+        assertThat(actual.getMessage(), is("Cross-schema SQL is not supported for database `logic_db`: `other_db.items`."));
+        verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT * FROM logic_db.orders WHERE EXISTS (SELECT 1 FROM other_db.items)", false, "QUERY");
+        verifyNoInteractions(transactionExecutor, statementExecutor);
+    }
+    
+    @Test
     void assertExecuteWithCrossSchemaDMLDisabled() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);

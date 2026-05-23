@@ -36,7 +36,7 @@ public final class StatementClassifier {
     
     private final SQLStatementClassResolver statementClassResolver = new SQLStatementClassResolver();
     
-    private final SQLStatementTargetResolver targetResolver = new SQLStatementTargetResolver(scanner, statementClassResolver);
+    private final SQLStatementTargetResolver targetResolver = new SQLStatementTargetResolver(scanner, structureResolver, statementClassResolver);
     
     /**
      * Classify one SQL statement.
