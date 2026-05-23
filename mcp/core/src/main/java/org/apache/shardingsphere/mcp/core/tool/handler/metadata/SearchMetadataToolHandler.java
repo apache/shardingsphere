@@ -78,13 +78,13 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
             result.put("next_actions", List.of(createEmptySearchNextAction(request)));
             return result;
         }
-        List<String> duplicatedNames = findDuplicatedNames(searchResult.getAmbiguityCandidates(), request.getQuery());
+        List<String> duplicatedNames = findDuplicatedNames(searchResult.getItems(), request.getQuery());
         List<Map<String, Object>> nextActions = createResultNextActions(searchResult, duplicatedNames);
         if (!nextActions.isEmpty()) {
             result.put("next_actions", nextActions);
         }
         if (!duplicatedNames.isEmpty()) {
-            result.put("ambiguity_state", createAmbiguityState(searchResult.getAmbiguityCandidates(), duplicatedNames));
+            result.put("ambiguity_state", createAmbiguityState(searchResult.getItems(), duplicatedNames));
         }
         return result;
     }

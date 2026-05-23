@@ -76,7 +76,7 @@ public final class SearchMetadataToolService {
                                                     final Set<SupportedMCPMetadataObjectType> searchObjectTypes, final boolean broadSearchGuarded) {
         List<MetadataSearchHit> filteredItems = matcher.filterByQuery(metadataItems, request.getQuery());
         filteredItems.sort(this::compareSearchHits);
-        return new MetadataSearchResult(filteredItems, createSearchContext(request, searchObjectTypes, broadSearchGuarded), filteredItems.size(), filteredItems);
+        return new MetadataSearchResult(filteredItems, createSearchContext(request, searchObjectTypes, broadSearchGuarded), filteredItems.size());
     }
     
     private Map<String, Object> createSearchContext(final MetadataSearchRequest request, final Set<SupportedMCPMetadataObjectType> searchObjectTypes, final boolean broadSearchGuarded) {

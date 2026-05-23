@@ -35,6 +35,4 @@ public final class MetadataSearchResult {
     private final Map<String, Object> searchContext;
     
     private final int totalMatchCount;
-    
-    private final List<MetadataSearchHit> ambiguityCandidates;
 }

@@ -126,8 +126,7 @@ final class MCPToolClarificationPolicy {
             return Optional.empty();
         }
         String formPropertyName = FORM_PROPERTY_PREFIX + questionIndex;
-        return findArgumentBindingTarget(field, toolDescriptor)
-                .map(target -> new ArgumentBinding(formPropertyName, target.argumentName(), target.fieldName(), getInputType(question), getAllowedValues(question)));
+        return findArgumentBinding(field, toolDescriptor, formPropertyName, getInputType(question), getAllowedValues(question));
     }
     
     private boolean isSensitiveClarificationQuestion(final Map<?, ?> question) {
@@ -238,15 +237,16 @@ final class MCPToolClarificationPolicy {
         return result;
     }
     
-    private Optional<ArgumentBindingTarget> findArgumentBindingTarget(final String field, final MCPToolDescriptor toolDescriptor) {
+    private Optional<ArgumentBinding> findArgumentBinding(final String field, final MCPToolDescriptor toolDescriptor, final String formPropertyName, final String inputType,
+                                                          final List<?> allowedValues) {
         int separatorIndex = field.indexOf(DOT);
         if (0 < separatorIndex && separatorIndex < field.length() - 1 && isBindableObjectProperty(toolDescriptor, field.substring(0, separatorIndex), field.substring(separatorIndex + 1))) {
-            return Optional.of(new ArgumentBindingTarget(field.substring(0, separatorIndex), field.substring(separatorIndex + 1)));
+            return Optional.of(new ArgumentBinding(formPropertyName, field.substring(0, separatorIndex), field.substring(separatorIndex + 1), inputType, allowedValues));
         }
         if (hasArgument(toolDescriptor, field) && !isObjectArgument(toolDescriptor, field)) {
-            return Optional.of(new ArgumentBindingTarget(field, ""));
+            return Optional.of(new ArgumentBinding(formPropertyName, field, "", inputType, allowedValues));
         }
-        return findObjectArgumentName(toolDescriptor, field).map(objectArgumentName -> new ArgumentBindingTarget(objectArgumentName, field));
+        return findObjectArgumentName(toolDescriptor, field).map(objectArgumentName -> new ArgumentBinding(formPropertyName, objectArgumentName, field, inputType, allowedValues));
     }
     
     private boolean isBindableObjectProperty(final MCPToolDescriptor toolDescriptor, final String argumentName, final String fieldName) {
@@ -325,8 +325,5 @@ final class MCPToolClarificationPolicy {
         private boolean isTopLevel() {
             return fieldName.isEmpty();
         }
-    }
-    
-    private record ArgumentBindingTarget(String argumentName, String fieldName) {
     }
 }
