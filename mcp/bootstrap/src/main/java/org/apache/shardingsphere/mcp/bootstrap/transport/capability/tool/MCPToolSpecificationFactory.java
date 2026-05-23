@@ -137,19 +137,21 @@ public final class MCPToolSpecificationFactory {
     }
     
     private void appendResourceLinks(final Map<String, Object> payload, final CallToolResult.Builder builder) {
-        MCPResourceLinkContract.ResourceLinks resourceLinks = MCPResourceLinkContract.createResourceLinks(payload, RESOURCE_LINK_LIMIT);
-        for (McpSchema.ResourceLink each : resourceLinks.links()) {
-            builder.addContent(each);
+        MCPResourceLinkCandidateCollector.ResourceLinkCandidates candidates = new MCPResourceLinkCandidateCollector(RESOURCE_LINK_LIMIT).collect(payload);
+        int emittedCount = 0;
+        for (MCPResourceLinkCandidateCollector.ResourceLinkCandidate each : candidates.candidates()) {
+            builder.addContent(MCPResourceLinkContract.createResourceLink(each));
+            emittedCount++;
         }
-        if (0 < resourceLinks.totalCount()) {
-            builder.meta(createResourceLinksMeta(resourceLinks));
+        if (0 < candidates.totalCount()) {
+            builder.meta(createResourceLinksMeta(emittedCount, candidates.totalCount()));
         }
     }
     
-    private Map<String, Object> createResourceLinksMeta(final MCPResourceLinkContract.ResourceLinks resourceLinks) {
+    private Map<String, Object> createResourceLinksMeta(final int emittedCount, final int totalCount) {
         return Map.of(
-                MCPShardingSphereMetadataKeys.RESOURCE_LINKS_EMITTED, resourceLinks.links().size(),
-                MCPShardingSphereMetadataKeys.RESOURCE_LINKS_OMITTED, resourceLinks.omittedCount(),
+                MCPShardingSphereMetadataKeys.RESOURCE_LINKS_EMITTED, emittedCount,
+                MCPShardingSphereMetadataKeys.RESOURCE_LINKS_OMITTED, Math.max(0, totalCount - emittedCount),
                 MCPShardingSphereMetadataKeys.RESOURCE_LINK_LIMIT, RESOURCE_LINK_LIMIT);
     }
 }

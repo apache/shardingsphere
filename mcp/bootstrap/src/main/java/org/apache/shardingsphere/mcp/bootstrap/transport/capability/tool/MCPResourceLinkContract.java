@@ -23,21 +23,14 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MCPResourceLinkContract {
     
     private static final String JSON_CONTENT_TYPE = "application/json";
     
-    static ResourceLinks createResourceLinks(final Map<String, Object> payload, final int limit) {
-        MCPResourceLinkCandidateCollector.ResourceLinkCandidates candidates = new MCPResourceLinkCandidateCollector(limit).collect(payload);
-        return new ResourceLinks(candidates.candidates().stream().map(MCPResourceLinkContract::createResourceLink).collect(Collectors.toList()), candidates.totalCount());
-    }
-    
-    private static McpSchema.ResourceLink createResourceLink(final MCPResourceLinkCandidateCollector.ResourceLinkCandidate candidate) {
+    static McpSchema.ResourceLink createResourceLink(final MCPResourceLinkCandidateCollector.ResourceLinkCandidate candidate) {
         return McpSchema.ResourceLink.builder()
                 .name(resolveResourceLinkName(candidate.uri()))
                 .title(candidate.title())
@@ -62,12 +55,5 @@ final class MCPResourceLinkContract {
         result.put(MCPShardingSphereMetadataKeys.PURPOSE, candidate.purpose());
         result.put(MCPShardingSphereMetadataKeys.SOURCE_FIELD, candidate.sourceField());
         return result;
-    }
-    
-    record ResourceLinks(List<McpSchema.ResourceLink> links, int totalCount) {
-
-        int omittedCount() {
-            return Math.max(0, totalCount - links.size());
-        }
     }
 }
