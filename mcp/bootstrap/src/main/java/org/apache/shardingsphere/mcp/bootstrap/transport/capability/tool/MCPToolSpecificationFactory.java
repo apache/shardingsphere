@@ -126,9 +126,8 @@ public final class MCPToolSpecificationFactory {
         if (validation.valid()) {
             return createCallToolResult(payload, false);
         }
-        final MCPResponse response1 = new MCPErrorResponse(String.format(
-                "Tool `%s` structuredContent does not match declared outputSchema: %s", descriptor.getName(), Objects.toString(validation.errorMessage(), "validation failed")));
-        return createCallToolResult(response1.toPayload(), true);
+        return createCallToolResult(new MCPErrorResponse(String.format(
+                "Tool `%s` structuredContent does not match declared outputSchema: %s", descriptor.getName(), Objects.toString(validation.errorMessage(), "validation failed"))).toPayload(), true);
     }
     
     private McpSchema.CallToolResult createCallToolResult(final Map<String, Object> payload, final boolean isError) {
