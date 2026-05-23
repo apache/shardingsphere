@@ -66,7 +66,7 @@ final class MCPToolClarificationPolicy {
     
     boolean isPlanningTool(final MCPToolDescriptor toolDescriptor) {
         return MCPDescriptorCatalogIndex.findToolRuntimeDescriptor(toolDescriptor.getName())
-                .map(runtimeDescriptor -> PLANNING_WORKFLOW_ROLE.equals(runtimeDescriptor.getWorkflowRole())).orElse(false);
+                .map(optional -> PLANNING_WORKFLOW_ROLE.equals(optional.getWorkflowRole())).orElse(false);
     }
     
     boolean hasClarificationQuestions(final Map<String, Object> payload) {
@@ -217,9 +217,25 @@ final class MCPToolClarificationPolicy {
     private void putElicitedArgument(final Map<String, Object> args, final ArgumentBinding binding, final Object value) {
         if (binding.isTopLevel()) {
             args.put(binding.argumentName(), value);
-            return;
+        } else {
+            putNestedArgument(args, binding.argumentName(), binding.fieldName(), value);
         }
-        putNestedArgument(args, binding.argumentName(), binding.fieldName(), value);
+    }
+    
+    private void putNestedArgument(final Map<String, Object> args, final String argumentName, final String fieldName, final Object value) {
+        Map<String, Object> nestedArguments = createNestedArguments(args.get(argumentName));
+        nestedArguments.put(fieldName, value);
+        args.put(argumentName, nestedArguments);
+    }
+    
+    private Map<String, Object> createNestedArguments(final Object rawValue) {
+        Map<String, Object> result = new LinkedHashMap<>(rawValue instanceof Map<?, ?> ? ((Map<?, ?>) rawValue).size() + 1 : 4, 1F);
+        if (rawValue instanceof Map<?, ?> rawMap) {
+            for (Entry<?, ?> entry : rawMap.entrySet()) {
+                result.put(Objects.toString(entry.getKey(), ""), entry.getValue());
+            }
+        }
+        return result;
     }
     
     private Optional<ArgumentBindingTarget> findArgumentBindingTarget(final String field, final MCPToolDescriptor toolDescriptor) {
@@ -282,22 +298,6 @@ final class MCPToolClarificationPolicy {
     private Map<String, Object> getInputProperties(final MCPToolDescriptor toolDescriptor) {
         Object properties = toolDescriptor.getInputSchema().get(PROPERTIES_FIELD);
         return properties instanceof Map<?, ?> ? (Map<String, Object>) properties : Map.of();
-    }
-    
-    private void putNestedArgument(final Map<String, Object> args, final String argumentName, final String fieldName, final Object value) {
-        Map<String, Object> nestedArguments = createNestedArguments(args.get(argumentName));
-        nestedArguments.put(fieldName, value);
-        args.put(argumentName, nestedArguments);
-    }
-    
-    private Map<String, Object> createNestedArguments(final Object rawValue) {
-        Map<String, Object> result = new LinkedHashMap<>(rawValue instanceof Map<?, ?> ? ((Map<?, ?>) rawValue).size() + 1 : 4, 1F);
-        if (rawValue instanceof Map<?, ?> rawMap) {
-            for (Entry<?, ?> entry : rawMap.entrySet()) {
-                result.put(Objects.toString(entry.getKey(), ""), entry.getValue());
-            }
-        }
-        return result;
     }
     
     private String getField(final Map<?, ?> question) {
