@@ -66,7 +66,7 @@ class MCPDescriptorCatalogLoaderTest {
     
     @Test
     void assertValidateRejectsUndeclaredPromptCompletionArgument() {
-        MCPDescriptorCatalog actual = new MCPDescriptorCatalog(List.of(), List.of(createResourceTemplateDescriptor()), List.of(createResourceExtensionDescriptor()), List.of(),
+        MCPDescriptorCatalog actual = new MCPDescriptorCatalog(List.of(), List.of(createResourceTemplateDescriptor()), List.of(createShardingSphereResourceMetadata()), List.of(),
                 List.of(createPromptDescriptor()), List.of(new MCPPromptTemplateBinding("inspect_metadata", "META-INF/shardingsphere-mcp/prompts/inspect-metadata.md")),
                 List.of(new MCPCompletionTargetDescriptor("prompt", "inspect_metadata", List.of("table"), 50, Map.of())), List.of(), List.of());
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> MCPDescriptorCatalogValidator.validate(actual));
@@ -115,8 +115,8 @@ class MCPDescriptorCatalogLoaderTest {
                 "Read one logical database detail.", "application/json", MCPResourceAnnotations.EMPTY, Collections.emptyMap());
     }
     
-    private MCPResourceExtensionDescriptor createResourceExtensionDescriptor() {
-        return new MCPResourceExtensionDescriptor("shardingsphere://databases/{database}",
+    private ShardingSphereMCPResourceMetadata createShardingSphereResourceMetadata() {
+        return new ShardingSphereMCPResourceMetadata("shardingsphere://databases/{database}",
                 List.of(new MCPUriVariableDescriptor("database", "Database", "Logical database name.", true, "database")),
                 "detail", "database", "", List.of(), List.of(), List.of());
     }
@@ -131,8 +131,8 @@ class MCPDescriptorCatalogLoaderTest {
                         MCPShardingSphereMetadataKeys.ASK_USER_CONDITIONS, List.of("Ask when metadata is ambiguous.")));
     }
     
-    private MCPResourceExtensionDescriptor findResourceExtension(final MCPDescriptorCatalog catalog, final String uriTemplate) {
-        return catalog.getResourceExtensionDescriptors().stream().filter(each -> uriTemplate.equals(each.getUriOrTemplate())).findFirst().orElseThrow();
+    private ShardingSphereMCPResourceMetadata findShardingSphereResourceMetadata(final MCPDescriptorCatalog catalog, final String uriTemplate) {
+        return catalog.getShardingSphereResourceMetadata().stream().filter(each -> uriTemplate.equals(each.getUriOrTemplate())).findFirst().orElseThrow();
     }
     
     private Map<?, ?> findInputProperty(final MCPToolDescriptor toolDescriptor, final String fieldName) {
@@ -146,13 +146,14 @@ class MCPDescriptorCatalogLoaderTest {
     }
     
     private void assertResourceDescriptor(final MCPDescriptorCatalog catalog) {
-        MCPResourceExtensionDescriptor extension = findResourceExtension(catalog, "shardingsphere://workflows/{plan_id}");
-        assertThat(extension.getResourceKind(), is("detail"));
-        assertThat(extension.getObjectScope(), is("workflow-plan"));
-        assertThat(extension.getRelatedTools(), is(List.of("database_gateway_validate_workflow", "database_gateway_apply_workflow")));
+        ShardingSphereMCPResourceMetadata metadata = findShardingSphereResourceMetadata(catalog, "shardingsphere://workflows/{plan_id}");
+        assertThat(metadata.getResourceKind(), is("detail"));
+        assertThat(metadata.getObjectScope(), is("workflow-plan"));
+        assertThat(metadata.getRelatedTools(), is(List.of("database_gateway_validate_workflow", "database_gateway_apply_workflow")));
         MCPResourceDescriptor actual = findResource(catalog, "shardingsphere://workflows/{plan_id}");
-        assertTrue(actual.getMeta().isEmpty());
-        assertThat(findResourceExtension(catalog, "shardingsphere://workflow/test-resource").getResourceKind(), is("detail"));
+        assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.RESOURCE_KIND), is("detail"));
+        assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.RELATED_TOOLS), is(List.of("database_gateway_validate_workflow", "database_gateway_apply_workflow")));
+        assertThat(findShardingSphereResourceMetadata(catalog, "shardingsphere://workflow/test-resource").getResourceKind(), is("detail"));
     }
     
     private void assertNoBannedPublicAliasFields(final MCPDescriptorCatalog catalog) {

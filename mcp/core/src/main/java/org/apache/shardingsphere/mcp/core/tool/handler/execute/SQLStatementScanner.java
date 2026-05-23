@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Locale;
 
 final class SQLStatementScanner {
-
+    
     String normalizeSingleStatement(final String sql) {
         String result = sql.trim();
         ShardingSpherePreconditions.checkState(!result.isEmpty(), () -> new IllegalArgumentException("sql cannot be empty."));
@@ -41,7 +41,7 @@ final class SQLStatementScanner {
         ShardingSpherePreconditions.checkState(!result.isEmpty(), () -> new IllegalArgumentException("sql cannot be empty."));
         return result;
     }
-
+    
     int skipInsignificant(final String sql, final int startIndex) {
         int result = startIndex;
         while (result < sql.length()) {
@@ -61,7 +61,7 @@ final class SQLStatementScanner {
         }
         return result;
     }
-
+    
     String extractLeadingKeyword(final String sql) {
         int startIndex = skipInsignificant(sql, 0);
         int stopIndex = startIndex;
@@ -73,7 +73,7 @@ final class SQLStatementScanner {
         }
         return sql.substring(startIndex, stopIndex).toUpperCase(Locale.ENGLISH);
     }
-
+    
     boolean matchesKeyword(final String sql, final int startIndex, final String keyword) {
         int keywordLength = keyword.length();
         if (startIndex + keywordLength > sql.length() || !sql.regionMatches(true, startIndex, keyword, 0, keywordLength)) {
@@ -81,14 +81,14 @@ final class SQLStatementScanner {
         }
         return startIndex + keywordLength == sql.length() || !isIdentifierCharacter(sql.charAt(startIndex + keywordLength));
     }
-
+    
     int skipKeyword(final String sql, final int startIndex, final String keyword) {
         if (!matchesKeyword(sql, startIndex, keyword)) {
             throw new MCPUnsupportedSQLStatementException();
         }
         return startIndex + keyword.length();
     }
-
+    
     int skipIdentifier(final String sql, final int startIndex) {
         if (startIndex >= sql.length()) {
             throw new MCPUnsupportedSQLStatementException();
@@ -107,11 +107,11 @@ final class SQLStatementScanner {
         }
         return result;
     }
-
+    
     int skipParenthesizedSegment(final String sql, final int startIndex) {
         return skipInsignificant(sql, findClosingParenthesis(sql, startIndex) + 1);
     }
-
+    
     int findClosingParenthesis(final String sql, final int startIndex) {
         int parenthesesDepth = 0;
         int result = startIndex;
@@ -144,7 +144,7 @@ final class SQLStatementScanner {
         }
         throw new MCPUnsupportedSQLStatementException();
     }
-
+    
     List<SQLStatementToken> tokenize(final String sql) {
         List<SQLStatementToken> result = new ArrayList<>(Math.max(1, sql.length() / 4));
         int currentIndex = 0;
@@ -180,7 +180,7 @@ final class SQLStatementScanner {
         }
         return result;
     }
-
+    
     boolean isKeyword(final SQLStatementToken token, final String... keywords) {
         for (String each : keywords) {
             if (isKeyword(token, each)) {
@@ -189,11 +189,11 @@ final class SQLStatementScanner {
         }
         return false;
     }
-
+    
     boolean isKeyword(final SQLStatementToken token, final String keyword) {
         return !token.quotedIdentifier() && token.upperText().equals(keyword);
     }
-
+    
     String normalizeIdentifier(final String identifier) {
         if (identifier.length() >= 2 && '"' == identifier.charAt(0) && '"' == identifier.charAt(identifier.length() - 1)) {
             return identifier.substring(1, identifier.length() - 1).replace("\"\"", "\"");
@@ -206,11 +206,11 @@ final class SQLStatementScanner {
         }
         return identifier;
     }
-
+    
     String normalizeIdentifierForComparison(final String identifier) {
         return normalizeIdentifier(identifier).toUpperCase(Locale.ENGLISH);
     }
-
+    
     boolean containsMySQLExecutableComment(final String sql) {
         int currentIndex = 0;
         while (currentIndex < sql.length()) {
@@ -233,7 +233,7 @@ final class SQLStatementScanner {
         }
         return false;
     }
-
+    
     boolean containsUserVariableAssignment(final String sql) {
         int currentIndex = 0;
         while (currentIndex < sql.length()) {
@@ -256,7 +256,7 @@ final class SQLStatementScanner {
         }
         return false;
     }
-
+    
     private boolean isUserVariableAssignment(final String sql, final int startIndex) {
         int currentIndex = startIndex;
         if (currentIndex < sql.length() && isQuotedTextStart(sql.charAt(currentIndex))) {
@@ -272,7 +272,7 @@ final class SQLStatementScanner {
         currentIndex = skipWhitespace(sql, currentIndex);
         return currentIndex + 1 < sql.length() && ':' == sql.charAt(currentIndex) && '=' == sql.charAt(currentIndex + 1);
     }
-
+    
     private int skipWhitespace(final String sql, final int startIndex) {
         int result = startIndex;
         while (result < sql.length() && Character.isWhitespace(sql.charAt(result))) {
@@ -280,7 +280,7 @@ final class SQLStatementScanner {
         }
         return result;
     }
-
+    
     private int findStatementDelimiter(final String sql) {
         int result = 0;
         while (result < sql.length()) {
@@ -304,7 +304,7 @@ final class SQLStatementScanner {
         }
         return -1;
     }
-
+    
     private int skipQuotedText(final String sql, final int startIndex) {
         char closingChar = '[' == sql.charAt(startIndex) ? ']' : sql.charAt(startIndex);
         int result = startIndex + 1;
@@ -320,31 +320,31 @@ final class SQLStatementScanner {
         }
         throw new MCPUnsupportedSQLStatementException();
     }
-
+    
     private boolean isIdentifierCharacter(final char value) {
         return Character.isLetterOrDigit(value) || '_' == value || '$' == value;
     }
-
+    
     private boolean isWordCharacter(final char value) {
         return isIdentifierCharacter(value);
     }
-
+    
     private boolean isQuotedIdentifierStart(final char value) {
         return '"' == value || '`' == value || '[' == value;
     }
-
+    
     private boolean isQuotedTextStart(final char value) {
         return '\'' == value || isQuotedIdentifierStart(value);
     }
-
+    
     private boolean isLineCommentStart(final String sql, final int startIndex) {
         return startIndex + 1 < sql.length() && '-' == sql.charAt(startIndex) && '-' == sql.charAt(startIndex + 1);
     }
-
+    
     private boolean isBlockCommentStart(final String sql, final int startIndex) {
         return startIndex + 1 < sql.length() && '/' == sql.charAt(startIndex) && '*' == sql.charAt(startIndex + 1);
     }
-
+    
     private int skipLineComment(final String sql, final int startIndex) {
         int result = startIndex + 2;
         while (result < sql.length() && '\n' != sql.charAt(result)) {
@@ -352,7 +352,7 @@ final class SQLStatementScanner {
         }
         return result;
     }
-
+    
     private int skipBlockComment(final String sql, final int startIndex) {
         int result = startIndex + 2;
         while (result + 1 < sql.length()) {

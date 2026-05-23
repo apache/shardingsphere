@@ -54,7 +54,7 @@ public final class PackagedDistributionPluginFixtureSupport {
                 title: Test Fixture Status
                 description: "Read the packaged MCP test fixture status used by e2e plugin discovery tests."
                 mimeType: application/json
-                extension:
+                shardingSphereMetadata:
                   resourceKind: detail
                   objectScope: test-fixture
             tools:

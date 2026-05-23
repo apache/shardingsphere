@@ -158,6 +158,17 @@ class MCPDescriptorCatalogYamlSwapperTest {
     }
     
     @Test
+    void assertSwapRejectsTypedResourceMetadataKeyInRawMeta() {
+        YamlMCPResourceDescriptor yamlResource = createYamlResourceDescriptor();
+        yamlResource.setMeta(Map.of(MCPShardingSphereMetadataKeys.RESOURCE_KIND, "detail"));
+        YamlMCPDescriptorCatalog yamlCatalog = new YamlMCPDescriptorCatalog();
+        yamlCatalog.setResources(List.of(yamlResource));
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPDescriptorCatalogYamlSwapper.swap(List.of(yamlCatalog)));
+        assertThat(actual.getMessage(),
+                is("MCP resource descriptor `shardingsphere://capabilities` raw meta must not define typed ShardingSphere resource metadata key `org.apache.shardingsphere/resource-kind`."));
+    }
+    
+    @Test
     void assertSwapRejectsDuplicatePromptArguments() {
         YamlMCPPromptDescriptor yamlPrompt = createYamlPromptDescriptor();
         yamlPrompt.setArguments(List.of(createYamlPromptArgument("database"), createYamlPromptArgument("database")));

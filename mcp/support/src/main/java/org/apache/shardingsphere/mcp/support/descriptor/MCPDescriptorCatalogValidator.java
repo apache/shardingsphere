@@ -75,7 +75,7 @@ final class MCPDescriptorCatalogValidator {
             ShardingSpherePreconditions.checkState(each.isTemplated(),
                     () -> new IllegalStateException(String.format("Resource template `%s` must contain template variables.", each.getUriTemplate())));
             validateResourceDescriptor(each, registered);
-            validateResourceVariables(each, findResourceExtension(catalog, each.getUriTemplate()));
+            validateResourceVariables(each, findShardingSphereResourceMetadata(catalog, each.getUriTemplate()));
         }
     }
     
@@ -84,11 +84,11 @@ final class MCPDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Duplicate MCP resource descriptor `%s`.", descriptor.getUriTemplate())));
     }
     
-    private static MCPResourceExtensionDescriptor findResourceExtension(final MCPDescriptorCatalog catalog, final String uriOrTemplate) {
-        return catalog.getResourceExtensionDescriptors().stream().filter(each -> uriOrTemplate.equals(each.getUriOrTemplate())).findFirst().orElse(null);
+    private static ShardingSphereMCPResourceMetadata findShardingSphereResourceMetadata(final MCPDescriptorCatalog catalog, final String uriOrTemplate) {
+        return catalog.getShardingSphereResourceMetadata().stream().filter(each -> uriOrTemplate.equals(each.getUriOrTemplate())).findFirst().orElse(null);
     }
     
-    private static void validateResourceVariables(final MCPResourceDescriptor descriptor, final MCPResourceExtensionDescriptor extension) {
+    private static void validateResourceVariables(final MCPResourceDescriptor descriptor, final ShardingSphereMCPResourceMetadata metadata) {
         List<String> templateVariables = new MCPUriTemplate(descriptor.getUriTemplate()).getVariableNames();
         Set<String> registeredTemplateVariables = new HashSet<>();
         for (String each : templateVariables) {
@@ -96,7 +96,7 @@ final class MCPDescriptorCatalogValidator {
                     () -> new IllegalStateException(String.format("Duplicate URI template variable `%s` in resource descriptor `%s`.", each, descriptor.getUriTemplate())));
         }
         Set<String> templateVariableSet = new HashSet<>(templateVariables);
-        Collection<MCPUriVariableDescriptor> uriVariables = null == extension ? List.of() : extension.getUriVariables();
+        Collection<MCPUriVariableDescriptor> uriVariables = null == metadata ? List.of() : metadata.getUriVariables();
         Map<String, MCPUriVariableDescriptor> declaredParameters = new LinkedHashMap<>(uriVariables.size(), 1F);
         for (MCPUriVariableDescriptor each : uriVariables) {
             ShardingSpherePreconditions.checkState(each.isRequired(), () -> new IllegalStateException(

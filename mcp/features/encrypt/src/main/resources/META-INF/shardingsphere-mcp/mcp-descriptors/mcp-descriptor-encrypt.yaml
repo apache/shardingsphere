@@ -24,7 +24,7 @@ resources:
     mimeType: application/json
     meta:
       org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
-    extension:
+    shardingSphereMetadata:
       resourceKind: list
       feature: encrypt
       relatedTools:
@@ -35,7 +35,7 @@ resourceTemplates:
     title: Encrypt Rules
     description: "List encrypt table rules for one ShardingSphere logical database. Read this before altering or validating encrypt configuration."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -52,7 +52,7 @@ resourceTemplates:
     title: Encrypt Table Rule
     description: "Read encrypt rules for one logical table. Use this before planning column-level encryption so the model can preserve existing cipher and assisted-query columns."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database

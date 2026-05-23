@@ -58,5 +58,5 @@ public final class YamlMCPResourceDescriptor {
     private Map<@MCPMetadataKey String, Object> meta = new LinkedHashMap<>();
     
     @Valid
-    private YamlMCPResourceExtensionDescriptor extension;
+    private YamlShardingSphereMCPResourceMetadata shardingSphereMetadata;
 }

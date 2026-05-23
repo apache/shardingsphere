@@ -80,7 +80,7 @@ class HttpTransportBaselineContractE2ETest extends AbstractHttpProgrammaticRunti
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("uri", resource.get("uri"));
         result.put("name", resource.get("name"));
-        result.put("meta", summarizeResourceMeta(resource));
+        result.put("_meta", summarizeResourceMeta(resource));
         return result;
     }
     
@@ -92,12 +92,12 @@ class HttpTransportBaselineContractE2ETest extends AbstractHttpProgrammaticRunti
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("uriTemplate", resourceTemplate.get("uriTemplate"));
         result.put("name", resourceTemplate.get("name"));
-        result.put("meta", summarizeResourceMeta(resourceTemplate));
+        result.put("_meta", summarizeResourceMeta(resourceTemplate));
         return result;
     }
     
     private Map<String, Object> summarizeResourceMeta(final Map<String, Object> resource) {
-        Map<String, Object> meta = castToMap(resource.getOrDefault("meta", Map.of()));
+        Map<String, Object> meta = castToMap(resource.getOrDefault("_meta", Map.of()));
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put(MCPShardingSphereMetadataKeys.RESOURCE_KIND, meta.get(MCPShardingSphereMetadataKeys.RESOURCE_KIND));
         putIfNotEmpty(result, MCPShardingSphereMetadataKeys.RELATED_TOOLS, (List<?>) meta.get(MCPShardingSphereMetadataKeys.RELATED_TOOLS));

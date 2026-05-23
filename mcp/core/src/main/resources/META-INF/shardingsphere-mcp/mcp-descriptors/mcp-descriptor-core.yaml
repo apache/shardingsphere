@@ -26,7 +26,7 @@ resources:
       audience:
         - assistant
       priority: 1.0
-    extension:
+    shardingSphereMetadata:
       resourceKind: capability-catalog
       useBefore:
         - inspecting ShardingSphere catalog metadata
@@ -40,7 +40,7 @@ resources:
       audience:
         - assistant
       priority: 0.9
-    extension:
+    shardingSphereMetadata:
       resourceKind: detail
       objectScope: runtime
       relatedResources:
@@ -51,7 +51,7 @@ resources:
     title: Logical Databases
     description: "List ShardingSphere logical databases visible to the current MCP runtime. Read this before choosing a database argument for metadata, SQL, or workflow tools."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       resourceKind: list
       objectScope: logical-database
       relatedTools:
@@ -63,7 +63,7 @@ resourceTemplates:
     title: Logical Database Detail
     description: "Read one ShardingSphere logical database entry and its visible metadata summary. Use this when a user names a database and the model needs to confirm it exists."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -77,7 +77,7 @@ resourceTemplates:
     title: Database Capabilities
     description: "Read statement, transaction, schema, and metadata-object capabilities for one logical database. Use before executing SQL or deciding whether EXPLAIN ANALYZE is available."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -93,7 +93,7 @@ resourceTemplates:
     title: Schemas
     description: "List schemas or namespaces visible inside one ShardingSphere logical database. Use this to fill schema arguments for metadata and SQL context."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -107,7 +107,7 @@ resourceTemplates:
     title: Schema Detail
     description: "Read one schema or namespace inside a logical database. Use this before listing tables, views, sequences, or indexes under that schema."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -126,7 +126,7 @@ resourceTemplates:
     title: Sequences
     description: "List sequences in a schema. Use this when SQL or workflow planning needs sequence object names visible through ShardingSphere."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -145,7 +145,7 @@ resourceTemplates:
     title: Sequence Detail
     description: "Read one sequence definition visible through ShardingSphere. Use this when SQL generation or review needs a concrete sequence object."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -169,7 +169,7 @@ resourceTemplates:
     title: Tables
     description: "List logical tables in a schema. Read this before planning encrypt or mask rules when the table name is uncertain."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -191,7 +191,7 @@ resourceTemplates:
     title: Table Detail
     description: "Read one logical table definition, including table-level metadata visible through ShardingSphere. Use this before column-level planning."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -218,7 +218,7 @@ resourceTemplates:
     title: Table Columns
     description: "List columns for one logical table. Read this before planning encrypt or mask rules for a column, or before writing SQL that references columns."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -245,7 +245,7 @@ resourceTemplates:
     title: Table Column Detail
     description: "Read one logical table column, including type and nullability metadata visible through ShardingSphere. Use this before column-level rule planning."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -277,7 +277,7 @@ resourceTemplates:
     title: Table Indexes
     description: "List indexes for one logical table. Use this before planning assisted-query encryption or reviewing DDL that may create or reuse indexes."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -303,7 +303,7 @@ resourceTemplates:
     title: Table Index Detail
     description: "Read one index definition for a logical table. Use this when a plan must preserve or create a specific index."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -332,7 +332,7 @@ resourceTemplates:
     title: Views
     description: "List views in a schema. Use this when SQL generation or metadata search must distinguish views from logical tables."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -351,7 +351,7 @@ resourceTemplates:
     title: View Detail
     description: "Read one view definition visible through ShardingSphere. Use this before writing SQL that references a view."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -375,7 +375,7 @@ resourceTemplates:
     title: View Columns
     description: "List columns exposed by one view. Use this before writing SQL that projects or filters view columns."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -399,7 +399,7 @@ resourceTemplates:
     title: View Column Detail
     description: "Read one view column definition visible through ShardingSphere. Use this when SQL should reference a specific view column."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database

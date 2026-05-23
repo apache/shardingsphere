@@ -51,8 +51,8 @@ model_contract:
   optional_catalog_resource: shardingsphere://capabilities
   metadata_first_resource: shardingsphere://databases
   sql_tool_selection: {side_effecting: Use database_gateway_execute_update with execution_mode=preview
-      before execution., read_only: Use database_gateway_execute_query for one SELECT
-      or EXPLAIN ANALYZE statement.}
+      before execution., read_only: Use database_gateway_execute_query for one classifier-approved
+      SELECT or EXPLAIN ANALYZE statement.}
   workflow_session_rule: Reuse the current-session plan_id returned by a planning
     tool; re-plan when the plan is unavailable.
   side_effect_rule: Preview before side effects and continue only when the requested
@@ -151,68 +151,68 @@ common_flows:
   referenced_resources: ['shardingsphere://capabilities']
 protocolAvailability: {resources: true, resourceTemplates: true, tools: true, toolAnnotations: true,
   toolOutputSchemas: true, prompts: true, completions: true, resourceNavigation: true}
-fingerprints: {algorithm: sha256, descriptorCatalog: 70eeca06750a163a4d9ad92d00ddefec716f271fb128a03b1d16348b75012b48,
-  promptSet: 04c5448b15d7bb057b6170f31f2830867e85207822bf3a00ea2ec34597ce8777, resourceNavigation: 64abf531e9c72549a99ab5f23ee2e0f6d769e45e19b56c73f86144e8f2e4799f,
-  modelFacingSchemas: 4ac7c5ad1f2368cdc9107fbca913644ef7c3a7bb4d72f474deb52c9455738f09}
+fingerprints: {algorithm: sha256, descriptorCatalog: f4ad81145c1af6bb9223e71ee783865c29edbf9b25d9ecc6999a1934fbc929e8,
+  promptSet: 3ce46d5c41e261470f1846680fab5274b38b35457b7d0a92d0dd0659ec8b5c17, resourceNavigation: 64abf531e9c72549a99ab5f23ee2e0f6d769e45e19b56c73f86144e8f2e4799f,
+  modelFacingSchemas: 9acdd7ed62c0ad8f3f184debf0b4f33868a8af3b677ea4212cf785a74c1ded8b}
 resources:
 - uri: shardingsphere://capabilities
   name: server-capability-catalog
-  meta: {org.apache.shardingsphere/resource-kind: capability-catalog}
+  _meta: {org.apache.shardingsphere/resource-kind: capability-catalog}
 - uri: shardingsphere://runtime
   name: runtime-status
-  meta: {org.apache.shardingsphere/resource-kind: detail}
+  _meta: {org.apache.shardingsphere/resource-kind: detail}
 - uri: shardingsphere://databases
   name: logical-databases
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/related-tools: [database_gateway_search_metadata, database_gateway_execute_query]
 - uri: shardingsphere://features/encrypt/algorithms
   name: encrypt-algorithms
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule]
 - uri: shardingsphere://features/mask/algorithms
   name: mask-algorithms
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/related-tools: [database_gateway_plan_mask_rule]
 resourceTemplates:
 - uriTemplate: shardingsphere://databases/{database}
   name: logical-database-detail
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
 - uriTemplate: shardingsphere://databases/{database}/capabilities
   name: database-capabilities
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/related-tools: [database_gateway_execute_query, database_gateway_execute_update]
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas
   name: schemas
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}
   name: schema-detail
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
     - {name: schema, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/sequences
   name: sequences
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
     - {name: schema, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}
   name: sequence-detail
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
@@ -220,7 +220,7 @@ resourceTemplates:
     - {name: sequence, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables
   name: tables
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule,
       database_gateway_plan_mask_rule]
@@ -229,7 +229,7 @@ resourceTemplates:
     - {name: schema, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
   name: table-detail
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule,
       database_gateway_plan_mask_rule]
@@ -239,7 +239,7 @@ resourceTemplates:
     - {name: table, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
   name: table-columns
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule,
       database_gateway_plan_mask_rule]
@@ -249,7 +249,7 @@ resourceTemplates:
     - {name: table, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}
   name: table-column-detail
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule,
       database_gateway_plan_mask_rule]
@@ -260,7 +260,7 @@ resourceTemplates:
     - {name: column, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
   name: table-indexes
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule]
     org.apache.shardingsphere/uri-variables:
@@ -269,7 +269,7 @@ resourceTemplates:
     - {name: table, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}
   name: table-index-detail
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
@@ -278,14 +278,14 @@ resourceTemplates:
     - {name: index, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views
   name: views
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
     - {name: schema, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}
   name: view-detail
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
@@ -293,7 +293,7 @@ resourceTemplates:
     - {name: view, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns
   name: view-columns
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
@@ -301,7 +301,7 @@ resourceTemplates:
     - {name: view, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}
   name: view-column-detail
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
@@ -310,7 +310,7 @@ resourceTemplates:
     - {name: column, required: true}
 - uriTemplate: shardingsphere://features/encrypt/databases/{database}/rules
   name: encrypt-rules
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule,
       database_gateway_validate_workflow]
@@ -318,7 +318,7 @@ resourceTemplates:
     - {name: database, required: true}
 - uriTemplate: shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules
   name: encrypt-table-rule
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule,
       database_gateway_validate_workflow]
@@ -327,14 +327,14 @@ resourceTemplates:
     - {name: table, required: true}
 - uriTemplate: shardingsphere://features/mask/databases/{database}/rules
   name: mask-rules
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/related-tools: [database_gateway_plan_mask_rule, database_gateway_validate_workflow]
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
 - uriTemplate: shardingsphere://features/mask/databases/{database}/tables/{table}/rules
   name: mask-table-rule
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: list
     org.apache.shardingsphere/related-tools: [database_gateway_plan_mask_rule, database_gateway_validate_workflow]
     org.apache.shardingsphere/uri-variables:
@@ -342,7 +342,7 @@ resourceTemplates:
     - {name: table, required: true}
 - uriTemplate: shardingsphere://workflows/{plan_id}
   name: workflow-plan
-  meta:
+  _meta:
     org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/related-tools: [database_gateway_validate_workflow,
       database_gateway_apply_workflow]
@@ -353,7 +353,7 @@ tools:
   annotations: {title: Search Metadata, readOnlyHint: true, destructiveHint: false,
     idempotentHint: true, openWorldHint: true}
 - name: database_gateway_execute_query
-  annotations: {title: Execute Read-Only SQL, readOnlyHint: true, destructiveHint: false,
+  annotations: {title: Execute Query SQL, readOnlyHint: true, destructiveHint: false,
     idempotentHint: true, openWorldHint: true}
 - name: database_gateway_execute_update
   annotations: {title: Execute Update SQL, readOnlyHint: false, destructiveHint: true,

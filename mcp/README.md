@@ -180,6 +180,7 @@ Expected result:
 
 MCP tools, resources, prompts, and completions publish model-facing metadata from YAML descriptors under `META-INF/shardingsphere-mcp/mcp-descriptors`.
 The same descriptor source is used by `resources/list`, `resources/templates/list`, `tools/list`, `prompts/list`, `completion/complete`, and the aggregate `shardingsphere://capabilities` resource.
+ShardingSphere-specific resource semantics are authored under `shardingSphereMetadata`, kept as typed runtime metadata, and exposed to MCP clients through resource and resource-template `_meta`.
 
 Descriptors must describe what the model should use the surface for, not just repeat the URI or tool name:
 

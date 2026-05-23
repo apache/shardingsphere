@@ -68,6 +68,22 @@ class MCPDescriptorCatalogPayloadBuilderTest {
     
     @Test
     @SuppressWarnings("unchecked")
+    void assertBuildResourceMetaPayload() {
+        Map<String, Object> meta = Map.of(MCPShardingSphereMetadataKeys.RESOURCE_KIND, "detail");
+        MCPResourceDescriptor resource = createResourceDescriptor("shardingsphere://runtime", MCPResourceAnnotations.EMPTY, meta);
+        MCPResourceDescriptor resourceTemplate = createResourceDescriptor("shardingsphere://databases/{database}", MCPResourceAnnotations.EMPTY, meta);
+        MCPDescriptorCatalog catalog = new MCPDescriptorCatalog(List.of(resource), List.of(resourceTemplate), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(catalog, List.of(), List.of(), List.of());
+        Map<String, Object> actualResource = ((List<Map<String, Object>>) payload.get("resources")).get(0);
+        Map<String, Object> actualResourceTemplate = ((List<Map<String, Object>>) payload.get("resourceTemplates")).get(0);
+        assertFalse(actualResource.containsKey("meta"));
+        assertFalse(actualResourceTemplate.containsKey("meta"));
+        assertThat((Map<String, Object>) actualResource.get("_meta"), is(meta));
+        assertThat((Map<String, Object>) actualResourceTemplate.get("_meta"), is(meta));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
     void assertBuildToolAnnotationsPayload() {
         MCPToolDescriptor toolDescriptor = createToolDescriptor(new MCPToolAnnotations(null, false, true, false, true));
         Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(createCatalog(List.of(), List.of(toolDescriptor)), List.of(), List.of(), List.of());
@@ -84,7 +100,11 @@ class MCPDescriptorCatalogPayloadBuilderTest {
     }
     
     private MCPResourceDescriptor createResourceDescriptor(final String uri, final MCPResourceAnnotations annotations) {
-        return new MCPResourceDescriptor(uri, "test-resource", "Test Resource", "Read a test resource.", "application/json", annotations, Map.of());
+        return createResourceDescriptor(uri, annotations, Map.of());
+    }
+    
+    private MCPResourceDescriptor createResourceDescriptor(final String uri, final MCPResourceAnnotations annotations, final Map<String, Object> meta) {
+        return new MCPResourceDescriptor(uri, "test-resource", "Test Resource", "Read a test resource.", "application/json", annotations, meta);
     }
     
     private MCPToolDescriptor createToolDescriptor(final MCPToolAnnotations annotations) {

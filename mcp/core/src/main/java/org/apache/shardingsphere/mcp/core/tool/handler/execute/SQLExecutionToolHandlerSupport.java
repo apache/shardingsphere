@@ -30,15 +30,15 @@ import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class SQLExecutionToolHandlerSupport {
-
+    
     private static final int DEFAULT_MAX_ROWS = 100;
-
+    
     private static final int MAX_ROWS_LIMIT = 5000;
-
+    
     private static final int DEFAULT_TIMEOUT_MILLISECONDS = 0;
-
+    
     private static final int MAX_TIMEOUT_MILLISECONDS = 300000;
-
+    
     static boolean isReadOnlyStatement(final ClassificationResult classificationResult) {
         if (SupportedMCPStatement.QUERY == classificationResult.getStatementClass()) {
             return true;
@@ -46,20 +46,20 @@ final class SQLExecutionToolHandlerSupport {
         return SupportedMCPStatement.EXPLAIN_ANALYZE == classificationResult.getStatementClass()
                 && SupportedMCPStatement.QUERY == classificationResult.getAnalyzedStatementClass().orElse(SupportedMCPStatement.QUERY);
     }
-
+    
     static void checkExecutionArguments(final MCPToolArguments toolArguments, final String sourceTool) {
         resolveMaxRows(toolArguments, sourceTool);
         getIntegerArgument(toolArguments, sourceTool, "timeout_ms", DEFAULT_TIMEOUT_MILLISECONDS, DEFAULT_TIMEOUT_MILLISECONDS, MAX_TIMEOUT_MILLISECONDS, DEFAULT_TIMEOUT_MILLISECONDS);
     }
-
+    
     static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String sql, final String sourceTool) {
         return createExecutionRequest(toolCall, toolArguments, toolArguments.getStringArgument("schema"), sql, sourceTool);
     }
-
+    
     static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool) {
         return createExecutionRequest(toolCall, toolArguments, schema, sql, sourceTool, false);
     }
-
+    
     private static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool,
                                                               final boolean readOnlyExecution) {
         return new SQLExecutionRequest(toolCall.getSessionId(), toolArguments.getStringArgument("database"), schema, sql,
@@ -67,16 +67,16 @@ final class SQLExecutionToolHandlerSupport {
                         MAX_TIMEOUT_MILLISECONDS, DEFAULT_TIMEOUT_MILLISECONDS),
                 readOnlyExecution);
     }
-
+    
     static SQLExecutionRequest createReadOnlyExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool) {
         return createExecutionRequest(toolCall, toolArguments, schema, sql, sourceTool, true);
     }
-
+    
     private static int resolveMaxRows(final MCPToolArguments toolArguments, final String sourceTool) {
         int result = getIntegerArgument(toolArguments, sourceTool, "max_rows", DEFAULT_MAX_ROWS, 0, MAX_ROWS_LIMIT, DEFAULT_MAX_ROWS);
         return 0 == result ? DEFAULT_MAX_ROWS : result;
     }
-
+    
     private static int getIntegerArgument(final MCPToolArguments toolArguments, final String sourceTool, final String argumentPath, final int defaultValue, final int minimumValue,
                                           final int maximumValue, final int suggestedValue) {
         try {
@@ -85,7 +85,7 @@ final class SQLExecutionToolHandlerSupport {
             throw new MCPInvalidToolArgumentException(sourceTool, sourceTool, argumentPath, minimumValue, maximumValue, suggestedValue, ex);
         }
     }
-
+    
     static void putIfNotEmpty(final Map<String, Object> target, final String key, final String value) {
         if (!value.isEmpty()) {
             target.put(key, value);

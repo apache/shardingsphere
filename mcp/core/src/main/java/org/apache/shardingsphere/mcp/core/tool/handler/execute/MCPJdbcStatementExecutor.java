@@ -52,11 +52,11 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public final class MCPJdbcStatementExecutor {
-
+    
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
-
+    
     private final MCPJdbcTransactionResourceManager transactionResourceManager;
-
+    
     /**
      * Execute one classified request.
      *
@@ -106,7 +106,7 @@ public final class MCPJdbcStatementExecutor {
             }
         }
     }
-
+    
     private SQLExecutionResponse executeWithConnection(final Connection connection, final SQLExecutionRequest executionRequest,
                                                        final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability,
                                                        final boolean transactionConnectionInUse) throws SQLException {
@@ -119,7 +119,7 @@ public final class MCPJdbcStatementExecutor {
             return executeStatement(statement, executionRequest, classificationResult);
         }
     }
-
+    
     private SQLExecutionResponse executeWithReadOnlyConnection(final Connection connection, final SQLExecutionRequest executionRequest,
                                                                final ClassificationResult classificationResult) throws SQLException {
         boolean originalReadOnly = connection.isReadOnly();
@@ -152,7 +152,7 @@ public final class MCPJdbcStatementExecutor {
             }
         }
     }
-
+    
     private SQLException rollbackReadOnlyConnection(final Connection connection, final SQLException previousFailure) {
         try {
             connection.rollback();
@@ -161,7 +161,7 @@ public final class MCPJdbcStatementExecutor {
             return appendFailure(previousFailure, ex);
         }
     }
-
+    
     private SQLException restoreAutoCommit(final Connection connection, final boolean originalAutoCommit, final SQLException previousFailure) {
         try {
             connection.setAutoCommit(originalAutoCommit);
@@ -170,7 +170,7 @@ public final class MCPJdbcStatementExecutor {
             return appendFailure(previousFailure, ex);
         }
     }
-
+    
     private SQLException restoreReadOnly(final Connection connection, final boolean originalReadOnly, final SQLException previousFailure) {
         try {
             connection.setReadOnly(originalReadOnly);
@@ -179,7 +179,7 @@ public final class MCPJdbcStatementExecutor {
             return appendFailure(previousFailure, ex);
         }
     }
-
+    
     private SQLException appendFailure(final SQLException previousFailure, final SQLException failure) {
         if (null == previousFailure) {
             return failure;
@@ -187,7 +187,7 @@ public final class MCPJdbcStatementExecutor {
         previousFailure.addSuppressed(failure);
         return previousFailure;
     }
-
+    
     private void configureStatement(final Statement statement, final SQLExecutionRequest executionRequest) throws SQLException {
         if (0 < executionRequest.getMaxRows()) {
             statement.setMaxRows(resolveStatementMaxRows(executionRequest.getMaxRows()));
@@ -196,7 +196,7 @@ public final class MCPJdbcStatementExecutor {
             statement.setQueryTimeout((executionRequest.getTimeoutMs() + 999) / 1000);
         }
     }
-
+    
     private SQLExecutionResponse executeStatement(final Statement statement, final SQLExecutionRequest executionRequest,
                                                   final ClassificationResult classificationResult) throws SQLException {
         boolean hasResultSet = statement.execute(classificationResult.getNormalizedSql());
@@ -220,11 +220,11 @@ public final class MCPJdbcStatementExecutor {
                 throw new StatementClassNotSupportedException();
         }
     }
-
+    
     private SQLExecutionResponse withExecutionHints(final SQLExecutionResponse response, final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         return response.withExecutionHints(executionRequest.getMaxRows(), executionRequest.getTimeoutMs()).withNormalizedSql(classificationResult.getNormalizedSql());
     }
-
+    
     private SQLExecutionResponse createResultSetResponse(final ResultSet resultSet, final int maxRows, final ClassificationResult classificationResult) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
@@ -248,17 +248,17 @@ public final class MCPJdbcStatementExecutor {
         }
         return SQLExecutionResponse.resultSet(classificationResult.getStatementClass(), classificationResult.getStatementType(), columns, rows, truncated);
     }
-
+    
     private int resolveStatementMaxRows(final int maxRows) {
         return Integer.MAX_VALUE == maxRows ? Integer.MAX_VALUE : maxRows + 1;
     }
-
+    
     private Connection openConnection(final String databaseName) throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = Optional.ofNullable(runtimeDatabases.get(databaseName))
                 .orElseThrow(() -> new MCPUnavailableException(String.format("Database `%s` is not configured.", databaseName)));
         return runtimeDatabaseConfig.openConnection(databaseName);
     }
-
+    
     private void applySchema(final Connection connection, final String schemaName, final SchemaExecutionSemantics schemaExecutionSemantics) throws SQLException {
         String actualSchema = Objects.toString(schemaName, "").trim();
         if (actualSchema.isEmpty() || SchemaExecutionSemantics.FIXED_TO_DATABASE == schemaExecutionSemantics) {

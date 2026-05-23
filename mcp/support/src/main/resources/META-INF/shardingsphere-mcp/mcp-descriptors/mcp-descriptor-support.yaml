@@ -20,7 +20,7 @@ resourceTemplates:
     title: Workflow Plan
     description: "Read one current in-memory workflow plan by plan_id. Use after planning tools to review status, clarification questions, artifacts, and next actions."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: plan_id
           title: Plan ID

@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * YAML MCP resource extension descriptor.
+ * YAML ShardingSphere MCP resource metadata descriptor.
  */
 @Getter
 @Setter
-public final class YamlMCPResourceExtensionDescriptor {
+public final class YamlShardingSphereMCPResourceMetadata {
     
     private Collection<@Valid YamlMCPUriVariableDescriptor> uriVariables = new LinkedList<>();
     

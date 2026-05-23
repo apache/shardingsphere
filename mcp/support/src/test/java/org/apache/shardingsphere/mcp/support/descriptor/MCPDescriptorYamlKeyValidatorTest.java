@@ -42,7 +42,7 @@ class MCPDescriptorYamlKeyValidatorTest {
                         - assistant
                       priority: 0.5
                       lastModified: "2026-05-13T00:00:00Z"
-                    extension:
+                    shardingSphereMetadata:
                       uriVariables:
                         - name: plan_id
                           title: Plan ID
@@ -208,6 +208,16 @@ class MCPDescriptorYamlKeyValidatorTest {
     }
     
     @Test
+    void assertValidateRejectsOldResourceExtensionKey() {
+        assertUnknownKey("""
+                resources:
+                  - uri: shardingsphere://capabilities
+                """ + "    extension" + ":\n" + """
+                      resourceKind: detail
+                """, "$.resources[0].extension");
+    }
+    
+    @Test
     void assertValidateUnknownResourceTemplateSizeKey() {
         assertUnknownKey("""
                 resourceTemplates:
@@ -236,13 +246,13 @@ class MCPDescriptorYamlKeyValidatorTest {
     }
     
     @Test
-    void assertValidateUnknownResourceExtensionKey() {
+    void assertValidateUnknownResourceMetadataKey() {
         assertUnknownKey("""
                 resourceTemplates:
                   - uriTemplate: shardingsphere://workflows/{plan_id}
-                    extension:
+                    shardingSphereMetadata:
                       unknown: true
-                """, "$.resourceTemplates[0].extension.unknown");
+                """, "$.resourceTemplates[0].shardingSphereMetadata.unknown");
     }
     
     private void assertUnknownKey(final String yamlContent, final String expectedKeyPath) {

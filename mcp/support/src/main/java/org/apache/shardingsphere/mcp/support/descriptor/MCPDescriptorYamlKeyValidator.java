@@ -32,11 +32,11 @@ final class MCPDescriptorYamlKeyValidator {
     
     private static final Collection<String> ROOT_KEYS = Set.of("resources", "resourceTemplates", "tools", "prompts", "completionTargets", "resourceNavigation");
     
-    private static final Collection<String> RESOURCE_KEYS = Set.of("uri", "name", "title", "description", "mimeType", "annotations", "meta", "extension");
+    private static final Collection<String> RESOURCE_KEYS = Set.of("uri", "name", "title", "description", "mimeType", "annotations", "meta", "shardingSphereMetadata");
     
-    private static final Collection<String> RESOURCE_TEMPLATE_KEYS = Set.of("uriTemplate", "name", "title", "description", "mimeType", "annotations", "meta", "extension");
+    private static final Collection<String> RESOURCE_TEMPLATE_KEYS = Set.of("uriTemplate", "name", "title", "description", "mimeType", "annotations", "meta", "shardingSphereMetadata");
     
-    private static final Collection<String> RESOURCE_EXTENSION_KEYS = Set.of("uriVariables", "resourceKind", "objectScope", "feature", "relatedTools", "relatedResources", "useBefore");
+    private static final Collection<String> SHARDINGSPHERE_RESOURCE_METADATA_KEYS = Set.of("uriVariables", "resourceKind", "objectScope", "feature", "relatedTools", "relatedResources", "useBefore");
     
     private static final Collection<String> RESOURCE_URI_VARIABLE_KEYS = Set.of("name", "title", "description", "required", "scope");
     
@@ -81,7 +81,7 @@ final class MCPDescriptorYamlKeyValidator {
             Map<?, ?> resource = asMap(resourceName, "$.resources[" + index + "]", each);
             validateKeys(resourceName, "$.resources[" + index + "]", resource, RESOURCE_KEYS);
             validateResourceAnnotations(resourceName, "$.resources[" + index + "].annotations", resource.get("annotations"));
-            validateResourceExtension(resourceName, "$.resources[" + index + "].extension", resource.get("extension"));
+            validateResourceMetadata(resourceName, "$.resources[" + index + "].shardingSphereMetadata", resource.get("shardingSphereMetadata"));
             index++;
         }
     }
@@ -92,18 +92,18 @@ final class MCPDescriptorYamlKeyValidator {
             Map<?, ?> resourceTemplate = asMap(resourceName, "$.resourceTemplates[" + index + "]", each);
             validateKeys(resourceName, "$.resourceTemplates[" + index + "]", resourceTemplate, RESOURCE_TEMPLATE_KEYS);
             validateResourceAnnotations(resourceName, "$.resourceTemplates[" + index + "].annotations", resourceTemplate.get("annotations"));
-            validateResourceExtension(resourceName, "$.resourceTemplates[" + index + "].extension", resourceTemplate.get("extension"));
+            validateResourceMetadata(resourceName, "$.resourceTemplates[" + index + "].shardingSphereMetadata", resourceTemplate.get("shardingSphereMetadata"));
             index++;
         }
     }
     
-    private static void validateResourceExtension(final String resourceName, final String path, final Object extension) {
-        if (null == extension) {
+    private static void validateResourceMetadata(final String resourceName, final String path, final Object metadata) {
+        if (null == metadata) {
             return;
         }
-        Map<?, ?> extensionMap = asMap(resourceName, path, extension);
-        validateKeys(resourceName, path, extensionMap, RESOURCE_EXTENSION_KEYS);
-        validateUriVariables(resourceName, path + ".uriVariables", extensionMap.get("uriVariables"));
+        Map<?, ?> metadataMap = asMap(resourceName, path, metadata);
+        validateKeys(resourceName, path, metadataMap, SHARDINGSPHERE_RESOURCE_METADATA_KEYS);
+        validateUriVariables(resourceName, path + ".uriVariables", metadataMap.get("uriVariables"));
     }
     
     private static void validateUriVariables(final String resourceName, final String path, final Object uriVariables) {

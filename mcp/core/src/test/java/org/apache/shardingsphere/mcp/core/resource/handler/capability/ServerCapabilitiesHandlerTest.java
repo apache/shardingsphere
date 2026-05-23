@@ -225,7 +225,8 @@ class ServerCapabilitiesHandlerTest {
     }
     
     private Map<?, ?> getResourceMeta(final Map<?, ?> resource) {
-        return (Map<?, ?>) resource.get("meta");
+        assertFalse(resource.containsKey("meta"));
+        return (Map<?, ?>) resource.get("_meta");
     }
     
     private Map<?, ?> findUriVariable(final Map<?, ?> resource, final String variableName) {

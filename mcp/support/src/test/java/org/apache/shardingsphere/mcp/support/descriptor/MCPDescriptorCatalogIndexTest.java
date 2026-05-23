@@ -52,8 +52,8 @@ class MCPDescriptorCatalogIndexTest {
     }
     
     @Test
-    void assertGetRequiredResourceExtensionDescriptor() {
-        MCPResourceExtensionDescriptor actual = MCPDescriptorCatalogIndex.getRequiredResourceExtensionDescriptor("shardingsphere://workflows/{plan_id}");
+    void assertGetRequiredShardingSphereResourceMetadata() {
+        ShardingSphereMCPResourceMetadata actual = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata("shardingsphere://workflows/{plan_id}");
         assertThat(actual.getResourceKind(), is("detail"));
     }
     

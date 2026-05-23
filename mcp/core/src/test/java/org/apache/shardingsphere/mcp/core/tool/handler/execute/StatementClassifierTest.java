@@ -35,9 +35,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StatementClassifierTest {
-
+    
     private final StatementClassifier statementClassifier = new StatementClassifier();
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertClassifyCases")
     void assertClassify(final String name, final String sql, final SupportedMCPStatement expectedStatementClass, final String expectedStatementType,
@@ -49,14 +49,14 @@ class StatementClassifierTest {
         assertThat(actualResult.getTargetObjectName().orElse(""), is(expectedTargetObjectName));
         assertThat(actualResult.getSavepointName().orElse(""), is(expectedSavepointName));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertClassifyWithInvalidStatementCases")
     void assertClassifyWithInvalidStatement(final String name, final String sql, final Class<? extends RuntimeException> expectedExceptionClass, final String expectedMessage) {
         RuntimeException actualException = assertThrows(expectedExceptionClass, () -> statementClassifier.classify(sql));
         assertThat(actualException.getMessage(), is(expectedMessage));
     }
-
+    
     @Test
     void assertClassifyExplainAnalyzeInnerStatementClass() {
         ClassificationResult actualResult = statementClassifier.classify("EXPLAIN ANALYZE UPDATE foo_orders SET status = 'DONE'");
@@ -64,47 +64,47 @@ class StatementClassifierTest {
         assertThat(actualResult.getAnalyzedStatementClass().orElseThrow(), is(SupportedMCPStatement.DML));
         assertThat(actualResult.getTargetObjectName().orElse(""), is("foo_orders"));
     }
-
+    
     @Test
     void assertClassifyReferencedObjectNames() {
         ClassificationResult actualResult = statementClassifier.classify(
                 "SELECT * FROM logic_db.foo_orders JOIN other_db.foo_order_items ON foo_orders.order_id = foo_order_items.order_id");
         assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
     }
-
+    
     @Test
     void assertClassifyDMLReferencedObjectNames() {
         ClassificationResult actualResult = statementClassifier.classify("UPDATE logic_db.foo_orders SET status = 'DONE' FROM other_db.foo_order_items");
         assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
     }
-
+    
     @Test
     void assertClassifySubqueryReferencedObjectNames() {
         ClassificationResult actualResult = statementClassifier.classify(
                 "SELECT * FROM logic_db.foo_orders WHERE EXISTS (SELECT 1 FROM other_db.foo_order_items)");
         assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
     }
-
+    
     @Test
     void assertClassifyDerivedTableReferencedObjectNames() {
         ClassificationResult actualResult = statementClassifier.classify("SELECT * FROM (SELECT * FROM other_db.foo_order_items) foo_items");
         assertThat(actualResult.getReferencedObjectNames(), contains("other_db.foo_order_items"));
     }
-
+    
     @Test
     void assertClassifyDMLSubqueryReferencedObjectNames() {
         ClassificationResult actualResult = statementClassifier.classify(
                 "UPDATE logic_db.foo_orders SET status = 'DONE' WHERE EXISTS (SELECT 1 FROM other_db.foo_order_items)");
         assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertClassifyReferencedObjectNamesWithObjectListsCases")
     void assertClassifyReferencedObjectNamesWithObjectLists(final String name, final String sql, final String[] expectedReferencedObjectNames) {
         ClassificationResult actualResult = statementClassifier.classify(sql);
         assertThat(actualResult.getReferencedObjectNames(), contains(expectedReferencedObjectNames));
     }
-
+    
     private static Stream<Arguments> assertClassifyCases() {
         return Stream.of(
                 Arguments.of("trim trailing semicolon query", "  SELECT * FROM foo_orders ;  ", SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM foo_orders", "foo_orders", ""),
@@ -177,7 +177,7 @@ class StatementClassifierTest {
                 Arguments.of("explain analyze", "EXPLAIN ANALYZE SELECT * FROM foo_orders", SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE",
                         "EXPLAIN ANALYZE SELECT * FROM foo_orders", "foo_orders", ""));
     }
-
+    
     private static Stream<Arguments> assertClassifyReferencedObjectNamesWithObjectListsCases() {
         return Stream.of(
                 Arguments.of("query from object list", "SELECT * FROM logic_db.foo_orders, other_db.foo_order_items",
@@ -239,7 +239,7 @@ class StatementClassifierTest {
                 Arguments.of("qualified function query", "SELECT other_db.foo_refresh_orders()",
                         new String[]{"other_db.foo_refresh_orders"}));
     }
-
+    
     private static Stream<Arguments> assertClassifyWithInvalidStatementCases() {
         return Stream.of(
                 Arguments.of("blank sql", "   ", IllegalArgumentException.class, "sql cannot be empty."),

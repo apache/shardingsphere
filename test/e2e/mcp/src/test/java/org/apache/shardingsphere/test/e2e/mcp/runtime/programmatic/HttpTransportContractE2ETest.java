@@ -208,7 +208,15 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         Map<String, Object> resourceListPayload = getResultPayload(resourceListResponse);
         assertModelFacingPayloadContract(resourceListPayload);
         List<Map<String, Object>> actualResources = castToMapList(resourceListPayload.get("resources"));
-        assertTrue(actualResources.stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.get("uri"))));
+        Map<String, Object> actualCapabilityResource = findByKey(actualResources, "uri", "shardingsphere://capabilities");
+        assertThat(castToMap(actualCapabilityResource.get("_meta")).get(MCPShardingSphereMetadataKeys.RESOURCE_KIND), is("capability-catalog"));
+        HttpResponse<String> resourceTemplateListResponse = sendResourceTemplateListRequest(httpClient, sessionId);
+        assertThat(resourceTemplateListResponse.statusCode(), is(200));
+        Map<String, Object> resourceTemplateListPayload = getResultPayload(resourceTemplateListResponse);
+        assertModelFacingPayloadContract(resourceTemplateListPayload);
+        List<Map<String, Object>> actualResourceTemplates = castToMapList(resourceTemplateListPayload.get("resourceTemplates"));
+        Map<String, Object> actualDatabaseDetail = findByKey(actualResourceTemplates, "uriTemplate", "shardingsphere://databases/{database}");
+        assertThat(castToMap(actualDatabaseDetail.get("_meta")).get(MCPShardingSphereMetadataKeys.RESOURCE_KIND), is("detail"));
         HttpResponse<String> promptListResponse = sendPromptListRequest(httpClient, sessionId);
         assertThat(promptListResponse.statusCode(), is(200));
         Map<String, Object> promptListPayload = getResultPayload(promptListResponse);
@@ -375,6 +383,11 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 "resources-list-1", "resources/list", Map.of()));
     }
     
+    private HttpResponse<String> sendResourceTemplateListRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+                "resource-templates-list-1", "resources/templates/list", Map.of()));
+    }
+    
     private HttpResponse<String> sendPromptListRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
         return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
                 "prompts-list-1", "prompts/list", Map.of()));
@@ -428,6 +441,10 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     
     private List<Map<String, Object>> castToMapList(final Object value) {
         return ((List<?>) value).stream().map(this::castToMap).toList();
+    }
+    
+    private Map<String, Object> findByKey(final List<Map<String, Object>> values, final String key, final String expectedValue) {
+        return values.stream().filter(each -> expectedValue.equals(each.get(key))).findFirst().orElseThrow();
     }
     
     @Test

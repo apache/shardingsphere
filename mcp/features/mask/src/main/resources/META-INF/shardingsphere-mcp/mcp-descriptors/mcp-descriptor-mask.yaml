@@ -24,7 +24,7 @@ resources:
     mimeType: application/json
     meta:
       org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
-    extension:
+    shardingSphereMetadata:
       resourceKind: list
       feature: mask
       relatedTools:
@@ -35,7 +35,7 @@ resourceTemplates:
     title: Mask Rules
     description: "List mask table rules for one ShardingSphere logical database. Read this before altering or validating mask configuration."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -52,7 +52,7 @@ resourceTemplates:
     title: Mask Table Rule
     description: "Read mask rules for one logical table. Use this before planning column-level masking so the model can preserve existing mask configuration."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database

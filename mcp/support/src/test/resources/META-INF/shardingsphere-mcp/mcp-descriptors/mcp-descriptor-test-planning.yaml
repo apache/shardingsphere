@@ -20,7 +20,7 @@ resources:
     title: Workflow Test Resource
     description: "Workflow descriptor resource used by descriptor catalog loader tests."
     mimeType: application/json
-    extension:
+    shardingSphereMetadata:
       resourceKind: detail
 
 tools:

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -106,9 +106,8 @@ final class MCPDescriptorCatalogPayloadBuilder {
         if (!descriptor.getAnnotations().isEmpty()) {
             result.put("annotations", toResourceAnnotationsPayload(descriptor.getAnnotations()));
         }
-        Map<String, Object> meta = createResourceMeta(descriptor);
-        if (!meta.isEmpty()) {
-            result.put("meta", meta);
+        if (!descriptor.getMeta().isEmpty()) {
+            result.put("_meta", descriptor.getMeta());
         }
         return result;
     }
@@ -123,42 +122,9 @@ final class MCPDescriptorCatalogPayloadBuilder {
         if (!descriptor.getAnnotations().isEmpty()) {
             result.put("annotations", toResourceAnnotationsPayload(descriptor.getAnnotations()));
         }
-        Map<String, Object> meta = createResourceMeta(descriptor);
-        if (!meta.isEmpty()) {
-            result.put("meta", meta);
+        if (!descriptor.getMeta().isEmpty()) {
+            result.put("_meta", descriptor.getMeta());
         }
-        return result;
-    }
-    
-    private Map<String, Object> createResourceMeta(final MCPResourceDescriptor descriptor) {
-        Map<String, Object> result = new LinkedHashMap<>(descriptor.getMeta());
-        MCPResourceExtensionDescriptor extension = findResourceExtension(descriptor.getUriTemplate());
-        if (null == extension) {
-            return result;
-        }
-        putIfPresent(result, MCPShardingSphereMetadataKeys.RESOURCE_KIND, extension.getResourceKind());
-        putIfPresent(result, MCPShardingSphereMetadataKeys.OBJECT_SCOPE, extension.getObjectScope());
-        putIfPresent(result, MCPShardingSphereMetadataKeys.FEATURE, extension.getFeature());
-        putIfNotEmpty(result, MCPShardingSphereMetadataKeys.RELATED_TOOLS, extension.getRelatedTools());
-        putIfNotEmpty(result, MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS, extension.getRelatedResources());
-        putIfNotEmpty(result, MCPShardingSphereMetadataKeys.USE_BEFORE, extension.getUseBefore());
-        if (!extension.getUriVariables().isEmpty()) {
-            result.put(MCPShardingSphereMetadataKeys.URI_VARIABLES, extension.getUriVariables().stream().map(this::toUriVariablePayload).toList());
-        }
-        return result;
-    }
-    
-    private MCPResourceExtensionDescriptor findResourceExtension(final String uriOrTemplate) {
-        return catalog.getResourceExtensionDescriptors().stream().filter(each -> uriOrTemplate.equals(each.getUriOrTemplate())).findFirst().orElse(null);
-    }
-    
-    private Map<String, Object> toUriVariablePayload(final MCPUriVariableDescriptor parameter) {
-        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
-        result.put("name", parameter.getName());
-        result.put("title", parameter.getTitle());
-        result.put("description", parameter.getDescription());
-        result.put("required", parameter.isRequired());
-        result.put("scope", parameter.getScope());
         return result;
     }
     
@@ -302,12 +268,6 @@ final class MCPDescriptorCatalogPayloadBuilder {
     private void putIfPresent(final Map<String, Object> target, final String key, final Object value) {
         if (null != value) {
             target.put(key, value);
-        }
-    }
-    
-    private void putIfNotEmpty(final Map<String, Object> target, final String key, final Collection<?> values) {
-        if (!values.isEmpty()) {
-            target.put(key, values);
         }
     }
     

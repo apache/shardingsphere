@@ -27,25 +27,25 @@ import lombok.Getter;
  */
 @Getter
 public final class SQLExecutionRequest {
-
+    
     private final String sessionId;
-
+    
     private final String database;
-
+    
     private final String schema;
-
+    
     private final String sql;
-
+    
     private final int maxRows;
-
+    
     private final int timeoutMs;
-
+    
     private final boolean readOnlyExecution;
-
+    
     public SQLExecutionRequest(final String sessionId, final String database, final String schema, final String sql, final int maxRows, final int timeoutMs) {
         this(sessionId, database, schema, sql, maxRows, timeoutMs, false);
     }
-
+    
     public SQLExecutionRequest(final String sessionId, final String database, final String schema, final String sql, final int maxRows, final int timeoutMs, final boolean readOnlyExecution) {
         this.sessionId = sessionId;
         this.database = database;

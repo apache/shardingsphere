@@ -20,6 +20,9 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
+import java.util.Set;
+
 /**
  * ShardingSphere MCP metadata keys.
  */
@@ -107,4 +110,7 @@ public final class MCPShardingSphereMetadataKeys {
     public static final String INFERRED_CONTEXT_ARGUMENTS = PREFIX + "inferred-context-arguments";
     
     public static final String ARGUMENT_PROVENANCE = PREFIX + "argument-provenance";
+    
+    public static final Collection<String> TYPED_RESOURCE_METADATA_KEYS = Set.of(
+            RESOURCE_KIND, OBJECT_SCOPE, FEATURE, URI_VARIABLES, RELATED_TOOLS, RELATED_RESOURCE_URIS, USE_BEFORE);
 }

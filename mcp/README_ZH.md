@@ -179,6 +179,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 MCP tools、resources、prompts 与 completions 的模型可见元数据来自 `META-INF/shardingsphere-mcp/mcp-descriptors` 下的 YAML descriptors。
 `resources/list`、`resources/templates/list`、`tools/list`、`prompts/list`、`completion/complete` 和聚合资源 `shardingsphere://capabilities` 都使用同一份 descriptor 来源。
+ShardingSphere 专用 resource 语义通过 `shardingSphereMetadata` 编写，在运行时保留 typed metadata，并通过 resource 与 resource template 的 `_meta` 暴露给 MCP client。
 
 Descriptor 必须说明模型该如何使用这个 surface，而不是只重复 URI 或 tool 名：
 

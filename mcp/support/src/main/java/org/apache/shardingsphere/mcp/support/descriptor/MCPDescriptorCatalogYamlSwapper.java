@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -29,16 +29,17 @@ import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPDescriptorCa
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPResourceExtensionDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPResourceNavigationDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolAnnotations;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolRuntimeDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPUriVariableDescriptor;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlShardingSphereMCPResourceMetadata;
 import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ final class MCPDescriptorCatalogYamlSwapper {
     static MCPDescriptorCatalog swap(final Collection<YamlMCPDescriptorCatalog> yamlCatalogs) {
         Collection<MCPResourceDescriptor> resourceDescriptors = new LinkedList<>();
         Collection<MCPResourceDescriptor> resourceTemplateDescriptors = new LinkedList<>();
-        Collection<MCPResourceExtensionDescriptor> resourceExtensionDescriptors = new LinkedList<>();
+        Collection<ShardingSphereMCPResourceMetadata> shardingSphereResourceMetadata = new LinkedList<>();
         Collection<MCPToolDescriptor> toolDescriptors = new LinkedList<>();
         Collection<MCPPromptDescriptor> promptDescriptors = new LinkedList<>();
         Collection<MCPPromptTemplateBinding> promptTemplateBindings = new LinkedList<>();
@@ -60,42 +61,60 @@ final class MCPDescriptorCatalogYamlSwapper {
         Collection<MCPToolRuntimeDescriptor> toolRuntimeDescriptors = new LinkedList<>();
         for (YamlMCPDescriptorCatalog each : yamlCatalogs) {
             MCPYamlConfigurationValidator.validate(each, "MCP descriptor catalog");
-            swapFixedResourceDescriptors(each.getResources(), resourceDescriptors, resourceExtensionDescriptors);
-            swapResourceTemplateDescriptors(each.getResourceTemplates(), resourceTemplateDescriptors, resourceExtensionDescriptors);
+            swapFixedResourceDescriptors(each.getResources(), resourceDescriptors, shardingSphereResourceMetadata);
+            swapResourceTemplateDescriptors(each.getResourceTemplates(), resourceTemplateDescriptors, shardingSphereResourceMetadata);
             toolDescriptors.addAll(swapToolDescriptors(each.getTools()));
             swapPromptDescriptors(each.getPrompts(), promptDescriptors, promptTemplateBindings);
             completionTargetDescriptors.addAll(swapCompletionTargetDescriptors(each.getCompletionTargets()));
             resourceNavigationDescriptors.addAll(swapResourceNavigationDescriptors(each.getResourceNavigation()));
             toolRuntimeDescriptors.addAll(swapToolRuntimeDescriptors(each.getTools()));
         }
-        return new MCPDescriptorCatalog(resourceDescriptors, resourceTemplateDescriptors, resourceExtensionDescriptors, toolDescriptors, promptDescriptors, promptTemplateBindings,
+        return new MCPDescriptorCatalog(resourceDescriptors, resourceTemplateDescriptors, shardingSphereResourceMetadata, toolDescriptors, promptDescriptors, promptTemplateBindings,
                 completionTargetDescriptors, resourceNavigationDescriptors, toolRuntimeDescriptors);
     }
     
     private static void swapFixedResourceDescriptors(final Collection<YamlMCPResourceDescriptor> yamlDescriptors, final Collection<MCPResourceDescriptor> resources,
-                                                     final Collection<MCPResourceExtensionDescriptor> resourceExtensions) {
+                                                     final Collection<ShardingSphereMCPResourceMetadata> resourceMetadata) {
         for (YamlMCPResourceDescriptor each : emptyIfNull(yamlDescriptors)) {
+            ShardingSphereMCPResourceMetadata metadata = swapShardingSphereResourceMetadata(each.getUri(), each.getShardingSphereMetadata());
             resources.add(new MCPResourceDescriptor(each.getUri(), each.getName(), each.getTitle(), each.getDescription(), each.getMimeType(),
-                    swapResourceAnnotations(each.getAnnotations()), emptyMapIfNull(each.getMeta())));
-            resourceExtensions.add(swapResourceExtension(each.getUri(), each.getExtension()));
+                    swapResourceAnnotations(each.getAnnotations()), createResourceMeta(each.getUri(), emptyMapIfNull(each.getMeta()), metadata)));
+            resourceMetadata.add(metadata);
         }
     }
     
     private static void swapResourceTemplateDescriptors(final Collection<YamlMCPResourceDescriptor> yamlDescriptors, final Collection<MCPResourceDescriptor> resourceTemplates,
-                                                        final Collection<MCPResourceExtensionDescriptor> resourceExtensions) {
+                                                        final Collection<ShardingSphereMCPResourceMetadata> resourceMetadata) {
         for (YamlMCPResourceDescriptor each : emptyIfNull(yamlDescriptors)) {
+            ShardingSphereMCPResourceMetadata metadata = swapShardingSphereResourceMetadata(each.getUriTemplate(), each.getShardingSphereMetadata());
             resourceTemplates.add(new MCPResourceDescriptor(each.getUriTemplate(), each.getName(), each.getTitle(), each.getDescription(), each.getMimeType(),
-                    swapResourceAnnotations(each.getAnnotations()), emptyMapIfNull(each.getMeta())));
-            resourceExtensions.add(swapResourceExtension(each.getUriTemplate(), each.getExtension()));
+                    swapResourceAnnotations(each.getAnnotations()), createResourceMeta(each.getUriTemplate(), emptyMapIfNull(each.getMeta()), metadata)));
+            resourceMetadata.add(metadata);
         }
     }
     
-    private static MCPResourceExtensionDescriptor swapResourceExtension(final String uriOrTemplate, final YamlMCPResourceExtensionDescriptor yamlExtension) {
-        if (null == yamlExtension) {
-            return new MCPResourceExtensionDescriptor(uriOrTemplate, List.of(), null, null, null, List.of(), List.of(), List.of());
+    private static ShardingSphereMCPResourceMetadata swapShardingSphereResourceMetadata(final String uriOrTemplate, final YamlShardingSphereMCPResourceMetadata yamlMetadata) {
+        if (null == yamlMetadata) {
+            return new ShardingSphereMCPResourceMetadata(uriOrTemplate, List.of(), null, null, null, List.of(), List.of(), List.of());
         }
-        return new MCPResourceExtensionDescriptor(uriOrTemplate, swapUriVariables(yamlExtension.getUriVariables()), yamlExtension.getResourceKind(), yamlExtension.getObjectScope(),
-                yamlExtension.getFeature(), emptyIfNull(yamlExtension.getRelatedTools()), emptyIfNull(yamlExtension.getRelatedResources()), emptyIfNull(yamlExtension.getUseBefore()));
+        return new ShardingSphereMCPResourceMetadata(uriOrTemplate, swapUriVariables(yamlMetadata.getUriVariables()), yamlMetadata.getResourceKind(), yamlMetadata.getObjectScope(),
+                yamlMetadata.getFeature(), emptyIfNull(yamlMetadata.getRelatedTools()), emptyIfNull(yamlMetadata.getRelatedResources()), emptyIfNull(yamlMetadata.getUseBefore()));
+    }
+    
+    private static Map<String, Object> createResourceMeta(final String uriOrTemplate, final Map<String, Object> rawMeta, final ShardingSphereMCPResourceMetadata metadata) {
+        validateNoTypedResourceMetadataKeys(uriOrTemplate, rawMeta);
+        Map<String, Object> result = new LinkedHashMap<>(rawMeta.size() + MCPShardingSphereMetadataKeys.TYPED_RESOURCE_METADATA_KEYS.size(), 1F);
+        result.putAll(rawMeta);
+        result.putAll(metadata.toMeta());
+        return result;
+    }
+    
+    private static void validateNoTypedResourceMetadataKeys(final String uriOrTemplate, final Map<String, Object> rawMeta) {
+        for (String each : MCPShardingSphereMetadataKeys.TYPED_RESOURCE_METADATA_KEYS) {
+            if (rawMeta.containsKey(each)) {
+                throw new IllegalStateException(String.format("MCP resource descriptor `%s` raw meta must not define typed ShardingSphere resource metadata key `%s`.", uriOrTemplate, each));
+            }
+        }
     }
     
     private static List<MCPUriVariableDescriptor> swapUriVariables(final Collection<YamlMCPUriVariableDescriptor> yamlUriVariables) {

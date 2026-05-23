@@ -58,7 +58,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class MCPSQLExecutionFacadeTest {
-
+    
     @Test
     void assertExecuteWithMissingSession() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -74,7 +74,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(capabilityProvider, transactionExecutor, statementExecutor);
     }
-
+    
     @Test
     void assertExecuteWithUnknownCapability() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -91,7 +91,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
-
+    
     @Test
     void assertExecuteWithUnsupportedStatement() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -114,7 +114,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
-
+    
     @Test
     void assertExecuteWithUnsupportedStatementClass() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -136,7 +136,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
-
+    
     @Test
     void assertExecuteTransactionStatement() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -161,7 +161,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "BEGIN", true, "BEGIN");
         verifyNoInteractions(statementExecutor);
     }
-
+    
     @Test
     void assertExecuteQueryStatement() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -186,7 +186,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", true, "QUERY");
         verifyNoInteractions(transactionExecutor);
     }
-
+    
     @Test
     void assertExecuteWithCrossSchemaQueryDisabled() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -209,7 +209,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT * FROM other_db.orders", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
-
+    
     @Test
     void assertExecuteWithCrossSchemaSubqueryDisabled() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -227,7 +227,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT * FROM logic_db.orders WHERE EXISTS (SELECT 1 FROM other_db.items)", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteWithCrossSchemaReferencesDisabledCases")
     void assertExecuteWithCrossSchemaReferencesDisabled(final String name, final String sql, final String expectedObjectName, final String expectedAuditMarker) {
@@ -246,7 +246,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", sql, false, expectedAuditMarker);
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
-
+    
     @Test
     void assertExecuteWithCrossSchemaDMLDisabled() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -269,7 +269,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "UPDATE other_db.orders SET status = 'DONE'", false, "DML");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
-
+    
     @Test
     void assertExecuteWithQualifiedCurrentDatabase() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -295,7 +295,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT * FROM logic_db.orders", true, "QUERY");
         verifyNoInteractions(transactionExecutor);
     }
-
+    
     @Test
     void assertExecuteWithCrossSchemaSqlEnabled() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -321,7 +321,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT * FROM other_db.orders", true, "QUERY");
         verifyNoInteractions(transactionExecutor);
     }
-
+    
     @Test
     void assertExecuteWithExplainAnalyzeUnsupported() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -343,7 +343,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "EXPLAIN ANALYZE SELECT 1", false, "EXPLAIN_ANALYZE");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
-
+    
     @Test
     void assertExecuteWithExecutorFailure() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -366,7 +366,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(transactionExecutor);
     }
-
+    
     @Test
     void assertExecuteExplainAnalyze() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
@@ -391,7 +391,7 @@ class MCPSQLExecutionFacadeTest {
         verify(auditRecorder).recordQueryExecution("session-1", "logic_db", "EXPLAIN ANALYZE SELECT 1", true, "EXPLAIN_ANALYZE");
         verifyNoInteractions(transactionExecutor);
     }
-
+    
     private MCPSQLExecutionFacade createFacade(final MCPDatabaseCapabilityProvider capabilityProvider, final MCPSessionExecutionCoordinator coordinator,
                                                final MCPJdbcTransactionStatementExecutor transactionExecutor, final MCPJdbcStatementExecutor statementExecutor,
                                                final AuditRecorder auditRecorder) {
@@ -402,7 +402,7 @@ class MCPSQLExecutionFacadeTest {
         setField(result, "auditRecorder", auditRecorder);
         return result;
     }
-
+    
     private void setField(final Object target, final String fieldName, final Object value) {
         try {
             Plugins.getMemberAccessor().set(MCPSQLExecutionFacade.class.getDeclaredField(fieldName), target, value);
@@ -410,16 +410,16 @@ class MCPSQLExecutionFacadeTest {
             throw new IllegalStateException(ex);
         }
     }
-
+    
     @SuppressWarnings("unchecked")
     private void mockSessionLock(final MCPSessionExecutionCoordinator coordinator) {
         when(coordinator.executeWithSessionLock(eq("session-1"), any())).thenAnswer(invocation -> ((Supplier<SQLExecutionResponse>) invocation.getArgument(1, Supplier.class)).get());
     }
-
+    
     private MCPDatabaseCapability createCapability(final Set<SupportedMCPStatement> supportedStatementClasses, final boolean supportsExplainAnalyze) {
         return createCapability(supportedStatementClasses, supportsExplainAnalyze, false);
     }
-
+    
     private MCPDatabaseCapability createCapability(final Set<SupportedMCPStatement> supportedStatementClasses, final boolean supportsExplainAnalyze, final boolean supportsCrossSchemaSql) {
         MCPDatabaseCapability result = mock(MCPDatabaseCapability.class);
         when(result.getSupportedStatementClasses()).thenReturn(supportedStatementClasses);
@@ -427,11 +427,11 @@ class MCPSQLExecutionFacadeTest {
         when(result.isSupportsCrossSchemaSql()).thenReturn(supportsCrossSchemaSql);
         return result;
     }
-
+    
     private MockedConstruction<StatementClassifier> mockClassification(final ClassificationResult classificationResult) {
         return mockConstruction(StatementClassifier.class, (mock, context) -> when(mock.classify(anyString())).thenReturn(classificationResult));
     }
-
+    
     private static Stream<Arguments> assertExecuteWithCrossSchemaReferencesDisabledCases() {
         return Stream.of(
                 Arguments.of("query object list", "SELECT * FROM logic_db.orders, other_db.items", "other_db.items", "QUERY"),
@@ -467,7 +467,7 @@ class MCPSQLExecutionFacadeTest {
                 Arguments.of("grant database target", "GRANT CONNECT ON DATABASE other_db TO PUBLIC", "other_db", "DCL"),
                 Arguments.of("qualified function", "SELECT other_db.refresh_orders()", "other_db.refresh_orders", "QUERY"));
     }
-
+    
     private SQLExecutionRequest createExecutionRequest(final String sql) {
         return new SQLExecutionRequest("session-1", "logic_db", "public", sql, 1, 1000);
     }

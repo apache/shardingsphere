@@ -37,7 +37,7 @@ public final class MCPDescriptorCatalog {
     
     private final Collection<MCPResourceDescriptor> resourceTemplateDescriptors;
     
-    private final Collection<MCPResourceExtensionDescriptor> resourceExtensionDescriptors;
+    private final Collection<ShardingSphereMCPResourceMetadata> shardingSphereResourceMetadata;
     
     private final Collection<MCPToolDescriptor> toolDescriptors;
     

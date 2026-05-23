@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceExtensionDescriptor;
+import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
@@ -66,25 +66,25 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         List<?> items = metadataLoader.apply(databaseContext, uriVariables);
         MCPResourceDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(uriTemplate);
-        MCPResourceExtensionDescriptor extension = MCPDescriptorCatalogIndex.getRequiredResourceExtensionDescriptor(descriptor.getUriTemplate());
+        ShardingSphereMCPResourceMetadata metadata = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata(descriptor.getUriTemplate());
         Map<String, Object> navigationPayload = createNavigationPayload(descriptor, uriVariables);
-        if (isDetailResource(extension)) {
+        if (isDetailResource(metadata)) {
             if (items.isEmpty()) {
-                appendEmptyStateGuidance(navigationPayload, extension, uriVariables);
+                appendEmptyStateGuidance(navigationPayload, metadata, uriVariables);
             }
-            return new MCPMapResponse(createDetailPayload(extension, items, navigationPayload));
+            return new MCPMapResponse(createDetailPayload(metadata, items, navigationPayload));
         }
         List<?> returnedItems = capListItems(items);
         appendListSizeMetadata(navigationPayload, items.size(), returnedItems.size());
         if (items.isEmpty()) {
-            appendEmptyStateGuidance(navigationPayload, extension, uriVariables);
+            appendEmptyStateGuidance(navigationPayload, metadata, uriVariables);
         } else if (isTruncated(items, returnedItems)) {
-            appendLargeResultGuidance(navigationPayload, extension, uriVariables, items.size());
+            appendLargeResultGuidance(navigationPayload, metadata, uriVariables, items.size());
         }
         return new MCPItemsResponse(returnedItems, navigationPayload);
     }
     
-    private boolean isDetailResource(final MCPResourceExtensionDescriptor descriptor) {
+    private boolean isDetailResource(final ShardingSphereMCPResourceMetadata descriptor) {
         return "detail".equals(descriptor.getResourceKind());
     }
     
@@ -102,7 +102,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         return returnedItems.size() < items.size();
     }
     
-    private Map<String, Object> createDetailPayload(final MCPResourceExtensionDescriptor descriptor, final List<?> items, final Map<String, Object> navigationPayload) {
+    private Map<String, Object> createDetailPayload(final ShardingSphereMCPResourceMetadata descriptor, final List<?> items, final Map<String, Object> navigationPayload) {
         Map<String, Object> result = new LinkedHashMap<>(navigationPayload.size() + 6, 1F);
         result.put("response_mode", MCPResponseMode.DETAIL);
         result.put("resource_kind", "detail");
@@ -119,7 +119,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         return result;
     }
     
-    private void appendEmptyStateGuidance(final Map<String, Object> payload, final MCPResourceExtensionDescriptor descriptor, final MCPUriVariables uriVariables) {
+    private void appendEmptyStateGuidance(final Map<String, Object> payload, final ShardingSphereMCPResourceMetadata descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> emptyState = new LinkedHashMap<>(3, 1F);
         String resourceKind = null == descriptor.getObjectScope() ? "metadata" : descriptor.getObjectScope();
         String recoveryCategory;
@@ -164,7 +164,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         return Stream.of("column", "index", "sequence", "view", "table", "schema", "database").filter(uriVariables::containsVariable).findFirst().map(uriVariables::getValue).orElse("");
     }
     
-    private void appendLargeResultGuidance(final Map<String, Object> payload, final MCPResourceExtensionDescriptor descriptor, final MCPUriVariables uriVariables, final int itemCount) {
+    private void appendLargeResultGuidance(final Map<String, Object> payload, final ShardingSphereMCPResourceMetadata descriptor, final MCPUriVariables uriVariables, final int itemCount) {
         Map<String, Object> largeResult = new LinkedHashMap<>(4, 1F);
         largeResult.put("state", "broad_metadata_list");
         largeResult.put("count", itemCount);
@@ -178,7 +178,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
                 createNarrowSearchArguments(descriptor, uriVariables))));
     }
     
-    private Map<String, Object> createNarrowSearchArguments(final MCPResourceExtensionDescriptor descriptor, final MCPUriVariables uriVariables) {
+    private Map<String, Object> createNarrowSearchArguments(final ShardingSphereMCPResourceMetadata descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         if (uriVariables.containsVariable("database")) {
             result.put("database", uriVariables.getValue("database"));
@@ -190,7 +190,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         return result;
     }
     
-    private String resolveSearchObjectType(final MCPResourceExtensionDescriptor descriptor) {
+    private String resolveSearchObjectType(final ShardingSphereMCPResourceMetadata descriptor) {
         String objectScope = descriptor.getObjectScope();
         if ("logical-database".equals(objectScope)) {
             return "database";
@@ -201,7 +201,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         return null == objectScope ? "database" : objectScope;
     }
     
-    private String resolveGuidanceScope(final MCPResourceExtensionDescriptor descriptor) {
+    private String resolveGuidanceScope(final ShardingSphereMCPResourceMetadata descriptor) {
         return null == descriptor.getObjectScope() ? "logical" : descriptor.getObjectScope();
     }
     

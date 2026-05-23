@@ -68,7 +68,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MCPJdbcStatementExecutorTest {
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteCases")
     void assertExecute(final String name, final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult, final Connection connection,
@@ -92,7 +92,7 @@ class MCPJdbcStatementExecutorTest {
         assertThat(actual.getNormalizedSql(), is(classificationResult.getNormalizedSql()));
         verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
-
+    
     @Test
     void assertExecuteWithTransactionConnection() throws SQLException {
         Connection connection = createStatementConnection(false, 2, null);
@@ -105,7 +105,7 @@ class MCPJdbcStatementExecutorTest {
         assertThat(actual.getAffectedRows(), is(2));
         verify(connection, never()).close();
     }
-
+    
     @Test
     void assertExecuteReadOnlyQueryWithRollback() throws SQLException {
         Statement statement = mock(Statement.class);
@@ -131,7 +131,7 @@ class MCPJdbcStatementExecutorTest {
         verify(connection).setReadOnly(false);
         verify(connection).close();
     }
-
+    
     @Test
     void assertExecuteReadOnlyQueryWithTransactionConnection() throws SQLException {
         Connection connection = createStatementConnection(true, 0, createResultSet(createColumns(), List.of(List.of(1, "NEW"))));
@@ -148,7 +148,7 @@ class MCPJdbcStatementExecutorTest {
         verify(connection, never()).setAutoCommit(false);
         verify(connection, never()).close();
     }
-
+    
     @Test
     void assertExecuteWithBlankSchemaAndNoLimits() throws SQLException {
         Statement statement = mock(Statement.class);
@@ -170,7 +170,7 @@ class MCPJdbcStatementExecutorTest {
         verify(statement, never()).setMaxRows(anyInt());
         verify(statement, never()).setQueryTimeout(anyInt());
     }
-
+    
     @Test
     void assertExecuteWithUnboundedStatementMaxRows() throws SQLException {
         Statement statement = mock(Statement.class);
@@ -190,7 +190,7 @@ class MCPJdbcStatementExecutorTest {
         assertFalse(actual.isTruncated());
         verify(statement).setMaxRows(Integer.MAX_VALUE);
     }
-
+    
     @Test
     void assertExecuteWithDmlResultSet() throws SQLException {
         Statement statement = mock(Statement.class);
@@ -213,7 +213,7 @@ class MCPJdbcStatementExecutorTest {
         assertThat(actual.getStatementType(), is("SELECT"));
         assertThat(actual.getRows().size(), is(1));
     }
-
+    
     @Test
     void assertExecuteWithFixedSchemaSemantics() throws SQLException {
         Connection connection = createStatementConnection(false, 1, null);
@@ -228,7 +228,7 @@ class MCPJdbcStatementExecutorTest {
         assertThat(actual.getAffectedRows(), is(1));
         verify(connection, never()).setSchema(anyString());
     }
-
+    
     @Test
     void assertExecuteWithUnsupportedSchema() throws SQLException {
         Connection connection = createStatementConnection(false, 1, null);
@@ -246,7 +246,7 @@ class MCPJdbcStatementExecutorTest {
         verify(connection, never()).createStatement();
         verify(connection).close();
     }
-
+    
     @Test
     void assertExecuteWithQueryWithoutResultSet() throws SQLException {
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
@@ -260,7 +260,7 @@ class MCPJdbcStatementExecutorTest {
                 new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("H2")));
         assertThat(actual.getMessage(), is("Query did not return a result set."));
     }
-
+    
     @Test
     void assertExecuteWithUnsupportedStatementClass() throws SQLException {
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
@@ -274,7 +274,7 @@ class MCPJdbcStatementExecutorTest {
                 new ClassificationResult(SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "BEGIN", "", ""), createDatabaseCapability("H2")));
         assertThat(actual.getMessage(), is("Statement class is not supported."));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteWithSQLExceptionCases")
     void assertExecuteWithSQLException(final String name, final SQLException sqlException, final Class<? extends ShardingSphereMCPException> expectedExceptionClass,
@@ -295,7 +295,7 @@ class MCPJdbcStatementExecutorTest {
         assertThat(actual.getMessage(), is(expectedMessage));
         assertThat(actual.getCause(), is(sqlException));
     }
-
+    
     @Test
     void assertExecuteWithTransactionStateException() {
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
@@ -308,7 +308,7 @@ class MCPJdbcStatementExecutorTest {
         assertThat(actual.getMessage(), is("Transaction already active."));
         assertThat(actual.getCause(), is(cause));
     }
-
+    
     @Test
     void assertExecuteWithMissingDatabase() {
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
@@ -319,7 +319,7 @@ class MCPJdbcStatementExecutorTest {
                 new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("H2")));
         assertThat(actual.getMessage(), is("Database `missing_db` is not configured."));
     }
-
+    
     @Test
     void assertExecuteWithStatementCloseFailure() throws SQLException {
         Statement statement = mock(Statement.class);
@@ -337,7 +337,7 @@ class MCPJdbcStatementExecutorTest {
                 new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", ""), createDatabaseCapability("H2")));
         assertThat(actual.getMessage(), is("statement close failed"));
     }
-
+    
     @Test
     void assertExecuteWithConnectionCloseFailure() throws SQLException {
         Connection connection = createStatementConnection(false, 1, null);
@@ -353,7 +353,7 @@ class MCPJdbcStatementExecutorTest {
         assertThat(actual.getAffectedRows(), is(1));
         verify(connection).close();
     }
-
+    
     @Test
     void assertExecuteWithNullConnection() throws SQLException {
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
@@ -365,7 +365,7 @@ class MCPJdbcStatementExecutorTest {
                 "logic_db", "", "SELECT status FROM orders", 0, 0),
                 new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("H2")));
     }
-
+    
     @Test
     void assertExecuteWithNullStatement() throws SQLException {
         Connection connection = mock(Connection.class);
@@ -379,11 +379,11 @@ class MCPJdbcStatementExecutorTest {
                 "logic_db", "", "SELECT status FROM orders", 0, 0),
                 new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("H2")));
     }
-
+    
     private static MCPDatabaseCapability createDatabaseCapability(final String databaseType) {
         return new MCPDatabaseCapability("logic_db", "", TypedSPILoader.getService(MCPDatabaseCapabilityOption.class, databaseType));
     }
-
+    
     private static Connection createStatementConnection(final boolean hasResultSet, final int updateCount, final ResultSet resultSet) throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.execute(anyString())).thenReturn(hasResultSet);
@@ -394,13 +394,13 @@ class MCPJdbcStatementExecutorTest {
         }
         return createStatementConnection(statement);
     }
-
+    
     private static Connection createStatementConnection(final Statement statement) throws SQLException {
         Connection result = mock(Connection.class);
         when(result.createStatement()).thenReturn(statement);
         return result;
     }
-
+    
     private static ResultSet createResultSet(final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
@@ -418,7 +418,7 @@ class MCPJdbcStatementExecutorTest {
         }
         return result;
     }
-
+    
     private static Stream<Arguments> assertExecuteCases() throws SQLException {
         return Stream.of(
                 Arguments.of("query result set", new SQLExecutionRequest("session-1", "logic_db", "public", "SELECT status FROM orders ORDER BY order_id", 1, 1000),
@@ -439,7 +439,7 @@ class MCPJdbcStatementExecutorTest {
                         new ClassificationResult(SupportedMCPStatement.DCL, "GRANT", "GRANT SELECT ON orders TO app_user", "", ""), createStatementConnection(false, 0, null),
                         ExecuteQueryResultKind.STATEMENT_ACK, "GRANT", 0, 0, "Statement executed.", false));
     }
-
+    
     private static Stream<Arguments> assertExecuteWithSQLExceptionCases() {
         return Stream.of(
                 Arguments.of("timeout", new SQLTimeoutException("timeout"), MCPTimeoutException.class, "timeout"),
@@ -447,7 +447,7 @@ class MCPJdbcStatementExecutorTest {
                 Arguments.of("syntax error", new SQLSyntaxErrorException("syntax error"), MCPInvalidRequestException.class, "syntax error"),
                 Arguments.of("query failed", new SQLException("query failed"), MCPQueryFailedException.class, "query failed"));
     }
-
+    
     private static List<ExecuteQueryColumnDefinition> createColumns() {
         return List.of(
                 new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INTEGER", false),
