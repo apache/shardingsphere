@@ -17,32 +17,24 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
-import io.modelcontextprotocol.json.schema.JsonSchemaValidator;
-import io.modelcontextprotocol.json.schema.JsonSchemaValidator.ValidationResponse;
-import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
-import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ToolAnnotations;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
-import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 
 import java.time.Clock;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -50,21 +42,19 @@ import java.util.Optional;
  */
 public final class MCPToolSpecificationFactory {
     
-    private static final int RESOURCE_LINK_LIMIT = 24;
-    
     private final List<MCPToolDescriptor> descriptors;
     
     private final MCPToolController controller;
     
     private final MCPToolElicitationHandler elicitationHandler;
     
-    private final JsonSchemaValidator outputSchemaValidator;
+    private final MCPCallToolResultFactory callToolResultFactory;
     
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         descriptors = ToolDefinitionRegistry.getSupportedToolDescriptors();
         controller = new MCPToolController(runtimeContext);
         elicitationHandler = new MCPToolElicitationHandler(controller, runtimeContext.getActiveTransport(), Clock.systemUTC());
-        outputSchemaValidator = new DefaultJsonSchemaValidator();
+        callToolResultFactory = new MCPCallToolResultFactory();
     }
     
     /**
@@ -107,51 +97,10 @@ public final class MCPToolSpecificationFactory {
             MCPResponse response = controller.handle(exchange.sessionId(), definition, arguments);
             Map<String, Object> payload = response.toPayload();
             return elicitationHandler.shouldHandle(definition.getDescriptor(), payload)
-                    ? createCallToolResult(definition.getDescriptor(), elicitationHandler.handle(exchange, definition, arguments, response, payload))
-                    : createCallToolResult(definition.getDescriptor(), response);
+                    ? callToolResultFactory.create(definition.getDescriptor(), elicitationHandler.handle(exchange, definition, arguments, response, payload))
+                    : callToolResultFactory.create(definition.getDescriptor(), response);
         } catch (final UnsupportedToolException ignored) {
             throw MCPTransportErrorFactory.createError(new UnsupportedToolException(request.name()));
         }
-    }
-    
-    private McpSchema.CallToolResult createCallToolResult(final MCPToolDescriptor descriptor, final MCPResponse response) {
-        if (response instanceof MCPErrorResponse) {
-            return createCallToolResult(response.toPayload(), true);
-        }
-        Map<String, Object> payload = response.toPayload();
-        if (descriptor.getOutputSchema().isEmpty()) {
-            return createCallToolResult(payload, false);
-        }
-        ValidationResponse validation = outputSchemaValidator.validate(descriptor.getOutputSchema(), payload);
-        if (validation.valid()) {
-            return createCallToolResult(payload, false);
-        }
-        return createCallToolResult(new MCPErrorResponse(String.format(
-                "Tool `%s` structuredContent does not match declared outputSchema: %s", descriptor.getName(), Objects.toString(validation.errorMessage(), "validation failed"))).toPayload(), true);
-    }
-    
-    private McpSchema.CallToolResult createCallToolResult(final Map<String, Object> payload, final boolean isError) {
-        CallToolResult.Builder builder = CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(isError);
-        appendResourceLinks(payload, builder);
-        return builder.build();
-    }
-    
-    private void appendResourceLinks(final Map<String, Object> payload, final CallToolResult.Builder builder) {
-        MCPResourceLinkCandidateCollector.ResourceLinkCandidates candidates = new MCPResourceLinkCandidateCollector(RESOURCE_LINK_LIMIT).collect(payload);
-        int emittedCount = 0;
-        for (MCPResourceLinkCandidateCollector.ResourceLinkCandidate each : candidates.candidates()) {
-            builder.addContent(MCPResourceLinkContract.createResourceLink(each));
-            emittedCount++;
-        }
-        if (0 < candidates.totalCount()) {
-            builder.meta(createResourceLinksMeta(emittedCount, candidates.totalCount()));
-        }
-    }
-    
-    private Map<String, Object> createResourceLinksMeta(final int emittedCount, final int totalCount) {
-        return Map.of(
-                MCPShardingSphereMetadataKeys.RESOURCE_LINKS_EMITTED, emittedCount,
-                MCPShardingSphereMetadataKeys.RESOURCE_LINKS_OMITTED, Math.max(0, totalCount - emittedCount),
-                MCPShardingSphereMetadataKeys.RESOURCE_LINK_LIMIT, RESOURCE_LINK_LIMIT);
     }
 }

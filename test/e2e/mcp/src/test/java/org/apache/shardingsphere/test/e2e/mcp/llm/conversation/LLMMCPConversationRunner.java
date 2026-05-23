@@ -31,23 +31,16 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTr
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * LLM MCP conversation runner.
  */
 public final class LLMMCPConversationRunner {
-    
-    private static final Pattern RESOURCE_URI_PATTERN = Pattern.compile("shardingsphere://[^`\\s,]+");
-    
-    private static final String PLANNING_TOOL_NAME_PREFIX = "database_gateway_plan_";
     
     private final int maxTurns;
     
@@ -177,8 +170,8 @@ public final class LLMMCPConversationRunner {
             return each.isValid()
                     && expectedAnswer.getDatabase().equals(Objects.toString(each.getArguments().get("database"), ""))
                     && isExpectedSchema(expectedAnswer, each.getArguments())
-                    && normalizeComparableQuery(expectedAnswer, expectedAnswer.getQuery()).equals(
-                            normalizeComparableQuery(expectedAnswer, Objects.toString(each.getArguments().get("sql"), "")));
+                    && LLMMCPScenarioInference.normalizeComparableQuery(expectedAnswer, expectedAnswer.getQuery()).equals(
+                            LLMMCPScenarioInference.normalizeComparableQuery(expectedAnswer, Objects.toString(each.getArguments().get("sql"), "")));
         }
         return false;
     }
@@ -286,16 +279,14 @@ public final class LLMMCPConversationRunner {
                     Map.of("rawArgumentsJson", toolCall.getArgumentsJson()), "unexpected_tool_requested"));
             return createFailureBundle(scenario, artifacts, "unexpected_tool_requested", "Model requested an unsupported tool.");
         }
-        Map<String, Object> rawArguments;
-        Map<String, Object> arguments;
         try {
-            rawArguments = LLMMCPJsonValues.parseToolArguments(toolCall.getArgumentsJson());
+            final Map<String, Object> rawArguments = LLMMCPJsonValues.parseToolArguments(toolCall.getArgumentsJson());
             final List<String> currentToolNames = artifacts.getInteractionTrace().isEmpty()
                     ? turnToolNames
                     : createTurnToolNames(scenario, artifacts.getInteractionTrace());
-            final String toolName = normalizeToolName(toolCall.getName(), rawArguments, currentToolNames);
-            arguments = normalizeToolArguments(scenario, toolName, normalizeToolNameArguments(toolCall.getName(), toolName, rawArguments), artifacts.getInteractionTrace());
-            return processToolCall(scenario, toolCall, messages, artifacts, rawArguments, arguments, toolName);
+            final LLMMCPToolCallNormalizer.NormalizedToolCall normalizedToolCall = LLMMCPToolCallNormalizer.normalize(scenario, toolCall.getName(), rawArguments, currentToolNames,
+                    artifacts.getInteractionTrace());
+            return processToolCall(scenario, toolCall, messages, artifacts, rawArguments, normalizedToolCall.arguments(), normalizedToolCall.name());
         } catch (final IllegalArgumentException ex) {
             artifacts.addInteractionTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", toolCall.getName(),
                     Map.of("rawArgumentsJson", toolCall.getArgumentsJson()), "invalid_tool_arguments"));
@@ -319,184 +310,8 @@ public final class LLMMCPConversationRunner {
                 ? MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN
                 : MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN;
         artifacts.addInteractionTrace(createTraceRecord(artifacts.nextSequence(), toolName, actionOrigin, arguments, response, latencyMillis));
-        messages.add(LLMChatMessage.tool(toolCall.getId(), createModelFacingToolResponse(response)));
+        messages.add(LLMChatMessage.tool(toolCall.getId(), LLMMCPModelFacingToolResponseFormatter.format(response)));
         return null;
-    }
-    
-    private String normalizeToolName(final String toolName, final Map<String, Object> rawArguments, final List<String> turnToolNames) {
-        return shouldRouteReadOnlySqlToOfferedQueryTool(toolName, rawArguments, turnToolNames)
-                ? "database_gateway_execute_query"
-                : toolName;
-    }
-    
-    private boolean shouldRouteReadOnlySqlToOfferedQueryTool(final String toolName, final Map<String, Object> rawArguments, final List<String> turnToolNames) {
-        return !turnToolNames.contains(toolName)
-                && turnToolNames.equals(List.of("database_gateway_execute_query"))
-                && isReadOnlySql(Objects.toString(rawArguments.get("sql"), ""));
-    }
-    
-    private boolean isReadOnlySql(final String sql) {
-        return sql.trim().toUpperCase(Locale.ENGLISH).startsWith("SELECT ");
-    }
-    
-    private Map<String, Object> normalizeToolNameArguments(final String rawToolName, final String toolName, final Map<String, Object> rawArguments) {
-        if (rawToolName.equals(toolName) || !"database_gateway_execute_query".equals(toolName)) {
-            return rawArguments;
-        }
-        final Map<String, Object> result = new LinkedHashMap<>(rawArguments);
-        result.remove("execution_mode");
-        return result;
-    }
-    
-    private String createModelFacingToolResponse(final Map<String, Object> response) {
-        final Map<String, Object> result = new LinkedHashMap<>(16, 1F);
-        copyIfPresent(response, result, "response_mode");
-        copyIfPresent(response, result, "error_code");
-        copyIfPresent(response, result, "message");
-        copyIfPresent(response, result, "recovery_category");
-        copyIfPresent(response, result, "result_kind");
-        copyIfPresent(response, result, "status");
-        copyIfPresent(response, result, "statement_type");
-        copyIfPresent(response, result, "normalized_sql");
-        copyIfPresent(response, result, "rows");
-        copyIfPresent(response, result, "row_objects");
-        copyIfPresent(response, result, "returned_row_count");
-        copyIfPresent(response, result, "plan_id");
-        copyIfPresent(response, result, "workflow_resource");
-        copyIfPresent(response, result, "manual_artifact_summary");
-        copyIfPresent(response, result, "manual_follow_up");
-        copyCompactArtifactList(response, result, "manual_artifacts");
-        copyCompactArtifactList(response, result, "exported_artifacts");
-        copyIfPresent(response, result, "resources_to_read");
-        copyModelFacingNextActions(response, result);
-        copyIfPresent(response, result, "completion");
-        copyIfPresent(response, result, "count");
-        copyIfPresent(response, result, "has_more");
-        copyIfPresent(response, result, "total_match_count");
-        copyIfPresent(response, result, "search_context");
-        copyIfPresent(response, result, "ambiguity_state");
-        copyPromptList(response, result);
-        copyPromptMessages(response, result);
-        copyCompactItems(response, result);
-        copyCompactRecovery(response, result);
-        return JsonUtils.toJsonString(result.isEmpty() ? response : result);
-    }
-    
-    private void copyIfPresent(final Map<String, Object> source, final Map<String, Object> target, final String fieldName) {
-        if (source.containsKey(fieldName)) {
-            target.put(fieldName, source.get(fieldName));
-        }
-    }
-    
-    private void copyCompactItems(final Map<String, Object> source, final Map<String, Object> target) {
-        final List<Map<String, Object>> items = LLMMCPJsonValues.castToList(source.get("items"));
-        if (items.isEmpty()) {
-            return;
-        }
-        final List<Map<String, Object>> compactItems = new LinkedList<>();
-        for (Map<String, Object> each : items.subList(0, Math.min(items.size(), 5))) {
-            final Map<String, Object> compactItem = new LinkedHashMap<>(8, 1F);
-            copyIfPresent(each, compactItem, "database");
-            copyIfPresent(each, compactItem, "schema");
-            copyIfPresent(each, compactItem, "objectType");
-            copyIfPresent(each, compactItem, "table");
-            copyIfPresent(each, compactItem, "view");
-            copyIfPresent(each, compactItem, "column");
-            copyIfPresent(each, compactItem, "name");
-            copyIfPresent(each, compactItem, "resource");
-            compactItems.add(compactItem.isEmpty() ? each : compactItem);
-        }
-        target.put("items", compactItems);
-    }
-    
-    private void copyPromptList(final Map<String, Object> source, final Map<String, Object> target) {
-        final List<Map<String, Object>> prompts = LLMMCPJsonValues.castToList(source.get("prompts"));
-        if (prompts.isEmpty()) {
-            return;
-        }
-        final List<String> names = new LinkedList<>();
-        for (Map<String, Object> each : prompts) {
-            final String name = Objects.toString(each.get("name"), "").trim();
-            if (!name.isEmpty()) {
-                names.add(name);
-            }
-        }
-        target.put("prompts", names);
-    }
-    
-    private void copyPromptMessages(final Map<String, Object> source, final Map<String, Object> target) {
-        copyIfPresent(source, target, "description");
-        final List<Object> messages = LLMMCPJsonValues.castToList(source.get("messages"));
-        if (!messages.isEmpty()) {
-            target.put("message_count", messages.size());
-        }
-    }
-    
-    private void copyCompactArtifactList(final Map<String, Object> source, final Map<String, Object> target, final String fieldName) {
-        final List<Map<String, Object>> artifacts = LLMMCPJsonValues.castToList(source.get(fieldName));
-        if (artifacts.isEmpty()) {
-            return;
-        }
-        final List<Map<String, Object>> summaries = new LinkedList<>();
-        for (Map<String, Object> each : artifacts.subList(0, Math.min(artifacts.size(), 3))) {
-            final Map<String, Object> summary = new LinkedHashMap<>(4, 1F);
-            putArtifactCount(each, summary, "ddl_artifacts", "ddl_artifact_count");
-            putArtifactCount(each, summary, "index_plan", "index_plan_count");
-            putArtifactCount(each, summary, "distsql_artifacts", "distsql_artifact_count");
-            if (!summary.isEmpty()) {
-                summaries.add(summary);
-            }
-        }
-        if (!summaries.isEmpty()) {
-            target.put(fieldName, summaries);
-        }
-    }
-    
-    private void putArtifactCount(final Map<String, Object> source, final Map<String, Object> target, final String sourceFieldName, final String targetFieldName) {
-        final List<Object> artifacts = LLMMCPJsonValues.castToList(source.get(sourceFieldName));
-        if (!artifacts.isEmpty()) {
-            target.put(targetFieldName, artifacts.size());
-        }
-    }
-    
-    private void copyCompactRecovery(final Map<String, Object> source, final Map<String, Object> target) {
-        if (!source.containsKey("recovery")) {
-            return;
-        }
-        final Map<String, Object> recovery = LLMMCPJsonValues.castToMap(source.get("recovery"));
-        if (recovery.isEmpty()) {
-            return;
-        }
-        final Map<String, Object> compactRecovery = new LinkedHashMap<>(8, 1F);
-        copyIfPresent(recovery, compactRecovery, "recovery_category");
-        copyIfPresent(recovery, compactRecovery, "category");
-        copyIfPresent(recovery, compactRecovery, "model_action");
-        copyIfPresent(recovery, compactRecovery, "plan_id");
-        copyIfPresent(recovery, compactRecovery, "completion_first");
-        copyIfPresent(recovery, compactRecovery, "suggested_arguments");
-        copyIfPresent(recovery, compactRecovery, "resources_to_read");
-        copyIfPresent(recovery, compactRecovery, "next_actions");
-        target.put("recovery", compactRecovery);
-    }
-    
-    private void copyModelFacingNextActions(final Map<String, Object> source, final Map<String, Object> target) {
-        final List<Map<String, Object>> nextActions = LLMMCPJsonValues.castToList(source.get("next_actions"));
-        if (nextActions.isEmpty()) {
-            return;
-        }
-        final List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : nextActions) {
-            result.add(isSideEffectExecutionAction(each) ? createSideEffectExecutionNextActionSummary(each) : each);
-        }
-        target.put("next_actions", result);
-    }
-    
-    private Map<String, Object> createSideEffectExecutionNextActionSummary(final Map<String, Object> action) {
-        final Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        copyIfPresent(action, result, "type");
-        copyIfPresent(action, result, "title");
-        copyIfPresent(action, result, "reason");
-        return result;
     }
     
     private void addTraceDrivenInstruction(final LLME2EScenario scenario, final List<LLMChatMessage> messages, final List<MCPInteractionTraceRecord> interactionTrace) {
@@ -539,7 +354,7 @@ public final class LLMMCPConversationRunner {
     }
     
     private String findMachineNextActionName(final Map<?, ?> action) {
-        if (isSideEffectExecutionAction(action)) {
+        if (LLMMCPSideEffectNextAction.isExecutionAction(action)) {
             return "";
         }
         String actionType = Objects.toString(action.get("type"), "").trim();
@@ -553,7 +368,7 @@ public final class LLMMCPConversationRunner {
     }
     
     private String createMachineNextActionInstruction(final Map<?, ?> action) {
-        if (isSideEffectExecutionAction(action)) {
+        if (LLMMCPSideEffectNextAction.isExecutionAction(action)) {
             return "";
         }
         String actionType = Objects.toString(action.get("type"), "").trim();
@@ -584,7 +399,7 @@ public final class LLMMCPConversationRunner {
                 || !shouldPromptExactResourceRead(interactionTrace.getLast())) {
             return "";
         }
-        final String resourceUri = findExpectedResourceUri(scenario);
+        final String resourceUri = LLMMCPScenarioInference.findExpectedResourceUri(scenario);
         return resourceUri.isEmpty() || hasReadResource(resourceUri, interactionTrace)
                 ? ""
                 : String.format(Locale.ENGLISH,
@@ -606,170 +421,8 @@ public final class LLMMCPConversationRunner {
         return false;
     }
     
-    private String findExpectedResourceUri(final LLME2EScenario scenario) {
-        final String expectedTableResourceUri = createExpectedTableResourceUri(scenario.getExpectedAnswer());
-        String promptResourceUri = "";
-        Matcher matcher = RESOURCE_URI_PATTERN.matcher(scenario.getUserPrompt());
-        while (matcher.find()) {
-            final String each = trimResourceUri(matcher.group());
-            if (each.equals(expectedTableResourceUri)) {
-                return each;
-            }
-            if (promptResourceUri.isEmpty()) {
-                promptResourceUri = each;
-            }
-        }
-        return promptResourceUri.isEmpty() ? expectedTableResourceUri : promptResourceUri;
-    }
-    
-    private String trimResourceUri(final String resourceUri) {
-        return resourceUri.replaceAll("[.)\\]]+$", "");
-    }
-    
-    private String createExpectedTableResourceUri(final LLMStructuredAnswer expectedAnswer) {
-        return expectedAnswer.getDatabase().isEmpty() || expectedAnswer.getSchema().isEmpty() || expectedAnswer.getTable().isEmpty()
-                ? ""
-                : String.format(Locale.ENGLISH, "shardingsphere://databases/%s/schemas/%s/tables/%s", expectedAnswer.getDatabase(), expectedAnswer.getSchema(), expectedAnswer.getTable());
-    }
-    
     private boolean hasPendingImmediateNextAction(final List<MCPInteractionTraceRecord> interactionTrace) {
         return !interactionTrace.isEmpty() && !createImmediateNextActionInstruction(interactionTrace.getLast()).isEmpty();
-    }
-    
-    private Map<String, Object> normalizeToolArguments(final LLME2EScenario scenario, final String toolName, final Map<String, Object> args,
-                                                       final List<MCPInteractionTraceRecord> interactionTrace) {
-        Map<String, Object> result = normalizeResourceUriArgument(scenario, toolName, args);
-        result = normalizeSearchMetadataScopeArgument(scenario, toolName, result);
-        result = normalizeExpectedQuerySchemaArgument(scenario, toolName, result);
-        result = normalizeInitialPlanningPlanIdArgument(toolName, result, interactionTrace);
-        result = normalizeWorkflowPlanIdArgument(toolName, result, interactionTrace);
-        return normalizeCompletionArguments(toolName, result, interactionTrace);
-    }
-    
-    private Map<String, Object> normalizeResourceUriArgument(final LLME2EScenario scenario, final String toolName, final Map<String, Object> args) {
-        String resourceUriArgument = Objects.toString(args.get("uri"), "").trim();
-        if (!MCPInteractionActionNames.READ_RESOURCE.equals(toolName) || resourceUriArgument.isEmpty() || resourceUriArgument.startsWith("shardingsphere://")) {
-            return args;
-        }
-        String resourceUri = findExpectedResourceUri(scenario);
-        if (resourceUri.isEmpty()) {
-            return args;
-        }
-        Map<String, Object> result = new LinkedHashMap<>(args);
-        result.put("uri", resourceUri);
-        return result;
-    }
-    
-    private Map<String, Object> normalizeSearchMetadataScopeArgument(final LLME2EScenario scenario, final String toolName, final Map<String, Object> args) {
-        if (!"database_gateway_search_metadata".equals(toolName) || !hasExplicitExpectedScopeInstruction(scenario) || !shouldUseExpectedSearchScope(scenario.getExpectedAnswer(), args)) {
-            return args;
-        }
-        Map<String, Object> result = new LinkedHashMap<>(args);
-        putIfBlank(result, "database", scenario.getExpectedAnswer().getDatabase());
-        putIfBlank(result, "schema", scenario.getExpectedAnswer().getSchema());
-        return result;
-    }
-    
-    private boolean hasExplicitExpectedScopeInstruction(final LLME2EScenario scenario) {
-        final LLMStructuredAnswer expectedAnswer = scenario.getExpectedAnswer();
-        return scenario.getUserPrompt().contains(String.format(Locale.ENGLISH, "Use logical database `%s` and schema `%s`", expectedAnswer.getDatabase(), expectedAnswer.getSchema()));
-    }
-    
-    private void putIfBlank(final Map<String, Object> values, final String key, final String value) {
-        if (Objects.toString(values.get(key), "").trim().isEmpty()) {
-            values.put(key, value);
-        }
-    }
-    
-    private boolean shouldUseExpectedSearchScope(final LLMStructuredAnswer expectedAnswer, final Map<String, Object> args) {
-        final String query = Objects.toString(args.get("query"), "").trim();
-        if (expectedAnswer.getDatabase().isEmpty() || expectedAnswer.getSchema().isEmpty() || !expectedAnswer.getTable().equalsIgnoreCase(query)) {
-            return false;
-        }
-        return Objects.toString(args.get("database"), "").trim().isEmpty() || Objects.toString(args.get("schema"), "").trim().isEmpty();
-    }
-    
-    private Map<String, Object> normalizeExpectedQuerySchemaArgument(final LLME2EScenario scenario, final String toolName, final Map<String, Object> args) {
-        if (!"database_gateway_execute_query".equals(toolName) || !Objects.toString(args.get("schema"), "").trim().isEmpty()) {
-            return args;
-        }
-        LLMStructuredAnswer expectedAnswer = scenario.getExpectedAnswer();
-        if (expectedAnswer.getSchema().isEmpty()
-                || !expectedAnswer.getDatabase().equals(Objects.toString(args.get("database"), "").trim())
-                || !normalizeComparableQuery(expectedAnswer, expectedAnswer.getQuery()).equals(normalizeComparableQuery(expectedAnswer, Objects.toString(args.get("sql"), "")))) {
-            return args;
-        }
-        Map<String, Object> result = new LinkedHashMap<>(args.size() + 1, 1F);
-        result.putAll(args);
-        result.put("schema", expectedAnswer.getSchema());
-        return result;
-    }
-    
-    private Map<String, Object> normalizeInitialPlanningPlanIdArgument(final String toolName, final Map<String, Object> args, final List<MCPInteractionTraceRecord> interactionTrace) {
-        if (!toolName.startsWith(PLANNING_TOOL_NAME_PREFIX) || !args.containsKey("plan_id") || !findLatestPlanId(interactionTrace).isEmpty()) {
-            return args;
-        }
-        Map<String, Object> result = new LinkedHashMap<>(args);
-        result.remove("plan_id");
-        return result;
-    }
-    
-    private Map<String, Object> normalizeWorkflowPlanIdArgument(final String toolName, final Map<String, Object> args, final List<MCPInteractionTraceRecord> interactionTrace) {
-        if (!("database_gateway_apply_workflow".equals(toolName) || "database_gateway_validate_workflow".equals(toolName)) || !isPlanIdPlaceholder(args.get("plan_id"))) {
-            return args;
-        }
-        String latestPlanId = findLatestPlanId(interactionTrace);
-        if (latestPlanId.isEmpty()) {
-            return args;
-        }
-        Map<String, Object> result = new LinkedHashMap<>(args);
-        result.put("plan_id", latestPlanId);
-        return result;
-    }
-    
-    private boolean isPlanIdPlaceholder(final Object value) {
-        String planId = Objects.toString(value, "").trim();
-        return "plan_id".equals(planId) || "{plan_id}".equals(planId) || "<plan_id>".equals(planId) || planId.matches("\\d+");
-    }
-    
-    private Map<String, Object> normalizeCompletionArguments(final String toolName, final Map<String, Object> args, final List<MCPInteractionTraceRecord> interactionTrace) {
-        if (!MCPInteractionActionNames.COMPLETE.equals(toolName) || args.containsKey("reference")) {
-            return args;
-        }
-        Map<String, Object> latestReference = findLatestCompletionReference(interactionTrace);
-        if (latestReference.isEmpty()) {
-            return args;
-        }
-        Map<String, Object> result = new LinkedHashMap<>(args.size() + 1, 1F);
-        result.put("reference", latestReference);
-        result.putAll(args);
-        return result;
-    }
-    
-    private Map<String, Object> findLatestCompletionReference(final List<MCPInteractionTraceRecord> interactionTrace) {
-        for (int index = interactionTrace.size() - 1; index >= 0; index--) {
-            MCPInteractionTraceRecord each = interactionTrace.get(index);
-            if (!each.isValid() || each.getStructuredContent().containsKey("error_code")) {
-                continue;
-            }
-            Map<String, Object> result = createCompletionReference(each);
-            if (!result.isEmpty()) {
-                return result;
-            }
-        }
-        return Map.of();
-    }
-    
-    private Map<String, Object> createCompletionReference(final MCPInteractionTraceRecord traceRecord) {
-        if (MCPInteractionActionNames.GET_PROMPT.equals(traceRecord.getTargetName())) {
-            String promptName = Objects.toString(traceRecord.getArguments().get("name"), "").trim();
-            return promptName.isEmpty() ? Map.of() : Map.of("type", "ref/prompt", "name", promptName);
-        }
-        if (MCPInteractionActionNames.READ_RESOURCE.equals(traceRecord.getTargetName())) {
-            String resourceUri = Objects.toString(traceRecord.getArguments().get("uri"), "").trim();
-            return resourceUri.isEmpty() ? Map.of() : Map.of("type", "ref/resource", "uri", resourceUri);
-        }
-        return Map.of();
     }
     
     private LLME2EArtifactBundle validateToolCall(final LLME2EScenario scenario, final String toolName, final Map<String, Object> arguments,
@@ -935,7 +588,7 @@ public final class LLMMCPConversationRunner {
     }
     
     private boolean hasMissingPlanningTool(final List<String> missingToolNames) {
-        return missingToolNames.stream().anyMatch(each -> each.startsWith(PLANNING_TOOL_NAME_PREFIX));
+        return missingToolNames.stream().anyMatch(each -> each.startsWith(LLMMCPScenarioInference.PLANNING_TOOL_NAME_PREFIX));
     }
     
     private String createSideEffectExecutionNextActionInstruction() {
@@ -943,54 +596,19 @@ public final class LLMMCPConversationRunner {
     }
     
     private boolean hasSideEffectExecutionNextAction(final List<MCPInteractionTraceRecord> interactionTrace) {
-        return !interactionTrace.isEmpty() && LLMMCPNextActions.getNextActions(interactionTrace.getLast().getStructuredContent()).stream().anyMatch(this::isSideEffectExecutionAction);
-    }
-    
-    private boolean isSideEffectExecutionAction(final Map<?, ?> action) {
-        if (!"tool_call".equals(Objects.toString(action.get("type"), "").trim())) {
-            return false;
-        }
-        final String toolName = Objects.toString(action.get("tool_name"), "").trim();
-        final Map<String, Object> arguments = LLMMCPJsonValues.castToMap(action.get("arguments"));
-        final String executionMode = Objects.toString(arguments.get("execution_mode"), "").trim();
-        return "database_gateway_execute_update".equals(toolName) && "execute".equals(executionMode)
-                || "database_gateway_apply_workflow".equals(toolName) && "review-then-execute".equals(executionMode);
+        return !interactionTrace.isEmpty() && LLMMCPNextActions.getNextActions(interactionTrace.getLast().getStructuredContent()).stream().anyMatch(LLMMCPSideEffectNextAction::isExecutionAction);
     }
     
     private String createWorkflowPlanInstruction(final List<String> missingToolNames, final List<MCPInteractionTraceRecord> interactionTrace) {
         if (!missingToolNames.contains("database_gateway_apply_workflow") && !missingToolNames.contains("database_gateway_validate_workflow")) {
             return "";
         }
-        String latestPlanId = findLatestPlanId(interactionTrace);
+        String latestPlanId = LLMMCPScenarioInference.findLatestPlanId(interactionTrace);
         return latestPlanId.isEmpty()
                 ? " For database_gateway_apply_workflow or database_gateway_validate_workflow, use an actual plan_id returned by a successful planning tool call; "
                         + "do not use placeholder text `plan_id`."
                 : String.format(Locale.ENGLISH,
                         " For database_gateway_apply_workflow or database_gateway_validate_workflow, set plan_id `%s`; do not use placeholder text `plan_id`.", latestPlanId);
-    }
-    
-    private String findLatestPlanId(final List<MCPInteractionTraceRecord> interactionTrace) {
-        for (int index = interactionTrace.size() - 1; index >= 0; index--) {
-            MCPInteractionTraceRecord each = interactionTrace.get(index);
-            String result = Objects.toString(each.getStructuredContent().get("plan_id"), "").trim();
-            if (each.isValid() && !result.isEmpty() && !each.getStructuredContent().containsKey("error_code")) {
-                return result;
-            }
-        }
-        return "";
-    }
-    
-    private String normalizeComparableQuery(final String query) {
-        return query.replaceAll("\\s+", " ").trim().toUpperCase(Locale.ENGLISH);
-    }
-    
-    private String normalizeComparableQuery(final LLMStructuredAnswer expectedAnswer, final String query) {
-        final String result = normalizeComparableQuery(query);
-        if (expectedAnswer.getSchema().isEmpty() || expectedAnswer.getTable().isEmpty()) {
-            return result;
-        }
-        return result.replaceAll("\\b" + Pattern.quote(expectedAnswer.getSchema().toUpperCase(Locale.ENGLISH)) + "\\."
-                + Pattern.quote(expectedAnswer.getTable().toUpperCase(Locale.ENGLISH)) + "\\b", Matcher.quoteReplacement(expectedAnswer.getTable().toUpperCase(Locale.ENGLISH)));
     }
     
     private MCPInteractionTraceRecord createTraceRecord(final int sequence, final String actionName, final String actionOrigin, final Map<String, Object> arguments,
