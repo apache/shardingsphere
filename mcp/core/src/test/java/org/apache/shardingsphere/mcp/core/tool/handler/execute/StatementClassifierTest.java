@@ -30,6 +30,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -62,6 +63,19 @@ class StatementClassifierTest {
         assertThat(actualResult.getStatementClass(), is(SupportedMCPStatement.EXPLAIN_ANALYZE));
         assertThat(actualResult.getAnalyzedStatementClass().orElseThrow(), is(SupportedMCPStatement.DML));
         assertThat(actualResult.getTargetObjectName().orElse(""), is("foo_orders"));
+    }
+    
+    @Test
+    void assertClassifyReferencedObjectNames() {
+        ClassificationResult actualResult = statementClassifier.classify(
+                "SELECT * FROM logic_db.foo_orders JOIN other_db.foo_order_items ON foo_orders.order_id = foo_order_items.order_id");
+        assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
+    }
+    
+    @Test
+    void assertClassifyDMLReferencedObjectNames() {
+        ClassificationResult actualResult = statementClassifier.classify("UPDATE logic_db.foo_orders SET status = 'DONE' FROM other_db.foo_order_items");
+        assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
     }
     
     private static Stream<Arguments> assertClassifyCases() {
@@ -99,6 +113,8 @@ class StatementClassifierTest {
                         "foo_orders", ""),
                 Arguments.of("insert dml", "INSERT INTO foo_orders VALUES (1)", SupportedMCPStatement.DML, "INSERT",
                         "INSERT INTO foo_orders VALUES (1)", "foo_orders", ""),
+                Arguments.of("insert select dml", "INSERT INTO bar_orders_archive SELECT * FROM foo_orders", SupportedMCPStatement.DML, "INSERT",
+                        "INSERT INTO bar_orders_archive SELECT * FROM foo_orders", "bar_orders_archive", ""),
                 Arguments.of("update dml", "UPDATE foo_orders SET status = 'DONE'", SupportedMCPStatement.DML, "UPDATE", "UPDATE foo_orders SET status = 'DONE'", "foo_orders", ""),
                 Arguments.of("delete only dml", "DELETE FROM ONLY foo_orders WHERE order_id = 1", SupportedMCPStatement.DML, "DELETE",
                         "DELETE FROM ONLY foo_orders WHERE order_id = 1", "foo_orders", ""),
@@ -123,8 +139,7 @@ class StatementClassifierTest {
                 Arguments.of("grant dcl", "GRANT SELECT ON foo_orders TO PUBLIC", SupportedMCPStatement.DCL, "GRANT", "GRANT SELECT ON foo_orders TO PUBLIC", "foo_orders", ""),
                 Arguments.of("revoke dcl", "REVOKE SELECT ON foo_orders FROM PUBLIC", SupportedMCPStatement.DCL, "REVOKE", "REVOKE SELECT ON foo_orders FROM PUBLIC", "foo_orders", ""),
                 Arguments.of("begin transaction", "BEGIN", SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "BEGIN", "", ""),
-                Arguments.of("start transaction", "START TRANSACTION READ WRITE", SupportedMCPStatement.TRANSACTION_CONTROL, "START TRANSACTION",
-                        "START TRANSACTION READ WRITE", "", ""),
+                Arguments.of("start transaction", "START TRANSACTION", SupportedMCPStatement.TRANSACTION_CONTROL, "START TRANSACTION", "START TRANSACTION", "", ""),
                 Arguments.of("commit transaction", "COMMIT", SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", "COMMIT", "", ""),
                 Arguments.of("rollback transaction", "ROLLBACK", SupportedMCPStatement.TRANSACTION_CONTROL, "ROLLBACK", "ROLLBACK", "", ""),
                 Arguments.of("savepoint", "SAVEPOINT foo_sp_1", SupportedMCPStatement.SAVEPOINT, "SAVEPOINT", "SAVEPOINT foo_sp_1", "", "foo_sp_1"),
@@ -149,6 +164,18 @@ class StatementClassifierTest {
                 Arguments.of("banned load", "LOAD DATA INFILE '/tmp/foo.csv' INTO TABLE foo_orders", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned call", "CALL foo_refresh_orders()", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned select into outfile", "SELECT * FROM foo_orders INTO OUTFILE '/tmp/foo.csv'", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned select into table", "SELECT * INTO bar_orders_archive FROM foo_orders", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned select into variable", "SELECT COUNT(*) INTO foo_count FROM foo_orders", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned with select into table", "WITH foo_result AS (SELECT * FROM foo_orders) SELECT * INTO bar_orders_archive FROM foo_result",
+                        MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("start transaction read only", "START TRANSACTION READ ONLY", MCPUnsupportedSQLStatementException.class,
+                        "Statement is not supported by the MCP contract."),
+                Arguments.of("start transaction read write", "START TRANSACTION READ WRITE", MCPUnsupportedSQLStatementException.class,
+                        "Statement is not supported by the MCP contract."),
+                Arguments.of("start transaction isolation level", "START TRANSACTION ISOLATION LEVEL SERIALIZABLE", MCPUnsupportedSQLStatementException.class,
+                        "Statement is not supported by the MCP contract."),
                 Arguments.of("banned alter system", "ALTER SYSTEM SET shared_buffers = '128MB'", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned create user", "CREATE USER foo_user IDENTIFIED BY 'pwd'", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned alter role", "ALTER ROLE foo_role SET search_path = public", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),

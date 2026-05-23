@@ -60,9 +60,10 @@ public final class StatementClassifier {
             String explainedSql = leadingSql.substring("EXPLAIN ANALYZE".length()).trim();
             SQLStatementStructure explainedStatementStructure = structureResolver.resolve(explainedSql);
             SupportedMCPStatement explainedStatementClass = statementClassResolver.resolve(explainedStatementStructure);
+            checkSideEffectingSelectInto(explainedStatementStructure);
             checkLockingRead(explainedStatementClass, scanner.tokenize(explainedSql));
-            return new ClassificationResult(SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", actualSql,
-                    targetResolver.resolve(explainedStatementStructure, explainedStatementClass), "", explainedStatementClass);
+            return new ClassificationResult(SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", actualSql, targetResolver.resolve(explainedStatementStructure, explainedStatementClass), "",
+                    explainedStatementClass, targetResolver.resolveAll(explainedStatementStructure, explainedStatementClass));
         }
         if (isSavepointStatement(upperLeadingSql)) {
             String statementType = extractStatementType(upperLeadingSql);
@@ -75,8 +76,10 @@ public final class StatementClassifier {
         }
         SQLStatementStructure statementStructure = structureResolver.resolve(actualSql);
         SupportedMCPStatement statementClass = statementClassResolver.resolve(statementStructure);
+        checkSideEffectingSelectInto(statementStructure);
         checkLockingRead(statementClass, scanner.tokenize(actualSql));
-        return new ClassificationResult(statementClass, statementStructure.statementType(), actualSql, targetResolver.resolve(statementStructure, statementClass), "");
+        return new ClassificationResult(statementClass, statementStructure.statementType(), actualSql, targetResolver.resolve(statementStructure, statementClass), "", null,
+                targetResolver.resolveAll(statementStructure, statementClass));
     }
     
     private boolean isBannedCommand(final String upperSql, final String sql) {
@@ -137,9 +140,33 @@ public final class StatementClassifier {
         }
     }
     
+    private void checkSideEffectingSelectInto(final SQLStatementStructure statementStructure) {
+        if ("SELECT".equals(statementStructure.statementType()) && containsTopLevelKeyword(scanner.tokenize(statementStructure.mainSql()), "INTO")) {
+            throw new MCPBannedSQLStatementException();
+        }
+    }
+    
     private boolean containsLockingReadClause(final List<SQLStatementToken> tokens) {
         for (int index = 0; index < tokens.size(); index++) {
             if (containsLockingReadForClause(tokens, index) || containsLockInShareModeClause(tokens, index)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsTopLevelKeyword(final List<SQLStatementToken> tokens, final String keyword) {
+        int parenthesesDepth = 0;
+        for (SQLStatementToken each : tokens) {
+            if ("(".equals(each.text())) {
+                parenthesesDepth++;
+                continue;
+            }
+            if (")".equals(each.text())) {
+                parenthesesDepth--;
+                continue;
+            }
+            if (0 == parenthesesDepth && scanner.isKeyword(each, keyword)) {
                 return true;
             }
         }
@@ -166,7 +193,7 @@ public final class StatementClassifier {
     
     private boolean isTransactionControlStatement(final String upperSql) {
         return "BEGIN".equals(upperSql)
-                || upperSql.startsWith("START TRANSACTION")
+                || "START TRANSACTION".equals(upperSql)
                 || "COMMIT".equals(upperSql)
                 || "ROLLBACK".equals(upperSql);
     }

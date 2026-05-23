@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
@@ -83,6 +84,7 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         }
         ShardingSpherePreconditions.checkContains(actualDatabaseCapability.getSupportedStatementClasses(), classificationResult.getStatementClass(),
                 () -> recordFailure(executionRequest, classificationResult.getAuditMarker(), new StatementClassNotSupportedException()));
+        checkCrossSchemaSql(executionRequest, actualDatabaseCapability, classificationResult);
         try {
             switch (classificationResult.getStatementClass()) {
                 case TRANSACTION_CONTROL:
@@ -111,6 +113,23 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
     private SQLExecutionResponse recordSuccess(final SQLExecutionRequest executionRequest, final SQLExecutionResponse response, final String statementMarker) {
         auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), true, statementMarker);
         return response;
+    }
+    
+    private void checkCrossSchemaSql(final SQLExecutionRequest executionRequest, final MCPDatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
+        if (databaseCapability.isSupportsCrossSchemaSql()) {
+            return;
+        }
+        for (String each : classificationResult.getReferencedObjectNames()) {
+            if (isCrossSchemaReference(each, executionRequest.getDatabase())) {
+                throw recordFailure(executionRequest, classificationResult.getAuditMarker(), new MCPInvalidRequestException(
+                        String.format("Cross-schema SQL is not supported for database `%s`: `%s`.", executionRequest.getDatabase(), each)));
+            }
+        }
+    }
+    
+    private boolean isCrossSchemaReference(final String objectName, final String databaseName) {
+        int qualifierSeparatorIndex = objectName.indexOf('.');
+        return -1 != qualifierSeparatorIndex && !objectName.substring(0, qualifierSeparatorIndex).equalsIgnoreCase(databaseName);
     }
     
     private <T extends RuntimeException> T recordFailure(final SQLExecutionRequest executionRequest, final String statementMarker, final T ex) {

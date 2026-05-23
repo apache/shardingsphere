@@ -23,9 +23,11 @@ import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPSta
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class SQLStatementTargetResolver {
@@ -35,42 +37,54 @@ final class SQLStatementTargetResolver {
     private final SQLStatementClassResolver statementClassResolver;
     
     String resolve(final SQLStatementStructure statementStructure, final SupportedMCPStatement statementClass) {
-        return resolve(statementStructure, statementClass, new LinkedList<>());
+        Collection<String> objectNames = resolveAll(statementStructure, statementClass);
+        return objectNames.isEmpty() ? "" : objectNames.iterator().next();
     }
     
-    private String resolve(final SQLStatementStructure statementStructure, final SupportedMCPStatement statementClass, final Collection<String> visitedAliases) {
+    Collection<String> resolveAll(final SQLStatementStructure statementStructure, final SupportedMCPStatement statementClass) {
+        Set<String> result = new LinkedHashSet<>(16, 1F);
+        collect(statementStructure, statementClass, new LinkedList<>(), result);
+        return result;
+    }
+    
+    private void collect(final SQLStatementStructure statementStructure, final SupportedMCPStatement statementClass, final Collection<String> visitedAliases, final Collection<String> result) {
         if ("SELECT".equals(statementStructure.statementType())) {
-            String result = extractSelectTargetObjectName(statementStructure, visitedAliases);
-            if (!result.isEmpty()) {
-                return result;
+            collectSelectTargetObjectNames(statementStructure, visitedAliases, result);
+            if (SupportedMCPStatement.DML == statementClass) {
+                collectDataModifyingTargetObjectNames(statementStructure, visitedAliases, result);
             }
-            return SupportedMCPStatement.DML == statementClass ? extractDataModifyingTargetObjectName(statementStructure, visitedAliases) : "";
+            return;
         }
-        return extractDirectTargetObjectName(statementStructure.mainSql(), statementStructure.statementType());
+        addObjectName(result, extractDirectTargetObjectName(statementStructure.mainSql(), statementStructure.statementType()));
+        collectClauseObjectNames(statementStructure, visitedAliases, result, "FROM", "JOIN", "USING");
     }
     
-    private String extractSelectTargetObjectName(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases) {
+    private void collectSelectTargetObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result) {
+        collectClauseObjectNames(statementStructure, visitedAliases, result, "FROM", "JOIN");
+    }
+    
+    private void collectClauseObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result, final String... keywords) {
         List<SQLStatementToken> tokens = scanner.tokenize(statementStructure.mainSql());
-        for (int each : findKeywordIndexes(tokens, "FROM")) {
-            String sourceObjectName = readObjectName(tokens, each + 1, "ONLY");
-            if (sourceObjectName.isEmpty()) {
-                continue;
-            }
-            Optional<SQLCommonTableExpression> commonTableExpression = findCommonTableExpression(statementStructure, sourceObjectName);
-            if (commonTableExpression.isEmpty()) {
-                return sourceObjectName;
-            }
-            SQLCommonTableExpression actualCommonTableExpression = commonTableExpression.get();
-            String normalizedAliasName = scanner.normalizeIdentifierForComparison(actualCommonTableExpression.aliasName());
-            if (!visitedAliases.contains(normalizedAliasName)) {
-                String result = resolve(actualCommonTableExpression.statementStructure(), statementClassResolver.resolve(actualCommonTableExpression.statementStructure()),
-                        appendVisitedAlias(visitedAliases, normalizedAliasName));
-                if (!result.isEmpty()) {
-                    return result;
-                }
+        for (int each : findKeywordIndexes(tokens, keywords)) {
+            String objectName = readObjectName(tokens, each + 1, "ONLY");
+            if (!objectName.isEmpty()) {
+                collectObjectName(statementStructure, objectName, visitedAliases, result);
             }
         }
-        return "";
+    }
+    
+    private void collectObjectName(final SQLStatementStructure statementStructure, final String objectName, final Collection<String> visitedAliases, final Collection<String> result) {
+        Optional<SQLCommonTableExpression> commonTableExpression = findCommonTableExpression(statementStructure, objectName);
+        if (commonTableExpression.isEmpty()) {
+            addObjectName(result, objectName);
+            return;
+        }
+        SQLCommonTableExpression actualCommonTableExpression = commonTableExpression.get();
+        String normalizedAliasName = scanner.normalizeIdentifierForComparison(actualCommonTableExpression.aliasName());
+        if (!visitedAliases.contains(normalizedAliasName)) {
+            collect(actualCommonTableExpression.statementStructure(), statementClassResolver.resolve(actualCommonTableExpression.statementStructure()),
+                    appendVisitedAlias(visitedAliases, normalizedAliasName), result);
+        }
     }
     
     private String extractDirectTargetObjectName(final String sql, final String statementType) {
@@ -103,7 +117,7 @@ final class SQLStatementTargetResolver {
         return "";
     }
     
-    private String extractDataModifyingTargetObjectName(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases) {
+    private void collectDataModifyingTargetObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result) {
         for (SQLCommonTableExpression each : statementStructure.commonTableExpressions()) {
             SupportedMCPStatement statementClass = statementClassResolver.resolve(each.statementStructure());
             if (SupportedMCPStatement.DML != statementClass) {
@@ -113,12 +127,8 @@ final class SQLStatementTargetResolver {
             if (visitedAliases.contains(normalizedAliasName)) {
                 continue;
             }
-            String result = resolve(each.statementStructure(), statementClass, appendVisitedAlias(visitedAliases, normalizedAliasName));
-            if (!result.isEmpty()) {
-                return result;
-            }
+            collect(each.statementStructure(), statementClass, appendVisitedAlias(visitedAliases, normalizedAliasName), result);
         }
-        return "";
     }
     
     private Collection<String> appendVisitedAlias(final Collection<String> visitedAliases, final String aliasName) {
@@ -184,10 +194,25 @@ final class SQLStatementTargetResolver {
         return result.toString();
     }
     
-    private List<Integer> findKeywordIndexes(final List<SQLStatementToken> tokens, final String keyword) {
+    private void addObjectName(final Collection<String> result, final String objectName) {
+        if (!objectName.isEmpty()) {
+            result.add(objectName);
+        }
+    }
+    
+    private List<Integer> findKeywordIndexes(final List<SQLStatementToken> tokens, final String... keywords) {
         List<Integer> result = new ArrayList<>(tokens.size());
+        int parenthesesDepth = 0;
         for (int index = 0; index < tokens.size(); index++) {
-            if (scanner.isKeyword(tokens.get(index), keyword)) {
+            if ("(".equals(tokens.get(index).text())) {
+                parenthesesDepth++;
+                continue;
+            }
+            if (")".equals(tokens.get(index).text())) {
+                parenthesesDepth--;
+                continue;
+            }
+            if (0 == parenthesesDepth && scanner.isKeyword(tokens.get(index), keywords)) {
                 result.add(index);
             }
         }

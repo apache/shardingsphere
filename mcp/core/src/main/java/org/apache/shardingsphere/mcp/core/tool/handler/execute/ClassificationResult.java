@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -35,6 +37,8 @@ public final class ClassificationResult {
     private final String normalizedSql;
     
     private final String targetObjectName;
+    
+    private final Collection<String> referencedObjectNames;
     
     private final String savepointName;
     
@@ -65,10 +69,16 @@ public final class ClassificationResult {
      */
     public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName,
                                 final SupportedMCPStatement analyzedStatementClass) {
+        this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, analyzedStatementClass, targetObjectName.isEmpty() ? List.of() : List.of(targetObjectName));
+    }
+    
+    ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName,
+                         final SupportedMCPStatement analyzedStatementClass, final Collection<String> referencedObjectNames) {
         this.statementClass = statementClass;
         this.statementType = statementType;
         this.normalizedSql = normalizedSql;
         this.targetObjectName = targetObjectName;
+        this.referencedObjectNames = referencedObjectNames;
         this.savepointName = savepointName;
         this.analyzedStatementClass = Optional.ofNullable(analyzedStatementClass);
     }
