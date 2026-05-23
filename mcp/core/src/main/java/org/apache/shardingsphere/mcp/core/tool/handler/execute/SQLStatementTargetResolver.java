@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,51 +30,72 @@ import java.util.Set;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class SQLStatementTargetResolver {
-    
+
+    private static final List<String> SQL_OBJECT_TYPE_KEYWORDS = List.of("TABLE", "VIEW", "INDEX", "SEQUENCE", "DATABASE", "SCHEMA", "TYPE", "FUNCTION", "PROCEDURE", "TRIGGER", "POLICY");
+
+    private static final List<String> OBJECT_LIST_STOP_KEYWORDS = List.of("JOIN", "WHERE", "ON", "USING", "SET", "VALUES", "RETURNING", "GROUP", "ORDER", "HAVING", "LIMIT", "OFFSET",
+            "FETCH", "UNION", "EXCEPT", "INTERSECT", "WHEN", "FROM", "TO");
+
+    private static final List<String> DELETE_MODIFIER_KEYWORDS = List.of("LOW_PRIORITY", "QUICK", "IGNORE");
+
     private final SQLStatementScanner scanner;
-    
+
     private final SQLStatementStructureResolver structureResolver;
-    
-    private final SQLStatementClassResolver statementClassResolver;
-    
-    String resolve(final SQLStatementStructure statementStructure, final SupportedMCPStatement statementClass) {
-        Collection<String> objectNames = resolveAll(statementStructure, statementClass);
+
+    String resolve(final SQLStatementStructure statementStructure) {
+        Collection<String> objectNames = resolveAll(statementStructure);
         return objectNames.isEmpty() ? "" : objectNames.iterator().next();
     }
-    
-    Collection<String> resolveAll(final SQLStatementStructure statementStructure, final SupportedMCPStatement statementClass) {
+
+    Collection<String> resolveAll(final SQLStatementStructure statementStructure) {
         Set<String> result = new LinkedHashSet<>(16, 1F);
-        collect(statementStructure, statementClass, new LinkedList<>(), result);
+        collect(statementStructure, new LinkedList<>(), result);
         return result;
     }
-    
-    private void collect(final SQLStatementStructure statementStructure, final SupportedMCPStatement statementClass, final Collection<String> visitedAliases, final Collection<String> result) {
+
+    private void collect(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result) {
         if ("SELECT".equals(statementStructure.statementType())) {
+            collectCommonTableExpressionObjectNames(statementStructure, visitedAliases, result);
             collectSelectTargetObjectNames(statementStructure, visitedAliases, result);
-            if (SupportedMCPStatement.DML == statementClass) {
-                collectDataModifyingTargetObjectNames(statementStructure, visitedAliases, result);
-            }
             return;
         }
-        addObjectName(result, extractDirectTargetObjectName(statementStructure.mainSql(), statementStructure.statementType()));
-        collectClauseObjectNames(statementStructure, visitedAliases, result, "FROM", "JOIN", "USING");
+        collectDirectTargetObjectNames(statementStructure, visitedAliases, result);
+        collectClauseObjectNames(statementStructure, visitedAliases, result, getClauseKeywords(statementStructure.statementType()));
+        collectCommonTableExpressionObjectNames(statementStructure, visitedAliases, result);
     }
-    
+
+    private void collectCommonTableExpressionObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result) {
+        for (SQLCommonTableExpression each : statementStructure.commonTableExpressions()) {
+            String normalizedAliasName = scanner.normalizeIdentifierForComparison(each.aliasName());
+            if (visitedAliases.contains(normalizedAliasName)) {
+                continue;
+            }
+            collect(each.statementStructure(), appendVisitedAlias(visitedAliases, normalizedAliasName), result);
+        }
+    }
+
     private void collectSelectTargetObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result) {
         collectClauseObjectNames(statementStructure, visitedAliases, result, "FROM", "JOIN");
     }
-    
+
     private void collectClauseObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result, final String... keywords) {
         List<SQLStatementToken> tokens = scanner.tokenize(statementStructure.mainSql());
         for (int each : findKeywordIndexes(tokens, keywords)) {
-            String objectName = readObjectName(tokens, each + 1, "ONLY");
-            if (!objectName.isEmpty()) {
-                collectObjectName(statementStructure, objectName, visitedAliases, result);
-            }
+            collectObjectNamesFromClause(statementStructure, tokens, each, visitedAliases, result);
         }
         collectNestedQueryObjectNames(tokens, visitedAliases, result);
+        collectQualifiedFunctionNames(tokens, result);
     }
-    
+
+    private void collectObjectNamesFromClause(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final int keywordIndex,
+                                              final Collection<String> visitedAliases, final Collection<String> result) {
+        int objectStartIndex = keywordIndex + 1;
+        if (scanner.isKeyword(tokens.get(keywordIndex), "INHERITS") && objectStartIndex < tokens.size() && "(".equals(tokens.get(objectStartIndex).text())) {
+            objectStartIndex++;
+        }
+        collectObjectNamesFromList(statementStructure, tokens, objectStartIndex, visitedAliases, result, "ONLY", "LATERAL");
+    }
+
     private void collectNestedQueryObjectNames(final List<SQLStatementToken> tokens, final Collection<String> visitedAliases, final Collection<String> result) {
         int index = 0;
         while (index < tokens.size()) {
@@ -86,14 +106,14 @@ final class SQLStatementTargetResolver {
             int closingParenthesisIndex = findClosingParenthesis(tokens, index);
             if (isNestedQuery(tokens, index + 1, closingParenthesisIndex)) {
                 SQLStatementStructure statementStructure = structureResolver.resolve(reconstructSql(tokens, index + 1, closingParenthesisIndex));
-                collect(statementStructure, statementClassResolver.resolve(statementStructure), visitedAliases, result);
+                collect(statementStructure, visitedAliases, result);
                 index = closingParenthesisIndex + 1;
                 continue;
             }
             index++;
         }
     }
-    
+
     private void collectObjectName(final SQLStatementStructure statementStructure, final String objectName, final Collection<String> visitedAliases, final Collection<String> result) {
         Optional<SQLCommonTableExpression> commonTableExpression = findCommonTableExpression(statementStructure, objectName);
         if (commonTableExpression.isEmpty()) {
@@ -103,61 +123,136 @@ final class SQLStatementTargetResolver {
         SQLCommonTableExpression actualCommonTableExpression = commonTableExpression.get();
         String normalizedAliasName = scanner.normalizeIdentifierForComparison(actualCommonTableExpression.aliasName());
         if (!visitedAliases.contains(normalizedAliasName)) {
-            collect(actualCommonTableExpression.statementStructure(), statementClassResolver.resolve(actualCommonTableExpression.statementStructure()),
-                    appendVisitedAlias(visitedAliases, normalizedAliasName), result);
+            collect(actualCommonTableExpression.statementStructure(), appendVisitedAlias(visitedAliases, normalizedAliasName), result);
         }
     }
-    
-    private String extractDirectTargetObjectName(final String sql, final String statementType) {
-        List<SQLStatementToken> tokens = scanner.tokenize(sql);
+
+    private void collectDirectTargetObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result) {
+        List<SQLStatementToken> tokens = scanner.tokenize(statementStructure.mainSql());
+        String statementType = statementStructure.statementType();
         if ("INSERT".equals(statementType) || "MERGE".equals(statementType)) {
-            return extractObjectNameAfterKeyword(tokens, "INTO");
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "INTO", visitedAliases, result);
+            return;
         }
         if ("UPDATE".equals(statementType)) {
-            return extractObjectNameAfterKeyword(tokens, "UPDATE", "ONLY");
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "UPDATE", visitedAliases, result, "ONLY");
+            return;
         }
         if ("DELETE".equals(statementType)) {
-            return extractObjectNameAfterKeyword(tokens, "FROM", "ONLY");
+            collectDeleteTargetObjectNames(statementStructure, tokens, visitedAliases, result);
+            return;
         }
         if ("CREATE".equals(statementType)) {
-            return extractObjectNameAfterTypeKeyword(tokens, List.of("TABLE", "VIEW", "INDEX", "SEQUENCE", "DATABASE", "SCHEMA"), "IF", "NOT", "EXISTS");
+            collectObjectNamesAfterTypeKeyword(statementStructure, tokens, visitedAliases, result, "CONCURRENTLY", "IF", "NOT", "EXISTS");
+            collectCreateSourceObjectNames(statementStructure, tokens, visitedAliases, result);
+            return;
         }
         if ("ALTER".equals(statementType)) {
-            return extractObjectNameAfterTypeKeyword(tokens, List.of("TABLE", "VIEW", "INDEX", "SEQUENCE", "DATABASE", "SCHEMA"), "ONLY");
+            collectObjectNamesAfterTypeKeyword(statementStructure, tokens, visitedAliases, result, "IF", "EXISTS", "ONLY");
+            collectAlterDestinationObjectNames(statementStructure, tokens, visitedAliases, result);
+            return;
         }
         if ("DROP".equals(statementType)) {
-            return extractObjectNameAfterTypeKeyword(tokens, List.of("TABLE", "VIEW", "INDEX", "SEQUENCE", "DATABASE", "SCHEMA"), "IF", "EXISTS");
+            collectObjectNamesAfterTypeKeyword(statementStructure, tokens, visitedAliases, result, "CONCURRENTLY", "IF", "EXISTS");
+            collectDropSourceObjectNames(statementStructure, tokens, visitedAliases, result);
+            return;
         }
         if ("TRUNCATE".equals(statementType)) {
-            String result = extractObjectNameAfterKeyword(tokens, "TABLE", "ONLY");
-            return result.isEmpty() ? readObjectName(tokens, 1, "ONLY") : result;
+            if (!collectObjectNamesAfterKeyword(statementStructure, tokens, "TABLE", visitedAliases, result, "ONLY")) {
+                collectObjectNamesFromList(statementStructure, tokens, 1, visitedAliases, result, "ONLY");
+            }
+            return;
         }
         if ("GRANT".equals(statementType) || "REVOKE".equals(statementType)) {
-            return extractObjectNameAfterKeyword(tokens, "ON", "TABLE", "VIEW", "INDEX", "SEQUENCE", "DATABASE", "SCHEMA");
-        }
-        return "";
-    }
-    
-    private void collectDataModifyingTargetObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result) {
-        for (SQLCommonTableExpression each : statementStructure.commonTableExpressions()) {
-            SupportedMCPStatement statementClass = statementClassResolver.resolve(each.statementStructure());
-            if (SupportedMCPStatement.DML != statementClass) {
-                continue;
-            }
-            String normalizedAliasName = scanner.normalizeIdentifierForComparison(each.aliasName());
-            if (visitedAliases.contains(normalizedAliasName)) {
-                continue;
-            }
-            collect(each.statementStructure(), statementClass, appendVisitedAlias(visitedAliases, normalizedAliasName), result);
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, result, "TABLE", "VIEW", "INDEX", "SEQUENCE", "DATABASE", "SCHEMA");
         }
     }
-    
+
+    private void collectDeleteTargetObjectNames(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final Collection<String> visitedAliases,
+                                                final Collection<String> result) {
+        int deleteTargetStartIndex = skipDeleteModifierKeywords(tokens, 1);
+        if (deleteTargetStartIndex < tokens.size() && !scanner.isKeyword(tokens.get(deleteTargetStartIndex), "FROM", "USING")) {
+            collectObjectNamesFromList(statementStructure, tokens, deleteTargetStartIndex, visitedAliases, result);
+        }
+        collectObjectNamesAfterKeyword(statementStructure, tokens, "FROM", visitedAliases, result, "ONLY");
+    }
+
+    private int skipDeleteModifierKeywords(final List<SQLStatementToken> tokens, final int startIndex) {
+        int result = startIndex;
+        while (result < tokens.size() && DELETE_MODIFIER_KEYWORDS.contains(tokens.get(result).upperText())) {
+            result++;
+        }
+        return result;
+    }
+
+    private String[] getClauseKeywords(final String statementType) {
+        if ("DELETE".equals(statementType)) {
+            return new String[]{"FROM", "JOIN", "USING"};
+        }
+        if ("CREATE".equals(statementType) || "ALTER".equals(statementType)) {
+            return new String[]{"FROM", "JOIN", "REFERENCES", "INHERITS", "INHERIT"};
+        }
+        return "MERGE".equals(statementType) ? new String[]{"USING", "JOIN"} : new String[]{"FROM", "JOIN"};
+    }
+
+    private void collectCreateSourceObjectNames(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final Collection<String> visitedAliases,
+                                                final Collection<String> result) {
+        if (isStatementObjectType(tokens, "INDEX")) {
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, result);
+        }
+        if (isStatementObjectType(tokens, "TRIGGER", "POLICY")) {
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, result);
+        }
+        if (isStatementObjectType(tokens, "TABLE")) {
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "LIKE", visitedAliases, result);
+        }
+    }
+
+    private void collectDropSourceObjectNames(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final Collection<String> visitedAliases,
+                                              final Collection<String> result) {
+        if (isStatementObjectType(tokens, "INDEX")) {
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, result);
+        }
+    }
+
+    private void collectAlterDestinationObjectNames(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final Collection<String> visitedAliases,
+                                                    final Collection<String> result) {
+        for (int index = 0; index < tokens.size(); index++) {
+            if (isRenameToDestination(tokens, index)) {
+                collectObjectNamesFromList(statementStructure, tokens, index + 2, visitedAliases, result);
+            }
+            if (isSetSchemaDestination(tokens, index)) {
+                collectObjectNamesFromList(statementStructure, tokens, index + 2, visitedAliases, result);
+            }
+        }
+        if (isStatementObjectType(tokens, "TRIGGER", "POLICY")) {
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, result);
+        }
+    }
+
+    private boolean isRenameToDestination(final List<SQLStatementToken> tokens, final int index) {
+        return index + 2 < tokens.size() && scanner.isKeyword(tokens.get(index), "RENAME") && scanner.isKeyword(tokens.get(index + 1), "TO");
+    }
+
+    private boolean isSetSchemaDestination(final List<SQLStatementToken> tokens, final int index) {
+        return index + 2 < tokens.size() && scanner.isKeyword(tokens.get(index), "SET") && scanner.isKeyword(tokens.get(index + 1), "SCHEMA");
+    }
+
+    private boolean isStatementObjectType(final List<SQLStatementToken> tokens, final String... keywords) {
+        for (SQLStatementToken each : tokens) {
+            if (SQL_OBJECT_TYPE_KEYWORDS.contains(each.upperText())) {
+                return scanner.isKeyword(each, keywords);
+            }
+        }
+        return false;
+    }
+
     private Collection<String> appendVisitedAlias(final Collection<String> visitedAliases, final String aliasName) {
         Collection<String> result = new LinkedList<>(visitedAliases);
         result.add(aliasName);
         return result;
     }
-    
+
     private Optional<SQLCommonTableExpression> findCommonTableExpression(final SQLStatementStructure statementStructure, final String aliasName) {
         String normalizedAliasName = scanner.normalizeIdentifierForComparison(aliasName);
         for (SQLCommonTableExpression each : statementStructure.commonTableExpressions()) {
@@ -167,60 +262,124 @@ final class SQLStatementTargetResolver {
         }
         return Optional.empty();
     }
-    
-    private String extractObjectNameAfterTypeKeyword(final List<SQLStatementToken> tokens, final List<String> typeKeywords, final String... optionalKeywords) {
+
+    private void collectObjectNamesAfterTypeKeyword(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final Collection<String> visitedAliases,
+                                                    final Collection<String> result, final String... optionalKeywords) {
         for (int index = 0; index < tokens.size(); index++) {
-            if (typeKeywords.contains(tokens.get(index).upperText())) {
-                return readObjectName(tokens, index + 1, optionalKeywords);
+            if (SQL_OBJECT_TYPE_KEYWORDS.contains(tokens.get(index).upperText())) {
+                collectObjectNamesFromList(statementStructure, tokens, index + 1, visitedAliases, result, optionalKeywords);
+                return;
             }
         }
-        return "";
     }
-    
-    private String extractObjectNameAfterKeyword(final List<SQLStatementToken> tokens, final String keyword, final String... optionalKeywords) {
+
+    private boolean collectObjectNamesAfterKeyword(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final String keyword,
+                                                   final Collection<String> visitedAliases, final Collection<String> result, final String... optionalKeywords) {
         for (int index = 0; index < tokens.size(); index++) {
             if (scanner.isKeyword(tokens.get(index), keyword)) {
-                return readObjectName(tokens, index + 1, optionalKeywords);
+                collectObjectNamesFromList(statementStructure, tokens, index + 1, visitedAliases, result, optionalKeywords);
+                return true;
             }
         }
-        return "";
+        return false;
     }
-    
-    private String readObjectName(final List<SQLStatementToken> tokens, final int startIndex, final String... optionalKeywords) {
+
+    private void collectObjectNamesFromList(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final int startIndex,
+                                            final Collection<String> visitedAliases, final Collection<String> result, final String... optionalKeywords) {
+        int currentIndex = startIndex;
+        while (currentIndex < tokens.size()) {
+            ObjectNameToken objectName = readObjectName(tokens, currentIndex, optionalKeywords);
+            if (objectName.objectName().isEmpty()) {
+                return;
+            }
+            collectObjectName(statementStructure, objectName.objectName(), visitedAliases, result);
+            currentIndex = skipObjectTail(tokens, objectName.nextIndex());
+            if (currentIndex >= tokens.size() || !",".equals(tokens.get(currentIndex).text())) {
+                return;
+            }
+            currentIndex++;
+        }
+    }
+
+    private int skipObjectTail(final List<SQLStatementToken> tokens, final int startIndex) {
         int result = startIndex;
+        int parenthesesDepth = 0;
         while (result < tokens.size()) {
             SQLStatementToken token = tokens.get(result);
-            if (scanner.isKeyword(token, optionalKeywords)) {
+            if ("(".equals(token.text())) {
+                parenthesesDepth++;
                 result++;
                 continue;
             }
-            if ("(".equals(token.text())) {
-                return "";
+            if (")".equals(token.text())) {
+                parenthesesDepth--;
+                result++;
+                continue;
             }
-            return readQualifiedName(tokens, result);
+            if (0 == parenthesesDepth && (",".equals(token.text()) || OBJECT_LIST_STOP_KEYWORDS.contains(token.upperText()))) {
+                return result;
+            }
+            result++;
         }
-        return "";
+        return result;
     }
-    
-    private String readQualifiedName(final List<SQLStatementToken> tokens, final int startIndex) {
-        if (startIndex >= tokens.size() || !tokens.get(startIndex).identifier()) {
-            return "";
+
+    private ObjectNameToken readObjectName(final List<SQLStatementToken> tokens, final int startIndex, final String... optionalKeywords) {
+        int currentIndex = startIndex;
+        while (currentIndex < tokens.size()) {
+            SQLStatementToken token = tokens.get(currentIndex);
+            if (scanner.isKeyword(token, optionalKeywords)) {
+                currentIndex++;
+                continue;
+            }
+            if ("(".equals(token.text())) {
+                return new ObjectNameToken("", currentIndex);
+            }
+            return readQualifiedName(tokens, currentIndex);
+        }
+        return new ObjectNameToken("", currentIndex);
+    }
+
+    private ObjectNameToken readQualifiedName(final List<SQLStatementToken> tokens, final int startIndex) {
+        if (startIndex >= tokens.size() || !isObjectNameSegment(tokens.get(startIndex))) {
+            return new ObjectNameToken("", startIndex);
         }
         StringBuilder result = new StringBuilder(scanner.normalizeIdentifier(tokens.get(startIndex).text()));
         int currentIndex = startIndex + 1;
-        while (currentIndex + 1 < tokens.size() && ".".equals(tokens.get(currentIndex).text()) && tokens.get(currentIndex + 1).identifier()) {
+        while (currentIndex + 1 < tokens.size() && ".".equals(tokens.get(currentIndex).text()) && isObjectNameSegment(tokens.get(currentIndex + 1))) {
             result.append('.').append(scanner.normalizeIdentifier(tokens.get(currentIndex + 1).text()));
             currentIndex += 2;
         }
-        return result.toString();
+        return new ObjectNameToken(result.toString(), currentIndex);
     }
-    
+
+    private boolean isObjectNameSegment(final SQLStatementToken token) {
+        return token.identifier() || "*".equals(token.text());
+    }
+
+    private void collectQualifiedFunctionNames(final List<SQLStatementToken> tokens, final Collection<String> result) {
+        int index = 0;
+        while (index < tokens.size()) {
+            ObjectNameToken objectName = readQualifiedName(tokens, index);
+            if (isQualifiedFunctionName(tokens, objectName)) {
+                addObjectName(result, objectName.objectName());
+                index = objectName.nextIndex() - 1;
+            }
+            index++;
+        }
+    }
+
+    private boolean isQualifiedFunctionName(final List<SQLStatementToken> tokens, final ObjectNameToken objectName) {
+        return objectName.objectName().contains(".") && !objectName.objectName().endsWith(".*") && objectName.nextIndex() < tokens.size()
+                && "(".equals(tokens.get(objectName.nextIndex()).text());
+    }
+
     private void addObjectName(final Collection<String> result, final String objectName) {
         if (!objectName.isEmpty()) {
             result.add(objectName);
         }
     }
-    
+
     private List<Integer> findKeywordIndexes(final List<SQLStatementToken> tokens, final String... keywords) {
         List<Integer> result = new ArrayList<>(tokens.size());
         int parenthesesDepth = 0;
@@ -239,7 +398,7 @@ final class SQLStatementTargetResolver {
         }
         return result;
     }
-    
+
     private int findClosingParenthesis(final List<SQLStatementToken> tokens, final int startIndex) {
         int parenthesesDepth = 0;
         for (int index = startIndex; index < tokens.size(); index++) {
@@ -256,11 +415,11 @@ final class SQLStatementTargetResolver {
         }
         return tokens.size();
     }
-    
+
     private boolean isNestedQuery(final List<SQLStatementToken> tokens, final int startIndex, final int stopIndex) {
         return startIndex < stopIndex && scanner.isKeyword(tokens.get(startIndex), "SELECT", "WITH");
     }
-    
+
     private String reconstructSql(final List<SQLStatementToken> tokens, final int startIndex, final int stopIndex) {
         StringBuilder result = new StringBuilder();
         for (int index = startIndex; index < stopIndex; index++) {
@@ -270,5 +429,8 @@ final class SQLStatementTargetResolver {
             result.append(tokens.get(index).text());
         }
         return result.toString();
+    }
+
+    private record ObjectNameToken(String objectName, int nextIndex) {
     }
 }

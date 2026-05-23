@@ -118,7 +118,8 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 - metadata 的 list / detail / capability discovery 统一走 `resources/read`。
 - 当前 public tools 包括 `database_gateway_search_metadata`、`database_gateway_execute_query`、`database_gateway_execute_update`、`database_gateway_plan_encrypt_rule`、`database_gateway_plan_mask_rule`、`database_gateway_apply_workflow` 和 `database_gateway_validate_workflow`。
-- `database_gateway_execute_query` 只接受只读 `SELECT` 和 `EXPLAIN ANALYZE`；DML、DDL、DCL、事务控制、savepoint 以及其他支持的有副作用 SQL 要使用 `database_gateway_execute_update`。
+- `database_gateway_execute_query` 只接受分类器批准的 `SELECT` 和 `EXPLAIN ANALYZE`，并拒绝已知有副作用的查询形态；
+  DML、DDL、DCL、事务控制、savepoint 以及其他支持的有副作用 SQL 要使用 `database_gateway_execute_update`。
 - `database_gateway_execute_query.max_rows` 省略或传 `0` 时使用服务端默认值 `100`；显式传 `1` 到 `5000` 用于限制返回行数。
 - 加密与脱敏 workflow 面向由 ShardingSphere-Proxy 暴露的逻辑库；下文会单独说明这部分的前置条件和使用方式。
 - `database_gateway_search_metadata.object_types` 只接受 `database`、`schema`、`table`、`view`、`column`、`index`、`sequence`。

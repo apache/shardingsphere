@@ -65,7 +65,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("optional_catalog_resource", CATALOG_RESOURCE_URI);
         result.put("metadata_first_resource", "shardingsphere://databases");
         result.put("sql_tool_selection", Map.of(
-                "read_only", "Use database_gateway_execute_query for one SELECT or EXPLAIN ANALYZE statement.",
+                "read_only", "Use database_gateway_execute_query for one classifier-approved SELECT or EXPLAIN ANALYZE statement.",
                 "side_effecting", "Use database_gateway_execute_update with execution_mode=preview before execution."));
         result.put("workflow_session_rule", "Reuse the current-session plan_id returned by a planning tool; re-plan when the plan is unavailable.");
         result.put("side_effect_rule", "Preview before side effects and continue only when the requested side effect is still intended.");

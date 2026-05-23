@@ -796,10 +796,10 @@ tools:
         - shardingsphere://databases
         - "shardingsphere://databases/{database}/schemas"
   - name: database_gateway_execute_query
-    title: Execute Read-Only SQL
+    title: Execute Query SQL
     description: >-
-      Execute exactly one read-only SELECT or EXPLAIN ANALYZE statement against a ShardingSphere logical database. Use for inspection only;
-      DML, DDL, DCL, transaction control, and savepoints are rejected.
+      Execute exactly one classifier-approved SELECT or EXPLAIN ANALYZE statement against a ShardingSphere logical database. Use for inspection only;
+      DML, DDL, DCL, transaction control, savepoints, and known side-effecting query forms are rejected.
     inputSchema:
       type: object
       properties:
@@ -811,7 +811,7 @@ tools:
           description: "Optional schema or namespace hint for unqualified object names."
         sql:
           type: string
-          description: "One SELECT or EXPLAIN ANALYZE statement. Do not include multiple statements or mutating SQL."
+          description: "One classifier-approved SELECT or EXPLAIN ANALYZE statement. Do not include multiple statements or mutating SQL."
         max_rows:
           type: integer
           description: "Optional maximum number of rows to return. Omit or pass 0 to use the server default of 100."
@@ -934,7 +934,7 @@ tools:
               title: Stop
               reason: Return the result rows to the user.
     annotations:
-      title: Execute Read-Only SQL
+      title: Execute Query SQL
       readOnlyHint: true
       destructiveHint: false
       idempotentHint: true

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.support.database.tool.request;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * SQL execution request.
@@ -26,19 +25,34 @@ import lombok.RequiredArgsConstructor;
  * <p>The logical database is the only strong execution boundary.
  * The optional schema field is a namespace hint for unqualified object names.</p>
  */
-@RequiredArgsConstructor
 @Getter
 public final class SQLExecutionRequest {
-    
+
     private final String sessionId;
-    
+
     private final String database;
-    
+
     private final String schema;
-    
+
     private final String sql;
-    
+
     private final int maxRows;
-    
+
     private final int timeoutMs;
+
+    private final boolean readOnlyExecution;
+
+    public SQLExecutionRequest(final String sessionId, final String database, final String schema, final String sql, final int maxRows, final int timeoutMs) {
+        this(sessionId, database, schema, sql, maxRows, timeoutMs, false);
+    }
+
+    public SQLExecutionRequest(final String sessionId, final String database, final String schema, final String sql, final int maxRows, final int timeoutMs, final boolean readOnlyExecution) {
+        this.sessionId = sessionId;
+        this.database = database;
+        this.schema = schema;
+        this.sql = sql;
+        this.maxRows = maxRows;
+        this.timeoutMs = timeoutMs;
+        this.readOnlyExecution = readOnlyExecution;
+    }
 }

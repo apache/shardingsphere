@@ -32,29 +32,29 @@ import java.util.Map;
  * Execute read-only SQL query tool handler.
  */
 public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
-    
+
     private static final String TOOL_NAME = "database_gateway_execute_query";
-    
+
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
     }
-    
+
     @Override
     public String getToolName() {
         return TOOL_NAME;
     }
-    
+
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         String sql = toolArguments.getStringArgument("sql");
         checkReadOnlyQuery(toolArguments, sql);
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
-        return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments,
+        return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(toolCall, toolArguments,
                 resolveSchema(databaseContext, toolArguments), sql, TOOL_NAME));
     }
-    
+
     private String resolveSchema(final MCPDatabaseHandlerContext databaseContext, final MCPToolArguments toolArguments) {
         String result = toolArguments.getStringArgument("schema");
         if (!result.isEmpty()) {
@@ -67,17 +67,17 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
         List<MCPSchemaMetadata> schemas = databaseContext.getMetadataQueryFacade().querySchemas(database);
         return 1 == schemas.size() ? schemas.iterator().next().getSchema() : "";
     }
-    
+
     private void checkReadOnlyQuery(final MCPToolArguments toolArguments, final String sql) {
         ClassificationResult classificationResult = new StatementClassifier().classify(sql);
         if (!SQLExecutionToolHandlerSupport.isReadOnlyStatement(classificationResult)) {
             throw new SQLToolMismatchException(
-                    "database_gateway_execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL.",
+                    "database_gateway_execute_query only supports classifier-approved QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL.",
                     TOOL_NAME, "database_gateway_execute_update", classificationResult,
                     createSuggestedArguments(toolArguments, classificationResult));
         }
     }
-    
+
     private Map<String, Object> createSuggestedArguments(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         SQLExecutionToolHandlerSupport.putIfNotEmpty(result, "database", toolArguments.getStringArgument("database"));

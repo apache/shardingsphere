@@ -52,11 +52,11 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public final class MCPJdbcStatementExecutor {
-    
+
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
-    
+
     private final MCPJdbcTransactionResourceManager transactionResourceManager;
-    
+
     /**
      * Execute one classified request.
      *
@@ -74,11 +74,13 @@ public final class MCPJdbcStatementExecutor {
     public SQLExecutionResponse execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) {
         Connection connection = null;
         boolean needCloseConnection = false;
+        boolean transactionConnectionInUse = false;
         try {
             try {
                 Optional<Connection> transactionConnection = transactionResourceManager.findTransactionConnection(executionRequest.getSessionId(), executionRequest.getDatabase());
                 if (transactionConnection.isPresent()) {
                     connection = transactionConnection.get();
+                    transactionConnectionInUse = true;
                 } else {
                     connection = openConnection(executionRequest.getDatabase());
                     needCloseConnection = true;
@@ -86,7 +88,7 @@ public final class MCPJdbcStatementExecutor {
             } catch (final IllegalStateException ex) {
                 throw new MCPTransactionStateException(ex.getMessage(), ex);
             }
-            return executeWithConnection(connection, executionRequest, classificationResult, databaseCapability);
+            return executeWithConnection(connection, executionRequest, classificationResult, databaseCapability, transactionConnectionInUse);
         } catch (final SQLTimeoutException ex) {
             throw new MCPTimeoutException(ex.getMessage(), ex);
         } catch (final SQLFeatureNotSupportedException ex) {
@@ -104,16 +106,88 @@ public final class MCPJdbcStatementExecutor {
             }
         }
     }
-    
+
     private SQLExecutionResponse executeWithConnection(final Connection connection, final SQLExecutionRequest executionRequest,
-                                                       final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) throws SQLException {
+                                                       final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability,
+                                                       final boolean transactionConnectionInUse) throws SQLException {
         applySchema(connection, executionRequest.getSchema(), databaseCapability.getSchemaExecutionSemantics());
+        if (executionRequest.isReadOnlyExecution() && !transactionConnectionInUse) {
+            return executeWithReadOnlyConnection(connection, executionRequest, classificationResult);
+        }
         try (Statement statement = connection.createStatement()) {
             configureStatement(statement, executionRequest);
             return executeStatement(statement, executionRequest, classificationResult);
         }
     }
-    
+
+    private SQLExecutionResponse executeWithReadOnlyConnection(final Connection connection, final SQLExecutionRequest executionRequest,
+                                                               final ClassificationResult classificationResult) throws SQLException {
+        boolean originalReadOnly = connection.isReadOnly();
+        boolean originalAutoCommit = connection.getAutoCommit();
+        boolean autoCommitDisabled = false;
+        SQLException failure = null;
+        try {
+            connection.setReadOnly(true);
+            if (originalAutoCommit) {
+                connection.setAutoCommit(false);
+                autoCommitDisabled = true;
+            }
+            try (Statement statement = connection.createStatement()) {
+                configureStatement(statement, executionRequest);
+                return executeStatement(statement, executionRequest, classificationResult);
+            }
+        } catch (final SQLException ex) {
+            failure = ex;
+            throw ex;
+        } finally {
+            if (autoCommitDisabled || !originalAutoCommit) {
+                failure = rollbackReadOnlyConnection(connection, failure);
+            }
+            if (autoCommitDisabled) {
+                failure = restoreAutoCommit(connection, originalAutoCommit, failure);
+            }
+            failure = restoreReadOnly(connection, originalReadOnly, failure);
+            if (null != failure) {
+                throw failure;
+            }
+        }
+    }
+
+    private SQLException rollbackReadOnlyConnection(final Connection connection, final SQLException previousFailure) {
+        try {
+            connection.rollback();
+            return previousFailure;
+        } catch (final SQLException ex) {
+            return appendFailure(previousFailure, ex);
+        }
+    }
+
+    private SQLException restoreAutoCommit(final Connection connection, final boolean originalAutoCommit, final SQLException previousFailure) {
+        try {
+            connection.setAutoCommit(originalAutoCommit);
+            return previousFailure;
+        } catch (final SQLException ex) {
+            return appendFailure(previousFailure, ex);
+        }
+    }
+
+    private SQLException restoreReadOnly(final Connection connection, final boolean originalReadOnly, final SQLException previousFailure) {
+        try {
+            connection.setReadOnly(originalReadOnly);
+            return previousFailure;
+        } catch (final SQLException ex) {
+            return appendFailure(previousFailure, ex);
+        }
+    }
+
+    private SQLException appendFailure(final SQLException previousFailure, final SQLException failure) {
+        if (null == previousFailure) {
+            return failure;
+        }
+        previousFailure.addSuppressed(failure);
+        return previousFailure;
+    }
+
     private void configureStatement(final Statement statement, final SQLExecutionRequest executionRequest) throws SQLException {
         if (0 < executionRequest.getMaxRows()) {
             statement.setMaxRows(resolveStatementMaxRows(executionRequest.getMaxRows()));
@@ -122,7 +196,7 @@ public final class MCPJdbcStatementExecutor {
             statement.setQueryTimeout((executionRequest.getTimeoutMs() + 999) / 1000);
         }
     }
-    
+
     private SQLExecutionResponse executeStatement(final Statement statement, final SQLExecutionRequest executionRequest,
                                                   final ClassificationResult classificationResult) throws SQLException {
         boolean hasResultSet = statement.execute(classificationResult.getNormalizedSql());
@@ -146,11 +220,11 @@ public final class MCPJdbcStatementExecutor {
                 throw new StatementClassNotSupportedException();
         }
     }
-    
+
     private SQLExecutionResponse withExecutionHints(final SQLExecutionResponse response, final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         return response.withExecutionHints(executionRequest.getMaxRows(), executionRequest.getTimeoutMs()).withNormalizedSql(classificationResult.getNormalizedSql());
     }
-    
+
     private SQLExecutionResponse createResultSetResponse(final ResultSet resultSet, final int maxRows, final ClassificationResult classificationResult) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
@@ -174,17 +248,17 @@ public final class MCPJdbcStatementExecutor {
         }
         return SQLExecutionResponse.resultSet(classificationResult.getStatementClass(), classificationResult.getStatementType(), columns, rows, truncated);
     }
-    
+
     private int resolveStatementMaxRows(final int maxRows) {
         return Integer.MAX_VALUE == maxRows ? Integer.MAX_VALUE : maxRows + 1;
     }
-    
+
     private Connection openConnection(final String databaseName) throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = Optional.ofNullable(runtimeDatabases.get(databaseName))
                 .orElseThrow(() -> new MCPUnavailableException(String.format("Database `%s` is not configured.", databaseName)));
         return runtimeDatabaseConfig.openConnection(databaseName);
     }
-    
+
     private void applySchema(final Connection connection, final String schemaName, final SchemaExecutionSemantics schemaExecutionSemantics) throws SQLException {
         String actualSchema = Objects.toString(schemaName, "").trim();
         if (actualSchema.isEmpty() || SchemaExecutionSemantics.FIXED_TO_DATABASE == schemaExecutionSemantics) {

@@ -21,9 +21,9 @@ package org.apache.shardingsphere.mcp.api.protocol.exception;
  * Exception for MCP transaction state errors.
  */
 public class MCPTransactionStateException extends ShardingSphereMCPException {
-    
+
     private static final long serialVersionUID = 4334035448011961475L;
-    
+
     public MCPTransactionStateException(final String message, final Exception cause) {
         super(message, cause);
     }

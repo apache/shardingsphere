@@ -119,7 +119,8 @@ Notes:
 
 - Metadata list/detail/capability discovery is unified through `resources/read`.
 - The current public tools are `database_gateway_search_metadata`, `database_gateway_execute_query`, `database_gateway_execute_update`, `database_gateway_plan_encrypt_rule`, `database_gateway_plan_mask_rule`, `database_gateway_apply_workflow`, and `database_gateway_validate_workflow`.
-- `database_gateway_execute_query` accepts read-only `SELECT` and `EXPLAIN ANALYZE` statements only. Use `database_gateway_execute_update` for DML, DDL, DCL, transaction control, savepoints, and other supported side-effecting SQL.
+- `database_gateway_execute_query` accepts classifier-approved `SELECT` and `EXPLAIN ANALYZE` statements only, and rejects known side-effecting query forms.
+  Use `database_gateway_execute_update` for DML, DDL, DCL, transaction control, savepoints, and other supported side-effecting SQL.
 - `database_gateway_execute_query.max_rows` uses server default `100` when omitted or set to `0`; explicit values from `1` to `5000` bound returned rows.
 - The encrypt and mask workflow targets logical databases exposed by ShardingSphere-Proxy; the dedicated usage notes appear below.
 - `database_gateway_search_metadata.object_types` accepts `database`, `schema`, `table`, `view`, `column`, `index`, and `sequence` only.

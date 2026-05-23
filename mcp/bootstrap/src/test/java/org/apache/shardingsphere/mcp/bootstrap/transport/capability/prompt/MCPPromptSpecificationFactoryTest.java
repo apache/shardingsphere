@@ -71,7 +71,7 @@ class MCPPromptSpecificationFactoryTest {
         assertRenderedLines(actualText, List.of(
                 "- database: logic_db",
                 "- sql_intent: count orders",
-                "2. Use database_gateway_execute_query only for one SELECT or EXPLAIN ANALYZE statement.",
+                "2. Use database_gateway_execute_query only for one classifier-approved SELECT or EXPLAIN ANALYZE statement.",
                 "5. Never split or batch multiple SQL statements into one MCP call."));
     }
     

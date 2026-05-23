@@ -21,7 +21,7 @@ Use official MCP list discovery methods (`tools/list`, `resources/list`, `resour
 
 Use `completion/complete` for supported argument values, and read `shardingsphere://capabilities` only as optional ShardingSphere domain catalog guidance.
 
-Use `database_gateway_execute_query` only for read-only `SELECT` or `EXPLAIN ANALYZE`.
+Use `database_gateway_execute_query` only for classifier-approved `SELECT` or `EXPLAIN ANALYZE`.
 Use `database_gateway_execute_update` with `execution_mode=preview` before side effects.
 
 Continue from `next_actions` or `recovery.next_actions` instead of guessing hidden tools or arguments.

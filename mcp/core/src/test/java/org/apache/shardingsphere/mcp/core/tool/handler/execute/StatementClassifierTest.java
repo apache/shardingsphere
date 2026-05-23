@@ -35,9 +35,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StatementClassifierTest {
-    
+
     private final StatementClassifier statementClassifier = new StatementClassifier();
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertClassifyCases")
     void assertClassify(final String name, final String sql, final SupportedMCPStatement expectedStatementClass, final String expectedStatementType,
@@ -49,14 +49,14 @@ class StatementClassifierTest {
         assertThat(actualResult.getTargetObjectName().orElse(""), is(expectedTargetObjectName));
         assertThat(actualResult.getSavepointName().orElse(""), is(expectedSavepointName));
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertClassifyWithInvalidStatementCases")
     void assertClassifyWithInvalidStatement(final String name, final String sql, final Class<? extends RuntimeException> expectedExceptionClass, final String expectedMessage) {
         RuntimeException actualException = assertThrows(expectedExceptionClass, () -> statementClassifier.classify(sql));
         assertThat(actualException.getMessage(), is(expectedMessage));
     }
-    
+
     @Test
     void assertClassifyExplainAnalyzeInnerStatementClass() {
         ClassificationResult actualResult = statementClassifier.classify("EXPLAIN ANALYZE UPDATE foo_orders SET status = 'DONE'");
@@ -64,40 +64,47 @@ class StatementClassifierTest {
         assertThat(actualResult.getAnalyzedStatementClass().orElseThrow(), is(SupportedMCPStatement.DML));
         assertThat(actualResult.getTargetObjectName().orElse(""), is("foo_orders"));
     }
-    
+
     @Test
     void assertClassifyReferencedObjectNames() {
         ClassificationResult actualResult = statementClassifier.classify(
                 "SELECT * FROM logic_db.foo_orders JOIN other_db.foo_order_items ON foo_orders.order_id = foo_order_items.order_id");
         assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
     }
-    
+
     @Test
     void assertClassifyDMLReferencedObjectNames() {
         ClassificationResult actualResult = statementClassifier.classify("UPDATE logic_db.foo_orders SET status = 'DONE' FROM other_db.foo_order_items");
         assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
     }
-    
+
     @Test
     void assertClassifySubqueryReferencedObjectNames() {
         ClassificationResult actualResult = statementClassifier.classify(
                 "SELECT * FROM logic_db.foo_orders WHERE EXISTS (SELECT 1 FROM other_db.foo_order_items)");
         assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
     }
-    
+
     @Test
     void assertClassifyDerivedTableReferencedObjectNames() {
         ClassificationResult actualResult = statementClassifier.classify("SELECT * FROM (SELECT * FROM other_db.foo_order_items) foo_items");
         assertThat(actualResult.getReferencedObjectNames(), contains("other_db.foo_order_items"));
     }
-    
+
     @Test
     void assertClassifyDMLSubqueryReferencedObjectNames() {
         ClassificationResult actualResult = statementClassifier.classify(
                 "UPDATE logic_db.foo_orders SET status = 'DONE' WHERE EXISTS (SELECT 1 FROM other_db.foo_order_items)");
         assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
     }
-    
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertClassifyReferencedObjectNamesWithObjectListsCases")
+    void assertClassifyReferencedObjectNamesWithObjectLists(final String name, final String sql, final String[] expectedReferencedObjectNames) {
+        ClassificationResult actualResult = statementClassifier.classify(sql);
+        assertThat(actualResult.getReferencedObjectNames(), contains(expectedReferencedObjectNames));
+    }
+
     private static Stream<Arguments> assertClassifyCases() {
         return Stream.of(
                 Arguments.of("trim trailing semicolon query", "  SELECT * FROM foo_orders ;  ", SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM foo_orders", "foo_orders", ""),
@@ -170,7 +177,69 @@ class StatementClassifierTest {
                 Arguments.of("explain analyze", "EXPLAIN ANALYZE SELECT * FROM foo_orders", SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE",
                         "EXPLAIN ANALYZE SELECT * FROM foo_orders", "foo_orders", ""));
     }
-    
+
+    private static Stream<Arguments> assertClassifyReferencedObjectNamesWithObjectListsCases() {
+        return Stream.of(
+                Arguments.of("query from object list", "SELECT * FROM logic_db.foo_orders, other_db.foo_order_items",
+                        new String[]{"logic_db.foo_orders", "other_db.foo_order_items"}),
+                Arguments.of("query from aliased object list", "SELECT * FROM logic_db.foo_orders o, other_db.foo_order_items i",
+                        new String[]{"logic_db.foo_orders", "other_db.foo_order_items"}),
+                Arguments.of("query from partitioned object list", "SELECT * FROM logic_db.foo_orders PARTITION (p0) o, other_db.foo_order_items i",
+                        new String[]{"logic_db.foo_orders", "other_db.foo_order_items"}),
+                Arguments.of("query from index hinted object list", "SELECT * FROM logic_db.foo_orders FORCE INDEX (idx_status), other_db.foo_order_items",
+                        new String[]{"logic_db.foo_orders", "other_db.foo_order_items"}),
+                Arguments.of("cte query from object list", "WITH foo_result AS (SELECT * FROM logic_db.foo_orders, other_db.foo_order_items) SELECT * FROM foo_result",
+                        new String[]{"logic_db.foo_orders", "other_db.foo_order_items"}),
+                Arguments.of("unused cte query reference", "WITH unused_result AS (SELECT * FROM other_db.foo_unused_orders) SELECT * FROM logic_db.foo_orders",
+                        new String[]{"other_db.foo_unused_orders", "logic_db.foo_orders"}),
+                Arguments.of("insert select from object list", "INSERT INTO logic_db.foo_orders_archive SELECT * FROM logic_db.foo_orders, other_db.foo_order_items",
+                        new String[]{"logic_db.foo_orders_archive", "logic_db.foo_orders", "other_db.foo_order_items"}),
+                Arguments.of("update target object list", "UPDATE logic_db.foo_orders, other_db.foo_order_items SET status = 'DONE'",
+                        new String[]{"logic_db.foo_orders", "other_db.foo_order_items"}),
+                Arguments.of("update target aliased object list", "UPDATE logic_db.foo_orders o, other_db.foo_order_items i SET o.status = 'DONE'",
+                        new String[]{"logic_db.foo_orders", "other_db.foo_order_items"}),
+                Arguments.of("delete target before from", "DELETE other_db.foo_orders FROM logic_db.foo_orders JOIN other_db.foo_order_items ON 1 = 1",
+                        new String[]{"other_db.foo_orders", "logic_db.foo_orders", "other_db.foo_order_items"}),
+                Arguments.of("delete target object list before from", "DELETE logic_db.foo_orders, other_db.foo_order_items FROM logic_db.foo_orders JOIN other_db.foo_order_items ON 1 = 1",
+                        new String[]{"logic_db.foo_orders", "other_db.foo_order_items"}),
+                Arguments.of("delete using object list", "DELETE FROM logic_db.foo_orders USING other_db.foo_order_items, other_db.foo_order_payments",
+                        new String[]{"logic_db.foo_orders", "other_db.foo_order_items", "other_db.foo_order_payments"}),
+                Arguments.of("create view from object list", "CREATE VIEW logic_db.foo_active_orders AS SELECT * FROM logic_db.foo_orders, other_db.foo_order_items",
+                        new String[]{"logic_db.foo_active_orders", "logic_db.foo_orders", "other_db.foo_order_items"}),
+                Arguments.of("create table like source", "CREATE TABLE logic_db.foo_orders_archive LIKE other_db.foo_orders",
+                        new String[]{"logic_db.foo_orders_archive", "other_db.foo_orders"}),
+                Arguments.of("create index on source", "CREATE INDEX foo_orders_idx ON other_db.foo_orders (status)",
+                        new String[]{"foo_orders_idx", "other_db.foo_orders"}),
+                Arguments.of("create index using method", "CREATE INDEX foo_orders_idx ON logic_db.foo_orders USING btree (status)",
+                        new String[]{"foo_orders_idx", "logic_db.foo_orders"}),
+                Arguments.of("create index with modifiers", "CREATE INDEX CONCURRENTLY IF NOT EXISTS other_db.foo_orders_idx ON logic_db.foo_orders (status)",
+                        new String[]{"other_db.foo_orders_idx", "logic_db.foo_orders"}),
+                Arguments.of("drop index on source", "DROP INDEX foo_orders_idx ON other_db.foo_orders",
+                        new String[]{"foo_orders_idx", "other_db.foo_orders"}),
+                Arguments.of("drop index with modifiers", "DROP INDEX CONCURRENTLY IF EXISTS other_db.foo_orders_idx",
+                        new String[]{"other_db.foo_orders_idx"}),
+                Arguments.of("drop table object list", "DROP TABLE IF EXISTS logic_db.foo_orders, other_db.foo_order_items",
+                        new String[]{"logic_db.foo_orders", "other_db.foo_order_items"}),
+                Arguments.of("alter table with modifiers", "ALTER TABLE IF EXISTS other_db.foo_orders ADD COLUMN status VARCHAR(10)",
+                        new String[]{"other_db.foo_orders"}),
+                Arguments.of("alter table rename destination", "ALTER TABLE logic_db.foo_orders RENAME TO other_db.foo_orders_archive",
+                        new String[]{"logic_db.foo_orders", "other_db.foo_orders_archive"}),
+                Arguments.of("alter table set schema destination", "ALTER TABLE logic_db.foo_orders SET SCHEMA other_db",
+                        new String[]{"logic_db.foo_orders", "other_db"}),
+                Arguments.of("create database target", "CREATE DATABASE other_db",
+                        new String[]{"other_db"}),
+                Arguments.of("drop schema target", "DROP SCHEMA IF EXISTS other_db",
+                        new String[]{"other_db"}),
+                Arguments.of("grant global wildcard", "GRANT SELECT ON *.* TO PUBLIC",
+                        new String[]{"*.*"}),
+                Arguments.of("grant database target", "GRANT CONNECT ON DATABASE other_db TO PUBLIC",
+                        new String[]{"other_db"}),
+                Arguments.of("truncate table object list", "TRUNCATE TABLE logic_db.foo_orders, other_db.foo_order_items",
+                        new String[]{"logic_db.foo_orders", "other_db.foo_order_items"}),
+                Arguments.of("qualified function query", "SELECT other_db.foo_refresh_orders()",
+                        new String[]{"other_db.foo_refresh_orders"}));
+    }
+
     private static Stream<Arguments> assertClassifyWithInvalidStatementCases() {
         return Stream.of(
                 Arguments.of("blank sql", "   ", IllegalArgumentException.class, "sql cannot be empty."),
@@ -190,6 +259,27 @@ class StatementClassifierTest {
                         "Statement is banned by the MCP contract."),
                 Arguments.of("banned with select into table", "WITH foo_result AS (SELECT * FROM foo_orders) SELECT * INTO bar_orders_archive FROM foo_result",
                         MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned mysql executable comment", "SELECT * FROM logic_db.foo_orders /*!50000 JOIN other_db.foo_order_items ON 1 = 1 */",
+                        MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned nextval function", "SELECT nextval('foo_seq')", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned setval function", "SELECT pg_catalog.setval('foo_seq', 1)", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned next value for sequence", "SELECT NEXT VALUE FOR foo_seq", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned sequence nextval pseudocolumn", "SELECT foo_seq.NEXTVAL FROM dual", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned get lock function", "SELECT GET_LOCK('foo_lock', 1)", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned release lock function", "SELECT RELEASE_LOCK('foo_lock')", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned advisory lock function", "SELECT pg_advisory_lock(1)", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned set config function", "SELECT set_config('search_path', 'public', false)", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned replication slot advance function", "SELECT pg_replication_slot_advance('foo_slot', '0/1')", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned wal switch function", "SELECT pg_switch_wal()", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned backend cancel function", "SELECT pg_cancel_backend(1)", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned mysql user variable assignment", "SELECT @foo_status := status FROM foo_orders", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned mysql last insert id mutation", "SELECT LAST_INSERT_ID(1)", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned metadata lookup function", "SELECT to_regclass('other_db.foo_orders')", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
                 Arguments.of("start transaction read only", "START TRANSACTION READ ONLY", MCPUnsupportedSQLStatementException.class,
                         "Statement is not supported by the MCP contract."),
                 Arguments.of("start transaction read write", "START TRANSACTION READ WRITE", MCPUnsupportedSQLStatementException.class,
