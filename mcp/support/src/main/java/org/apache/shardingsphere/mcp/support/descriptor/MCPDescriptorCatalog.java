@@ -29,8 +29,8 @@ import java.util.LinkedList;
 /**
  * MCP descriptor catalog.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class MCPDescriptorCatalog {
     
     private final Collection<MCPResourceDescriptor> resourceDescriptors;

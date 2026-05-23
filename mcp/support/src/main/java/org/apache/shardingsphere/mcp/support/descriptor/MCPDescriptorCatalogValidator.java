@@ -116,7 +116,7 @@ final class MCPDescriptorCatalogValidator {
         Collection<MCPToolDescriptorValidator> descriptorValidators = MCPToolDescriptorValidatorLoader.load();
         Map<String, MCPToolDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         Map<String, MCPToolRuntimeDescriptor> runtimes = runtimeDescriptors.stream()
-                .collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(runtimeDescriptors.size(), 1F)));
+                .collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each));
         for (MCPToolDescriptor each : descriptors) {
             ShardingSpherePreconditions.checkState(null == registered.putIfAbsent(each.getName(), each),
                     () -> new IllegalStateException(String.format("Duplicate MCP tool descriptor `%s`.", each.getName())));
@@ -281,7 +281,7 @@ final class MCPDescriptorCatalogValidator {
     private static void validatePromptDescriptors(final Collection<MCPPromptDescriptor> descriptors, final Collection<MCPPromptTemplateBinding> templateBindings) {
         Map<String, MCPPromptDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         Map<String, MCPPromptTemplateBinding> bindings = templateBindings.stream()
-                .collect(Collectors.toMap(MCPPromptTemplateBinding::getPromptName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(templateBindings.size(), 1F)));
+                .collect(Collectors.toMap(MCPPromptTemplateBinding::getPromptName, each -> each));
         for (MCPPromptDescriptor each : descriptors) {
             MCPPromptTemplateBinding binding = bindings.get(each.getName());
             ShardingSpherePreconditions.checkState(null != binding, () -> new IllegalStateException(String.format("Prompt `%s` must declare an internal template binding.", each.getName())));

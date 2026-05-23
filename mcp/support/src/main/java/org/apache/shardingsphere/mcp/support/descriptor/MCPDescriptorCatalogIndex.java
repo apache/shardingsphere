@@ -68,8 +68,7 @@ public final class MCPDescriptorCatalogIndex {
     
     private static Map<String, MCPResourceExtensionDescriptor> createResourceExtensionDescriptors() {
         return CATALOG.getResourceExtensionDescriptors().stream()
-                .collect(Collectors.toMap(MCPResourceExtensionDescriptor::getUriOrTemplate, each -> each, (a, b) -> b,
-                        () -> new LinkedHashMap<>(CATALOG.getResourceExtensionDescriptors().size(), 1F)));
+                .collect(Collectors.toMap(MCPResourceExtensionDescriptor::getUriOrTemplate, each -> each));
     }
     
     private static Map<String, MCPToolDescriptor> createToolDescriptors() {
@@ -86,13 +85,11 @@ public final class MCPDescriptorCatalogIndex {
     }
     
     private static Map<String, MCPPromptTemplateBinding> createPromptTemplateBindings() {
-        return CATALOG.getPromptTemplateBindings().stream()
-                .collect(Collectors.toMap(MCPPromptTemplateBinding::getPromptName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getPromptTemplateBindings().size(), 1F)));
+        return CATALOG.getPromptTemplateBindings().stream().collect(Collectors.toMap(MCPPromptTemplateBinding::getPromptName, each -> each));
     }
     
     private static Map<String, MCPToolRuntimeDescriptor> createToolRuntimeDescriptors() {
-        return CATALOG.getToolRuntimeDescriptors().stream()
-                .collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getToolRuntimeDescriptors().size(), 1F)));
+        return CATALOG.getToolRuntimeDescriptors().stream().collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each));
     }
     
     /**
