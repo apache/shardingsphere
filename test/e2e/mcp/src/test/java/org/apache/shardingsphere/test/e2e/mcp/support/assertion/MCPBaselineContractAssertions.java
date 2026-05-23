@@ -31,36 +31,36 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Golden contract assertions for normalized MCP model-facing payloads.
+ * Baseline contract assertions for normalized MCP model-facing payloads.
  */
-public final class MCPGoldenContractAssertions {
+public final class MCPBaselineContractAssertions {
     
     private static final String PLAN_ID_PLACEHOLDER = "<plan_id>";
     
-    private MCPGoldenContractAssertions() {
+    private MCPBaselineContractAssertions() {
     }
     
     /**
-     * Assert one model-facing payload projection against a normalized golden YAML resource.
+     * Assert one model-facing payload projection against a normalized baseline YAML resource.
      *
-     * @param resourcePath golden resource path
+     * @param resourcePath baseline resource path
      * @param actual actual payload projection
      */
-    public static void assertMatchesNormalizedGoldenContract(final String resourcePath, final Object actual) {
+    public static void assertMatchesNormalizedBaselineContract(final String resourcePath, final Object actual) {
         Object actualNormalized = normalize(actual);
-        Object expected = loadGoldenContract(resourcePath);
-        assertThat("Golden contract resource: " + resourcePath + System.lineSeparator() + new Yaml().dump(actualNormalized), actualNormalized, is(expected));
+        Object expected = loadBaselineContract(resourcePath);
+        assertThat("Baseline contract resource: " + resourcePath + System.lineSeparator() + new Yaml().dump(actualNormalized), actualNormalized, is(expected));
     }
     
-    private static Object loadGoldenContract(final String resourcePath) {
+    private static Object loadBaselineContract(final String resourcePath) {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath)) {
             if (null == inputStream) {
-                fail("Missing golden contract resource: " + resourcePath);
+                fail("Missing baseline contract resource: " + resourcePath);
             }
             Object result = new Yaml().load(inputStream);
             return null == result ? Map.of() : result;
         } catch (final IOException ex) {
-            throw new IllegalStateException("Failed to load golden contract resource: " + resourcePath, ex);
+            throw new IllegalStateException("Failed to load baseline contract resource: " + resourcePath, ex);
         }
     }
     
@@ -69,7 +69,7 @@ public final class MCPGoldenContractAssertions {
             return normalizeMap((Map<?, ?>) value);
         }
         if (value instanceof Collection) {
-            return ((Collection<?>) value).stream().map(MCPGoldenContractAssertions::normalize).toList();
+            return ((Collection<?>) value).stream().map(MCPBaselineContractAssertions::normalize).toList();
         }
         return value;
     }

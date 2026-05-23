@@ -39,7 +39,7 @@ class ServerCapabilitiesHandlerTest {
     @Test
     void assertHandleReturnsCoreModelSurfaceContract() {
         Map<String, Object> actual = createCapabilitiesPayload();
-        assertGoldenTopLevelKeys(actual);
+        assertBaselineTopLevelKeys(actual);
         assertTrue(((Collection<?>) actual.get("supportedResources")).contains("shardingsphere://capabilities"));
         assertTrue(((Collection<?>) actual.get("supportedTools")).containsAll(List.of("database_gateway_search_metadata", "database_gateway_execute_query",
                 "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
@@ -73,7 +73,7 @@ class ServerCapabilitiesHandlerTest {
         }
     }
     
-    private void assertGoldenTopLevelKeys(final Map<String, Object> capabilities) {
+    private void assertBaselineTopLevelKeys(final Map<String, Object> capabilities) {
         assertThat(capabilities.keySet(), is(Set.of("response_mode", "model_first_summary", "supportedResources", "supportedTools", "supportedStatementClasses", "model_contract",
                 "surface_summary", "field_naming_contract", "next_action_contract", "common_flows", "security_hints", "resources", "resourceTemplates", "tools", "prompts",
                 "completionTargets", "resourceNavigation", "protocolAvailability", "fingerprints")));

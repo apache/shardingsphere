@@ -85,7 +85,7 @@
 - 当前 session workflow 列表或详情 resource。现有 `plan_id` 返回、当前 session completion 和 recovery 已覆盖主要恢复路径。
 - metadata freshness 字段。它会引入元数据批次一致性语义，当前没有证据证明是模型使用 MCP 的主要阻塞。
 - 配置环境变量引用。它更像运维安全能力，不是模型原生使用 MCP 的核心路径。
-- normalized golden transcript 大套件、real-model E2E 扩展、model-confusion 测试矩阵、
+- normalized baseline transcript 大套件、real-model E2E 扩展、model-confusion 测试矩阵、
   sampling/progress/logging/roots 边界测试。它们可以作为未来质量工程候选，但不进入当前轻量改进范围。
 - `recommended_next_tool`、`suggested_next_tool` 等旧推荐字段。本次实现迁移到 `next_actions` 并删除兼容契约。
 

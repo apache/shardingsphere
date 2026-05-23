@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
-import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPGoldenContractAssertions;
+import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPBaselineContractAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
@@ -35,22 +35,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @EnabledIf("isEnabled")
-class HttpTransportGoldenContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class HttpTransportBaselineContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
-    private static final String GOLDEN_RESOURCE_PATH = "golden/model-contract/";
+    private static final String BASELINE_RESOURCE_PATH = "baseline-contract/model-contract/";
     
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();
     }
     
     @Test
-    void assertCapabilitiesGoldenContract() throws IOException, InterruptedException {
+    void assertCapabilitiesBaselineContract() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://capabilities");
         assertThat(actual.statusCode(), is(200));
-        MCPGoldenContractAssertions.assertMatchesNormalizedGoldenContract(GOLDEN_RESOURCE_PATH + "capabilities.yaml", createCapabilitiesContract(getFirstResourcePayload(actual.body())));
+        MCPBaselineContractAssertions.assertMatchesNormalizedBaselineContract(BASELINE_RESOURCE_PATH + "capabilities.yaml", createCapabilitiesContract(getFirstResourcePayload(actual.body())));
     }
     
     private Map<String, Object> createCapabilitiesContract(final Map<String, Object> payload) {
