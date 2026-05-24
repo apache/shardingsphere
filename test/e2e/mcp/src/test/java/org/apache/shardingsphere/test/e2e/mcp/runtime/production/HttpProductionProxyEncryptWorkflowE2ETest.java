@@ -55,7 +55,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     private static boolean isEnabled() {
         return MCPE2ECondition.isProductionMySQLEnabled();
     }
-
+    
     @Test
     void assertCompleteEncryptAlgorithmThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {

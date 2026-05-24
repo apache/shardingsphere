@@ -54,7 +54,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     private static boolean isEnabled() {
         return MCPE2ECondition.isProductionMySQLEnabled();
     }
-
+    
     @Test
     void assertCompleteMaskAlgorithmThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
