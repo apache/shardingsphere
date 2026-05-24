@@ -315,47 +315,29 @@ public final class MySQLRuntimeTestSupport {
     
     private static Connection getConnection(final GenericContainer<?> container, final String databaseName) throws SQLException {
         String jdbcUrl = createJdbcUrl(container.getHost(), container.getMappedPort(3306), databaseName);
-        long startTime = System.currentTimeMillis();
-        long deadline = System.currentTimeMillis() + JDBC_READY_TIMEOUT.toMillis();
-        long intervalMillis = JDBC_READY_INITIAL_INTERVAL_MILLIS;
-        int attemptCount = 0;
-        SQLException lastException = null;
-        while (System.currentTimeMillis() < deadline) {
-            attemptCount++;
-            try {
-                return DriverManager.getConnection(jdbcUrl, USERNAME, PASSWORD);
-            } catch (final SQLException ex) {
-                lastException = ex;
-                intervalMillis = sleepBeforeRetry(deadline, intervalMillis);
-            }
-        }
-        throw createJdbcReadyException(lastException, attemptCount, startTime);
-    }
-    
-    private static long sleepBeforeRetry(final long deadline, final long intervalMillis) throws SQLException {
-        long remainingMillis = deadline - System.currentTimeMillis();
-        if (0L >= remainingMillis) {
-            return intervalMillis;
-        }
         try {
-            Thread.sleep(Math.min(intervalMillis, remainingMillis));
-            return Math.min(JDBC_READY_MAX_INTERVAL_MILLIS, intervalMillis * 2L);
+            return new ReadinessProbe(JDBC_READY_TIMEOUT.toMillis(), JDBC_READY_INITIAL_INTERVAL_MILLIS, JDBC_READY_MAX_INTERVAL_MILLIS)
+                    .waitUntilReady(() -> getConnectionIfReady(jdbcUrl), MySQLRuntimeTestSupport::createJdbcReadyException);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new SQLException("Interrupted while waiting for MySQL JDBC readiness.", ex);
         }
     }
     
-    private static SQLException createJdbcReadyException(final SQLException cause, final int attemptCount, final long startTimeMillis) {
+    private static ReadinessProbe.ReadinessResult<Connection> getConnectionIfReady(final String jdbcUrl) {
+        try {
+            return ReadinessProbe.ReadinessResult.ready(DriverManager.getConnection(jdbcUrl, USERNAME, PASSWORD));
+        } catch (final SQLException ex) {
+            return ReadinessProbe.ReadinessResult.retry(ex);
+        }
+    }
+    
+    private static SQLException createJdbcReadyException(final Exception cause, final int attemptCount, final long elapsedMillis) {
         String result = String.format("MySQL JDBC connection did not become ready after %d attempt(s), elapsedMillis=%d, timeoutMillis=%d.",
-                attemptCount, System.currentTimeMillis() - startTimeMillis, JDBC_READY_TIMEOUT.toMillis());
+                attemptCount, elapsedMillis, JDBC_READY_TIMEOUT.toMillis());
         return null == cause || null == cause.getMessage() || cause.getMessage().isBlank()
                 ? new SQLException(result)
                 : new SQLException(result + " Last readiness failure: " + cause.getMessage(), cause);
-    }
-    
-    private static String createJdbcUrl(final String host, final int port) {
-        return createJdbcUrl(host, port, DATABASE_NAME);
     }
     
     private static String createJdbcUrl(final String host, final int port, final String databaseName) {

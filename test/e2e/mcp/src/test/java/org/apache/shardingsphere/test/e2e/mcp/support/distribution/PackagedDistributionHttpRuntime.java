@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport.PreparedPackagedDistribution;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe.ReadinessResult;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpInteractionClient;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 
@@ -57,26 +59,8 @@ public final class PackagedDistributionHttpRuntime implements AutoCloseable {
      */
     public MCPInteractionClient openInteractionClient() throws IOException, InterruptedException {
         processSupport.startIfNeeded();
-        long deadline = System.currentTimeMillis() + STARTUP_TIMEOUT_MILLIS;
-        IllegalStateException lastException = null;
-        while (System.currentTimeMillis() < deadline) {
-            if (!processSupport.isAlive()) {
-                throw createStartupFailure(lastException);
-            }
-            MCPHttpInteractionClient result = new MCPHttpInteractionClient(distribution.getEndpointUri(), HttpClient.newHttpClient());
-            try {
-                result.open();
-                return result;
-            } catch (final IOException | IllegalStateException ex) {
-                lastException = new IllegalStateException("Packaged MCP HTTP distribution is not ready yet.", ex);
-                closeInteractionClientQuietly(result);
-                long remainingMillis = deadline - System.currentTimeMillis();
-                if (0L < remainingMillis) {
-                    Thread.sleep(Math.min(STARTUP_POLL_INTERVAL_MILLIS, remainingMillis));
-                }
-            }
-        }
-        throw createStartupFailure(lastException);
+        return new ReadinessProbe(STARTUP_TIMEOUT_MILLIS, STARTUP_POLL_INTERVAL_MILLIS, STARTUP_POLL_INTERVAL_MILLIS)
+                .waitUntilReady(this::openInteractionClientIfReady, this::createStartupFailure);
     }
     
     @Override
@@ -84,7 +68,21 @@ public final class PackagedDistributionHttpRuntime implements AutoCloseable {
         processSupport.close();
     }
     
-    private IllegalStateException createStartupFailure(final IllegalStateException cause) {
+    private ReadinessResult<MCPInteractionClient> openInteractionClientIfReady() throws InterruptedException {
+        if (!processSupport.isAlive()) {
+            return ReadinessResult.failed(null);
+        }
+        MCPHttpInteractionClient result = new MCPHttpInteractionClient(distribution.getEndpointUri(), HttpClient.newHttpClient());
+        try {
+            result.open();
+            return ReadinessResult.ready(result);
+        } catch (final IOException | IllegalStateException ex) {
+            closeInteractionClientQuietly(result);
+            return ReadinessResult.retry(new IllegalStateException("Packaged MCP HTTP distribution is not ready yet.", ex));
+        }
+    }
+    
+    private IllegalStateException createStartupFailure(final Exception cause, final int ignoredAttemptCount, final long ignoredElapsedMillis) {
         return new IllegalStateException("Packaged MCP HTTP distribution failed to become ready. output: " + ProcessOutputDiagnostics.format(processSupport.getOutputMessages()), cause);
     }
     

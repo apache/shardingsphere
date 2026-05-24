@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe.ReadinessResult;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpInteractionClient;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 
@@ -28,7 +30,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -70,26 +71,8 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
      */
     public MCPInteractionClient openInteractionClient() throws IOException, InterruptedException {
         startIfNeeded();
-        long deadline = System.currentTimeMillis() + STARTUP_TIMEOUT_MILLIS;
-        IllegalStateException lastException = null;
-        while (System.currentTimeMillis() < deadline) {
-            if (!process.isAlive()) {
-                throw createStartupFailure(lastException);
-            }
-            MCPHttpInteractionClient result = new MCPHttpInteractionClient(URI.create("http://127.0.0.1:" + httpPort + "/mcp"), HttpClient.newHttpClient());
-            try {
-                result.open();
-                return result;
-            } catch (final IOException | IllegalStateException ex) {
-                lastException = new IllegalStateException("Docker MCP HTTP distribution is not ready yet.", ex);
-                closeInteractionClientQuietly(result);
-                long remainingMillis = deadline - System.currentTimeMillis();
-                if (0L < remainingMillis) {
-                    Thread.sleep(Math.min(STARTUP_POLL_INTERVAL_MILLIS, remainingMillis));
-                }
-            }
-        }
-        throw createStartupFailure(lastException);
+        return new ReadinessProbe(STARTUP_TIMEOUT_MILLIS, STARTUP_POLL_INTERVAL_MILLIS, STARTUP_POLL_INTERVAL_MILLIS)
+                .waitUntilReady(this::openInteractionClientIfReady, this::createStartupFailure);
     }
     
     @Override
@@ -125,13 +108,9 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
     }
     
     private List<String> createDockerCommand(final int httpPort) {
-        List<String> result = new LinkedList<>();
-        result.addAll(List.of("docker", "run", "--rm", "--add-host=host.docker.internal:host-gateway",
-                "-p", "127.0.0.1:" + httpPort + ":18088",
-                "-v", configFile.toAbsolutePath().normalize() + ":" + CONTAINER_CONFIG_FILE + ":ro",
-                "-e", "SHARDINGSPHERE_MCP_TRANSPORT=http",
-                "-e", "SHARDINGSPHERE_MCP_CONFIG=" + CONTAINER_CONFIG_FILE, imageName));
-        return result;
+        return List.of("docker", "run", "--rm", "--add-host=host.docker.internal:host-gateway", "-p",
+                "127.0.0.1:" + httpPort + ":18088", "-v", configFile.toAbsolutePath().normalize() + ":" + CONTAINER_CONFIG_FILE + ":ro", "-e", "SHARDINGSPHERE_MCP_TRANSPORT=http", "-e",
+                "SHARDINGSPHERE_MCP_CONFIG=" + CONTAINER_CONFIG_FILE, imageName);
     }
     
     private int allocatePort() throws IOException {
@@ -157,7 +136,21 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
         }
     }
     
-    private IllegalStateException createStartupFailure(final IllegalStateException cause) {
+    private ReadinessResult<MCPInteractionClient> openInteractionClientIfReady() throws InterruptedException {
+        if (!process.isAlive()) {
+            return ReadinessResult.failed(null);
+        }
+        MCPHttpInteractionClient result = new MCPHttpInteractionClient(URI.create("http://127.0.0.1:" + httpPort + "/mcp"), HttpClient.newHttpClient());
+        try {
+            result.open();
+            return ReadinessResult.ready(result);
+        } catch (final IOException | IllegalStateException ex) {
+            closeInteractionClientQuietly(result);
+            return ReadinessResult.retry(new IllegalStateException("Docker MCP HTTP distribution is not ready yet.", ex));
+        }
+    }
+    
+    private IllegalStateException createStartupFailure(final Exception cause, final int ignoredAttemptCount, final long ignoredElapsedMillis) {
         return new IllegalStateException("Docker MCP HTTP distribution failed to become ready. output: " + ProcessOutputDiagnostics.format(outputMessages), cause);
     }
     
