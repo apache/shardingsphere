@@ -22,6 +22,8 @@ import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatab
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -46,7 +48,7 @@ import static org.mockito.Mockito.when;
 class WorkflowProxyQueryServiceTest {
     
     @Test
-    void assertQueryReturnsLowerCaseRowsAndAppliesSchema() throws Exception {
+    void assertQueryReturnsLowerCaseRowsAndAppliesSchema() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
@@ -71,7 +73,7 @@ class WorkflowProxyQueryServiceTest {
     }
     
     @Test
-    void assertQueryWithAnyDatabaseDelegatesToAvailableDatabase() throws Exception {
+    void assertQueryWithAnyDatabaseDelegatesToAvailableDatabase() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
@@ -105,7 +107,7 @@ class WorkflowProxyQueryServiceTest {
     }
     
     @Test
-    void assertQueryColumnDefinitionFormatsDecimalDefinition() throws Exception {
+    void assertQueryColumnDefinitionFormatsDecimalDefinition() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
@@ -126,7 +128,7 @@ class WorkflowProxyQueryServiceTest {
     }
     
     @Test
-    void assertQueryColumnDefinitionReturnsDefaultWhenMetadataIsEmpty() throws Exception {
+    void assertQueryColumnDefinitionReturnsDefaultWhenMetadataIsEmpty() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
@@ -143,7 +145,7 @@ class WorkflowProxyQueryServiceTest {
     }
     
     @Test
-    void assertQueryInformationSchemaColumnNamesReturnsDistinctColumnNames() throws Exception {
+    void assertQueryInformationSchemaColumnNamesSkipsSchemaFilterWhenSchemaIsEmpty() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
@@ -161,12 +163,13 @@ class WorkflowProxyQueryServiceTest {
         when(resultSet.getObject(1)).thenReturn("status_cipher", "status_assisted_query");
         Set<String> columnNames = new LinkedHashSet<>(List.of("status_cipher", "status_assisted_query"));
         WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
-        Set<String> actual = service.queryInformationSchemaColumnNames("logic_db", "public", "orders", columnNames);
+        Set<String> actual = service.queryInformationSchemaColumnNames("logic_db", "", "orders", columnNames);
         assertThat(actual, is(Set.of("status_cipher", "status_assisted_query")));
     }
     
-    @Test
-    void assertQueryInformationSchemaColumnNamesUsesSchemaFilterForPostgreSql() throws Exception {
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"MySQL", "MariaDB", "PostgreSQL", "openGauss"})
+    void assertQueryInformationSchemaColumnNamesUsesSchemaFilter(final String databaseType) throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
@@ -181,7 +184,7 @@ class WorkflowProxyQueryServiceTest {
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("COLUMN_NAME");
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getObject(1)).thenReturn("status_cipher");
-        WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig), "PostgreSQL");
+        WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig), databaseType);
         Set<String> actual = service.queryInformationSchemaColumnNames("logic_db", "public", "orders", new LinkedHashSet<>(List.of("status_cipher")));
         assertThat(actual, is(Set.of("status_cipher")));
     }
@@ -193,18 +196,18 @@ class WorkflowProxyQueryServiceTest {
     private WorkflowProxyQueryService createService(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final String databaseType) {
         Map<String, RuntimeDatabaseConfiguration> capabilityRuntimeDatabases = new LinkedHashMap<>(runtimeDatabases.isEmpty() ? 0 : 1, 1F);
         if (!runtimeDatabases.isEmpty()) {
-            capabilityRuntimeDatabases.put("logic_db", createCapabilityRuntimeDatabaseConfiguration("logic_db", databaseType));
+            capabilityRuntimeDatabases.put("logic_db", createCapabilityRuntimeDatabaseConfiguration(databaseType));
         }
         return new WorkflowProxyQueryService(new MCPSessionManager(runtimeDatabases), new MCPDatabaseCapabilityProvider(capabilityRuntimeDatabases));
     }
     
-    private RuntimeDatabaseConfiguration createCapabilityRuntimeDatabaseConfiguration(final String databaseName, final String databaseType) {
+    private RuntimeDatabaseConfiguration createCapabilityRuntimeDatabaseConfiguration(final String databaseType) {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         try {
             when(result.getDatabaseType()).thenReturn(databaseType);
-            when(result.openConnection(databaseName)).thenReturn(connection);
+            when(result.openConnection("logic_db")).thenReturn(connection);
             when(connection.getMetaData()).thenReturn(databaseMetaData);
             when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");

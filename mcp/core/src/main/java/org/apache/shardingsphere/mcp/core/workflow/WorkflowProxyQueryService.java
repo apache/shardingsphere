@@ -138,7 +138,8 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
             return false;
         }
         String databaseType = databaseCapabilityProvider.provide(databaseName).map(MCPDatabaseCapability::getDatabaseType).orElse("");
-        return "PostgreSQL".equalsIgnoreCase(databaseType) || "openGauss".equalsIgnoreCase(databaseType) || "H2".equalsIgnoreCase(databaseType);
+        return "MySQL".equalsIgnoreCase(databaseType) || "MariaDB".equalsIgnoreCase(databaseType)
+                || "PostgreSQL".equalsIgnoreCase(databaseType) || "openGauss".equalsIgnoreCase(databaseType);
     }
     
     private Connection openConnection(final String databaseName) throws SQLException {
