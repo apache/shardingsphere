@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.merge.dql.orderby;
+package org.apache.shardingsphere.sharding.merge.dql;
 
 import org.junit.jupiter.api.Test;
 

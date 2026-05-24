@@ -15,13 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.merge.dql.orderby;
+package org.apache.shardingsphere.sharding.merge.dql;
 
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 /**
  * Comparable wrapper for byte arrays ordered by unsigned lexicographic comparison, matching MySQL VARBINARY collation.
+ *
+ * <p>Used by {@code OrderByValue}, {@code GroupByValue}, and {@code GroupByRowComparator} so that {@code byte[]} values
+ * from VARBINARY columns sort, group and de-duplicate by content rather than reference identity across {@code QueryResult}
+ * instances coming from different shards. Declared {@code public} because Java packages are flat: a package-private type
+ * placed in {@code merge.dql} would be invisible to its {@code merge.dql.orderby} and {@code merge.dql.groupby}
+ * subpackages, which is the only reason this class is not package-private.</p>
  */
 @RequiredArgsConstructor
 @EqualsAndHashCode
