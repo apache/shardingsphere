@@ -5785,4 +5785,36 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_on_conflit_do_update" parameters="1,'init',1">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="21" stop-index="32">
+            <column name="c1" start-index="22" stop-index="23" />
+            <column name="c2" start-index="26" stop-index="27" />
+            <column name="c3" start-index="30" stop-index="31" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="44" stop-index="44" />
+                    <literal-expression value="1" start-index="44" stop-index="44" />
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="now" text="now()" start-index="47" stop-index="51" literal-start-index="47" literal-stop-index="51" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="54" stop-index="54" />
+                    <literal-expression value="init" start-index="54" stop-index="59" />
+                </assignment-value>
+            </value>
+        </values>
+        <on-duplicate-key-columns start-index="58" stop-index="121" literal-start-index="63" literal-stop-index="126">
+            <assignment start-index="95" stop-index="97">
+                <column name="c2" start-index="95" stop-index="96" literal-start-index="100" literal-stop-index="101"/>
+                <assignment-value>
+                    <function function-name="now" text="now()" start-index="100" stop-index="104" literal-start-index="105" literal-stop-index="109" />
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
+    </insert>
 </sql-parser-test-cases>
