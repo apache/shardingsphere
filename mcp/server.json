@@ -1,0 +1,66 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.apache/shardingsphere-mcp",
+  "title": "Apache ShardingSphere MCP",
+  "description": "Apache ShardingSphere MCP runtime for metadata discovery, SQL preview, and encrypt/mask workflows",
+  "websiteUrl": "https://github.com/apache/shardingsphere/tree/master/mcp",
+  "repository": {
+    "url": "https://github.com/apache/shardingsphere",
+    "source": "github",
+    "subfolder": "mcp"
+  },
+  "version": "5.5.4-SNAPSHOT",
+  "packages": [
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/apache/shardingsphere-mcp:5.5.4-SNAPSHOT",
+      "version": "5.5.4-SNAPSHOT",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "SHARDINGSPHERE_MCP_TRANSPORT",
+          "value": "stdio",
+          "description": "Launch the container in stdio mode for MCP clients.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "SHARDINGSPHERE_MCP_CONFIG",
+          "description": "Optional absolute config path inside the OCI container. Mount the YAML file before setting this value.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    },
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/apache/shardingsphere-mcp:5.5.4-SNAPSHOT",
+      "version": "5.5.4-SNAPSHOT",
+      "transport": {
+        "type": "streamable-http",
+        "url": "http://127.0.0.1:18088/mcp"
+      },
+      "environmentVariables": [
+        {
+          "name": "SHARDINGSPHERE_MCP_TRANSPORT",
+          "value": "http",
+          "description": "Launch the container in Streamable HTTP mode for local or remote MCP clients.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "SHARDINGSPHERE_MCP_CONFIG",
+          "description": "Optional absolute config path inside the OCI container. Mount the YAML file before setting this value.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}

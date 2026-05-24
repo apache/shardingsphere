@@ -82,12 +82,18 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
     
     private final AdaptorContainerConfiguration config;
     
+    private final int proxyPort;
+    
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     @Getter
     private final Set<Startable> dependencies = new HashSet<>();
     
     private ShardingSphereProxy proxy;
+    
+    public ShardingSphereProxyEmbeddedContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
+        this(databaseType, config, Integer.parseInt(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getDefaultValue()));
+    }
     
     /**
      * Depends on.
@@ -108,11 +114,10 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
     @SneakyThrows({SQLException.class, IOException.class, InterruptedException.class})
     private void startProxy() {
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(getTempConfigurationDirectory().toString());
-        int port = Integer.parseInt(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getDefaultValue());
-        new BootstrapInitializer().init(yamlConfig, port);
+        new BootstrapInitializer().init(yamlConfig, proxyPort);
         ProxySSLContext.init();
         proxy = new ShardingSphereProxy();
-        proxy.startInternal(port, Collections.singletonList("0.0.0.0"));
+        proxy.startInternal(proxyPort, Collections.singletonList("0.0.0.0"));
         log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getModeConfiguration().getType());
     }
     
@@ -213,7 +218,7 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
         if (null == dataSource) {
             StorageContainerConnectOption storageContainerConnectOption = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption();
             targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(storageContainerConnectOption.getURL(
-                    "127.0.0.1", 3307, config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2));
+                    "127.0.0.1", proxyPort, config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2));
         }
         return targetDataSourceProvider.get();
     }

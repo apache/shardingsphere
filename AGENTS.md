@@ -21,6 +21,17 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
     - Delete unused code; when changing functionality, remove legacy compatibility shims.
     - Keep variable declarations adjacent to first use; if a value must be retained, declare it `final` to satisfy Checkstyle VariableDeclarationUsageDistance.
     - Single-use local variables must be inlined by default; keep a local variable only when it is reused (for stubbing/verification/assertions) or materially improves readability.
+    - Do not add explicit defensive immutable collection copies in constructors or method return values by default.
+      Avoid `List.copyOf`, `Set.copyOf`, `Map.copyOf`, `Collections.unmodifiableList`, `Collections.unmodifiableSet`, `Collections.unmodifiableMap`,
+      `Collectors.toUnmodifiableList`, `Collectors.toUnmodifiableSet`, `Collectors.toUnmodifiableMap`,
+      Guava `ImmutableList` / `ImmutableSet` / `ImmutableMap`, or similar explicit immutable copy/wrapper APIs
+      when the only reason is defensive programming.
+    - Ordinary collection literals or stream collection results are allowed when they express direct data construction or transformation.
+      Do not flag `List.of`, `Set.of`, `Map.of`, or `Stream.toList()` by default, and do not replace `Stream.toList()` with a mutable collector
+      unless the code has a concrete mutability requirement.
+    - Explicit immutable collection copies or wrappers are allowed only with a concrete semantic reason, such as enforcing a documented public API contract,
+      preserving a snapshot across shared ownership or asynchronous execution, protecting cached/global state from mutation, or satisfying an external API requirement.
+      Record the reason in the plan, review note, or nearby code rationale.
 - **Complete Implementation**: no MVPs/placeholders/TODOs—deliver fully runnable solutions.
 
 ### Performance Standards
@@ -37,6 +48,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Test Naming Simplicity**: keep test names concise and scenario-focused (avoid “ReturnsXXX”/overly wordy or AI-like phrasing); describe the scenario directly.
 - **Coverage Discipline**: follow the dedicated coverage & branch checklist before coding when coverage targets are stated.
 - **Dedicated and scoped tests**: each public production method must be covered by dedicated test methods; each test method covers only one scenario and invokes the target public method at most once (repeat only when the same scenario needs extra assertions), and different branches/inputs belong in separate test methods.
+- **No interface-only tests**: do not create unit tests for interfaces themselves; cover behavior through concrete implementations instead, and avoid dedicated test classes for pure contracts such as `MCPHandlerProvider`.
 - **Parameterized tests naming**: all parameterized tests must set an explicit `name` and use the `"{0}"` template for display names.
 - **Mocking Rule**: default to mocks; see Mocking & SPI Guidance for static/constructor mocking and spy avoidance details.
 - **Reflection Rule**: when tests must touch fields or methods via reflection, use `Plugins.getMemberAccessor()`—direct reflection APIs are forbidden.
@@ -91,6 +103,7 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - **Risk gate:** if any action fits the Dangerous Operation Checklist, pause and use the confirmation template before proceeding.
 - **Planning rules:** use Sequential Thinking with 3-10 actionable steps (no single-step plans) via the plan tool for non-trivial tasks; convert all hard requirements (SPI usage, mocking rules, coverage/test naming, forbidden APIs) into a checklist inside the plan and do not code until each item is addressed or explicitly waived.
 - **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use and mark retained values `final`; inline single-use locals by default unless reuse/readability justifies retention; delete dead code and avoid placeholders/TODOs.
+- **AGENTS.md maintenance:** do not add or update a `Session Notes` section in `AGENTS.md`. Keep task-specific notes in the active conversation, issue, or PR; only stable project-level rules may be generalized into this file.
 - **Post-task self-check (before replying):** confirm all instructions were honored; verify no placeholders/unused code; ensure Checkstyle/Spotless gates for touched modules are satisfied or explain why not run and what to run; list commands with exit codes; call out risks and follow-ups; complete all applicable checks before replying and do not rely on users to find missed rule violations.
 - **Final response template:** include intent/why, changed files with paths, rationale per file/section, commands run (with exit codes), verification status, and remaining risks/next actions (if tests skipped, state reason and the exact command to run); include a concise self-check result statement confirming final clean status after fixes.
 
@@ -180,7 +193,7 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 
 ## Design Playbook
 - **Preferred styles:** elegant, minimal solutions that keep methods/tests lean, use guard clauses, and delete dead code immediately.
-- **Patterns to lean on:** builders/factories from `infra`, SPI-driven extensions, immutable DTOs for plan descriptions, explicit strategy enums.
+- **Patterns to lean on:** builders/factories from `infra`, SPI-driven extensions, DTOs with explicit ownership contracts, explicit strategy enums.
 - **Anti-patterns:** duplicating parsing logic, bypassing metadata caches, silently accepting invalid configs, static singletons in shared modules, or overbuilt helpers.
 - **Known pitfalls:** routing regressions when shadow rules are skipped, timezone drift from poor time-mocking, forgetting standalone vs cluster (`mode`) validation, missing ASF headers, Mockito inline mocks breaking on JDKs that block self-attach.
 - **Success recipe:** explain why the change exists, cite the affected data-flow step, keep public APIs backward compatible, and record defaults/knobs alongside code changes.
@@ -238,6 +251,3 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - If the class under test implements `TypedSPI` or `DatabaseTypedSPI`, instantiate it via `TypedSPILoader` or `DatabaseTypedSPILoader` instead of calling `new` directly.
 - Do not mix Mockito matchers with raw arguments; choose a single style per invocation, and ensure the Mockito extension aligns with the mocking approach.
 - Compliance is mandatory: before any coding, re-read AGENTS.md and convert all hard requirements (SPI usage, no FQCN, mocking rules, coverage targets, planning steps) into a checklist in the plan; do not proceed or report completion until every item is satisfied or explicitly waived by the user.
-
-## Session Notes
-- MySQLSchemataQueryExecutorFactoryTest：public 方法分别测试，`accept` 与 `newInstance` 各自使用独立测试方法。

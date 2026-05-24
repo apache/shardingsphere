@@ -603,11 +603,27 @@ git checkout ${RELEASE.VERSION}
 docker logout
 ```
 
+3.8 ShardingSphere MCP 发布
+
+ShardingSphere MCP 通过仓库中的 [`.github/workflows/mcp-build.yml`](https://github.com/apache/shardingsphere/blob/master/.github/workflows/mcp-build.yml) workflow 发布。
+该 workflow 会构建 MCP 发行包、把 `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}` 推送到 GHCR，
+稳定版额外更新 `latest`，然后通过 GitHub OIDC 把 `mcp/server.json` 发布到官方 MCP Registry。
+
 ### 4. GitHub 版本发布
 
 在 [GitHub Releases](https://github.com/apache/shardingsphere/releases) 页面创建新版本。
 
 编辑版本号及版本说明，选择 `Set as the latest release`，并点击 `Publish release`。
+
+GitHub release 发布后：
+
+- 等待 `MCP - Build` workflow 成功完成
+- 确认 [GitHub Packages](https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-mcp) 中存在 `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}`
+- 通过下面的命令确认官方 MCP Registry 已返回该 server 的 metadata：
+
+```shell
+curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.apache/shardingsphere-mcp"
+```
 
 ### 5. 从发布区移除上一版本内容
 
