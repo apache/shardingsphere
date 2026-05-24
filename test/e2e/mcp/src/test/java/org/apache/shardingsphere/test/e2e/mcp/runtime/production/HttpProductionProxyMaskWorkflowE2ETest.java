@@ -19,8 +19,10 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.util.List;
 import java.util.Locale;
@@ -32,6 +34,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
+@EnabledIf("isEnabled")
 class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWorkflowE2ETest {
     
     private static final String PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
@@ -48,6 +51,10 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     
     private static final String TABLE_RULES_RESOURCE_URI = "shardingsphere://features/mask/databases/%s/tables/%s/rules";
     
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isProductionMySQLEnabled();
+    }
+
     @Test
     void assertCompleteMaskAlgorithmThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {

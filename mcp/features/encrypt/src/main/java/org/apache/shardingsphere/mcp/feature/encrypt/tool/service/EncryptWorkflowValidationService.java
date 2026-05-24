@@ -34,13 +34,10 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchroniz
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Encrypt workflow validation service.
@@ -89,7 +86,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         EncryptWorkflowRequest request = getWorkflowRequest(snapshot);
         EncryptWorkflowState workflowState = getWorkflowState(snapshot);
         List<Map<String, Object>> encryptRules = ruleInspectionService.queryEncryptRules(queryFacade, request.getDatabase(), request.getTable());
-        result.setDdlValidation(validateDdl(queryFacade, snapshot, workflowState, encryptRules, result));
+        result.setDdlValidation(validateDdl(snapshot, workflowState, encryptRules, result));
         result.setRuleValidation(validateRules(snapshot, request, encryptRules, result));
         result.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, result));
         result.setSqlExecutabilityValidation(validateSqlExecutability(executionFacade, sessionId, snapshot, request, result));
@@ -110,7 +107,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         return snapshot.getFeatureData() instanceof EncryptWorkflowState ? (EncryptWorkflowState) snapshot.getFeatureData() : new EncryptWorkflowState();
     }
     
-    private ValidationSection validateDdl(final MCPFeatureQueryFacade queryFacade, final WorkflowContextSnapshot snapshot, final EncryptWorkflowState workflowState,
+    private ValidationSection validateDdl(final WorkflowContextSnapshot snapshot, final EncryptWorkflowState workflowState,
                                           final List<Map<String, Object>> encryptRules, final ValidationReport validationReport) {
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
             return new ValidationSection(WorkflowLifecycle.STATUS_SKIPPED, List.of(), "Encrypt drop does not validate physical cleanup in V1.");
@@ -133,14 +130,13 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         addDerivedColumnMismatch(mismatches, "like_query_column",
                 workflowState.getDerivedColumnPlan().isLikeQueryColumnRequired() ? workflowState.getDerivedColumnPlan().getLikeQueryColumnName() : "",
                 WorkflowRuleValueUtils.getRuleValue(actualRule.get(), "like_query_column"), "LIKE-query column mapping does not match.");
-        addMissingPhysicalDerivedColumnMismatches(queryFacade, snapshot, workflowState, mismatches);
         if (!mismatches.isEmpty()) {
             validationReport.getMismatches().addAll(mismatches);
-            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createDdlEvidence(actualRule.get(), queryFacade, snapshot, workflowState),
+            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, actualRule.get(),
                     "Derived column mappings do not match the plan.");
         }
-        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, createDdlEvidence(actualRule.get(), queryFacade, snapshot, workflowState),
-                "Derived column mappings match the planned physical layout.");
+        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, actualRule.get(),
+                "Derived column mappings match the encrypt rule exposed by Proxy logical metadata.");
     }
     
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot,
@@ -179,57 +175,6 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
                                                        final EncryptWorkflowRequest request, final ValidationReport validationReport) {
         return validationSupport.validateSqlExecutability(executionFacade, sessionId, snapshot, validationReport,
                 createValidationSqls(snapshot, request), "Validation SQLs are executable from the logical view.");
-    }
-    
-    private void addMissingPhysicalDerivedColumnMismatches(final MCPFeatureQueryFacade queryFacade, final WorkflowContextSnapshot snapshot,
-                                                           final EncryptWorkflowState workflowState, final List<Map<String, Object>> mismatches) {
-        Set<String> expectedColumnNames = createExpectedDerivedColumnNames(workflowState);
-        try {
-            Set<String> actualColumnNames = queryFacade.queryInformationSchemaColumnNames(
-                    snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), snapshot.getRequest().getTable(), expectedColumnNames);
-            for (String each : expectedColumnNames) {
-                if (!actualColumnNames.contains(each)) {
-                    mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", each, actualColumnNames.toString(),
-                            "Derived column is not visible from Proxy information_schema.", "Create the physical derived columns again."));
-                }
-            }
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", createExpectedDerivedColumnSummary(workflowState), ex.getMessage(),
-                    "Failed to verify derived columns from Proxy information_schema.", "Inspect Proxy metadata access or verify the physical columns manually."));
-        }
-    }
-    
-    private Set<String> createExpectedDerivedColumnNames(final EncryptWorkflowState workflowState) {
-        Set<String> result = new LinkedHashSet<>(4, 1F);
-        addIfPresent(result, workflowState.getDerivedColumnPlan().getCipherColumnName());
-        if (workflowState.getDerivedColumnPlan().isAssistedQueryColumnRequired()) {
-            addIfPresent(result, workflowState.getDerivedColumnPlan().getAssistedQueryColumnName());
-        }
-        if (workflowState.getDerivedColumnPlan().isLikeQueryColumnRequired()) {
-            addIfPresent(result, workflowState.getDerivedColumnPlan().getLikeQueryColumnName());
-        }
-        return result;
-    }
-    
-    private void addIfPresent(final Set<String> target, final String value) {
-        if (!value.isEmpty()) {
-            target.add(value);
-        }
-    }
-    
-    private Map<String, Object> createDdlEvidence(final Map<String, Object> actualRule, final MCPFeatureQueryFacade queryFacade,
-                                                  final WorkflowContextSnapshot snapshot, final EncryptWorkflowState workflowState) {
-        Map<String, Object> result = new LinkedHashMap<>(actualRule);
-        try {
-            result.put("physical_columns", queryFacade.queryInformationSchemaColumnNames(
-                    snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), snapshot.getRequest().getTable(), createExpectedDerivedColumnNames(workflowState)));
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ignored) {
-            // CHECKSTYLE:ON
-        }
-        return result;
     }
     
     private List<String> createValidationSqls(final WorkflowContextSnapshot snapshot, final EncryptWorkflowRequest request) {

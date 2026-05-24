@@ -40,13 +40,13 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -91,13 +91,13 @@ class EncryptWorkflowValidationServiceTest {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryInformationSchemaColumnNames("logic_db", "public", "orders", Set.of("phone_cipher", "phone_assisted_query", "phone_like_query")))
-                .thenReturn(Set.of("phone_cipher", "phone_assisted_query", "phone_like_query"));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
         Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
         assertThat(actual.get("overall_status"), is("passed"));
+        assertThat(((Map<?, ?>) actual.get("ddl_validation")).get("details"), is("Derived column mappings match the encrypt rule exposed by Proxy logical metadata."));
+        verify(queryFacade, never()).queryInformationSchemaColumnNames(any(), any(), any(), any());
         verify(executionFacade, times(3)).execute(any());
     }
     
@@ -117,11 +117,11 @@ class EncryptWorkflowValidationServiceTest {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryInformationSchemaColumnNames("logic_db", "public", "orders", Set.of("phone_cipher"))).thenReturn(Set.of("phone_cipher"));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
         EncryptWorkflowValidationService service = createService(ruleInspectionService);
         service.synchronize(snapshot, metadataQueryFacade, queryFacade, executionFacade, "session-1");
+        verify(queryFacade, never()).queryInformationSchemaColumnNames(any(), any(), any(), any());
     }
     
     @Test
@@ -195,12 +195,12 @@ class EncryptWorkflowValidationServiceTest {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryInformationSchemaColumnNames("logic_db", "public", "orders", Set.of("phone_cipher"))).thenReturn(Set.of("phone_cipher"));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("sql failed"));
         Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) actual.get("sql_executability_validation")).get("status"), is("failed"));
+        verify(queryFacade, never()).queryInformationSchemaColumnNames(any(), any(), any(), any());
     }
     
     private EncryptWorkflowValidationService createService(final EncryptRuleInspectionService ruleInspectionService) throws ReflectiveOperationException {
