@@ -2529,6 +2529,15 @@
         <table name="test" start-index="12" stop-index="15" />
     </alter-table>
 
+    <alter-table sql-case-id="alter_with_older_table">
+        <table name="older" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_with_older_column">
+        <table name="test" start-index="12" stop-index="15" />
+        <drop-column name="older" start-index="29" stop-index="33" />
+    </alter-table>
+
     <alter-table sql-case-id="alter_create_tag_default">
         <table name="test" start-index="12" stop-index="15" />
     </alter-table>
