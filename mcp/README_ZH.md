@@ -194,7 +194,8 @@ Descriptor 必须说明模型该如何使用这个 surface，而不是只重复 
   以及 workflow plan 到 apply 或 validation 工具。
 - `shardingsphere://runtime` 暴露轻量运行时状态，`shardingsphere://workflows/{plan_id}` 支持按 plan_id 回读 workflow plan。
 - `fingerprints` 记录 descriptor、prompt、navigation 和模型可见 schema 的确定性哈希，让测试产物能证明模型使用的是哪一版 MCP surface。
-- item-list 响应总会包含 `items` 和 `count`。大结果 payload 在需要收窄后续查询时使用 typed `truncated`、`total_count`、`returned_count` 和 `large_result_guidance` 字段。
+- item-list 响应总会包含 `items`、`count`、`has_more` 和 `continuation_mode`。`next_page_token` 只会在响应支持 ShardingSphere application-level pagination 时出现；
+  这些 structured payload 字段不是 MCP list 方法的 `cursor` 或 `nextCursor`。大结果 payload 在需要收窄后续查询时使用 typed `truncated`、`total_count`、`returned_count` 和 `large_result_guidance` 字段。
   resource read 还会包含 `self_uri`，并在适用时包含 typed `parent_resource` 或 typed `next_resources`。
 - Workflow tool 响应包含 `missing_required_inputs`、`clarification_questions`、`resources_to_read` 和 `next_actions`，
   让模型可以按结构化提示继续补问、预览、执行或校验。

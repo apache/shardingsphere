@@ -677,6 +677,14 @@ tools:
         count:
           type: integer
           description: "Number of matched metadata items returned in this response."
+        has_more:
+          type: boolean
+          description: "Whether an application-level continuation mode is active. Metadata search returns false; not MCP list pagination."
+        continuation_mode:
+          type: string
+          description: "ShardingSphere application continuation mode for this metadata search result; not MCP cursor or nextCursor semantics."
+          enum:
+            - none
         search_context:
           type: object
           description: "Applied search scope, query, and object types used for this response."
@@ -767,6 +775,8 @@ tools:
                 - name
               matched_value: orders
           count: 1
+          has_more: false
+          continuation_mode: none
           total_match_count: 1
           search_context:
             query: orders

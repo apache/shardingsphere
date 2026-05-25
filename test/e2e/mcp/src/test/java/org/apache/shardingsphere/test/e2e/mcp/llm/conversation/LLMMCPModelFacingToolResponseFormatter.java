@@ -53,6 +53,7 @@ final class LLMMCPModelFacingToolResponseFormatter {
         copyModelFacingNextActions(response, result);
         copyIfPresent(response, result, "completion");
         copyIfPresent(response, result, "count");
+        copyIfPresent(response, result, "has_more");
         copyIfPresent(response, result, "total_match_count");
         copyIfPresent(response, result, "search_context");
         copyIfPresent(response, result, "ambiguity_state");

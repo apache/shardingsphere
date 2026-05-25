@@ -49,8 +49,8 @@ class MetadataResourceHandlerTest {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases",
                 (requestContext, uriVariables) -> List.of(Map.of("database", "logic_db")));
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of()));
-        assertThat(actual.toPayload(), is(Map.of("response_mode", "list", "items", List.of(Map.of("database", "logic_db")), "count", 1,
-                "self_uri", "shardingsphere://databases", "total_count", 1, "returned_count", 1, "truncated", false)));
+        assertThat(actual.toPayload(), is(Map.of("response_mode", "list", "items", List.of(Map.of("database", "logic_db")), "count", 1, "has_more", false,
+                "continuation_mode", "none", "self_uri", "shardingsphere://databases", "total_count", 1, "returned_count", 1, "truncated", false)));
     }
     
     @Test
@@ -63,10 +63,13 @@ class MetadataResourceHandlerTest {
         assertThat(actualPayload.get("total_count"), is(101));
         assertThat(actualPayload.get("returned_count"), is(100));
         assertTrue((Boolean) actualPayload.get("truncated"));
+        assertTrue((Boolean) actualPayload.get("has_more"));
+        assertThat(actualPayload.get("continuation_mode"), is("metadata_search"));
         assertThat(((Map<?, ?>) actualPayload.get("large_result_guidance")).get("state"), is("broad_metadata_list"));
         assertThat(((Map<?, ?>) actualPayload.get("large_result_guidance")).get("threshold"), is(100));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_search_metadata"));
+        assertFalse(((Map<?, ?>) actualNextAction.get("arguments")).containsKey("page_size"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("object_types"), is(List.of("database")));
     }
     

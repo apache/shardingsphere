@@ -216,7 +216,8 @@
 - 列表查询支持关键字搜索。
 - 大结果通过 `truncated`、`total_count`、`returned_count` 和收窄提示表达。
 - 元数据搜索支持按对象类型过滤。
-- V1 不承诺 token-based continuation flow。
+- item-list 响应保留 application-level `has_more` 和 `continuation_mode` 字段；当响应支持 ShardingSphere application-level pagination 时才返回 `next_page_token`。
+- 上述 structured payload 字段不是 MCP list 方法的 `cursor` 或 `nextCursor`。
 - 不允许客户端通过完整枚举完成大型数据库结构发现。
 
 ### `search_metadata.object_types` 正式支持

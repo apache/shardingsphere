@@ -171,6 +171,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         largeResult.put("threshold", LARGE_RESULT_THRESHOLD);
         largeResult.put("reason", "This metadata resource returned many items. Use database_gateway_search_metadata with an explicit query or scope before reading many detail resources.");
         largeResult.put("search_arguments", createNarrowSearchArguments(descriptor, uriVariables));
+        payload.put("continuation_mode", "metadata_search");
         payload.put("large_result_guidance", largeResult);
         payload.put("next_actions", List.of(MCPNextActionUtils.callTool("database_gateway_search_metadata",
                 String.format("Narrow the broad %s metadata list before reading detail resources.", resolveGuidanceScope(descriptor)),
