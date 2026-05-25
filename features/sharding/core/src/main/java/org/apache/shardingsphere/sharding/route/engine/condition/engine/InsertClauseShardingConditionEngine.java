@@ -43,13 +43,18 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Sharding condition engine for insert clause.
@@ -57,11 +62,31 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class InsertClauseShardingConditionEngine {
     
+    private static final Set<String> NUMERIC_CAST_TARGETS = unmodifiableUpperCaseSet(
+            "INT", "INTEGER", "INT2", "INT4", "INT8", "BIGINT", "SMALLINT", "TINYINT",
+            "NUMERIC", "DECIMAL", "DEC", "NUMBER",
+            "FLOAT", "FLOAT4", "FLOAT8", "REAL", "DOUBLE", "DOUBLE PRECISION",
+            "SERIAL", "BIGSERIAL", "SMALLSERIAL");
+    
+    private static final Set<String> TEXT_CAST_TARGETS = unmodifiableUpperCaseSet(
+            "TEXT", "VARCHAR", "CHARACTER VARYING", "CHAR", "CHARACTER", "BPCHAR", "NAME", "NVARCHAR", "NCHAR");
+    
+    private static final Set<String> BOOLEAN_CAST_TARGETS = unmodifiableUpperCaseSet("BOOL", "BOOLEAN");
+    
+    private static final Set<String> TEMPORAL_CAST_TARGETS = unmodifiableUpperCaseSet(
+            "DATE", "TIME", "TIMETZ", "TIMESTAMP", "TIMESTAMPTZ", "TIMESTAMP WITHOUT TIME ZONE", "TIMESTAMP WITH TIME ZONE");
+    
     private final ShardingSphereDatabase database;
     
     private final ShardingRule rule;
     
     private final TimestampServiceRule timestampServiceRule;
+    
+    private static Set<String> unmodifiableUpperCaseSet(final String... values) {
+        Set<String> result = new HashSet<>(values.length, 1F);
+        result.addAll(Arrays.asList(values));
+        return Collections.unmodifiableSet(result);
+    }
     
     /**
      * Create sharding conditions.
@@ -134,7 +159,7 @@ public final class InsertClauseShardingConditionEngine {
             if (!shardingColumn.isPresent()) {
                 continue;
             }
-            ExpressionSegment value = unwrapTypeCast(each);
+            ExpressionSegment value = unwrapTypeCastForRouting(each, params);
             if (value instanceof SimpleExpressionSegment) {
                 List<Integer> parameterMarkerIndexes = value instanceof ParameterMarkerExpressionSegment
                         ? Collections.singletonList(((ParameterMarkerExpressionSegment) value).getParameterMarkerIndex())
@@ -152,30 +177,74 @@ public final class InsertClauseShardingConditionEngine {
     }
     
     /**
-     * Unwrap nested {@link TypeCastExpression} layers so that an {@code expression::type} cast on a sharding key reuses the
-     * underlying parameter marker or literal for routing. Only unwraps when the innermost expression is a
-     * {@link ParameterMarkerExpressionSegment} or {@link LiteralExpressionSegment}; otherwise returns the original cast so
-     * that the caller's {@code SimpleExpressionSegment} branch does not enter with an unsupported inner segment such as
-     * {@link org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment}, which
-     * would otherwise hit a {@link ClassCastException} at {@code getShardingValue}.
+     * Unwrap nested {@link TypeCastExpression} layers for routing only when the cast is semantically safe, i.e. the bound
+     * Java value belongs to the same category as the outermost cast target type. An {@code expression::type} cast on a
+     * sharding key then reuses the underlying parameter marker or literal for routing without coercion.
      *
-     * <p>Routing uses the raw Java value of the parameter or literal as-is and does not coerce it to the cast target type.
-     * If a caller binds a {@code String "1"} for {@code ?::int4} on a sharding column whose algorithm distinguishes Java
-     * types, the route may diverge from the database-evaluated value. Adding cast-aware type coercion is a follow-up.</p>
+     * <p>Unwrap is refused, returning the original cast (which falls through the {@code instanceof} chain and adds no
+     * sharding condition), in any of the following cases:</p>
+     * <ul>
+     * <li>the innermost expression is not a {@link ParameterMarkerExpressionSegment} or {@link LiteralExpressionSegment}
+     * (e.g. {@link org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment}),
+     * which would otherwise hit a {@link ClassCastException} at {@code getShardingValue};</li>
+     * <li>the bound Java value is {@code null};</li>
+     * <li>the bound Java value's class does not match the outermost cast target category, e.g. binding a {@code String}
+     * for {@code ?::int4}. PostgreSQL would evaluate the SQL value as an integer while raw-value routing would still see
+     * the {@code String}, so refusing to unwrap avoids routing to the wrong shard.</li>
+     * </ul>
      *
      * @param expressionSegment expression segment that may be wrapped in one or more {@link TypeCastExpression} layers
-     * @return innermost {@link ParameterMarkerExpressionSegment} or {@link LiteralExpressionSegment} after unwrapping; the
-     *         original argument when it is not a {@link TypeCastExpression} or when its innermost expression is unsupported
+     * @param params bound parameter values used to look up the runtime Java type of a parameter marker
+     * @return the innermost {@link ParameterMarkerExpressionSegment} or {@link LiteralExpressionSegment} when the cast is
+     *         safe; otherwise the original argument
      */
-    private static ExpressionSegment unwrapTypeCast(final ExpressionSegment expressionSegment) {
+    private static ExpressionSegment unwrapTypeCastForRouting(final ExpressionSegment expressionSegment, final List<Object> params) {
         if (!(expressionSegment instanceof TypeCastExpression)) {
             return expressionSegment;
         }
-        ExpressionSegment inner = expressionSegment;
+        TypeCastExpression outermost = (TypeCastExpression) expressionSegment;
+        ExpressionSegment inner = outermost;
         while (inner instanceof TypeCastExpression) {
             inner = ((TypeCastExpression) inner).getExpression();
         }
-        return inner instanceof ParameterMarkerExpressionSegment || inner instanceof LiteralExpressionSegment ? inner : expressionSegment;
+        if (!(inner instanceof ParameterMarkerExpressionSegment) && !(inner instanceof LiteralExpressionSegment)) {
+            return expressionSegment;
+        }
+        Object routingValue;
+        if (inner instanceof ParameterMarkerExpressionSegment) {
+            int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) inner).getParameterMarkerIndex();
+            if (parameterMarkerIndex < 0 || parameterMarkerIndex >= params.size()) {
+                return expressionSegment;
+            }
+            routingValue = params.get(parameterMarkerIndex);
+        } else {
+            routingValue = ((LiteralExpressionSegment) inner).getLiterals();
+        }
+        return isCastSafeForRouting(routingValue, outermost.getDataType()) ? inner : expressionSegment;
+    }
+    
+    private static boolean isCastSafeForRouting(final Object value, final String castTargetType) {
+        if (null == value || null == castTargetType) {
+            return false;
+        }
+        String normalized = castTargetType.toUpperCase(Locale.ROOT).trim();
+        int parenIndex = normalized.indexOf('(');
+        if (parenIndex > 0) {
+            normalized = normalized.substring(0, parenIndex).trim();
+        }
+        if (value instanceof Number) {
+            return NUMERIC_CAST_TARGETS.contains(normalized);
+        }
+        if (value instanceof String) {
+            return TEXT_CAST_TARGETS.contains(normalized);
+        }
+        if (value instanceof Boolean) {
+            return BOOLEAN_CAST_TARGETS.contains(normalized);
+        }
+        if (value instanceof Date) {
+            return TEMPORAL_CAST_TARGETS.contains(normalized);
+        }
+        return false;
     }
     
     private void generateShardingCondition(final CommonExpressionSegment expressionSegment, final ShardingCondition condition, final String shardingColumn, final String tableName) {

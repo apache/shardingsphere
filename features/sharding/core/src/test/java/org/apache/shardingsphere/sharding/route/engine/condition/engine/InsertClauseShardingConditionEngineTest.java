@@ -222,9 +222,9 @@ class InsertClauseShardingConditionEngineTest {
     }
     
     @Test
-    void assertCreateShardingConditionsWithNestedTypeCastParameterMarker() {
-        TypeCastExpression inner = new TypeCastExpression(0, 5, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
-        TypeCastExpression outer = new TypeCastExpression(0, 12, "?::int4::text", inner, "text");
+    void assertCreateShardingConditionsWithNestedCompatibleTypeCastParameterMarker() {
+        TypeCastExpression inner = new TypeCastExpression(0, 5, "?::int8", new ParameterMarkerExpressionSegment(0, 0, 0), "int8");
+        TypeCastExpression outer = new TypeCastExpression(0, 12, "?::int8::int4", inner, "int4");
         InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(outer), Collections.singletonList(42), 0);
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
         when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
@@ -237,16 +237,62 @@ class InsertClauseShardingConditionEngineTest {
     }
     
     @Test
-    void assertCreateShardingConditionsWithTypeCastParameterMarkerKeepsRawJavaType() {
+    void assertCreateShardingConditionsWithNestedIncompatibleTypeCastParameterMarkerDoesNotRoute() {
+        TypeCastExpression inner = new TypeCastExpression(0, 5, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        TypeCastExpression outer = new TypeCastExpression(0, 12, "?::int4::text", inner, "text");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(outer), Collections.singletonList(42), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(42));
+        assertThat(shardingConditions.size(), is(1));
+        assertTrue(shardingConditions.get(0).getValues().isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastStringParameterToIntDoesNotRoute() {
         TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
         InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList("1"), 0);
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
         when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList("1"));
         assertThat(shardingConditions.size(), is(1));
+        assertTrue(shardingConditions.get(0).getValues().isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastStringParameterToTextRoutes() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::text", new ParameterMarkerExpressionSegment(0, 0, 0), "text");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList("foo"), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList("foo"));
+        assertThat(shardingConditions.size(), is(1));
+        assertThat(shardingConditions.get(0).getValues().size(), is(1));
         ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
-        assertThat(actual.getValues(), is(Collections.singletonList("1")));
+        assertThat(actual.getValues(), is(Collections.singletonList("foo")));
         assertThat(actual.getParameterMarkerIndexes(), is(Collections.singletonList(0)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastNullParameterDoesNotRoute() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(null), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(null));
+        assertThat(shardingConditions.size(), is(1));
+        assertTrue(shardingConditions.get(0).getValues().isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastLiteralStringMismatchedToIntDoesNotRoute() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "'1'::int4", new LiteralExpressionSegment(0, 10, "1"), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.emptyList(), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
+        assertThat(shardingConditions.size(), is(1));
+        assertTrue(shardingConditions.get(0).getValues().isEmpty());
     }
     
     @Test
