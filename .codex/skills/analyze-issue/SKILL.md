@@ -187,6 +187,108 @@ Type-specific rules:
 
 ## Mandatory Output Structure
 
+### GitHub Issue Markdown Requirements
+
+- Format every issue analysis as GitHub-flavored Markdown that can be pasted directly into a GitHub issue comment.
+- The GitHub-facing issue analysis body must not be wrapped in a code fence, blockquote, XML/HTML container, or plain-text transcript.
+- Use the same natural language as the user request for explanatory prose unless the user explicitly asks for another language.
+- Keep the mandatory Markdown structure unchanged regardless of output language.
+- Keep mandatory section titles and stable fields in English, such as `Problem Understanding`, `Root Cause`, `Problem Analysis`,
+  `Problem Conclusion`, `Evidence Confidence`, `Issue Type`, `Recommended Labels`, and `Next Action`.
+- Use Markdown headings (`### Problem Understanding`, `### Root Cause`, etc.) with a blank line before and after each heading.
+- Use short unordered bullets under each heading; use bold inline labels such as `Observation:`, `Inference:`, `Confidence:`, and `Action:`.
+- Use repo-relative paths with line numbers, for example `infra/.../Foo.java:123`; do not use local absolute file paths in GitHub-facing analysis text.
+- Keep evidence IDs, labels, severity values, topology values, commands, class names, method names, SQL, YAML, and Java snippets in their original English/code form.
+- Prefer bullets over tables. Use tables only for compact status summaries that remain readable in GitHub's issue comment pane.
+- Keep command evidence in inline code or short fenced blocks; avoid long raw JSON, full logs, or unrendered terminal transcripts.
+- Before final output, perform a formatting self-check on the inner GitHub-facing issue analysis body:
+  - The inner GitHub-facing issue analysis body is not wrapped in a code fence, blockquote, XML/HTML container, or transcript.
+  - The inner GitHub-facing issue analysis body contains the required `###` headings for the selected issue-type template.
+  - The inner GitHub-facing issue analysis body contains `Problem Conclusion` with the required conclusion fields.
+  - File references are repo-relative paths with line numbers, not local absolute paths.
+  - Stable section titles, evidence IDs, labels, severity values, and conclusion field labels remain in English/code form.
+
+### Codex Chat Delivery
+
+- When returning the issue analysis in Codex chat for the user to copy, wrap the GitHub-facing issue analysis body in a fenced `markdown` code block.
+- The fenced code block is only a chat delivery wrapper; it is not part of the GitHub-facing issue analysis body.
+- Tell the user to copy only the content inside the fenced block.
+- Keep any copy instruction outside the fenced block.
+- When posting directly to GitHub through an API or tool, submit only the inner GitHub-facing issue analysis body and do not include the outer fence.
+- Apply the formatting self-check to the inner GitHub-facing issue analysis body, not to the chat delivery wrapper.
+
+Use this GitHub Markdown skeleton for Question and Misunderstanding / Invalid Usage:
+
+```markdown
+### Problem Understanding
+
+- **Issue:** ...
+- **Topology:** ...
+- **Observed Evidence:** `OBS-1`, `OBS-2`
+
+### Root Cause
+
+- **Observation:** ...
+- **Inference:** ...
+- **Confidence:** High/Medium/Low
+
+### Problem Analysis
+
+- **Issue Type:** Question / Misunderstanding / Invalid Usage
+- **Evidence:** ...
+- **Label Recommendation:** ...
+
+### Problem Conclusion
+
+- **Evidence Confidence:** High/Medium/Low
+- **Impact Scope:** ...
+- **Topology:** JDBC/Proxy + Standalone/Cluster
+- **Issue Type:** ...
+- **Recommended Labels:** ...
+- **Next Action:** ...
+```
+
+Use this GitHub Markdown skeleton for Bug and Enhancement:
+
+```markdown
+### Problem Understanding
+
+- **Issue:** ...
+- **Topology:** ...
+- **Observed Evidence:** `OBS-1`, `OBS-2`
+
+### Root Cause
+
+- **Observation:** ...
+- **Inference:** ...
+- **Confidence:** High/Medium/Low
+
+### Problem Analysis
+
+- **Issue Type:** Bug / Enhancement
+- **Evidence:** ...
+- **Compatibility Checklist:** Behavior / Config / API-SPI / SQL
+
+### Code-Level Design Suggestions
+
+- **Affected Modules:** ...
+- **Key Classes:** ...
+- **Required Test Scope:** ...
+- **Rollback Hint:** ...
+
+### Problem Conclusion
+
+- **Evidence Confidence:** High/Medium/Low
+- **Severity:** S0/S1/S2/S3
+- **Impact Scope:** ...
+- **Topology:** JDBC/Proxy + Standalone/Cluster
+- **Issue Type:** ...
+- **Recommended Labels:** ...
+- **Next Action:** ...
+- **Compatibility:** Behavior/Config/API-SPI/SQL
+- **Regression Scope:** ...
+```
+
 Four-section structure (Question, Misunderstanding / Invalid Usage):
 1. Problem Understanding
 2. Root Cause
