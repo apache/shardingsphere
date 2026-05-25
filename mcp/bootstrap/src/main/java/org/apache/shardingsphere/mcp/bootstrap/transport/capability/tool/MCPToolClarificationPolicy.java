@@ -29,7 +29,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 
-final class MCPToolClarificationPolicy {
+class MCPToolClarificationPolicy {
     
     private static final String PLANNING_WORKFLOW_ROLE = "plan";
     

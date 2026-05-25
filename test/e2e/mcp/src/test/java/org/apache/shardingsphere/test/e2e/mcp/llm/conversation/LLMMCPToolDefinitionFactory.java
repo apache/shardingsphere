@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-final class LLMMCPToolDefinitionFactory {
+class LLMMCPToolDefinitionFactory {
     
     List<Map<String, Object>> create(final Collection<String> allowedToolNames) {
         List<Map<String, Object>> result = new LinkedList<>();

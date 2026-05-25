@@ -134,10 +134,10 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static List<String> createMissingRequiredInputs(final WorkflowContextSnapshot snapshot) {
-        final List<String> result = new LinkedList<>();
-        final ClarifiedIntent clarifiedIntent = snapshot.getClarifiedIntent();
+        List<String> result = new LinkedList<>();
+        ClarifiedIntent clarifiedIntent = snapshot.getClarifiedIntent();
         for (final String each : clarifiedIntent.getUnresolvedFields()) {
-            final String missingInput = normalizeMissingInput(snapshot, each);
+            String missingInput = normalizeMissingInput(snapshot, each);
             if (!result.contains(missingInput)) {
                 result.add(missingInput);
             }
@@ -152,10 +152,10 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static List<Map<String, Object>> createClarificationQuestions(final WorkflowContextSnapshot snapshot, final List<String> missingRequiredInputs) {
-        final List<Map<String, Object>> result = new LinkedList<>();
-        final List<String> clarificationMessages = snapshot.getClarifiedIntent().getClarificationMessages();
+        List<Map<String, Object>> result = new LinkedList<>();
+        List<String> clarificationMessages = snapshot.getClarifiedIntent().getClarificationMessages();
         for (int i = 0; i < missingRequiredInputs.size(); i++) {
-            final String fieldName = missingRequiredInputs.get(i);
+            String fieldName = missingRequiredInputs.get(i);
             result.add(createClarificationQuestion(snapshot, fieldName, i < clarificationMessages.size() ? clarificationMessages.get(i) : ""));
         }
         return result;
@@ -195,16 +195,16 @@ public final class WorkflowGuidancePayloadBuilder {
         return false;
     }
     
-    private static void addMissingInputsFromIssue(final Collection<String> result, final WorkflowContextSnapshot snapshot, final WorkflowIssue issue) {
-        if (WorkflowIssueCode.DATABASE_REQUIRED.equals(issue.getCode()) && !result.contains(WorkflowFieldNames.DATABASE)) {
-            result.add(WorkflowFieldNames.DATABASE);
+    private static void addMissingInputsFromIssue(final Collection<String> missingInputs, final WorkflowContextSnapshot snapshot, final WorkflowIssue issue) {
+        if (WorkflowIssueCode.DATABASE_REQUIRED.equals(issue.getCode()) && !missingInputs.contains(WorkflowFieldNames.DATABASE)) {
+            missingInputs.add(WorkflowFieldNames.DATABASE);
         }
         Object missingProperties = issue.getDetails().get("missing_properties");
         if (missingProperties instanceof Collection) {
             for (Object each : (Collection<?>) missingProperties) {
                 String missingInput = resolveAlgorithmPropertyInput(snapshot, String.valueOf(each));
-                if (!result.contains(missingInput)) {
-                    result.add(missingInput);
+                if (!missingInputs.contains(missingInput)) {
+                    missingInputs.add(missingInput);
                 }
             }
         }
@@ -249,9 +249,9 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static List<Map<String, Object>> createResourcesToRead(final WorkflowContextSnapshot snapshot) {
-        final List<Map<String, Object>> result = new LinkedList<>();
+        List<Map<String, Object>> result = new LinkedList<>();
         addFeatureResources(result, snapshot);
-        final WorkflowRequest request = snapshot.getRequest();
+        WorkflowRequest request = snapshot.getRequest();
         if (!request.getDatabase().isEmpty()) {
             addRuleResources(result, snapshot, request);
             if (!request.getSchema().isEmpty() && !request.getTable().isEmpty()) {
@@ -261,36 +261,36 @@ public final class WorkflowGuidancePayloadBuilder {
         return result;
     }
     
-    private static void addFeatureResources(final Collection<Map<String, Object>> result, final WorkflowContextSnapshot snapshot) {
+    private static void addFeatureResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot) {
         String workflowKind = resolveWorkflowKind(snapshot);
         if ("encrypt.rule".equals(workflowKind)) {
-            result.add(MCPResourceHintUtils.create("shardingsphere://features/encrypt/algorithms", "algorithm", "read_first",
+            resourcesToRead.add(MCPResourceHintUtils.create("shardingsphere://features/encrypt/algorithms", "algorithm", "read_first",
                     "Read encrypt algorithm metadata before choosing algorithm arguments.", "resources_to_read"));
         } else if ("mask.rule".equals(workflowKind)) {
-            result.add(MCPResourceHintUtils.create("shardingsphere://features/mask/algorithms", "algorithm", "read_first",
+            resourcesToRead.add(MCPResourceHintUtils.create("shardingsphere://features/mask/algorithms", "algorithm", "read_first",
                     "Read mask algorithm metadata before choosing algorithm arguments.", "resources_to_read"));
         }
     }
     
-    private static void addRuleResources(final Collection<Map<String, Object>> result, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+    private static void addRuleResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
         String workflowKind = resolveWorkflowKind(snapshot);
         if ("encrypt.rule".equals(workflowKind)) {
-            result.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/encrypt/databases/%s/rules",
+            resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/encrypt/databases/%s/rules",
                     MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail",
                     "Inspect current encrypt rules before planning changes.", "resources_to_read"));
         } else if ("mask.rule".equals(workflowKind)) {
-            result.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/mask/databases/%s/rules",
+            resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/mask/databases/%s/rules",
                     MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail",
                     "Inspect current mask rules before planning changes.", "resources_to_read"));
         }
     }
     
-    private static void addTableResources(final Collection<Map<String, Object>> result, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
-        result.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
+    private static void addTableResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+        resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
                 MCPUriPathSegmentUtils.encodePathSegment(request.getSchema()), MCPUriPathSegmentUtils.encodePathSegment(request.getTable())),
                 "column", "validate_scope", "Read table columns before planning column-level workflow changes.", "resources_to_read"));
         if ("encrypt.rule".equals(resolveWorkflowKind(snapshot))) {
-            result.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
+            resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
                     MCPUriPathSegmentUtils.encodePathSegment(request.getSchema()), MCPUriPathSegmentUtils.encodePathSegment(request.getTable())),
                     "index", "validate_scope", "Read table indexes before planning assisted-query encrypt rules.", "resources_to_read"));
         }
@@ -330,7 +330,7 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static List<Map<String, Object>> addSequencing(final List<Map<String, Object>> nextActions) {
-        final List<Map<String, Object>> result = new LinkedList<>(nextActions);
+        List<Map<String, Object>> result = new LinkedList<>(nextActions);
         for (int index = 0; index < result.size(); index++) {
             result.get(index).put("order", index + 1);
             if (0 < index && "ask_user".equals(result.get(index - 1).get("type"))) {

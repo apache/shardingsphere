@@ -99,7 +99,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         if (snapshot.getRequest() instanceof EncryptWorkflowRequest) {
             return (EncryptWorkflowRequest) snapshot.getRequest();
         }
-        final EncryptWorkflowRequest result = EncryptWorkflowRequest.merge(snapshot.getRequest(), null);
+        EncryptWorkflowRequest result = EncryptWorkflowRequest.merge(snapshot.getRequest(), null);
         return null == result ? new EncryptWorkflowRequest() : result;
     }
     

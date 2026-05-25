@@ -218,7 +218,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         String uriOrTemplate = descriptor.getUriTemplate();
         Optional<String> selfUri = new MCPUriTemplate(uriOrTemplate).expandIfComplete(uriVariables);
         selfUri.ifPresent(uri -> result.put("self_uri", uri));
-        String parentUri = createParentUri(selfUri);
+        String parentUri = createParentUri(selfUri.orElse(""));
         if (!parentUri.isEmpty()) {
             result.put("parent_resource", MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent",
                     "Read the parent metadata resource before broadening or correcting the request.", "parent_resource"));
@@ -259,15 +259,15 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         return "logical-database";
     }
     
-    private String createParentUri(final Optional<String> selfUri) {
+    private String createParentUri(final String selfUri) {
         if (selfUri.isEmpty()) {
             return "";
         }
         String prefix = "shardingsphere://";
-        if (!selfUri.get().startsWith(prefix)) {
+        if (!selfUri.startsWith(prefix)) {
             return "";
         }
-        String path = selfUri.get().substring(prefix.length());
+        String path = selfUri.substring(prefix.length());
         int lastSeparatorIndex = path.lastIndexOf('/');
         return 0 > lastSeparatorIndex ? "" : prefix + path.substring(0, lastSeparatorIndex);
     }

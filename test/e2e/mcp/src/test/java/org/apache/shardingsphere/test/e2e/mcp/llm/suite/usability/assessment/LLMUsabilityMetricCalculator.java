@@ -87,7 +87,7 @@ public final class LLMUsabilityMetricCalculator {
             message = "Scenario expected one recoverable MCP error with category `" + scenario.getExpectedRecoveryCategory() + "` before final success.";
         }
         boolean recoveredAfterError = success && (!scenario.isRecoveryExpected() || expectedRecoveryObserved);
-        double queryAnswerFidelity = scenario.isQueryScenario() ? success ? 1.0D : 0.0D : 0.0D;
+        double queryAnswerFidelity = scenario.isQueryScenario() && success ? 1.0D : 0.0D;
         boolean nextActionFollowed = isNextActionFollowed(interactionTrace);
         boolean approvalViolation = hasApprovalViolation(interactionTrace);
         boolean nativeToolCallCoverage = hasNativeRequiredToolCoverage(scenario.getLlmScenario().getRequiredToolNames(), interactionTrace);

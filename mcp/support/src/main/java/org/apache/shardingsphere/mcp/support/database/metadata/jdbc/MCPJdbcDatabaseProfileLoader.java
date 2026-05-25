@@ -101,71 +101,71 @@ public final class MCPJdbcDatabaseProfileLoader {
     private String determineActualDatabaseType(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {
         String productName = Objects.toString(databaseMetaData.getDatabaseProductName(), "").trim();
         String jdbcUrl = Objects.toString(databaseMetaData.getURL(), "").trim();
-        String result = resolveDatabaseTypeFromProductName(productName, jdbcUrl);
-        if (null == result) {
+        Optional<String> result = resolveDatabaseTypeFromProductName(productName, jdbcUrl);
+        if (result.isEmpty()) {
             result = resolveDatabaseTypeFromJdbcUrl(jdbcUrl);
         }
-        if (null == result) {
+        if (result.isEmpty()) {
             throw RuntimeDatabaseConnectionException.invalidConfiguration(databaseName,
                     new IllegalStateException(String.format("Actual database type cannot be determined for database `%s`.", databaseName)));
         }
-        return result;
+        return result.get();
     }
     
-    private String resolveDatabaseTypeFromProductName(final String productName, final String jdbcUrl) {
+    private Optional<String> resolveDatabaseTypeFromProductName(final String productName, final String jdbcUrl) {
         if (!productName.isEmpty()) {
             if (productName.toUpperCase(Locale.ENGLISH).contains("POSTGRESQL")) {
-                return jdbcUrl.toLowerCase(Locale.ENGLISH).startsWith("jdbc:opengauss:") ? "openGauss" : "PostgreSQL";
+                return Optional.of(jdbcUrl.toLowerCase(Locale.ENGLISH).startsWith("jdbc:opengauss:") ? "openGauss" : "PostgreSQL");
             }
             if (productName.toUpperCase(Locale.ENGLISH).contains("SQL SERVER")) {
-                return "SQLServer";
+                return Optional.of("SQLServer");
             }
             if (productName.toUpperCase(Locale.ENGLISH).contains("MARIADB")) {
-                return "MariaDB";
+                return Optional.of("MariaDB");
             }
             if (productName.toUpperCase(Locale.ENGLISH).contains("MYSQL")) {
-                return "MySQL";
+                return Optional.of("MySQL");
             }
             if (productName.toUpperCase(Locale.ENGLISH).contains("ORACLE")) {
-                return "Oracle";
+                return Optional.of("Oracle");
             }
             if (productName.toUpperCase(Locale.ENGLISH).contains("FIREBIRD")) {
-                return "Firebird";
+                return Optional.of("Firebird");
             }
             if (productName.toUpperCase(Locale.ENGLISH).contains("H2")) {
-                return "H2";
+                return Optional.of("H2");
             }
         }
-        return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, productName).map(MCPDatabaseCapabilityOption::getType).orElse(null);
+        return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, productName).map(MCPDatabaseCapabilityOption::getType);
     }
     
-    private String resolveDatabaseTypeFromJdbcUrl(final String jdbcUrl) {
+    private Optional<String> resolveDatabaseTypeFromJdbcUrl(final String jdbcUrl) {
         String actualJdbcUrl = jdbcUrl.toLowerCase(Locale.ENGLISH);
         if (actualJdbcUrl.startsWith("jdbc:opengauss:")) {
-            return "openGauss";
+            return Optional.of("openGauss");
         }
         if (actualJdbcUrl.startsWith("jdbc:postgresql:")) {
-            return "PostgreSQL";
+            return Optional.of("PostgreSQL");
         }
         if (actualJdbcUrl.startsWith("jdbc:sqlserver:")) {
-            return "SQLServer";
+            return Optional.of("SQLServer");
         }
         if (actualJdbcUrl.startsWith("jdbc:mariadb:")) {
-            return "MariaDB";
+            return Optional.of("MariaDB");
         }
         if (actualJdbcUrl.startsWith("jdbc:mysql:")) {
-            return "MySQL";
+            return Optional.of("MySQL");
         }
         if (actualJdbcUrl.startsWith("jdbc:oracle:")) {
-            return "Oracle";
+            return Optional.of("Oracle");
         }
         if (actualJdbcUrl.startsWith("jdbc:firebirdsql:")) {
-            return "Firebird";
+            return Optional.of("Firebird");
         }
         if (actualJdbcUrl.startsWith("jdbc:h2:")) {
-            return "H2";
+            return Optional.of("H2");
         }
-        return null;
+        return Optional.empty();
     }
     
     private Optional<String> resolveCompatibleBranchDatabaseType(final Connection connection, final String configuredDatabaseType,

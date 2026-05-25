@@ -126,12 +126,12 @@ final class LLMMCPActionExecutor {
         return "";
     }
     
-    private void normalizeCompletionReferenceType(final Map<String, Object> result) {
-        String referenceType = Objects.toString(result.get("type"), "").trim().toLowerCase(Locale.ENGLISH);
+    private void normalizeCompletionReferenceType(final Map<String, Object> completionReference) {
+        String referenceType = Objects.toString(completionReference.get("type"), "").trim().toLowerCase(Locale.ENGLISH);
         if ("prompt".equals(referenceType)) {
-            result.put("type", "ref/prompt");
+            completionReference.put("type", "ref/prompt");
         } else if ("resource".equals(referenceType)) {
-            result.put("type", "ref/resource");
+            completionReference.put("type", "ref/resource");
         }
     }
     

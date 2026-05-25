@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
@@ -35,8 +38,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -72,11 +73,11 @@ class PackagedDistributionTestSupportTest {
     
     @Test
     void assertFindDistributionHomeWithConfiguredHome() throws IOException {
-        final Path configuredHome = Files.createDirectories(tempDir.resolve("configured-home"));
-        final String actualOriginalHome = System.getProperty("mcp.distribution.home");
+        Path configuredHome = Files.createDirectories(tempDir.resolve("configured-home"));
+        String actualOriginalHome = System.getProperty("mcp.distribution.home");
         System.setProperty("mcp.distribution.home", configuredHome.toString());
         try {
-            final Optional<Path> actual = PackagedDistributionTestSupport.findDistributionHome();
+            Optional<Path> actual = PackagedDistributionTestSupport.findDistributionHome();
             assertThat(actual.orElseThrow(), is(configuredHome.toAbsolutePath().normalize()));
         } finally {
             restoreDistributionHome(actualOriginalHome);
@@ -85,13 +86,13 @@ class PackagedDistributionTestSupportTest {
     
     @Test
     void assertFindDistributionHomeWithRelativeConfiguredHome() throws IOException {
-        final Path configuredHome = Files.createDirectories(tempDir.resolve("distribution-home"));
-        final String actualOriginalHome = System.getProperty("mcp.distribution.home");
-        final String actualOriginalProjectDirectory = System.getProperty("maven.multiModuleProjectDirectory");
+        Path configuredHome = Files.createDirectories(tempDir.resolve("distribution-home"));
+        String actualOriginalHome = System.getProperty("mcp.distribution.home");
+        String actualOriginalProjectDirectory = System.getProperty("maven.multiModuleProjectDirectory");
         System.setProperty("mcp.distribution.home", "distribution-home");
         System.setProperty("maven.multiModuleProjectDirectory", tempDir.toString());
         try {
-            final Optional<Path> actual = PackagedDistributionTestSupport.findDistributionHome();
+            Optional<Path> actual = PackagedDistributionTestSupport.findDistributionHome();
             assertThat(actual.orElseThrow(), is(configuredHome.toAbsolutePath().normalize()));
         } finally {
             restoreDistributionHome(actualOriginalHome);
@@ -101,8 +102,8 @@ class PackagedDistributionTestSupportTest {
     
     @Test
     void assertFindDistributionHomeWithMissingConfiguredHome() {
-        final Path configuredHome = tempDir.resolve("missing-home");
-        final String actualOriginalHome = System.getProperty("mcp.distribution.home");
+        Path configuredHome = tempDir.resolve("missing-home");
+        String actualOriginalHome = System.getProperty("mcp.distribution.home");
         System.setProperty("mcp.distribution.home", configuredHome.toString());
         try {
             assertThrows(IllegalStateException.class, PackagedDistributionTestSupport::findDistributionHome);
@@ -113,14 +114,14 @@ class PackagedDistributionTestSupportTest {
     
     @Test
     void assertPrepareFailsWithMissingDistributionHome() throws IOException {
-        final Path repositoryRoot = tempDir.resolve("repo");
+        Path repositoryRoot = tempDir.resolve("repo");
         Files.createDirectories(repositoryRoot.resolve("distribution/mcp"));
-        final String actualOriginalHome = System.getProperty("mcp.distribution.home");
-        final String actualOriginalProjectDirectory = System.getProperty("maven.multiModuleProjectDirectory");
+        String actualOriginalHome = System.getProperty("mcp.distribution.home");
+        String actualOriginalProjectDirectory = System.getProperty("maven.multiModuleProjectDirectory");
         System.clearProperty("mcp.distribution.home");
         System.setProperty("maven.multiModuleProjectDirectory", repositoryRoot.toString());
         try {
-            final IllegalStateException actual = assertThrows(IllegalStateException.class,
+            IllegalStateException actual = assertThrows(IllegalStateException.class,
                     () -> PackagedDistributionTestSupport.prepare(tempDir.resolve("missing-distribution"), RuntimeTransport.HTTP));
             assertThat(actual.getMessage(), is("Packaged MCP distribution was not found. Run `./mvnw -pl distribution/mcp -am -DskipTests package` first"
                     + " or set `-Dmcp.distribution.home=/path/to/apache-shardingsphere-mcp-*`. Checked `"
@@ -134,11 +135,11 @@ class PackagedDistributionTestSupportTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("prepareCases")
     void assertPrepareWithTransport(final String caseName, final RuntimeTransport transport, final MCPTransportType expectedTransportType) throws IOException {
-        final Path distributionHome = createDistributionHome(tempDir.resolve(caseName));
-        final String actualOriginalHome = System.getProperty("mcp.distribution.home");
+        Path distributionHome = createDistributionHome(tempDir.resolve(caseName));
+        String actualOriginalHome = System.getProperty("mcp.distribution.home");
         System.setProperty("mcp.distribution.home", distributionHome.toString());
         try {
-            final PreparedPackagedDistribution actual = PackagedDistributionTestSupport.prepare(tempDir.resolve(caseName + "-working"), transport);
+            PreparedPackagedDistribution actual = PackagedDistributionTestSupport.prepare(tempDir.resolve(caseName + "-working"), transport);
             final MCPLaunchConfiguration actualConfig = MCPConfigurationLoader.load(actual.configFile().toString());
             assertThat(actual.transport(), is(transport));
             assertFalse(Files.exists(actual.home().resolve("data")));

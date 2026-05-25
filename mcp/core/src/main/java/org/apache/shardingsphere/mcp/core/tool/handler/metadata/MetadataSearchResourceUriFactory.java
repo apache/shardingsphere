@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-final class MetadataSearchResourceUriFactory {
+class MetadataSearchResourceUriFactory {
     
     private static final String DATABASES_RESOURCE_URI = "shardingsphere://databases";
     

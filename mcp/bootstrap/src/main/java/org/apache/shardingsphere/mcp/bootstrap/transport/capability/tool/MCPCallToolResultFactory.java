@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadat
 import java.util.Map;
 import java.util.Objects;
 
-final class MCPCallToolResultFactory {
+class MCPCallToolResultFactory {
     
     private static final int RESOURCE_LINK_LIMIT = 24;
     
@@ -40,11 +40,11 @@ final class MCPCallToolResultFactory {
         if (response instanceof MCPErrorResponse) {
             return create(response.toPayload(), true);
         }
-        final Map<String, Object> payload = response.toPayload();
+        Map<String, Object> payload = response.toPayload();
         if (descriptor.getOutputSchema().isEmpty()) {
             return create(payload, false);
         }
-        final ValidationResponse validation = outputSchemaValidator.validate(descriptor.getOutputSchema(), payload);
+        ValidationResponse validation = outputSchemaValidator.validate(descriptor.getOutputSchema(), payload);
         return validation.valid()
                 ? create(payload, false)
                 : create(new MCPErrorResponse(String.format(
@@ -53,13 +53,13 @@ final class MCPCallToolResultFactory {
     }
     
     private CallToolResult create(final Map<String, Object> payload, final boolean isError) {
-        final CallToolResult.Builder result = CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(isError);
+        CallToolResult.Builder result = CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(isError);
         appendResourceLinks(payload, result);
         return result.build();
     }
     
     private void appendResourceLinks(final Map<String, Object> payload, final CallToolResult.Builder builder) {
-        final MCPResourceLinkCandidateCollector.ResourceLinkCandidates candidates = new MCPResourceLinkCandidateCollector(RESOURCE_LINK_LIMIT).collect(payload);
+        MCPResourceLinkCandidateCollector.ResourceLinkCandidates candidates = new MCPResourceLinkCandidateCollector(RESOURCE_LINK_LIMIT).collect(payload);
         int emittedCount = 0;
         for (MCPResourceLinkCandidateCollector.ResourceLinkCandidate each : candidates.candidates()) {
             builder.addContent(MCPResourceLinkContract.createResourceLink(each));

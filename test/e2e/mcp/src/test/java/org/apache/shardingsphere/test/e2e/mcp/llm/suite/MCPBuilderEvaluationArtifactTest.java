@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-final class MCPBuilderEvaluationArtifactTest {
+class MCPBuilderEvaluationArtifactTest {
     
     private static final int EXPECTED_QA_PAIR_COUNT = 10;
     

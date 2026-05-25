@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-final class SQLStatementTargetResolver {
+class SQLStatementTargetResolver {
     
     private static final List<String> SQL_OBJECT_TYPE_KEYWORDS = List.of("TABLE", "VIEW", "INDEX", "SEQUENCE", "DATABASE", "SCHEMA", "TYPE", "FUNCTION", "PROCEDURE", "TRIGGER", "POLICY");
     
@@ -54,50 +54,50 @@ final class SQLStatementTargetResolver {
         return result;
     }
     
-    private void collect(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result) {
+    private void collect(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> objectNames) {
         if ("SELECT".equals(statementStructure.statementType())) {
-            collectCommonTableExpressionObjectNames(statementStructure, visitedAliases, result);
-            collectSelectTargetObjectNames(statementStructure, visitedAliases, result);
+            collectCommonTableExpressionObjectNames(statementStructure, visitedAliases, objectNames);
+            collectSelectTargetObjectNames(statementStructure, visitedAliases, objectNames);
             return;
         }
-        collectDirectTargetObjectNames(statementStructure, visitedAliases, result);
-        collectClauseObjectNames(statementStructure, visitedAliases, result, getClauseKeywords(statementStructure.statementType()));
-        collectCommonTableExpressionObjectNames(statementStructure, visitedAliases, result);
+        collectDirectTargetObjectNames(statementStructure, visitedAliases, objectNames);
+        collectClauseObjectNames(statementStructure, visitedAliases, objectNames, getClauseKeywords(statementStructure.statementType()));
+        collectCommonTableExpressionObjectNames(statementStructure, visitedAliases, objectNames);
     }
     
-    private void collectCommonTableExpressionObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result) {
+    private void collectCommonTableExpressionObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> objectNames) {
         for (SQLCommonTableExpression each : statementStructure.commonTableExpressions()) {
             String normalizedAliasName = scanner.normalizeIdentifierForComparison(each.aliasName());
             if (visitedAliases.contains(normalizedAliasName)) {
                 continue;
             }
-            collect(each.statementStructure(), appendVisitedAlias(visitedAliases, normalizedAliasName), result);
+            collect(each.statementStructure(), appendVisitedAlias(visitedAliases, normalizedAliasName), objectNames);
         }
     }
     
-    private void collectSelectTargetObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result) {
-        collectClauseObjectNames(statementStructure, visitedAliases, result, "FROM", "JOIN");
+    private void collectSelectTargetObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> objectNames) {
+        collectClauseObjectNames(statementStructure, visitedAliases, objectNames, "FROM", "JOIN");
     }
     
-    private void collectClauseObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result, final String... keywords) {
+    private void collectClauseObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> objectNames, final String... keywords) {
         List<SQLStatementToken> tokens = scanner.tokenize(statementStructure.mainSql());
         for (int each : findKeywordIndexes(tokens, keywords)) {
-            collectObjectNamesFromClause(statementStructure, tokens, each, visitedAliases, result);
+            collectObjectNamesFromClause(statementStructure, tokens, each, visitedAliases, objectNames);
         }
-        collectNestedQueryObjectNames(tokens, visitedAliases, result);
-        collectQualifiedFunctionNames(tokens, result);
+        collectNestedQueryObjectNames(tokens, visitedAliases, objectNames);
+        collectQualifiedFunctionNames(tokens, objectNames);
     }
     
     private void collectObjectNamesFromClause(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final int keywordIndex,
-                                              final Collection<String> visitedAliases, final Collection<String> result) {
+                                              final Collection<String> visitedAliases, final Collection<String> objectNames) {
         int objectStartIndex = keywordIndex + 1;
         if (scanner.isKeyword(tokens.get(keywordIndex), "INHERITS") && objectStartIndex < tokens.size() && "(".equals(tokens.get(objectStartIndex).text())) {
             objectStartIndex++;
         }
-        collectObjectNamesFromList(statementStructure, tokens, objectStartIndex, visitedAliases, result, "ONLY", "LATERAL");
+        collectObjectNamesFromList(statementStructure, tokens, objectStartIndex, visitedAliases, objectNames, "ONLY", "LATERAL");
     }
     
-    private void collectNestedQueryObjectNames(final List<SQLStatementToken> tokens, final Collection<String> visitedAliases, final Collection<String> result) {
+    private void collectNestedQueryObjectNames(final List<SQLStatementToken> tokens, final Collection<String> visitedAliases, final Collection<String> objectNames) {
         int index = 0;
         while (index < tokens.size()) {
             if (!"(".equals(tokens.get(index).text())) {
@@ -107,7 +107,7 @@ final class SQLStatementTargetResolver {
             int closingParenthesisIndex = findClosingParenthesis(tokens, index);
             if (isNestedQuery(tokens, index + 1, closingParenthesisIndex)) {
                 SQLStatementStructure statementStructure = structureResolver.resolve(reconstructSql(tokens, index + 1, closingParenthesisIndex));
-                collect(statementStructure, visitedAliases, result);
+                collect(statementStructure, visitedAliases, objectNames);
                 index = closingParenthesisIndex + 1;
                 continue;
             }
@@ -115,67 +115,67 @@ final class SQLStatementTargetResolver {
         }
     }
     
-    private void collectObjectName(final SQLStatementStructure statementStructure, final String objectName, final Collection<String> visitedAliases, final Collection<String> result) {
+    private void collectObjectName(final SQLStatementStructure statementStructure, final String objectName, final Collection<String> visitedAliases, final Collection<String> objectNames) {
         Optional<SQLCommonTableExpression> commonTableExpression = findCommonTableExpression(statementStructure, objectName);
         if (commonTableExpression.isEmpty()) {
-            addObjectName(result, objectName);
+            addObjectName(objectNames, objectName);
             return;
         }
         SQLCommonTableExpression actualCommonTableExpression = commonTableExpression.get();
         String normalizedAliasName = scanner.normalizeIdentifierForComparison(actualCommonTableExpression.aliasName());
         if (!visitedAliases.contains(normalizedAliasName)) {
-            collect(actualCommonTableExpression.statementStructure(), appendVisitedAlias(visitedAliases, normalizedAliasName), result);
+            collect(actualCommonTableExpression.statementStructure(), appendVisitedAlias(visitedAliases, normalizedAliasName), objectNames);
         }
     }
     
-    private void collectDirectTargetObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> result) {
+    private void collectDirectTargetObjectNames(final SQLStatementStructure statementStructure, final Collection<String> visitedAliases, final Collection<String> objectNames) {
         List<SQLStatementToken> tokens = scanner.tokenize(statementStructure.mainSql());
         String statementType = statementStructure.statementType();
         if ("INSERT".equals(statementType) || "MERGE".equals(statementType)) {
-            collectObjectNamesAfterKeyword(statementStructure, tokens, "INTO", visitedAliases, result);
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "INTO", visitedAliases, objectNames);
             return;
         }
         if ("UPDATE".equals(statementType)) {
-            collectObjectNamesAfterKeyword(statementStructure, tokens, "UPDATE", visitedAliases, result, "ONLY");
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "UPDATE", visitedAliases, objectNames, "ONLY");
             return;
         }
         if ("DELETE".equals(statementType)) {
-            collectDeleteTargetObjectNames(statementStructure, tokens, visitedAliases, result);
+            collectDeleteTargetObjectNames(statementStructure, tokens, visitedAliases, objectNames);
             return;
         }
         if ("CREATE".equals(statementType)) {
-            collectObjectNamesAfterTypeKeyword(statementStructure, tokens, visitedAliases, result, "CONCURRENTLY", "IF", "NOT", "EXISTS");
-            collectCreateSourceObjectNames(statementStructure, tokens, visitedAliases, result);
+            collectObjectNamesAfterTypeKeyword(statementStructure, tokens, visitedAliases, objectNames, "CONCURRENTLY", "IF", "NOT", "EXISTS");
+            collectCreateSourceObjectNames(statementStructure, tokens, visitedAliases, objectNames);
             return;
         }
         if ("ALTER".equals(statementType)) {
-            collectObjectNamesAfterTypeKeyword(statementStructure, tokens, visitedAliases, result, "IF", "EXISTS", "ONLY");
-            collectAlterDestinationObjectNames(statementStructure, tokens, visitedAliases, result);
+            collectObjectNamesAfterTypeKeyword(statementStructure, tokens, visitedAliases, objectNames, "IF", "EXISTS", "ONLY");
+            collectAlterDestinationObjectNames(statementStructure, tokens, visitedAliases, objectNames);
             return;
         }
         if ("DROP".equals(statementType)) {
-            collectObjectNamesAfterTypeKeyword(statementStructure, tokens, visitedAliases, result, "CONCURRENTLY", "IF", "EXISTS");
-            collectDropSourceObjectNames(statementStructure, tokens, visitedAliases, result);
+            collectObjectNamesAfterTypeKeyword(statementStructure, tokens, visitedAliases, objectNames, "CONCURRENTLY", "IF", "EXISTS");
+            collectDropSourceObjectNames(statementStructure, tokens, visitedAliases, objectNames);
             return;
         }
         if ("TRUNCATE".equals(statementType)) {
-            if (!collectObjectNamesAfterKeyword(statementStructure, tokens, "TABLE", visitedAliases, result, "ONLY")) {
-                collectObjectNamesFromList(statementStructure, tokens, 1, visitedAliases, result, "ONLY");
+            if (!collectObjectNamesAfterKeyword(statementStructure, tokens, "TABLE", visitedAliases, objectNames, "ONLY")) {
+                collectObjectNamesFromList(statementStructure, tokens, 1, visitedAliases, objectNames, "ONLY");
             }
             return;
         }
         if ("GRANT".equals(statementType) || "REVOKE".equals(statementType)) {
-            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, result, "TABLE", "VIEW", "INDEX", "SEQUENCE", "DATABASE", "SCHEMA");
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, objectNames, "TABLE", "VIEW", "INDEX", "SEQUENCE", "DATABASE", "SCHEMA");
         }
     }
     
     private void collectDeleteTargetObjectNames(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final Collection<String> visitedAliases,
-                                                final Collection<String> result) {
+                                                final Collection<String> objectNames) {
         int deleteTargetStartIndex = skipDeleteModifierKeywords(tokens, 1);
         if (deleteTargetStartIndex < tokens.size() && !scanner.isKeyword(tokens.get(deleteTargetStartIndex), "FROM", "USING")) {
-            collectObjectNamesFromList(statementStructure, tokens, deleteTargetStartIndex, visitedAliases, result);
+            collectObjectNamesFromList(statementStructure, tokens, deleteTargetStartIndex, visitedAliases, objectNames);
         }
-        collectObjectNamesAfterKeyword(statementStructure, tokens, "FROM", visitedAliases, result, "ONLY");
+        collectObjectNamesAfterKeyword(statementStructure, tokens, "FROM", visitedAliases, objectNames, "ONLY");
     }
     
     private int skipDeleteModifierKeywords(final List<SQLStatementToken> tokens, final int startIndex) {
@@ -197,37 +197,37 @@ final class SQLStatementTargetResolver {
     }
     
     private void collectCreateSourceObjectNames(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final Collection<String> visitedAliases,
-                                                final Collection<String> result) {
+                                                final Collection<String> objectNames) {
         if (isStatementObjectType(tokens, "INDEX")) {
-            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, result);
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, objectNames);
         }
         if (isStatementObjectType(tokens, "TRIGGER", "POLICY")) {
-            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, result);
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, objectNames);
         }
         if (isStatementObjectType(tokens, "TABLE")) {
-            collectObjectNamesAfterKeyword(statementStructure, tokens, "LIKE", visitedAliases, result);
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "LIKE", visitedAliases, objectNames);
         }
     }
     
     private void collectDropSourceObjectNames(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final Collection<String> visitedAliases,
-                                              final Collection<String> result) {
+                                              final Collection<String> objectNames) {
         if (isStatementObjectType(tokens, "INDEX")) {
-            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, result);
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, objectNames);
         }
     }
     
     private void collectAlterDestinationObjectNames(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final Collection<String> visitedAliases,
-                                                    final Collection<String> result) {
+                                                    final Collection<String> objectNames) {
         for (int index = 0; index < tokens.size(); index++) {
             if (isRenameToDestination(tokens, index)) {
-                collectObjectNamesFromList(statementStructure, tokens, index + 2, visitedAliases, result);
+                collectObjectNamesFromList(statementStructure, tokens, index + 2, visitedAliases, objectNames);
             }
             if (isSetSchemaDestination(tokens, index)) {
-                collectObjectNamesFromList(statementStructure, tokens, index + 2, visitedAliases, result);
+                collectObjectNamesFromList(statementStructure, tokens, index + 2, visitedAliases, objectNames);
             }
         }
         if (isStatementObjectType(tokens, "TRIGGER", "POLICY")) {
-            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, result);
+            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, objectNames);
         }
     }
     
@@ -265,20 +265,20 @@ final class SQLStatementTargetResolver {
     }
     
     private void collectObjectNamesAfterTypeKeyword(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final Collection<String> visitedAliases,
-                                                    final Collection<String> result, final String... optionalKeywords) {
+                                                    final Collection<String> objectNames, final String... optionalKeywords) {
         for (int index = 0; index < tokens.size(); index++) {
             if (SQL_OBJECT_TYPE_KEYWORDS.contains(tokens.get(index).upperText())) {
-                collectObjectNamesFromList(statementStructure, tokens, index + 1, visitedAliases, result, optionalKeywords);
+                collectObjectNamesFromList(statementStructure, tokens, index + 1, visitedAliases, objectNames, optionalKeywords);
                 return;
             }
         }
     }
     
     private boolean collectObjectNamesAfterKeyword(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final String keyword,
-                                                   final Collection<String> visitedAliases, final Collection<String> result, final String... optionalKeywords) {
+                                                   final Collection<String> visitedAliases, final Collection<String> objectNames, final String... optionalKeywords) {
         for (int index = 0; index < tokens.size(); index++) {
             if (scanner.isKeyword(tokens.get(index), keyword)) {
-                collectObjectNamesFromList(statementStructure, tokens, index + 1, visitedAliases, result, optionalKeywords);
+                collectObjectNamesFromList(statementStructure, tokens, index + 1, visitedAliases, objectNames, optionalKeywords);
                 return true;
             }
         }
@@ -286,14 +286,14 @@ final class SQLStatementTargetResolver {
     }
     
     private void collectObjectNamesFromList(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final int startIndex,
-                                            final Collection<String> visitedAliases, final Collection<String> result, final String... optionalKeywords) {
+                                            final Collection<String> visitedAliases, final Collection<String> objectNames, final String... optionalKeywords) {
         int currentIndex = startIndex;
         while (currentIndex < tokens.size()) {
             SQLStatementObjectName objectName = objectNameReader.readObjectName(tokens, currentIndex, optionalKeywords);
             if (objectName.objectName().isEmpty()) {
                 return;
             }
-            collectObjectName(statementStructure, objectName.objectName(), visitedAliases, result);
+            collectObjectName(statementStructure, objectName.objectName(), visitedAliases, objectNames);
             currentIndex = objectNameReader.skipObjectTail(tokens, objectName.nextIndex());
             if (currentIndex >= tokens.size() || !",".equals(tokens.get(currentIndex).text())) {
                 return;
@@ -302,12 +302,12 @@ final class SQLStatementTargetResolver {
         }
     }
     
-    private void collectQualifiedFunctionNames(final List<SQLStatementToken> tokens, final Collection<String> result) {
+    private void collectQualifiedFunctionNames(final List<SQLStatementToken> tokens, final Collection<String> objectNames) {
         int index = 0;
         while (index < tokens.size()) {
             SQLStatementObjectName objectName = objectNameReader.readQualifiedName(tokens, index);
             if (isQualifiedFunctionName(tokens, objectName)) {
-                addObjectName(result, objectName.objectName());
+                addObjectName(objectNames, objectName.objectName());
                 index = objectName.nextIndex() - 1;
             }
             index++;
@@ -319,9 +319,9 @@ final class SQLStatementTargetResolver {
                 && "(".equals(tokens.get(objectName.nextIndex()).text());
     }
     
-    private void addObjectName(final Collection<String> result, final String objectName) {
+    private void addObjectName(final Collection<String> objectNames, final String objectName) {
         if (!objectName.isEmpty()) {
-            result.add(objectName);
+            objectNames.add(objectName);
         }
     }
     

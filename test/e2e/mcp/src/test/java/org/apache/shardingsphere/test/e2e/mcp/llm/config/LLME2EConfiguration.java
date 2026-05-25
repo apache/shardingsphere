@@ -80,7 +80,7 @@ public final class LLME2EConfiguration {
      * @return LLM E2E configuration
      */
     public static LLME2EConfiguration load() {
-        final RuntimeMode runtimeMode = RuntimeMode.from(readString("mcp.llm.runtime-mode", "MCP_LLM_RUNTIME_MODE", RuntimeMode.DOCKER.getValue()));
+        RuntimeMode runtimeMode = RuntimeMode.from(readString("mcp.llm.runtime-mode", "MCP_LLM_RUNTIME_MODE", RuntimeMode.DOCKER.getValue()));
         return new LLME2EConfiguration(
                 normalizeBaseUrl(readString("mcp.llm.base-url", "MCP_LLM_BASE_URL", DEFAULT_BASE_URL)),
                 readString("mcp.llm.provider", "MCP_LLM_PROVIDER", "openai-compatible"),
@@ -104,7 +104,7 @@ public final class LLME2EConfiguration {
      * @throws IOException IO exception
      */
     public Path createArtifactDirectory(final String scenarioId) throws IOException {
-        final Path result = artifactRoot.resolve(runId).resolve(scenarioId);
+        Path result = artifactRoot.resolve(runId).resolve(scenarioId);
         Files.createDirectories(result);
         return result;
     }
@@ -172,7 +172,7 @@ public final class LLME2EConfiguration {
     }
     
     private static int readInteger(final String propertyName, final String environmentName, final int defaultValue) {
-        final String result = readString(propertyName, environmentName, String.valueOf(defaultValue));
+        String result = readString(propertyName, environmentName, String.valueOf(defaultValue));
         try {
             return Integer.parseInt(result);
         } catch (final NumberFormatException ignored) {

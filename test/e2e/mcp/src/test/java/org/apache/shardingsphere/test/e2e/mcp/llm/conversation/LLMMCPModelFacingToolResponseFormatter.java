@@ -31,7 +31,7 @@ import java.util.Objects;
 final class LLMMCPModelFacingToolResponseFormatter {
     
     static String format(final Map<String, Object> response) {
-        final Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         copyIfPresent(response, result, "response_mode");
         copyIfPresent(response, result, "error_code");
         copyIfPresent(response, result, "message");
@@ -71,13 +71,13 @@ final class LLMMCPModelFacingToolResponseFormatter {
     }
     
     private static void copyCompactItems(final Map<String, Object> source, final Map<String, Object> target) {
-        final List<Map<String, Object>> items = LLMMCPJsonValues.castToList(source.get("items"));
+        List<Map<String, Object>> items = LLMMCPJsonValues.castToList(source.get("items"));
         if (items.isEmpty()) {
             return;
         }
-        final List<Map<String, Object>> compactItems = new LinkedList<>();
+        List<Map<String, Object>> compactItems = new LinkedList<>();
         for (Map<String, Object> each : items.subList(0, Math.min(items.size(), 5))) {
-            final Map<String, Object> compactItem = new LinkedHashMap<>(8, 1F);
+            Map<String, Object> compactItem = new LinkedHashMap<>(8, 1F);
             copyIfPresent(each, compactItem, "database");
             copyIfPresent(each, compactItem, "schema");
             copyIfPresent(each, compactItem, "objectType");
@@ -92,13 +92,13 @@ final class LLMMCPModelFacingToolResponseFormatter {
     }
     
     private static void copyPromptList(final Map<String, Object> source, final Map<String, Object> target) {
-        final List<Map<String, Object>> prompts = LLMMCPJsonValues.castToList(source.get("prompts"));
+        List<Map<String, Object>> prompts = LLMMCPJsonValues.castToList(source.get("prompts"));
         if (prompts.isEmpty()) {
             return;
         }
-        final List<String> names = new LinkedList<>();
+        List<String> names = new LinkedList<>();
         for (Map<String, Object> each : prompts) {
-            final String name = Objects.toString(each.get("name"), "").trim();
+            String name = Objects.toString(each.get("name"), "").trim();
             if (!name.isEmpty()) {
                 names.add(name);
             }
@@ -108,20 +108,20 @@ final class LLMMCPModelFacingToolResponseFormatter {
     
     private static void copyPromptMessages(final Map<String, Object> source, final Map<String, Object> target) {
         copyIfPresent(source, target, "description");
-        final List<Object> messages = LLMMCPJsonValues.castToList(source.get("messages"));
+        List<Object> messages = LLMMCPJsonValues.castToList(source.get("messages"));
         if (!messages.isEmpty()) {
             target.put("message_count", messages.size());
         }
     }
     
     private static void copyCompactArtifactList(final Map<String, Object> source, final Map<String, Object> target, final String fieldName) {
-        final List<Map<String, Object>> artifacts = LLMMCPJsonValues.castToList(source.get(fieldName));
+        List<Map<String, Object>> artifacts = LLMMCPJsonValues.castToList(source.get(fieldName));
         if (artifacts.isEmpty()) {
             return;
         }
-        final List<Map<String, Object>> summaries = new LinkedList<>();
+        List<Map<String, Object>> summaries = new LinkedList<>();
         for (Map<String, Object> each : artifacts.subList(0, Math.min(artifacts.size(), 3))) {
-            final Map<String, Object> summary = new LinkedHashMap<>(4, 1F);
+            Map<String, Object> summary = new LinkedHashMap<>(4, 1F);
             putArtifactCount(each, summary, "ddl_artifacts", "ddl_artifact_count");
             putArtifactCount(each, summary, "index_plan", "index_plan_count");
             putArtifactCount(each, summary, "distsql_artifacts", "distsql_artifact_count");
@@ -135,7 +135,7 @@ final class LLMMCPModelFacingToolResponseFormatter {
     }
     
     private static void putArtifactCount(final Map<String, Object> source, final Map<String, Object> target, final String sourceFieldName, final String targetFieldName) {
-        final List<Object> artifacts = LLMMCPJsonValues.castToList(source.get(sourceFieldName));
+        List<Object> artifacts = LLMMCPJsonValues.castToList(source.get(sourceFieldName));
         if (!artifacts.isEmpty()) {
             target.put(targetFieldName, artifacts.size());
         }
@@ -145,11 +145,11 @@ final class LLMMCPModelFacingToolResponseFormatter {
         if (!source.containsKey("recovery")) {
             return;
         }
-        final Map<String, Object> recovery = LLMMCPJsonValues.castToMap(source.get("recovery"));
+        Map<String, Object> recovery = LLMMCPJsonValues.castToMap(source.get("recovery"));
         if (recovery.isEmpty()) {
             return;
         }
-        final Map<String, Object> compactRecovery = new LinkedHashMap<>(8, 1F);
+        Map<String, Object> compactRecovery = new LinkedHashMap<>(8, 1F);
         copyIfPresent(recovery, compactRecovery, "recovery_category");
         copyIfPresent(recovery, compactRecovery, "category");
         copyIfPresent(recovery, compactRecovery, "model_action");
@@ -162,11 +162,11 @@ final class LLMMCPModelFacingToolResponseFormatter {
     }
     
     private static void copyModelFacingNextActions(final Map<String, Object> source, final Map<String, Object> target) {
-        final List<Map<String, Object>> nextActions = LLMMCPJsonValues.castToList(source.get("next_actions"));
+        List<Map<String, Object>> nextActions = LLMMCPJsonValues.castToList(source.get("next_actions"));
         if (nextActions.isEmpty()) {
             return;
         }
-        final List<Map<String, Object>> result = new LinkedList<>();
+        List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : nextActions) {
             result.add(LLMMCPSideEffectNextAction.isExecutionAction(each) ? createSideEffectExecutionNextActionSummary(each) : each);
         }
@@ -174,7 +174,7 @@ final class LLMMCPModelFacingToolResponseFormatter {
     }
     
     private static Map<String, Object> createSideEffectExecutionNextActionSummary(final Map<String, Object> action) {
-        final Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         copyIfPresent(action, result, "type");
         copyIfPresent(action, result, "title");
         copyIfPresent(action, result, "reason");

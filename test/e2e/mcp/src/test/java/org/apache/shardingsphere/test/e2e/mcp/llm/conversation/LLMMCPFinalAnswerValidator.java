@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-final class LLMMCPFinalAnswerValidator {
+class LLMMCPFinalAnswerValidator {
     
     LLME2EAssertionReport validateSafely(final LLME2EScenario scenario, final LLMStructuredAnswer actualAnswer, final List<MCPInteractionTraceRecord> interactionTrace) {
         try {

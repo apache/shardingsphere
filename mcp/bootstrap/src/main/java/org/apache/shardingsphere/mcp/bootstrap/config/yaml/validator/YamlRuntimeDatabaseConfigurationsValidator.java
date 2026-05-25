@@ -41,47 +41,47 @@ public final class YamlRuntimeDatabaseConfigurationsValidator implements Constra
         return result;
     }
     
-    private boolean validateRuntimeDatabase(final Entry<String, Map<String, Object>> entry, final ConstraintValidatorContext context) {
-        if (null == entry.getValue()) {
-            addViolation(context, String.format("contains null configuration for database `%s`", entry.getKey()));
+    private boolean validateRuntimeDatabase(final Entry<String, Map<String, Object>> databaseEntry, final ConstraintValidatorContext context) {
+        if (null == databaseEntry.getValue()) {
+            addViolation(context, String.format("contains null configuration for database `%s`", databaseEntry.getKey()));
             return false;
         }
-        return validateSupportedProperties(entry, context) && validateRequiredProperties(entry, context);
+        return validateSupportedProperties(databaseEntry, context) && validateRequiredProperties(databaseEntry, context);
     }
     
-    private boolean validateSupportedProperties(final Entry<String, Map<String, Object>> entry, final ConstraintValidatorContext context) {
+    private boolean validateSupportedProperties(final Entry<String, Map<String, Object>> databaseEntry, final ConstraintValidatorContext context) {
         boolean result = true;
-        for (String each : entry.getValue().keySet()) {
+        for (String each : databaseEntry.getValue().keySet()) {
             if (!YamlRuntimeDatabaseConfigurationProperties.SUPPORTED_PROPERTIES.contains(each)) {
-                addViolation(context, String.format("contains unsupported property `%s` for database `%s`", each, entry.getKey()));
+                addViolation(context, String.format("contains unsupported property `%s` for database `%s`", each, databaseEntry.getKey()));
                 result = false;
             }
         }
         return result;
     }
     
-    private boolean validateRequiredProperties(final Entry<String, Map<String, Object>> entry, final ConstraintValidatorContext context) {
-        boolean result = validateRequiredText(entry, YamlRuntimeDatabaseConfigurationProperties.DATABASE_TYPE, context);
-        result = validateRequiredText(entry, YamlRuntimeDatabaseConfigurationProperties.JDBC_URL, context) && result;
-        result = validateExplicitText(entry, YamlRuntimeDatabaseConfigurationProperties.USERNAME, context) && result;
-        result = validateExplicitText(entry, YamlRuntimeDatabaseConfigurationProperties.PASSWORD, context) && result;
-        return validateExplicitText(entry, YamlRuntimeDatabaseConfigurationProperties.DRIVER_CLASS_NAME, context) && result;
+    private boolean validateRequiredProperties(final Entry<String, Map<String, Object>> databaseEntry, final ConstraintValidatorContext context) {
+        boolean result = validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.DATABASE_TYPE, context);
+        result = validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.JDBC_URL, context) && result;
+        result = validateExplicitText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.USERNAME, context) && result;
+        result = validateExplicitText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.PASSWORD, context) && result;
+        return validateExplicitText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.DRIVER_CLASS_NAME, context) && result;
     }
     
-    private boolean validateRequiredText(final Entry<String, Map<String, Object>> entry, final String key, final ConstraintValidatorContext context) {
-        Object value = entry.getValue().get(key);
+    private boolean validateRequiredText(final Entry<String, Map<String, Object>> databaseEntry, final String key, final ConstraintValidatorContext context) {
+        Object value = databaseEntry.getValue().get(key);
         if (null != value && !value.toString().isBlank()) {
             return true;
         }
-        addViolation(context, String.format("contains database `%s` property `%s` is required", entry.getKey(), key));
+        addViolation(context, String.format("contains database `%s` property `%s` is required", databaseEntry.getKey(), key));
         return false;
     }
     
-    private boolean validateExplicitText(final Entry<String, Map<String, Object>> entry, final String key, final ConstraintValidatorContext context) {
-        if (null != entry.getValue().get(key)) {
+    private boolean validateExplicitText(final Entry<String, Map<String, Object>> databaseEntry, final String key, final ConstraintValidatorContext context) {
+        if (null != databaseEntry.getValue().get(key)) {
             return true;
         }
-        addViolation(context, String.format("contains database `%s` property `%s` is required. Use an empty string when no value is needed", entry.getKey(), key));
+        addViolation(context, String.format("contains database `%s` property `%s` is required. Use an empty string when no value is needed", databaseEntry.getKey(), key));
         return false;
     }
     

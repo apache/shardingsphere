@@ -46,8 +46,8 @@ public final class MCPToolCallLimiter {
      * @throws MCPToolCallLimitExceededException when session tool call quota is exhausted
      */
     public void acquire(final String sessionId, final String toolName) {
-        final String actualSessionId = normalizeSessionId(sessionId);
-        final int callCount = sessionToolCallCounts.computeIfAbsent(actualSessionId, ignored -> new AtomicInteger()).incrementAndGet();
+        String actualSessionId = normalizeSessionId(sessionId);
+        int callCount = sessionToolCallCounts.computeIfAbsent(actualSessionId, ignored -> new AtomicInteger()).incrementAndGet();
         if (callCount > maxToolCallsPerSession) {
             throw new MCPToolCallLimitExceededException(actualSessionId, Objects.toString(toolName, ""), maxToolCallsPerSession);
         }
@@ -63,7 +63,7 @@ public final class MCPToolCallLimiter {
     }
     
     private String normalizeSessionId(final String sessionId) {
-        final String result = Objects.toString(sessionId, "").trim();
+        String result = Objects.toString(sessionId, "").trim();
         return result.isEmpty() ? "anonymous" : result;
     }
 }

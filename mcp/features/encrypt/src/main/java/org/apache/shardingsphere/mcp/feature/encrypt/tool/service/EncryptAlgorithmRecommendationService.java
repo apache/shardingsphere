@@ -96,7 +96,7 @@ public final class EncryptAlgorithmRecommendationService {
         return encryptAlgorithms.isEmpty() ? "" : getAlgorithmType(encryptAlgorithms.get(0));
     }
     
-    private void addAssistedQueryCandidate(final List<AlgorithmCandidate> result, final EncryptWorkflowRequest request,
+    private void addAssistedQueryCandidate(final List<AlgorithmCandidate> candidates, final EncryptWorkflowRequest request,
                                            final List<Map<String, Object>> encryptAlgorithms, final List<WorkflowIssue> issues) {
         String assistedQueryType = resolveAssistedQueryAlgorithm(request, encryptAlgorithms, issues);
         if (assistedQueryType.isEmpty()) {
@@ -105,10 +105,10 @@ public final class EncryptAlgorithmRecommendationService {
             return;
         }
         AlgorithmCandidate assistedQueryCandidate = createEncryptCandidate("assisted_query", assistedQueryType, request);
-        result.add(assistedQueryCandidate);
+        candidates.add(assistedQueryCandidate);
     }
     
-    private void addLikeQueryCandidate(final List<AlgorithmCandidate> result, final EncryptWorkflowRequest request,
+    private void addLikeQueryCandidate(final List<AlgorithmCandidate> candidates, final EncryptWorkflowRequest request,
                                        final List<Map<String, Object>> encryptAlgorithms, final List<WorkflowIssue> issues) {
         String likeQueryType = resolveLikeQueryAlgorithm(request, encryptAlgorithms, issues);
         if (likeQueryType.isEmpty()) {
@@ -117,7 +117,7 @@ public final class EncryptAlgorithmRecommendationService {
             return;
         }
         AlgorithmCandidate likeQueryCandidate = createEncryptCandidate("like_query", likeQueryType, request);
-        result.add(likeQueryCandidate);
+        candidates.add(likeQueryCandidate);
     }
     
     private void addCapabilityConflictIssue(final List<WorkflowIssue> issues, final String specifiedAlgorithmType, final String message, final String userAction) {

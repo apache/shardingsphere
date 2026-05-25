@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-final class LLMMCPSafetyValidator {
+class LLMMCPSafetyValidator {
     
     private static final String EXECUTION_MODE_PREVIEW = "preview";
     

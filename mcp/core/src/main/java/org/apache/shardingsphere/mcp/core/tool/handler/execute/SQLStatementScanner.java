@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-final class SQLStatementScanner {
+class SQLStatementScanner {
     
     String normalizeSingleStatement(final String sql) {
         String result = sql.trim();

@@ -70,12 +70,12 @@ public final class LLMUsabilityReportWriter {
         return result.toString();
     }
     
-    private void appendSummaryItem(final StringBuilder result, final String name, final Object value) {
-        result.append("- ").append(name).append(": ").append(value).append(System.lineSeparator());
+    private void appendSummaryItem(final StringBuilder report, final String name, final Object value) {
+        report.append("- ").append(name).append(": ").append(value).append(System.lineSeparator());
     }
     
-    private void appendScenarioResult(final StringBuilder result, final LLMUsabilityScenarioResult scenarioResult) {
-        result.append("- ").append(scenarioResult.getScenarioId())
+    private void appendScenarioResult(final StringBuilder report, final LLMUsabilityScenarioResult scenarioResult) {
+        report.append("- ").append(scenarioResult.getScenarioId())
                 .append(": ").append(scenarioResult.isSuccess() ? "PASS" : "FAIL")
                 .append(" failureType=").append(getTextOrDefault(scenarioResult.getFailureType()))
                 .append(", roundTrips=").append(scenarioResult.getRoundTripCount())

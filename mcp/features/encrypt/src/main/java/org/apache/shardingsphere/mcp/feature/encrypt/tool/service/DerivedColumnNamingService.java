@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,7 +41,7 @@ public final class DerivedColumnNamingService {
      * @param issues workflow issues
      * @return derived column plan
      */
-    public DerivedColumnPlan createPlan(final EncryptWorkflowRequest request, final Set<String> existingNames, final java.util.List<WorkflowIssue> issues) {
+    public DerivedColumnPlan createPlan(final EncryptWorkflowRequest request, final Set<String> existingNames, final List<WorkflowIssue> issues) {
         boolean requiresAssistedQuery = Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter());
         boolean requiresLikeQuery = Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery());
         DerivedColumnPlan result = new DerivedColumnPlan();
@@ -60,7 +61,7 @@ public final class DerivedColumnNamingService {
     }
     
     private String resolveName(final String defaultName, final String overrideName, final Set<String> existingNames,
-                               final java.util.List<WorkflowIssue> issues, final DerivedColumnPlan plan) {
+                               final List<WorkflowIssue> issues, final DerivedColumnPlan plan) {
         String candidate = overrideName.isEmpty() ? defaultName : overrideName;
         if (!WorkflowSQLUtils.isSafeIdentifier(candidate)) {
             issues.add(new WorkflowIssue(WorkflowIssueCode.USER_OVERRIDE_NAME_UNSAFE, "error", "planning-artifacts",

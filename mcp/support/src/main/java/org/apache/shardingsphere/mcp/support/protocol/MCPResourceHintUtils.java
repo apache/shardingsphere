@@ -40,7 +40,7 @@ public final class MCPResourceHintUtils {
      * @return typed resource hint
      */
     public static Map<String, Object> create(final String uri, final String resourceKind, final String purpose, final String reason, final String sourceField) {
-        final Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("uri", uri);
         result.put("resource_kind", resourceKind);
         result.put("purpose", purpose);

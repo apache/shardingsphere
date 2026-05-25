@@ -29,7 +29,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-final class TestWorkflowSessionContext implements WorkflowSessionContext {
+class TestWorkflowSessionContext implements WorkflowSessionContext {
     
     private final Map<String, WorkflowContextSnapshot> contexts = new ConcurrentHashMap<>();
     

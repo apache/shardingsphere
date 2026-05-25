@@ -46,13 +46,13 @@ public final class LLMMCPNextActions {
         return result;
     }
     
-    private static void appendActions(final List<Map<?, ?>> result, final Object value) {
+    private static void appendActions(final List<Map<?, ?>> actions, final Object value) {
         if (!(value instanceof List)) {
             return;
         }
         for (Object each : (List<?>) value) {
             if (each instanceof Map) {
-                result.add((Map<?, ?>) each);
+                actions.add((Map<?, ?>) each);
             }
         }
     }
