@@ -96,22 +96,18 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - **Precise modification**: change only the files and code paths required by the task; avoid drive-by refactors and unrelated cleanup.
 - **Goal-driven execution**: convert the request into verifiable outcomes before implementation, then validate those outcomes with scoped checks.
 
-## Required Coding Skills
-- Use `source-driven-development` during intake and planning when requirement correctness depends on official documentation, framework or library behavior,
-  standards, release notes, or documented ShardingSphere contracts; cite authoritative sources and flag anything unverified.
-- Use `api-and-interface-design` before coding when a task touches public APIs, SPIs, configuration contracts, module boundaries, or cross-module behavior.
-- Use `doubt-driven-development` for non-trivial decisions, especially when changing branching logic, public contracts, module boundaries, invariants,
-  performance-sensitive paths, or claims that tests and types cannot fully prove.
-- Use `code-simplification` after implementation on changed code and directly affected code only; simplification must preserve behavior and match project conventions.
-- Use `code-review-and-quality` before the final response to review correctness, readability, architecture, security, performance, and tests; fix all in-scope required findings before handoff.
-- If a required skill is unavailable, first try the approved local skill installation flow when the environment supports it.
-  If installation is blocked by tools, policy, or network, report the limitation and continue with an equivalent manual checklist.
+## Coding Skill Guidance
+- When the named third-party skills are available in the current environment, use them for the matching work:
+  `source-driven-development` for official-source checks, `api-and-interface-design` for public contracts,
+  `doubt-driven-development` for non-trivial decisions, `code-simplification` after implementation, and `code-review-and-quality` before handoff.
+- If a named third-party skill is unavailable, do not install it automatically or block the task.
+  Apply an equivalent manual checklist for the same intent, record the fallback in the plan or final response, and continue.
 
 ## Workflow
 - Use Sequential Thinking when tasks need decomposition: 6-10 steps (fallback 3-5), one sentence each, actionable.
 - Intake: choose the strategy for the task, confirm tool availability/fallbacks, capture constraints (forbidden APIs, output format, coverage/test expectations),
-  and use `source-driven-development` to verify requirement facts when correctness depends on authoritative sources.
-- Plan: inspect existing code with tools before edits, finish the plan before coding, use `doubt-driven-development` for non-trivial decisions,
+  and use `source-driven-development` when available, or equivalent source-checking, to verify facts that depend on authoritative sources.
+- Plan: inspect existing code with tools before edits, finish the plan before coding, use `doubt-driven-development` when available for non-trivial decisions,
   and set the quality/verification bar.
 - Implement: keep scope minimal, follow quality standards, record decisions, and handle edge cases; honor instruction precedence from Core Principle #7.
 - Validate: run the narrowest meaningful checks (see Verification & Commands) and prefer scoped runs; note any sandbox or limit blocks and alternatives.
@@ -127,9 +123,12 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - **Final response template:** include intent/why, changed files with paths, rationale per file/section, commands run (with exit codes), verification status, and remaining risks/next actions (if tests skipped, state reason and the exact command to run); include a concise self-check result statement confirming final clean status after fixes.
 
 ## Final Self-Iteration Gate
-- Before finishing, ask whether this task created in-scope legacy or dead code that can be safely removed, whether the changed implementation can be simpler without changing behavior,
-  whether existing public behavior and contracts are preserved, and whether `code-review-and-quality` still has in-scope required findings.
-- Use `doubt-driven-development` to keep raising and resolving valuable in-scope questions until the stop condition is met.
+- Apply this gate only to implementation tasks where the user has requested or authorized code or documentation edits.
+  For review-only, analysis-only, triage-only, or plan-only tasks, report findings and suggested follow-ups without modifying the reviewed target.
+- Before finishing an authorized implementation task, ask whether this task created in-scope legacy or dead code that can be safely removed,
+  whether the changed implementation can be simpler without changing behavior,
+  whether existing public behavior and contracts are preserved, and whether `code-review-and-quality` or equivalent review still has in-scope required findings.
+- Use `doubt-driven-development` when available, or equivalent adversarial self-review, to keep raising and resolving valuable in-scope questions until the stop condition is met.
   Stop when no actionable findings remain, the same findings repeat, 3 doubt cycles complete, or the user explicitly overrides.
 - If any answer reveals an in-scope, behavior-preserving, low-risk required fix, make the fix and rerun relevant checks.
 - Repeat the review-fix-verify loop until no in-scope required findings remain.
