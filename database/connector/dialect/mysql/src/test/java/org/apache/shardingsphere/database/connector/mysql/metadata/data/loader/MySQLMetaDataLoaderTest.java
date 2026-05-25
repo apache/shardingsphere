@@ -192,15 +192,15 @@ class MySQLMetaDataLoaderTest {
         assertThat(actualTableMetaData.getName(), is("tbl"));
         assertThat(actualTableMetaData.getColumns().size(), is(9));
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false));
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false, true));
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("geo", Types.BINARY, false, false, false, true, false, true));
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("t_year", Types.DATE, false, false, false, true, false, true));
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("pg", Types.BINARY, false, false, false, true, false, true));
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("mpg", Types.BINARY, false, false, false, true, false, true));
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("pt", Types.BINARY, false, false, false, true, false, true));
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("mpt", Types.BINARY, false, false, false, true, false, true));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false, "int"));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true, "varchar"));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false, true, "json"));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("geo", Types.BINARY, false, false, false, true, false, true, "geometry"));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("t_year", Types.DATE, false, false, false, true, false, true, "year"));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("pg", Types.BINARY, false, false, false, true, false, true, "polygon"));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("mpg", Types.BINARY, false, false, false, true, false, true, "multipolygon"));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("pt", Types.BINARY, false, false, false, true, false, true, "point"));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("mpt", Types.BINARY, false, false, false, true, false, true, "multipoint"));
         assertIndexMetaData(actualTableMetaData.getIndexes(), expectedCompositeIndexExists);
         assertConstraintMetaData(actualTableMetaData.getConstraints(), expectedConstraintExists);
     }
@@ -214,6 +214,7 @@ class MySQLMetaDataLoaderTest {
         assertThat(actual.isVisible(), is(expected.isVisible()));
         assertThat(actual.isUnsigned(), is(expected.isUnsigned()));
         assertThat(actual.isNullable(), is(expected.isNullable()));
+        assertThat(actual.getColumnTypeName(), is(expected.getColumnTypeName()));
     }
     
     private void assertIndexMetaData(final Collection<IndexMetaData> actualIndexMetaData, final boolean expectedCompositeIndexExists) {

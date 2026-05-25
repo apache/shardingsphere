@@ -50,6 +50,7 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCa
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -154,9 +155,14 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
         List<BinaryCell> result = new ArrayList<>(queryResponseRow.getCells().size());
         for (QueryResponseCell each : queryResponseRow.getCells()) {
-            result.add(new BinaryCell(MySQLBinaryColumnType.valueOfJDBCType(each.getJdbcType()), each.getData()));
+            MySQLBinaryColumnType columnType = MySQLBinaryColumnType.valueOfJDBCType(each.getJdbcType(), each.getColumnTypeName().orElse(null));
+            result.add(new BinaryCell(columnType, adjustValueForBinaryColumnType(columnType, each.getData())));
         }
         return new BinaryRow(result);
+    }
+    
+    private Object adjustValueForBinaryColumnType(final MySQLBinaryColumnType columnType, final Object value) {
+        return MySQLBinaryColumnType.YEAR == columnType && value instanceof Date ? ((Date) value).toLocalDate().getYear() : value;
     }
     
     @Override

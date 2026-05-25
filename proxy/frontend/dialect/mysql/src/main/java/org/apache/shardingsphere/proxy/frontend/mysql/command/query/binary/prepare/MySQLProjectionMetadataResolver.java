@@ -95,7 +95,8 @@ public final class MySQLProjectionMetadataResolver {
     private static MySQLColumnDefinition41Packet createMySQLColumnDefinition41Packet(final QueryHeader queryHeader, final int characterSet) {
         int actualCharacterSet = BINARY_TYPES.contains(queryHeader.getColumnType()) ? MySQLCharacterSets.BINARY.getId() : characterSet;
         return new MySQLColumnDefinition41Packet(actualCharacterSet, getColumnDefinitionFlag(queryHeader), queryHeader.getSchema(), queryHeader.getTable(), queryHeader.getTable(),
-                queryHeader.getColumnLabel(), queryHeader.getColumnName(), queryHeader.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(queryHeader.getColumnType()),
+                queryHeader.getColumnLabel(), queryHeader.getColumnName(), queryHeader.getColumnLength(),
+                MySQLBinaryColumnType.valueOfJDBCType(queryHeader.getColumnType(), queryHeader.getColumnTypeName()),
                 queryHeader.getDecimals(), false);
     }
     

@@ -43,4 +43,6 @@ public final class YamlShardingSphereColumn implements YamlConfiguration {
     private boolean unsigned;
     
     private boolean nullable;
+    
+    private String columnTypeName;
 }

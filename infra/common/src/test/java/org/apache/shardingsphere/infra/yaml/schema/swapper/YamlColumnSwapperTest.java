@@ -32,7 +32,7 @@ class YamlColumnSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        ShardingSphereColumn column = new ShardingSphereColumn("id", 1, true, false, true, true, false, false);
+        ShardingSphereColumn column = new ShardingSphereColumn("id", 1, true, false, true, true, false, false, "int");
         YamlShardingSphereColumn actual = swapper.swapToYamlConfiguration(column);
         assertThat(actual.getName(), is("id"));
         assertThat(actual.getDataType(), is(1));
@@ -42,6 +42,7 @@ class YamlColumnSwapperTest {
         assertTrue(actual.isVisible());
         assertFalse(actual.isUnsigned());
         assertFalse(actual.isNullable());
+        assertThat(actual.getColumnTypeName(), is("int"));
     }
     
     @Test
@@ -55,6 +56,7 @@ class YamlColumnSwapperTest {
         yamlColumn.setVisible(false);
         yamlColumn.setUnsigned(true);
         yamlColumn.setNullable(true);
+        yamlColumn.setColumnTypeName("year");
         ShardingSphereColumn actual = swapper.swapToObject(yamlColumn);
         assertThat(actual.getName(), is("id"));
         assertThat(actual.getDataType(), is(2));
@@ -64,5 +66,6 @@ class YamlColumnSwapperTest {
         assertFalse(actual.isVisible());
         assertTrue(actual.isUnsigned());
         assertTrue(actual.isNullable());
+        assertThat(actual.getColumnTypeName(), is("year"));
     }
 }
