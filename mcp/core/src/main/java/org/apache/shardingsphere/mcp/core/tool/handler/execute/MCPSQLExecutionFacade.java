@@ -40,28 +40,28 @@ import java.util.Optional;
  * MCP SQL execution facade.
  */
 public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
-
+    
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
-
+    
     private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
-
+    
     private final MCPJdbcTransactionStatementExecutor transactionStatementExecutor;
-
+    
     private final MCPJdbcStatementExecutor statementExecutor;
-
+    
     private final StatementClassifier statementClassifier;
-
+    
     private final SQLStatementScanner scanner;
-
+    
     private final SQLExecutionTraceFactory sqlExecutionTraceFactory;
-
+    
     public MCPSQLExecutionFacade(final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final MCPSessionManager sessionManager) {
         this(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
                 new MCPJdbcTransactionStatementExecutor(sessionManager),
                 new MCPJdbcStatementExecutor(sessionManager.getTransactionResourceManager().getRuntimeDatabases(), sessionManager.getTransactionResourceManager()),
                 new StatementClassifier(), new SQLStatementScanner(), new SQLExecutionTraceFactory());
     }
-
+    
     MCPSQLExecutionFacade(final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final MCPSessionExecutionCoordinator sessionExecutionCoordinator,
                           final MCPJdbcTransactionStatementExecutor transactionStatementExecutor, final MCPJdbcStatementExecutor statementExecutor,
                           final StatementClassifier statementClassifier, final SQLStatementScanner scanner, final SQLExecutionTraceFactory sqlExecutionTraceFactory) {
@@ -73,7 +73,7 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         this.scanner = scanner;
         this.sqlExecutionTraceFactory = sqlExecutionTraceFactory;
     }
-
+    
     /**
      * Execute one MCP SQL request.
      *
@@ -88,7 +88,7 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
             throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), ex);
         }
     }
-
+    
     private SQLExecutionResponse executeInternal(final SQLExecutionRequest executionRequest) {
         Optional<MCPDatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(executionRequest.getDatabase());
         ShardingSpherePreconditions.checkState(databaseCapability.isPresent(), () -> recordFailure(executionRequest, "QUERY", new DatabaseCapabilityNotFoundException()));
@@ -126,12 +126,12 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
             throw recordFailure(executionRequest, classificationResult.getTraceStatementMarker(), ex);
         }
     }
-
+    
     private SQLExecutionResponse recordSuccess(final SQLExecutionRequest executionRequest, final SQLExecutionResponse response, final String statementMarker) {
         sqlExecutionTraceFactory.create(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), true, statementMarker);
         return response;
     }
-
+    
     private void checkCrossSchemaSql(final SQLExecutionRequest executionRequest, final MCPDatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
         if (databaseCapability.isSupportsCrossSchemaSql()) {
             return;
@@ -143,7 +143,7 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
             }
         }
     }
-
+    
     private boolean isCrossSchemaReference(final String objectName, final String databaseName, final ClassificationResult classificationResult) {
         int qualifierSeparatorIndex = objectName.indexOf('.');
         if (-1 != qualifierSeparatorIndex) {
@@ -151,7 +151,7 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         }
         return isDatabaseOrSchemaBoundaryReference(objectName, databaseName, classificationResult);
     }
-
+    
     private boolean isDatabaseOrSchemaBoundaryReference(final String objectName, final String databaseName, final ClassificationResult classificationResult) {
         if (objectName.equalsIgnoreCase(databaseName)) {
             return false;
@@ -163,22 +163,22 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         }
         return SupportedMCPStatement.DCL == classificationResult.getStatementClass() && containsOnDatabaseOrSchemaClause(upperSql);
     }
-
+    
     private boolean isDatabaseOrSchemaStatement(final String upperSql, final String statementType) {
         if (!"CREATE".equals(statementType) && !"ALTER".equals(statementType) && !"DROP".equals(statementType)) {
             return false;
         }
         return upperSql.startsWith(statementType + " DATABASE ") || upperSql.startsWith(statementType + " SCHEMA ");
     }
-
+    
     private boolean containsSetSchemaClause(final String upperSql) {
         return upperSql.matches(".*\\bSET\\s+SCHEMA\\b.*");
     }
-
+    
     private boolean containsOnDatabaseOrSchemaClause(final String upperSql) {
         return upperSql.matches(".*\\bON\\s+(DATABASE|SCHEMA)\\b.*");
     }
-
+    
     private <T extends RuntimeException> T recordFailure(final SQLExecutionRequest executionRequest, final String statementMarker, final T ex) {
         sqlExecutionTraceFactory.create(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, statementMarker);
         return ex;

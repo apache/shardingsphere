@@ -31,40 +31,40 @@ import java.util.Map;
  * <p>Payload pagination fields are application-level fields, not MCP list cursor fields.</p>
  */
 public final class MCPItemsResponse implements MCPResponse {
-
+    
     private static final String CONTINUATION_MODE = "continuation_mode";
-
+    
     private static final String CONTINUATION_MODE_NONE = "none";
-
+    
     private static final String CONTINUATION_MODE_PAGINATION = "pagination";
-
+    
     private final List<?> items;
-
+    
     private final String nextPageToken;
-
+    
     private final Map<String, Object> navigation;
-
+    
     private final String responseMode;
-
+    
     public MCPItemsResponse(final List<?> items) {
         this(items, "");
     }
-
+    
     public MCPItemsResponse(final List<?> items, final String nextPageToken) {
         this(items, nextPageToken, Collections.emptyMap(), MCPResponseMode.LIST);
     }
-
+    
     public MCPItemsResponse(final List<?> items, final Map<String, Object> navigation) {
         this(items, "", navigation, MCPResponseMode.LIST);
     }
-
+    
     public MCPItemsResponse(final List<?> items, final String nextPageToken, final Map<String, Object> navigation, final String responseMode) {
         this.items = null == items ? Collections.emptyList() : items;
         this.nextPageToken = nextPageToken;
         this.navigation = null == navigation ? Collections.emptyMap() : navigation;
         this.responseMode = null == responseMode || responseMode.isEmpty() ? MCPResponseMode.LIST : responseMode;
     }
-
+    
     @Override
     public Map<String, Object> toPayload() {
         String continuationMode = resolveContinuationMode();
@@ -80,7 +80,7 @@ public final class MCPItemsResponse implements MCPResponse {
         result.putAll(navigation);
         return result;
     }
-
+    
     private String resolveContinuationMode() {
         Object value = navigation.get(CONTINUATION_MODE);
         if (value instanceof String && !((String) value).isEmpty()) {

@@ -26,17 +26,17 @@ import java.util.Locale;
  * Classify one SQL statement into the MCP statement classes.
  */
 public final class StatementClassifier {
-
+    
     private final SQLStatementScanner scanner = new SQLStatementScanner();
-
+    
     private final SQLStatementSafetyValidator safetyValidator = new SQLStatementSafetyValidator(scanner);
-
+    
     private final SQLStatementStructureResolver structureResolver = new SQLStatementStructureResolver(scanner);
-
+    
     private final SQLStatementClassResolver statementClassResolver = new SQLStatementClassResolver();
-
+    
     private final SQLStatementTargetResolver targetResolver = new SQLStatementTargetResolver(scanner, structureResolver);
-
+    
     /**
      * Classify one SQL statement.
      *
@@ -71,21 +71,21 @@ public final class StatementClassifier {
         return new ClassificationResult(statementClass, statementStructure.statementType(), actualSql, targetResolver.resolve(statementStructure), "", null,
                 targetResolver.resolveAll(statementStructure));
     }
-
+    
     private boolean isTransactionControlStatement(final String upperSql) {
         return "BEGIN".equals(upperSql)
                 || "START TRANSACTION".equals(upperSql)
                 || "COMMIT".equals(upperSql)
                 || "ROLLBACK".equals(upperSql);
     }
-
+    
     private boolean isSavepointStatement(final String upperSql) {
         return "SAVEPOINT".equals(upperSql)
                 || upperSql.startsWith("SAVEPOINT ")
                 || upperSql.startsWith("ROLLBACK TO SAVEPOINT")
                 || upperSql.startsWith("RELEASE SAVEPOINT");
     }
-
+    
     private String extractStatementType(final String upperSql) {
         if (upperSql.startsWith("START TRANSACTION")) {
             return "START TRANSACTION";
@@ -98,7 +98,7 @@ public final class StatementClassifier {
         }
         return upperSql.split("\\s+")[0];
     }
-
+    
     private String extractSavepointName(final String sql) {
         String[] tokens = sql.split("\\s+");
         if ("SAVEPOINT".equalsIgnoreCase(tokens[0]) && tokens.length >= 2) {
@@ -112,7 +112,7 @@ public final class StatementClassifier {
         }
         return "";
     }
-
+    
     private void validateSavepointName(final String statementType, final String savepointName) {
         if (!savepointName.isEmpty()) {
             return;
