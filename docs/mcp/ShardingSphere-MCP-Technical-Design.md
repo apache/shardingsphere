@@ -31,7 +31,7 @@
   - 统一 SQL 执行入口 `execute_query`
   - 统一错误模型
   - 统一事务与 `savepoint` 能力边界
-  - 统一审计与治理能力
+  - 统一 SQL execution trace 与治理可见性
 - 当前仓库和生态事实如下：
   - 根工程模块结构见 `pom.xml`（line 33）
   - 根工程 Java 基线为 8，`pom.xml`（line 55）
@@ -60,7 +60,7 @@
     - `capability`
     - `execute_query`
     - `transaction matrix`
-    - `audit`
+    - `SQL execution trace`
     - 统一错误模型
 
 ## 5. 非目标
@@ -216,7 +216,7 @@ shardingsphere
 - tool catalog 与参数归一化
 - 通用 payload / error payload builder
 - error model
-- audit facade
+- SQL execution trace facade
 - 对 ShardingSphere 内核能力的统一门面
 - runtime service 聚合
 - JDBC runtime 配置模型
@@ -299,7 +299,7 @@ shardingsphere
   - STDIO 本地调试入口
   - metadata discovery
   - `execute_query`
-  - 审计与变化可见性
+  - SQL execution trace 与变化可见性
 
 #### 9.1.4 Rollback Guidance
 - 如需回滚：
@@ -406,7 +406,7 @@ flowchart TB
     E --> F["Metadata / Governance / Execution"]
     F --> G["Underlying Databases"]
 
-    H["Audit / Metrics / Logging"] --> C
+    H["Trace / Metrics / Logging"] --> C
     H --> D
 ```
 
@@ -538,7 +538,7 @@ flowchart TB
   - 当前 database 上下文
   - 当前事务状态
   - `savepoint` 状态
-  - 审计使用的 session_id
+  - SQL execution trace 使用的 session_id
 
 ### 14.2 HTTP 会话策略
 - 由于 PRD 已定义事务与 `savepoint` 语义，HTTP 路径必须维护逻辑 MCP 会话。
@@ -581,19 +581,20 @@ flowchart TB
   - 验收标准的技术来源
   - 支持矩阵维护的统一资产
 
-## 15. 运行边界与审计设计
+## 15. 运行边界与 SQL Execution Trace 设计
 
 ### 15.1 运行边界
 - V1 内置 runtime 聚焦 session 协商、会话状态维护与运行边界校验。
 - follow-up production runtime 路径通过 `runtimeDatabases` 显式装配真实 metadata 与执行适配，不再允许默认空 `MetadataCatalog` / 空 `DatabaseRuntime` 作为成功启动路径。
 - HTTP 服务如需对外暴露，应放在受信网络、上游网关、反向代理或其他网络边界之后。
 
-### 15.2 审计基线
+### 15.2 SQL execution trace 基线
+- V1 只生成 SQL 执行路径的本地 trace 摘要，不承诺持久化合规日志或全量 MCP 活动记录。
 - 统一输出：
   - session_id
   - database
-  - operation_class
-  - operation_digest
+  - statement_class
+  - statement_digest
   - success_or_failure
   - error_code
   - transaction_marker
@@ -607,7 +608,7 @@ flowchart TB
   - 独立进程
   - 独立容器
   - 独立配置目录
-  - 独立日志与审计
+  - 独立日志与 SQL execution trace
   - 独立版本发布
 
 ### 16.2 调试模型
@@ -729,7 +730,7 @@ apache-shardingsphere-mcp-<version>/
 - 当前 V1 打包运行时默认具备：
   - 服务日志目录
   - `conf/logback.xml` 日志配置
-  - 审计相关代码路径
+  - SQL execution trace 相关代码路径
 - `readiness / liveness` 属于后续运行时增强项，当前 standalone runtime 未直接提供。
   - capability 快照
   - tool 调用统计
@@ -818,7 +819,7 @@ apache-shardingsphere-mcp-<version>/
 - 阶段 3：执行与治理
   - 完成 `execute_query`
   - 完成事务能力矩阵
-  - 完成 audit 治理链路
+  - 完成 SQL execution trace 治理可见性链路
 - 阶段 4：部署与联调
   - 完成 HTTP 服务化部署
   - 完成 STDIO 本地调试

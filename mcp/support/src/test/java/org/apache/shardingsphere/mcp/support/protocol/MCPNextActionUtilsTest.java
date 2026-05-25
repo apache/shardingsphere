@@ -38,7 +38,7 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("resource_uri"), is("shardingsphere://capabilities"));
         assertThat(actual.get("reason"), is("Read capabilities."));
         assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoLegacyAliases(actual);
+        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -50,7 +50,7 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("tool_name"), is("database_gateway_search_metadata"));
         assertThat(actual.get("arguments"), is(Map.of("query", "orders")));
         assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoLegacyAliases(actual);
+        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -61,7 +61,7 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("tool_name"), is("database_gateway_execute_update"));
         assertThat(actual.get("arguments"), is(Map.of("execution_mode", "preview")));
         assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoLegacyAliases(actual);
+        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -85,7 +85,7 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("resume_target"), is("database_gateway_search_metadata"));
         assertThat(actual.get("resume_arguments"), is(Map.of("query", "orders")));
         assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoLegacyAliases(actual);
+        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -104,7 +104,7 @@ class MCPNextActionUtilsTest {
         assertFalse(actual.containsKey("resume_target_type"));
         assertFalse(actual.containsKey("resume_target"));
         assertFalse(actual.containsKey("resume_arguments"));
-        assertNoLegacyAliases(actual);
+        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -115,7 +115,7 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("question"), is("Choose execution mode."));
         assertThat(actual.get("required_inputs"), is(List.of("execution_mode")));
         assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoLegacyAliases(actual);
+        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -125,7 +125,7 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("title"), is("Stop"));
         assertThat(actual.get("reason"), is("Done."));
         assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoLegacyAliases(actual);
+        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -145,7 +145,7 @@ class MCPNextActionUtilsTest {
         assertFalse(action.containsKey("depends_on"));
     }
     
-    private void assertNoLegacyAliases(final Map<String, Object> action) {
+    private void assertNoRemovedAliases(final Map<String, Object> action) {
         assertFalse(action.containsKey("target_tool"));
         assertFalse(action.containsKey("target_resource"));
         assertFalse(action.containsKey("required_arguments"));

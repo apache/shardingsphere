@@ -107,8 +107,7 @@ class SearchMetadataToolServiceTest {
         assertThat(actualSearchContext.get("database_scope"), is("single_database"));
         assertThat(actualSearchContext.get("schema"), is(""));
         assertThat(actualSearchContext.get("object_types"), is(List.of("table", "view")));
-        assertFalse(actualSearchContext.containsKey("page_size"));
-        assertFalse(actualSearchContext.containsKey("page_token"));
+        assertThat(actualSearchContext.keySet(), is(Set.of("query", "database", "database_scope", "schema", "object_types")));
         assertThat(actual.getTotalMatchCount(), is(4));
     }
     
@@ -123,7 +122,7 @@ class SearchMetadataToolServiceTest {
         assertThat(extractResourceHintUri(actual.getItems().get(2)), is("shardingsphere://databases/runtime_db/schemas/public/sequences/order_seq"));
         assertThat(extractParentResourceHintUri(actual.getItems().get(2)), is("shardingsphere://databases/runtime_db/schemas/public/sequences"));
         assertThat(actual.getItems().get(2).getMatchKind(), is("all"));
-        assertFalse(actual.getSearchContext().containsKey("page_size"));
+        assertThat(actual.getSearchContext().keySet(), is(Set.of("query", "database", "database_scope", "schema", "object_types")));
     }
     
     @Test

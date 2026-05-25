@@ -67,7 +67,7 @@ class MaskRuleDistSQLPlanningServiceTest {
     void assertPlanMaskRuleRejectsUnsafeExistingColumn() {
         MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class,
                 () -> service.planMaskRule(createRequest("alter"), List.of(Map.of("column", "bad column", "algorithm_type", "MD5"))));
-        assertThat(actualException.getMessage(), is("column `bad column` contains unsupported characters. Only unquoted SQL identifiers are supported in V1."));
+        assertThat(actualException.getMessage(), is("column `bad column` contains unsupported characters. Workflow and generated SQL planning support standard unquoted identifiers only."));
     }
     
     @Test

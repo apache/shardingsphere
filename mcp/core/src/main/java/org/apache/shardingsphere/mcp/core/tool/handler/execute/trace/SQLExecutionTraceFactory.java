@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.handler.execute.audit;
+package org.apache.shardingsphere.mcp.core.tool.handler.execute.trace;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -23,26 +23,22 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 
 /**
- * Record MCP audit events for metadata and query activity.
+ * Create SQL execution trace records.
  */
-public final class AuditRecorder {
+public final class SQLExecutionTraceFactory {
     
     /**
-     * Record one query-execution audit event.
+     * Create one SQL execution trace record.
      *
      * @param sessionId session identifier
      * @param databaseName logical database name
      * @param sql SQL text
      * @param success success flag
      * @param statementMarker optional statement marker
-     * @return recorded audit entry
+     * @return SQL execution trace record
      */
-    public AuditRecord recordQueryExecution(final String sessionId, final String databaseName, final String sql, final boolean success, final String statementMarker) {
-        return record(sessionId, databaseName, sql, success, statementMarker);
-    }
-    
-    private AuditRecord record(final String sessionId, final String databaseName, final String operationSource, final boolean success, final String statementMarker) {
-        return new AuditRecord(sessionId, databaseName, OperationClass.QUERY_EXECUTION, digest(operationSource), success, statementMarker, Instant.now().toString());
+    public SQLExecutionTraceRecord create(final String sessionId, final String databaseName, final String sql, final boolean success, final String statementMarker) {
+        return new SQLExecutionTraceRecord(sessionId, databaseName, digest(sql), success, statementMarker, Instant.now().toString());
     }
     
     private String digest(final String value) {

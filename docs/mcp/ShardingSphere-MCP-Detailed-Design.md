@@ -155,7 +155,7 @@ shardingsphere
   - `session`
   - `metadata`
   - `execute`
-  - `audit`
+  - `trace`
   - `config`
   - `common`
 - 说明：
@@ -177,8 +177,8 @@ shardingsphere
   - `execute`
     - `execute_query` facade
     - `DatabaseRuntime` assembly and JDBC-backed runtime context factory
-  - `audit`
-    - audit facade
+  - `trace`
+    - SQL execution trace facade
   - `config`
     - MCP 内部配置模型
   - `common`
@@ -392,7 +392,7 @@ stateDiagram-v2
   - 调用 ShardingSphere parse / route / execute
   - 统一结果映射
   - 统一错误映射
-  - 审计输出
+  - SQL execution trace 输出
 
 ### 10.2 执行阶段
 - 内部固定为 7 个阶段：
@@ -422,7 +422,7 @@ stateDiagram-v2
   - `savepoint`
   - `explain_analyze`
 - `WITH` 只表示 CTE 写法，不单独形成产品 statement class。
-- `statement class` 用于 capability、audit 和执行分支。
+- `statement class` 用于 capability、SQL execution trace 和执行分支。
 - `statement type` 用于表达更具体的用户可读动作，如 `SELECT`、`UPDATE`、`MERGE`。
 
 ### 10.4 统一结果
@@ -484,23 +484,24 @@ stateDiagram-v2
   - `driverClassName`
 - schema 采用 strict mapping
   - unknown key 直接报错
-  - legacy `runtime.*` alias 不再作为专门迁移分支保留
+  - `runtime.*` alias 不再作为专门迁移分支保留
   - per-database capability booleans 不再接受为 operator-facing 配置
 - distribution 默认配置提供一段 demo JDBC runtime，确保发行包第一次启动即可验证非空 metadata 与真实执行链路；真实部署需替换为目标环境配置
 
-## 12. 运行边界与审计详细设计
+## 12. 运行边界与 SQL Execution Trace 详细设计
 
 ### 12.1 运行边界
 - V1 内置 runtime 聚焦 session 协商、会话状态维护与运行边界校验。
 - follow-up production runtime 路径要求通过 `runtimeDatabases` 显式装配真实 metadata 与执行适配，不再允许空 runtime 作为成功启动兜底。
 - HTTP 端点如需对外暴露，应放在受信网络、上游网关、反向代理或其他网络边界之后。
 
-### 12.2 审计模型
+### 12.2 SQL execution trace 模型
+- V1 只生成当前 SQL 执行路径的本地 trace 摘要，不承诺持久化合规日志或全量 MCP 活动记录。
 - 统一输出：
   - sessionId
   - database
-  - operationClass
-  - operationDigest
+  - statementClass
+  - statementDigest
   - successOrFailure
   - errorCode
   - transactionMarker

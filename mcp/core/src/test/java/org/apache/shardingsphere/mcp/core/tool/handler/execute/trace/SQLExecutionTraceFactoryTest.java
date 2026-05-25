@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.handler.execute.audit;
+package org.apache.shardingsphere.mcp.core.tool.handler.execute.trace;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,23 +24,19 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AuditRecorderTest {
+class SQLExecutionTraceFactoryTest {
     
     @Test
-    void assertRecordQueryExecution() {
-        AuditRecorder auditRecorder = new AuditRecorder();
-        AuditRecord actual = auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", true, "QUERY");
-        assertThat(actual.getOperationClass(), is(OperationClass.QUERY_EXECUTION));
+    void assertCreateSuccessTrace() {
+        SQLExecutionTraceRecord actual = new SQLExecutionTraceFactory().create("session-1", "logic_db", "SELECT * FROM orders", true, "QUERY");
         assertTrue(actual.isSuccess());
         assertThat(actual.getDatabase(), is("logic_db"));
-        assertThat(actual.getOperationDigest().length(), is(64));
+        assertThat(actual.getSqlDigest().length(), is(64));
     }
     
     @Test
-    void assertRecordFailedQueryExecution() {
-        AuditRecorder auditRecorder = new AuditRecorder();
-        AuditRecord actual = auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", false, "QUERY");
-        assertThat(actual.getOperationClass(), is(OperationClass.QUERY_EXECUTION));
+    void assertCreateFailureTrace() {
+        SQLExecutionTraceRecord actual = new SQLExecutionTraceFactory().create("session-1", "logic_db", "SELECT * FROM orders", false, "QUERY");
         assertThat(actual.getStatementMarker(), is("QUERY"));
         assertFalse(actual.isSuccess());
     }

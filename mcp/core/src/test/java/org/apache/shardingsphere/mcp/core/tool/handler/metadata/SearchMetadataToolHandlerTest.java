@@ -76,9 +76,6 @@ class SearchMetadataToolHandlerTest {
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
             assertThat(actualPayload.get("total_match_count"), is(1));
-            assertFalse(actualPayload.containsKey("next_page_token"));
-            assertFalse((Boolean) actualPayload.get("has_more"));
-            assertThat(actualPayload.get("continuation_mode"), is("none"));
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_idx"));
             assertThat(((Map<?, ?>) actualPayload.get("search_context")).get("object_types"), is(List.of("index")));
         }
@@ -207,7 +204,6 @@ class SearchMetadataToolHandlerTest {
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((List<?>) actualPayload.get("items")).size(), is(3));
             assertThat(actualPayload.get("total_match_count"), is(3));
-            assertFalse(actualPayload.containsKey("next_page_token"));
             Map<?, ?> actualAmbiguityState = (Map<?, ?>) actualPayload.get("ambiguity_state");
             assertThat(actualAmbiguityState.get("candidate_count"), is(2));
             assertThat(actualAmbiguityState.get("duplicated_names"), is(List.of("orders")));

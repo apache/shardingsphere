@@ -20,7 +20,7 @@
 - 当前数据库接入主要存在以下问题：
 - 不同数据库 MCP 的资源命名、工具定义、返回结构和能力边界不一致。
 - 上层 Agent 需要分别适配多种数据库，接入成本高。
-- 企业希望统一数据库访问的对象暴露、审计、超时和结果限制。
+- 企业希望统一数据库访问的对象暴露、SQL execution trace、超时和结果限制。
 - 即使同样是列库、查结构、执行 SQL，不同数据库的行为、错误和结果表达也不一致。
 - ShardingSphere 具备统一接入多种数据库的能力，因此适合作为统一 MCP 出口。
 
@@ -73,7 +73,7 @@
 - Agent 统一发现多个数据库中的可访问对象。
 - Agent 统一读取表结构、字段、视图等元数据。
 - Agent 在不同数据库下使用同一套工具执行 SQL。
-- 平台统一承接审计、超时和结果限制要求。
+- 平台统一承接 SQL execution trace、超时和结果限制要求。
 - 数据库结构变化后，Agent 在分钟级看到 MCP 资源更新。
 - MCP 会话内通过事务控制语句管理事务边界。
 
@@ -178,11 +178,11 @@
 ### 工具定义
 - `list_databases`
 - `list_schemas(database)`
-- `list_tables(database, schema, search?, page_size?, page_token?)`
-- `list_views(database, schema, search?, page_size?, page_token?)`
-- `list_columns(database, schema, object_type, object_name, search?, page_size?, page_token?)`
-- `list_indexes(database, schema, table, search?, page_size?, page_token?)`
-- `search_metadata(database?, schema?, query, object_types?, page_size?, page_token?)`
+- `list_tables(database, schema, search?)`
+- `list_views(database, schema, search?)`
+- `list_columns(database, schema, object_type, object_name, search?)`
+- `list_indexes(database, schema, table, search?)`
+- `search_metadata(database?, schema?, query, object_types?)`
 - `describe_table(database, schema, table)`
 - `describe_view(database, schema, view)`
 - `get_capabilities(database?)`
@@ -210,13 +210,13 @@
 - `get_capabilities(database)` 返回数据库级 `capability`。
 - 当当前 `database` 不支持 `index` 时，`list_indexes` 统一返回 `unsupported`。
 
-## 13. 搜索、过滤与分页
+## 13. 搜索、过滤与收窄
 
 ### V1 必须支持
 - 列表查询支持关键字搜索。
-- 列表查询支持分页。
+- 大结果通过 `truncated`、`total_count`、`returned_count` 和收窄提示表达。
 - 元数据搜索支持按对象类型过滤。
-- 分页结果必须返回下一页标识或等价机制。
+- V1 不承诺 token-based continuation flow。
 - 不允许客户端通过完整枚举完成大型数据库结构发现。
 
 ### `search_metadata.object_types` 正式支持
@@ -288,7 +288,7 @@
 
 ## 16. MCP 会话与事务语义
 - 每个 MCP 会话对应一个逻辑会话上下文。
-- V1 内置运行时直接使用 `session_id` 作为审计标签。
+- V1 内置运行时直接使用 `session_id` 作为 SQL execution trace 标签。
 - 会话期间该 `session_id` 保持不变。
 - 会话不支持恢复；会话结束即逻辑上下文结束。
 - 默认执行模式为 `autocommit = true`。
@@ -394,12 +394,12 @@
 - `index` 是否支持由 `supported_object_types` 明确声明。
 - DDL、DCL、`EXPLAIN ANALYZE` 的事务边界行为必须由数据库级 `capability` 明确声明。
 
-## 20. 运行边界与审计
+## 20. 运行边界与 SQL Execution Trace
 
 ### V1 当前实现
 - 内置 runtime 不拦截调用请求。
 - HTTP 端点如需对外暴露，应放在受信网络、上游网关、反向代理或其他网络边界之后。
-- 元数据读取、工具调用与 SQL 执行都必须纳入审计。
+- SQL 执行路径生成本地 trace 摘要；V1 不承诺持久化合规日志或全量 MCP 活动记录。
 
 ### V1 不纳入正式验收
 - 内置对象级可见性裁剪
@@ -424,13 +424,13 @@
 - 若结构变更通过当前 MCP 会话执行成功，当前会话中应尽快可见。
 - 全局视角仍以 1 分钟内同步为准。
 
-## 23. 审计基线
+## 23. SQL Execution Trace 基线
 
-### 审计记录至少应包含
+### SQL execution trace 记录至少应包含
 - `session_id`
 - `database`
-- `operation_class`
-- `operation_digest`
+- `statement_class`
+- `statement_digest`
 - `success_or_failure`
 - `error_code`
 - `transaction_marker`
@@ -519,10 +519,10 @@
 1. 必须提供统一数据库访问与 SQL 执行公共面。
 2. 必须统一 `database / schema / table / view / column / capability` 对象语义。
 3. `index` 必须作为数据库级可选公共对象，通过 `capability` 明确声明。
-4. 必须支持对象发现的搜索、过滤与分页。
+4. 必须支持对象发现的搜索、过滤和大结果收窄提示。
 5. 必须提供正式公共工具 `execute_query`。
 6. 必须支持通用 SQL 执行，但 V1 不包含 `USE`、`SET`、`COPY`、`LOAD`、`CALL` 和各数据库专有高风险元命令。
-7. 必须定义 MCP 会话语义、审计标签和事务语义。
+7. 必须定义 MCP 会话语义、SQL execution trace 标签和事务语义。
 8. 必须区分事务控制语义与 `savepoint` 语义。
 9. 必须提供统一执行结果模型。
 10. 必须补充服务级 `capability` 与数据库级 `capability` 的正式内容模型。

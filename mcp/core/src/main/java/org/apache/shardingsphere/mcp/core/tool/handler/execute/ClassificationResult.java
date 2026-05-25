@@ -101,7 +101,7 @@ public final class ClassificationResult {
         return savepointName.isEmpty() ? Optional.empty() : Optional.of(savepointName);
     }
     
-    String getAuditMarker() {
+    String getTraceStatementMarker() {
         return SupportedMCPStatement.TRANSACTION_CONTROL == statementClass || SupportedMCPStatement.SAVEPOINT == statementClass ? statementType : statementClass.name();
     }
 }

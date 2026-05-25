@@ -60,7 +60,8 @@ public final class WorkflowSQLUtils {
     public static void checkSafeIdentifier(final String fieldName, final String identifier) {
         String actualIdentifier = trimToEmpty(identifier);
         ShardingSpherePreconditions.checkState(actualIdentifier.isEmpty() || isSafeIdentifier(actualIdentifier),
-                () -> new MCPInvalidRequestException(String.format("%s `%s` contains unsupported characters. Only unquoted SQL identifiers are supported in V1.", fieldName, actualIdentifier)));
+                () -> new MCPInvalidRequestException(String.format(
+                        "%s `%s` contains unsupported characters. Workflow and generated SQL planning support standard unquoted identifiers only.", fieldName, actualIdentifier)));
     }
     
     /**

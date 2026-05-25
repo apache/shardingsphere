@@ -27,7 +27,6 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CoreToolDescriptorValidatorTest {
@@ -40,13 +39,9 @@ class CoreToolDescriptorValidatorTest {
     @Test
     void assertSearchMetadataDocumentsCompleteSearchResult() {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor("database_gateway_search_metadata");
-        assertFalse(getInputProperties(descriptor).containsKey("page_size"));
-        assertFalse(getInputProperties(descriptor).containsKey("page_token"));
-        assertFalse(getOutputProperties(descriptor).containsKey("next_page_token"));
-        assertThat(findOutputProperty(descriptor, "has_more").get("description"),
-                is("Whether an application-level continuation mode is active. Metadata search returns false; not MCP list pagination."));
-        assertThat(findOutputProperty(descriptor, "continuation_mode").get("description"),
-                is("ShardingSphere application continuation mode for this metadata search result; not MCP cursor or nextCursor semantics."));
+        assertTrue(getInputProperties(descriptor).containsKey("query"));
+        assertTrue(getOutputProperties(descriptor).containsKey("search_context"));
+        assertTrue(getOutputProperties(descriptor).containsKey("total_match_count"));
     }
     
     @Test
@@ -79,10 +74,6 @@ class CoreToolDescriptorValidatorTest {
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new CoreToolDescriptorValidator().validate(new MCPToolDescriptor(
                 descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), inputSchema, descriptor.getOutputSchema(), descriptor.getAnnotations(), descriptor.getMeta())));
         assertThat(actual.getMessage(), is("Tool `database_gateway_execute_update` must declare execution_mode."));
-    }
-    
-    private Map<?, ?> findOutputProperty(final MCPToolDescriptor toolDescriptor, final String fieldName) {
-        return (Map<?, ?>) getOutputProperties(toolDescriptor).get(fieldName);
     }
     
     private Map<?, ?> getInputProperties(final MCPToolDescriptor toolDescriptor) {

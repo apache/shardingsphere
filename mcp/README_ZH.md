@@ -120,6 +120,8 @@ curl -sS http://127.0.0.1:18088/mcp \
 - 当前 public tools 包括 `database_gateway_search_metadata`、`database_gateway_execute_query`、`database_gateway_execute_update`、`database_gateway_plan_encrypt_rule`、`database_gateway_plan_mask_rule`、`database_gateway_apply_workflow` 和 `database_gateway_validate_workflow`。
 - `database_gateway_execute_query` 只接受分类器批准的 `SELECT` 和 `EXPLAIN ANALYZE`，并拒绝已知有副作用的查询形态；
   DML、DDL、DCL、事务控制、savepoint 以及其他支持的有副作用 SQL 要使用 `database_gateway_execute_update`。
+- SQL 执行分类会识别限定名和带引号对象名，但用途仅限安全分类与跨 schema 防护；
+  这不代表 workflow 规划输入支持这些写法，也不代表 MCP 内置通用 SQL 表达式解析器。
 - `database_gateway_execute_query.max_rows` 省略或传 `0` 时使用服务端默认值 `100`；显式传 `1` 到 `5000` 用于限制返回行数。
 - 加密与脱敏 workflow 面向由 ShardingSphere-Proxy 暴露的逻辑库；下文会单独说明这部分的前置条件和使用方式。
 - `database_gateway_search_metadata.object_types` 只接受 `database`、`schema`、`table`、`view`、`column`、`index`、`sequence`。
@@ -192,8 +194,7 @@ Descriptor 必须说明模型该如何使用这个 surface，而不是只重复 
   以及 workflow plan 到 apply 或 validation 工具。
 - `shardingsphere://runtime` 暴露轻量运行时状态，`shardingsphere://workflows/{plan_id}` 支持按 plan_id 回读 workflow plan。
 - `fingerprints` 记录 descriptor、prompt、navigation 和模型可见 schema 的确定性哈希，让测试产物能证明模型使用的是哪一版 MCP surface。
-- item-list 响应总会包含 `items`、`count`、`has_more` 和 `continuation_mode`。`next_page_token` 只会在响应支持 ShardingSphere application-level pagination 时出现；
-  这些 structured payload 字段不是 MCP list 方法的 `cursor` 或 `nextCursor`。
+- item-list 响应总会包含 `items` 和 `count`。大结果 payload 在需要收窄后续查询时使用 typed `truncated`、`total_count`、`returned_count` 和 `large_result_guidance` 字段。
   resource read 还会包含 `self_uri`，并在适用时包含 typed `parent_resource` 或 typed `next_resources`。
 - Workflow tool 响应包含 `missing_required_inputs`、`clarification_questions`、`resources_to_read` 和 `next_actions`，
   让模型可以按结构化提示继续补问、预览、执行或校验。
@@ -326,7 +327,7 @@ bin\start.bat conf\mcp-stdio.yaml
 ## Runtime 说明
 
 - 发行包里的 `conf/mcp-http.yaml` 现在默认内置一段 demo 多数据库 JDBC `runtimeDatabases` 配置，所以第一次启动就能验证逻辑库发现和真实 query 执行。
-- 如果要接真实部署，请把 `runtimeDatabases` 段替换成你自己的逻辑库映射和 JDBC 连接属性。每个逻辑库条目都需要显式声明所需的 runtime 字段；schema 发现改为依赖 JDBC metadata，legacy `runtime.*` alias 已不再支持。
+- 如果要接真实部署，请把 `runtimeDatabases` 段替换成你自己的逻辑库映射和 JDBC 连接属性。每个逻辑库条目都需要显式声明所需的 runtime 字段；schema 发现改为依赖 JDBC metadata，`runtime.*` alias 已不再支持。
 - 对支持 JDBC 4 自动注册的驱动，`driverClassName` 可以不写；只有目标驱动需要显式覆盖时再配置。
 - 发行包默认把 MCP 官方基线 jar，包括 encrypt 和 mask feature，放在 `lib/` 下。
 - 如果目标数据库驱动或额外的 MCP feature jar 没有随发行包提供，请先把对应 jar 放到 `plugins/`，再执行 `bin/start.sh` 或 `bin\start.bat`。
@@ -1144,8 +1145,8 @@ curl -sS http://127.0.0.1:18088/mcp \
 - `encrypt drop` 只删除规则；物理派生列和索引仍需人工清理
 - 不处理存量数据迁移或回填
 - 不提供自动回滚能力
-- 不做审计落库
-- V1 只支持未加引号的 SQL identifier
+- 不持久化 SQL 执行 trace
+- workflow 与生成 DDL/DistSQL 的规划输入只接受标准未加引号的逻辑 identifier
 
 ## Registry 与 OCI 发布
 
@@ -1250,7 +1251,7 @@ sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh
 - `mcp/support`：为 MCP core 与可插拔 feature 提供 database metadata、execution、capability、workflow context、model、facade、SPI 与复用 helper
 - `mcp/features/encrypt`：encrypt tools、resources、planning / apply / validation 与算法可见性装配
 - `mcp/features/mask`：mask tools、resources、planning / apply / validation 与算法可见性装配
-- `mcp/core`：handler 发现、registry、request scope 实现、session、audit、execute-query runtime service 聚合，以及 JDBC runtime 配置模型、metadata 发现、`DatabaseRuntime` 装配与 JDBC-backed runtime context factory
+- `mcp/core`：handler 发现、registry、request scope 实现、session、SQL execution trace 创建、execute-query runtime service 聚合，以及 JDBC runtime 配置模型、metadata 发现、`DatabaseRuntime` 装配与 JDBC-backed runtime context factory
 - `mcp/bootstrap`：基于 MCP Java SDK 的 bootstrap、HTTP / STDIO transport、顶层配置加载、feature SPI 汇总与生命周期管理
 - `distribution/mcp`：独立打包、启动脚本、配置、Dockerfile
 - `test/e2e/mcp`：端到端契约验证

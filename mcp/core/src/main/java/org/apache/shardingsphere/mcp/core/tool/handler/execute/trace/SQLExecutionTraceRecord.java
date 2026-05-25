@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.handler.execute.audit;
+package org.apache.shardingsphere.mcp.core.tool.handler.execute.trace;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Audit record projection.
+ * SQL execution trace projection.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AuditRecord {
+public final class SQLExecutionTraceRecord {
     
     private final String sessionId;
     
     private final String database;
     
-    private final OperationClass operationClass;
-    
-    private final String operationDigest;
+    private final String sqlDigest;
     
     private final boolean success;
     

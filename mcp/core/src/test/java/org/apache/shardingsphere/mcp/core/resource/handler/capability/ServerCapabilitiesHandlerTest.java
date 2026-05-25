@@ -57,7 +57,7 @@ class ServerCapabilitiesHandlerTest {
         assertNextActionContract(actual);
         assertCommonFlows(actual);
         assertSecurityHints(actual);
-        assertLegacyPayloadFieldsAbsent(actual);
+        assertRemovedPayloadFieldsAbsent(actual);
         assertResourcePayloadContracts(actual);
         assertCoreToolSchemas(actual);
     }
@@ -199,7 +199,7 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(String.valueOf(actualClientSafetyPolicy.get("abuse_guard")).contains("counted before dispatch"));
     }
     
-    private void assertLegacyPayloadFieldsAbsent(final Map<String, Object> capabilities) {
+    private void assertRemovedPayloadFieldsAbsent(final Map<String, Object> capabilities) {
         String actual = JsonUtils.toJsonString(capabilities);
         for (String each : List.of("pending_questions", "parent_uri", "next_resource_uris", "read_resources_first", "empty_reason", "not_found_reason")) {
             assertFalse(actual.contains(each));
@@ -254,27 +254,27 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> inspectMetadataPrompt = findPrompt(capabilities, "inspect_metadata");
         Map<?, ?> schemaArgument = findPromptArgument(inspectMetadataPrompt, "schema");
         assertThat(((Map<?, ?>) schemaArgument.get("completion")).get("required_context_arguments"), is(List.of("database")));
-        assertNoLegacyPublicAliasFields(capabilities);
+        assertNoRemovedPublicAliasFields(capabilities);
     }
     
-    private void assertNoLegacyPublicAliasFields(final Object value) {
+    private void assertNoRemovedPublicAliasFields(final Object value) {
         if (value instanceof Map) {
-            assertNoLegacyPublicAliasFieldMap((Map<?, ?>) value);
+            assertNoRemovedPublicAliasFieldMap((Map<?, ?>) value);
         } else if (value instanceof Collection) {
             for (Object each : (Collection<?>) value) {
-                assertNoLegacyPublicAliasFields(each);
+                assertNoRemovedPublicAliasFields(each);
             }
         }
     }
     
-    private void assertNoLegacyPublicAliasFieldMap(final Map<?, ?> value) {
+    private void assertNoRemovedPublicAliasFieldMap(final Map<?, ?> value) {
         assertFalse(value.containsKey("recommended_next_tool"));
         assertFalse(value.containsKey("suggested_next_tool"));
         assertFalse(value.containsKey("suggested_next_tools"));
         assertFalse(value.containsKey("recommended_recovery"));
         assertFalse(value.containsKey("suggested_next_action"));
         for (Object each : value.values()) {
-            assertNoLegacyPublicAliasFields(each);
+            assertNoRemovedPublicAliasFields(each);
         }
     }
     

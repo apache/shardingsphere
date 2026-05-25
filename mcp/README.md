@@ -121,6 +121,8 @@ Notes:
 - The current public tools are `database_gateway_search_metadata`, `database_gateway_execute_query`, `database_gateway_execute_update`, `database_gateway_plan_encrypt_rule`, `database_gateway_plan_mask_rule`, `database_gateway_apply_workflow`, and `database_gateway_validate_workflow`.
 - `database_gateway_execute_query` accepts classifier-approved `SELECT` and `EXPLAIN ANALYZE` statements only, and rejects known side-effecting query forms.
   Use `database_gateway_execute_update` for DML, DDL, DCL, transaction control, savepoints, and other supported side-effecting SQL.
+- SQL execution classification recognizes qualified and quoted object names only for safety checks and cross-schema guarding.
+  This does not expand workflow planning input support or introduce a general SQL expression parser.
 - `database_gateway_execute_query.max_rows` uses server default `100` when omitted or set to `0`; explicit values from `1` to `5000` bound returned rows.
 - The encrypt and mask workflow targets logical databases exposed by ShardingSphere-Proxy; the dedicated usage notes appear below.
 - `database_gateway_search_metadata.object_types` accepts `database`, `schema`, `table`, `view`, `column`, `index`, and `sequence` only.
@@ -193,11 +195,10 @@ Descriptors must describe what the model should use the surface for, not just re
   and workflow plans to apply or validation tools.
 - `shardingsphere://runtime` exposes a small runtime status readout, and `shardingsphere://workflows/{plan_id}` lets clients read back a workflow plan by ID.
 - `fingerprints` records deterministic hashes for descriptor, prompt, navigation, and model-facing schema surfaces so test artifacts can prove which MCP surface a model used.
-- Item-list responses always include `items`, `count`, `has_more`, and `continuation_mode`. `next_page_token` appears only when a response supports ShardingSphere application-level pagination;
-  these structured payload fields are not MCP list-method `cursor` or `nextCursor`.
-  Resource reads also include `self_uri`, and include typed `parent_resource` or typed `next_resources` when applicable.
+- Item-list responses always include `items` and `count`. Large result payloads use typed `truncated`, `total_count`, `returned_count`, and `large_result_guidance` fields when the server needs a narrower follow-up query.
+  Resource reads include `self_uri`, and include typed `parent_resource` or typed `next_resources` when applicable.
 - Workflow tool responses include `missing_required_inputs`, `clarification_questions`, `resources_to_read`, `review_summary`, and `next_actions`
-  so a model can continue the workflow without guessing or relying on legacy recommendation fields.
+  so a model can continue the workflow without guessing or relying on removed recommendation alias fields.
 - Recoverable error payloads keep `message`, and add `recovery` hints for missing arguments, unsupported tools or resources,
   invalid enum values, workflow state errors, and unsafe SQL tool selection.
   JSON-RPC numeric error codes are the MCP protocol error contract.
@@ -356,7 +357,7 @@ Reference:
 ## Runtime Notes
 
 - The packaged `conf/mcp-http.yaml` now ships with a demo multi-database JDBC `runtimeDatabases` block so the distribution can prove logical-database discovery and real query execution on the first run.
-- For real deployments, replace the `runtimeDatabases` block with your own logical database mapping and JDBC connection properties. Each logical database entry must declare its own required runtime fields; schema discovery now comes from JDBC metadata, and legacy `runtime.*` aliases are no longer supported.
+- For real deployments, replace the `runtimeDatabases` block with your own logical database mapping and JDBC connection properties. Each logical database entry must declare its own required runtime fields; schema discovery now comes from JDBC metadata, and `runtime.*` aliases are no longer supported.
 - `driverClassName` is optional for JDBC 4 drivers that auto-register through `DriverManager`. Keep it only when your target driver requires an explicit override.
 - The packaged distribution keeps the official MCP baseline jars, including encrypt and mask, under `lib/`.
 - If your target database driver or an extra MCP feature jar is not already packaged, copy that jar under `plugins/` before running `bin/start.sh` or `bin\start.bat`.
@@ -1174,8 +1175,8 @@ curl -sS http://127.0.0.1:18088/mcp \
 - `encrypt drop` removes rules only; physical derived columns and indexes still require manual cleanup
 - no existing-data migration or backfill
 - no automatic rollback support
-- no audit persistence
-- V1 supports unquoted SQL identifiers only
+- no SQL execution trace persistence
+- workflow and generated DDL/DistSQL planning inputs use standard unquoted logical identifiers only
 
 ## Registry and OCI Publication
 
@@ -1281,7 +1282,7 @@ sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh
 - `mcp/support`: database metadata, execution, capability, and workflow contexts, models, facades, SPI, and reusable helpers for MCP core and pluggable features
 - `mcp/features/encrypt`: encrypt tools, resources, planning / apply / validation, and algorithm visibility assembly
 - `mcp/features/mask`: mask tools, resources, planning / apply / validation, and algorithm visibility assembly
-- `mcp/core`: handler discovery, registry, request scope implementation, session, audit, execute-query runtime service assembly, JDBC runtime configuration, metadata discovery, `DatabaseRuntime` assembly, and the JDBC-backed runtime context factory
+- `mcp/core`: handler discovery, registry, request scope implementation, session, SQL execution trace creation, execute-query runtime service assembly, JDBC runtime configuration, metadata discovery, `DatabaseRuntime` assembly, and the JDBC-backed runtime context factory
 - `mcp/bootstrap`: MCP Java SDK based bootstrap, HTTP / STDIO transport, top-level config loading, feature SPI aggregation, and lifecycle management
 - `distribution/mcp`: standalone packaging, scripts, config, Dockerfile
 - `test/e2e/mcp`: end-to-end contract validation
