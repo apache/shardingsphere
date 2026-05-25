@@ -35,19 +35,19 @@ class MySQLBitLengthFunctionTest {
         assertDoesNotThrow(MySQLBitLengthFunction::new);
     }
     
-    @ParameterizedTest(name = "bitLength({0}) -> {1}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("bitLengthTestCases")
-    void assertBitLength(final Object input, final Object expected) {
+    void assertBitLength(final String name, final Object input, final Object expected) {
         assertThat(MySQLBitLengthFunction.bitLength(input), is(expected));
     }
     
     private static Stream<Arguments> bitLengthTestCases() {
         return Stream.of(
-                Arguments.of(null, null),
-                Arguments.of("", 0L),
-                Arguments.of("abc", 24L),
-                Arguments.of("中文", 48L),
-                Arguments.of(new byte[]{1, 2, 3}, 24L),
-                Arguments.of(new byte[0], 0L));
+                Arguments.of("null input returns null", null, null),
+                Arguments.of("empty string returns zero", "", 0L),
+                Arguments.of("ASCII string", "abc", 24L),
+                Arguments.of("multi-byte UTF-8 string", "中文", 48L),
+                Arguments.of("non-empty byte array", new byte[]{1, 2, 3}, 24L),
+                Arguments.of("empty byte array", new byte[0], 0L));
     }
 }

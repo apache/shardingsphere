@@ -33,7 +33,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 /**
- * MySQL BIT_LENGTH function returning the bit length of the operand (UTF-8 byte count multiplied by eight for character values).
+ * MySQL {@code BIT_LENGTH} function returning the bit length of the operand: the raw array length times eight for
+ * {@code byte[]} values and the UTF-8 byte length times eight for character values.
+ *
+ * <p>Character-set introducers such as {@code _latin1} / {@code _binary} are not honored; a character value is always
+ * treated as UTF-8. Honoring introducers would require collation-aware operand inspection and is left as follow-up.</p>
  */
 public final class MySQLBitLengthFunction extends SqlUserDefinedFunction {
     

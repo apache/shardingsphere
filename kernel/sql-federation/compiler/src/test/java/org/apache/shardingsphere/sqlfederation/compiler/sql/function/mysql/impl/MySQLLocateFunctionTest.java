@@ -36,37 +36,37 @@ class MySQLLocateFunctionTest {
         assertDoesNotThrow(() -> new MySQLLocateFunction(true));
     }
     
-    @ParameterizedTest(name = "locate({0}, {1}) -> {2}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("locateTestCases")
-    void assertLocate(final String substring, final String value, final Integer expected) {
+    void assertLocate(final String name, final String substring, final String value, final Integer expected) {
         assertThat(MySQLLocateFunction.locate(substring, value), is(expected));
     }
     
     private static Stream<Arguments> locateTestCases() {
         return Stream.of(
-                Arguments.of(null, "abc", null),
-                Arguments.of("a", null, null),
-                Arguments.of("a", "abc", 1),
-                Arguments.of("c", "abc", 3),
-                Arguments.of("x", "abc", 0),
-                Arguments.of("", "abc", 1));
+                Arguments.of("null substring returns null", null, "abc", null),
+                Arguments.of("null value returns null", "a", null, null),
+                Arguments.of("substring at start", "a", "abc", 1),
+                Arguments.of("substring at end", "c", "abc", 3),
+                Arguments.of("substring not found", "x", "abc", 0),
+                Arguments.of("empty substring returns 1", "", "abc", 1));
     }
     
-    @ParameterizedTest(name = "locateAt({0}, {1}, {2}) -> {3}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("locateAtTestCases")
-    void assertLocateAt(final String substring, final String value, final Integer position, final Integer expected) {
+    void assertLocateAt(final String name, final String substring, final String value, final Integer position, final Integer expected) {
         assertThat(MySQLLocateFunction.locateAt(substring, value, position), is(expected));
     }
     
     private static Stream<Arguments> locateAtTestCases() {
         return Stream.of(
-                Arguments.of(null, "abc", 1, null),
-                Arguments.of("a", null, 1, null),
-                Arguments.of("a", "abc", null, null),
-                Arguments.of("a", "abca", 2, 4),
-                Arguments.of("a", "abc", 0, 0),
-                Arguments.of("a", "abc", -1, 0),
-                Arguments.of("a", "abc", 5, 0),
-                Arguments.of("c", "abc", 3, 3));
+                Arguments.of("null substring returns null", null, "abc", 1, null),
+                Arguments.of("null value returns null", "a", null, 1, null),
+                Arguments.of("null position returns null", "a", "abc", null, null),
+                Arguments.of("substring found after start position", "a", "abca", 2, 4),
+                Arguments.of("zero start position returns 0", "a", "abc", 0, 0),
+                Arguments.of("negative start position returns 0", "a", "abc", -1, 0),
+                Arguments.of("start position past end returns 0", "a", "abc", 5, 0),
+                Arguments.of("substring at exact start position", "c", "abc", 3, 3));
     }
 }

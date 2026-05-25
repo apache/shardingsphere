@@ -35,20 +35,20 @@ class MySQLLengthFunctionTest {
         assertDoesNotThrow(MySQLLengthFunction::new);
     }
     
-    @ParameterizedTest(name = "length({0}) -> {1}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("lengthTestCases")
-    void assertLength(final Object input, final Object expected) {
+    void assertLength(final String name, final Object input, final Object expected) {
         assertThat(MySQLLengthFunction.length(input), is(expected));
     }
     
     private static Stream<Arguments> lengthTestCases() {
         return Stream.of(
-                Arguments.of(null, null),
-                Arguments.of("", 0L),
-                Arguments.of("abc", 3L),
-                Arguments.of("中文", 6L),
-                Arguments.of(new byte[]{1, 2, 3, 4}, 4L),
-                Arguments.of(new byte[0], 0L),
-                Arguments.of(42, 2L));
+                Arguments.of("null input returns null", null, null),
+                Arguments.of("empty string returns zero", "", 0L),
+                Arguments.of("ASCII string", "abc", 3L),
+                Arguments.of("multi-byte UTF-8 string", "中文", 6L),
+                Arguments.of("non-empty byte array", new byte[]{1, 2, 3, 4}, 4L),
+                Arguments.of("empty byte array", new byte[0], 0L),
+                Arguments.of("non-string non-array uses toString", 42, 2L));
     }
 }

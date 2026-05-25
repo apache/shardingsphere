@@ -33,7 +33,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 /**
- * MySQL LENGTH function returning the byte length of the operand (UTF-8 for character values, raw length for binary values).
+ * MySQL {@code LENGTH} function returning the byte length of the operand: the raw array length for {@code byte[]} values
+ * and the UTF-8 byte length for character values.
+ *
+ * <p>Character-set introducers such as {@code _latin1} / {@code _binary} are not honored; a character value is always
+ * treated as UTF-8. {@code LENGTH(_latin1'Müller')} therefore returns 7 (UTF-8 bytes) rather than the 6 latin1 bytes
+ * MySQL would report. Honoring introducers would require collation-aware operand inspection and is left as follow-up.</p>
  */
 public final class MySQLLengthFunction extends SqlUserDefinedFunction {
     

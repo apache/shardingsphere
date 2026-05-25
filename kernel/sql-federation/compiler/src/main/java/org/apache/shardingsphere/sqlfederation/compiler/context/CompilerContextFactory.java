@@ -35,9 +35,12 @@ import org.apache.shardingsphere.parser.rule.builder.SQLParserRuleBuilder;
 import org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.SQLFederationConnectionConfigBuilderFactory;
 import org.apache.shardingsphere.sqlfederation.compiler.context.schema.CalciteSchemaBuilder;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLStringFunctionOperatorTable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -74,6 +77,12 @@ public final class CompilerContextFactory {
     private static Collection<SqlOperatorTable> getOperatorTables(final DatabaseType databaseType) {
         SqlOperatorTable operatorTable = SqlLibraryOperatorTableFactory.INSTANCE.getOperatorTable(
                 Arrays.asList(SqlLibrary.STANDARD, DATABASE_TYPE_SQL_LIBRARIES.getOrDefault(databaseType.getType(), SqlLibrary.MYSQL)));
-        return Arrays.asList(new MySQLOperatorTable(), operatorTable);
+        List<SqlOperatorTable> result = new ArrayList<>(3);
+        result.add(new MySQLOperatorTable());
+        if ("MySQL".equalsIgnoreCase(databaseType.getType())) {
+            result.add(new MySQLStringFunctionOperatorTable());
+        }
+        result.add(operatorTable);
+        return result;
     }
 }

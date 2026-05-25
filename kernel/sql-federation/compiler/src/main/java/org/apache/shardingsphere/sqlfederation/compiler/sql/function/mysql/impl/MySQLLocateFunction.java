@@ -33,7 +33,13 @@ import org.apache.calcite.sql.validate.SqlUserDefinedFunction;
 import java.util.Arrays;
 
 /**
- * MySQL LOCATE function returning the 1-based position of a substring in a string, or 0 when absent, mirroring MySQL semantics for the optional start position.
+ * MySQL {@code LOCATE} function returning the 1-based position of a substring in a string, or 0 when absent, mirroring
+ * MySQL semantics for the optional start position.
+ *
+ * <p>Comparison is byte-by-byte case-sensitive on the {@code byte[]} overload and {@link String#indexOf(String, int)}
+ * (case-sensitive) on the character overload. MySQL's collation-driven case-insensitive matching for non-binary inputs
+ * is not modeled; character-set introducers such as {@code _latin1} / {@code _binary} are not honored. Honoring those
+ * would require collation-aware operand inspection and is left as follow-up.</p>
  */
 public final class MySQLLocateFunction extends SqlUserDefinedFunction {
     
