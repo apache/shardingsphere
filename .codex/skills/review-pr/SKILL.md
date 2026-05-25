@@ -233,41 +233,92 @@ When the user provides previous-round feedback or PR adds new commits, perform i
 
 ## Output Structure
 
+### GitHub Review Markdown Requirements
+
+- Format every review as GitHub-flavored Markdown that can be pasted directly into a PR comment or review body.
+- Do not wrap the whole review in a code fence, blockquote, XML/HTML container, or plain-text transcript.
+- Use the same natural language as the user request unless the user explicitly asks for another language.
+- Use Markdown headings (`### Decision`, `### Major Issues`, etc.) with a blank line before and after each heading.
+- Keep the GitHub Markdown structure unchanged regardless of output language.
+- Keep `Merge Verdict: ...` as a bold bullet near the top, and output exactly one verdict line.
+- Keep stable review labels in English, such as `Merge Verdict`, `Reviewed Scope`, `Not Reviewed Scope`, and `Need Expert Review`,
+  so they remain searchable and consistent.
+- Use short unordered bullets under each heading; use bold inline labels such as `Symptom:`, `Risk:`, and `Action:` for issue details.
+- Use repo-relative paths with line numbers, for example `infra/.../Foo.java:123`; do not use local absolute file paths in GitHub-facing review text.
+- Prefer bullets over tables. Use tables only for compact status summaries that remain readable in GitHub's narrow review pane.
+- Keep command evidence in inline code or short fenced blocks; avoid long raw JSON, full logs, or unrendered terminal transcripts.
+- Before final output, perform a formatting self-check:
+  - The response is not wrapped in a whole-message code fence, blockquote, XML/HTML container, or transcript.
+  - The response contains the required `###` headings for the selected verdict template.
+  - The response contains exactly one bold `Merge Verdict: ...` line.
+  - File references are repo-relative paths with line numbers, not local absolute paths.
+  - Stable labels remain in English.
+
 ### A. Not Mergeable (Change Request)
 
-Use committer tone, gentle wording, no emojis; structure:
+Use committer tone, gentle wording, no emojis; use this GitHub Markdown skeleton:
 
-1. Decision block
-   - `Merge Verdict: Not Mergeable`
-   - `Reviewed Scope / Not Reviewed Scope / Need Expert Review`
-2. Positive feedback (optional)
-   - Include only when there are genuinely correct direction-aligned changes.
-   - Omit if none.
-3. Major issues
-   - List unreasonable/incorrect points by severity.
-   - Each issue includes: label, symptom, risk, recommended action (fix or rollback).
-4. Newly introduced issues
-   - Point out defects/regression risks introduced by this PR.
-   - Clearly require fix or rollback.
-5. Unrelated changes (output only when present)
-   - List changes unrelated to this PR goal and request rollback.
-6. Next-step suggestions
-   - Provide executable fix checklist and encourage next revision.
-7. Multi-round comparison (only when history exists)
-   - Versus previous round: closed, unresolved, and new items.
-8. Evidence supplement (only when information is insufficient)
-   - Explicitly list minimum additional information and review entry points.
+```markdown
+### Decision
+
+- **Merge Verdict: Not Mergeable**
+- **Reviewed Scope:** ...
+- **Not Reviewed Scope:** ...
+- **Need Expert Review:** ...
+
+### Positive Feedback
+
+- Optional; omit this section when there is no genuinely correct direction-aligned change.
+
+### Major Issues
+
+- **[Severity] Short issue title** (`path/to/File.java:123`)
+  - **Symptom:** ...
+  - **Risk:** ...
+  - **Action:** Please ...
+
+### Newly Introduced Issues
+
+- Include only when the latest PR revision introduces new defects or regression risks.
+
+### Unrelated Changes
+
+- Include only when unrelated changes exist, and explicitly ask for rollback.
+
+### Next Steps
+
+- Provide an executable fix checklist.
+
+### Multi-Round Comparison
+
+- Include only when previous-round feedback exists; summarize closed, unresolved, and new items.
+
+### Evidence Supplement
+
+- Include only when information gaps block mergeability; list the minimum additional information required.
+```
 
 ### B. Mergeable
 
-1. Decision block
-   - `Merge Verdict: Mergeable`
-   - `Reviewed Scope / Not Reviewed Scope / Need Expert Review`
-2. Basis
-   - Root-cause fix evidence.
-   - Risk assessment results (proving no unresolved risk).
-3. Pre-merge checks
-   - CI, tests, compatibility confirmations.
+Use this GitHub Markdown skeleton:
+
+```markdown
+### Decision
+
+- **Merge Verdict: Mergeable**
+- **Reviewed Scope:** ...
+- **Not Reviewed Scope:** ...
+- **Need Expert Review:** ...
+
+### Basis
+
+- Root-cause fix evidence.
+- Risk assessment results proving no unresolved risk.
+
+### Pre-Merge Checks
+
+- CI, tests, and compatibility confirmations.
+```
 
 ## Change Request Tone Guidelines
 
