@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -47,7 +48,8 @@ public final class ProxySQLComQueryParser {
         if (SQLUtils.trimComment(sql).isEmpty()) {
             return new EmptyStatement(parserDatabaseType);
         }
-        SQLParserRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
+        SQLParserRule rule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         return rule.getSQLParserEngine(parserDatabaseType).parse(sql, false);
     }
     
