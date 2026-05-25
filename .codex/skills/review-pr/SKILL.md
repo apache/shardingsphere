@@ -236,7 +236,7 @@ When the user provides previous-round feedback or PR adds new commits, perform i
 ### GitHub Review Markdown Requirements
 
 - Format every review as GitHub-flavored Markdown that can be pasted directly into a PR comment or review body.
-- Do not wrap the whole review in a code fence, blockquote, XML/HTML container, or plain-text transcript.
+- The GitHub-facing review body must not be wrapped in a code fence, blockquote, XML/HTML container, or plain-text transcript.
 - Use the same natural language as the user request unless the user explicitly asks for another language.
 - Use Markdown headings (`### Decision`, `### Major Issues`, etc.) with a blank line before and after each heading.
 - Keep the GitHub Markdown structure unchanged regardless of output language.
@@ -247,12 +247,21 @@ When the user provides previous-round feedback or PR adds new commits, perform i
 - Use repo-relative paths with line numbers, for example `infra/.../Foo.java:123`; do not use local absolute file paths in GitHub-facing review text.
 - Prefer bullets over tables. Use tables only for compact status summaries that remain readable in GitHub's narrow review pane.
 - Keep command evidence in inline code or short fenced blocks; avoid long raw JSON, full logs, or unrendered terminal transcripts.
-- Before final output, perform a formatting self-check:
-  - The response is not wrapped in a whole-message code fence, blockquote, XML/HTML container, or transcript.
-  - The response contains the required `###` headings for the selected verdict template.
-  - The response contains exactly one bold `Merge Verdict: ...` line.
+- Before final output, perform a formatting self-check on the inner GitHub-facing review body:
+  - The inner GitHub-facing review body is not wrapped in a code fence, blockquote, XML/HTML container, or transcript.
+  - The inner GitHub-facing review body contains the required `###` headings for the selected verdict template.
+  - The inner GitHub-facing review body contains exactly one bold `Merge Verdict: ...` line.
   - File references are repo-relative paths with line numbers, not local absolute paths.
   - Stable labels remain in English.
+
+### Codex Chat Delivery
+
+- When returning the review in Codex chat for the user to copy, wrap the GitHub-facing review body in a fenced `markdown` code block.
+- The fenced code block is only a chat delivery wrapper; it is not part of the GitHub-facing review body.
+- Tell the user to copy only the content inside the fenced block.
+- Keep any copy instruction outside the fenced block.
+- When posting directly to GitHub through an API or tool, submit only the inner GitHub-facing review body and do not include the outer fence.
+- Apply the formatting self-check to the inner GitHub-facing review body, not to the chat delivery wrapper.
 
 ### A. Not Mergeable (Change Request)
 

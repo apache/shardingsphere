@@ -190,7 +190,7 @@ Type-specific rules:
 ### GitHub Issue Markdown Requirements
 
 - Format every issue analysis as GitHub-flavored Markdown that can be pasted directly into a GitHub issue comment.
-- Do not wrap the whole analysis in a code fence, blockquote, XML/HTML container, or plain-text transcript.
+- The GitHub-facing issue analysis body must not be wrapped in a code fence, blockquote, XML/HTML container, or plain-text transcript.
 - Use the same natural language as the user request for explanatory prose unless the user explicitly asks for another language.
 - Keep the mandatory Markdown structure unchanged regardless of output language.
 - Keep mandatory section titles and stable fields in English, such as `Problem Understanding`, `Root Cause`, `Problem Analysis`,
@@ -201,12 +201,21 @@ Type-specific rules:
 - Keep evidence IDs, labels, severity values, topology values, commands, class names, method names, SQL, YAML, and Java snippets in their original English/code form.
 - Prefer bullets over tables. Use tables only for compact status summaries that remain readable in GitHub's issue comment pane.
 - Keep command evidence in inline code or short fenced blocks; avoid long raw JSON, full logs, or unrendered terminal transcripts.
-- Before final output, perform a formatting self-check:
-  - The response is not wrapped in a whole-message code fence, blockquote, XML/HTML container, or transcript.
-  - The response contains the required `###` headings for the selected issue-type template.
-  - The response contains `Problem Conclusion` with the required conclusion fields.
+- Before final output, perform a formatting self-check on the inner GitHub-facing issue analysis body:
+  - The inner GitHub-facing issue analysis body is not wrapped in a code fence, blockquote, XML/HTML container, or transcript.
+  - The inner GitHub-facing issue analysis body contains the required `###` headings for the selected issue-type template.
+  - The inner GitHub-facing issue analysis body contains `Problem Conclusion` with the required conclusion fields.
   - File references are repo-relative paths with line numbers, not local absolute paths.
   - Stable section titles, evidence IDs, labels, severity values, and conclusion field labels remain in English/code form.
+
+### Codex Chat Delivery
+
+- When returning the issue analysis in Codex chat for the user to copy, wrap the GitHub-facing issue analysis body in a fenced `markdown` code block.
+- The fenced code block is only a chat delivery wrapper; it is not part of the GitHub-facing issue analysis body.
+- Tell the user to copy only the content inside the fenced block.
+- Keep any copy instruction outside the fenced block.
+- When posting directly to GitHub through an API or tool, submit only the inner GitHub-facing issue analysis body and do not include the outer fence.
+- Apply the formatting self-check to the inner GitHub-facing issue analysis body, not to the chat delivery wrapper.
 
 Use this GitHub Markdown skeleton for Question and Misunderstanding / Invalid Usage:
 
