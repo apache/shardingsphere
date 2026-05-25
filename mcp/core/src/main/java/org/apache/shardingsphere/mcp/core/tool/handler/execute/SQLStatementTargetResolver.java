@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -28,19 +25,23 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class SQLStatementTargetResolver {
     
     private static final List<String> SQL_OBJECT_TYPE_KEYWORDS = List.of("TABLE", "VIEW", "INDEX", "SEQUENCE", "DATABASE", "SCHEMA", "TYPE", "FUNCTION", "PROCEDURE", "TRIGGER", "POLICY");
-    
-    private static final List<String> OBJECT_LIST_STOP_KEYWORDS = List.of("JOIN", "WHERE", "ON", "USING", "SET", "VALUES", "RETURNING", "GROUP", "ORDER", "HAVING", "LIMIT", "OFFSET",
-            "FETCH", "UNION", "EXCEPT", "INTERSECT", "WHEN", "FROM", "TO");
     
     private static final List<String> DELETE_MODIFIER_KEYWORDS = List.of("LOW_PRIORITY", "QUICK", "IGNORE");
     
     private final SQLStatementScanner scanner;
     
     private final SQLStatementStructureResolver structureResolver;
+    
+    private final SQLStatementObjectNameReader objectNameReader;
+    
+    SQLStatementTargetResolver(final SQLStatementScanner scanner, final SQLStatementStructureResolver structureResolver) {
+        this.scanner = scanner;
+        this.structureResolver = structureResolver;
+        objectNameReader = new SQLStatementObjectNameReader(scanner);
+    }
     
     String resolve(final SQLStatementStructure statementStructure) {
         Collection<String> objectNames = resolveAll(statementStructure);
@@ -288,12 +289,12 @@ final class SQLStatementTargetResolver {
                                             final Collection<String> visitedAliases, final Collection<String> result, final String... optionalKeywords) {
         int currentIndex = startIndex;
         while (currentIndex < tokens.size()) {
-            ObjectNameToken objectName = readObjectName(tokens, currentIndex, optionalKeywords);
+            SQLStatementObjectName objectName = objectNameReader.readObjectName(tokens, currentIndex, optionalKeywords);
             if (objectName.objectName().isEmpty()) {
                 return;
             }
             collectObjectName(statementStructure, objectName.objectName(), visitedAliases, result);
-            currentIndex = skipObjectTail(tokens, objectName.nextIndex());
+            currentIndex = objectNameReader.skipObjectTail(tokens, objectName.nextIndex());
             if (currentIndex >= tokens.size() || !",".equals(tokens.get(currentIndex).text())) {
                 return;
             }
@@ -301,66 +302,10 @@ final class SQLStatementTargetResolver {
         }
     }
     
-    private int skipObjectTail(final List<SQLStatementToken> tokens, final int startIndex) {
-        int result = startIndex;
-        int parenthesesDepth = 0;
-        while (result < tokens.size()) {
-            SQLStatementToken token = tokens.get(result);
-            if ("(".equals(token.text())) {
-                parenthesesDepth++;
-                result++;
-                continue;
-            }
-            if (")".equals(token.text())) {
-                parenthesesDepth--;
-                result++;
-                continue;
-            }
-            if (0 == parenthesesDepth && (",".equals(token.text()) || OBJECT_LIST_STOP_KEYWORDS.contains(token.upperText()))) {
-                return result;
-            }
-            result++;
-        }
-        return result;
-    }
-    
-    private ObjectNameToken readObjectName(final List<SQLStatementToken> tokens, final int startIndex, final String... optionalKeywords) {
-        int currentIndex = startIndex;
-        while (currentIndex < tokens.size()) {
-            SQLStatementToken token = tokens.get(currentIndex);
-            if (scanner.isKeyword(token, optionalKeywords)) {
-                currentIndex++;
-                continue;
-            }
-            if ("(".equals(token.text())) {
-                return new ObjectNameToken("", currentIndex);
-            }
-            return readQualifiedName(tokens, currentIndex);
-        }
-        return new ObjectNameToken("", currentIndex);
-    }
-    
-    private ObjectNameToken readQualifiedName(final List<SQLStatementToken> tokens, final int startIndex) {
-        if (startIndex >= tokens.size() || !isObjectNameSegment(tokens.get(startIndex))) {
-            return new ObjectNameToken("", startIndex);
-        }
-        StringBuilder result = new StringBuilder(scanner.normalizeIdentifier(tokens.get(startIndex).text()));
-        int currentIndex = startIndex + 1;
-        while (currentIndex + 1 < tokens.size() && ".".equals(tokens.get(currentIndex).text()) && isObjectNameSegment(tokens.get(currentIndex + 1))) {
-            result.append('.').append(scanner.normalizeIdentifier(tokens.get(currentIndex + 1).text()));
-            currentIndex += 2;
-        }
-        return new ObjectNameToken(result.toString(), currentIndex);
-    }
-    
-    private boolean isObjectNameSegment(final SQLStatementToken token) {
-        return token.identifier() || "*".equals(token.text());
-    }
-    
     private void collectQualifiedFunctionNames(final List<SQLStatementToken> tokens, final Collection<String> result) {
         int index = 0;
         while (index < tokens.size()) {
-            ObjectNameToken objectName = readQualifiedName(tokens, index);
+            SQLStatementObjectName objectName = objectNameReader.readQualifiedName(tokens, index);
             if (isQualifiedFunctionName(tokens, objectName)) {
                 addObjectName(result, objectName.objectName());
                 index = objectName.nextIndex() - 1;
@@ -369,7 +314,7 @@ final class SQLStatementTargetResolver {
         }
     }
     
-    private boolean isQualifiedFunctionName(final List<SQLStatementToken> tokens, final ObjectNameToken objectName) {
+    private boolean isQualifiedFunctionName(final List<SQLStatementToken> tokens, final SQLStatementObjectName objectName) {
         return objectName.objectName().contains(".") && !objectName.objectName().endsWith(".*") && objectName.nextIndex() < tokens.size()
                 && "(".equals(tokens.get(objectName.nextIndex()).text());
     }
@@ -431,6 +376,4 @@ final class SQLStatementTargetResolver {
         return result.toString();
     }
     
-    private record ObjectNameToken(String objectName, int nextIndex) {
-    }
 }

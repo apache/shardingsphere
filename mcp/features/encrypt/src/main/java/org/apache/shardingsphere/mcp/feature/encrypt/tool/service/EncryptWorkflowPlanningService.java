@@ -191,7 +191,7 @@ public final class EncryptWorkflowPlanningService {
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ENCRYPT_DROP_SCOPE_LIMITED, "warning", "planning-artifacts",
                     "Encrypt drop only removes the rule. MCP will not restore historical plaintext data.", "Review business impact before execution.", true, Map.of()));
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.PHYSICAL_CLEANUP_REQUIRED, "warning", "planning-artifacts",
-                    "Encrypt drop does not clean up legacy physical derived columns or indexes in V1.",
+                    "Encrypt drop does not clean up pre-existing physical derived columns or indexes in V1.",
                     "Clean up obsolete physical artifacts manually if they are no longer needed.", true, Map.of()));
             return;
         }

@@ -229,7 +229,7 @@ public final class WorkflowPlanningSupport {
         }
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", "discovering",
                 String.format("%s identifier `%s` contains unsupported characters.", fieldName, identifier),
-                "Use unquoted SQL identifiers only in V1.", false, Map.of("field", fieldName, "identifier", identifier)));
+                "Use standard unquoted logical identifiers for workflow planning.", false, Map.of("field", fieldName, "identifier", identifier)));
         return false;
     }
     

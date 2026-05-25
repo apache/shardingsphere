@@ -47,7 +47,7 @@ class MCPDocumentationContractTest {
     }
     
     @Test
-    void assertDocumentationOmitsLegacyPayloadFields() throws IOException {
+    void assertDocumentationOmitsRemovedPayloadFields() throws IOException {
         String actual = Files.readString(resolveMCPDirectory().resolve("README.md")) + Files.readString(resolveMCPDirectory().resolve("README_ZH.md"));
         for (String each : List.of("pending_questions", "resource_uri", "parent_uri", "next_resource_uris", "read_resources_first", "empty_reason", "not_found_reason")) {
             assertFalse(actual.contains(each));

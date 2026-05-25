@@ -22,6 +22,8 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe.ReadinessResult;
 
 import java.io.IOException;
 import java.net.URI;
@@ -61,37 +63,18 @@ public final class LLMChatModelClient {
      * @throws IllegalStateException model service is not ready
      */
     public void waitUntilReady() throws InterruptedException {
-        long startTime = System.currentTimeMillis();
-        long deadline = startTime + config.getReadyTimeoutSeconds() * 1000L;
-        long intervalMillis = INITIAL_READINESS_INTERVAL_MILLIS;
-        int attemptCount = 0;
-        Exception lastFailure = null;
-        while (System.currentTimeMillis() < deadline) {
-            attemptCount++;
-            try {
-                if (isReadinessContractReady()) {
-                    return;
-                }
-            } catch (final IOException ex) {
-                lastFailure = ex;
-            } catch (final IllegalStateException ex) {
-                lastFailure = ex;
-                if (isNonRetryableReadinessFailure(ex)) {
-                    throw createReadinessException(lastFailure, attemptCount, startTime);
-                }
-            }
-            intervalMillis = waitForNextReadinessAttempt(deadline, intervalMillis);
-        }
-        throw createReadinessException(lastFailure, attemptCount, startTime);
+        new ReadinessProbe(config.getReadyTimeoutSeconds() * 1000L, INITIAL_READINESS_INTERVAL_MILLIS, MAX_READINESS_INTERVAL_MILLIS)
+                .waitUntilReady(this::checkReadiness, this::createReadinessException);
     }
     
-    private long waitForNextReadinessAttempt(final long deadline, final long intervalMillis) throws InterruptedException {
-        long remainingMillis = deadline - System.currentTimeMillis();
-        if (0L >= remainingMillis) {
-            return intervalMillis;
+    private ReadinessResult<Boolean> checkReadiness() throws InterruptedException {
+        try {
+            return isReadinessContractReady() ? ReadinessResult.ready(Boolean.TRUE) : ReadinessResult.retry(null);
+        } catch (final IOException ex) {
+            return ReadinessResult.retry(ex);
+        } catch (final IllegalStateException ex) {
+            return isNonRetryableReadinessFailure(ex) ? ReadinessResult.failed(ex) : ReadinessResult.retry(ex);
         }
-        Thread.sleep(Math.min(intervalMillis, remainingMillis));
-        return Math.min(MAX_READINESS_INTERVAL_MILLIS, intervalMillis * 2L);
     }
     
     private boolean isNonRetryableReadinessFailure(final Exception cause) {
@@ -99,8 +82,8 @@ public final class LLMChatModelClient {
         return message.contains("HTTP 400") || message.contains("HTTP 401");
     }
     
-    private IllegalStateException createReadinessException(final Exception cause, final int attemptCount, final long startTimeMillis) {
-        IllegalStateException result = new IllegalStateException(createReadinessFailureMessage(cause, attemptCount, System.currentTimeMillis() - startTimeMillis));
+    private IllegalStateException createReadinessException(final Exception cause, final int attemptCount, final long elapsedMillis) {
+        IllegalStateException result = new IllegalStateException(createReadinessFailureMessage(cause, attemptCount, elapsedMillis));
         if (null != cause) {
             result.initCause(cause);
         }

@@ -177,22 +177,12 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
-    void assertDispatchWithRemovedSearchPageSizeArgument() {
+    void assertDispatchWithUnknownSearchArgument() {
         MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
-                () -> dispatch("database_gateway_search_metadata", Map.of("query", "order", "page_size", 10)));
-        assertThat(actual.getMessage(), is("page_size is not a supported argument for database_gateway_search_metadata."));
+                () -> dispatch("database_gateway_search_metadata", Map.of("query", "order", "client_hint", "narrow")));
+        assertThat(actual.getMessage(), is("client_hint is not a supported argument for database_gateway_search_metadata."));
         assertThat(actual.getCategory(), is("unknown_argument"));
-        assertThat(actual.getArgumentPath(), is("page_size"));
-        assertThat(actual.getSuggestedArguments(), is(Map.of("query", "order")));
-    }
-    
-    @Test
-    void assertDispatchWithRemovedSearchPageTokenArgument() {
-        MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
-                () -> dispatch("database_gateway_search_metadata", Map.of("query", "order", "page_token", "offset")));
-        assertThat(actual.getMessage(), is("page_token is not a supported argument for database_gateway_search_metadata."));
-        assertThat(actual.getCategory(), is("unknown_argument"));
-        assertThat(actual.getArgumentPath(), is("page_token"));
+        assertThat(actual.getArgumentPath(), is("client_hint"));
         assertThat(actual.getSuggestedArguments(), is(Map.of("query", "order")));
     }
     

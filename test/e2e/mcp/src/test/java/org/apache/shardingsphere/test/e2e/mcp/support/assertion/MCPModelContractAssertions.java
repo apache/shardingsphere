@@ -44,7 +44,7 @@ public final class MCPModelContractAssertions {
     }
     
     /**
-     * Assert that no legacy public fields are present recursively.
+     * Assert that no banned public fields are present recursively.
      *
      * @param value model-facing payload value
      */
@@ -75,7 +75,7 @@ public final class MCPModelContractAssertions {
     
     private static void assertNoBannedPublicFieldMap(final Map<?, ?> value) {
         for (Object each : value.keySet()) {
-            assertFalse(BANNED_PUBLIC_FIELDS.contains(String.valueOf(each)), () -> "Legacy model-facing field returned: " + each);
+            assertFalse(BANNED_PUBLIC_FIELDS.contains(String.valueOf(each)), () -> "Banned model-facing field returned: " + each);
         }
         for (Object each : value.values()) {
             assertNoBannedPublicFields(each);

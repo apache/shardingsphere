@@ -75,7 +75,7 @@ class EncryptRuleDistSQLPlanningServiceTest {
         EncryptWorkflowRequest request = createRequest("create", false, false);
         request.setColumn("phone;drop");
         MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class, () -> service.planEncryptRule(request, createDerivedColumnPlan(), List.of()));
-        assertThat(actualException.getMessage(), is("column `phone;drop` contains unsupported characters. Only unquoted SQL identifiers are supported in V1."));
+        assertThat(actualException.getMessage(), is("column `phone;drop` contains unsupported characters. Workflow and generated SQL planning support standard unquoted identifiers only."));
     }
     
     @Test

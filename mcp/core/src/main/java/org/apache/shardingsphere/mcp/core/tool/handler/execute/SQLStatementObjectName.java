@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.handler.execute.audit;
+package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-/**
- * Audit operation classes.
- */
-public enum OperationClass {
+final class SQLStatementObjectName {
     
-    RESOURCE_READ, METADATA_TOOL, QUERY_EXECUTION
+    private final String objectName;
+    
+    private final int nextIndex;
+    
+    SQLStatementObjectName(final String objectName, final int nextIndex) {
+        this.objectName = objectName;
+        this.nextIndex = nextIndex;
+    }
+    
+    String objectName() {
+        return objectName;
+    }
+    
+    int nextIndex() {
+        return nextIndex;
+    }
 }

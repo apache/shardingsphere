@@ -18,11 +18,8 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
-import org.apache.shardingsphere.mcp.core.protocol.exception.MCPLockingReadStatementException;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -30,15 +27,9 @@ import java.util.Locale;
  */
 public final class StatementClassifier {
     
-    private static final List<String> SIDE_EFFECTING_FUNCTION_NAMES = List.of("NEXTVAL", "SETVAL", "GET_LOCK", "RELEASE_LOCK", "RELEASE_ALL_LOCKS", "PG_ADVISORY_LOCK",
-            "PG_ADVISORY_XACT_LOCK", "PG_TRY_ADVISORY_LOCK", "PG_TRY_ADVISORY_XACT_LOCK", "PG_ADVISORY_UNLOCK", "PG_ADVISORY_UNLOCK_ALL", "SET_CONFIG",
-            "PG_REPLICATION_SLOT_ADVANCE", "PG_LOGICAL_SLOT_GET_CHANGES", "PG_LOGICAL_SLOT_GET_BINARY_CHANGES", "PG_LOGICAL_EMIT_MESSAGE", "PG_SWITCH_WAL", "PG_RELOAD_CONF",
-            "PG_CANCEL_BACKEND", "PG_TERMINATE_BACKEND");
-    
-    private static final List<String> METADATA_LOOKUP_FUNCTION_NAMES = List.of("TO_REGCLASS", "TO_REGTYPE", "TO_REGPROC", "TO_REGPROCEDURE", "TO_REGOPER", "TO_REGOPERATOR",
-            "TO_REGNAMESPACE", "TO_REGROLE", "OBJECT_ID");
-    
     private final SQLStatementScanner scanner = new SQLStatementScanner();
+    
+    private final SQLStatementSafetyValidator safetyValidator = new SQLStatementSafetyValidator(scanner);
     
     private final SQLStatementStructureResolver structureResolver = new SQLStatementStructureResolver(scanner);
     
@@ -51,25 +42,17 @@ public final class StatementClassifier {
      *
      * @param sql SQL text
      * @return classification result
-     * @throws MCPBannedSQLStatementException when the SQL is banned by contract
-     * @throws MetadataIntrospectionSQLStatementException when the SQL should use MCP metadata resources
      */
     public ClassificationResult classify(final String sql) {
         String actualSql = scanner.normalizeSingleStatement(sql);
         String leadingSql = actualSql.substring(scanner.skipInsignificant(actualSql, 0)).trim();
         String upperLeadingSql = leadingSql.toUpperCase(Locale.ENGLISH);
-        if (isBannedCommand(upperLeadingSql, actualSql)) {
-            throw new MCPBannedSQLStatementException();
-        }
-        if (isMetadataIntrospectionStatement(upperLeadingSql)) {
-            throw new MetadataIntrospectionSQLStatementException(extractStatementType(upperLeadingSql));
-        }
+        safetyValidator.checkLeadingStatement(upperLeadingSql, actualSql);
         if (upperLeadingSql.startsWith("EXPLAIN ANALYZE")) {
             String explainedSql = leadingSql.substring("EXPLAIN ANALYZE".length()).trim();
             SQLStatementStructure explainedStatementStructure = structureResolver.resolve(explainedSql);
             SupportedMCPStatement explainedStatementClass = statementClassResolver.resolve(explainedStatementStructure);
-            checkSideEffectingSelectInto(explainedStatementStructure);
-            checkLockingRead(explainedStatementClass, scanner.tokenize(explainedSql));
+            safetyValidator.checkStructuredStatement(explainedStatementClass, explainedStatementStructure);
             return new ClassificationResult(SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", actualSql, targetResolver.resolve(explainedStatementStructure), "",
                     explainedStatementClass, targetResolver.resolveAll(explainedStatementStructure));
         }
@@ -84,177 +67,9 @@ public final class StatementClassifier {
         }
         SQLStatementStructure statementStructure = structureResolver.resolve(actualSql);
         SupportedMCPStatement statementClass = statementClassResolver.resolve(statementStructure);
-        checkSideEffectingSelectInto(statementStructure);
-        checkLockingRead(statementClass, scanner.tokenize(actualSql));
+        safetyValidator.checkStructuredStatement(statementClass, statementStructure);
         return new ClassificationResult(statementClass, statementStructure.statementType(), actualSql, targetResolver.resolve(statementStructure), "", null,
                 targetResolver.resolveAll(statementStructure));
-    }
-    
-    private boolean isBannedCommand(final String upperSql, final String sql) {
-        return upperSql.startsWith("USE ")
-                || upperSql.startsWith("SET ")
-                || upperSql.startsWith("COPY ")
-                || upperSql.startsWith("LOAD ")
-                || upperSql.startsWith("CALL ")
-                || scanner.containsMySQLExecutableComment(sql)
-                || scanner.containsUserVariableAssignment(sql)
-                || containsBannedDialectPattern(scanner.tokenize(sql));
-    }
-    
-    private boolean isMetadataIntrospectionStatement(final String upperSql) {
-        return "SHOW".equals(upperSql)
-                || upperSql.startsWith("SHOW ")
-                || "DESCRIBE".equals(upperSql)
-                || upperSql.startsWith("DESCRIBE ")
-                || "DESC".equals(upperSql)
-                || upperSql.startsWith("DESC ");
-    }
-    
-    private boolean containsBannedDialectPattern(final List<SQLStatementToken> tokens) {
-        return containsSelectIntoFile(tokens)
-                || containsKeywordSequence(tokens, "ALTER", "SYSTEM")
-                || containsUserOrRoleManagement(tokens)
-                || containsSideEffectingQueryPattern(tokens)
-                || containsMetadataLookupFunction(tokens);
-    }
-    
-    private boolean containsSelectIntoFile(final List<SQLStatementToken> tokens) {
-        for (int index = 0; index + 1 < tokens.size(); index++) {
-            if (!scanner.isKeyword(tokens.get(index), "INTO")) {
-                continue;
-            }
-            if (scanner.isKeyword(tokens.get(index + 1), "OUTFILE") || scanner.isKeyword(tokens.get(index + 1), "DUMPFILE")) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsUserOrRoleManagement(final List<SQLStatementToken> tokens) {
-        return containsKeywordSequence(tokens, "CREATE", "USER")
-                || containsKeywordSequence(tokens, "ALTER", "USER")
-                || containsKeywordSequence(tokens, "DROP", "USER")
-                || containsKeywordSequence(tokens, "CREATE", "ROLE")
-                || containsKeywordSequence(tokens, "ALTER", "ROLE")
-                || containsKeywordSequence(tokens, "DROP", "ROLE");
-    }
-    
-    private boolean containsSideEffectingQueryPattern(final List<SQLStatementToken> tokens) {
-        return containsKeywordSequence(tokens, "NEXT", "VALUE", "FOR")
-                || containsSequenceNextvalPseudocolumn(tokens)
-                || containsSideEffectingFunction(tokens)
-                || containsLastInsertIdMutation(tokens);
-    }
-    
-    private boolean containsSideEffectingFunction(final List<SQLStatementToken> tokens) {
-        for (int index = 0; index + 1 < tokens.size(); index++) {
-            if ("(".equals(tokens.get(index + 1).text()) && SIDE_EFFECTING_FUNCTION_NAMES.contains(tokens.get(index).upperText())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsMetadataLookupFunction(final List<SQLStatementToken> tokens) {
-        for (int index = 0; index + 1 < tokens.size(); index++) {
-            if ("(".equals(tokens.get(index + 1).text()) && METADATA_LOOKUP_FUNCTION_NAMES.contains(tokens.get(index).upperText())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsLastInsertIdMutation(final List<SQLStatementToken> tokens) {
-        for (int index = 0; index + 2 < tokens.size(); index++) {
-            if (scanner.isKeyword(tokens.get(index), "LAST_INSERT_ID") && "(".equals(tokens.get(index + 1).text()) && !")".equals(tokens.get(index + 2).text())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsSequenceNextvalPseudocolumn(final List<SQLStatementToken> tokens) {
-        for (int index = 2; index < tokens.size(); index++) {
-            if (scanner.isKeyword(tokens.get(index), "NEXTVAL") && ".".equals(tokens.get(index - 1).text()) && tokens.get(index - 2).identifier()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsKeywordSequence(final List<SQLStatementToken> tokens, final String... keywords) {
-        for (int index = 0; index + keywords.length <= tokens.size(); index++) {
-            if (containsKeywordSequence(tokens, index, keywords)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsKeywordSequence(final List<SQLStatementToken> tokens, final int startIndex, final String... keywords) {
-        for (int index = 0; index < keywords.length; index++) {
-            if (!scanner.isKeyword(tokens.get(startIndex + index), keywords[index])) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private void checkLockingRead(final SupportedMCPStatement statementClass, final List<SQLStatementToken> tokens) {
-        if (SupportedMCPStatement.QUERY == statementClass && containsLockingReadClause(tokens)) {
-            throw new MCPLockingReadStatementException();
-        }
-    }
-    
-    private void checkSideEffectingSelectInto(final SQLStatementStructure statementStructure) {
-        if ("SELECT".equals(statementStructure.statementType()) && containsTopLevelKeyword(scanner.tokenize(statementStructure.mainSql()), "INTO")) {
-            throw new MCPBannedSQLStatementException();
-        }
-    }
-    
-    private boolean containsLockingReadClause(final List<SQLStatementToken> tokens) {
-        for (int index = 0; index < tokens.size(); index++) {
-            if (containsLockingReadForClause(tokens, index) || containsLockInShareModeClause(tokens, index)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsTopLevelKeyword(final List<SQLStatementToken> tokens, final String keyword) {
-        int parenthesesDepth = 0;
-        for (SQLStatementToken each : tokens) {
-            if ("(".equals(each.text())) {
-                parenthesesDepth++;
-                continue;
-            }
-            if (")".equals(each.text())) {
-                parenthesesDepth--;
-                continue;
-            }
-            if (0 == parenthesesDepth && scanner.isKeyword(each, keyword)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsLockingReadForClause(final List<SQLStatementToken> tokens, final int index) {
-        if (!scanner.isKeyword(tokens.get(index), "FOR") || index + 1 >= tokens.size()) {
-            return false;
-        }
-        return scanner.isKeyword(tokens.get(index + 1), "UPDATE", "SHARE")
-                || index + 2 < tokens.size() && scanner.isKeyword(tokens.get(index + 1), "KEY") && scanner.isKeyword(tokens.get(index + 2), "SHARE")
-                || index + 3 < tokens.size() && scanner.isKeyword(tokens.get(index + 1), "NO") && scanner.isKeyword(tokens.get(index + 2), "KEY")
-                        && scanner.isKeyword(tokens.get(index + 3), "UPDATE");
-    }
-    
-    private boolean containsLockInShareModeClause(final List<SQLStatementToken> tokens, final int index) {
-        return index + 3 < tokens.size()
-                && scanner.isKeyword(tokens.get(index), "LOCK")
-                && scanner.isKeyword(tokens.get(index + 1), "IN")
-                && scanner.isKeyword(tokens.get(index + 2), "SHARE")
-                && scanner.isKeyword(tokens.get(index + 3), "MODE");
     }
     
     private boolean isTransactionControlStatement(final String upperSql) {

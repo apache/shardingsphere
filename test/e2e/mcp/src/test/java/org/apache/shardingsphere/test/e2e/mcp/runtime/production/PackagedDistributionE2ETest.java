@@ -186,7 +186,7 @@ class PackagedDistributionE2ETest {
     private void assertOfficialRuntime(final Path distributionHome, final RuntimeTransport transport,
                                        final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
         assertBootstrapDirectoriesCreated(distributionHome);
-        assertLegacyExtensionDirectoryRemoved(distributionHome);
+        assertRemovedExtensionDirectoryAbsent(distributionHome);
         assertOfficialFeatureJarsPackaged(distributionHome);
         assertRuntimeDiagnostics(interactionClient.readResource("shardingsphere://runtime"), transport);
         assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"));
@@ -209,7 +209,7 @@ class PackagedDistributionE2ETest {
         assertTrue(Files.isDirectory(distributionHome.resolve("plugins")));
     }
     
-    private void assertLegacyExtensionDirectoryRemoved(final Path distributionHome) {
+    private void assertRemovedExtensionDirectoryAbsent(final Path distributionHome) {
         assertFalse(Files.exists(distributionHome.resolve("ext-lib")));
     }
     

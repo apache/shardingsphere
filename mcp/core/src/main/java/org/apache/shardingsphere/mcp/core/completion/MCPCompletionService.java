@@ -164,7 +164,6 @@ public final class MCPCompletionService {
         result.put(MCPShardingSphereMetadataKeys.CANDIDATE_COUNT, candidates.size());
         result.put(MCPShardingSphereMetadataKeys.MATCHED_CANDIDATE_COUNT, filteredCandidates.size());
         result.put(MCPShardingSphereMetadataKeys.RETURNED_CANDIDATE_COUNT, returnedCandidates.size());
-        result.put(MCPShardingSphereMetadataKeys.CONTINUATION_MODE, filteredCandidates.size() > returnedCandidates.size() ? "pagination" : "none");
         putInferredContext(result, inferredContextArguments);
         result.put(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS, missingContextArguments);
         String diagnostic = createDiagnostic(candidates, filteredCandidates, missingContextArguments);

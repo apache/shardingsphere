@@ -50,7 +50,7 @@ class MCPDescriptorCatalogValidatorTest {
     void assertValidateRejectsPublicAliasOutputField() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
                 "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
-                createOutputSchema(Map.of("recommended_next_tool", Map.of("type", "string", "description", "Legacy alias.")))))),
+                createOutputSchema(Map.of("recommended_next_tool", Map.of("type", "string", "description", "Removed alias.")))))),
                 "Tool `database_gateway_test_tool` outputSchema must use canonical fields instead of banned `recommended_next_tool`.");
     }
     

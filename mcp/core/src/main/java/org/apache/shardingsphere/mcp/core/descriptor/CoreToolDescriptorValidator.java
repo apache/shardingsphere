@@ -50,7 +50,7 @@ public final class CoreToolDescriptorValidator implements MCPToolDescriptorValid
     public void validate(final MCPToolDescriptor toolDescriptor) {
         if (SEARCH_METADATA.equals(toolDescriptor.getName())) {
             MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor,
-                    List.of("response_mode", "items", "count", "has_more", "continuation_mode", "search_context", "total_match_count"));
+                    List.of("response_mode", "items", "count", "search_context", "total_match_count"));
             validateSearchMetadataOutputItems(toolDescriptor);
             return;
         }

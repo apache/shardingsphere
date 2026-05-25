@@ -44,7 +44,7 @@ class WorkflowSQLUtilsTest {
     @Test
     void assertCheckSafeIdentifierRejectsUnsafeIdentifier() {
         Exception actualException = assertThrows(RuntimeException.class, () -> WorkflowSQLUtils.checkSafeIdentifier("table", "bad table"));
-        assertThat(actualException.getMessage(), is("table `bad table` contains unsupported characters. Only unquoted SQL identifiers are supported in V1."));
+        assertThat(actualException.getMessage(), is("table `bad table` contains unsupported characters. Workflow and generated SQL planning support standard unquoted identifiers only."));
     }
     
     @Test

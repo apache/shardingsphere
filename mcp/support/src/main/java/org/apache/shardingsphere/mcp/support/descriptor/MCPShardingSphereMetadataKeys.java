@@ -93,8 +93,6 @@ public final class MCPShardingSphereMetadataKeys {
     
     public static final String RETURNED_CANDIDATE_COUNT = PREFIX + "returned-candidate-count";
     
-    public static final String CONTINUATION_MODE = PREFIX + "continuation-mode";
-    
     public static final String MISSING_CONTEXT_ARGUMENTS = PREFIX + "missing-context-arguments";
     
     public static final String DIAGNOSTIC = PREFIX + "diagnostic";
