@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-class SQLStatementObjectName {
+final class SQLStatementObjectName {
     
     private final String objectName;
     

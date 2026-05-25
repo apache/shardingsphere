@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import java.util.Locale;
 
-class SQLStatementToken {
+final class SQLStatementToken {
     
     private final String text;
     

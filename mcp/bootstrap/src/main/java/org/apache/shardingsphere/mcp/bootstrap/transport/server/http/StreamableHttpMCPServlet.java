@@ -43,7 +43,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-class StreamableHttpMCPServlet extends HttpServlet implements McpStreamableServerTransportProvider {
+final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamableServerTransportProvider {
     
     private static final long serialVersionUID = -2320345528569140021L;
     

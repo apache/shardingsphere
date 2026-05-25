@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-class SQLStatementTargetResolver {
+final class SQLStatementTargetResolver {
     
     private static final List<String> SQL_OBJECT_TYPE_KEYWORDS = List.of("TABLE", "VIEW", "INDEX", "SEQUENCE", "DATABASE", "SCHEMA", "TYPE", "FUNCTION", "PROCEDURE", "TRIGGER", "POLICY");
     

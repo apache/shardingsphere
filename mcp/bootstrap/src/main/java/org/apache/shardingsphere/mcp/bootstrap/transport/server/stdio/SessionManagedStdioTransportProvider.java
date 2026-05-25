@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-class SessionManagedStdioTransportProvider extends StdioServerTransportProvider {
+final class SessionManagedStdioTransportProvider extends StdioServerTransportProvider {
     
     private final MCPSessionManager sessionManager;
     

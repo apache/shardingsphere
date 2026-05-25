@@ -44,7 +44,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class LLMUsabilitySuiteRunner {
+final class LLMUsabilitySuiteRunner {
     
     private static final Set<String> INFRASTRUCTURE_FAILURE_TYPES = Set.of("model_service_unavailable", "mcp_runtime_unavailable");
     

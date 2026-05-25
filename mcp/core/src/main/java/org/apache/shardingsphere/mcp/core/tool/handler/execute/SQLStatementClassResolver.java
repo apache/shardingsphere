@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
-class SQLStatementClassResolver {
+final class SQLStatementClassResolver {
     
     SupportedMCPStatement resolve(final SQLStatementStructure statementStructure) {
         String statementType = statementStructure.statementType();

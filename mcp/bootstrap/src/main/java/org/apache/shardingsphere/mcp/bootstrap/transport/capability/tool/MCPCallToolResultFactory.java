@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadat
 import java.util.Map;
 import java.util.Objects;
 
-class MCPCallToolResultFactory {
+final class MCPCallToolResultFactory {
     
     private static final int RESOURCE_LINK_LIMIT = 24;
     

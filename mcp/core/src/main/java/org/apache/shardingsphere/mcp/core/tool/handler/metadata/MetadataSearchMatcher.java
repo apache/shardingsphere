@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-class MetadataSearchMatcher {
+final class MetadataSearchMatcher {
     
     List<MetadataSearchHit> filterByQuery(final List<MetadataSearchHit> metadataItems, final String query) {
         List<MetadataSearchHit> result = new LinkedList<>();
