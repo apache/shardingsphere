@@ -63,25 +63,7 @@ jobs:
           cache-suffix: 'mcp'
           enable-docker-setup: 'true'
       - name: Run MCP Default E2E
-        shell: bash
-        run: |
-          set -euo pipefail
-          run_mcp_default_e2e() {
-            ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -Dmcp.e2e.contract.enabled=true -B -ntp
-          }
-          log_file="${RUNNER_TEMP}/mcp-default-e2e.log"
-          set +e
-          run_mcp_default_e2e 2>&1 | tee "${log_file}"
-          status=${PIPESTATUS[0]}
-          set -e
-          if [[ ${status} -eq 0 ]]; then
-            exit 0
-          fi
-          if ! grep -Eq 'Could not transfer artifact|Premature end of Content-Length|Connection reset|Read timed out' "${log_file}"; then
-            exit "${status}"
-          fi
-          echo 'Maven dependency transfer failed; retrying MCP default E2E once.' >&2
-          run_mcp_default_e2e
+        run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -Dmcp.e2e.contract.enabled=true -B -ntp
 
   mcp-mysql-e2e:
     name: MCP E2E - MySQL HTTP and STDIO
