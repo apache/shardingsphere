@@ -151,12 +151,31 @@ public final class InsertClauseShardingConditionEngine {
         return result;
     }
     
+    /**
+     * Unwrap nested {@link TypeCastExpression} layers so that an {@code expression::type} cast on a sharding key reuses the
+     * underlying parameter marker or literal for routing. Only unwraps when the innermost expression is a
+     * {@link ParameterMarkerExpressionSegment} or {@link LiteralExpressionSegment}; otherwise returns the original cast so
+     * that the caller's {@code SimpleExpressionSegment} branch does not enter with an unsupported inner segment such as
+     * {@link org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment}, which
+     * would otherwise hit a {@link ClassCastException} at {@code getShardingValue}.
+     *
+     * <p>Routing uses the raw Java value of the parameter or literal as-is and does not coerce it to the cast target type.
+     * If a caller binds a {@code String "1"} for {@code ?::int4} on a sharding column whose algorithm distinguishes Java
+     * types, the route may diverge from the database-evaluated value. Adding cast-aware type coercion is a follow-up.</p>
+     *
+     * @param expressionSegment expression segment that may be wrapped in one or more {@link TypeCastExpression} layers
+     * @return innermost {@link ParameterMarkerExpressionSegment} or {@link LiteralExpressionSegment} after unwrapping; the
+     *         original argument when it is not a {@link TypeCastExpression} or when its innermost expression is unsupported
+     */
     private static ExpressionSegment unwrapTypeCast(final ExpressionSegment expressionSegment) {
-        ExpressionSegment result = expressionSegment;
-        while (result instanceof TypeCastExpression) {
-            result = ((TypeCastExpression) result).getExpression();
+        if (!(expressionSegment instanceof TypeCastExpression)) {
+            return expressionSegment;
         }
-        return result;
+        ExpressionSegment inner = expressionSegment;
+        while (inner instanceof TypeCastExpression) {
+            inner = ((TypeCastExpression) inner).getExpression();
+        }
+        return inner instanceof ParameterMarkerExpressionSegment || inner instanceof LiteralExpressionSegment ? inner : expressionSegment;
     }
     
     private void generateShardingCondition(final CommonExpressionSegment expressionSegment, final ShardingCondition condition, final String shardingColumn, final String tableName) {
