@@ -46,6 +46,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -191,27 +192,15 @@ class StandaloneMetaDataManagerPersistServiceTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
-        DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"));
-        when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(Collections.singleton(new MetaDataVersion(databaseRuleNodePath)));
+        DatabaseRuleNodePath uniqueDatabaseRuleNodePath = new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"));
+        DatabaseRuleNodePath namedDatabaseRuleNodePath = new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("named", "foo_rule"));
+        when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(Arrays.asList(
+                new MetaDataVersion(uniqueDatabaseRuleNodePath), new MetaDataVersion(namedDatabaseRuleNodePath)));
         metaDataManagerPersistService.removeRuleConfigurationItem(database, ruleConfig);
-        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(deepEq(databaseRuleNodePath));
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(deepEq(uniqueDatabaseRuleNodePath));
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(deepEq(namedDatabaseRuleNodePath));
     }
     
-    @Test
-    void assertRemoveNamedRuleConfigurationItem() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("foo_db");
-        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
-        when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
-        DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("named", "foo_rule"));
-        when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(Collections.singleton(new MetaDataVersion(databaseRuleNodePath)));
-        metaDataManagerPersistService.removeRuleConfigurationItem(database, ruleConfig);
-        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(deepEq(databaseRuleNodePath));
-    }
     @Test
     void assertRemoveSingleRuleConfigurationItem() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
