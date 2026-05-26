@@ -104,13 +104,14 @@ final class MCPToolElicitationHandler {
     private final MCPToolClarificationPolicy clarificationPolicy = new MCPToolClarificationPolicy();
     
     boolean shouldHandle(final MCPToolDescriptor toolDescriptor, final Map<String, Object> payload) {
-        return clarificationPolicy.requiresPlanningClarification(toolDescriptor, payload);
+        return clarificationPolicy.isPlanningTool(toolDescriptor) && clarificationPolicy.hasClarificationQuestions(payload);
     }
     
     MCPResponse handle(final McpSyncServerExchange exchange, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments,
                        final MCPResponse fallbackResponse, final Map<String, Object> payload) {
+        MCPToolDescriptor toolDescriptor = toolDefinition.getDescriptor();
         ClientElicitationSupport clientSupport = getClientElicitationSupport(exchange);
-        Optional<MCPToolClarificationPolicy.ClarificationForm> clarificationForm = clarificationPolicy.createClarificationForm(payload, toolDefinition.getDescriptor());
+        Optional<MCPToolClarificationPolicy.ClarificationForm> clarificationForm = clarificationPolicy.createClarificationForm(payload, toolDescriptor);
         if (clarificationForm.isEmpty()) {
             return createFallbackResponse(payload, determineUnavailableFormReason(payload, clientSupport), clientSupport);
         }
@@ -120,10 +121,10 @@ final class MCPToolElicitationHandler {
         if (!STDIO_TRANSPORT.equals(activeTransport)) {
             return createFallbackResponse(payload, REMOTE_IDENTITY_REQUIRED_REASON, clientSupport);
         }
-        FormContinuationContext continuationContext = createContinuationContext(exchange, toolDefinition.getDescriptor(), arguments, clarificationForm.get());
+        FormContinuationContext continuationContext = createContinuationContext(exchange, toolDescriptor, arguments, clarificationForm.get());
         McpSchema.ElicitResult elicitedResult;
         try {
-            elicitedResult = exchange.createElicitation(createElicitRequest(toolDefinition.getDescriptor().getName(), clarificationForm.get(), continuationContext.formRequestId()));
+            elicitedResult = exchange.createElicitation(createElicitRequest(toolDescriptor.getName(), clarificationForm.get(), continuationContext.formRequestId()));
         } catch (final McpError | IllegalStateException | UnsupportedOperationException ignored) {
             return createFallbackResponse(payload, ELICITATION_FAILED_REASON, clientSupport);
         }
