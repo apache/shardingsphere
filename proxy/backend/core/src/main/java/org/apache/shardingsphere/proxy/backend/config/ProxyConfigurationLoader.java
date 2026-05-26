@@ -96,8 +96,12 @@ public final class ProxyConfigurationLoader {
     
     @SneakyThrows(URISyntaxException.class)
     private static File getResourceFile(final String path) {
+        File result = new File(path);
+        if (result.exists()) {
+            return result;
+        }
         URL url = ProxyConfigurationLoader.class.getResource(path);
-        return null == url ? new File(path) : new File(url.toURI().getPath());
+        return null == url ? result : new File(url.toURI());
     }
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {

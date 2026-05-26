@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -60,6 +61,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mockStatic;
+
+import org.mockito.internal.configuration.plugins.Plugins;
 
 class ProxyConfigurationLoaderTest {
     
@@ -150,6 +153,28 @@ class ProxyConfigurationLoaderTest {
             IllegalStateException actual = assertThrows(IllegalStateException.class, () -> ProxyConfigurationLoader.load(tempDir.toString()));
             assertThat(actual.getMessage(), is("Not find rule tag name of class class " + MockedRuleConfiguration.class.getName()));
         }
+    }
+    
+    @Test
+    void assertGetResourceFileWithFilesystemPath(@TempDir final Path tempDir) throws Exception {
+        Files.write(tempDir.resolve("global.yaml"), Collections.singletonList(""));
+        File actual = (File) Plugins.getMemberAccessor().invoke(ProxyConfigurationLoader.class.getDeclaredMethod("getResourceFile", String.class), null, tempDir.toString());
+        assertTrue(actual.exists());
+        assertThat(actual.getPath(), is(tempDir.toString()));
+    }
+    
+    @Test
+    void assertGetResourceFileWithClasspathResource() throws Exception {
+        File actual = (File) Plugins.getMemberAccessor().invoke(ProxyConfigurationLoader.class.getDeclaredMethod("getResourceFile", String.class), null, "/conf/empty/");
+        assertTrue(actual.exists());
+        assertTrue(actual.isDirectory());
+    }
+    
+    @Test
+    void assertGetResourceFileWithNonExistentPath() throws Exception {
+        File actual = (File) Plugins.getMemberAccessor().invoke(ProxyConfigurationLoader.class.getDeclaredMethod("getResourceFile", String.class), null, "/non/existent/path/");
+        assertFalse(actual.exists());
+        assertThat(actual.getPath(), is("/non/existent/path"));
     }
     
     private void assertShardingRuleConfiguration(final YamlProxyDatabaseConfiguration actual) {
