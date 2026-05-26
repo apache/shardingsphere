@@ -212,7 +212,6 @@ class StandaloneMetaDataManagerPersistServiceTest {
         metaDataManagerPersistService.removeRuleConfigurationItem(database, ruleConfig);
         verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(deepEq(databaseRuleNodePath));
     }
-    
     @Test
     void assertRemoveSingleRuleConfigurationItem() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
