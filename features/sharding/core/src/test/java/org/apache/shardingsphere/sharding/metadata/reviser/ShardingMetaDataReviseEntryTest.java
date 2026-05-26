@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser;
 
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.table.TableMetaDataReviseEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.metadata.reviser.column.ShardingColumnGeneratedReviser;
@@ -30,7 +34,9 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Types;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
@@ -78,6 +84,19 @@ class ShardingMetaDataReviseEntryTest {
         Optional<ShardingSchemaTableAggregationReviser> schemaTableAggregationReviser = reviseEntry.getSchemaTableAggregationReviser(new ConfigurationProperties(null));
         assertTrue(schemaTableAggregationReviser.isPresent());
         assertThat(schemaTableAggregationReviser.get().getClass(), is(ShardingSchemaTableAggregationReviser.class));
+    }
+    
+    @Test
+    void assertReviseKeepsYearColumnTypeNameThroughShardingPath() {
+        ColumnMetaData yearColumn = new ColumnMetaData("t_year", Types.DATE, false, false, false, true, false, true, "YEAR");
+        TableMetaData original = new TableMetaData("t_order", Collections.singleton(yearColumn), Collections.emptyList(), Collections.emptyList(), TableType.TABLE);
+        TableMetaData revised = new TableMetaDataReviseEngine<>(rule, reviseEntry).revise(original);
+        Iterator<ColumnMetaData> columns = revised.getColumns().iterator();
+        assertTrue(columns.hasNext());
+        ColumnMetaData revisedColumn = columns.next();
+        assertThat(revisedColumn.getName(), is("t_year"));
+        assertThat(revisedColumn.getDataType(), is(Types.DATE));
+        assertThat(revisedColumn.getColumnTypeName(), is("YEAR"));
     }
     
     private ShardingRule createShardingRule() {
