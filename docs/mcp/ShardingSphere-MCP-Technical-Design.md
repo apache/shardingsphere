@@ -1,6 +1,9 @@
 # ShardingSphere MCP 技术设计方案
 
-> 状态说明：本文档保留早期技术设计背景，不是当前 MCP public surface 契约。当前契约以 `shardingsphere://capabilities`、descriptor、`mcp/README.md` 和 `mcp/README_ZH.md` 为准；不要从本文档推导早期工具矩阵或额外兼容层。
+> 状态说明：本文档保留早期技术设计背景，不是当前 MCP public surface 契约。
+> 当前契约以 `shardingsphere://capabilities`、descriptor、`mcp/README.md` 和 `mcp/README_ZH.md` 为准。
+> 不要从本文档推导早期工具矩阵或额外兼容层。
+> 当前可提交范围是 MCP V1 runtime readiness，不是完整 ShardingSphere governance administration surface。
 
 ## 1. 文档信息
 - 文档名称：ShardingSphere MCP 技术设计方案
@@ -28,7 +31,7 @@
 - 根据前期 PRD，ShardingSphere MCP 要解决的不是“把 MCP 跑起来”，而是形成正式的数据库统一 AI/Agent 接入面，覆盖：
   - 统一 metadata 发现
   - 统一 capability 声明
-  - 统一 SQL 执行入口 `execute_query`
+  - 统一 SQL 执行入口的早期设想；当前 public tools 使用 `database_gateway_execute_query` 与 `database_gateway_execute_update`
   - 统一错误模型
   - 统一事务与 `savepoint` 能力边界
   - 统一 SQL execution trace 与治理可见性
@@ -48,7 +51,7 @@
   - MCP 进入主仓库
   - 不破坏根工程 Java 8 默认构建
   - 保持与现有 distribution 结构一致
-  - 覆盖 PRD 中定义的 `capability / execute_query / transaction semantics`
+  - 覆盖当前 descriptor public surface 中的 capability、SQL execution 与 transaction semantics
 
 ## 4. 目标
 - 本方案目标如下：
@@ -58,7 +61,8 @@
   - 形成独立部署、独立运行、独立发布的 MCP 服务。
   - 支撑 PRD 中定义的：
     - `capability`
-    - `execute_query`
+    - `database_gateway_execute_query`
+    - `database_gateway_execute_update`
     - `transaction matrix`
     - `SQL execution trace`
     - 统一错误模型
@@ -209,7 +213,7 @@ shardingsphere
 - MCP 公共对象模型
 - capability 组装
 - metadata discovery facade
-- execute_query facade
+- SQL tool facade
 - session / transaction facade
 - session lifecycle registry
 - resource URI resolver
@@ -298,7 +302,7 @@ shardingsphere
   - `/mcp` Streamable HTTP 会话初始化与关闭
   - STDIO 本地调试入口
   - metadata discovery
-  - `execute_query`
+  - SQL tool pair
   - SQL execution trace 与变化可见性
 
 #### 9.1.4 Rollback Guidance
@@ -430,7 +434,7 @@ flowchart TB
 - 统一提供：
   - metadata discovery
   - capability
-  - execute_query
+  - SQL tool pair
   - transaction / savepoint handling
 
 #### ShardingSphere Integration Layer
@@ -481,10 +485,13 @@ flowchart TB
   - `index` 由数据库级 capability 的 `supported_object_types` 声明
   - 不支持时 direct API 返回 `unsupported`
 
-## 13. `execute_query` 统一执行入口设计
+## 13. SQL 执行入口设计
+
+> 本节标题和部分正文保留早期 `execute_query` 术语。
+> 当前 MCP public surface 将读查询与变更执行拆分为 `database_gateway_execute_query` 和 `database_gateway_execute_update`。
 
 ### 13.1 设计原则
-- `execute_query` 是 V1 唯一 SQL 执行入口。
+- 早期 `execute_query` 设计已收敛为当前 descriptor 中的 SQL tool pair。
 - 它不是 SQL 透传接口，而是统一执行与治理入口。
 - `database` 是唯一强执行边界。
 - `schema` 是可选 namespace hint，不是第二个强路由键。
@@ -620,9 +627,11 @@ flowchart TB
 
 ### 16.2.1 默认发行包启动面
 - distribution 默认启动使用 HTTP 配置，STDIO 通过 `conf/mcp-stdio.yaml` 或 `SHARDINGSPHERE_MCP_TRANSPORT=stdio` 显式选择。
-- 默认 `conf/mcp-http.yaml` 内置一段 demo JDBC runtime，用于首次启动时验证非空 metadata 和真实 `execute_query` 行为。
-- `conf/mcp-http.yaml` 采用 strict schema：`transport.type`、`transport.http.bindHost`、`transport.http.port`、`transport.http.endpointPath` 以及每个 runtime database 的全部字段都必须使用受支持字段名。
-- 真实部署需要替换 `runtimeDatabases` 段为目标逻辑库与 JDBC 连接属性；schema 范围与默认 schema 由 JDBC metadata 自动发现，如需额外 JDBC 驱动，可放入发行包根目录下的 `ext-lib/`。
+- 默认 `conf/mcp-http.yaml` 内置一段 demo JDBC runtime，用于首次启动时验证非空 metadata 和真实 SQL tool 行为。
+- `conf/mcp-http.yaml` 采用 strict schema：`transport.type`、`transport.http.bindHost`、`transport.http.port`、
+  `transport.http.endpointPath` 以及每个 runtime database 的全部字段都必须使用受支持字段名。
+- 真实部署需要替换 `runtimeDatabases` 段为目标逻辑库与 JDBC 连接属性；schema 范围与默认 schema 由 JDBC metadata 自动发现。
+  如需额外 JDBC 驱动，可放入发行包根目录下的 `plugins/`。
 
 ### 16.3 推荐集群拓扑
 - MCP 服务集群
@@ -670,7 +679,7 @@ sequenceDiagram
     participant F as Metadata Facade
     participant S as ShardingSphere Metadata
 
-    C->>M: list_tables / list_views / search_metadata
+    C->>M: resources/read or database_gateway_search_metadata
     M->>F: metadata discovery
     F->>S: metadata 查询
     S-->>F: 可访问对象
@@ -686,7 +695,7 @@ sequenceDiagram
     participant E as ExecuteQuery Facade
     participant S as ShardingSphere Core
 
-    C->>M: execute_query(database, schema?, sql)
+    C->>M: database_gateway_execute_query or database_gateway_execute_update
     M->>E: 执行统一 SQL 请求
     E->>S: parse / route / execute
     S-->>E: raw result
@@ -817,7 +826,7 @@ apache-shardingsphere-mcp-<version>/
   - 完成 capability 组装链
   - 完成统一 error model
 - 阶段 3：执行与治理
-  - 完成 `execute_query`
+  - 完成 SQL tool pair
   - 完成事务能力矩阵
   - 完成 SQL execution trace 治理可见性链路
 - 阶段 4：部署与联调
@@ -832,7 +841,7 @@ apache-shardingsphere-mcp-<version>/
   - 是否未反向污染主仓库 Java 8 主线
   - 是否使用官方 SDK 而非自研协议实现
   - capability 是否实现分层清晰
-  - `execute_query` 是否成为统一执行入口
+  - 当前 SQL tool pair 是否覆盖查询与变更执行入口
   - 事务能力矩阵是否显式维护
   - HTTP 会话与事务语义是否闭合
   - distribution 是否形成独立运维单元

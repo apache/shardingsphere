@@ -117,7 +117,8 @@ curl -sS http://127.0.0.1:18088/mcp \
 说明：
 
 - metadata 的 list / detail / capability discovery 统一走 `resources/read`。
-- 当前 public tools 包括 `database_gateway_search_metadata`、`database_gateway_execute_query`、`database_gateway_execute_update`、`database_gateway_plan_encrypt_rule`、`database_gateway_plan_mask_rule`、`database_gateway_apply_workflow` 和 `database_gateway_validate_workflow`。
+- 当前 public tools 包括 `database_gateway_search_metadata`、`database_gateway_execute_query`、`database_gateway_execute_update`、
+  `database_gateway_plan_encrypt_rule`、`database_gateway_plan_mask_rule`、`database_gateway_apply_workflow` 和 `database_gateway_validate_workflow`。
 - `database_gateway_execute_query` 只接受分类器批准的 `SELECT` 和 `EXPLAIN ANALYZE`，并拒绝已知有副作用的查询形态；
   DML、DDL、DCL、事务控制、savepoint 以及其他支持的有副作用 SQL 要使用 `database_gateway_execute_update`。
 - SQL 执行分类会识别限定名和带引号对象名，但用途仅限安全分类与跨 schema 防护；
@@ -211,6 +212,11 @@ Descriptor annotations 遵循 MCP `2025-11-25` schema，并且属于开发者维
 - Tool annotations 只作为客户端提示，不替代运行时校验、SQL 安全检查、用户审批或服务端授权。
 - MCP `icons` 和 `Tool.execution` 是官方 `2025-11-25` descriptor 字段，但 MCP Java SDK `1.1.2` 尚未在 `Resource`、`ResourceTemplate` 或 `Tool` 中暴露 `icons`，也尚未在 `Tool` 中暴露 `execution`；
   在 SDK 边界支持前，它们属于后续范围。
+
+### 当前提交范围
+
+本次可提交范围是 MCP V1 runtime readiness，不是完整的 ShardingSphere 治理管理入口。
+当前 public contract 以 descriptor 和 resource-first discovery 为准，并以上文列出的 `database_gateway_*` tools 作为正式 tool 入口。
 
 ### 读取 `shardingsphere://databases/orders/schemas/public/sequences`
 
