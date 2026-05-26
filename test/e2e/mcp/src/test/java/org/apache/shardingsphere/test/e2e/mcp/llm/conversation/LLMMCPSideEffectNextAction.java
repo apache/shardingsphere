@@ -30,9 +30,9 @@ final class LLMMCPSideEffectNextAction {
         if (!"tool_call".equals(Objects.toString(action.get("type"), "").trim())) {
             return false;
         }
-        final String toolName = Objects.toString(action.get("tool_name"), "").trim();
-        final Map<String, Object> arguments = LLMMCPJsonValues.castToMap(action.get("arguments"));
-        final String executionMode = Objects.toString(arguments.get("execution_mode"), "").trim();
+        String toolName = Objects.toString(action.get("tool_name"), "").trim();
+        Map<String, Object> arguments = LLMMCPJsonValues.castToMap(action.get("arguments"));
+        String executionMode = Objects.toString(arguments.get("execution_mode"), "").trim();
         return "database_gateway_execute_update".equals(toolName) && "execute".equals(executionMode)
                 || "database_gateway_apply_workflow".equals(toolName) && "review-then-execute".equals(executionMode);
     }

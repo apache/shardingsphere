@@ -84,13 +84,13 @@ final class MetadataSearchCollector {
         return result;
     }
     
-    private void addSchemaSearchHits(final List<MetadataSearchHit> result, final String databaseName, final String schemaName) {
+    private void addSchemaSearchHits(final List<MetadataSearchHit> searchHits, final String databaseName, final String schemaName) {
         if (!schemaName.isEmpty()) {
-            metadataQueryFacade.querySchema(databaseName, schemaName).ifPresent(optional -> result.add(createSearchHit(optional)));
+            metadataQueryFacade.querySchema(databaseName, schemaName).ifPresent(optional -> searchHits.add(createSearchHit(optional)));
             return;
         }
         for (MCPSchemaMetadata each : metadataQueryFacade.querySchemas(databaseName)) {
-            result.add(createSearchHit(each));
+            searchHits.add(createSearchHit(each));
         }
     }
     

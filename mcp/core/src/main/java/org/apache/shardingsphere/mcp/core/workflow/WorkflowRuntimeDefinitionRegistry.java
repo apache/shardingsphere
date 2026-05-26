@@ -44,16 +44,16 @@ public final class WorkflowRuntimeDefinitionRegistry {
     }
     
     private static Map<WorkflowKind, WorkflowRuntimeDefinition> createRegisteredDefinitions(final Collection<WorkflowRuntimeDefinition> definitions) {
-        final Map<WorkflowKind, WorkflowRuntimeDefinition> result = new LinkedHashMap<>(Math.max(definitions.size(), 1), 1F);
+        Map<WorkflowKind, WorkflowRuntimeDefinition> result = new LinkedHashMap<>(Math.max(definitions.size(), 1), 1F);
         for (WorkflowRuntimeDefinition each : definitions) {
             Objects.requireNonNull(each, "Workflow definition is required.");
-            final WorkflowKind workflowKind = Objects.requireNonNull(each.getWorkflowKind(),
+            WorkflowKind workflowKind = Objects.requireNonNull(each.getWorkflowKind(),
                     () -> String.format("Workflow kind is required for `%s`.", each.getClass().getName()));
             ShardingSpherePreconditions.checkNotNull(each.getValidationHandler(),
                     () -> new IllegalArgumentException(String.format("Workflow validation handler is required for `%s`.", workflowKind.getValue())));
             ShardingSpherePreconditions.checkNotNull(each.getApplySynchronizationHandler(),
                     () -> new IllegalArgumentException(String.format("Workflow apply synchronization handler is required for `%s`.", workflowKind.getValue())));
-            final WorkflowRuntimeDefinition previousDefinition = result.putIfAbsent(workflowKind, each);
+            WorkflowRuntimeDefinition previousDefinition = result.putIfAbsent(workflowKind, each);
             ShardingSpherePreconditions.checkState(null == previousDefinition,
                     () -> new IllegalArgumentException(String.format("Duplicate workflow kind `%s` with `%s` and `%s`.",
                             workflowKind.getValue(), previousDefinition.getClass().getName(), each.getClass().getName())));
@@ -71,7 +71,7 @@ public final class WorkflowRuntimeDefinitionRegistry {
     }
     
     private static Collection<WorkflowRuntimeDefinition> loadDefinitions() {
-        final Collection<WorkflowRuntimeDefinition> result = new LinkedList<>();
+        Collection<WorkflowRuntimeDefinition> result = new LinkedList<>();
         for (MCPHandlerProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)) {
             if (each instanceof MCPWorkflowDefinitionProvider) {
                 result.addAll(createDefinitions((MCPWorkflowDefinitionProvider) each));
@@ -81,7 +81,7 @@ public final class WorkflowRuntimeDefinitionRegistry {
     }
     
     private static Collection<WorkflowRuntimeDefinition> createDefinitions(final MCPWorkflowDefinitionProvider workflowDefinitionProvider) {
-        final Collection<WorkflowRuntimeDefinition> result = Objects.requireNonNull(workflowDefinitionProvider.getWorkflowDefinitions(),
+        Collection<WorkflowRuntimeDefinition> result = Objects.requireNonNull(workflowDefinitionProvider.getWorkflowDefinitions(),
                 () -> String.format("Workflow definitions are required for `%s`.", workflowDefinitionProvider.getClass().getName()));
         result.forEach(each -> Objects.requireNonNull(each, () -> String.format("Workflow definition is required for `%s`.", workflowDefinitionProvider.getClass().getName())));
         return result;

@@ -29,7 +29,7 @@ class MCPClientSafetyPolicyTest {
     
     @Test
     void assertGetMaxToolCallsPerSession() {
-        final String previous = System.getProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
+        String previous = System.getProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
         try {
             System.setProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, "8");
             assertThat(MCPClientSafetyPolicy.getMaxToolCallsPerSession(), is(8));
@@ -42,10 +42,10 @@ class MCPClientSafetyPolicyTest {
     
     @Test
     void assertCreateModelFacingPayload() {
-        final Map<String, Object> actual = MCPClientSafetyPolicy.createModelFacingPayload();
+        Map<String, Object> actual = MCPClientSafetyPolicy.createModelFacingPayload();
         assertThat(actual.get("identity_scope"), is("mcp_session"));
         assertTrue(String.valueOf(actual.get("external_model_boundary")).contains("never calls external model providers"));
-        final Map<?, ?> actualToolCallLimit = (Map<?, ?>) actual.get("tool_call_limit");
+        Map<?, ?> actualToolCallLimit = (Map<?, ?>) actual.get("tool_call_limit");
         assertThat(actualToolCallLimit.get("scope"), is("session"));
         assertThat(actualToolCallLimit.get("property"), is(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY));
     }

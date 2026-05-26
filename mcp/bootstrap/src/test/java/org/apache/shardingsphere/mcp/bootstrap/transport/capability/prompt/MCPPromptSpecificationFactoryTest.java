@@ -152,8 +152,8 @@ class MCPPromptSpecificationFactoryTest {
         return promptSpecification.promptHandler().apply(mock(McpSyncServerExchange.class), new McpSchema.GetPromptRequest(name, arguments));
     }
     
-    private String readText(final McpSchema.GetPromptResult result) {
-        return ((McpSchema.TextContent) result.messages().get(0).content()).text();
+    private String readText(final McpSchema.GetPromptResult promptResult) {
+        return ((McpSchema.TextContent) promptResult.messages().get(0).content()).text();
     }
     
     private void assertRenderedLines(final String text, final List<String> expectedLines) {

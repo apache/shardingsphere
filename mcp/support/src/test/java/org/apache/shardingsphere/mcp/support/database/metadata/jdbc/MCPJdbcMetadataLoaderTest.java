@@ -432,7 +432,7 @@ class MCPJdbcMetadataLoaderTest {
         ResultSet viewResultSet = mockResultSet("TABLE_NAME");
         ResultSet columnResultSet = mockResultSet("COLUMN_NAME", "order_id");
         ResultSet indexResultSet = mockResultSet("INDEX_NAME");
-        final ResultSet emptyQueryResultSet = mockMultiRowResultSet(List.of());
+        ResultSet emptyQueryResultSet = mockMultiRowResultSet(List.of());
         when(result.getMetaData()).thenReturn(databaseMetaData);
         when(result.createStatement()).thenReturn(statement);
         when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseProductName);
@@ -445,7 +445,7 @@ class MCPJdbcMetadataLoaderTest {
         when(databaseMetaData.getColumns(isNull(), isNull(), eq("orders"), eq("%"))).thenReturn(columnResultSet);
         when(databaseMetaData.getIndexInfo(isNull(), isNull(), eq("orders"), eq(false), eq(false))).thenReturn(indexResultSet);
         for (Entry<String, String> entry : scalarQueries.entrySet()) {
-            final ResultSet scalarResultSet = mockScalarResultSet(entry.getValue());
+            ResultSet scalarResultSet = mockScalarResultSet(entry.getValue());
             when(statement.executeQuery(entry.getKey())).thenReturn(scalarResultSet);
         }
         return result;

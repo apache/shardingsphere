@@ -21,9 +21,12 @@ import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
@@ -288,18 +291,18 @@ final class MCPBuilderEvaluationArtifactTest {
         return result;
     }
     
-    private Document loadDocument() throws Exception {
+    private Document loadDocument() throws ParserConfigurationException, SAXException, IOException {
         try (InputStream inputStream = MCPBuilderEvaluationArtifactTest.class.getResourceAsStream("/llm/evaluation/mcp-builder-evaluation.xml")) {
             assertNotNull(inputStream);
             return parseDocument(inputStream);
         }
     }
     
-    private Element loadQAPair(final String xml) throws Exception {
-        return (Element) parseDocument(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))).getDocumentElement();
+    private Element loadQAPair(final String xml) throws ParserConfigurationException, SAXException, IOException {
+        return parseDocument(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))).getDocumentElement();
     }
     
-    private Document parseDocument(final InputStream inputStream) throws Exception {
+    private Document parseDocument(final InputStream inputStream) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         return factory.newDocumentBuilder().parse(inputStream);

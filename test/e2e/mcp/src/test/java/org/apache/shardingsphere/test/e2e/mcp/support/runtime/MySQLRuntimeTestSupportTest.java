@@ -19,8 +19,6 @@ package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -28,12 +26,12 @@ class MySQLRuntimeTestSupportTest {
     
     @Test
     void assertCreateDockerRequiredMessageWithReadinessDiagnostic() {
-        assertThat(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required.", Optional.of("daemon unavailable")),
+        assertThat(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required.", "daemon unavailable"),
                 is("Docker is required. Docker readiness diagnostic: daemon unavailable"));
     }
     
     @Test
     void assertCreateDockerRequiredMessageWithoutReadinessDiagnostic() {
-        assertThat(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required.", Optional.empty()), is("Docker is required."));
+        assertThat(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required.", ""), is("Docker is required."));
     }
 }

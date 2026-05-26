@@ -53,7 +53,7 @@ public final class LLMStructuredAnswer {
      * @return LLM structured answer
      */
     public static LLMStructuredAnswer fromJson(final String json) {
-        final Map<String, Object> payload = readPayload(json);
+        Map<String, Object> payload = readPayload(json);
         List<String> interactionSequence = createInteractionSequence(payload);
         return new LLMStructuredAnswer(
                 Objects.toString(payload.get("database"), "").trim(),
@@ -66,7 +66,7 @@ public final class LLMStructuredAnswer {
     
     private static Map<String, Object> readPayload(final String json) {
         try {
-            final Map<String, Object> result = OBJECT_MAPPER.readValue(json, new TypeReference<>() {
+            Map<String, Object> result = OBJECT_MAPPER.readValue(json, new TypeReference<>() {
             });
             if (null == result) {
                 throw new IllegalArgumentException("Structured answer JSON must decode to one object.");

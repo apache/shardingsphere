@@ -51,7 +51,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -229,7 +228,8 @@ class CoreResourceHandlerSurfaceTest {
                         (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryDatabases()), "shardingsphere://databases",
                         "shardingsphere://databases", HandlerResultType.METADATA, "", List.of("logic_db", "runtime_db", "warehouse")),
                 new HandlerCase("database", new MetadataResourceHandler("shardingsphere://databases/{database}",
-                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryDatabase(uriVariables.getValue("database")))),
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryDatabase(uriVariables.getValue("database"))
+                                .map(CoreResourceHandlerSurfaceTest::createSingletonList).orElse(Collections.emptyList())),
                         "shardingsphere://databases/{database}",
                         "shardingsphere://databases/logic_db", HandlerResultType.METADATA, "", List.of("logic_db")),
                 new HandlerCase("database capabilities", new DatabaseCapabilitiesHandler(), "shardingsphere://databases/{database}/capabilities",
@@ -244,13 +244,15 @@ class CoreResourceHandlerSurfaceTest {
                         "shardingsphere://databases/{database}/schemas/{schema}/sequences",
                         "shardingsphere://databases/runtime_db/schemas/public/sequences", HandlerResultType.METADATA, "", List.of("order_seq")),
                 new HandlerCase("database schema sequence", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
-                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().querySequence(
-                                uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("sequence")))),
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().querySequence(
+                                uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("sequence"))
+                                .map(CoreResourceHandlerSurfaceTest::createSingletonList).orElse(Collections.emptyList())),
                         "shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
                         "shardingsphere://databases/runtime_db/schemas/public/sequences/order_seq", HandlerResultType.METADATA, "", List.of("order_seq")),
                 new HandlerCase("database schema", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}",
-                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().querySchema(
-                                uriVariables.getValue("database"), uriVariables.getValue("schema")))),
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().querySchema(
+                                uriVariables.getValue("database"), uriVariables.getValue("schema"))
+                                .map(CoreResourceHandlerSurfaceTest::createSingletonList).orElse(Collections.emptyList())),
                         "shardingsphere://databases/{database}/schemas/{schema}",
                         "shardingsphere://databases/logic_db/schemas/public", HandlerResultType.METADATA, "", List.of("public")),
                 new HandlerCase("database schema tables", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables",
@@ -264,8 +266,9 @@ class CoreResourceHandlerSurfaceTest {
                         "shardingsphere://databases/{database}/schemas/{schema}/views",
                         "shardingsphere://databases/logic_db/schemas/public/views", HandlerResultType.METADATA, "", List.of("orders_view")),
                 new HandlerCase("database schema table", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
-                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryTable(
-                                uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table")))),
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryTable(
+                                uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table"))
+                                .map(CoreResourceHandlerSurfaceTest::createSingletonList).orElse(Collections.emptyList())),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders", HandlerResultType.METADATA, "", List.of("orders")),
                 new HandlerCase("database schema table columns", new MetadataResourceHandler(
@@ -276,13 +279,15 @@ class CoreResourceHandlerSurfaceTest {
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/columns", HandlerResultType.METADATA, "", List.of("order_id")),
                 new HandlerCase("database schema table column", new MetadataResourceHandler(
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
-                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryTableColumn(
-                                uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table"), uriVariables.getValue("column")))),
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryTableColumn(
+                                uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table"), uriVariables.getValue("column"))
+                                .map(CoreResourceHandlerSurfaceTest::createSingletonList).orElse(Collections.emptyList())),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id", HandlerResultType.METADATA, "", List.of("order_id")),
                 new HandlerCase("database schema view", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
-                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryView(
-                                uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("view")))),
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryView(
+                                uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("view"))
+                                .map(CoreResourceHandlerSurfaceTest::createSingletonList).orElse(Collections.emptyList())),
                         "shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
                         "shardingsphere://databases/logic_db/schemas/public/views/orders_view", HandlerResultType.METADATA, "", List.of("orders_view")),
                 new HandlerCase("database schema view columns", new MetadataResourceHandler(
@@ -293,8 +298,9 @@ class CoreResourceHandlerSurfaceTest {
                         "shardingsphere://databases/logic_db/schemas/public/views/orders_view/columns", HandlerResultType.METADATA, "", List.of("order_id")),
                 new HandlerCase("database schema view column", new MetadataResourceHandler(
                         "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
-                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryViewColumn(
-                                uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("view"), uriVariables.getValue("column")))),
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryViewColumn(
+                                uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("view"), uriVariables.getValue("column"))
+                                .map(CoreResourceHandlerSurfaceTest::createSingletonList).orElse(Collections.emptyList())),
                         "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
                         "shardingsphere://databases/logic_db/schemas/public/views/orders_view/columns/order_id", HandlerResultType.METADATA, "", List.of("order_id")),
                 new HandlerCase("database schema table indexes", new MetadataResourceHandler(
@@ -305,14 +311,15 @@ class CoreResourceHandlerSurfaceTest {
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes", HandlerResultType.METADATA, "", List.of("order_idx")),
                 new HandlerCase("database schema table index", new MetadataResourceHandler(
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
-                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryIndex(
-                                uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table"), uriVariables.getValue("index")))),
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryIndex(
+                                uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table"), uriVariables.getValue("index"))
+                                .map(CoreResourceHandlerSurfaceTest::createSingletonList).orElse(Collections.emptyList())),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes/order_idx", HandlerResultType.METADATA, "", List.of("order_idx")));
     }
     
-    private static List<?> singletonOrEmpty(final Optional<?> metadata) {
-        return metadata.map(Collections::singletonList).orElse(Collections.emptyList());
+    private static List<?> createSingletonList(final Object metadata) {
+        return Collections.singletonList(metadata);
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

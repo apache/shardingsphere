@@ -199,14 +199,14 @@ public final class WorkflowValidationSupport {
         return result;
     }
     
-    private void addValidationSection(final List<Map<String, Object>> result, final String layer, final ValidationSection section) {
+    private void addValidationSection(final List<Map<String, Object>> sections, final String layer, final ValidationSection section) {
         if (null == section) {
             return;
         }
         Map<String, Object> sectionPayload = new LinkedHashMap<>(4, 1F);
         sectionPayload.put("layer", layer);
         sectionPayload.putAll(section.toMap());
-        result.add(sectionPayload);
+        sections.add(sectionPayload);
     }
     
     private String resolveValidationStatus(final ValidationReport validationReport) {

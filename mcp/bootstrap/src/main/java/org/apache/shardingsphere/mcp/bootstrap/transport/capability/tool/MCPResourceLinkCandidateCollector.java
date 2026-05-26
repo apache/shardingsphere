@@ -63,30 +63,30 @@ final class MCPResourceLinkCandidateCollector {
         return new ResourceLinkCandidates(createLimitedCandidates(uniqueCandidates), uniqueCandidates.size());
     }
     
-    private void collectResourceLinkCandidates(final Map<?, ?> payload, final List<OrderedResourceLinkCandidate> result) {
-        collectResourceLinkFields(payload, result);
-        collectRecoveryResourceLinkFields(payload, result);
-        collectItemResourceLinkFields(payload, result);
+    private void collectResourceLinkCandidates(final Map<?, ?> payload, final List<OrderedResourceLinkCandidate> candidates) {
+        collectResourceLinkFields(payload, candidates);
+        collectRecoveryResourceLinkFields(payload, candidates);
+        collectItemResourceLinkFields(payload, candidates);
     }
     
-    private void collectResourceLinkFields(final Map<?, ?> value, final List<OrderedResourceLinkCandidate> result) {
-        collectResourceLinkValue(value.get(RESOURCES_TO_READ_FIELD), RESOURCES_TO_READ_FIELD, result);
-        collectResourceLinkValue(value.get(RESOURCE_FIELD), RESOURCE_FIELD, result);
-        collectResourceLinkValue(value.get(PARENT_RESOURCE_FIELD), PARENT_RESOURCE_FIELD, result);
-        collectResourceLinkValue(value.get(NEXT_RESOURCES_FIELD), NEXT_RESOURCES_FIELD, result);
+    private void collectResourceLinkFields(final Map<?, ?> value, final List<OrderedResourceLinkCandidate> candidates) {
+        collectResourceLinkValue(value.get(RESOURCES_TO_READ_FIELD), RESOURCES_TO_READ_FIELD, candidates);
+        collectResourceLinkValue(value.get(RESOURCE_FIELD), RESOURCE_FIELD, candidates);
+        collectResourceLinkValue(value.get(PARENT_RESOURCE_FIELD), PARENT_RESOURCE_FIELD, candidates);
+        collectResourceLinkValue(value.get(NEXT_RESOURCES_FIELD), NEXT_RESOURCES_FIELD, candidates);
     }
     
-    private void collectResourceLinkValue(final Object value, final String sourceField, final List<OrderedResourceLinkCandidate> result) {
+    private void collectResourceLinkValue(final Object value, final String sourceField, final List<OrderedResourceLinkCandidate> candidates) {
         if (value instanceof Map<?, ?> resourceLinkValue) {
-            collectResourceLinkHint(resourceLinkValue, sourceField, result);
+            collectResourceLinkHint(resourceLinkValue, sourceField, candidates);
         } else if (value instanceof Iterable<?> resourceLinkValues) {
-            collectIterableResourceLinkHints(resourceLinkValues, sourceField, result);
+            collectIterableResourceLinkHints(resourceLinkValues, sourceField, candidates);
         }
     }
     
-    private void collectResourceLinkHint(final Map<?, ?> value, final String sourceField, final List<OrderedResourceLinkCandidate> result) {
+    private void collectResourceLinkHint(final Map<?, ?> value, final String sourceField, final List<OrderedResourceLinkCandidate> candidates) {
         if (isResourceHint(value)) {
-            result.add(createCandidate(value, sourceField, result.size()));
+            candidates.add(createCandidate(value, sourceField, candidates.size()));
         }
     }
     
@@ -110,29 +110,29 @@ final class MCPResourceLinkCandidateCollector {
         return result.isEmpty() ? sourceField : result;
     }
     
-    private void collectIterableResourceLinkHints(final Iterable<?> value, final String sourceField, final List<OrderedResourceLinkCandidate> result) {
+    private void collectIterableResourceLinkHints(final Iterable<?> value, final String sourceField, final List<OrderedResourceLinkCandidate> candidates) {
         for (Object each : value) {
             if (each instanceof Map<?, ?> resourceLinkValue) {
-                collectResourceLinkHint(resourceLinkValue, sourceField, result);
+                collectResourceLinkHint(resourceLinkValue, sourceField, candidates);
             }
         }
     }
     
-    private void collectRecoveryResourceLinkFields(final Map<?, ?> payload, final List<OrderedResourceLinkCandidate> result) {
+    private void collectRecoveryResourceLinkFields(final Map<?, ?> payload, final List<OrderedResourceLinkCandidate> candidates) {
         Object recovery = payload.get(RECOVERY_FIELD);
         if (recovery instanceof Map<?, ?> recoveryPayload) {
-            collectResourceLinkFields(recoveryPayload, result);
+            collectResourceLinkFields(recoveryPayload, candidates);
         }
     }
     
-    private void collectItemResourceLinkFields(final Map<?, ?> payload, final List<OrderedResourceLinkCandidate> result) {
+    private void collectItemResourceLinkFields(final Map<?, ?> payload, final List<OrderedResourceLinkCandidate> candidates) {
         Object items = payload.get(ITEMS_FIELD);
         if (!(items instanceof Iterable<?> itemValues)) {
             return;
         }
         for (Object each : itemValues) {
             if (each instanceof Map<?, ?> item) {
-                collectResourceLinkFields(item, result);
+                collectResourceLinkFields(item, candidates);
             }
         }
     }

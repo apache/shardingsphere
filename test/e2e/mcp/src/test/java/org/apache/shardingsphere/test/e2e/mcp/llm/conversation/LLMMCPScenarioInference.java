@@ -37,11 +37,11 @@ final class LLMMCPScenarioInference {
     private static final Pattern RESOURCE_URI_PATTERN = Pattern.compile("shardingsphere://[^`\\s,]+");
     
     static String findExpectedResourceUri(final LLME2EScenario scenario) {
-        final String expectedTableResourceUri = createExpectedTableResourceUri(scenario.getExpectedAnswer());
+        String expectedTableResourceUri = createExpectedTableResourceUri(scenario.getExpectedAnswer());
         String promptResourceUri = "";
-        final Matcher matcher = RESOURCE_URI_PATTERN.matcher(scenario.getUserPrompt());
+        Matcher matcher = RESOURCE_URI_PATTERN.matcher(scenario.getUserPrompt());
         while (matcher.find()) {
-            final String each = trimResourceUri(matcher.group());
+            String each = trimResourceUri(matcher.group());
             if (each.equals(expectedTableResourceUri)) {
                 return each;
             }
@@ -64,8 +64,8 @@ final class LLMMCPScenarioInference {
     
     static String findLatestPlanId(final List<MCPInteractionTraceRecord> interactionTrace) {
         for (int index = interactionTrace.size() - 1; index >= 0; index--) {
-            final MCPInteractionTraceRecord each = interactionTrace.get(index);
-            final String result = Objects.toString(each.getStructuredContent().get("plan_id"), "").trim();
+            MCPInteractionTraceRecord each = interactionTrace.get(index);
+            String result = Objects.toString(each.getStructuredContent().get("plan_id"), "").trim();
             if (each.isValid() && !result.isEmpty() && !each.getStructuredContent().containsKey("error_code")) {
                 return result;
             }
@@ -74,7 +74,7 @@ final class LLMMCPScenarioInference {
     }
     
     static String normalizeComparableQuery(final LLMStructuredAnswer expectedAnswer, final String query) {
-        final String result = normalizeComparableQuery(query);
+        String result = normalizeComparableQuery(query);
         if (expectedAnswer.getSchema().isEmpty() || expectedAnswer.getTable().isEmpty()) {
             return result;
         }

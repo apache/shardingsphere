@@ -116,11 +116,11 @@ public final class MySQLRuntimeTestSupport {
      * @return Docker-required message
      */
     public static String createDockerRequiredMessage(final String scenarioMessage) {
-        return createDockerRequiredMessage(scenarioMessage, getDockerUnavailableReason());
+        return createDockerRequiredMessage(scenarioMessage, getDockerUnavailableReason().orElse(""));
     }
     
-    static String createDockerRequiredMessage(final String scenarioMessage, final Optional<String> unavailableReason) {
-        return unavailableReason.map(each -> scenarioMessage + " Docker readiness diagnostic: " + each).orElse(scenarioMessage);
+    static String createDockerRequiredMessage(final String scenarioMessage, final String unavailableReason) {
+        return unavailableReason.isEmpty() ? scenarioMessage : scenarioMessage + " Docker readiness diagnostic: " + unavailableReason;
     }
     
     private static String createDockerUnavailableReason(final IllegalStateException ex) {

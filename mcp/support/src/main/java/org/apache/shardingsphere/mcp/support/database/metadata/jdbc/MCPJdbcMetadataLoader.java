@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -141,11 +142,11 @@ public final class MCPJdbcMetadataLoader {
     
     private void loadSequences(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final String databaseType,
                                final DatabaseMetadataAccumulator accumulator, final Connection connection) throws SQLException {
-        String sequenceQuery = getSequenceQuery(databaseType);
-        if (null == sequenceQuery) {
+        Optional<String> sequenceQuery = getSequenceQuery(databaseType);
+        if (sequenceQuery.isEmpty()) {
             return;
         }
-        try (Statement statement = connection.createStatement(); ResultSet sequences = statement.executeQuery(sequenceQuery)) {
+        try (Statement statement = connection.createStatement(); ResultSet sequences = statement.executeQuery(sequenceQuery.get())) {
             while (sequences.next()) {
                 String schemaName = Objects.toString(sequences.getString("SEQUENCE_SCHEMA"), "").trim();
                 if (isSystemSchema(schemaName)) {
@@ -160,26 +161,26 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
-    private String getSequenceQuery(final String databaseType) {
+    private Optional<String> getSequenceQuery(final String databaseType) {
         if (null == databaseType || databaseType.isBlank()) {
-            return null;
+            return Optional.empty();
         }
         switch (databaseType.toUpperCase(Locale.ENGLISH)) {
             case "POSTGRESQL":
             case "OPENGAUSS":
-                return INFORMATION_SCHEMA_SEQUENCE_QUERY;
+                return Optional.of(INFORMATION_SCHEMA_SEQUENCE_QUERY);
             case "SQLSERVER":
-                return SQL_SERVER_SEQUENCE_QUERY;
+                return Optional.of(SQL_SERVER_SEQUENCE_QUERY);
             case "ORACLE":
-                return ORACLE_SEQUENCE_QUERY;
+                return Optional.of(ORACLE_SEQUENCE_QUERY);
             case "MARIADB":
-                return MARIADB_SEQUENCE_QUERY;
+                return Optional.of(MARIADB_SEQUENCE_QUERY);
             case "FIREBIRD":
-                return FIREBIRD_SEQUENCE_QUERY;
+                return Optional.of(FIREBIRD_SEQUENCE_QUERY);
             case "H2":
-                return "SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM INFORMATION_SCHEMA.SEQUENCES";
+                return Optional.of("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM INFORMATION_SCHEMA.SEQUENCES");
             default:
-                return null;
+                return Optional.empty();
         }
     }
     

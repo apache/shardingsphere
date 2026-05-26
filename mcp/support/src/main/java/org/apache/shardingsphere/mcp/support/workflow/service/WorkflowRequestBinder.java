@@ -123,14 +123,14 @@ public final class WorkflowRequestBinder {
         }
     }
     
-    private static void addUserOverrideConflict(final Collection<String> conflicts, final Map<String, Object> arguments, final Entry<String, Object> entry) {
-        if (!arguments.containsKey(entry.getKey())) {
+    private static void addUserOverrideConflict(final Collection<String> conflicts, final Map<String, Object> arguments, final Entry<String, Object> userOverride) {
+        if (!arguments.containsKey(userOverride.getKey())) {
             return;
         }
-        String actualValue = normalizeComparableValue(arguments.get(entry.getKey()));
-        String overrideValue = normalizeComparableValue(entry.getValue());
+        String actualValue = normalizeComparableValue(arguments.get(userOverride.getKey()));
+        String overrideValue = normalizeComparableValue(userOverride.getValue());
         if (!actualValue.isEmpty() && !overrideValue.isEmpty() && !actualValue.equals(overrideValue)) {
-            conflicts.add(String.format("%s conflicts with %s.%s", entry.getKey(), WorkflowFieldNames.USER_OVERRIDES, entry.getKey()));
+            conflicts.add(String.format("%s conflicts with %s.%s", userOverride.getKey(), WorkflowFieldNames.USER_OVERRIDES, userOverride.getKey()));
         }
     }
     

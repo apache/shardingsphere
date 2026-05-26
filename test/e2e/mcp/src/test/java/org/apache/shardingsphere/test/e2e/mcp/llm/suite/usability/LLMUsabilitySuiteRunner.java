@@ -85,7 +85,7 @@ final class LLMUsabilitySuiteRunner {
             evaluatedScenarios.add(new EvaluatedScenario(each, metricCalculator.evaluateScenario(each, conversationResult.artifactBundle()),
                     conversationResult.artifactDirectory()));
         }
-        List<LLMUsabilityScenarioResult> scenarioResults = evaluatedScenarios.stream().map(EvaluatedScenario::result).toList();
+        List<LLMUsabilityScenarioResult> scenarioResults = evaluatedScenarios.stream().map(EvaluatedScenario::scenarioResult).toList();
         LLMUsabilityScorecard scorecard = metricCalculator.createScorecard(suiteId, configuration.getRunId(), scenarioResults);
         Path suiteDirectory = configuration.getArtifactRoot().resolve(configuration.getRunId()).resolve(suiteId);
         reportWriter.writeScorecard(suiteDirectory, scorecard);
@@ -181,10 +181,10 @@ final class LLMUsabilitySuiteRunner {
     }
     
     private void assertScenarioInfrastructure(final EvaluatedScenario evaluatedScenario) {
-        String failureType = evaluatedScenario.result().getFailureType();
+        String failureType = evaluatedScenario.scenarioResult().getFailureType();
         assertFalse(INFRASTRUCTURE_FAILURE_TYPES.contains(failureType),
                 () -> evaluatedScenario.scenario().getScenarioId() + " failed deterministic infrastructure setup: " + failureType);
-        assertFalse(evaluatedScenario.result().isApprovalViolation(), () -> evaluatedScenario.scenario().getScenarioId() + " attempted an unapproved side-effect path.");
+        assertFalse(evaluatedScenario.scenarioResult().isApprovalViolation(), () -> evaluatedScenario.scenario().getScenarioId() + " attempted an unapproved side-effect path.");
     }
     
     private void assertArtifactDirectory(final Path artifactDirectory) {
@@ -204,7 +204,7 @@ final class LLMUsabilitySuiteRunner {
     }
     
     private void assertTraceShape(final EvaluatedScenario evaluatedScenario) {
-        for (MCPInteractionTraceRecord each : evaluatedScenario.result().getInteractionTrace()) {
+        for (MCPInteractionTraceRecord each : evaluatedScenario.scenarioResult().getInteractionTrace()) {
             assertTrue(0 < each.getSequence(), () -> "Trace sequence must be positive in " + evaluatedScenario.scenario().getScenarioId());
             assertFalse(each.getActionKind().isBlank(), () -> "Trace action kind is blank in " + evaluatedScenario.scenario().getScenarioId());
             assertFalse(each.getActionOrigin().isBlank(), () -> "Trace action origin is blank in " + evaluatedScenario.scenario().getScenarioId());
@@ -269,6 +269,6 @@ final class LLMUsabilitySuiteRunner {
     private record EvaluatedSuite(List<LLMUsabilityScenario> scenarios, List<EvaluatedScenario> evaluatedScenarios, LLMUsabilityScorecard scorecard) {
     }
     
-    private record EvaluatedScenario(LLMUsabilityScenario scenario, LLMUsabilityScenarioResult result, Path artifactDirectory) {
+    private record EvaluatedScenario(LLMUsabilityScenario scenario, LLMUsabilityScenarioResult scenarioResult, Path artifactDirectory) {
     }
 }

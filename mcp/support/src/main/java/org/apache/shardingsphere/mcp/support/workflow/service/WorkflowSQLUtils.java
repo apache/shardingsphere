@@ -200,9 +200,9 @@ public final class WorkflowSQLUtils {
         return result;
     }
     
-    private static int findPropertySeparatorIndex(final String entry) {
-        int equalsIndex = entry.indexOf('=');
-        return -1 == equalsIndex ? entry.indexOf(':') : equalsIndex;
+    private static int findPropertySeparatorIndex(final String propertyEntry) {
+        int equalsIndex = propertyEntry.indexOf('=');
+        return -1 == equalsIndex ? propertyEntry.indexOf(':') : equalsIndex;
     }
     
     private static String stripQuotes(final String value) {

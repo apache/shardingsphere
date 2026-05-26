@@ -172,9 +172,9 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         }
     }
     
-    private void addDimensionIfAmbiguous(final List<String> result, final String dimension, final Set<String> values) {
+    private void addDimensionIfAmbiguous(final List<String> dimensions, final String dimension, final Set<String> values) {
         if (1 < values.size()) {
-            result.add(dimension);
+            dimensions.add(dimension);
         }
     }
     
@@ -189,7 +189,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     }
     
     private Map<String, Object> createEmptyState(final MetadataSearchRequest request) {
-        final Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("state", request.getQuery().isEmpty() ? "no_items" : "no_match");
         result.put("category", request.getQuery().isEmpty() ? "empty_scope" : "not_found");
         result.put("reason", request.getQuery().isEmpty() ? "No metadata is available in the requested scope." : "No metadata matched the query in the requested scope.");
