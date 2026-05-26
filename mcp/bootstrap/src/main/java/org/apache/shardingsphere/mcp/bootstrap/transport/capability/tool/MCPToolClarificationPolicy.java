@@ -64,14 +64,11 @@ final class MCPToolClarificationPolicy {
     private static final List<String> SENSITIVE_FIELD_NAME_MARKERS = List.of(
             "password", "passwd", "passphrase", "secret", "token", "accesstoken", "apikey", "privatekey", "credential", "card", "cvv", "payment", "key");
     
-    boolean isPlanningTool(final MCPToolDescriptor toolDescriptor) {
-        return MCPDescriptorCatalogIndex.findToolRuntimeDescriptor(toolDescriptor.getName())
-                .map(optional -> PLANNING_WORKFLOW_ROLE.equals(optional.getWorkflowRole())).orElse(false);
-    }
-    
-    boolean hasClarificationQuestions(final Map<String, Object> payload) {
+    boolean requiresPlanningClarification(final MCPToolDescriptor toolDescriptor, final Map<String, Object> payload) {
         Object clarificationQuestions = payload.get(CLARIFICATION_QUESTIONS_FIELD);
-        return clarificationQuestions instanceof List<?> questions && !questions.isEmpty();
+        return MCPDescriptorCatalogIndex.findToolRuntimeDescriptor(toolDescriptor.getName())
+                .map(runtimeDescriptor -> PLANNING_WORKFLOW_ROLE.equals(runtimeDescriptor.getWorkflowRole())).orElse(false)
+                && clarificationQuestions instanceof List<?> questions && !questions.isEmpty();
     }
     
     Optional<ClarificationForm> createClarificationForm(final Map<String, Object> payload, final MCPToolDescriptor toolDescriptor) {
