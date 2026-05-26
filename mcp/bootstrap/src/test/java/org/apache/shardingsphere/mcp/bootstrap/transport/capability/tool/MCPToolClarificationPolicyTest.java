@@ -26,29 +26,29 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPToolClarificationPolicyTest extends AbstractMCPToolSpecificationFactoryTest {
-
+    
     private final MCPToolClarificationPolicy policy = new MCPToolClarificationPolicy();
-
+    
     @Test
     void assertRequiresPlanningClarification() {
         assertTrue(policy.requiresPlanningClarification(createPlanningToolDescriptor("database_gateway_plan_encrypt_rule"), createClarifyingPayload()));
     }
-
+    
     @Test
     void assertRequiresPlanningClarificationWithApplyTool() {
         assertFalse(policy.requiresPlanningClarification(createToolDescriptor("database_gateway_apply_workflow"), createClarifyingPayload()));
     }
-
+    
     @Test
     void assertRequiresPlanningClarificationWithoutRuntimeDescriptor() {
         assertFalse(policy.requiresPlanningClarification(createToolDescriptor("fixture_ping"), createClarifyingPayload()));
     }
-
+    
     @Test
     void assertRequiresPlanningClarificationWithoutQuestions() {
         assertFalse(policy.requiresPlanningClarification(createPlanningToolDescriptor("database_gateway_plan_encrypt_rule"), Map.of("plan_id", "plan-1", "status", "planned")));
     }
-
+    
     @Test
     void assertRequiresPlanningClarificationWithEmptyQuestions() {
         assertFalse(policy.requiresPlanningClarification(createPlanningToolDescriptor("database_gateway_plan_encrypt_rule"), Map.of(
