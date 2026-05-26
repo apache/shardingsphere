@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.MultiStatementsUpdateResponseHeader;
@@ -44,9 +45,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.In
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.MultiSQLSplitter;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * COM_QUERY command packet executor for MySQL.
@@ -130,7 +136,19 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     @Override
     public MySQLPacket getQueryRowPacket() throws SQLException {
-        return new MySQLTextResultSetRowPacket(proxyBackendHandler.getRowData().getData());
+        Collection<QueryResponseCell> cells = proxyBackendHandler.getRowData().getCells();
+        List<Object> result = new ArrayList<>(cells.size());
+        for (QueryResponseCell each : cells) {
+            result.add(adjustValueForTextColumnType(each));
+        }
+        return new MySQLTextResultSetRowPacket(result);
+    }
+    
+    private Object adjustValueForTextColumnType(final QueryResponseCell cell) {
+        Object data = cell.getData();
+        return Types.DATE == cell.getJdbcType() && "YEAR".equalsIgnoreCase(cell.getColumnTypeName().orElse(null)) && data instanceof Date
+                ? String.format(Locale.ROOT, "%04d", ((Date) data).toLocalDate().getYear())
+                : data;
     }
     
     @Override

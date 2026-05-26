@@ -63,4 +63,16 @@ class ColumnReviseEngineTest {
         assertFalse(revisedColumn.isUnsigned());
         assertFalse(revisedColumn.isNullable());
     }
+    
+    @Test
+    void assertReviseKeepsColumnTypeName() {
+        String tableName = "foo_tbl";
+        when(reviseEntry.getColumnExistedReviser(rule, tableName)).thenReturn(Optional.empty());
+        when(reviseEntry.getColumnNameReviser(rule, tableName)).thenReturn(Optional.empty());
+        when(reviseEntry.getColumnGeneratedReviser(rule, tableName)).thenReturn(Optional.empty());
+        ColumnMetaData yearColumn = new ColumnMetaData("t_year", java.sql.Types.DATE, false, false, false, true, false, true, "YEAR");
+        Collection<ColumnMetaData> actual = new ColumnReviseEngine<>(rule, reviseEntry).revise(tableName, Collections.singleton(yearColumn));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getColumnTypeName(), is("YEAR"));
+    }
 }

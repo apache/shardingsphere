@@ -17,13 +17,19 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
+import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -61,6 +67,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.plugins.MemberAccessor;
 import org.mockito.quality.Strictness;
 
+import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
@@ -197,6 +205,34 @@ class MySQLComQueryPacketExecutorTest {
     @Test
     void assertGetQueryRowPacket() throws SQLException {
         assertThat(new MySQLComQueryPacketExecutor(packet, connectionSession).getQueryRowPacket(), isA(MySQLTextResultSetRowPacket.class));
+    }
+    
+    @Test
+    void assertYearColumnRowEmitsFourDigitYearFromDate() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        MySQLComQueryPacketExecutor executor = new MySQLComQueryPacketExecutor(packet, connectionSession);
+        Plugins.getMemberAccessor().set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), executor, proxyBackendHandler);
+        when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.DATE, Date.valueOf("1925-01-01"), "YEAR"))));
+        MySQLPacket rowPacket = executor.getQueryRowPacket();
+        ByteBuf buffer = Unpooled.buffer();
+        rowPacket.write(new MySQLPacketPayload(buffer, StandardCharsets.UTF_8));
+        assertThat(buffer.readUnsignedByte(), is((short) 4));
+        byte[] yearBytes = new byte[4];
+        buffer.readBytes(yearBytes);
+        assertThat(new String(yearBytes, StandardCharsets.UTF_8), is("1925"));
+    }
+    
+    @Test
+    void assertDateColumnRowEmitsFullDateString() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        MySQLComQueryPacketExecutor executor = new MySQLComQueryPacketExecutor(packet, connectionSession);
+        Plugins.getMemberAccessor().set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), executor, proxyBackendHandler);
+        when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.DATE, Date.valueOf("2025-05-26"), "DATE"))));
+        MySQLPacket rowPacket = executor.getQueryRowPacket();
+        ByteBuf buffer = Unpooled.buffer();
+        rowPacket.write(new MySQLPacketPayload(buffer, StandardCharsets.UTF_8));
+        assertThat(buffer.readUnsignedByte(), is((short) 10));
+        byte[] dateBytes = new byte[10];
+        buffer.readBytes(dateBytes);
+        assertThat(new String(dateBytes, StandardCharsets.UTF_8), is("2025-05-26"));
     }
     
     @Test
