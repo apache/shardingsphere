@@ -20,10 +20,13 @@ package org.apache.shardingsphere.sharding.route.engine.condition.generator;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.PostgreSQLCastEvaluator;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,11 +43,23 @@ public final class ConditionValue {
     private boolean isNull;
     
     public ConditionValue(final ExpressionSegment expressionSegment, final List<Object> params) {
+        ExpressionSegment marker = unwrapMarker(expressionSegment);
+        parameterMarkerIndex = marker instanceof ParameterMarkerExpressionSegment ? ((ParameterMarkerExpressionSegment) marker).getParameterMarkerIndex() : -1;
         value = getValue(expressionSegment, params);
-        parameterMarkerIndex = expressionSegment instanceof ParameterMarkerExpressionSegment ? ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex() : -1;
+    }
+    
+    private ExpressionSegment unwrapMarker(final ExpressionSegment expressionSegment) {
+        ExpressionSegment result = expressionSegment;
+        while (result instanceof TypeCastExpression) {
+            result = ((TypeCastExpression) result).getExpression();
+        }
+        return result;
     }
     
     private Comparable<?> getValue(final ExpressionSegment expressionSegment, final List<Object> params) {
+        if (expressionSegment instanceof TypeCastExpression) {
+            return getValue((TypeCastExpression) expressionSegment, params);
+        }
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
             return getValue((ParameterMarkerExpressionSegment) expressionSegment, params);
         }
@@ -52,6 +67,43 @@ public final class ConditionValue {
             return getValue((LiteralExpressionSegment) expressionSegment);
         }
         return null;
+    }
+    
+    private Comparable<?> getValue(final TypeCastExpression expressionSegment, final List<Object> params) {
+        List<String> castTargetTypesOuterToInner = new ArrayList<>();
+        ExpressionSegment innermost = expressionSegment;
+        while (innermost instanceof TypeCastExpression) {
+            castTargetTypesOuterToInner.add(((TypeCastExpression) innermost).getDataType());
+            innermost = ((TypeCastExpression) innermost).getExpression();
+        }
+        if (!(innermost instanceof ParameterMarkerExpressionSegment) && !(innermost instanceof LiteralExpressionSegment)) {
+            return null;
+        }
+        Object current;
+        if (innermost instanceof ParameterMarkerExpressionSegment) {
+            int markerIndex = ((ParameterMarkerExpressionSegment) innermost).getParameterMarkerIndex();
+            if (markerIndex < 0 || markerIndex >= params.size()) {
+                return null;
+            }
+            current = params.get(markerIndex);
+            isNull = null == current;
+        } else {
+            current = ((LiteralExpressionSegment) innermost).getLiterals();
+            isNull = null == current;
+        }
+        if (null == current) {
+            return null;
+        }
+        for (int index = castTargetTypesOuterToInner.size() - 1; index >= 0; index--) {
+            Optional<Comparable<?>> casted = PostgreSQLCastEvaluator.evaluate(current, castTargetTypesOuterToInner.get(index));
+            if (!casted.isPresent()) {
+                return null;
+            }
+            current = casted.get();
+        }
+        Object finalValue = current;
+        ShardingSpherePreconditions.checkState(finalValue instanceof Comparable, () -> new NotImplementComparableValueException("Sharding", finalValue));
+        return (Comparable<?>) finalValue;
     }
     
     private Comparable<?> getValue(final ParameterMarkerExpressionSegment expressionSegment, final List<Object> params) {

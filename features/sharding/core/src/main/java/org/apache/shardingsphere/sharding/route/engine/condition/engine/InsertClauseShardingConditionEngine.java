@@ -43,18 +43,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Sharding condition engine for insert clause.
@@ -62,31 +57,11 @@ import java.util.Set;
 @RequiredArgsConstructor
 public final class InsertClauseShardingConditionEngine {
     
-    private static final Set<String> NUMERIC_CAST_TARGETS = unmodifiableUpperCaseSet(
-            "INT", "INTEGER", "INT2", "INT4", "INT8", "BIGINT", "SMALLINT", "TINYINT",
-            "NUMERIC", "DECIMAL", "DEC", "NUMBER",
-            "FLOAT", "FLOAT4", "FLOAT8", "REAL", "DOUBLE", "DOUBLE PRECISION",
-            "SERIAL", "BIGSERIAL", "SMALLSERIAL");
-    
-    private static final Set<String> TEXT_CAST_TARGETS = unmodifiableUpperCaseSet(
-            "TEXT", "VARCHAR", "CHARACTER VARYING", "CHAR", "CHARACTER", "BPCHAR", "NAME", "NVARCHAR", "NCHAR");
-    
-    private static final Set<String> BOOLEAN_CAST_TARGETS = unmodifiableUpperCaseSet("BOOL", "BOOLEAN");
-    
-    private static final Set<String> TEMPORAL_CAST_TARGETS = unmodifiableUpperCaseSet(
-            "DATE", "TIME", "TIMETZ", "TIMESTAMP", "TIMESTAMPTZ", "TIMESTAMP WITHOUT TIME ZONE", "TIMESTAMP WITH TIME ZONE");
-    
     private final ShardingSphereDatabase database;
     
     private final ShardingRule rule;
     
     private final TimestampServiceRule timestampServiceRule;
-    
-    private static Set<String> unmodifiableUpperCaseSet(final String... values) {
-        Set<String> result = new HashSet<>(values.length, 1F);
-        result.addAll(Arrays.asList(values));
-        return Collections.unmodifiableSet(result);
-    }
     
     /**
      * Create sharding conditions.
@@ -159,92 +134,84 @@ public final class InsertClauseShardingConditionEngine {
             if (!shardingColumn.isPresent()) {
                 continue;
             }
-            ExpressionSegment value = unwrapTypeCastForRouting(each, params);
-            if (value instanceof SimpleExpressionSegment) {
-                List<Integer> parameterMarkerIndexes = value instanceof ParameterMarkerExpressionSegment
-                        ? Collections.singletonList(((ParameterMarkerExpressionSegment) value).getParameterMarkerIndex())
-                        : Collections.emptyList();
-                Object shardingValue = getShardingValue((SimpleExpressionSegment) value, params);
-                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(shardingValue),
-                        parameterMarkerIndexes));
-            } else if (value instanceof CommonExpressionSegment) {
-                generateShardingCondition((CommonExpressionSegment) value, result, shardingColumn.get(), tableName);
-            } else if (ExpressionConditionUtils.isNowExpression(value)) {
-                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(timestampServiceRule.getTimestamp())));
-            }
+            appendCastRoutedValueIfPresent(each, params, shardingColumn.get(), tableName, result)
+                    .orElseGet(() -> appendRoutedValueWithoutCast(each, params, shardingColumn.get(), tableName, result));
         }
         return result;
     }
     
     /**
-     * Unwrap nested {@link TypeCastExpression} layers for routing only when the cast is semantically safe, i.e. the bound
-     * Java value belongs to the same category as the outermost cast target type. An {@code expression::type} cast on a
-     * sharding key then reuses the underlying parameter marker or literal for routing without coercion.
+     * Route a {@code TypeCastExpression} sharding-key value by the database-visible cast result instead of the raw bound
+     * Java value, so that PostgreSQL/openGauss runtime semantics for {@code expression::type} (string-to-integer,
+     * lossy-numeric-to-integer, boolean conversions, etc.) are preserved by routing.
      *
-     * <p>Unwrap is refused, returning the original cast (which falls through the {@code instanceof} chain and adds no
-     * sharding condition), in any of the following cases:</p>
-     * <ul>
-     * <li>the innermost expression is not a {@link ParameterMarkerExpressionSegment} or {@link LiteralExpressionSegment}
-     * (e.g. {@link org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment}),
-     * which would otherwise hit a {@link ClassCastException} at {@code getShardingValue};</li>
-     * <li>the bound Java value is {@code null};</li>
-     * <li>the bound Java value's class does not match the outermost cast target category, e.g. binding a {@code String}
-     * for {@code ?::int4}. PostgreSQL would evaluate the SQL value as an integer while raw-value routing would still see
-     * the {@code String}, so refusing to unwrap avoids routing to the wrong shard.</li>
-     * </ul>
+     * <p>Returns {@link Optional#empty()} when the segment is not a cast or when {@link PostgreSQLCastEvaluator} cannot
+     * resolve the cast (unsupported target, parse failure, overflow, or a non-marker / non-literal inner expression such
+     * as a {@code SubqueryExpressionSegment}). In that case the caller falls back to the no-cast path.</p>
      *
-     * @param expressionSegment expression segment that may be wrapped in one or more {@link TypeCastExpression} layers
-     * @param params bound parameter values used to look up the runtime Java type of a parameter marker
-     * @return the innermost {@link ParameterMarkerExpressionSegment} or {@link LiteralExpressionSegment} when the cast is
-     *         safe; otherwise the original argument
+     * @param expressionSegment expression segment to route
+     * @param params bound parameter values for parameter markers
+     * @param shardingColumn sharding column name to attach the routed value to
+     * @param tableName sharding table name to attach the routed value to
+     * @param condition sharding condition to append the routed value to
+     * @return {@link Optional#of(Object)} with a non-null placeholder when a cast-derived sharding condition was
+     *         appended, otherwise {@link Optional#empty()}
      */
-    private static ExpressionSegment unwrapTypeCastForRouting(final ExpressionSegment expressionSegment, final List<Object> params) {
+    private Optional<Object> appendCastRoutedValueIfPresent(final ExpressionSegment expressionSegment, final List<Object> params,
+                                                            final String shardingColumn, final String tableName, final ShardingCondition condition) {
         if (!(expressionSegment instanceof TypeCastExpression)) {
-            return expressionSegment;
+            return Optional.empty();
         }
-        TypeCastExpression outermost = (TypeCastExpression) expressionSegment;
-        ExpressionSegment inner = outermost;
-        while (inner instanceof TypeCastExpression) {
-            inner = ((TypeCastExpression) inner).getExpression();
+        List<String> castTargetTypesOuterToInner = new ArrayList<>();
+        ExpressionSegment innermost = expressionSegment;
+        while (innermost instanceof TypeCastExpression) {
+            castTargetTypesOuterToInner.add(((TypeCastExpression) innermost).getDataType());
+            innermost = ((TypeCastExpression) innermost).getExpression();
         }
-        if (!(inner instanceof ParameterMarkerExpressionSegment) && !(inner instanceof LiteralExpressionSegment)) {
-            return expressionSegment;
+        if (!(innermost instanceof ParameterMarkerExpressionSegment) && !(innermost instanceof LiteralExpressionSegment)) {
+            return Optional.empty();
         }
-        Object routingValue;
-        if (inner instanceof ParameterMarkerExpressionSegment) {
-            int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) inner).getParameterMarkerIndex();
+        Object value;
+        List<Integer> parameterMarkerIndexes;
+        if (innermost instanceof ParameterMarkerExpressionSegment) {
+            int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) innermost).getParameterMarkerIndex();
             if (parameterMarkerIndex < 0 || parameterMarkerIndex >= params.size()) {
-                return expressionSegment;
+                return Optional.empty();
             }
-            routingValue = params.get(parameterMarkerIndex);
+            value = params.get(parameterMarkerIndex);
+            parameterMarkerIndexes = Collections.singletonList(parameterMarkerIndex);
         } else {
-            routingValue = ((LiteralExpressionSegment) inner).getLiterals();
+            value = ((LiteralExpressionSegment) innermost).getLiterals();
+            parameterMarkerIndexes = Collections.emptyList();
         }
-        return isCastSafeForRouting(routingValue, outermost.getDataType()) ? inner : expressionSegment;
+        for (int index = castTargetTypesOuterToInner.size() - 1; index >= 0; index--) {
+            Optional<Comparable<?>> casted = PostgreSQLCastEvaluator.evaluate(value, castTargetTypesOuterToInner.get(index));
+            if (!casted.isPresent()) {
+                return Optional.empty();
+            }
+            value = casted.get();
+        }
+        if (!(value instanceof Comparable)) {
+            return Optional.empty();
+        }
+        condition.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList((Comparable<?>) value), parameterMarkerIndexes));
+        return Optional.of(Boolean.TRUE);
     }
     
-    private static boolean isCastSafeForRouting(final Object value, final String castTargetType) {
-        if (null == value || null == castTargetType) {
-            return false;
+    private Object appendRoutedValueWithoutCast(final ExpressionSegment expressionSegment, final List<Object> params,
+                                                final String shardingColumn, final String tableName, final ShardingCondition condition) {
+        if (expressionSegment instanceof SimpleExpressionSegment) {
+            List<Integer> parameterMarkerIndexes = expressionSegment instanceof ParameterMarkerExpressionSegment
+                    ? Collections.singletonList(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex())
+                    : Collections.emptyList();
+            Object shardingValue = getShardingValue((SimpleExpressionSegment) expressionSegment, params);
+            condition.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList(shardingValue), parameterMarkerIndexes));
+        } else if (expressionSegment instanceof CommonExpressionSegment) {
+            generateShardingCondition((CommonExpressionSegment) expressionSegment, condition, shardingColumn, tableName);
+        } else if (ExpressionConditionUtils.isNowExpression(expressionSegment)) {
+            condition.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList(timestampServiceRule.getTimestamp())));
         }
-        String normalized = castTargetType.toUpperCase(Locale.ROOT).trim();
-        int parenIndex = normalized.indexOf('(');
-        if (parenIndex > 0) {
-            normalized = normalized.substring(0, parenIndex).trim();
-        }
-        if (value instanceof Number) {
-            return NUMERIC_CAST_TARGETS.contains(normalized);
-        }
-        if (value instanceof String) {
-            return TEXT_CAST_TARGETS.contains(normalized);
-        }
-        if (value instanceof Boolean) {
-            return BOOLEAN_CAST_TARGETS.contains(normalized);
-        }
-        if (value instanceof Date) {
-            return TEMPORAL_CAST_TARGETS.contains(normalized);
-        }
-        return false;
+        return Boolean.TRUE;
     }
     
     private void generateShardingCondition(final CommonExpressionSegment expressionSegment, final ShardingCondition condition, final String shardingColumn, final String tableName) {
