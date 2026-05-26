@@ -89,16 +89,20 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
     
     private void fillDataOnlyOnce(final AssertionTestParameter testParam) throws IOException, JAXBException {
         String cacheKey = testParam.getKey() + "-" + System.identityHashCode(getEnvironmentEngine().getActualDataSourceMap());
-        if (!FILLED_SUITES.contains(cacheKey)) {
-            synchronized (FILLED_SUITES) {
-                if (!FILLED_SUITES.contains(cacheKey)) {
-                    new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType()).fillData();
-                    new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario(), Type.EXPECTED).getDataSetFile(), getEnvironmentEngine().getExpectedDataSourceMap(), testParam.getDatabaseType()).fillData();
-                    FILLED_SUITES.add(cacheKey);
-                }
+        if (FILLED_SUITES.contains(cacheKey)) {
+            return;
+        }
+        synchronized (FILLED_SUITES) {
+            if (FILLED_SUITES.contains(cacheKey)) {
+                return;
             }
+            new DataSetEnvironmentManager(
+                    new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(),
+                    testParam.getDatabaseType()).fillData();
+            new DataSetEnvironmentManager(
+                    new ScenarioDataPath(testParam.getScenario(), Type.EXPECTED).getDataSetFile(), getEnvironmentEngine().getExpectedDataSourceMap(),
+                    testParam.getDatabaseType()).fillData();
+            FILLED_SUITES.add(cacheKey);
         }
     }
     
