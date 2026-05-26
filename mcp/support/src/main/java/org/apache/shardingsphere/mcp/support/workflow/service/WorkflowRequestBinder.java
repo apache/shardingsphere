@@ -115,8 +115,8 @@ public final class WorkflowRequestBinder {
             return;
         }
         List<String> conflicts = new LinkedList<>();
-        for (Entry<String, Object> each : userOverrides.entrySet()) {
-            addUserOverrideConflict(conflicts, arguments, each);
+        for (Entry<String, Object> entry : userOverrides.entrySet()) {
+            addUserOverrideConflict(conflicts, arguments, entry);
         }
         if (!conflicts.isEmpty()) {
             throw new WorkflowArgumentConflictException(conflicts);
