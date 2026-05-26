@@ -1,6 +1,9 @@
 # ShardingSphere MCP PRD
 
-> 状态说明：本文档保留早期 PRD 背景，不是当前 MCP public surface 契约。当前契约以 `shardingsphere://capabilities`、descriptor、`mcp/README.md` 和 `mcp/README_ZH.md` 为准；不要从本文档推导 `list_*`、`describe_*` 等早期工具矩阵。
+> 状态说明：本文档保留早期 PRD 背景，不是当前 MCP public surface 契约。
+> 当前契约以 `shardingsphere://capabilities`、descriptor、`mcp/README.md` 和 `mcp/README_ZH.md` 为准。
+> 不要从本文档推导 `list_*`、`describe_*` 等早期工具矩阵。
+> 当前可提交范围是 MCP V1 runtime readiness：metadata discovery、safe SQL、encrypt/mask workflow、HTTP/STDIO runtime、distribution 与 E2E infrastructure。
 
 ## 文档信息
 - 产品名称：ShardingSphere MCP
@@ -120,7 +123,7 @@
 
 ## 10. 对象语义定义
 - `database`：MCP 对外暴露的一级访问目标，也是每次 SQL 执行必须显式指定的目标。
-- `schema`：`database` 内部命名空间；在 `execute_query` 中只作为可选 namespace hint，不是第二个强执行边界。
+- `schema`：`database` 内部命名空间；在当前 SQL tools 中只作为可选 namespace hint，不是第二个强执行边界。
 - `table / view`：通过 `(database, schema, name)` 唯一确定。
 - `column`：从属于某个表或视图。
 - `index`：从属于某个表，仅在当前 `database` 支持时暴露。
@@ -160,7 +163,9 @@
 - 凡列为 V1 公共对象者，必须在 `resources` 和 / 或 `tools` 中有正式承载路径。
 - 当当前 `database` 的 `supported_object_types` 不包含 `index` 时，`index` 相关 `resources` 统一返回 `unsupported`。
 
-## 12. V1 公共 Tools
+## 12. 历史 V1 公共 Tools 设想（非当前契约）
+
+> 本节记录早期 PRD 工具拆分设想。当前 public tools 以 `mcp/README.md`、`mcp/README_ZH.md` 和 descriptors 中的 `database_gateway_*` 工具为准。
 
 ### 正式工具清单
 - `list_databases`
@@ -233,15 +238,18 @@
 - 该行为不等同于跨 `database` SQL 执行。
 - 当 `schema` 被指定时，`database` 必须同时指定，否则返回 `invalid_request`。
 
-## 14. SQL 执行能力
-- SQL 执行通过 `execute_query` 统一暴露。
+## 14. 历史 SQL 执行能力（非当前契约）
+
+> 本节使用早期 `execute_query` 术语。当前 public tools 使用 `database_gateway_execute_query` 与 `database_gateway_execute_update`。
+
+- SQL 执行通过早期 `execute_query` 设想统一暴露。
 - 每次 SQL 必须显式指定 `database`。
 - V1 不支持跨 `database` SQL 执行。
 - `schema` 不构成第二个强执行边界。
 - 同一 `database` 内的跨 `schema` SQL 可在数据库能力允许时支持。
 - 不支持时必须明确返回 `unsupported`。
 - 事务一旦开始，当前事务绑定单一 `database`。
-- 事务存续期间若 `execute_query` 指定其他 `database`，统一返回 `conflict`。
+- 事务存续期间若 SQL tool 指定其他 `database`，统一返回 `conflict`。
 
 ## 15. V1 允许的 SQL 类型
 
@@ -339,7 +347,7 @@
   但 data-modifying CTE 等场景允许 `statement_class = dml` 且返回 `result_set`。
 - `CREATE`、`ALTER`、`DROP`、`TRUNCATE`、`GRANT`、`REVOKE`、事务控制语句默认返回 `statement_ack`。
 - `EXPLAIN ANALYZE` 的返回形态由数据库级 `capability` 决定。
-- 一次 `execute_query` 只返回一个结果对象。
+- 一次 SQL tool call 只返回一个结果对象。
 - V1 不支持多结果集返回。
 
 ## 18. 统一结果数据类型约束
@@ -387,7 +395,7 @@
 ### 19.4 说明
 - `default_autocommit` 指 ShardingSphere MCP 会话默认行为，不等同于底层数据库原生默认 `autocommit`。
 - `default_schema_semantics` 解决 metadata/discovery 侧的统一 schema 语义。
-- `schema_execution_semantics` 解决 `execute_query.schema` 在执行时如何解释。
+- `schema_execution_semantics` 解决 SQL tool request-level `schema` 在执行时如何解释。
 - 对原生支持事务控制的 `database`，`supports_transaction_control = true`。
 - 对原生不支持事务控制的 `database`，`supports_transaction_control = false`。
 - 对原生支持 `savepoint` 的 `database`，`supports_savepoint = true`。
@@ -459,7 +467,10 @@
 - 当前 `database` 不支持事务控制时执行事务控制语句，返回 `unsupported`。
 - 当前 `database` 不支持 `savepoint` 时执行 `savepoint` 语句，返回 `unsupported`。
 
-## 25. V1 最低统一能力基线
+## 25. 历史 V1 最低统一能力基线（非当前提交门禁）
+
+> 本节是早期统一数据库入口目标，不是当前 submit-ready MCP V1 的完成门禁。
+> 当前提交门禁以 runtime readiness、distribution、E2E 与当前 descriptor public surface 为准。
 - V1 正式支持数据库必须统一满足以下最低能力基线：
 - 统一支持核心对象模型：`database / schema / table / view / column / capability`
 - 统一支持公共 `tools`：`list_databases / list_schemas / list_tables / list_views / list_columns / search_metadata / describe_table / describe_view / get_capabilities / execute_query`
@@ -516,7 +527,9 @@
 - DDL、DCL、`EXPLAIN ANALYZE` 在事务中的行为以数据库级 `capability` 为准。
 - `index` 相关能力仅在 `supported_object_types` 包含 `index` 时暴露。
 
-## 30. 压缩版需求清单
+## 30. 历史压缩版需求清单（非当前提交门禁）
+
+> 本清单保留早期目标，不表示当前提交必须完成完整统一治理能力。
 1. 必须提供统一数据库访问与 SQL 执行公共面。
 2. 必须统一 `database / schema / table / view / column / capability` 对象语义。
 3. `index` 必须作为数据库级可选公共对象，通过 `capability` 明确声明。

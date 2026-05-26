@@ -1,6 +1,9 @@
 # ShardingSphere MCP 详细设计说明书
 
-> 状态说明：本文档保留早期详细设计背景，不是当前 MCP public surface 契约。当前契约以 `shardingsphere://capabilities`、descriptor、`mcp/README.md` 和 `mcp/README_ZH.md` 为准；不要从本文档推导 `list_databases`、`describe_table` 等早期工具矩阵。
+> 状态说明：本文档保留早期详细设计背景，不是当前 MCP public surface 契约。
+> 当前契约以 `shardingsphere://capabilities`、descriptor、`mcp/README.md` 和 `mcp/README_ZH.md` 为准。
+> 不要从本文档推导 `list_databases`、`describe_table` 等早期工具矩阵。
+> 当前可提交范围是 MCP V1 runtime readiness，不是完整 ShardingSphere governance administration surface。
 
 ## 1. 文档信息
 - 文档名称：ShardingSphere MCP 详细设计说明书
@@ -175,7 +178,7 @@ shardingsphere
     - metadata discovery facade
     - JDBC metadata discovery and runtime configuration
   - `execute`
-    - `execute_query` facade
+    - SQL tool facade
     - `DatabaseRuntime` assembly and JDBC-backed runtime context factory
   - `trace`
     - SQL execution trace facade
@@ -380,10 +383,13 @@ stateDiagram-v2
   3. 应用部署时覆盖项
   4. 生成数据库级 capability
 
-## 10. `execute_query` 详细设计
+## 10. SQL tool 详细设计
+
+> 本节保留早期 `execute_query` 术语。
+> 当前 MCP public surface 将读查询与变更执行拆分为 `database_gateway_execute_query` 和 `database_gateway_execute_update`。
 
 ### 10.1 职责
-- `execute_query` 负责：
+- 当前 SQL tool facade 负责：
   - 单语句校验
   - statement class 归类
   - request-level schema semantics 解释
@@ -404,7 +410,7 @@ stateDiagram-v2
   6. result / error mapping
 
 ### 10.2A `database` / `schema` 边界
-- `database` 是 `execute_query` 的唯一强执行边界。
+- `database` 是当前 SQL tools 的唯一强执行边界。
 - `schema` 是可选 namespace hint，用于表达未限定对象名的目标命名空间意图。
 - 当数据库级 capability `schema_execution_semantics = fixed_to_database` 时，
   request-level `schema` 不被承诺为独立执行命名空间切换器。
@@ -521,7 +527,7 @@ stateDiagram-v2
   - capability assembler
   - transaction matrix registry
   - session manager
-  - `execute_query` facade
+  - SQL tool facade
   - error mapper
 
 ### 13.3 模块集成测试重点
@@ -579,7 +585,10 @@ stateDiagram-v2
 - E. capability 组
   - capability 与矩阵一致
 
-### 13.8 E2E 最小冒烟场景
+### 13.8 历史 E2E 最小冒烟场景（非当前门禁）
+
+> 本节保留早期 tool matrix。
+> 当前 submit-ready E2E 门禁以 `tools/list`、`resources/read`、`database_gateway_search_metadata`、SQL tool pair、workflow tools、HTTP 和 STDIO runtime 为准。
 - 至少固定以下 12 个场景：
   1. 服务级 capability
   2. 数据库级 capability
@@ -634,7 +643,7 @@ apache-shardingsphere-mcp-<version>/
   3. `mcp/core` 的 capability / error / session
   4. `mcp/bootstrap` 的 HTTP / STDIO transport
   5. `/mcp` 的 Streamable HTTP endpoint
-  6. `execute_query` 与 metadata discovery
+  6. SQL tool pair 与 metadata discovery
   7. `distribution/mcp`
   8. 单元测试
   9. 模块集成测试
@@ -650,7 +659,7 @@ apache-shardingsphere-mcp-<version>/
   - `DELETE /mcp` 会话关闭行为已定
   - SDK provider 与 ShardingSphere glue 的职责边界已定
   - transaction matrix 存储方式已定
-  - capability / `execute_query` 输入输出边界已定
+  - capability / SQL tool 输入输出边界已定
 
 ### 16.1 AI-Friendly 增量开工前重新取证
 
