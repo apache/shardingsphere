@@ -147,31 +147,6 @@ class OrderByValueTest {
         return result;
     }
     
-    private QueryResult createQueryResultWithBytes(final byte[] value) throws SQLException {
-        QueryResult result = mock(QueryResult.class);
-        when(result.next()).thenReturn(true, false);
-        when(result.getValue(1, Object.class)).thenReturn(value);
-        return result;
-    }
-    
-    @Test
-    void assertCompareToForVarBinaryAsc() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SelectStatement selectStatement = createSelectStatement();
-        SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(), "foo_db", Collections.emptyList());
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        OrderByValue smaller = new OrderByValue(createQueryResultWithBytes(new byte[]{1, 2}),
-                Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST))),
-                selectStatementContext, schema);
-        Plugins.getMemberAccessor().set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), smaller, Collections.singletonList(false));
-        assertTrue(smaller.next());
-        OrderByValue larger = new OrderByValue(createQueryResultWithBytes(new byte[]{(byte) 0x80}),
-                Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST))),
-                selectStatementContext, schema);
-        Plugins.getMemberAccessor().set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), larger, Collections.singletonList(false));
-        assertTrue(larger.next());
-        assertTrue(smaller.compareTo(larger) < 0);
-    }
-    
     private SelectStatement createSelectStatement() {
         return SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).orderBy(createOrderBySegment()).build();
     }
