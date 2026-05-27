@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetAutoCommitStatement;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TC
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.tcl.type.BeginTransactionStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.tcl.type.CommitStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.tcl.type.ReleaseSavepointStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.tcl.type.RollbackStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.tcl.type.SavepointStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.tcl.type.SetAutoCommitStatementAssert;
@@ -38,6 +40,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.t
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.BeginTransactionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.CommitStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.ReleaseSavepointStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.RollbackStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.SavepointStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
@@ -70,6 +73,8 @@ public final class TCLStatementAssert {
             RollbackStatementAssert.assertIs(assertContext, (RollbackStatement) actual, (RollbackStatementTestCase) expected);
         } else if (actual instanceof SavepointStatement) {
             SavepointStatementAssert.assertIs(assertContext, (SavepointStatement) actual, (SavepointStatementTestCase) expected);
+        } else if (actual instanceof ReleaseSavepointStatement) {
+            ReleaseSavepointStatementAssert.assertIs(assertContext, (ReleaseSavepointStatement) actual, (ReleaseSavepointStatementTestCase) expected);
         } else if (actual instanceof SetConstraintsStatement) {
             SetConstraintsStatementAssert.assertIs(assertContext, (SetConstraintsStatement) actual, (SetConstraintsStatementTestCase) expected);
         }

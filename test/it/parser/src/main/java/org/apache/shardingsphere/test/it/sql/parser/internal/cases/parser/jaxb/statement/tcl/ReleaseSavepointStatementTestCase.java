@@ -24,18 +24,12 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.S
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Set transaction statement test case.
+ * Release savepoint statement test case.
  */
 @Getter
 @Setter
-public final class SetTransactionStatementTestCase extends SQLParserTestCase {
+public final class ReleaseSavepointStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "scope")
-    private String scope;
-    
-    @XmlAttribute(name = "isolation-level")
-    private String isolationLevel;
-    
-    @XmlAttribute(name = "access-mode")
-    private String accessMode;
+    @XmlAttribute(name = "savepoint-name")
+    private String savepointName;
 }
