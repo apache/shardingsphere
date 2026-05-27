@@ -423,7 +423,64 @@
         </with>
         <table name="t_order" start-index="77" stop-index="83"/>
     </delete>
-
+    
+    <delete sql-case-id="delete_multi_tables_with_with_clause" parameters="1900">
+        <with start-index="0" stop-index="70" literal-stop-index="73">
+            <common-table-expression name="target_orders" start-index="5" stop-index="70" literal-stop-index="73">
+                <subquery-expression start-index="5" stop-index="70" literal-stop-index="73">
+                    <select>
+                        <from>
+                            <simple-table name="t_order" start-index="44" stop-index="50" />
+                        </from>
+                        <projections start-index="30" stop-index="37">
+                            <column-projection name="order_id" start-index="30" stop-index="37" />
+                        </projections>
+                        <where start-index="52" stop-index="69" literal-stop-index="72">
+                            <expr>
+                                <binary-operation-expression start-index="58" stop-index="69" literal-stop-index="72">
+                                    <left>
+                                        <column name="order_id" start-index="58" stop-index="65" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1900" start-index="69" stop-index="72" />
+                                        <parameter-marker-expression parameter-index="0" start-index="69" stop-index="69" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <table name="o" start-index="79" stop-index="79" literal-start-index="82" literal-stop-index="82" />
+        <table name="i" start-index="82" stop-index="82" literal-start-index="85" literal-stop-index="85" />
+        <where start-index="152" stop-index="207" literal-start-index="155" literal-stop-index="210">
+            <expr>
+                <in-expression start-index="158" stop-index="207" literal-start-index="161" literal-stop-index="210">
+                    <not>false</not>
+                    <left>
+                        <column name="order_id" start-index="158" stop-index="167" literal-start-index="161" literal-stop-index="170">
+                            <owner name="o" start-index="158" stop-index="158" literal-start-index="161" literal-stop-index="161" />
+                        </column>
+                    </left>
+                    <right>
+                        <subquery start-index="172" stop-index="207" literal-start-index="175" literal-stop-index="210">
+                            <select>
+                                <from>
+                                    <simple-table name="target_orders" start-index="194" stop-index="206" literal-start-index="197" literal-stop-index="209" />
+                                </from>
+                                <projections start-index="180" stop-index="187" literal-start-index="183" literal-stop-index="190">
+                                    <column-projection name="order_id" start-index="180" stop-index="187" literal-start-index="183" literal-stop-index="190" />
+                                </projections>
+                            </select>
+                        </subquery>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </delete>
+    
     <delete sql-case-id="delete_without_columns_with_with_clause">
         <with start-index="0" stop-index="50">
             <common-table-expression name="cte" start-index="5" stop-index="50">
