@@ -97,11 +97,20 @@ Triage decision:
 Before finalizing `Bug` or `Enhancement`, check whether the same root cause has already been fixed or tracked in the Apache ShardingSphere repository:
 1. Search by the issue's error message, exception class, key SQL token, affected class/method, and module labels.
 2. Use same-repository evidence only: target issue links/comments, GitHub issues/PRs in `apache/shardingsphere`, `git log --grep`, `git log -S`, and relevant file history.
-3. If current `dev` or a later branch already contains an explicit fix, identify the fixing PR or original tracked issue whenever possible.
+3. If the current upstream target branch, normally `apache/master`, or the release branch matching the reporter's version already contains an explicit fix,
+   identify the fixing PR or original tracked issue whenever possible.
 4. Record the fixing PR number, merge state, merge commit, linked issue, target milestone/version, and changed module/class evidence when available.
 5. If a fixing PR or original issue is found and covers the same root cause, classify the new issue as `Duplicate` instead of a fresh `Bug` or `Enhancement`.
-6. If current code appears fixed but no fixing PR/issue can be identified after a reasonable search,
-   say `already fixed on current dev` and keep the primary type as `Bug` or `Enhancement` as appropriate.
+6. If the current upstream target branch appears fixed but no fixing PR/issue can be identified after a reasonable search,
+   say `already fixed on the current upstream target branch` and keep the primary type as `Bug` or `Enhancement` as appropriate.
+
+Before classifying an issue as `Duplicate`, check the evidence against at least one relevant counterexample or negative scenario:
+1. Same error message but different affected class, SQL token, configuration, or call path -> do not classify as `Duplicate`.
+2. Same symptom but the fixing PR is not merged into the upstream target branch -> do not say `already fixed`;
+   classify as `Bug`, `Enhancement`, or `Needs More Info` as appropriate.
+3. Same root cause fixed on the upstream target branch but not available in the reporter's release version -> state the fixed branch/version clearly
+   and ask the reporter to verify with a version that includes the fix.
+4. Same linked issue/PR exists but does not cover the same trigger condition and root-cause chain -> do not close as duplicate.
 
 For `Duplicate`, the maintainer reply should link the original PR/issue, recommend `type: duplicate`, and close as duplicate unless the reporter can still reproduce on a version that includes the fix.
 
