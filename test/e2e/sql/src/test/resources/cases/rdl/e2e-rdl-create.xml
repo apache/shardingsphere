@@ -23,27 +23,53 @@
             <destroy-sql sql="DROP SHARDING TABLE REFERENCE RULE reference_0;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;" />
         </assertion>
     </test-case>
-    
+
     <test-case sql="CREATE BROADCAST TABLE RULE t_product_category;" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="create_broadcast_rules.xml">
             <assertion-sql sql="SHOW BROADCAST TABLE RULES;" />
             <destroy-sql sql="DROP BROADCAST TABLE RULE t_product_category; " />
         </assertion>
     </test-case>
-    
+
     <test-case sql="CREATE ENCRYPT RULE t_user (COLUMNS((NAME=pwd,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))))));" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="create_encrypt_rule.xml">
             <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user;" />
             <destroy-sql sql="DROP ENCRYPT RULE t_user " />
         </assertion>
     </test-case>
-    
+
     <test-case sql="CREATE ENCRYPT RULE t_user_recreated (COLUMNS((NAME=pwd,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))))));" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="create_recreated_encrypt_rule.xml">
             <initial-sql sql="CREATE ENCRYPT RULE t_user_recreated (COLUMNS((NAME=pwd,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))))));
             DROP ENCRYPT RULE t_user_recreated;" />
             <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user_recreated;" />
             <destroy-sql sql="DROP ENCRYPT RULE t_user_recreated " />
+        </assertion>
+    </test-case>
+
+    <test-case sql="LOAD SINGLE TABLE *.*" db-types="MySQL, PostgreSQL"
+               scenario-comments="Verify a dropped encrypt rule remains absent after reloading single tables.">
+        <assertion expected-data-file="drop_encrypt_rule.xml">
+            <initial-sql sql="SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0;
+            CREATE TABLE t_user_recreated_loaded (user_id INT PRIMARY KEY, pwd VARCHAR(50), pwd_cipher VARCHAR(50));
+            CREATE ENCRYPT RULE t_user_recreated_loaded (COLUMNS((NAME=pwd,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))))));
+            DROP ENCRYPT RULE t_user_recreated_loaded;" />
+            <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user_recreated_loaded;" />
+            <destroy-sql sql="DROP TABLE t_user_recreated_loaded;SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM" />
+        </assertion>
+    </test-case>
+
+    <test-case sql="LOAD SINGLE TABLE *.*" db-types="MySQL, PostgreSQL"
+               scenario-comments="Verify DML rewrite is disabled after dropping an encrypt rule and reloading single tables.">
+        <assertion expected-data-file="insert_after_drop_encrypt_rule.xml">
+            <initial-sql sql="SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0;
+            CREATE TABLE t_user_recreated_dml (user_id INT PRIMARY KEY, pwd VARCHAR(50), pwd_cipher VARCHAR(50));
+            CREATE ENCRYPT RULE t_user_recreated_dml (COLUMNS((NAME=pwd,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))))));
+            INSERT INTO t_user_recreated_dml (user_id, pwd) VALUES (1, 'before_drop_cipher');
+            DROP ENCRYPT RULE t_user_recreated_dml;
+            INSERT INTO t_user_recreated_dml (user_id, pwd) VALUES (2, 'after_drop_plain');" />
+            <assertion-sql sql="SELECT user_id, pwd, CASE WHEN pwd_cipher IS NULL THEN 1 ELSE 0 END AS pwd_cipher_is_null FROM t_user_recreated_dml ORDER BY user_id;" />
+            <destroy-sql sql="DROP TABLE t_user_recreated_dml;SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM" />
         </assertion>
     </test-case>
 
@@ -56,7 +82,7 @@
             <destroy-sql sql="DROP TABLE temp;SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;" />
         </assertion>
     </test-case>
-    
+
     <test-case sql="CREATE TABLE temp_alter (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="alter_single_table_rules.xml">
             <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));
@@ -66,7 +92,7 @@
             <destroy-sql sql="DROP TABLE temp_alter;SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;" />
         </assertion>
     </test-case>
-    
+
     <test-case sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));" db-types="MySQL">
         <assertion expected-data-file="create_sharding_rules.xml">
             <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
@@ -89,7 +115,7 @@
 <!--            <assertion-sql sql="SHOW READWRITE_SPLITTING RULES;" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
-    
+
     <test-case sql="CREATE MASK RULE t_mask (COLUMNS((NAME=order_id,TYPE(NAME='MD5'))));">
         <assertion expected-data-file="create_mask_rule.xml">
             <assertion-sql sql="SHOW MASK RULES;" />
