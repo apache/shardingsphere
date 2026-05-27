@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidApprovedS
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMissingToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.math.BigInteger;
 import java.util.Collection;
@@ -36,8 +37,6 @@ import java.util.Objects;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class MCPToolArgumentContract {
-    
-    private static final String EXECUTION_MODE = "execution_mode";
     
     private static final String APPROVED_STEPS = "approved_steps";
     
@@ -173,15 +172,15 @@ final class MCPToolArgumentContract {
     }
     
     private RuntimeException createMissingArgumentException(final Map<String, Object> arguments, final String argumentName) {
-        if (!EXECUTION_MODE.equals(argumentName)) {
+        if (!MCPPayloadFieldNames.EXECUTION_MODE.equals(argumentName)) {
             return new MCPMissingToolArgumentException(argumentName);
         }
-        List<String> allowedValues = getEnumValues(findProperty(inputSchema, EXECUTION_MODE));
+        List<String> allowedValues = getEnumValues(findProperty(inputSchema, MCPPayloadFieldNames.EXECUTION_MODE));
         return new MCPExecutionModeRequiredException(toolName, allowedValues, createExecutionModeSuggestedArguments(arguments, allowedValues));
     }
     
     private RuntimeException createInvalidEnumException(final Map<String, Object> arguments, final String argumentName, final List<String> allowedValues) {
-        if (EXECUTION_MODE.equals(argumentName)) {
+        if (MCPPayloadFieldNames.EXECUTION_MODE.equals(argumentName)) {
             return new MCPInvalidExecutionModeException(toolName, allowedValues, createExecutionModeSuggestedArguments(arguments, allowedValues));
         }
         if (argumentName.startsWith(APPROVED_STEPS + "[")) {
@@ -202,10 +201,10 @@ final class MCPToolArgumentContract {
     
     private Map<String, Object> createExecutionModeSuggestedArguments(final Map<String, Object> arguments, final List<String> allowedValues) {
         Map<String, Object> result = new LinkedHashMap<>(arguments);
-        result.remove(EXECUTION_MODE);
+        result.remove(MCPPayloadFieldNames.EXECUTION_MODE);
         String suggestedExecutionMode = findSafestExecutionMode(allowedValues);
         if (!suggestedExecutionMode.isEmpty()) {
-            result.put(EXECUTION_MODE, suggestedExecutionMode);
+            result.put(MCPPayloadFieldNames.EXECUTION_MODE, suggestedExecutionMode);
         }
         return result;
     }
@@ -223,9 +222,9 @@ final class MCPToolArgumentContract {
     private Map<String, Object> createApprovedStepsSuggestedArguments(final Map<String, Object> arguments) {
         Map<String, Object> result = new LinkedHashMap<>(arguments);
         result.remove(APPROVED_STEPS);
-        String suggestedExecutionMode = findSafestExecutionMode(getEnumValues(findProperty(inputSchema, EXECUTION_MODE)));
+        String suggestedExecutionMode = findSafestExecutionMode(getEnumValues(findProperty(inputSchema, MCPPayloadFieldNames.EXECUTION_MODE)));
         if (!suggestedExecutionMode.isEmpty()) {
-            result.put(EXECUTION_MODE, suggestedExecutionMode);
+            result.put(MCPPayloadFieldNames.EXECUTION_MODE, suggestedExecutionMode);
         }
         return result;
     }

@@ -39,11 +39,9 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.exception.LoadTableMetaDataFailedException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.SchemaMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistDisabledService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistEnabledService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
-import org.apache.shardingsphere.mode.persist.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -100,7 +98,7 @@ class DatabaseMetaDataPersistFacadeTest {
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        databaseMetaDataFacade = new DatabaseMetaDataPersistFacade(repository, versionPersistService, true);
+        databaseMetaDataFacade = new DatabaseMetaDataPersistFacade(repository, versionPersistService);
         Plugins.getMemberAccessor().set(DatabaseMetaDataPersistFacade.class.getDeclaredField("schema"), databaseMetaDataFacade, schemaMetaDataService);
         Plugins.getMemberAccessor().set(DatabaseMetaDataPersistFacade.class.getDeclaredField("table"), databaseMetaDataFacade, tableMetaDataService);
         Plugins.getMemberAccessor().set(DatabaseMetaDataPersistFacade.class.getDeclaredField("view"), databaseMetaDataFacade, viewMetaDataService);
@@ -108,10 +106,8 @@ class DatabaseMetaDataPersistFacadeTest {
     
     @Test
     void assertConstructorChoosesTablePersistService() {
-        DatabaseMetaDataPersistFacade enabledFacade = new DatabaseMetaDataPersistFacade(repository, versionPersistService, true);
-        DatabaseMetaDataPersistFacade disabledFacade = new DatabaseMetaDataPersistFacade(repository, versionPersistService, false);
-        assertThat(enabledFacade.getTable(), isA(TableMetaDataPersistEnabledService.class));
-        assertThat(disabledFacade.getTable(), isA(TableMetaDataPersistDisabledService.class));
+        DatabaseMetaDataPersistFacade enabledFacade = new DatabaseMetaDataPersistFacade(repository, versionPersistService);
+        assertThat(enabledFacade.getTable(), isA(TableMetaDataPersistService.class));
     }
     
     @Test

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.where.ExpectedWhereClause;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.with.ExpectedWithClause;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -36,6 +37,9 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class UpdateStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "with")
+    private ExpectedWithClause withClause;
     
     @XmlElement
     private ExpectedTable table;

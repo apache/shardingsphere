@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
@@ -76,7 +75,7 @@ public final class MetaDataContextsFactory {
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
         MetaDataContextsInitFactory initFactory = containsRegisteredDatabases(persistFacade.getRepository())
                 ? new RegisterCenterMetaDataContextsInitFactory(persistFacade.getRepository(), instanceContext)
-                : new LocalConfigurationMetaDataContextsInitFactory(persistFacade.getRepository(), instanceContext, param.getProps());
+                : new LocalConfigurationMetaDataContextsInitFactory(persistFacade.getRepository(), instanceContext);
         return initFactory.create(param);
     }
     
@@ -147,15 +146,6 @@ public final class MetaDataContextsFactory {
         ConfigurationProperties props = originalMetaDataContext.getMetaData().getProps();
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
         Collection<ShardingSphereSchema> schemas = persistFacade.getDatabaseMetaDataFacade().getSchema().load(databaseName, protocolType);
-        boolean persistSchemasEnabled = props.getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED);
-        if (!persistSchemasEnabled) {
-            for (ShardingSphereSchema schema : schemas) {
-                if (originalMetaDataContext.getMetaData().getDatabase(databaseName).containsSchema(schema.getName())) {
-                    ShardingSphereSchema originSchema = originalMetaDataContext.getMetaData().getDatabase(databaseName).getSchema(schema.getName());
-                    originSchema.getAllTables().forEach(schema::putTable);
-                }
-            }
-        }
         return ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, props, instanceContext, schemas);
     }
     

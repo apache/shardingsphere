@@ -136,11 +136,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     AGENT_PLUGINS_ENABLED("agent-plugins-enabled", String.valueOf(Boolean.TRUE), boolean.class, false),
     
     /**
-     * Persist schemas to repository.
-     */
-    PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED("persist-schemas-to-repository-enabled", String.valueOf(Boolean.TRUE), boolean.class, true),
-    
-    /**
      * Metadata identifier case sensitivity.
      */
     METADATA_IDENTIFIER_CASE_SENSITIVITY("metadata-identifier-case-sensitivity", MetadataIdentifierCaseSensitivity.AUTO.name(), MetadataIdentifierCaseSensitivity.class, true),
