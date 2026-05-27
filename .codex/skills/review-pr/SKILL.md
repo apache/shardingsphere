@@ -4,7 +4,7 @@ description: >-
   Used to review whether an Apache ShardingSphere PR truly fixes the root cause,
   assess side effects and regression risks, and determine whether it can be safely merged.
   If not mergeable, produce committer-tone change request suggestions.
-  Supports targeted comparison across multiple review rounds.
+  Supports targeted comparison across GitHub-visible review rounds when prior PR comments or review threads exist.
 ---
 
 # Review PR
@@ -70,6 +70,16 @@ description: >-
 16. If a method reachable from the Proxy or JDBC DML/DQL high-frequency SQL execution path uses `ConcurrentHashMap#computeIfAbsent`,
     require a preceding `get` lookup and call `computeIfAbsent` only when the value is missing, to avoid the JDK 8 implementation bottleneck.
     If this pattern is absent and the path is high-frequency, bias to `Merge Verdict: Not Mergeable`.
+17. Do not use GitHub Actions, CI status, or check-run completion as part of the merge verdict unless explicitly requested by the user.
+18. Use repository-declared formatting/style gates as the formatting authority; do not introduce extra formatting blockers outside those gates by default.
+
+## Review Boundary
+
+- Review PR code, tests, behavior, compatibility, regression risk, and scope.
+- Do not inspect or use GitHub Actions, CI status, or check-run completion for the merge verdict unless the user explicitly asks for CI review.
+- Do not treat CI pending, failing, or passing as a review finding by default; final approvers and mergers handle that gate.
+- Use the repository-declared formatting and style gates as authority. For ShardingSphere, Spotless and Checkstyle are the formatting/style gates.
+- Do not treat `git diff --check` as a blocker when it conflicts with Spotless/Checkstyle behavior, unless the user explicitly asks for that check.
 
 ## Execution Boundary
 
@@ -79,10 +89,12 @@ description: >-
 
 Priority from high to low:
 
-1. PR facts: diff, commit history, review comments, CI status, check results.
+1. PR facts: diff, commit history, GitHub-visible review comments, and code/test changes.
 2. Related issues in the same repo, relevant module code/tests, historical behavior (optional git blame/log).
 3. ShardingSphere official docs and official repo conventions.
 4. External authoritative specs only when necessary (official standards/docs only).
+
+CI status and check-runs are out of scope unless explicitly requested by the user.
 
 For SQL parser reviews:
 
@@ -138,6 +150,8 @@ When information gaps block mergeability, request at least:
 - For SQL parser reviews: official documentation links/pages for the exact syntax and version, plus any affected ShardingSphere doc paths or examples.
 
 ## Review Workflow
+
+CI/check-run review is not part of this workflow unless explicitly requested; do not query or report it by default.
 
 1. Define target and boundary: restate PR goal, impacted modules, target topology (JDBC or Proxy, Standalone or Cluster).
 2. Root-cause modeling: reconstruct "trigger condition -> failure path -> result" from issue and code path.
@@ -208,6 +222,17 @@ If the root-cause chain cannot be fully proven fixed, set `Merge Verdict: Not Me
 - Operational risk: config migration complexity, gray-release and rollback complexity.
 - Supply-chain risk: vulnerabilities, licenses, transitive dependency changes from new deps.
 
+## Boundary Validation Review Guidance
+
+- Identify the authoritative input boundary before requiring validation changes.
+  Examples: YAML swappers/validators, CLI parsers, REST/API request binders, SPI loaders, protocol decoders, SQL parsers, or config-center loaders.
+- If the authoritative boundary already rejects invalid input and all production entry paths pass through it,
+  do not require duplicate validation in downstream value holders, runtime contexts, or internal DTOs by default.
+- Require downstream validation only when there is evidence of another production path that bypasses the boundary, public/shared API exposure, untrusted deserialization,
+  asynchronous/shared ownership risk, or a documented invariant owned by the downstream type.
+- Prefer tests that prove boundary-to-runtime propagation and adjacent valid values over adding defensive checks at every layer.
+- If boundary ownership is unclear, ask for production entry-path evidence and treat duplicate validation as a design question, not an automatic blocker.
+
 ## Coverage Statement (Required in Every Review)
 
 Each review must declare:
@@ -219,7 +244,10 @@ Each review must declare:
 
 ## Multi-Round Change Request Comparison Rules
 
-When the user provides previous-round feedback or PR adds new commits, perform incremental comparison:
+Apply this section only when previous feedback exists in GitHub-visible PR review comments, review threads, or change requests.
+Do not output `Multi-Round Comparison` for local chat-only iterations, private reviewer analysis, or commit-history-only changes.
+
+When GitHub-visible previous-round feedback exists, perform incremental comparison:
 
 1. Build a "previous issues list" and mark each as:
    - Fixed
@@ -300,7 +328,7 @@ Use committer tone, gentle wording, no emojis; use this GitHub Markdown skeleton
 
 ### Multi-Round Comparison
 
-- Include only when previous-round feedback exists; summarize closed, unresolved, and new items.
+- Include only when previous-round feedback exists in GitHub-visible PR comments, review threads, or change requests.
 
 ### Evidence Supplement
 
@@ -324,9 +352,11 @@ Use this GitHub Markdown skeleton:
 - Root-cause fix evidence.
 - Risk assessment results proving no unresolved risk.
 
-### Pre-Merge Checks
+### Verification
 
-- CI, tests, and compatibility confirmations.
+- Reviewer-run local verification, if any.
+- Test and compatibility evidence from the reviewed code.
+- Do not include GitHub Actions / CI status unless explicitly requested.
 ```
 
 ## Change Request Tone Guidelines
@@ -348,6 +378,7 @@ Use this GitHub Markdown skeleton:
 - Do not ignore unrelated changes.
 - Do not reuse old conclusions after new commits are added without re-review.
 - Do not include emojis in change request text.
+- Do not inspect or report GitHub Actions / CI status unless explicitly requested.
 - Do not output `Mergeable` for a shared-code change unless you have checked at least one non-target dialect or feature that also uses the changed path.
 - Do not output `Mergeable` when local verification omitted `-am` on a module-scoped Maven run and dependency freshness matters.
 - Do not output `Mergeable` when Proxy/JDBC DML/DQL high-frequency SQL paths directly call `ConcurrentHashMap#computeIfAbsent` without a preceding `get` miss check.
