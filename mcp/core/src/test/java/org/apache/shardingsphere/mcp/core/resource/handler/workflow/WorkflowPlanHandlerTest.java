@@ -40,7 +40,7 @@ class WorkflowPlanHandlerTest {
     
     @Test
     void assertHandle() {
-        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()), new MCPDatabaseCapabilityProvider(Map.of()), "unknown");
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()), new MCPDatabaseCapabilityProvider(Map.of()), "http");
         runtimeContext.getWorkflowSessionContext().save(createSnapshot());
         try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
             Map<String, Object> actual = new WorkflowPlanHandler().handle(requestScope, new MCPUriVariables(Map.of("plan_id", "plan-1"))).toPayload();

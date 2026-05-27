@@ -23,29 +23,25 @@ import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContex
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 
-import java.util.Objects;
-
 /**
  * MCP runtime context.
  */
 @Getter
 public final class MCPRuntimeContext {
     
-    private static final String UNKNOWN_TRANSPORT = "unknown";
-    
     private final MCPSessionManager sessionManager;
     
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
     
-    private final WorkflowSessionContext workflowSessionContext;
-    
     private final String activeTransport;
+    
+    private final WorkflowSessionContext workflowSessionContext;
     
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final String activeTransport) {
         this.sessionManager = sessionManager;
         this.databaseCapabilityProvider = databaseCapabilityProvider;
+        this.activeTransport = activeTransport;
         workflowSessionContext = new InMemoryWorkflowSessionContext();
-        this.activeTransport = Objects.toString(activeTransport, UNKNOWN_TRANSPORT);
         sessionManager.addSessionCloseListener(workflowSessionContext::removeBySessionId);
     }
 }

@@ -84,7 +84,7 @@ public final class ResourceTestDataFactory {
      * @return runtime context
      */
     public static MCPRuntimeContext createRuntimeContext(final List<MCPDatabaseMetadata> databaseMetadataList) {
-        return createRuntimeContext(databaseMetadataList, "unknown");
+        return createRuntimeContext(databaseMetadataList, "http");
     }
     
     /**
