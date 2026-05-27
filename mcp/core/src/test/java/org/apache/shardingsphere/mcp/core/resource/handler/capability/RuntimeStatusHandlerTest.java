@@ -60,7 +60,7 @@ class RuntimeStatusHandlerTest {
             assertThat(actual.get("active_transport"), is("stdio"));
         }
     }
-
+    
     @Test
     void assertHandleWithEmptyRuntimeDatabase() {
         try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(List.of(), "http"))) {
