@@ -85,7 +85,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     }
     
     private String resolveExecutionMode(final MCPToolArguments toolArguments) {
-        String result = toolArguments.getStringArgument("execution_mode");
+        String result = toolArguments.getStringArgument(MCPPayloadFieldNames.EXECUTION_MODE);
         if (result.isEmpty()) {
             throw new MCPExecutionModeRequiredException(TOOL_NAME, EXECUTION_MODES, createPreviewSuggestedArguments(toolArguments));
         }
@@ -99,7 +99,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         result.put("response_mode", MCPResponseMode.PREVIEW);
         result.put("result_kind", RESULT_KIND_PREVIEW);
-        result.put("execution_mode", EXECUTION_MODE_PREVIEW);
+        result.put(MCPPayloadFieldNames.EXECUTION_MODE, EXECUTION_MODE_PREVIEW);
         result.put("preview_semantics", "classification_only");
         result.put("affected_rows_estimated", false);
         result.put("status", "PREVIEWED");
@@ -144,7 +144,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
             arguments.put("schema", schema);
         }
         arguments.put("sql", classificationResult.getNormalizedSql());
-        arguments.put("execution_mode", EXECUTION_MODE_EXECUTE);
+        arguments.put(MCPPayloadFieldNames.EXECUTION_MODE, EXECUTION_MODE_EXECUTE);
         return arguments;
     }
     
@@ -153,7 +153,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         SQLExecutionToolHandlerSupport.putIfNotEmpty(result, "database", toolArguments.getStringArgument("database"));
         SQLExecutionToolHandlerSupport.putIfNotEmpty(result, "schema", toolArguments.getStringArgument("schema"));
         SQLExecutionToolHandlerSupport.putIfNotEmpty(result, "sql", toolArguments.getStringArgument("sql"));
-        result.put("execution_mode", EXECUTION_MODE_PREVIEW);
+        result.put(MCPPayloadFieldNames.EXECUTION_MODE, EXECUTION_MODE_PREVIEW);
         return result;
     }
     
@@ -166,7 +166,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
             result.put("schema", "user_provided");
         }
         result.put("sql", "server_generated");
-        result.put("execution_mode", "server_defaulted");
+        result.put(MCPPayloadFieldNames.EXECUTION_MODE, "server_defaulted");
         return result;
     }
     

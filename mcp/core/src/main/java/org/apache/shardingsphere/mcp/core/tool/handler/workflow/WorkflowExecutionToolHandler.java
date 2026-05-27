@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 import java.util.LinkedHashMap;
@@ -64,14 +65,14 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
-        String executionMode = toolArguments.getStringArgument("execution_mode");
+        String executionMode = toolArguments.getStringArgument(WorkflowFieldNames.EXECUTION_MODE);
         if (executionMode.isEmpty()) {
             throw new MCPExecutionModeRequiredException("database_gateway_apply_workflow", List.of("preview", "review-then-execute", "manual-only"),
                     createPreviewSuggestedArguments(toolCall.getArguments()));
         }
         MCPDatabaseHandlerContext databaseContext = workflowContext.getDatabaseContext();
         WorkflowContextSnapshot snapshot = WorkflowSessionSnapshotResolver.getRequired(workflowContext.getWorkflowSessionContext(), toolCall.getSessionId(),
-                toolArguments.getStringArgument("plan_id"));
+                toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
         WorkflowKind workflowKind = getRequiredWorkflowKind(snapshot);
         return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(),
                 databaseContext.getExecutionFacade(), workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getApplySynchronizationHandler(), toolCall.getSessionId(), snapshot,
@@ -87,8 +88,8 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
     
     private static Map<String, Object> createPreviewSuggestedArguments(final Map<String, Object> arguments) {
         Map<String, Object> result = new LinkedHashMap<>(arguments);
-        result.remove("execution_mode");
-        result.put("execution_mode", "preview");
+        result.remove(WorkflowFieldNames.EXECUTION_MODE);
+        result.put(WorkflowFieldNames.EXECUTION_MODE, "preview");
         return result;
     }
 }

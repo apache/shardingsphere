@@ -178,7 +178,7 @@ public final class SQLExecutionResponse implements MCPResponse {
         result.put("response_mode", responseMode);
         result.put("result_kind", resultKind.name().toLowerCase(Locale.ENGLISH));
         if (!executionMode.isEmpty()) {
-            result.put("execution_mode", executionMode);
+            result.put(MCPPayloadFieldNames.EXECUTION_MODE, executionMode);
         }
         result.put("statement_class", statementClass.name().toLowerCase(Locale.ENGLISH));
         result.put("statement_type", statementType);

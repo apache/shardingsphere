@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -83,7 +84,7 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
         SQLExecutionToolHandlerSupport.putIfNotEmpty(result, "database", toolArguments.getStringArgument("database"));
         SQLExecutionToolHandlerSupport.putIfNotEmpty(result, "schema", toolArguments.getStringArgument("schema"));
         result.put("sql", classificationResult.getNormalizedSql());
-        result.put("execution_mode", "preview");
+        result.put(MCPPayloadFieldNames.EXECUTION_MODE, "preview");
         return result;
     }
 }

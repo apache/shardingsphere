@@ -71,7 +71,7 @@ final class MCPSQLRecoveryPayloadFactory {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "multiple_sql_statements", "Split the user intent into separate MCP calls and handle each statement independently.");
         result.put("ask_user_when_uncertain", true);
-        result.put("suggested_arguments", Map.of("execution_mode", "preview"));
+        result.put("suggested_arguments", Map.of(MCPPayloadFieldNames.EXECUTION_MODE, "preview"));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.askUser(
                 "Ask the user which single statement should be handled first.", List.of("single_sql_statement"))));
         return result;

@@ -363,9 +363,9 @@ final class MCPDescriptorCatalogValidator {
         if (!descriptor.getAnnotations().isDestructiveHint()) {
             return;
         }
-        Map<?, ?> executionMode = findToolInputProperty(descriptor, "execution_mode").orElseThrow(
+        Map<?, ?> executionMode = findToolInputProperty(descriptor, MCPPayloadFieldNames.EXECUTION_MODE).orElseThrow(
                 () -> new IllegalStateException(String.format("Destructive tool `%s` must declare execution_mode.", descriptor.getName())));
-        ShardingSpherePreconditions.checkState(isRequiredToolInput(descriptor, "execution_mode"),
+        ShardingSpherePreconditions.checkState(isRequiredToolInput(descriptor, MCPPayloadFieldNames.EXECUTION_MODE),
                 () -> new IllegalStateException(String.format("Destructive tool `%s` execution_mode must be required.", descriptor.getName())));
         Collection<?> executionModes = executionMode.get("enum") instanceof Collection ? (Collection<?>) executionMode.get("enum") : List.of();
         ShardingSpherePreconditions.checkState(executionModes.contains("preview"),
@@ -380,7 +380,7 @@ final class MCPDescriptorCatalogValidator {
         if (descriptor.getAnnotations().isDestructiveHint()) {
             return;
         }
-        Optional<Map<?, ?>> executionMode = findToolInputProperty(descriptor, "execution_mode");
+        Optional<Map<?, ?>> executionMode = findToolInputProperty(descriptor, MCPPayloadFieldNames.EXECUTION_MODE);
         if (executionMode.isEmpty()) {
             return;
         }

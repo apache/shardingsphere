@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
@@ -55,7 +56,7 @@ public final class WorkflowValidationToolHandler implements MCPToolHandler<MCPWo
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         MCPDatabaseHandlerContext databaseContext = workflowContext.getDatabaseContext();
         WorkflowContextSnapshot snapshot = WorkflowSessionSnapshotResolver.getRequired(workflowContext.getWorkflowSessionContext(), toolCall.getSessionId(),
-                toolArguments.getStringArgument("plan_id"));
+                toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
         WorkflowKind workflowKind = getRequiredWorkflowKind(snapshot);
         return new MCPMapResponse(workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getValidationHandler().validate(workflowContext.getWorkflowSessionContext(),
                 databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(), databaseContext.getExecutionFacade(), toolCall.getSessionId(), snapshot));

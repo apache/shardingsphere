@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
 
 import java.util.LinkedHashMap;
@@ -193,11 +194,11 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("planning_tools", catalog.getToolDescriptors().stream().map(MCPToolDescriptor::getName).filter(each -> each.startsWith(PLANNING_TOOL_NAME_PREFIX)).toList());
         Map<String, Object> previewTool = new LinkedHashMap<>(2, 1F);
         previewTool.put("tool", "database_gateway_apply_workflow");
-        previewTool.put("execution_mode", "preview");
+        previewTool.put(MCPPayloadFieldNames.EXECUTION_MODE, "preview");
         result.put("preview_tool", previewTool);
         Map<String, Object> executeTool = new LinkedHashMap<>(3, 1F);
         executeTool.put("tool", "database_gateway_apply_workflow");
-        executeTool.put("execution_mode", "review-then-execute");
+        executeTool.put(MCPPayloadFieldNames.EXECUTION_MODE, "review-then-execute");
         executeTool.put("execute_requires", "execution_mode=review-then-execute");
         result.put("execute_tool", executeTool);
         result.put("validate_tool", "database_gateway_validate_workflow");

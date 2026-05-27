@@ -94,9 +94,9 @@ public final class CoreToolDescriptorValidator implements MCPToolDescriptorValid
     }
     
     private void validateExecuteUpdateDescriptor(final MCPToolDescriptor descriptor) {
-        Map<?, ?> executionMode = findToolInputProperty(descriptor, "execution_mode").orElseThrow(
+        Map<?, ?> executionMode = findToolInputProperty(descriptor, MCPPayloadFieldNames.EXECUTION_MODE).orElseThrow(
                 () -> new IllegalStateException("Tool `database_gateway_execute_update` must declare execution_mode."));
-        ShardingSpherePreconditions.checkState(isRequiredToolInput(descriptor, "execution_mode"),
+        ShardingSpherePreconditions.checkState(isRequiredToolInput(descriptor, MCPPayloadFieldNames.EXECUTION_MODE),
                 () -> new IllegalStateException("Tool `database_gateway_execute_update` execution_mode must be required."));
         Object executionModes = executionMode.get("enum");
         ShardingSpherePreconditions.checkState(executionModes instanceof Collection && ((Collection<?>) executionModes).containsAll(List.of("execute", "preview")),
