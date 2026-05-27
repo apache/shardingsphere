@@ -63,6 +63,7 @@ Use only the following sources:
 - Apache ShardingSphere official documentation.
 - Apache ShardingSphere official repository code and tests.
 - Target GitHub issue content (body, comments, and linked PRs in the same repository).
+- Same-repository GitHub issues/PRs needed to verify a duplicate or prior fix relationship.
 
 Do not use blogs, third-party tutorials, or forum posts as evidence.
 
@@ -89,6 +90,29 @@ Triage decision:
 - Misconfigured or unsupported usage -> Misunderstanding / Invalid Usage
 - Reproducible mismatch between expected and actual behavior -> Bug
 - Intended new capability or behavior evolution -> Enhancement
+- Same root cause already fixed or tracked by an earlier issue/PR -> Duplicate
+
+## Duplicate / Prior Fix Check
+
+Before finalizing `Bug` or `Enhancement`, check whether the same root cause has already been fixed or tracked in the Apache ShardingSphere repository:
+1. Search by the issue's error message, exception class, key SQL token, affected class/method, and module labels.
+2. Use same-repository evidence only: target issue links/comments, GitHub issues/PRs in `apache/shardingsphere`, `git log --grep`, `git log -S`, and relevant file history.
+3. If the current upstream target branch, normally `apache/master`, or the release branch matching the reporter's version already contains an explicit fix,
+   identify the fixing PR or original tracked issue whenever possible.
+4. Record the fixing PR number, merge state, merge commit, linked issue, target milestone/version, and changed module/class evidence when available.
+5. If a fixing PR or original issue is found and covers the same root cause, classify the new issue as `Duplicate` instead of a fresh `Bug` or `Enhancement`.
+6. If the current upstream target branch appears fixed but no fixing PR/issue can be identified after a reasonable search,
+   say `already fixed on the current upstream target branch` and keep the primary type as `Bug` or `Enhancement` as appropriate.
+
+Before classifying an issue as `Duplicate`, check the evidence against at least one relevant counterexample or negative scenario:
+1. Same error message but different affected class, SQL token, configuration, or call path -> do not classify as `Duplicate`.
+2. Same symptom but the fixing PR is not merged into the upstream target branch -> do not say `already fixed`;
+   classify as `Bug`, `Enhancement`, or `Needs More Info` as appropriate.
+3. Same root cause fixed on the upstream target branch but not available in the reporter's release version -> state the fixed branch/version clearly
+   and ask the reporter to verify with a version that includes the fix.
+4. Same linked issue/PR exists but does not cover the same trigger condition and root-cause chain -> do not close as duplicate.
+
+For `Duplicate`, the maintainer reply should link the original PR/issue, recommend `type: duplicate`, and close as duplicate unless the reporter can still reproduce on a version that includes the fix.
 
 ## Reasonability Gate
 
@@ -151,6 +175,7 @@ Mention topology in the default maintainer reply only when it changes the suppor
     - Question
     - Misunderstanding / Invalid Usage
     - Bug
+    - Duplicate
     - Enhancement
 5. If behavior changes are needed, explain scope and compatibility impact.
 
@@ -193,9 +218,11 @@ Before final conclusion, provide issue type and label recommendations:
 - Misunderstanding / Invalid Usage: recommend `type: question`, `status: invalid`
 - Bug: recommend `type: bug`, optionally with module/database labels (for example `in: SQL parse`, `db: SQLServer`)
 - Enhancement: recommend `type: enhancement`, and optionally `status: volunteer wanted` to invite community contribution
+- Duplicate: recommend `type: duplicate`, optionally with module/database labels when the duplicate scope is clear
 
-When type is Bug/Enhancement, add module/database labels when evidence is sufficient:
+When type is Bug/Enhancement/Duplicate, add module/database labels when evidence is sufficient:
 - Parser-related -> `in: SQL parse`
+- SQL bind-related -> `in: SQL bind`
 - Routing/rewrite/execution core -> `in: Kernel`
 - Proxy runtime/protocol -> `in: Proxy`
 - JDBC driver behavior -> `in: JDBC`
@@ -237,13 +264,20 @@ Default to maintainer replies shaped by the issue type:
 - Recommend `type: bug` plus module/database labels.
 - Do not provide temporary workarounds.
 
-4. Enhancement
+4. Duplicate
+- State that the issue is covered by the earlier fixing PR or original tracked issue.
+- Briefly explain the shared root cause using issue evidence and repository code/PR evidence.
+- Recommend verifying with a version that includes the fixing PR.
+- Recommend `type: duplicate` plus clear module/database labels, then close as duplicate.
+- Do not invite a new PR unless the reporter can still reproduce on a version that includes the fix.
+
+5. Enhancement
 - Acknowledge the requested behavior as new or changed capability.
 - Explain design questions, compatibility impact, and expected tests before accepting implementation.
 - Invite community contribution when suitable.
 - Recommend `type: enhancement` and optionally `status: volunteer wanted`.
 
-5. Needs More Info
+6. Needs More Info
 - Ask only for facts that block classification or root-cause judgment.
 - Use one concise consolidated list and set a 7-14 day follow-up window.
 - Recommend `status: need more info`.
@@ -276,6 +310,13 @@ Bug:
 Hi @user, thanks for reporting this.
 This looks like a bug in <module/path> because <documented expected behavior> does not match <current code behavior>.
 The fix should cover <key classes/paths> and include <test scope>. Contributors are welcome to submit a PR with code and tests.
+```
+
+Duplicate:
+```markdown
+Hi @user, thanks for reporting this.
+This is a duplicate of #<issue-or-pr>, which already fixed or tracks the same root cause in <module/class>.
+Please verify with a version that includes #<fix-pr>. I suggest labeling this as `type: duplicate` and closing it as duplicate.
 ```
 
 Enhancement:
@@ -329,7 +370,7 @@ Use this section for the default appended Reference Analysis and for explicit Re
 - When posting directly to GitHub through an API or tool, submit only the inner GitHub-facing issue analysis body and do not include the outer fence.
 - Apply formatting self-checks to the inner GitHub-facing body, not to the chat delivery wrapper.
 
-In Reference Analysis mode, use this GitHub Markdown skeleton for Question and Misunderstanding / Invalid Usage:
+In Reference Analysis mode, use this GitHub Markdown skeleton for Question, Misunderstanding / Invalid Usage, and Duplicate:
 
 ```markdown
 ### Problem Understanding
@@ -346,7 +387,7 @@ In Reference Analysis mode, use this GitHub Markdown skeleton for Question and M
 
 ### Problem Analysis
 
-- **Issue Type:** Question / Misunderstanding / Invalid Usage
+- **Issue Type:** Question / Misunderstanding / Invalid Usage / Duplicate
 - **Evidence:** ...
 - **Label Recommendation:** ...
 
@@ -356,6 +397,9 @@ In Reference Analysis mode, use this GitHub Markdown skeleton for Question and M
 - **Impact Scope:** ...
 - **Topology:** JDBC/Proxy + Standalone/Cluster
 - **Issue Type:** ...
+- **Duplicate Of:** #issue-or-pr (Duplicate only)
+- **Fix PR:** #pr (Duplicate only)
+- **Merged In:** commit/milestone/version if known (Duplicate only)
 - **Recommended Labels:** ...
 - **Next Action:** ...
 ```
@@ -401,7 +445,7 @@ In Reference Analysis mode, use this GitHub Markdown skeleton for Bug and Enhanc
 - **Regression Scope:** ...
 ```
 
-- Reference four-section structure for Question and Misunderstanding / Invalid Usage: Problem Understanding, Root Cause, Problem Analysis, Problem Conclusion.
+- Reference four-section structure for Question, Misunderstanding / Invalid Usage, and Duplicate: Problem Understanding, Root Cause, Problem Analysis, Problem Conclusion.
 - Reference five-section structure for Bug and Enhancement: Problem Understanding, Root Cause, Problem Analysis, Code-Level Design Suggestions, Problem Conclusion.
 
 At the end of `Problem Conclusion`, append:
@@ -410,6 +454,9 @@ At the end of `Problem Conclusion`, append:
 - `Impact Scope: ...`
 - `Topology: JDBC/Proxy + Standalone/Cluster`
 - `Issue Type: ...`
+- `Duplicate Of: #issue-or-pr` (Duplicate required)
+- `Fix PR: #pr` (Duplicate required when a fixing PR is found)
+- `Merged In: commit/milestone/version if known` (Duplicate required when known)
 - `Recommended Labels: ...`
 - `Next Action: ...`
 
