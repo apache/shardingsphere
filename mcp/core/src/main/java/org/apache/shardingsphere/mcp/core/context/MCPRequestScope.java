@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.context;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPSQLExecutionFacade;
@@ -40,8 +41,10 @@ public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatab
     
     private final String activeTransport;
     
+    @Getter(AccessLevel.NONE)
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
     
+    @Getter(AccessLevel.NONE)
     private final RequestScopedMetadataContext metadataContext;
     
     private final WorkflowSessionContext workflowSessionContext;
