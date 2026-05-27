@@ -16,9 +16,6 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="start_transaction" value="START TRANSACTION" db-types="MySQL,PostgreSQL,openGauss" />
-    <sql-case id="start_read_committed" value="START TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL,openGauss" />
-    <sql-case id="start_read_only" value="START TRANSACTION READ ONLY" db-types="PostgreSQL,openGauss" />
-    <sql-case id="start_with_transaction_mode" value="START TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL,openGauss" />
-</sql-cases>
+<sql-parser-test-cases>
+    <release-savepoint sql-case-id="release_savepoint" savepoint-name="savepoint1" />
+</sql-parser-test-cases>

@@ -514,6 +514,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.CommitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.LockStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.PrepareTransactionTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.ReleaseSavepointStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.RollbackStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.SavepointStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
@@ -747,6 +748,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "savepoint")
     private final List<SavepointStatementTestCase> savepointTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "release-savepoint")
+    private final List<ReleaseSavepointStatementTestCase> releaseSavepointTestCases = new LinkedList<>();
     
     @XmlElement(name = "grant")
     private final List<GrantStatementTestCase> grantTestCases = new LinkedList<>();
