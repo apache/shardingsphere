@@ -165,7 +165,7 @@ a temporary self-signed X.509 certificate when the JVM does not provide the
 equivalent functionality.  It can be obtained at:
 
   * LICENSE:
-    * license/LICENSE.bouncycastle.txt (MIT License)
+    * licenses/LICENSE-bouncy-castle.txt (MIT License)
   * HOMEPAGE:
     * https://www.bouncycastle.org/
 

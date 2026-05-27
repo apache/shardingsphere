@@ -118,7 +118,8 @@ Expected result:
 Notes:
 
 - Metadata list/detail/capability discovery is unified through `resources/read`.
-- The current public tools are `database_gateway_search_metadata`, `database_gateway_execute_query`, `database_gateway_execute_update`, `database_gateway_plan_encrypt_rule`, `database_gateway_plan_mask_rule`, `database_gateway_apply_workflow`, and `database_gateway_validate_workflow`.
+- The current public tools are `database_gateway_search_metadata`, `database_gateway_execute_query`, `database_gateway_execute_update`,
+  `database_gateway_plan_encrypt_rule`, `database_gateway_plan_mask_rule`, `database_gateway_apply_workflow`, and `database_gateway_validate_workflow`.
 - `database_gateway_execute_query` accepts classifier-approved `SELECT` and `EXPLAIN ANALYZE` statements only, and rejects known side-effecting query forms.
   Use `database_gateway_execute_update` for DML, DDL, DCL, transaction control, savepoints, and other supported side-effecting SQL.
 - SQL execution classification recognizes qualified and quoted object names only for safety checks and cross-schema guarding.
@@ -228,6 +229,9 @@ ShardingSphere MCP targets MCP protocol revision `2025-11-25`. The public protoc
 - Elicitation is client-negotiated and used only for non-sensitive workflow clarification. Secret-bearing fields remain out-of-band as described in the workflow security notes.
 
 ### ShardingSphere Feature Scope
+
+This submit-ready scope is MCP V1 runtime readiness, not a complete ShardingSphere governance administration surface.
+The current public contract is descriptor-first and resource-first, with the `database_gateway_*` tools listed above as the supported tool entry points.
 
 The runtime exposes ShardingSphere through logical database metadata, safe SQL tools, and selected workflow helpers. Current V1 scope:
 
