@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLStringFunctionOperatorTable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -92,7 +93,7 @@ class SQLStatementCompilerIT {
     private Collection<SqlOperatorTable> getOperatorTables() {
         SqlOperatorTable operatorTable =
                 SqlLibraryOperatorTableFactory.INSTANCE.getOperatorTable(Arrays.asList(SqlLibrary.STANDARD, SqlLibrary.MYSQL));
-        return Arrays.asList(new MySQLOperatorTable(), operatorTable);
+        return Arrays.asList(new MySQLOperatorTable(), new MySQLStringFunctionOperatorTable(), operatorTable);
     }
     
     private ShardingSphereTable createOrderFederationTableMetaData() {
