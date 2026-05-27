@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.core.protocol.response;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
 import java.util.LinkedHashMap;
@@ -52,9 +53,9 @@ public final class MCPErrorResponse implements MCPResponse {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("response_mode", MCPResponseMode.RECOVERY);
         result.put("request_id", requestId);
-        result.put("message", message);
+        result.put(MCPPayloadFieldNames.MESSAGE, message);
         if (!recovery.isEmpty()) {
-            result.put("recovery", createRecoveryPayload());
+            result.put(MCPPayloadFieldNames.RECOVERY, createRecoveryPayload());
         }
         return result;
     }

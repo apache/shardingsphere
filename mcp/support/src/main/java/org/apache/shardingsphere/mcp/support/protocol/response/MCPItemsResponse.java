@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.support.protocol.response;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
 import java.util.Collections;
@@ -70,7 +71,7 @@ public final class MCPItemsResponse implements MCPResponse {
         String continuationMode = resolveContinuationMode();
         Map<String, Object> result = new LinkedHashMap<>(items.size() + navigation.size() + 5, 1F);
         result.put("response_mode", responseMode);
-        result.put("items", items);
+        result.put(MCPPayloadFieldNames.ITEMS, items);
         result.put("count", items.size());
         result.put("has_more", !CONTINUATION_MODE_NONE.equals(continuationMode));
         if (null != nextPageToken && !nextPageToken.isEmpty()) {

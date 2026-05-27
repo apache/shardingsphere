@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
@@ -64,17 +65,17 @@ public final class WorkflowGuidancePayloadBuilder {
         List<String> missingRequiredInputs = createMissingRequiredInputs(snapshot);
         List<Map<String, Object>> clarificationQuestions = createClarificationQuestions(snapshot, missingRequiredInputs);
         payload.put("missing_required_inputs", missingRequiredInputs);
-        payload.put("clarification_questions", clarificationQuestions);
-        payload.put("resources_to_read", createResourcesToRead(snapshot));
+        payload.put(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS, clarificationQuestions);
+        payload.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(snapshot));
         payload.put("proxy_topology_hint", createProxyTopologyHint(snapshot));
-        payload.put("next_actions", createPlanningNextActions(snapshot, missingRequiredInputs));
+        payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, createPlanningNextActions(snapshot, missingRequiredInputs));
     }
     
     private static Map<String, Object> createProxyTopologyHint(final WorkflowContextSnapshot snapshot) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("expected_runtime_view", "proxy_logical_database");
         result.put("workflow_kind", resolveWorkflowKind(snapshot));
-        result.put("reason", "Encrypt and mask workflow planning must use Proxy logical metadata; physical-database metadata can hide or misrepresent rule-visible objects.");
+        result.put(MCPPayloadFieldNames.REASON, "Encrypt and mask workflow planning must use Proxy logical metadata; physical-database metadata can hide or misrepresent rule-visible objects.");
         result.put("safe_recovery", "Reconnect the MCP runtime to ShardingSphere Proxy for this logical database if metadata appears to be physical-table-first.");
         return result;
     }
@@ -97,7 +98,7 @@ public final class WorkflowGuidancePayloadBuilder {
         if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
             nextActions.add(createUserAction("Inspect issues and retry database_gateway_apply_workflow only after the failed artifact is corrected.", List.of("issues")));
         }
-        payload.put("next_actions", addSequencing(nextActions));
+        payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, addSequencing(nextActions));
     }
     
     /**
@@ -110,7 +111,7 @@ public final class WorkflowGuidancePayloadBuilder {
     public static void appendValidationGuidance(final Map<String, Object> payload, final WorkflowContextSnapshot snapshot, final ValidationReport validationReport) {
         boolean failed = WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus());
         payload.put("recovery_guidance", failed ? createValidationRecovery(snapshot) : "");
-        payload.put("next_actions", failed ? createValidationFailureActions(snapshot) : List.of(createStopAction()));
+        payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, failed ? createValidationFailureActions(snapshot) : List.of(createStopAction()));
     }
     
     private static String createValidationRecovery(final WorkflowContextSnapshot snapshot) {
@@ -164,14 +165,14 @@ public final class WorkflowGuidancePayloadBuilder {
     private static Map<String, Object> createClarificationQuestion(final WorkflowContextSnapshot snapshot, final String fieldName, final String clarificationMessage) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         String inputType = resolveClarificationInputType(snapshot, fieldName);
-        result.put("field", fieldName);
+        result.put(MCPPayloadFieldNames.FIELD, fieldName);
         result.put("question_key", fieldName.replace('.', '_'));
-        result.put("input_type", inputType);
+        result.put(MCPPayloadFieldNames.INPUT_TYPE, inputType);
         if ("boolean".equals(inputType)) {
-            result.put("allowed_values", List.of(true, false));
+            result.put(MCPPayloadFieldNames.ALLOWED_VALUES, List.of(true, false));
         }
-        result.put("secret", isSecretClarificationField(snapshot, fieldName));
-        result.put("display_message", clarificationMessage.isBlank() ? String.format("Please provide `%s`.", fieldName) : clarificationMessage);
+        result.put(MCPPayloadFieldNames.SECRET, isSecretClarificationField(snapshot, fieldName));
+        result.put(MCPPayloadFieldNames.DISPLAY_MESSAGE, clarificationMessage.isBlank() ? String.format("Please provide `%s`.", fieldName) : clarificationMessage);
         return result;
     }
     
@@ -265,10 +266,10 @@ public final class WorkflowGuidancePayloadBuilder {
         String workflowKind = resolveWorkflowKind(snapshot);
         if ("encrypt.rule".equals(workflowKind)) {
             resourcesToRead.add(MCPResourceHintUtils.create("shardingsphere://features/encrypt/algorithms", "algorithm", "read_first",
-                    "Read encrypt algorithm metadata before choosing algorithm arguments.", "resources_to_read"));
+                    "Read encrypt algorithm metadata before choosing algorithm arguments.", MCPPayloadFieldNames.RESOURCES_TO_READ));
         } else if ("mask.rule".equals(workflowKind)) {
             resourcesToRead.add(MCPResourceHintUtils.create("shardingsphere://features/mask/algorithms", "algorithm", "read_first",
-                    "Read mask algorithm metadata before choosing algorithm arguments.", "resources_to_read"));
+                    "Read mask algorithm metadata before choosing algorithm arguments.", MCPPayloadFieldNames.RESOURCES_TO_READ));
         }
     }
     
@@ -277,22 +278,22 @@ public final class WorkflowGuidancePayloadBuilder {
         if ("encrypt.rule".equals(workflowKind)) {
             resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/encrypt/databases/%s/rules",
                     MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail",
-                    "Inspect current encrypt rules before planning changes.", "resources_to_read"));
+                    "Inspect current encrypt rules before planning changes.", MCPPayloadFieldNames.RESOURCES_TO_READ));
         } else if ("mask.rule".equals(workflowKind)) {
             resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/mask/databases/%s/rules",
                     MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail",
-                    "Inspect current mask rules before planning changes.", "resources_to_read"));
+                    "Inspect current mask rules before planning changes.", MCPPayloadFieldNames.RESOURCES_TO_READ));
         }
     }
     
     private static void addTableResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
         resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
                 MCPUriPathSegmentUtils.encodePathSegment(request.getSchema()), MCPUriPathSegmentUtils.encodePathSegment(request.getTable())),
-                "column", "validate_scope", "Read table columns before planning column-level workflow changes.", "resources_to_read"));
+                "column", "validate_scope", "Read table columns before planning column-level workflow changes.", MCPPayloadFieldNames.RESOURCES_TO_READ));
         if ("encrypt.rule".equals(resolveWorkflowKind(snapshot))) {
             resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
                     MCPUriPathSegmentUtils.encodePathSegment(request.getSchema()), MCPUriPathSegmentUtils.encodePathSegment(request.getTable())),
-                    "index", "validate_scope", "Read table indexes before planning assisted-query encrypt rules.", "resources_to_read"));
+                    "index", "validate_scope", "Read table indexes before planning assisted-query encrypt rules.", MCPPayloadFieldNames.RESOURCES_TO_READ));
         }
     }
     

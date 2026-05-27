@@ -21,6 +21,8 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidator;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidationUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
 import java.util.List;
 
@@ -37,6 +39,7 @@ public final class EncryptToolDescriptorValidator implements MCPToolDescriptorVa
     @Override
     public void validate(final MCPToolDescriptor toolDescriptor) {
         MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor,
-                List.of("response_mode", "plan_id", "workflow_kind", "status", "missing_required_inputs", "resources_to_read", "next_actions"));
+                List.of("response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs",
+                        MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS));
     }
 }

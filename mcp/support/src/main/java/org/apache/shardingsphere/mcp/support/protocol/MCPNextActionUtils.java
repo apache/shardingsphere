@@ -154,7 +154,7 @@ public final class MCPNextActionUtils {
         result.put("order", 1);
         result.put("type", type);
         result.put("title", title);
-        result.put("reason", reason);
+        result.put(MCPPayloadFieldNames.REASON, reason);
         return result;
     }
     

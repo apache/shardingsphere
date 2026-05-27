@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -52,7 +53,7 @@ public final class AlgorithmPropertyRequirement {
         result.put("algorithm_role", algorithmRole);
         result.put("property_key", propertyKey);
         result.put("required", required);
-        result.put("secret", secret);
+        result.put(MCPPayloadFieldNames.SECRET, secret);
         result.put("description", description);
         result.put("default_value", defaultValue);
         return result;

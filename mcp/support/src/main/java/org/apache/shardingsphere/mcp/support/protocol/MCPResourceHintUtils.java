@@ -41,11 +41,11 @@ public final class MCPResourceHintUtils {
      */
     public static Map<String, Object> create(final String uri, final String resourceKind, final String purpose, final String reason, final String sourceField) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
-        result.put("uri", uri);
-        result.put("resource_kind", resourceKind);
-        result.put("purpose", purpose);
-        result.put("reason", reason);
-        result.put("source_field", sourceField);
+        result.put(MCPPayloadFieldNames.URI, uri);
+        result.put(MCPPayloadFieldNames.RESOURCE_KIND, resourceKind);
+        result.put(MCPPayloadFieldNames.PURPOSE, purpose);
+        result.put(MCPPayloadFieldNames.REASON, reason);
+        result.put(MCPPayloadFieldNames.SOURCE_FIELD, sourceField);
         return result;
     }
 }

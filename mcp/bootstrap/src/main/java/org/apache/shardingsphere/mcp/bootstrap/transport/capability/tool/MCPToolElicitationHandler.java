@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 
 import java.time.Clock;
@@ -48,18 +49,6 @@ final class MCPToolElicitationHandler {
     private static final String STDIO_TRANSPORT = "stdio";
     
     private static final Duration FORM_CONTINUATION_TTL = Duration.ofMinutes(10L);
-    
-    private static final String CLARIFICATION_QUESTIONS_FIELD = "clarification_questions";
-    
-    private static final String NEXT_ACTIONS_FIELD = "next_actions";
-    
-    private static final String FIELD_FIELD = "field";
-    
-    private static final String INPUT_TYPE_FIELD = "input_type";
-    
-    private static final String SECRET_FIELD = "secret";
-    
-    private static final String MESSAGE_FIELD = "message";
     
     private static final String ELICITATION_SUPPORT_FIELD = "elicitation_support";
     
@@ -104,7 +93,7 @@ final class MCPToolElicitationHandler {
     private final MCPToolClarificationPolicy clarificationPolicy = new MCPToolClarificationPolicy();
     
     boolean shouldHandle(final MCPToolDescriptor toolDescriptor, final Map<String, Object> payload) {
-        return clarificationPolicy.isPlanningTool(toolDescriptor) && clarificationPolicy.hasClarificationQuestions(payload);
+        return clarificationPolicy.requiresPlanningClarification(toolDescriptor, payload);
     }
     
     MCPResponse handle(final McpSyncServerExchange exchange, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments,
@@ -176,8 +165,8 @@ final class MCPToolElicitationHandler {
     private MCPResponse createFallbackResponse(final Map<String, Object> payload, final String fallbackReason, final ClientElicitationSupport clientSupport) {
         Map<String, Object> result = new LinkedHashMap<>(payload);
         if (clarificationPolicy.hasSensitiveClarificationQuestions(payload)) {
-            result.put(CLARIFICATION_QUESTIONS_FIELD, createSanitizedClarificationQuestions(payload));
-            result.put(NEXT_ACTIONS_FIELD, createSensitiveNextActions());
+            result.put(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS, createSanitizedClarificationQuestions(payload));
+            result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createSensitiveNextActions());
         }
         result.put(ELICITATION_SUPPORT_FIELD, createElicitationSupportPayload(clientSupport, selectFallbackInteraction(fallbackReason)));
         result.put(FALLBACK_REASON_FIELD, fallbackReason);
@@ -185,7 +174,7 @@ final class MCPToolElicitationHandler {
     }
     
     private List<Map<String, Object>> createSanitizedClarificationQuestions(final Map<String, Object> payload) {
-        Object clarificationQuestions = payload.get(CLARIFICATION_QUESTIONS_FIELD);
+        Object clarificationQuestions = payload.get(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS);
         if (!(clarificationQuestions instanceof List<?> questions)) {
             return List.of();
         }
@@ -200,10 +189,10 @@ final class MCPToolElicitationHandler {
     
     private Map<String, Object> createSanitizedClarificationQuestion(final Map<?, ?> question) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put(FIELD_FIELD, Objects.toString(question.get(FIELD_FIELD), ""));
-        result.put(INPUT_TYPE_FIELD, "secret");
-        result.put(SECRET_FIELD, true);
-        result.put(MESSAGE_FIELD, "Sensitive input must be provided through configured secure channels before continuing the same planner.");
+        result.put(MCPPayloadFieldNames.FIELD, Objects.toString(question.get(MCPPayloadFieldNames.FIELD), ""));
+        result.put(MCPPayloadFieldNames.INPUT_TYPE, "secret");
+        result.put(MCPPayloadFieldNames.SECRET, true);
+        result.put(MCPPayloadFieldNames.MESSAGE, "Sensitive input must be provided through configured secure channels before continuing the same planner.");
         return result;
     }
     
@@ -212,7 +201,7 @@ final class MCPToolElicitationHandler {
         result.put("order", 1);
         result.put("type", "terminal");
         result.put("title", "Collect sensitive inputs through configured secure channels.");
-        result.put("reason", "MCP form elicitation is limited to non-sensitive STDIO continuations; URL mode is not implemented in this release.");
+        result.put(MCPPayloadFieldNames.REASON, "MCP form elicitation is limited to non-sensitive STDIO continuations; URL mode is not implemented in this release.");
         return List.of(result);
     }
     

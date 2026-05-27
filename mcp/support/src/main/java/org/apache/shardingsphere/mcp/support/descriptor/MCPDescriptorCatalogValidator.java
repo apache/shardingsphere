@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDesc
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplate;
 
@@ -43,8 +44,9 @@ final class MCPDescriptorCatalogValidator {
     private static final Collection<String> BANNED_NEXT_ACTION_FIELDS = List.of("action_kind", "target_tool", "target_resource", "required_arguments");
     
     private static final Collection<String> MODEL_CRITICAL_HINT_FIELDS = List.of(
-            "next_actions", "resources_to_read", "resource", "parent_resource", "next_resources", "manual_artifact_summary", "manual_follow_up", "empty_state", "ambiguity_state",
-            "recovery", "recovery_guidance", "remediation");
+            MCPPayloadFieldNames.NEXT_ACTIONS, MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.RESOURCE, MCPPayloadFieldNames.PARENT_RESOURCE,
+            MCPPayloadFieldNames.NEXT_RESOURCES, "manual_artifact_summary", "manual_follow_up", "empty_state", "ambiguity_state", MCPPayloadFieldNames.RECOVERY, "recovery_guidance",
+            "remediation");
     
     private static final Collection<String> CONTINUATION_MODES = List.of("none", "pagination", "metadata_search");
     
@@ -250,7 +252,7 @@ final class MCPDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Tool `%s` model-critical output field `%s` must be an object.", descriptor.getName(), fieldName)));
         Object description = ((Map<?, ?>) property).get("description");
         checkDescription(null == description ? "" : description.toString(), String.format("Tool model-critical output field `%s.%s` description", descriptor.getName(), fieldName));
-        if ("next_actions".equals(fieldName)) {
+        if (MCPPayloadFieldNames.NEXT_ACTIONS.equals(fieldName)) {
             validateNextActionsSchema(descriptor, (Map<?, ?>) property);
         }
     }
@@ -361,9 +363,9 @@ final class MCPDescriptorCatalogValidator {
         if (!descriptor.getAnnotations().isDestructiveHint()) {
             return;
         }
-        Map<?, ?> executionMode = findToolInputProperty(descriptor, "execution_mode").orElseThrow(
+        Map<?, ?> executionMode = findToolInputProperty(descriptor, MCPPayloadFieldNames.EXECUTION_MODE).orElseThrow(
                 () -> new IllegalStateException(String.format("Destructive tool `%s` must declare execution_mode.", descriptor.getName())));
-        ShardingSpherePreconditions.checkState(isRequiredToolInput(descriptor, "execution_mode"),
+        ShardingSpherePreconditions.checkState(isRequiredToolInput(descriptor, MCPPayloadFieldNames.EXECUTION_MODE),
                 () -> new IllegalStateException(String.format("Destructive tool `%s` execution_mode must be required.", descriptor.getName())));
         Collection<?> executionModes = executionMode.get("enum") instanceof Collection ? (Collection<?>) executionMode.get("enum") : List.of();
         ShardingSpherePreconditions.checkState(executionModes.contains("preview"),
@@ -378,7 +380,7 @@ final class MCPDescriptorCatalogValidator {
         if (descriptor.getAnnotations().isDestructiveHint()) {
             return;
         }
-        Optional<Map<?, ?>> executionMode = findToolInputProperty(descriptor, "execution_mode");
+        Optional<Map<?, ?>> executionMode = findToolInputProperty(descriptor, MCPPayloadFieldNames.EXECUTION_MODE);
         if (executionMode.isEmpty()) {
             return;
         }

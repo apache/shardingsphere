@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.List;
 import java.util.Map;
@@ -45,15 +46,15 @@ public final class MetadataSearchHit {
     
     private final String name;
     
-    @JsonProperty("resource")
+    @JsonProperty(MCPPayloadFieldNames.RESOURCE)
     @JsonInclude(Include.NON_EMPTY)
     private final Map<String, Object> resource;
     
-    @JsonProperty("parent_resource")
+    @JsonProperty(MCPPayloadFieldNames.PARENT_RESOURCE)
     @JsonInclude(Include.NON_EMPTY)
     private final Map<String, Object> parentResource;
     
-    @JsonProperty("next_resources")
+    @JsonProperty(MCPPayloadFieldNames.NEXT_RESOURCES)
     @JsonInclude(Include.NON_EMPTY)
     private final List<Map<String, Object>> nextResources;
     

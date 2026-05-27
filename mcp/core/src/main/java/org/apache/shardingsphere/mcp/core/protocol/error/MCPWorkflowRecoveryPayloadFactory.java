@@ -24,6 +24,8 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidApprovedS
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArgumentConflictException;
 
 import java.util.List;
@@ -46,11 +48,11 @@ final class MCPWorkflowRecoveryPayloadFactory {
     static Map<String, Object> createInvalidApprovedStepsRecovery(final MCPInvalidApprovedStepsException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "invalid_enum_value", "Retry database_gateway_apply_workflow with approved_steps copied from preview_artifacts.approval_step, or omit approved_steps to apply every artifact.");
-        Map<String, Object> suggestedArguments = MCPRecoveryPayloadSupport.getSuggestedArguments(cause.getSuggestedArguments(), Map.of("execution_mode", "preview"));
-        result.put("field", "approved_steps");
-        result.put("allowed_values", cause.getAllowedValues());
+        Map<String, Object> suggestedArguments = MCPRecoveryPayloadSupport.getSuggestedArguments(cause.getSuggestedArguments(), Map.of(WorkflowFieldNames.EXECUTION_MODE, "preview"));
+        result.put(MCPPayloadFieldNames.FIELD, "approved_steps");
+        result.put(MCPPayloadFieldNames.ALLOWED_VALUES, cause.getAllowedValues());
         result.put("suggested_arguments", suggestedArguments);
-        result.put("next_actions", List.of(MCPNextActionUtils.callTool(
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(
                 "database_gateway_apply_workflow", "Preview again, then copy only visible approval_step values into approved_steps.", suggestedArguments)));
         result.put("ask_user_when_uncertain", true);
         return result;
@@ -61,8 +63,8 @@ final class MCPWorkflowRecoveryPayloadFactory {
                 "workflow_argument_conflict", "Ask the user which public workflow argument value to keep, then retry with only one value.");
         List<String> argumentFields = createWorkflowArgumentConflictFields(cause.getConflictingArguments());
         result.put("conflicting_arguments", cause.getConflictingArguments());
-        result.put("clarification_questions", createWorkflowArgumentConflictQuestions(cause.getConflictingArguments()));
-        result.put("next_actions", List.of(MCPNextActionUtils.askUser("Resolve conflicting workflow arguments before retrying the planning tool.", argumentFields)));
+        result.put(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS, createWorkflowArgumentConflictQuestions(cause.getConflictingArguments()));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.askUser("Resolve conflicting workflow arguments before retrying the planning tool.", argumentFields)));
         result.put("ask_user_when_uncertain", true);
         return result;
     }
@@ -70,12 +72,12 @@ final class MCPWorkflowRecoveryPayloadFactory {
     static Map<String, Object> createWorkflowStateRecovery(final MCPWorkflowStateException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "stale_workflow", "Use current-session completion to select an available plan_id, or re-run the matching planning tool.");
-        result.put("plan_id", cause.getPlanId());
-        result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
+        result.put(WorkflowFieldNames.PLAN_ID, cause.getPlanId());
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://capabilities", "capability", "Read workflow-capable MCP tools before re-planning."));
-        result.put("completion_first", Map.of("argument", "plan_id", "scope", "current MCP session"));
-        result.put("next_actions", MCPNextActionUtils.ordered(
-                MCPNextActionUtils.completeArgument("resource", "shardingsphere://workflows/{plan_id}", "plan_id", "", Map.of(), List.of(), "resource",
+        result.put("completion_first", Map.of("argument", WorkflowFieldNames.PLAN_ID, "scope", "current MCP session"));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, MCPNextActionUtils.ordered(
+                MCPNextActionUtils.completeArgument("resource", "shardingsphere://workflows/{plan_id}", WorkflowFieldNames.PLAN_ID, "", Map.of(), List.of(), "resource",
                         "shardingsphere://workflows/{plan_id}", Map.of(), "Use MCP completion for plan_id to pick an available current-session workflow plan."),
                 MCPNextActionUtils.dependsOn(MCPNextActionUtils.readResource(
                         "shardingsphere://capabilities", "Read current workflow tools, then re-run the matching planning tool if completion has no usable plan."), 1)));
@@ -111,15 +113,15 @@ final class MCPWorkflowRecoveryPayloadFactory {
                                                                    final boolean retryTool) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(category, modelAction);
         if (missingField) {
-            result.put("missing_fields", List.of("execution_mode"));
+            result.put("missing_fields", List.of(WorkflowFieldNames.EXECUTION_MODE));
         }
-        result.put("field", "execution_mode");
+        result.put(MCPPayloadFieldNames.FIELD, WorkflowFieldNames.EXECUTION_MODE);
         result.put("source_tool", toolName);
         result.put("tool_name", toolName);
-        result.put("allowed_values", allowedValues);
-        Map<String, Object> suggestedArguments = MCPRecoveryPayloadSupport.getSuggestedArguments(sourceSuggestedArguments, Map.of("execution_mode", "preview"));
+        result.put(MCPPayloadFieldNames.ALLOWED_VALUES, allowedValues);
+        Map<String, Object> suggestedArguments = MCPRecoveryPayloadSupport.getSuggestedArguments(sourceSuggestedArguments, Map.of(WorkflowFieldNames.EXECUTION_MODE, "preview"));
         result.put("suggested_arguments", suggestedArguments);
-        result.put("next_actions", List.of(retryTool
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(retryTool
                 ? MCPNextActionUtils.retryTool(toolName, retryReason, suggestedArguments)
                 : MCPNextActionUtils.callTool(toolName, retryReason, suggestedArguments)));
         result.put("ask_user_when_uncertain", true);
@@ -137,10 +139,10 @@ final class MCPWorkflowRecoveryPayloadFactory {
     private static Map<String, Object> createWorkflowArgumentConflictQuestion(final String conflict) {
         String field = getWorkflowArgumentConflictField(conflict);
         return Map.of(
-                "field", field,
+                MCPPayloadFieldNames.FIELD, field,
                 "conflict", conflict,
-                "input_type", "string",
-                "display_message", String.format("Choose one value for `%s`, or remove the duplicate path.", field));
+                MCPPayloadFieldNames.INPUT_TYPE, "string",
+                MCPPayloadFieldNames.DISPLAY_MESSAGE, String.format("Choose one value for `%s`, or remove the duplicate path.", field));
     }
     
     private static String getWorkflowArgumentConflictField(final String conflict) {

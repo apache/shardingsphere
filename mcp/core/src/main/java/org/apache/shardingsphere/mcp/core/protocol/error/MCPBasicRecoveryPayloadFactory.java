@@ -27,7 +27,9 @@ import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionReg
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
 import java.util.List;
 import java.util.Map;
@@ -43,9 +45,9 @@ final class MCPBasicRecoveryPayloadFactory {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery("unsupported_tool", "Call one of the supported tools returned by tools/list.");
         result.put("tool_name", toolName);
         result.put("supported_tools", ToolDefinitionRegistry.getSupportedTools());
-        result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://capabilities", "capability", "Read ShardingSphere catalog details after checking tools/list."));
-        result.put("next_actions", List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities",
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities",
                 "Read the ShardingSphere domain catalog only when tools/list does not provide enough context.")));
         result.put("ask_user_when_uncertain", false);
         return result;
@@ -54,11 +56,11 @@ final class MCPBasicRecoveryPayloadFactory {
     static Map<String, Object> createUnsupportedResourceRecovery(final String resourceUri) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "unsupported_resource", "Read one of the supported resources or templates returned by resources/list and resources/templates/list.");
-        result.put("resource", MCPResourceHintUtils.create(resourceUri, "resource", "inspect_detail", "Unsupported resource URI requested.", "recovery"));
+        result.put(MCPPayloadFieldNames.RESOURCE, MCPResourceHintUtils.create(resourceUri, "resource", "inspect_detail", "Unsupported resource URI requested.", MCPPayloadFieldNames.RECOVERY));
         result.put("matching_resource_templates", ResourceDefinitionRegistry.getSupportedResources());
-        result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://capabilities", "capability", "Read ShardingSphere catalog details after checking resources/list and resources/templates/list."));
-        result.put("next_actions", List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities",
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities",
                 "Read the ShardingSphere domain catalog only when official resource discovery does not provide enough context.")));
         result.put("ask_user_when_uncertain", false);
         return result;
@@ -66,10 +68,10 @@ final class MCPBasicRecoveryPayloadFactory {
     
     static Map<String, Object> createRuntimeDatabaseConnectionRecovery(final RuntimeDatabaseConnectionException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(cause.getCategory(), createRuntimeDatabaseConnectionModelAction(cause));
-        result.put("database", cause.getDatabaseName());
-        result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
+        result.put(WorkflowFieldNames.DATABASE, cause.getDatabaseName());
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://capabilities", "capability", "Read configured MCP runtime capabilities before retrying."));
-        result.put("next_actions", MCPNextActionUtils.ordered(
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, MCPNextActionUtils.ordered(
                 MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read current MCP runtime capabilities and configured database names."),
                 MCPNextActionUtils.dependsOn(MCPNextActionUtils.askUser(
                         "Ask the operator to fix the MCP runtime database configuration before retrying.", List.of("runtime_database_configuration")), 1)));
@@ -84,9 +86,9 @@ final class MCPBasicRecoveryPayloadFactory {
         result.put("session_id", cause.getSessionId());
         result.put("tool_name", cause.getToolName());
         result.put("max_tool_calls_per_session", cause.getMaxToolCallsPerSession());
-        result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://capabilities", "capability", "Read the current MCP safety policy before retrying."));
-        result.put("next_actions", List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read current MCP safety policy and tool call limits.")));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read current MCP safety policy and tool call limits.")));
         result.put("ask_user_when_uncertain", true);
         return result;
     }
@@ -98,19 +100,19 @@ final class MCPBasicRecoveryPayloadFactory {
     
     static Map<String, Object> createToolArgumentContractViolationRecovery(final MCPToolArgumentContractViolationException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(cause.getCategory(), createToolArgumentContractModelAction(cause));
-        result.put("field", cause.getArgumentPath());
+        result.put(MCPPayloadFieldNames.FIELD, cause.getArgumentPath());
         result.put("argument_path", cause.getArgumentPath());
         result.put("tool_name", cause.getToolName());
         if (!cause.getExpectedType().isEmpty()) {
             result.put("expected_type", cause.getExpectedType());
         }
         if (!cause.getAllowedValues().isEmpty()) {
-            result.put("allowed_values", cause.getAllowedValues());
+            result.put(MCPPayloadFieldNames.ALLOWED_VALUES, cause.getAllowedValues());
         }
         if (!cause.getSuggestedArguments().isEmpty()) {
             result.put("suggested_arguments", cause.getSuggestedArguments());
         }
-        result.put("next_actions", createToolArgumentContractNextActions(cause));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createToolArgumentContractNextActions(cause));
         result.put("ask_user_when_uncertain", cause.getSuggestedArguments().isEmpty());
         return result;
     }
@@ -133,25 +135,25 @@ final class MCPBasicRecoveryPayloadFactory {
     }
     
     static Map<String, Object> createMissingArgumentRecovery(final String argumentName) {
-        boolean missingDatabase = "database".equals(argumentName);
+        boolean missingDatabase = WorkflowFieldNames.DATABASE.equals(argumentName);
         String category = missingDatabase ? "missing_database" : "missing_argument";
         String modelAction = missingDatabase
                 ? "Read shardingsphere://databases, infer a single safe database when possible, or ask the user."
                 : "Provide the missing argument, infer it from resources when safe, or ask the user.";
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(category, modelAction);
         result.put("missing_fields", List.of(argumentName));
-        result.put("resources_to_read", createMissingArgumentResourcesToRead(argumentName));
-        result.put("next_actions", createMissingArgumentNextActions(argumentName));
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createMissingArgumentResourcesToRead(argumentName));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createMissingArgumentNextActions(argumentName));
         result.put("ask_user_when_uncertain", true);
         return result;
     }
     
     static Map<String, Object> createInvalidObjectTypesRecovery(final MCPInvalidMetadataObjectTypesException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery("invalid_enum_value", "Retry with one or more allowed object_types values.");
-        result.put("field", "object_types");
-        result.put("allowed_values", cause.getAllowedValues());
+        result.put(MCPPayloadFieldNames.FIELD, "object_types");
+        result.put(MCPPayloadFieldNames.ALLOWED_VALUES, cause.getAllowedValues());
         result.put("suggested_arguments", Map.of("object_types", cause.getAllowedValues()));
-        result.put("next_actions", List.of(MCPNextActionUtils.retryTool("database_gateway_search_metadata",
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.retryTool("database_gateway_search_metadata",
                 "Retry database_gateway_search_metadata with allowed object_types values, or omit object_types to search every supported metadata type.",
                 Map.of("object_types", cause.getAllowedValues()))));
         result.put("ask_user_when_uncertain", false);
@@ -161,7 +163,7 @@ final class MCPBasicRecoveryPayloadFactory {
     private static Map<String, Object> createInvalidIntegerArgumentRecovery(final String fieldName, final int suggestedValue, final String sourceTool, final String targetTool,
                                                                             final int minimumValue, final int maximumValue) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery("invalid_integer_argument", "Retry with an integer value inside the documented bounds.");
-        result.put("field", fieldName);
+        result.put(MCPPayloadFieldNames.FIELD, fieldName);
         result.put("argument_path", fieldName);
         if (!sourceTool.isEmpty()) {
             result.put("source_tool", sourceTool);
@@ -174,7 +176,7 @@ final class MCPBasicRecoveryPayloadFactory {
         result.put("suggested_value", suggestedValue);
         Map<String, Object> suggestedArguments = Map.of(fieldName, suggestedValue);
         result.put("suggested_arguments", suggestedArguments);
-        result.put("next_actions", createInvalidIntegerArgumentNextActions(fieldName, targetTool, suggestedArguments));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createInvalidIntegerArgumentNextActions(fieldName, targetTool, suggestedArguments));
         result.put("ask_user_when_uncertain", false);
         return result;
     }
@@ -187,11 +189,11 @@ final class MCPBasicRecoveryPayloadFactory {
     }
     
     private static List<Map<String, Object>> createMissingArgumentResourcesToRead(final String argumentName) {
-        if ("database".equals(argumentName)) {
+        if (WorkflowFieldNames.DATABASE.equals(argumentName)) {
             return MCPRecoveryPayloadSupport.createResourceHintList(
                     "shardingsphere://databases", "logical-database", "Read logical databases before retrying with a database argument.");
         }
-        if ("plan_id".equals(argumentName)) {
+        if (WorkflowFieldNames.PLAN_ID.equals(argumentName)) {
             return MCPRecoveryPayloadSupport.createResourceHintList(
                     "shardingsphere://capabilities", "capability", "Read workflow-capable MCP tools before retrying with a plan_id argument.");
         }
@@ -203,7 +205,8 @@ final class MCPBasicRecoveryPayloadFactory {
         if (resources.isEmpty()) {
             return List.of(MCPNextActionUtils.askUser("Ask the user for the missing argument.", List.of(argumentName)));
         }
-        return List.of(MCPNextActionUtils.readResource(Objects.toString(resources.iterator().next().get("uri"), ""), "Read a safe resource before retrying with the missing argument."));
+        return List.of(
+                MCPNextActionUtils.readResource(Objects.toString(resources.iterator().next().get(MCPPayloadFieldNames.URI), ""), "Read a safe resource before retrying with the missing argument."));
     }
     
     private static String createRuntimeDatabaseConnectionModelAction(final RuntimeDatabaseConnectionException cause) {

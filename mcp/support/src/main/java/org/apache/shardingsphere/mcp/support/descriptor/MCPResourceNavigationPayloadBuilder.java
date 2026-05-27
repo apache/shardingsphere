@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplate;
 
@@ -57,12 +58,12 @@ public final class MCPResourceNavigationPayloadBuilder {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         new MCPUriTemplate(descriptor.getUriTemplate()).expandIfComplete(uriVariables).ifPresent(uri -> result.put("self_uri", uri));
         Optional<String> parentUri = new MCPUriTemplate(parentUriTemplate).expandIfComplete(uriVariables);
-        parentUri.filter(uri -> !uri.isEmpty()).ifPresent(uri -> result.put("parent_resource", createParentResourceHint(uri)));
+        parentUri.filter(uri -> !uri.isEmpty()).ifPresent(uri -> result.put(MCPPayloadFieldNames.PARENT_RESOURCE, createParentResourceHint(uri)));
         return result;
     }
     
     private static Map<String, Object> createParentResourceHint(final String uri) {
-        return MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_parent", "Read the parent resource.", "parent_resource");
+        return MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_parent", "Read the parent resource.", MCPPayloadFieldNames.PARENT_RESOURCE);
     }
     
     private static String resolveResourceKind(final String uri) {

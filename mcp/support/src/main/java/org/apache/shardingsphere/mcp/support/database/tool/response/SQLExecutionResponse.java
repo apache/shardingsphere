@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPSta
 import org.apache.shardingsphere.mcp.support.database.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.support.database.protocol.ExecuteQueryResultKind;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
 import java.util.Collections;
@@ -177,7 +178,7 @@ public final class SQLExecutionResponse implements MCPResponse {
         result.put("response_mode", responseMode);
         result.put("result_kind", resultKind.name().toLowerCase(Locale.ENGLISH));
         if (!executionMode.isEmpty()) {
-            result.put("execution_mode", executionMode);
+            result.put(MCPPayloadFieldNames.EXECUTION_MODE, executionMode);
         }
         result.put("statement_class", statementClass.name().toLowerCase(Locale.ENGLISH));
         result.put("statement_type", statementType);
@@ -195,12 +196,12 @@ public final class SQLExecutionResponse implements MCPResponse {
             result.put("affected_rows", affectedRows);
         }
         if (ExecuteQueryResultKind.STATEMENT_ACK == resultKind) {
-            result.put("message", message);
+            result.put(MCPPayloadFieldNames.MESSAGE, message);
         }
         result.put("applied_max_rows", appliedMaxRows);
         result.put("applied_timeout_ms", appliedTimeoutMs);
         result.put("truncated", truncated);
-        result.put("next_actions", createNextActions());
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createNextActions());
         return result;
     }
     

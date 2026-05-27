@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.security;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -63,7 +64,7 @@ public final class MCPClientSafetyPolicy {
         result.put("scope", "session");
         result.put("max_calls", getMaxToolCallsPerSession());
         result.put("property", MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
-        result.put("recovery", "Close and recreate the MCP session after the quota is exhausted.");
+        result.put(MCPPayloadFieldNames.RECOVERY, "Close and recreate the MCP session after the quota is exhausted.");
         return result;
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -28,28 +29,6 @@ import java.util.Objects;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class MCPResourceLinkCandidateCollector {
-    
-    private static final String RESOURCES_TO_READ_FIELD = "resources_to_read";
-    
-    private static final String RESOURCE_FIELD = "resource";
-    
-    private static final String PARENT_RESOURCE_FIELD = "parent_resource";
-    
-    private static final String NEXT_RESOURCES_FIELD = "next_resources";
-    
-    private static final String RECOVERY_FIELD = "recovery";
-    
-    private static final String ITEMS_FIELD = "items";
-    
-    private static final String URI_FIELD = "uri";
-    
-    private static final String RESOURCE_KIND_FIELD = "resource_kind";
-    
-    private static final String SOURCE_FIELD = "source_field";
-    
-    private static final String REASON_FIELD = "reason";
-    
-    private static final String PURPOSE_FIELD = "purpose";
     
     private static final String DEFAULT_DESCRIPTION = "Read this ShardingSphere MCP resource.";
     
@@ -70,10 +49,10 @@ final class MCPResourceLinkCandidateCollector {
     }
     
     private void collectResourceLinkFields(final Map<?, ?> value, final List<OrderedResourceLinkCandidate> candidates) {
-        collectResourceLinkValue(value.get(RESOURCES_TO_READ_FIELD), RESOURCES_TO_READ_FIELD, candidates);
-        collectResourceLinkValue(value.get(RESOURCE_FIELD), RESOURCE_FIELD, candidates);
-        collectResourceLinkValue(value.get(PARENT_RESOURCE_FIELD), PARENT_RESOURCE_FIELD, candidates);
-        collectResourceLinkValue(value.get(NEXT_RESOURCES_FIELD), NEXT_RESOURCES_FIELD, candidates);
+        collectResourceLinkValue(value.get(MCPPayloadFieldNames.RESOURCES_TO_READ), MCPPayloadFieldNames.RESOURCES_TO_READ, candidates);
+        collectResourceLinkValue(value.get(MCPPayloadFieldNames.RESOURCE), MCPPayloadFieldNames.RESOURCE, candidates);
+        collectResourceLinkValue(value.get(MCPPayloadFieldNames.PARENT_RESOURCE), MCPPayloadFieldNames.PARENT_RESOURCE, candidates);
+        collectResourceLinkValue(value.get(MCPPayloadFieldNames.NEXT_RESOURCES), MCPPayloadFieldNames.NEXT_RESOURCES, candidates);
     }
     
     private void collectResourceLinkValue(final Object value, final String sourceField, final List<OrderedResourceLinkCandidate> candidates) {
@@ -91,22 +70,22 @@ final class MCPResourceLinkCandidateCollector {
     }
     
     private boolean isResourceHint(final Map<?, ?> value) {
-        return value.containsKey(URI_FIELD) && value.containsKey(RESOURCE_KIND_FIELD) && !Objects.toString(value.get(URI_FIELD), "").isBlank();
+        return value.containsKey(MCPPayloadFieldNames.URI) && value.containsKey(MCPPayloadFieldNames.RESOURCE_KIND) && !Objects.toString(value.get(MCPPayloadFieldNames.URI), "").isBlank();
     }
     
     private OrderedResourceLinkCandidate createCandidate(final Map<?, ?> value, final String sourceField, final int order) {
         return new OrderedResourceLinkCandidate(
-                Objects.toString(value.get(URI_FIELD), ""),
-                Objects.toString(value.get(RESOURCE_KIND_FIELD), "resource"),
-                Objects.toString(value.get(REASON_FIELD), DEFAULT_DESCRIPTION),
-                Objects.toString(value.get(RESOURCE_KIND_FIELD), ""),
-                Objects.toString(value.get(PURPOSE_FIELD), ""),
+                Objects.toString(value.get(MCPPayloadFieldNames.URI), ""),
+                Objects.toString(value.get(MCPPayloadFieldNames.RESOURCE_KIND), "resource"),
+                Objects.toString(value.get(MCPPayloadFieldNames.REASON), DEFAULT_DESCRIPTION),
+                Objects.toString(value.get(MCPPayloadFieldNames.RESOURCE_KIND), ""),
+                Objects.toString(value.get(MCPPayloadFieldNames.PURPOSE), ""),
                 resolveSourceField(value, sourceField),
                 order);
     }
     
     private String resolveSourceField(final Map<?, ?> value, final String sourceField) {
-        String result = Objects.toString(value.get(SOURCE_FIELD), "");
+        String result = Objects.toString(value.get(MCPPayloadFieldNames.SOURCE_FIELD), "");
         return result.isEmpty() ? sourceField : result;
     }
     
@@ -119,14 +98,14 @@ final class MCPResourceLinkCandidateCollector {
     }
     
     private void collectRecoveryResourceLinkFields(final Map<?, ?> payload, final List<OrderedResourceLinkCandidate> candidates) {
-        Object recovery = payload.get(RECOVERY_FIELD);
+        Object recovery = payload.get(MCPPayloadFieldNames.RECOVERY);
         if (recovery instanceof Map<?, ?> recoveryPayload) {
             collectResourceLinkFields(recoveryPayload, candidates);
         }
     }
     
     private void collectItemResourceLinkFields(final Map<?, ?> payload, final List<OrderedResourceLinkCandidate> candidates) {
-        Object items = payload.get(ITEMS_FIELD);
+        Object items = payload.get(MCPPayloadFieldNames.ITEMS);
         if (!(items instanceof Iterable<?> itemValues)) {
             return;
         }
@@ -143,16 +122,16 @@ final class MCPResourceLinkCandidateCollector {
     }
     
     private static int resolveResourceLinkPriority(final String sourceField) {
-        if (RESOURCES_TO_READ_FIELD.equals(sourceField)) {
+        if (MCPPayloadFieldNames.RESOURCES_TO_READ.equals(sourceField)) {
             return 0;
         }
-        if (RESOURCE_FIELD.equals(sourceField)) {
+        if (MCPPayloadFieldNames.RESOURCE.equals(sourceField)) {
             return 1;
         }
-        if (PARENT_RESOURCE_FIELD.equals(sourceField)) {
+        if (MCPPayloadFieldNames.PARENT_RESOURCE.equals(sourceField)) {
             return 2;
         }
-        return NEXT_RESOURCES_FIELD.equals(sourceField) ? 3 : 4;
+        return MCPPayloadFieldNames.NEXT_RESOURCES.equals(sourceField) ? 3 : 4;
     }
     
     private Map<String, OrderedResourceLinkCandidate> deduplicateCandidates(final List<OrderedResourceLinkCandidate> candidates) {

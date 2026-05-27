@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderRes
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public final class WorkflowPlanIdCompletionProvider implements MCPCompletionProv
     
     @Override
     public boolean supports(final MCPCompletionRequestContext requestContext) {
-        return "plan_id".equals(requestContext.getArgumentName());
+        return WorkflowFieldNames.PLAN_ID.equals(requestContext.getArgumentName());
     }
     
     @Override

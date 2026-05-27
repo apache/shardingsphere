@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 
@@ -75,13 +76,13 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         result.put("total_match_count", searchResult.getTotalMatchCount());
         if (searchResult.getItems().isEmpty()) {
             result.put("empty_state", createEmptyState(request));
-            result.put("next_actions", List.of(createEmptySearchNextAction(request)));
+            result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(createEmptySearchNextAction(request)));
             return result;
         }
         List<String> duplicatedNames = findDuplicatedNames(searchResult.getItems(), request.getQuery());
         List<Map<String, Object>> nextActions = createResultNextActions(searchResult, duplicatedNames);
         if (!nextActions.isEmpty()) {
-            result.put("next_actions", nextActions);
+            result.put(MCPPayloadFieldNames.NEXT_ACTIONS, nextActions);
         }
         if (!duplicatedNames.isEmpty()) {
             result.put("ambiguity_state", createAmbiguityState(searchResult.getItems(), duplicatedNames));
@@ -143,7 +144,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         result.put("candidate_count", countDuplicatedCandidates(items, duplicatedNames));
         result.put("duplicated_names", duplicatedNames);
         result.put("narrowing_arguments", List.of("database", "schema", "object_types"));
-        result.put("reason", "Multiple metadata hits share the same name; choose an explicit database, schema, or object type before reading a specific resource.");
+        result.put(MCPPayloadFieldNames.REASON, "Multiple metadata hits share the same name; choose an explicit database, schema, or object type before reading a specific resource.");
         return result;
     }
     
@@ -192,7 +193,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("state", request.getQuery().isEmpty() ? "no_items" : "no_match");
         result.put("category", request.getQuery().isEmpty() ? "empty_scope" : "not_found");
-        result.put("reason", request.getQuery().isEmpty() ? "No metadata is available in the requested scope." : "No metadata matched the query in the requested scope.");
+        result.put(MCPPayloadFieldNames.REASON, request.getQuery().isEmpty() ? "No metadata is available in the requested scope." : "No metadata matched the query in the requested scope.");
         return result;
     }
     

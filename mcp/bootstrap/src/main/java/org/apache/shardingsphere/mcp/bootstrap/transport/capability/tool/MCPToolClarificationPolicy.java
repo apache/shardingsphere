@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -32,20 +34,6 @@ import java.util.Optional;
 final class MCPToolClarificationPolicy {
     
     private static final String PLANNING_WORKFLOW_ROLE = "plan";
-    
-    private static final String CLARIFICATION_QUESTIONS_FIELD = "clarification_questions";
-    
-    private static final String PLAN_ID_FIELD = "plan_id";
-    
-    private static final String FIELD_FIELD = "field";
-    
-    private static final String INPUT_TYPE_FIELD = "input_type";
-    
-    private static final String DISPLAY_MESSAGE_FIELD = "display_message";
-    
-    private static final String ALLOWED_VALUES_FIELD = "allowed_values";
-    
-    private static final String SECRET_FIELD = "secret";
     
     private static final String PROPERTIES_FIELD = "properties";
     
@@ -64,14 +52,11 @@ final class MCPToolClarificationPolicy {
     private static final List<String> SENSITIVE_FIELD_NAME_MARKERS = List.of(
             "password", "passwd", "passphrase", "secret", "token", "accesstoken", "apikey", "privatekey", "credential", "card", "cvv", "payment", "key");
     
-    boolean isPlanningTool(final MCPToolDescriptor toolDescriptor) {
+    boolean requiresPlanningClarification(final MCPToolDescriptor toolDescriptor, final Map<String, Object> payload) {
+        Object clarificationQuestions = payload.get(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS);
         return MCPDescriptorCatalogIndex.findToolRuntimeDescriptor(toolDescriptor.getName())
-                .map(optional -> PLANNING_WORKFLOW_ROLE.equals(optional.getWorkflowRole())).orElse(false);
-    }
-    
-    boolean hasClarificationQuestions(final Map<String, Object> payload) {
-        Object clarificationQuestions = payload.get(CLARIFICATION_QUESTIONS_FIELD);
-        return clarificationQuestions instanceof List<?> questions && !questions.isEmpty();
+                .map(runtimeDescriptor -> PLANNING_WORKFLOW_ROLE.equals(runtimeDescriptor.getWorkflowRole())).orElse(false)
+                && clarificationQuestions instanceof List<?> questions && !questions.isEmpty();
     }
     
     Optional<ClarificationForm> createClarificationForm(final Map<String, Object> payload, final MCPToolDescriptor toolDescriptor) {
@@ -79,7 +64,7 @@ final class MCPToolClarificationPolicy {
         if (planId.isEmpty()) {
             return Optional.empty();
         }
-        Object clarificationQuestions = payload.get(CLARIFICATION_QUESTIONS_FIELD);
+        Object clarificationQuestions = payload.get(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS);
         if (!(clarificationQuestions instanceof List<?> questions) || questions.isEmpty()) {
             return Optional.empty();
         }
@@ -108,7 +93,7 @@ final class MCPToolClarificationPolicy {
     }
     
     boolean hasSensitiveClarificationQuestions(final Map<String, Object> payload) {
-        Object clarificationQuestions = payload.get(CLARIFICATION_QUESTIONS_FIELD);
+        Object clarificationQuestions = payload.get(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS);
         if (!(clarificationQuestions instanceof List<?> questions)) {
             return false;
         }
@@ -130,7 +115,7 @@ final class MCPToolClarificationPolicy {
     }
     
     private boolean isSensitiveClarificationQuestion(final Map<?, ?> question) {
-        return Boolean.TRUE.equals(question.get(SECRET_FIELD)) || isSecretInputType(question) || isSensitiveFieldName(question) || isUnknownAlgorithmPropertySensitivity(question);
+        return Boolean.TRUE.equals(question.get(MCPPayloadFieldNames.SECRET)) || isSecretInputType(question) || isSensitiveFieldName(question) || isUnknownAlgorithmPropertySensitivity(question);
     }
     
     private boolean isSecretInputType(final Map<?, ?> question) {
@@ -148,7 +133,7 @@ final class MCPToolClarificationPolicy {
     }
     
     private boolean isUnknownAlgorithmPropertySensitivity(final Map<?, ?> question) {
-        return normalizeSensitiveName(getField(question)).contains("algorithmproperties") && !question.containsKey(SECRET_FIELD);
+        return normalizeSensitiveName(getField(question)).contains("algorithmproperties") && !question.containsKey(MCPPayloadFieldNames.SECRET);
     }
     
     private String normalizeSensitiveName(final String value) {
@@ -156,13 +141,13 @@ final class MCPToolClarificationPolicy {
     }
     
     String getPlanId(final Map<String, Object> payload) {
-        return Objects.toString(payload.get(PLAN_ID_FIELD), "");
+        return Objects.toString(payload.get(WorkflowFieldNames.PLAN_ID), "");
     }
     
     private Map<String, Object> createRequestedPropertySchema(final Map<?, ?> question, final ArgumentBinding binding) {
         Map<String, Object> result = new LinkedHashMap<>(binding.allowedValues().isEmpty() ? 2 : 3, 1F);
         result.put(TYPE_FIELD, binding.inputType());
-        result.put("description", Objects.toString(question.get(DISPLAY_MESSAGE_FIELD), ""));
+        result.put("description", Objects.toString(question.get(MCPPayloadFieldNames.DISPLAY_MESSAGE), ""));
         if (!binding.allowedValues().isEmpty()) {
             result.put("enum", binding.allowedValues());
         }
@@ -204,8 +189,8 @@ final class MCPToolClarificationPolicy {
     
     Map<String, Object> mergeArguments(final Map<String, Object> args, final ClarificationForm form, final Map<String, Object> elicitedContent) {
         Map<String, Object> result = new LinkedHashMap<>(args);
-        if (!result.containsKey(PLAN_ID_FIELD)) {
-            result.put(PLAN_ID_FIELD, form.planId());
+        if (!result.containsKey(WorkflowFieldNames.PLAN_ID)) {
+            result.put(WorkflowFieldNames.PLAN_ID, form.planId());
         }
         for (ArgumentBinding each : form.fieldBindings().values()) {
             putElicitedArgument(result, each, elicitedContent.get(each.formPropertyName()));
@@ -301,7 +286,7 @@ final class MCPToolClarificationPolicy {
     }
     
     private String getField(final Map<?, ?> question) {
-        return Objects.toString(question.get(FIELD_FIELD), "").trim();
+        return Objects.toString(question.get(MCPPayloadFieldNames.FIELD), "").trim();
     }
     
     private String getInputType(final Map<?, ?> question) {
@@ -309,19 +294,19 @@ final class MCPToolClarificationPolicy {
     }
     
     private List<?> getAllowedValues(final Map<?, ?> question) {
-        Object allowedValues = question.get(ALLOWED_VALUES_FIELD);
+        Object allowedValues = question.get(MCPPayloadFieldNames.ALLOWED_VALUES);
         return allowedValues instanceof List<?> ? (List<?>) allowedValues : List.of();
     }
     
     private String normalizeInputType(final Map<?, ?> question) {
-        return Objects.toString(question.get(INPUT_TYPE_FIELD), "").trim().toLowerCase(Locale.ENGLISH);
+        return Objects.toString(question.get(MCPPayloadFieldNames.INPUT_TYPE), "").trim().toLowerCase(Locale.ENGLISH);
     }
     
     record ClarificationForm(Map<String, Object> requestedSchema, Map<String, ArgumentBinding> fieldBindings, String planId) {
     }
     
     private record ArgumentBinding(String formPropertyName, String argumentName, String fieldName, String inputType, List<?> allowedValues) {
-        
+
         private boolean isTopLevel() {
             return fieldName.isEmpty();
         }
