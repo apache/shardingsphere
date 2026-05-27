@@ -73,6 +73,15 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("email", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("telephone", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("ScrapReason", Arrays.asList(
+                new ShardingSphereColumn("ScrapReasonID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("Name", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("ModifiedDate", Types.TIMESTAMP, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("WorkOrder", Arrays.asList(
+                new ShardingSphereColumn("WorkOrderID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("ScrapReasonID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("ScrappedQty", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         return Collections.singleton(new ShardingSphereSchema(schemaName, mock(DatabaseType.class), tables, Collections.emptyList()));
     }
     
@@ -85,6 +94,8 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_account_detail");
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_order");
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_user");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "ScrapReason");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "WorkOrder");
         }
     }
 }

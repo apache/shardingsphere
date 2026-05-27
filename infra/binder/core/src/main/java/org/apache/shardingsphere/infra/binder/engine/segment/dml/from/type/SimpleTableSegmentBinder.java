@@ -65,6 +65,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -93,7 +94,10 @@ public final class SimpleTableSegmentBinder {
         Optional<IdentifierValue> schemaName = getSchemaName(segment, binderContext, databaseName);
         IdentifierValue tableName = segment.getTableName().getIdentifier();
         Optional<ShardingSphereSchema> schema = schemaName.map(identifierValue -> binderContext.getMetaData().getDatabase(databaseName).getSchema(identifierValue));
-        checkTableExists(binderContext, schema.orElse(null), tableName, segment);
+        if (isUpdateTargetTableAlias(binderContext, tableBinderContexts, tableName.getValue(), segment)) {
+            return bindUpdateTargetTableAlias(segment, binderContext, tableBinderContexts, databaseName, schemaName, tableName);
+        }
+        checkTableExists(binderContext, schema.orElse(null), tableName, segment, tableBinderContexts);
         checkTableMetadata(binderContext, schema.orElse(null), schemaName.map(IdentifierValue::getValue).orElse(null), tableName);
         String tableAliasOrName = segment.getAliasName().orElseGet(tableName::getValue);
         Optional<SimpleTableSegmentBinderContext> tableBinderContext = createSimpleTableBinderContext(segment, schema.orElse(null), databaseName, schemaName.orElse(null), binderContext);
@@ -145,8 +149,44 @@ public final class SimpleTableSegmentBinder {
         return Optional.ofNullable(database.getDefaultSchemaName()).map(IdentifierValue::new);
     }
     
-    private static void checkTableExists(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final IdentifierValue tableName, final SimpleTableSegment segment) {
+    private static boolean isUpdateTargetTableAlias(final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                    final String tableNameValue, final SimpleTableSegment segment) {
+        if (!(binderContext.getSqlStatement() instanceof UpdateStatement)) {
+            return false;
+        }
+        UpdateStatement updateStatement = (UpdateStatement) binderContext.getSqlStatement();
+        if (!updateStatement.getFrom().isPresent()) {
+            return false;
+        }
+        if (!(updateStatement.getTable() instanceof SimpleTableSegment)) {
+            return false;
+        }
+        if (!((SimpleTableSegment) updateStatement.getTable()).getTableName().getIdentifier().getValue().equalsIgnoreCase(tableNameValue)) {
+            return false;
+        }
+        if (segment.getAliasName().isPresent()) {
+            return false;
+        }
+        return tableBinderContexts.containsKey(CaseInsensitiveString.of(tableNameValue));
+    }
+    
+    private static SimpleTableSegment bindUpdateTargetTableAlias(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext,
+                                                                 final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts, final IdentifierValue databaseName,
+                                                                 final Optional<IdentifierValue> schemaName, final IdentifierValue tableName) {
+        TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName);
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName.orElse(null)));
+        SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
+        segment.getOwner().ifPresent(result::setOwner);
+        segment.getAliasSegment().ifPresent(result::setAlias);
+        return result;
+    }
+    
+    private static void checkTableExists(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final IdentifierValue tableName, final SimpleTableSegment segment,
+                                         final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         String tableNameValue = tableName.getValue();
+        if (isUpdateTargetTableAlias(binderContext, tableBinderContexts, tableNameValue, segment)) {
+            return;
+        }
         // TODO refactor table exists check with spi @duanzhengqiang
         if (binderContext.getSqlStatement() instanceof CreateTableStatement && isCreateTable(((CreateTableStatement) binderContext.getSqlStatement()).getTable(), tableNameValue)) {
             ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate()

@@ -46,8 +46,8 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
         WithSegment boundWith = sqlStatement.getWith().map(optional -> WithSegmentBinder.bind(optional, binderContext, outerTableBinderContexts)).orElse(null);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        TableSegment boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, outerTableBinderContexts);
         TableSegment boundFrom = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+        TableSegment boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, outerTableBinderContexts);
         SetAssignmentSegment boundSetAssignment = sqlStatement.getAssignment()
                 .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);

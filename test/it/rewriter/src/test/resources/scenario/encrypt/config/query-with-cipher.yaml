@@ -152,6 +152,12 @@ rules:
           likeQuery:
             name: user_telephone_like
             encryptorName: rewrite_it_like_encryptor_fixture
+    ScrapReason:
+      columns:
+        Remark:
+          cipher:
+            name: remark_cipher
+            encryptorName: rewrite_normal_fixture
   encryptors:
     rewrite_normal_fixture:
       type: REWRITE.NORMAL.FIXTURE
