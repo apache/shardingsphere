@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
@@ -115,9 +116,12 @@ final class MetadataSearchResourceUriFactory {
     }
     
     private MetadataResourceUris derived(final String resourceUri, final String parentResourceUri, final List<String> nextResourceUris) {
-        return new MetadataResourceUris(MCPResourceHintUtils.create(resourceUri, resolveResourceKind(resourceUri), "inspect_detail", "Read the matched metadata detail resource.", "resource"),
-                MCPResourceHintUtils.create(parentResourceUri, resolveResourceKind(parentResourceUri), "inspect_parent", "Read the parent metadata resource.", "parent_resource"),
-                nextResourceUris.stream().map(each -> MCPResourceHintUtils.create(each, resolveResourceKind(each), "inspect_detail", "Read a child metadata resource.", "next_resources")).toList(),
+        return new MetadataResourceUris(MCPResourceHintUtils.create(resourceUri, resolveResourceKind(resourceUri), "inspect_detail", "Read the matched metadata detail resource.",
+                MCPPayloadFieldNames.RESOURCE),
+                MCPResourceHintUtils.create(parentResourceUri, resolveResourceKind(parentResourceUri), "inspect_parent", "Read the parent metadata resource.",
+                        MCPPayloadFieldNames.PARENT_RESOURCE),
+                nextResourceUris.stream().map(each -> MCPResourceHintUtils.create(each, resolveResourceKind(each), "inspect_detail", "Read a child metadata resource.",
+                        MCPPayloadFieldNames.NEXT_RESOURCES)).toList(),
                 "derived", "");
     }
     

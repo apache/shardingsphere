@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
@@ -238,7 +239,7 @@ public final class WorkflowValidationSupport {
         result.put("overall_status", WorkflowLifecycle.STATUS_FAILED);
         result.put("mismatches", List.of());
         result.put("recovery_guidance", userAction);
-        result.put("next_actions", List.of());
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of());
         return result;
     }
     

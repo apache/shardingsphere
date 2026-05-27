@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -54,7 +55,7 @@ public final class WorkflowIssue {
         result.put("code", code);
         result.put("severity", severity);
         result.put("stage", stage);
-        result.put("message", message);
+        result.put(MCPPayloadFieldNames.MESSAGE, message);
         result.put("user_action", userAction);
         result.put("retryable", retryable);
         result.put("details", details);

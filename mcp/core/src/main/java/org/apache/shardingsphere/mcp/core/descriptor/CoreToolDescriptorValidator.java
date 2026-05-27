@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidator;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidationUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.Collection;
 import java.util.List;
@@ -50,23 +51,23 @@ public final class CoreToolDescriptorValidator implements MCPToolDescriptorValid
     public void validate(final MCPToolDescriptor toolDescriptor) {
         if (SEARCH_METADATA.equals(toolDescriptor.getName())) {
             MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor,
-                    List.of("response_mode", "items", "count", "search_context", "total_match_count"));
+                    List.of("response_mode", MCPPayloadFieldNames.ITEMS, "count", "search_context", "total_match_count"));
             validateSearchMetadataOutputItems(toolDescriptor);
             return;
         }
         if (EXECUTE_QUERY.equals(toolDescriptor.getName())) {
             MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor, List.of("response_mode", "result_kind", "statement_class", "statement_type", "status", "returned_row_count",
-                    "applied_max_rows", "applied_timeout_ms", "truncated", "next_actions"));
+                    "applied_max_rows", "applied_timeout_ms", "truncated", MCPPayloadFieldNames.NEXT_ACTIONS));
             return;
         }
         MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor, List.of("response_mode", "result_kind", "statement_class", "statement_type", "status", "returned_row_count",
-                "applied_max_rows", "applied_timeout_ms", "suggested_arguments", "next_actions"));
+                "applied_max_rows", "applied_timeout_ms", "suggested_arguments", MCPPayloadFieldNames.NEXT_ACTIONS));
         validateExecuteUpdateDescriptor(toolDescriptor);
     }
     
     private void validateSearchMetadataOutputItems(final MCPToolDescriptor descriptor) {
         Map<?, ?> properties = (Map<?, ?>) descriptor.getOutputSchema().get("properties");
-        Object items = properties.get("items");
+        Object items = properties.get(MCPPayloadFieldNames.ITEMS);
         ShardingSpherePreconditions.checkState(items instanceof Map,
                 () -> new IllegalStateException("Tool `database_gateway_search_metadata` outputSchema property `items` must be an object."));
         Object itemSchema = ((Map<?, ?>) items).get("items");
@@ -79,8 +80,8 @@ public final class CoreToolDescriptorValidator implements MCPToolDescriptorValid
     }
     
     private void validateSearchMetadataItemFields(final Map<?, ?> properties) {
-        for (String each : List.of("database", "schema", "objectType", "table", "view", "name", "resource", "parent_resource", "next_resources", "derivation_status",
-                "match_kind", "matched_fields", "matched_value")) {
+        for (String each : List.of("database", "schema", "objectType", "table", "view", "name", MCPPayloadFieldNames.RESOURCE, MCPPayloadFieldNames.PARENT_RESOURCE,
+                MCPPayloadFieldNames.NEXT_RESOURCES, "derivation_status", "match_kind", "matched_fields", "matched_value")) {
             ShardingSpherePreconditions.checkState(properties.containsKey(each),
                     () -> new IllegalStateException(String.format("Tool `database_gateway_search_metadata` outputSchema item must declare `%s`.", each)));
             Object property = properties.get(each);

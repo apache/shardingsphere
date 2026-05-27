@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotati
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
 import java.nio.charset.StandardCharsets;
@@ -98,7 +99,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
     
     private Map<String, Object> toResourcePayload(final MCPResourceDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        result.put("uri", descriptor.getUriTemplate());
+        result.put(MCPPayloadFieldNames.URI, descriptor.getUriTemplate());
         result.put("name", descriptor.getName());
         result.put("title", descriptor.getTitle());
         result.put("description", descriptor.getDescription());
@@ -312,7 +313,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
     }
     
     private Map<String, Object> createResourceSchema(final Map<String, Object> resource) {
-        return resource.containsKey("uriTemplate") ? Map.of("uriTemplate", resource.get("uriTemplate")) : Map.of("uri", resource.get("uri"));
+        return resource.containsKey("uriTemplate") ? Map.of("uriTemplate", resource.get("uriTemplate")) : Map.of(MCPPayloadFieldNames.URI, resource.get(MCPPayloadFieldNames.URI));
     }
     
     private Map<String, Object> createToolSchema(final Map<String, Object> tool) {

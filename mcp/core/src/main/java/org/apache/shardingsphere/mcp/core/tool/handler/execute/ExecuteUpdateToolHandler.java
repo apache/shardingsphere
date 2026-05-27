@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
@@ -113,9 +114,9 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         result.put("review_summary", createReviewSummary(classificationResult));
         Map<String, Object> suggestedArguments = createSuggestedArguments(toolArguments, classificationResult);
         result.put("suggested_arguments", suggestedArguments);
-        result.put("resources_to_read", createResourcesToRead(toolArguments));
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(toolArguments));
         result.put("argument_provenance", createArgumentProvenance(suggestedArguments));
-        result.put("next_actions", List.of(MCPNextActionUtils.callTool(TOOL_NAME,
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(TOOL_NAME,
                 "Execute after reviewing normalized_sql and side_effect_scope.", suggestedArguments)));
         return new MCPMapResponse(result);
     }
@@ -180,10 +181,11 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     private List<Map<String, Object>> createResourcesToRead(final MCPToolArguments toolArguments) {
         String database = toolArguments.getStringArgument("database");
         if (database.isEmpty()) {
-            return List.of(MCPResourceHintUtils.create("shardingsphere://databases", "logical-database", "read_first", "Read logical databases before execution.", "resources_to_read"));
+            return List.of(MCPResourceHintUtils.create("shardingsphere://databases", "logical-database", "read_first", "Read logical databases before execution.",
+                    MCPPayloadFieldNames.RESOURCES_TO_READ));
         }
         return List.of(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/capabilities", MCPUriPathSegmentUtils.encodePathSegment(database)), "logical-database-capability",
-                "read_first", "Read logical database capabilities before execution.", "resources_to_read"));
+                "read_first", "Read logical database capabilities before execution.", MCPPayloadFieldNames.RESOURCES_TO_READ));
     }
     
 }

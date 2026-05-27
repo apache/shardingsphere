@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.List;
 import java.util.Locale;
@@ -45,7 +46,7 @@ final class MCPSQLRecoveryPayloadFactory {
         cause.getClassificationResult().getTargetObjectName().ifPresent(optional -> result.put("target_object", optional));
         cause.getClassificationResult().getSavepointName().ifPresent(optional -> result.put("savepoint", optional));
         result.put("suggested_arguments", cause.getSuggestedArguments());
-        result.put("next_actions", List.of(MCPNextActionUtils.callTool(cause.getTargetTool(), createSQLToolMismatchActionReason(cause), cause.getSuggestedArguments())));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(cause.getTargetTool(), createSQLToolMismatchActionReason(cause), cause.getSuggestedArguments())));
         result.put("ask_user_when_uncertain", false);
         return result;
     }
@@ -54,10 +55,10 @@ final class MCPSQLRecoveryPayloadFactory {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "metadata_introspection_sql", "Use logical metadata resources or database_gateway_search_metadata instead of console-style metadata SQL.");
         result.put("statement_type", cause.getStatementType());
-        result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://databases", "logical-database", "Read logical databases before choosing a metadata scope."));
         result.put("suggested_arguments", Map.of("object_types", List.of("database")));
-        result.put("next_actions", MCPNextActionUtils.ordered(
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, MCPNextActionUtils.ordered(
                 MCPNextActionUtils.readResource("shardingsphere://databases", "Read logical databases before choosing a metadata scope."),
                 MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_search_metadata",
                         "Search metadata with an explicit database, schema, query, or object_types scope instead of executing metadata SQL.",
@@ -71,7 +72,7 @@ final class MCPSQLRecoveryPayloadFactory {
                 "multiple_sql_statements", "Split the user intent into separate MCP calls and handle each statement independently.");
         result.put("ask_user_when_uncertain", true);
         result.put("suggested_arguments", Map.of("execution_mode", "preview"));
-        result.put("next_actions", List.of(MCPNextActionUtils.askUser(
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.askUser(
                 "Ask the user which single statement should be handled first.", List.of("single_sql_statement"))));
         return result;
     }
@@ -79,9 +80,9 @@ final class MCPSQLRecoveryPayloadFactory {
     static Map<String, Object> createUnsupportedStatementRecovery() {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "unsupported_sql_statement", "Ask the user for a supported SELECT, EXPLAIN ANALYZE, DML, DDL, DCL, transaction, or savepoint statement.");
-        result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://capabilities", "capability", "Read supported SQL statement classes before retrying."));
-        result.put("next_actions", List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read supported statement classes before retrying.")));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read supported statement classes before retrying.")));
         result.put("ask_user_when_uncertain", true);
         return result;
     }
@@ -89,9 +90,9 @@ final class MCPSQLRecoveryPayloadFactory {
     static Map<String, Object> createBannedStatementRecovery() {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "banned_sql_statement", "Do not execute this SQL through MCP; ask the user for a safer supported operation.");
-        result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://capabilities", "capability", "Read supported safe alternatives before asking the user."));
-        result.put("next_actions", List.of(MCPNextActionUtils.askUser(
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.askUser(
                 "Ask for a safer supported operation instead of executing the banned SQL.", List.of("safe_sql_or_metadata_request"))));
         result.put("ask_user_when_uncertain", true);
         return result;

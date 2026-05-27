@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.protocol.error;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
@@ -48,7 +49,7 @@ final class MCPRecoveryPayloadSupport {
     }
     
     static List<Map<String, Object>> createResourceHintList(final String uri, final String resourceKind, final String reason) {
-        return List.of(MCPResourceHintUtils.create(uri, resourceKind, "read_first", reason, "resources_to_read"));
+        return List.of(MCPResourceHintUtils.create(uri, resourceKind, "read_first", reason, MCPPayloadFieldNames.RESOURCES_TO_READ));
     }
     
     private static String normalizeRecoveryCategory(final String category) {

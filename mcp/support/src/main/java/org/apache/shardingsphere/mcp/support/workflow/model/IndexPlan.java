@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -47,7 +48,7 @@ public final class IndexPlan {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("index_name", indexName);
         result.put("column_name", columnName);
-        result.put("reason", reason);
+        result.put(MCPPayloadFieldNames.REASON, reason);
         result.put("sql", sql);
         return result;
     }

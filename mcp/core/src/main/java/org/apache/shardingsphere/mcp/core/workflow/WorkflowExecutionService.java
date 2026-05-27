@@ -25,10 +25,12 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
@@ -168,8 +170,8 @@ public final class WorkflowExecutionService {
         result.put("preview_artifacts", previewArtifacts);
         result.put("review_focus", createPreviewReviewFocus(snapshot, previewArtifacts));
         result.put("review_summary", createReviewSummary(previewArtifacts));
-        result.put("argument_provenance", createPreviewArgumentProvenance(snapshot));
-        result.put("next_actions", createPreviewNextActions(snapshot));
+        result.put("argument_provenance", createPreviewArgumentProvenance());
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createPreviewNextActions(snapshot));
         return result;
     }
     
@@ -222,16 +224,16 @@ public final class WorkflowExecutionService {
                 : "Apply workflow artifacts after reviewing the previewed side effects.";
     }
     
-    private Map<String, Object> createPreviewArgumentProvenance(final WorkflowContextSnapshot snapshot) {
-        return Map.of("plan_id", "server_generated", "execution_mode", "server_defaulted");
+    private Map<String, Object> createPreviewArgumentProvenance() {
+        return Map.of(WorkflowFieldNames.PLAN_ID, "server_generated", WorkflowFieldNames.EXECUTION_MODE, "server_defaulted");
     }
     
     private Map<String, Object> createExecutionArguments(final WorkflowContextSnapshot snapshot, final String executionMode) {
-        return Map.of("plan_id", snapshot.getPlanId(), "execution_mode", executionMode);
+        return Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId(), WorkflowFieldNames.EXECUTION_MODE, executionMode);
     }
     
     private Map<String, Object> createPreviewSuggestedArguments(final WorkflowContextSnapshot snapshot) {
-        return Map.of("plan_id", snapshot.getPlanId(), "execution_mode", EXECUTION_MODE_PREVIEW);
+        return Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId(), WorkflowFieldNames.EXECUTION_MODE, EXECUTION_MODE_PREVIEW);
     }
     
     private String resolveApplyExecutionMode(final WorkflowContextSnapshot snapshot) {
@@ -336,9 +338,9 @@ public final class WorkflowExecutionService {
                                                       final List<String> skippedArtifacts, final Map<String, Object> manualArtifactPackage) {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         result.put("response_mode", resolveResponseMode(status, executionMode));
-        result.put("plan_id", planId);
+        result.put(WorkflowFieldNames.PLAN_ID, planId);
         result.put("status", status);
-        result.put("execution_mode", executionMode);
+        result.put(WorkflowFieldNames.EXECUTION_MODE, executionMode);
         result.put("issues", issues);
         result.put("step_results", stepResults);
         result.put("executed_ddl", executedDdl);
@@ -387,7 +389,7 @@ public final class WorkflowExecutionService {
         result.put("requires_user_confirmation", true);
         result.put("validation_blocked_until", "manual_artifacts_executed");
         result.put("validation_tool_after_manual_execution", "database_gateway_validate_workflow");
-        result.put("validation_arguments_after_manual_execution", Map.of("plan_id", planId));
+        result.put("validation_arguments_after_manual_execution", Map.of(WorkflowFieldNames.PLAN_ID, planId));
         return result;
     }
     

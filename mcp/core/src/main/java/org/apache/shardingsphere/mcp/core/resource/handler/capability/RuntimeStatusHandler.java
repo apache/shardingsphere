@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabase
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
@@ -69,8 +70,8 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("redaction_summary", Map.of("categories", List.of(), "redacted_count", 0, "marker", "******"));
         result.put("diagnostics", createDiagnostics(hasConfiguredDatabase));
         result.put("capability_fingerprint", MCPDescriptorCatalogIndex.getDescriptorCatalogFingerprint());
-        result.put("resources_to_read", createResourcesToRead(hasConfiguredDatabase));
-        result.put("next_actions", createNextActions(hasConfiguredDatabase));
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(hasConfiguredDatabase));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createNextActions(hasConfiguredDatabase));
         return new MCPMapResponse(result);
     }
     
@@ -82,7 +83,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         if (hasConfiguredDatabase) {
             return result;
         }
-        result.put("reason", "No runtime databases are configured.");
+        result.put(MCPPayloadFieldNames.REASON, "No runtime databases are configured.");
         return result;
     }
     
@@ -125,12 +126,12 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     
     private List<Map<String, Object>> createResourcesToRead(final boolean hasConfiguredDatabase) {
         Map<String, Object> capabilitiesResource = MCPResourceHintUtils.create("shardingsphere://capabilities", "capability", "read_first",
-                "Read full MCP capabilities before choosing tools.", "resources_to_read");
+                "Read full MCP capabilities before choosing tools.", MCPPayloadFieldNames.RESOURCES_TO_READ);
         if (!hasConfiguredDatabase) {
             return List.of(capabilitiesResource);
         }
         return List.of(capabilitiesResource, MCPResourceHintUtils.create("shardingsphere://databases", "logical-database", "read_first",
-                "Read logical databases before choosing a database scope.", "resources_to_read"));
+                "Read logical databases before choosing a database scope.", MCPPayloadFieldNames.RESOURCES_TO_READ));
     }
     
     private List<Map<String, Object>> createNextActions(final boolean hasConfiguredDatabase) {
@@ -153,7 +154,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("capabilities", capability.map(this::createCapabilityStatus).orElseGet(this::createUnavailableCapabilityStatus));
         result.put("capability_visibility", capability.isPresent() ? "ready" : "unavailable");
         result.put("feature_visibility", "ready");
-        result.put("resource", MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s", MCPUriPathSegmentUtils.encodePathSegment(database.getDatabase())),
+        result.put(MCPPayloadFieldNames.RESOURCE, MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s", MCPUriPathSegmentUtils.encodePathSegment(database.getDatabase())),
                 "logical-database", "inspect_detail", "Read this logical database resource for metadata details.", "databases"));
         return result;
     }

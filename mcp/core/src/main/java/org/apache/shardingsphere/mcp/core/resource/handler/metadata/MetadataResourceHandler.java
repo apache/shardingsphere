@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
@@ -105,12 +106,12 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     private Map<String, Object> createDetailPayload(final ShardingSphereMCPResourceMetadata descriptor, final List<?> items, final Map<String, Object> navigationPayload) {
         Map<String, Object> result = new LinkedHashMap<>(navigationPayload.size() + 6, 1F);
         result.put("response_mode", MCPResponseMode.DETAIL);
-        result.put("resource_kind", "detail");
+        result.put(MCPPayloadFieldNames.RESOURCE_KIND, "detail");
         if (null != descriptor.getObjectScope()) {
             result.put("object_scope", descriptor.getObjectScope());
         }
         result.put("found", !items.isEmpty());
-        result.put("items", items);
+        result.put(MCPPayloadFieldNames.ITEMS, items);
         result.put("count", items.size());
         if (!items.isEmpty()) {
             result.put("item", items.get(0));
@@ -126,19 +127,19 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         if (isDetailResource(descriptor)) {
             emptyState.put("state", "not_found");
             emptyState.put("category", "not_found");
-            emptyState.put("reason", String.format("%s detail resource was not found for this URI.", resourceKind));
+            emptyState.put(MCPPayloadFieldNames.REASON, String.format("%s detail resource was not found for this URI.", resourceKind));
             recoveryCategory = "not_found";
         } else {
             emptyState.put("state", "no_items");
             emptyState.put("category", "empty_scope");
-            emptyState.put("reason", "No metadata items are available in this scope.");
+            emptyState.put(MCPPayloadFieldNames.REASON, "No metadata items are available in this scope.");
             recoveryCategory = "empty_scope";
         }
-        emptyState.put("resource_kind", resourceKind);
+        emptyState.put(MCPPayloadFieldNames.RESOURCE_KIND, resourceKind);
         payload.put("empty_state", emptyState);
-        String parentUri = getResourceHintUri(payload.get("parent_resource"));
-        payload.put("recovery", createRecovery(recoveryCategory, resourceKind, parentUri, uriVariables));
-        payload.put("next_actions", parentUri.isEmpty()
+        String parentUri = getResourceHintUri(payload.get(MCPPayloadFieldNames.PARENT_RESOURCE));
+        payload.put(MCPPayloadFieldNames.RECOVERY, createRecovery(recoveryCategory, resourceKind, parentUri, uriVariables));
+        payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, parentUri.isEmpty()
                 ? List.of(MCPNextActionUtils.stop("No metadata items are available in this scope."))
                 : List.of(MCPNextActionUtils.readResource(parentUri, "Read the parent metadata resource before broadening or correcting the request.")));
     }
@@ -148,7 +149,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         result.put("response_mode", MCPResponseMode.RECOVERY);
         result.put("recovery_category", category);
         result.put("category", category);
-        result.put("resource_kind", resourceKind);
+        result.put(MCPPayloadFieldNames.RESOURCE_KIND, resourceKind);
         if (!parentUri.isEmpty()) {
             result.put("parent_resource_uri", parentUri);
         }
@@ -169,11 +170,12 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         largeResult.put("state", "broad_metadata_list");
         largeResult.put("count", itemCount);
         largeResult.put("threshold", LARGE_RESULT_THRESHOLD);
-        largeResult.put("reason", "This metadata resource returned many items. Use database_gateway_search_metadata with an explicit query or scope before reading many detail resources.");
+        largeResult.put(MCPPayloadFieldNames.REASON,
+                "This metadata resource returned many items. Use database_gateway_search_metadata with an explicit query or scope before reading many detail resources.");
         largeResult.put("search_arguments", createNarrowSearchArguments(descriptor, uriVariables));
         payload.put("continuation_mode", "metadata_search");
         payload.put("large_result_guidance", largeResult);
-        payload.put("next_actions", List.of(MCPNextActionUtils.callTool("database_gateway_search_metadata",
+        payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool("database_gateway_search_metadata",
                 String.format("Narrow the broad %s metadata list before reading detail resources.", resolveGuidanceScope(descriptor)),
                 createNarrowSearchArguments(descriptor, uriVariables))));
     }
@@ -209,7 +211,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         if (!(value instanceof Map)) {
             return "";
         }
-        Object uri = ((Map<?, ?>) value).get("uri");
+        Object uri = ((Map<?, ?>) value).get(MCPPayloadFieldNames.URI);
         return null == uri ? "" : uri.toString();
     }
     
@@ -220,21 +222,21 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         selfUri.ifPresent(uri -> result.put("self_uri", uri));
         String parentUri = createParentUri(selfUri.orElse(""));
         if (!parentUri.isEmpty()) {
-            result.put("parent_resource", MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent",
-                    "Read the parent metadata resource before broadening or correcting the request.", "parent_resource"));
+            result.put(MCPPayloadFieldNames.PARENT_RESOURCE, MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent",
+                    "Read the parent metadata resource before broadening or correcting the request.", MCPPayloadFieldNames.PARENT_RESOURCE));
         }
         List<Map<String, Object>> nextResources = MCPDescriptorCatalogIndex.getResourceNavigationDescriptors(uriOrTemplate).stream()
                 .filter(each -> each.getTo().startsWith("shardingsphere://"))
                 .map(each -> createNextResourceHint(each.getTo(), each.getDescription(), uriVariables)).flatMap(Optional::stream).toList();
         if (!nextResources.isEmpty()) {
-            result.put("next_resources", nextResources);
+            result.put(MCPPayloadFieldNames.NEXT_RESOURCES, nextResources);
         }
         return result;
     }
     
     private Optional<Map<String, Object>> createNextResourceHint(final String uriTemplate, final String description, final MCPUriVariables variables) {
         return new MCPUriTemplate(uriTemplate).expandIfComplete(variables)
-                .map(uri -> MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_detail", description, "next_resources"));
+                .map(uri -> MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_detail", description, MCPPayloadFieldNames.NEXT_RESOURCES));
     }
     
     private String resolveResourceKind(final String uri) {
