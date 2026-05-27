@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
@@ -27,12 +28,15 @@ import org.apache.shardingsphere.data.pipeline.core.importer.PipelineRequiredCol
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.executor.DistributedPipelineJobExecutorCallback;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.TransmissionTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDataSourceConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
@@ -40,6 +44,8 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.ingest.dumper.
 import org.apache.shardingsphere.data.pipeline.scenario.migration.preparer.MigrationJobPreparer;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -57,12 +63,31 @@ import java.util.stream.Collectors;
  */
 public final class MigrationJobExecutorCallback implements DistributedPipelineJobExecutorCallback<MigrationJobConfiguration, MigrationJobItemContext, TransmissionJobItemProgress> {
     
+    private static final String JOB_TYPE = new MigrationJobType().getType();
+    
     @Override
     public MigrationJobItemContext buildJobItemContext(final MigrationJobConfiguration jobConfig, final int shardingItem,
                                                        final TransmissionJobItemProgress jobItemProgress, final TransmissionProcessContext jobProcessContext,
                                                        final PipelineDataSourceManager dataSourceManager) {
+        transformDataSourceConfigurations(jobConfig);
         MigrationTaskConfiguration taskConfig = buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getProcessConfiguration());
         return new MigrationJobItemContext(jobConfig, shardingItem, jobItemProgress, jobProcessContext, taskConfig, dataSourceManager);
+    }
+    
+    private void transformDataSourceConfigurations(final MigrationJobConfiguration jobConfig) {
+        Map<String, DataSourcePoolProperties> sourceDataSourcePoolProps = new PipelineDataSourcePersistService().load(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()), JOB_TYPE);
+        Map<String, StorageUnit> targetStorageUnits = PipelineContextManager.getProxyContext().getStorageUnits(jobConfig.getTargetDatabaseName());
+        for (Entry<String, PipelineDataSourceConfiguration> entry : jobConfig.getSources().entrySet()) {
+            entry.setValue(transformSourceDataSourceConfiguration(jobConfig, entry, sourceDataSourcePoolProps));
+        }
+        PipelineDataSourceConfigurationUtils.transformPipelineDataSourceConfiguration(jobConfig.getJobId(), jobConfig.getTarget(), targetStorageUnits);
+    }
+    
+    private PipelineDataSourceConfiguration transformSourceDataSourceConfiguration(final MigrationJobConfiguration jobConfig, final Entry<String, PipelineDataSourceConfiguration> entry,
+                                                                                   final Map<String, DataSourcePoolProperties> sourceDataSourcePoolProps) {
+        return sourceDataSourcePoolProps.containsKey(entry.getKey())
+                ? PipelineDataSourceConfigurationUtils.transformPipelineDataSourceConfiguration(jobConfig.getJobId(), entry.getKey(), entry.getValue(), sourceDataSourcePoolProps.get(entry.getKey()))
+                : entry.getValue();
     }
     
     private MigrationTaskConfiguration buildTaskConfiguration(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration processConfig) {
