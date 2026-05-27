@@ -107,31 +107,20 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
     }
     
     private Collection<QualifiedTable> getSingleTables(final ShardingSphereDatabase database, final SingleRule rule, final SQLStatementContext sqlStatementContext) {
-        Collection<QualifiedTable> qualifiedTables = rule.getQualifiedTables(sqlStatementContext, database);
-        Collection<Collection<String>> distributedTableNames = getDistributedTableNames(database);
         Collection<QualifiedTable> result = new LinkedList<>();
-        for (QualifiedTable each : qualifiedTables) {
-            if (!containsDistributedTable(distributedTableNames, each.getTableName())) {
+        Collection<TableMapperRuleAttribute> tableMapperRuleAttributes = database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class);
+        for (QualifiedTable each : rule.getQualifiedTables(sqlStatementContext, database)) {
+            if (!isDistributedTable(tableMapperRuleAttributes, each.getTableName())) {
                 result.add(each);
             }
         }
         return sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? result : rule.getSingleTables(result, database);
     }
     
-    private Collection<Collection<String>> getDistributedTableNames(final ShardingSphereDatabase database) {
-        Collection<Collection<String>> result = new LinkedList<>();
-        for (TableMapperRuleAttribute each : database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)) {
+    private boolean isDistributedTable(final Collection<TableMapperRuleAttribute> tableMapperRuleAttributes, final String tableName) {
+        for (TableMapperRuleAttribute each : tableMapperRuleAttributes) {
             Collection<String> distributedTableNames = each.getDistributedTableNames();
-            if (!distributedTableNames.isEmpty()) {
-                result.add(distributedTableNames);
-            }
-        }
-        return result;
-    }
-    
-    private boolean containsDistributedTable(final Collection<Collection<String>> distributedTableNames, final String tableName) {
-        for (Collection<String> each : distributedTableNames) {
-            if (each.contains(tableName)) {
+            if (!distributedTableNames.isEmpty() && distributedTableNames.contains(tableName)) {
                 return true;
             }
         }
