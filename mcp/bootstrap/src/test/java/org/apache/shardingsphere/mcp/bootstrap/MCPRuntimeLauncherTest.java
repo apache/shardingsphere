@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
@@ -48,7 +49,8 @@ class MCPRuntimeLauncherTest {
         try (
                 MockedConstruction<MCPSessionManager> ignoredMockedSessionManager = mockConstruction(MCPSessionManager.class);
                 MockedConstruction<MCPDatabaseCapabilityProvider> ignoredMockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
-                MockedConstruction<StreamableHttpMCPServer> mockedHttpServer = mockConstruction(StreamableHttpMCPServer.class);
+                MockedConstruction<StreamableHttpMCPServer> mockedHttpServer = mockConstruction(StreamableHttpMCPServer.class,
+                        (mock, context) -> assertThat(((MCPRuntimeContext) context.arguments().get(1)).getActiveTransport(), is("http")));
                 MockedConstruction<StdioMCPServer> mockedStdioServer = mockConstruction(StdioMCPServer.class)) {
             MCPRuntimeServer actual = new MCPRuntimeLauncher("conf/mcp-http.yaml").launch(createLaunchConfiguration(true));
             assertThat(actual, is(mockedHttpServer.constructed().get(0)));
@@ -64,7 +66,8 @@ class MCPRuntimeLauncherTest {
                 MockedConstruction<MCPSessionManager> ignoredMockedSessionManager = mockConstruction(MCPSessionManager.class);
                 MockedConstruction<MCPDatabaseCapabilityProvider> ignoredMockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
                 MockedConstruction<StreamableHttpMCPServer> mockedHttpServer = mockConstruction(StreamableHttpMCPServer.class);
-                MockedConstruction<StdioMCPServer> mockedStdioServer = mockConstruction(StdioMCPServer.class)) {
+                MockedConstruction<StdioMCPServer> mockedStdioServer = mockConstruction(StdioMCPServer.class,
+                        (mock, context) -> assertThat(((MCPRuntimeContext) context.arguments().get(0)).getActiveTransport(), is("stdio")))) {
             MCPRuntimeServer actual = new MCPRuntimeLauncher("conf/mcp-http.yaml").launch(createLaunchConfiguration(false));
             assertThat(actual, isA(StdioMCPServer.class));
             assertThat(actual, is(mockedStdioServer.constructed().get(0)));

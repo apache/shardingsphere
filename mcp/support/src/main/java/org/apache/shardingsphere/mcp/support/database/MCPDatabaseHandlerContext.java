@@ -33,9 +33,7 @@ public interface MCPDatabaseHandlerContext extends MCPHandlerContext {
      *
      * @return active MCP transport
      */
-    default String getActiveTransport() {
-        return "unknown";
-    }
+    String getActiveTransport();
     
     /**
      * Get metadata query facade.

@@ -53,6 +53,15 @@ class RuntimeStatusHandlerTest {
     }
     
     @Test
+    void assertHandleWithStdioTransport() {
+        try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata(), "stdio"))) {
+            Map<String, Object> actual = new RuntimeStatusHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
+            assertThat(actual.get("transport"), is("stdio"));
+            assertThat(actual.get("active_transport"), is("stdio"));
+        }
+    }
+    
+    @Test
     void assertHandleWithEmptyRuntimeDatabase() {
         try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(List.of(), "http"))) {
             Map<String, Object> actual = new RuntimeStatusHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
