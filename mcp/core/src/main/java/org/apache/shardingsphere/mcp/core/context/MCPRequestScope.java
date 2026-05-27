@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.context;
 
+import lombok.Getter;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowProxyQueryService;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 /**
  * MCP request scope.
  */
+@Getter
 public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatabaseHandlerContext, MCPWorkflowHandlerContext, AutoCloseable {
     
     private final String activeTransport;
@@ -69,31 +71,6 @@ public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatab
     @Override
     public MCPDatabaseHandlerContext getDatabaseContext() {
         return this;
-    }
-    
-    @Override
-    public WorkflowSessionContext getWorkflowSessionContext() {
-        return workflowSessionContext;
-    }
-    
-    @Override
-    public String getActiveTransport() {
-        return activeTransport;
-    }
-    
-    @Override
-    public MCPMetadataQueryFacade getMetadataQueryFacade() {
-        return metadataQueryFacade;
-    }
-    
-    @Override
-    public MCPFeatureExecutionFacade getExecutionFacade() {
-        return executionFacade;
-    }
-    
-    @Override
-    public MCPFeatureQueryFacade getQueryFacade() {
-        return queryFacade;
     }
     
     @Override
