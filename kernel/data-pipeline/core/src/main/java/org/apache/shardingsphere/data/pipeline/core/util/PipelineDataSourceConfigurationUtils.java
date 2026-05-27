@@ -20,14 +20,16 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * Utility class for pipeline data source configuration.
@@ -41,35 +43,132 @@ public final class PipelineDataSourceConfigurationUtils {
      *
      * @param jobId job id
      * @param pipelineDataSourceConfig the pipeline data source configuration to transform
+     * @param storageUnits current storage units
+     * @return transformed pipeline data source configuration
      */
-    public static void transformPipelineDataSourceConfiguration(final String jobId, final ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig) {
-        YamlRootConfiguration rootConfig = pipelineDataSourceConfig.getRootConfig();
-        ShardingSphereDatabase database;
-        try {
-            database = PipelineContextManager.getProxyContext().getDatabase(rootConfig.getDatabaseName());
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ignored) {
-            // CHECKSTYLE:ON
-            return;
+    public static PipelineDataSourceConfiguration transformPipelineDataSourceConfiguration(final String jobId, final PipelineDataSourceConfiguration pipelineDataSourceConfig,
+                                                                                           final Map<String, StorageUnit> storageUnits) {
+        if (null == storageUnits || storageUnits.isEmpty()) {
+            return pipelineDataSourceConfig;
         }
-        Map<String, StorageUnit> storageUnitMap = database.getResourceMetaData().getStorageUnits();
-        for (Entry<String, Map<String, Object>> entry : rootConfig.getDataSources().entrySet()) {
-            StorageUnit storageUnit = storageUnitMap.get(entry.getKey());
+        if (pipelineDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
+            return transformPipelineDataSourceConfiguration(jobId, (ShardingSpherePipelineDataSourceConfiguration) pipelineDataSourceConfig, storageUnits);
+        }
+        return pipelineDataSourceConfig;
+    }
+    
+    /**
+     * Transform the given pipeline data source properties.
+     *
+     * @param jobId job id
+     * @param dataSourceName data source name
+     * @param pipelineDataSourceConfig the pipeline data source configuration to transform
+     * @param storageUnits current storage units
+     * @return transformed pipeline data source configuration
+     */
+    public static PipelineDataSourceConfiguration transformPipelineDataSourceConfiguration(final String jobId, final String dataSourceName,
+                                                                                           final PipelineDataSourceConfiguration pipelineDataSourceConfig,
+                                                                                           final Map<String, StorageUnit> storageUnits) {
+        if (null == storageUnits || storageUnits.isEmpty()) {
+            return pipelineDataSourceConfig;
+        }
+        if (pipelineDataSourceConfig instanceof StandardPipelineDataSourceConfiguration) {
+            StorageUnit storageUnit = storageUnits.get(dataSourceName);
+            return null == storageUnit ? pipelineDataSourceConfig
+                    : transformStandardPipelineDataSourceConfiguration(jobId, dataSourceName, (StandardPipelineDataSourceConfiguration) pipelineDataSourceConfig, storageUnit);
+        }
+        return transformPipelineDataSourceConfiguration(jobId, pipelineDataSourceConfig, storageUnits);
+    }
+    
+    /**
+     * Transform the given pipeline data source properties.
+     *
+     * @param jobId job id
+     * @param dataSourceName data source name
+     * @param pipelineDataSourceConfig the pipeline data source configuration to transform
+     * @param dataSourcePoolProps current data source pool properties
+     * @return transformed pipeline data source configuration
+     */
+    public static PipelineDataSourceConfiguration transformPipelineDataSourceConfiguration(final String jobId, final String dataSourceName,
+                                                                                           final PipelineDataSourceConfiguration pipelineDataSourceConfig,
+                                                                                           final DataSourcePoolProperties dataSourcePoolProps) {
+        return pipelineDataSourceConfig instanceof StandardPipelineDataSourceConfiguration
+                ? transformStandardPipelineDataSourceConfiguration(jobId, dataSourceName, (StandardPipelineDataSourceConfiguration) pipelineDataSourceConfig, dataSourcePoolProps)
+                : pipelineDataSourceConfig;
+    }
+    
+    /**
+     * Transform the given ShardingSphere pipeline data source properties.
+     *
+     * @param jobId job id
+     * @param pipelineDataSourceConfig the pipeline data source configuration to transform
+     * @param storageUnits current storage units
+     * @return transformed pipeline data source configuration
+     */
+    public static ShardingSpherePipelineDataSourceConfiguration transformPipelineDataSourceConfiguration(final String jobId,
+                                                                                                         final ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig,
+                                                                                                         final Map<String, StorageUnit> storageUnits) {
+        if (null == storageUnits || storageUnits.isEmpty()) {
+            return pipelineDataSourceConfig;
+        }
+        for (Entry<String, Map<String, Object>> entry : pipelineDataSourceConfig.getRootConfig().getDataSources().entrySet()) {
+            StorageUnit storageUnit = storageUnits.get(entry.getKey());
             if (null == storageUnit) {
                 continue;
             }
             Map<String, Object> jobDataSourceProps = entry.getValue();
             Map<String, Object> storageUnitStandardProps = storageUnit.getDataSourcePoolProperties().getPoolPropertySynonyms().getStandardProperties();
-            if (storageUnitStandardProps.containsKey("maxPoolSize")) {
-                log.info("Transform maxPoolSize from '{}' to '{}' for {} data source: {}",
-                        jobDataSourceProps.get("maxPoolSize"), storageUnitStandardProps.get("maxPoolSize"), jobId, entry.getKey());
-                jobDataSourceProps.put("maxPoolSize", storageUnitStandardProps.get("maxPoolSize"));
-            }
-            if (storageUnitStandardProps.containsKey("maximumPoolSize")) {
-                log.info("Transform maximumPoolSize from '{}' to '{}' for {} data source: {}",
-                        jobDataSourceProps.get("maximumPoolSize"), storageUnitStandardProps.get("maximumPoolSize"), jobId, entry.getKey());
-                jobDataSourceProps.put("maximumPoolSize", storageUnitStandardProps.get("maximumPoolSize"));
-            }
+            logTransformPoolSize(jobId, entry.getKey(), jobDataSourceProps, storageUnitStandardProps);
+            transformPoolSize(jobDataSourceProps, storageUnitStandardProps);
+        }
+        return pipelineDataSourceConfig;
+    }
+    
+    private static PipelineDataSourceConfiguration transformStandardPipelineDataSourceConfiguration(final String jobId, final String dataSourceName,
+                                                                                                    final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig,
+                                                                                                    final StorageUnit storageUnit) {
+        return transformStandardPipelineDataSourceConfiguration(jobId, dataSourceName, pipelineDataSourceConfig, storageUnit.getDataSourcePoolProperties());
+    }
+    
+    private static PipelineDataSourceConfiguration transformStandardPipelineDataSourceConfiguration(final String jobId, final String dataSourceName,
+                                                                                                    final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig,
+                                                                                                    final DataSourcePoolProperties dataSourcePoolProps) {
+        DataSourcePoolProperties jobDataSourcePoolProps = (DataSourcePoolProperties) pipelineDataSourceConfig.getDataSourceConfiguration();
+        Map<String, Object> jobStandardProps = jobDataSourcePoolProps.getPoolPropertySynonyms().getStandardProperties();
+        Map<String, Object> currentStandardProps = dataSourcePoolProps.getPoolPropertySynonyms().getStandardProperties();
+        if (!isPoolSizeChanged(jobStandardProps, currentStandardProps)) {
+            return pipelineDataSourceConfig;
+        }
+        logTransformPoolSize(jobId, dataSourceName, jobStandardProps, currentStandardProps);
+        return new StandardPipelineDataSourceConfiguration(new YamlDataSourceConfigurationSwapper().swapToMap(dataSourcePoolProps));
+    }
+    
+    private static boolean isPoolSizeChanged(final Map<String, Object> jobDataSourceProps, final Map<String, Object> storageUnitStandardProps) {
+        return isPoolSizeChanged("maxPoolSize", jobDataSourceProps, storageUnitStandardProps)
+                || isPoolSizeChanged("maximumPoolSize", jobDataSourceProps, storageUnitStandardProps);
+    }
+    
+    private static boolean isPoolSizeChanged(final String key, final Map<String, Object> jobDataSourceProps, final Map<String, Object> storageUnitStandardProps) {
+        return storageUnitStandardProps.containsKey(key) && !Objects.equals(String.valueOf(jobDataSourceProps.get(key)), String.valueOf(storageUnitStandardProps.get(key)));
+    }
+    
+    private static void logTransformPoolSize(final String jobId, final String dataSourceName, final Map<String, Object> jobDataSourceProps, final Map<String, Object> storageUnitStandardProps) {
+        if (storageUnitStandardProps.containsKey("maxPoolSize")) {
+            log.info("Transform maxPoolSize from '{}' to '{}' for {} data source: {}",
+                    jobDataSourceProps.get("maxPoolSize"), storageUnitStandardProps.get("maxPoolSize"), jobId, dataSourceName);
+        }
+        if (storageUnitStandardProps.containsKey("maximumPoolSize")) {
+            log.info("Transform maximumPoolSize from '{}' to '{}' for {} data source: {}",
+                    jobDataSourceProps.get("maximumPoolSize"), storageUnitStandardProps.get("maximumPoolSize"), jobId, dataSourceName);
+        }
+    }
+    
+    private static void transformPoolSize(final Map<String, Object> jobDataSourceProps, final Map<String, Object> storageUnitStandardProps) {
+        if (storageUnitStandardProps.containsKey("maxPoolSize")) {
+            jobDataSourceProps.put("maxPoolSize", storageUnitStandardProps.get("maxPoolSize"));
+        }
+        if (storageUnitStandardProps.containsKey("maximumPoolSize")) {
+            jobDataSourceProps.put("maximumPoolSize", storageUnitStandardProps.get("maximumPoolSize"));
         }
     }
 }
