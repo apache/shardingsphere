@@ -483,6 +483,8 @@ public enum SQLVisitorRule {
     
     SHOW_REPLICA_STATUS("ShowReplicaStatus", SQLStatementType.DAL),
     
+    SHOW_RESOURCES("ShowResources", SQLStatementType.DAL),
+    
     SHOW_SLAVE_HOSTS("ShowSlaveHosts", SQLStatementType.DAL),
     
     SHOW_SLAVE_STATUS("ShowSlaveStatus", SQLStatementType.DAL),

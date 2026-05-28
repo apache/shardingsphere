@@ -10798,6 +10798,24 @@
         </from>
     </select>
 
+    <select sql-case-id="select_resources_as_identifier_doris">
+        <projections start-index="7" stop-index="15">
+            <column-projection name="resources" start-index="7" stop-index="15" />
+        </projections>
+        <from start-index="22" stop-index="32">
+            <simple-table name="t_resources" start-index="22" stop-index="32" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_resourcetype_as_identifier_doris">
+        <projections start-index="7" stop-index="18">
+            <column-projection name="resourcetype" start-index="7" stop-index="18" />
+        </projections>
+        <from start-index="25" stop-index="38">
+            <simple-table name="t_resourcetype" start-index="25" stop-index="38" />
+        </from>
+    </select>
+
     <select sql-case-id="select_plan_as_identifier_doris">
         <projections start-index="7" stop-index="10">
             <column-projection name="plan" start-index="7" stop-index="10" />
