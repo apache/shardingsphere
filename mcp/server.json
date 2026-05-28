@@ -3,7 +3,7 @@
   "name": "io.github.apache/shardingsphere-mcp",
   "title": "Apache ShardingSphere MCP",
   "description": "Apache ShardingSphere MCP runtime for metadata discovery, SQL preview, and encrypt/mask workflows",
-  "websiteUrl": "https://github.com/apache/shardingsphere/tree/master/mcp",
+  "websiteUrl": "https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-mcp/",
   "repository": {
     "url": "https://github.com/apache/shardingsphere",
     "source": "github",

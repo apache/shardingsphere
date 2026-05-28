@@ -200,7 +200,7 @@ GPG signatures and hashes (SHA* etc) should be prefixed with `https://downloads.
 
 ### 5. Update README files
 
-Update `${RELEASE.VERSION}` and `${NEXT.RELEASE.VERSION}` in README.md and README_ZH.md.
+Update `${RELEASE.VERSION}` and `${NEXT.RELEASE.VERSION}` in the root README.md and README_ZH.md.
 
 ### 6. Update ShardingSphereDriver
 

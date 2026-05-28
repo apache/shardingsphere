@@ -112,13 +112,6 @@
                                         <include>NOTICE</include>
                                     </includes>
                                 </resource>
-                                <resource>
-                                    <directory>${project.basedir}/../../mcp</directory>
-                                    <includes>
-                                        <include>README.md</include>
-                                        <include>README_ZH.md</include>
-                                    </includes>
-                                </resource>
                             </resources>
                         </configuration>
                     </execution>
