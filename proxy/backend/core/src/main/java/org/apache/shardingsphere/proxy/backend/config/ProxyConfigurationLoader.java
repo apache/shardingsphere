@@ -100,6 +100,9 @@ public final class ProxyConfigurationLoader {
         if (result.exists()) {
             return result;
         }
+        if (result.isAbsolute() && null != result.getParentFile() && result.getParentFile().exists()) {
+            return result;
+        }
         URL url = ProxyConfigurationLoader.class.getResource(path);
         return null == url ? result : new File(url.toURI());
     }

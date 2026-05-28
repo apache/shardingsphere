@@ -39,7 +39,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -61,8 +60,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mockStatic;
-
-import org.mockito.internal.configuration.plugins.Plugins;
 
 class ProxyConfigurationLoaderTest {
     
@@ -156,25 +153,24 @@ class ProxyConfigurationLoaderTest {
     }
     
     @Test
-    void assertGetResourceFileWithFilesystemPath(@TempDir final Path tempDir) throws Exception {
-        Files.write(tempDir.resolve("global.yaml"), Collections.singletonList(""));
-        File actual = (File) Plugins.getMemberAccessor().invoke(ProxyConfigurationLoader.class.getDeclaredMethod("getResourceFile", String.class), null, tempDir.toString());
-        assertTrue(actual.exists());
-        assertThat(actual.getPath(), is(tempDir.toString()));
+    void assertLoadWithFilesystemPath(@TempDir final Path tempDir) throws IOException {
+        writeConfigurationFile(tempDir, "global.yaml", "");
+        YamlProxyConfiguration actual = ProxyConfigurationLoader.load(tempDir.toString());
+        assertNotNull(actual.getServerConfiguration());
+        assertTrue(actual.getServerConfiguration().getRules().isEmpty());
+        assertTrue(actual.getDatabaseConfigurations().isEmpty());
     }
     
     @Test
-    void assertGetResourceFileWithClasspathResource() throws Exception {
-        File actual = (File) Plugins.getMemberAccessor().invoke(ProxyConfigurationLoader.class.getDeclaredMethod("getResourceFile", String.class), null, "/conf/empty/");
-        assertTrue(actual.exists());
-        assertTrue(actual.isDirectory());
-    }
-    
-    @Test
-    void assertGetResourceFileWithNonExistentPath() throws Exception {
-        File actual = (File) Plugins.getMemberAccessor().invoke(ProxyConfigurationLoader.class.getDeclaredMethod("getResourceFile", String.class), null, "/non/existent/path/");
-        assertFalse(actual.exists());
-        assertThat(actual.getPath(), is("/non/existent/path"));
+    void assertLoadWithCompatibleServerYamlOnly(@TempDir final Path tempDir) throws IOException {
+        writeConfigurationFile(tempDir, "server.yaml", "authority:\n"
+                + "  users:\n"
+                + "    - user: root\n"
+                + "      password: root\n");
+        YamlProxyConfiguration actual = ProxyConfigurationLoader.load(tempDir.toString());
+        assertNotNull(actual.getServerConfiguration());
+        assertFalse(actual.getServerConfiguration().getRules().isEmpty());
+        assertTrue(actual.getDatabaseConfigurations().isEmpty());
     }
     
     private void assertShardingRuleConfiguration(final YamlProxyDatabaseConfiguration actual) {
