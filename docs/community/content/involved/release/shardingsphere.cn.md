@@ -198,7 +198,7 @@ GPG 签名文件和哈希校验文件的下载连接应该使用这个前缀：`
 
 ### 5. 修改 README 文件
 
-更新 `README.md` 和 `README_ZH.md` 里的 `${RELEASE.VERSION}` 和 `${NEXT.RELEASE.VERSION}`。
+更新根目录 `README.md` 和 `README_ZH.md` 里的 `${RELEASE.VERSION}` 和 `${NEXT.RELEASE.VERSION}`。
 
 ### 6. 修改 ShardingSphereDriver
 

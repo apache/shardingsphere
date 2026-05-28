@@ -320,7 +320,7 @@ class MCPRegistryMetadataCommandTest {
     
     private Path resolveProjectRoot() {
         Path result = Path.of("").toAbsolutePath();
-        while (null != result && !Files.exists(result.resolve("mcp/README.md"))) {
+        while (null != result && (!Files.exists(result.resolve("pom.xml")) || !Files.exists(result.resolve("mcp/server.json")))) {
             result = result.getParent();
         }
         if (null == result) {
