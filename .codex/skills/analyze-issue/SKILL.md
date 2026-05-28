@@ -370,6 +370,14 @@ Use this section for the default appended Reference Analysis and for explicit Re
 - When posting directly to GitHub through an API or tool, submit only the inner GitHub-facing issue analysis body and do not include the outer fence.
 - Apply formatting self-checks to the inner GitHub-facing body, not to the chat delivery wrapper.
 
+### Markdown Fence Safety
+
+- Default to inline code for short SQL, commands, paths, and single-line examples inside GitHub-facing issue comments.
+- Avoid inner fenced code blocks inside the GitHub-facing body unless the snippet is multi-line or syntax highlighting materially improves readability.
+- If the GitHub-facing body contains any inner fenced code block, the outer Codex chat delivery fence must use more backticks than the longest inner fence.
+- Before final output, verify every inner fence has a matching closing fence, the outer delivery fence cannot be closed by an inner fence, and the copyable body starts after the outer opening fence and ends before the outer closing fence.
+- If fence safety is uncertain, remove the inner fenced block and use inline code or a plain bullet instead.
+
 In Reference Analysis mode, use this GitHub Markdown skeleton for Question, Misunderstanding / Invalid Usage, and Duplicate:
 
 ```markdown
@@ -529,6 +537,7 @@ For default output, verify:
 - The Reference Analysis contains required detailed sections and conclusion fields.
 - The reply includes a next action and label/close recommendation when appropriate.
 - For questions, the reply invites community participation when appropriate.
+- If the Codex chat delivery wrapper contains inner fenced code blocks, the outer fence is longer than every inner fence and all fences are closed.
 
 For Reference Analysis output, a local checker (script or CI step) may verify:
 - Required detailed sections exist.
