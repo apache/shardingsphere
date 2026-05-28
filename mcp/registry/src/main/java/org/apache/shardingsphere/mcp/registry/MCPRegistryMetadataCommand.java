@@ -237,11 +237,18 @@ public final class MCPRegistryMetadataCommand {
     private static void validateEnvironmentVariable(final Map<String, Object> packageMetadata, final String name) {
         Object envVars = packageMetadata.get("environmentVariables");
         ShardingSpherePreconditions.checkState(envVars instanceof List<?>, () -> new IllegalArgumentException("MCP Registry package must define " + name + "."));
-        ShardingSpherePreconditions.checkState(containsEnvironmentVariable((List<?>) envVars, name), () -> new IllegalArgumentException("MCP Registry package must define " + name + "."));
+        Map<?, ?> envVar = findEnvironmentVariable((List<?>) envVars, name);
+        ShardingSpherePreconditions.checkState(Boolean.FALSE.equals(envVar.get("isRequired")),
+                () -> new IllegalArgumentException(String.format("MCP Registry metadata for %s must declare isRequired as false.", name)));
+        ShardingSpherePreconditions.checkState(Boolean.FALSE.equals(envVar.get("isSecret")),
+                () -> new IllegalArgumentException(String.format("MCP Registry metadata for %s must declare isRequired as false.", name)));
+        ShardingSpherePreconditions.checkState("string".equals(envVar.get("format")),
+                () -> new IllegalArgumentException(String.format("MCP Registry metadata for %s format must be string.", name)));
     }
     
-    private static boolean containsEnvironmentVariable(final List<?> envVars, final String name) {
-        return envVars.stream().filter(each -> each instanceof Map<?, ?>).map(each -> (Map<?, ?>) each).anyMatch(each -> name.equals(each.get("name")));
+    private static Map<?, ?> findEnvironmentVariable(final List<?> envVars, final String name) {
+        return envVars.stream().filter(each -> each instanceof Map<?, ?>).map(each -> (Map<?, ?>) each).filter(each -> name.equals(each.get("name"))).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("MCP Registry package must define " + name + "."));
     }
     
     private record CommandOptions(Path path, String version, String identifier, String dockerfilePath, boolean validateOnly, boolean allowSnapshot) {

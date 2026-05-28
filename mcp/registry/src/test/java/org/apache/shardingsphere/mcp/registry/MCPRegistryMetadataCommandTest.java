@@ -122,6 +122,27 @@ class MCPRegistryMetadataCommandTest {
     }
     
     @Test
+    void assertExecuteRejectsRequiredEnvironmentVariable() throws IOException {
+        Map<String, Object> server = createServerMetadata();
+        getConfigEnvironmentVariable(server).put("isRequired", true);
+        assertEnvironmentVariableRejected(server, "MCP Registry environment variable SHARDINGSPHERE_MCP_CONFIG must set isRequired to false.");
+    }
+    
+    @Test
+    void assertExecuteRejectsNonStringEnvironmentVariableFormat() throws IOException {
+        Map<String, Object> server = createServerMetadata();
+        getConfigEnvironmentVariable(server).put("format", "path");
+        assertEnvironmentVariableRejected(server, "MCP Registry environment variable SHARDINGSPHERE_MCP_CONFIG format must be string.");
+    }
+    
+    @Test
+    void assertExecuteRejectsSecretEnvironmentVariable() throws IOException {
+        Map<String, Object> server = createServerMetadata();
+        getConfigEnvironmentVariable(server).put("isSecret", true);
+        assertEnvironmentVariableRejected(server, "MCP Registry environment variable SHARDINGSPHERE_MCP_CONFIG must set isSecret to false.");
+    }
+    
+    @Test
     void assertExecuteValidatesSourceMetadata() {
         Path serverPath = resolveMCPDirectory().resolve("server.json");
         assertDoesNotThrow(() -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
@@ -221,6 +242,13 @@ class MCPRegistryMetadataCommandTest {
         assertThat(actual.getMessage(), is(expectedMessage));
     }
     
+    private void assertEnvironmentVariableRejected(final Map<String, Object> server, final String expectedMessage) throws IOException {
+        Path serverPath = createServerJson(server);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
+        assertThat(actual.getMessage(), is(expectedMessage));
+    }
+    
     private Map<String, Object> readServerJson(final Path serverPath) throws IOException {
         return JSON_MAPPER.readValue(serverPath.toFile(), new TypeReference<>() {
         });
@@ -271,6 +299,15 @@ class MCPRegistryMetadataCommandTest {
     @SuppressWarnings("unchecked")
     private List<Map<String, Object>> getPackages(final Map<String, Object> server) {
         return (List<Map<String, Object>>) server.get("packages");
+    }
+    
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> getEnvironmentVariables(final Map<String, Object> server, final int packageIndex) {
+        return (List<Map<String, Object>>) getPackages(server).get(packageIndex).get("environmentVariables");
+    }
+    
+    private Map<String, Object> getConfigEnvironmentVariable(final Map<String, Object> server) {
+        return getEnvironmentVariables(server, 0).stream().filter(each -> "SHARDINGSPHERE_MCP_CONFIG".equals(each.get("name"))).findFirst().orElseThrow();
     }
     
     private List<Object> getPackageValues(final Map<String, Object> server, final String key) {
