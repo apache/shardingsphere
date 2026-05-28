@@ -21,6 +21,7 @@ import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.SessionAttributionResolver;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.OriginHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.ProtocolVersionHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
@@ -40,10 +41,11 @@ public final class ServerTransportSecurityValidatorFactory {
      *
      * @param sessionManager session manager
      * @param bindHost bind host
+     * @param sessionAttributionResolver session attribution resolver
      * @return transport security validator
      */
-    public static ServerTransportSecurityValidator create(final MCPSessionManager sessionManager, final String bindHost) {
-        return new ShardingSphereServerTransportSecurityValidator(sessionManager, createConstraints(bindHost));
+    public static ServerTransportSecurityValidator create(final MCPSessionManager sessionManager, final String bindHost, final SessionAttributionResolver sessionAttributionResolver) {
+        return new ShardingSphereServerTransportSecurityValidator(sessionManager, createConstraints(bindHost), sessionAttributionResolver);
     }
     
     private static List<TransportHeaderConstraint> createConstraints(final String bindHost) {

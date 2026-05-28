@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.session;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -40,12 +42,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MCPSessionManagerTest {
-    
+
     @Test
     void assertCreateSession() {
         assertDoesNotThrow(() -> new MCPSessionManager(Collections.emptyMap()).createSession("session-1"));
     }
-    
+
     @Test
     void assertCreateSessionWithDuplicateSessionId() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
@@ -53,14 +55,14 @@ class MCPSessionManagerTest {
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> sessionManager.createSession("session-1"));
         assertThat(actual.getMessage(), is("Session already exists."));
     }
-    
+
     @Test
     void assertHasSession() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
         assertTrue(sessionManager.hasSession("session-1"));
     }
-    
+
     @Test
     void assertCloseSession() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
@@ -69,7 +71,7 @@ class MCPSessionManagerTest {
         sessionManager.closeSession("session-1");
         assertFalse(sessionManager.hasSession("session-1"));
     }
-    
+
     @Test
     void assertCloseSessionInvokesSessionCloseListener() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
@@ -79,7 +81,7 @@ class MCPSessionManagerTest {
         sessionManager.closeSession("session-1");
         assertThat(actualClosedSessions, is(List.of("session-1")));
     }
-    
+
     @Test
     void assertCloseSessionWithTransactionResourceManager() throws SQLException {
         Connection connection = mock(Connection.class);
@@ -94,7 +96,7 @@ class MCPSessionManagerTest {
         verify(connection).close();
         assertFalse(sessionManager.hasSession("session-1"));
     }
-    
+
     @Test
     void assertCloseSessionWithTransactionResourceManagerFailure() throws SQLException {
         Connection connection = mock(Connection.class);
@@ -110,7 +112,7 @@ class MCPSessionManagerTest {
         verify(connection).close();
         assertFalse(sessionManager.hasSession("session-1"));
     }
-    
+
     @Test
     void assertCloseAllSessions() throws SQLException {
         Connection firstConnection = mock(Connection.class);
@@ -131,5 +133,33 @@ class MCPSessionManagerTest {
         verify(secondConnection).close();
         assertFalse(sessionManager.hasSession("session-1"));
         assertFalse(sessionManager.hasSession("session-2"));
+    }
+
+    @Test
+    void assertBindSessionAttribution() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        MCPSessionAttribution sessionAttribution = new MCPSessionAttribution("subject", "gateway", Map.of("region", "ap-south"));
+        sessionManager.createSession("session-1");
+        assertDoesNotThrow(() -> sessionManager.bindSessionAttribution("session-1", sessionAttribution));
+        assertThat(sessionManager.findSessionAttribution("session-1"), is(Optional.of(sessionAttribution)));
+    }
+
+    @Test
+    void assertBindSessionAttributionWithDifferentBinding() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        sessionManager.createSession("session-1");
+        sessionManager.bindSessionAttribution("session-1", new MCPSessionAttribution("subject", "gateway", Map.of()));
+        IllegalStateException actual = assertThrows(IllegalStateException.class,
+                () -> sessionManager.bindSessionAttribution("session-1", new MCPSessionAttribution("other", "gateway", Map.of())));
+        assertThat(actual.getMessage(), is("Session attribution does not match existing binding for session `session-1`."));
+    }
+
+    @Test
+    void assertCloseSessionRemovesSessionAttribution() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        sessionManager.createSession("session-1");
+        sessionManager.bindSessionAttribution("session-1", new MCPSessionAttribution("subject", "gateway", Map.of()));
+        sessionManager.closeSession("session-1");
+        assertThat(sessionManager.findSessionAttribution("session-1"), is(Optional.empty()));
     }
 }

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.SessionAttributionResolver;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
@@ -72,8 +73,9 @@ public final class MCPRuntimeLauncher {
     private List<String> createHttpStartupLogMessages(final MCPLaunchConfiguration config, final MCPRuntimeServer server) {
         int port = server instanceof StreamableHttpMCPServer ? ((StreamableHttpMCPServer) server).getLocalPort() : config.getHttpTransport().getPort();
         String endpoint = String.format("http://%s:%d%s", config.getHttpTransport().getBindHost(), port, config.getHttpTransport().getEndpointPath());
-        return List.of(String.format("ShardingSphere MCP runtime started, transport=http, config=%s, databases=%d, endpoint=%s, authorization=none, logs=%s.",
-                configPath, config.getDatabases().size(), endpoint, LOG_PATH));
+        SessionAttributionResolver sessionAttributionResolver = new SessionAttributionResolver(config.getHttpTransport().getSessionAttributionSource());
+        return List.of(String.format("ShardingSphere MCP runtime started, transport=http, config=%s, databases=%d, endpoint=%s, session_attribution=%s, logs=%s.",
+                configPath, config.getDatabases().size(), endpoint, sessionAttributionResolver.getSummary(), LOG_PATH));
     }
     
     private List<String> createStdioStartupLogMessages(final MCPLaunchConfiguration config) {

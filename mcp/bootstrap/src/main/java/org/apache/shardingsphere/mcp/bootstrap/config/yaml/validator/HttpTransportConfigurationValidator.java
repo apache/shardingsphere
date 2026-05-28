@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlSessionAttributionSourceConfiguration;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -28,7 +29,7 @@ import java.util.Objects;
  * HTTP transport configuration validator.
  */
 public final class HttpTransportConfigurationValidator implements ConstraintValidator<ValidHttpTransportConfiguration, YamlHttpTransportConfiguration> {
-    
+
     @Override
     public boolean isValid(final YamlHttpTransportConfiguration value, final ConstraintValidatorContext context) {
         if (null == value) {
@@ -46,9 +47,12 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
             addViolation(context, "endpointPath", "must be a single absolute path without query or fragment");
             return false;
         }
+        if (!isValidSessionAttributionSource(value.getSessionAttributionSource(), context)) {
+            return false;
+        }
         return true;
     }
-    
+
     private boolean isValidBindHost(final String value) {
         if (null == value) {
             return true;
@@ -59,11 +63,11 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
         }
         return !actualValue.contains("://");
     }
-    
+
     private boolean isValidPort(final Integer value) {
         return null == value || value >= 0 && value <= 65535;
     }
-    
+
     private boolean isValidEndpointPath(final String value) {
         if (null == value) {
             return true;
@@ -79,7 +83,42 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
             return false;
         }
     }
-    
+
+    private boolean isValidSessionAttributionSource(final YamlSessionAttributionSourceConfiguration value, final ConstraintValidatorContext context) {
+        if (null == value) {
+            return true;
+        }
+        if (!isValidHeaderName(value.getSubjectHeader())) {
+            addViolation(context, "sessionAttributionSource.subjectHeader", "must be a valid HTTP header name");
+            return false;
+        }
+        if (!isValidHeaderName(value.getSourceHeader())) {
+            addViolation(context, "sessionAttributionSource.sourceHeader", "must be a valid HTTP header name");
+            return false;
+        }
+        if (!isValidHeaderName(value.getAttributeHeaderPrefix())) {
+            addViolation(context, "sessionAttributionSource.attributeHeaderPrefix", "must be a valid HTTP header name prefix");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValidHeaderName(final String value) {
+        if (null == value) {
+            return true;
+        }
+        String actualValue = Objects.toString(value, "").trim();
+        if (actualValue.isEmpty()) {
+            return false;
+        }
+        for (char each : actualValue.toCharArray()) {
+            if (Character.isWhitespace(each) || ':' == each) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void addViolation(final ConstraintValidatorContext context, final String propertyName, final String message) {
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(message).addPropertyNode(propertyName).addConstraintViolation();

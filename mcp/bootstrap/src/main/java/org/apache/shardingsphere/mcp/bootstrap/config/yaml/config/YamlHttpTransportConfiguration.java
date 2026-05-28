@@ -29,10 +29,12 @@ import org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator.ValidHttpTr
 @Setter
 @ValidHttpTransportConfiguration
 public final class YamlHttpTransportConfiguration implements YamlConfiguration {
-    
+
     private String bindHost;
-    
+
     private Integer port;
-    
+
     private String endpointPath;
+
+    private YamlSessionAttributionSourceConfiguration sessionAttributionSource;
 }

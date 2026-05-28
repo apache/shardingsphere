@@ -21,6 +21,8 @@ import io.modelcontextprotocol.server.transport.ServerTransportSecurityException
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator;
 import io.modelcontextprotocol.spec.HttpHeaders;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.SessionAttributionResolver;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.SessionRequiredTransportHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -28,19 +30,23 @@ import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * ShardingSphere server transport security validator.
  */
 @RequiredArgsConstructor
 public final class ShardingSphereServerTransportSecurityValidator implements ServerTransportSecurityValidator {
-    
+
     private final MCPSessionManager sessionManager;
-    
+
     private final List<TransportHeaderConstraint> constraints;
-    
+
+    private final SessionAttributionResolver sessionAttributionResolver;
+
     @Override
     public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
+        validateSessionAttribution(headers);
         for (TransportHeaderConstraint each : constraints) {
             if (each instanceof SessionRequiredTransportHeaderConstraint) {
                 String sessionId = getFirstHeaderValue(headers, HttpHeaders.MCP_SESSION_ID);
@@ -51,7 +57,22 @@ public final class ShardingSphereServerTransportSecurityValidator implements Ser
             each.validate(getFirstHeaderValue(headers, each.getConstraintKey()));
         }
     }
-    
+
+    private void validateSessionAttribution(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
+        String sessionId = getFirstHeaderValue(headers, HttpHeaders.MCP_SESSION_ID);
+        if (sessionId.isEmpty() || !sessionManager.hasSession(sessionId) || !sessionAttributionResolver.isEnabled()) {
+            return;
+        }
+        Optional<MCPSessionAttribution> sessionAttribution = sessionAttributionResolver.resolve(headers);
+        if (sessionAttribution.isPresent()) {
+            try {
+                sessionManager.bindSessionAttribution(sessionId, sessionAttribution.get());
+            } catch (final IllegalStateException ex) {
+                throw new ServerTransportSecurityException(400, ex.getMessage());
+            }
+        }
+    }
+
     private String getFirstHeaderValue(final Map<String, List<String>> headers, final String headerName) {
         return headers.entrySet().stream()
                 .filter(entry -> headerName.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()).findFirst().map(optional -> Objects.toString(optional.getValue().get(0), "").trim())

@@ -85,7 +85,7 @@ class MCPModelFirstContractPayloadBuilderTest {
         assertTrue(String.valueOf(actual.get("origin_header")).contains("loopback origins"));
         Map<?, ?> actualClientSafetyPolicy = castToMap(actual.get("client_safety_policy"));
         assertThat(actualClientSafetyPolicy.get("identity_scope"), is("mcp_session"));
-        assertTrue(String.valueOf(actualClientSafetyPolicy.get("transport_scope")).contains("no built-in authorization"));
+        assertTrue(String.valueOf(actualClientSafetyPolicy.get("transport_scope")).contains("trusted session attribution"));
         assertThat(castToMap(actualClientSafetyPolicy.get("tool_call_limit")).get("scope"), is("session"));
         assertTrue(String.valueOf(actualClientSafetyPolicy.get("external_model_boundary")).contains("never calls external model providers"));
     }

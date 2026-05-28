@@ -15,23 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api;
+package org.apache.shardingsphere.mcp.api.session;
 
-import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-import java.util.Optional;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Marker interface for MCP handler execution context.
+ * MCP session attribution.
  */
-public interface MCPHandlerContext {
+@Getter
+@EqualsAndHashCode
+public final class MCPSessionAttribution {
 
-    /**
-     * Find session attribution.
-     *
-     * @return session attribution
-     */
-    default Optional<MCPSessionAttribution> findSessionAttribution() {
-        return Optional.empty();
+    private final String subject;
+
+    private final String source;
+
+    private final Map<String, String> attributes;
+
+    public MCPSessionAttribution(final String subject, final String source, final Map<String, String> attributes) {
+        this.subject = subject;
+        this.source = source;
+        this.attributes = new LinkedHashMap<>(attributes);
     }
 }

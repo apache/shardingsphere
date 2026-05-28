@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api;
+package org.apache.shardingsphere.mcp.bootstrap.config;
 
-import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
-
-import java.util.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Marker interface for MCP handler execution context.
+ * Session attribution source configuration.
  */
-public interface MCPHandlerContext {
+@RequiredArgsConstructor
+@Getter
+public final class SessionAttributionSourceConfiguration {
 
-    /**
-     * Find session attribution.
-     *
-     * @return session attribution
-     */
-    default Optional<MCPSessionAttribution> findSessionAttribution() {
-        return Optional.empty();
-    }
+    private final String subjectHeader;
+
+    private final String sourceHeader;
+
+    private final String attributeHeaderPrefix;
 }

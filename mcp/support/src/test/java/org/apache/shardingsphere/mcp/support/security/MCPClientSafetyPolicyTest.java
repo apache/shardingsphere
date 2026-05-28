@@ -44,6 +44,7 @@ class MCPClientSafetyPolicyTest {
     void assertCreateModelFacingPayload() {
         Map<String, Object> actual = MCPClientSafetyPolicy.createModelFacingPayload();
         assertThat(actual.get("identity_scope"), is("mcp_session"));
+        assertTrue(String.valueOf(actual.get("transport_scope")).contains("trusted session attribution"));
         assertTrue(String.valueOf(actual.get("external_model_boundary")).contains("never calls external model providers"));
         Map<?, ?> actualToolCallLimit = (Map<?, ?>) actual.get("tool_call_limit");
         assertThat(actualToolCallLimit.get("scope"), is("session"));
