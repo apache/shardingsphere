@@ -241,7 +241,7 @@ public final class MCPRegistryMetadataCommand {
         ShardingSpherePreconditions.checkState(Boolean.FALSE.equals(envVar.get("isRequired")),
                 () -> new IllegalArgumentException(String.format("MCP Registry metadata for %s must declare isRequired as false.", name)));
         ShardingSpherePreconditions.checkState(Boolean.FALSE.equals(envVar.get("isSecret")),
-                () -> new IllegalArgumentException(String.format("MCP Registry metadata for %s must declare isRequired as false.", name)));
+                () -> new IllegalArgumentException(String.format("MCP Registry metadata for %s must declare isSecret as false.", name)));
         ShardingSpherePreconditions.checkState("string".equals(envVar.get("format")),
                 () -> new IllegalArgumentException(String.format("MCP Registry metadata for %s format must be string.", name)));
     }

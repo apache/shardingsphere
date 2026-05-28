@@ -139,7 +139,7 @@ class MCPRegistryMetadataCommandTest {
     void assertExecuteRejectsSecretEnvironmentVariable() throws IOException {
         Map<String, Object> server = createServerMetadata();
         getConfigEnvironmentVariable(server).put("isSecret", true);
-        assertEnvironmentVariableRejected(server, "MCP Registry metadata for SHARDINGSPHERE_MCP_CONFIG must declare isRequired as false.");
+        assertEnvironmentVariableRejected(server, "MCP Registry metadata for SHARDINGSPHERE_MCP_CONFIG must declare isSecret as false.");
     }
     
     @Test
