@@ -84,17 +84,22 @@ class EncryptSQLRewriteContextDecoratorTest {
         when(sqlRewriteContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         decorator.decorate(rule, mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
         assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());
+    }
+    // CHECKSTYLE:OFF
+    @Test
+    void assertDecorateWithoutDroppedEncryptTable() {
+        // CHECKSTYLE:ON
         EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd_cipher", "standard_encryptor"));
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnConfig));
         EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(tableConfig)),
                 Collections.singletonMap("standard_encryptor", new AlgorithmConfiguration("CORE.FIXTURE", new Properties())));
         new EncryptTableChangedProcessor().dropRuleItemConfiguration("t_encrypt", ruleConfig);
-        SQLRewriteContext droppedRuleSQLRewriteContext = mock(SQLRewriteContext.class);
+        SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))));
-        when(droppedRuleSQLRewriteContext.getSqlStatementContext()).thenReturn(insertStatementContext);
-        decorator.decorate(new EncryptRule("foo_db", ruleConfig), mock(ConfigurationProperties.class), droppedRuleSQLRewriteContext, mock(RouteContext.class));
-        verify(droppedRuleSQLRewriteContext, never()).addSQLTokenGenerators(any());
+        when(sqlRewriteContext.getSqlStatementContext()).thenReturn(insertStatementContext);
+        decorator.decorate(new EncryptRule("foo_db", ruleConfig), mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
+        verify(sqlRewriteContext, never()).addSQLTokenGenerators(any());
     }
 }
