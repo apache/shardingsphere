@@ -55,7 +55,7 @@ final class MCPToolClarificationPolicy {
     boolean requiresPlanningClarification(final MCPToolDescriptor toolDescriptor, final Map<String, Object> payload) {
         Object clarificationQuestions = payload.get(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS);
         return MCPDescriptorCatalogIndex.findToolRuntimeDescriptor(toolDescriptor.getName())
-                .map(runtimeDescriptor -> PLANNING_WORKFLOW_ROLE.equals(runtimeDescriptor.getWorkflowRole())).orElse(false)
+                .map(optional -> PLANNING_WORKFLOW_ROLE.equals(optional.getWorkflowRole())).orElse(false)
                 && clarificationQuestions instanceof List<?> questions && !questions.isEmpty();
     }
     
@@ -228,7 +228,7 @@ final class MCPToolClarificationPolicy {
         if (hasArgument(toolDescriptor, field) && !isObjectArgument(toolDescriptor, field)) {
             return Optional.of(new ArgumentBinding(formPropertyName, field, "", inputType, allowedValues));
         }
-        return findObjectArgumentName(toolDescriptor, field).map(objectArgumentName -> new ArgumentBinding(formPropertyName, objectArgumentName, field, inputType, allowedValues));
+        return findObjectArgumentName(toolDescriptor, field).map(optional -> new ArgumentBinding(formPropertyName, optional, field, inputType, allowedValues));
     }
     
     private boolean isBindableObjectProperty(final MCPToolDescriptor toolDescriptor, final String argumentName, final String fieldName) {
