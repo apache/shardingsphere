@@ -33,6 +33,8 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLR
 @RequiredArgsConstructor
 public final class PostgreSQLResetVariableAdminExecutor implements DatabaseAdminUpdateExecutor {
     
+    private static final String CLIENT_ENCODING = "client_encoding";
+    
     private static final String DEFAULT = "DEFAULT";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
@@ -43,6 +45,8 @@ public final class PostgreSQLResetVariableAdminExecutor implements DatabaseAdmin
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         String variableName = resetParameterStatement.getConfigurationParameter();
         new CharsetSetExecutor(databaseType, connectionSession).set(variableName, DEFAULT);
-        new SessionVariableRecordExecutor(databaseType, connectionSession).recordVariable(variableName, DEFAULT);
+        if (!CLIENT_ENCODING.equalsIgnoreCase(variableName)) {
+            new SessionVariableRecordExecutor(databaseType, connectionSession).recordVariable(variableName, DEFAULT);
+        }
     }
 }

@@ -39,6 +39,7 @@ import java.util.Optional;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -80,7 +81,7 @@ class PostgreSQLResetVariableAdminExecutorTest {
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType)).thenReturn(Optional.of(replayedSessionVariableProvider));
             executor.execute(connectionSession, mock());
             verify(attribute).set(StandardCharsets.UTF_8);
-            verify(requiredSessionVariableRecorder).setVariable("client_encoding", "DEFAULT");
+            verify(requiredSessionVariableRecorder, never()).setVariable("client_encoding", "DEFAULT");
         }
     }
 }
