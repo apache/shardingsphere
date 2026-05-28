@@ -18,6 +18,15 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Architecture**: follow SOLID, DRY, separation of concerns, and YAGNI (build only what you need).
 - **Code Quality**:
     - Use clear naming and reasonable abstractions.
+    - Do not introduce package-private top-level helper types by default.
+      Keep very small, single-owner state or continuation helpers as private nested types, but avoid accumulating multiple nested collaborators inside one class.
+      When a helper has cohesive behavior, multiple callers, direct test value, or enough logic to distract from the owner class, split it into a public top-level type with a clear contract and direct tests.
+      If neither private nor public fits, pause before coding and explain why.
+    - Every new public production type must have direct, focused tests.
+      Broad workflow tests do not replace public contract tests unless they explicitly exercise that public type's behavior.
+    - New internal abstractions must reduce cognitive complexity instead of merely wrapping branches in more types.
+      For simple internal two-path flows, avoid marker interfaces, multi-type result hierarchies, or extra DTO-style helpers.
+      Add them only when they define a stable boundary, keep owner classes readable, or remove meaningful duplicated logic.
     - Delete unused code; when changing functionality, remove legacy compatibility shims.
     - Keep variable declarations adjacent to first use; if a value must be retained, declare it `final` to satisfy Checkstyle VariableDeclarationUsageDistance.
     - Single-use local variables must be inlined by default; keep a local variable only when it is reused (for stubbing/verification/assertions) or materially improves readability.
@@ -43,7 +52,9 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Test-Driven**: design for testability, ensure unit-test coverage, and keep background unit tests under 60s to avoid job stalls.
 - **Quality Assurance**: run static checks, formatting, and code reviews.
 - **Checkstyle Gate**: do not hand off code with Checkstyle/Spotless failures—run the relevant module check locally and fix before completion.
-- **Formatting Gate**: after code changes, format only with `./mvnw spotless:apply -Pcheck -T1C`, then check style with `./mvnw checkstyle:check -Pcheck -T1C`; do not use any other formatting method.
+- **Formatting Gate**: after code or documentation changes, format only with `./mvnw spotless:apply -Pcheck -T1C`, then check style with `./mvnw checkstyle:check -Pcheck -T1C`; do not use any other formatting method.
+  Spotless must run after the last file-changing action and before Checkstyle/tests in the final handoff sequence.
+  If any file is edited, generated, moved, or manually whitespace-cleaned after Spotless, rerun Spotless before replying.
 - **Continuous Verification**: rely on automated tests and integration validation.
 - **Test Naming Simplicity**: keep test names concise and scenario-focused (avoid “ReturnsXXX”/overly wordy or AI-like phrasing); describe the scenario directly.
 - **Coverage Discipline**: follow the dedicated coverage & branch checklist before coding when coverage targets are stated.
@@ -120,6 +131,8 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use and mark retained values `final`; inline single-use locals by default unless reuse/readability justifies retention; delete dead code and avoid placeholders/TODOs.
 - **AGENTS.md maintenance:** do not add or update a `Session Notes` section in `AGENTS.md`. Keep task-specific notes in the active conversation, issue, or PR; only stable project-level rules may be generalized into this file.
 - **Post-task self-check (before replying):** confirm all instructions were honored; verify no placeholders/unused code; ensure Checkstyle/Spotless gates for touched modules are satisfied or explain why not run and what to run; list commands with exit codes; call out risks and follow-ups; complete all applicable checks before replying and do not rely on users to find missed rule violations.
+- **End-of-task format/style gate:** for any task that edits files, run `./mvnw spotless:apply -Pcheck -T1C` after the final edit, then run `./mvnw checkstyle:check -Pcheck -T1C` when production, test, or project-rule files are touched.
+  Do not perform manual formatting or whitespace cleanup after the final Spotless run; if a later cleanup is required, repeat Spotless and then Checkstyle before the final response.
 - **Final response template:** include intent/why, changed files with paths, rationale per file/section, commands run (with exit codes), verification status, and remaining risks/next actions (if tests skipped, state reason and the exact command to run); include a concise self-check result statement confirming final clean status after fixes.
 
 ## Final Self-Iteration Gate
@@ -228,8 +241,9 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 ## Verification & Commands
 - Core commands: `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test` (fast verification), `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
 - Coverage: when tests change or targets demand it, run `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` or scoped `-pl <module> -am -Djacoco.skip=false test jacoco:report`; pair with the Coverage & Branch Checklist.
-- Format: after code changes, run `./mvnw spotless:apply -Pcheck -T1C`; do not use any other formatting method.
-- Style: after code changes and formatting, run `./mvnw checkstyle:check -Pcheck -T1C`.
+- Format: after code or documentation changes, run `./mvnw spotless:apply -Pcheck -T1C`; do not use any other formatting method.
+  This must be repeated after the last file-changing action before handoff.
+- Style: after formatting, run `./mvnw checkstyle:check -Pcheck -T1C` when production, test, or project-rule files are touched.
 - Scoped defaults: prefer module-scoped runs over whole-repo builds; include `-Dsurefire.failIfNoSpecifiedTests=false` when targeting specific tests.
 - Testing ground rules: JUnit 5 + Mockito, `ClassNameTest` naming, Arrange–Act–Assert, mock external systems/time/network, reset static caches, and reuse swappers/helpers for complex configs.
 - API bans: if a user forbids a tool/assertion, add it to the plan, avoid it during implementation, and cite verification searches (e.g., `rg assertEquals`) in the final report.
