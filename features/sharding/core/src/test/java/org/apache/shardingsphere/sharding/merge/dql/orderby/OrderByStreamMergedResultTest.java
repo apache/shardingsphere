@@ -204,6 +204,35 @@ class OrderByStreamMergedResultTest {
         assertFalse(actual.next());
     }
     
+    @Test
+    void assertNextForVarBinaryFromMultipleResults() throws SQLException {
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
+        for (int i = 0; i < 3; i++) {
+            QueryResultMetaData metaData = mock(QueryResultMetaData.class);
+            when(queryResults.get(i).getMetaData()).thenReturn(metaData);
+            when(metaData.getColumnName(1)).thenReturn("col1");
+            when(metaData.getColumnName(2)).thenReturn("col2");
+        }
+        when(queryResults.get(0).next()).thenReturn(true, false);
+        when(queryResults.get(0).getValue(1, Object.class)).thenReturn(new byte[]{0x10});
+        when(queryResults.get(0).getValue(2, Object.class)).thenReturn(new byte[]{0x01});
+        when(queryResults.get(1).next()).thenReturn(true, false);
+        when(queryResults.get(1).getValue(1, Object.class)).thenReturn(new byte[]{0x10});
+        when(queryResults.get(1).getValue(2, Object.class)).thenReturn(new byte[]{0x02});
+        when(queryResults.get(2).next()).thenReturn(true, false);
+        when(queryResults.get(2).getValue(1, Object.class)).thenReturn(new byte[]{(byte) 0x80});
+        when(queryResults.get(2).getValue(2, Object.class)).thenReturn(new byte[]{0x03});
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabase(), mock(ConnectionContext.class));
+        assertTrue(actual.next());
+        assertThat((byte[]) actual.getValue(1, Object.class), is(new byte[]{0x10}));
+        assertTrue(actual.next());
+        assertThat((byte[]) actual.getValue(1, Object.class), is(new byte[]{0x10}));
+        assertTrue(actual.next());
+        assertThat((byte[]) actual.getValue(1, Object.class), is(new byte[]{(byte) 0x80}));
+        assertFalse(actual.next());
+    }
+    
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereColumn column1 = new ShardingSphereColumn("col1", 0, false, false, true, true, false, false);
         ShardingSphereColumn column2 = new ShardingSphereColumn("col2", 0, false, false, false, true, false, false);

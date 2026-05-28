@@ -22,6 +22,7 @@
 1. Mode: Fix rule metadata not removed from memory after dropping rules in Etcd cluster mode - [#38561](https://github.com/apache/shardingsphere/pull/38561)
 1. Pipeline: Fix MySQL JSON literal decoding in migration - [#38622](https://github.com/apache/shardingsphere/pull/38622)
 1. Pipeline: Fix MySQL zero-value temporal binlog decoding with fractional precision in migration - [#35531](https://github.com/apache/shardingsphere/issues/35531)
+1. Sharding: Support ORDER BY MySQL VARBINARY column by wrapping byte[] values in a Comparable adapter - [#38699](https://github.com/apache/shardingsphere/pull/38699)
 
 ### Enhancements
 

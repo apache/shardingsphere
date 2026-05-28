@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
+import org.apache.shardingsphere.sharding.merge.dql.ComparableByteArray;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.CompareUtils;
 
 import java.util.Collection;
@@ -50,16 +51,25 @@ public final class GroupByRowComparator implements Comparator<MemoryQueryResultR
     @SuppressWarnings("rawtypes")
     private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final Collection<OrderByItem> orderByItems) {
         for (OrderByItem each : orderByItems) {
-            Object orderValue1 = o1.getCell(each.getIndex());
-            ShardingSpherePreconditions.checkState(null == orderValue1 || orderValue1 instanceof Comparable, () -> new NotImplementComparableValueException("Order by", orderValue1));
-            Object orderValue2 = o2.getCell(each.getIndex());
-            ShardingSpherePreconditions.checkState(null == orderValue2 || orderValue2 instanceof Comparable, () -> new NotImplementComparableValueException("Order by", orderValue2));
-            int result = CompareUtils.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getSegment().getOrderDirection(),
+            Comparable orderValue1 = toComparable(o1.getCell(each.getIndex()));
+            Comparable orderValue2 = toComparable(o2.getCell(each.getIndex()));
+            int result = CompareUtils.compareTo(orderValue1, orderValue2, each.getSegment().getOrderDirection(),
                     each.getSegment().getNullsOrderType(selectStatementContext.getSqlStatement().getDatabaseType()), valueCaseSensitive.get(each.getIndex()));
             if (0 != result) {
                 return result;
             }
         }
         return 0;
+    }
+    
+    private Comparable<?> toComparable(final Object value) {
+        if (null == value) {
+            return null;
+        }
+        if (value instanceof byte[]) {
+            return new ComparableByteArray((byte[]) value);
+        }
+        ShardingSpherePreconditions.checkState(value instanceof Comparable, () -> new NotImplementComparableValueException("Order by", value));
+        return (Comparable<?>) value;
     }
 }
