@@ -26,7 +26,9 @@ import io.modelcontextprotocol.spec.ProtocolVersions;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
@@ -42,6 +44,7 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -229,6 +232,30 @@ class StreamableHttpMCPServletTest {
         actual.service(request, response);
         verify(response).setHeader(HttpHeaders.MCP_SESSION_ID, "session-id");
         verify(response).setHeader(HttpHeaders.PROTOCOL_VERSION, MCPTransportConstants.PROTOCOL_VERSION);
+    }
+    
+    @Test
+    void assertServicePostBindSessionAttribution() throws ServletException, IOException, ReflectiveOperationException {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("POST");
+        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
+        when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("X-Test-Subject", "X-Test-Source", "X-Test-ATTR-Region")));
+        when(request.getHeader("X-Test-Subject")).thenReturn("subject");
+        when(request.getHeader("X-Test-Source")).thenReturn("gateway");
+        when(request.getHeader("X-Test-ATTR-Region")).thenReturn("ap-south");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(delegate.closeGracefully()).thenReturn(Mono.empty());
+        HttpTransportConfiguration config = new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp",
+                new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-"));
+        StreamableHttpMCPServlet actual = createServlet(delegate, sessionManager, mock(MCPSessionExecutionCoordinator.class), config);
+        doAnswer(invocation -> {
+            ((HttpServletResponse) invocation.getArgument(1)).setHeader(HttpHeaders.MCP_SESSION_ID, "session-id");
+            return null;
+        }).when(delegate).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        actual.service(request, response);
+        verify(sessionManager).bindSessionAttribution("session-id", new MCPSessionAttribution("subject", "gateway", Map.of("region", "ap-south")));
     }
     
     @Test

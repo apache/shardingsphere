@@ -70,7 +70,7 @@ public final class MCPToolController {
     public MCPResponse handle(final String sessionId, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments) {
         try {
             toolCallLimiter.acquire(sessionId, toolDefinition.getDescriptor().getName());
-            try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
+            try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, sessionId)) {
                 return ToolDefinitionRegistry.dispatch(requestScope, toolDefinition, sessionId, arguments);
             }
             // CHECKSTYLE:OFF

@@ -59,12 +59,15 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
     
+    private final SessionAttributionResolver sessionAttributionResolver;
+    
     private final Map<String, String> sessionProtocolVersions;
     
     private final AtomicBoolean closed;
     
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final HttpTransportConfiguration config) {
-        delegate = createDelegate(sessionManager, jsonMapper, config.getBindHost(), config.getEndpointPath());
+        sessionAttributionResolver = new SessionAttributionResolver(config.getSessionAttributionSource());
+        delegate = createDelegate(sessionManager, jsonMapper, config.getBindHost(), config.getEndpointPath(), sessionAttributionResolver);
         this.sessionManager = sessionManager;
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         sessionProtocolVersions = new ConcurrentHashMap<>();
@@ -73,9 +76,9 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     }
     
     private static HttpServletStreamableServerTransportProvider createDelegate(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper,
-                                                                               final String bindHost, final String endpointPath) {
+                                                                               final String bindHost, final String endpointPath, final SessionAttributionResolver sessionAttributionResolver) {
         return HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath)
-                .securityValidator(ServerTransportSecurityValidatorFactory.create(sessionManager, bindHost)).build();
+                .securityValidator(ServerTransportSecurityValidatorFactory.create(sessionManager, bindHost, sessionAttributionResolver)).build();
     }
     
     @Override
@@ -138,7 +141,9 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
             response.sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Content-Type must be application/json.");
             return;
         }
-        serviceRequest(request, withInitializeProtocolHeader(response));
+        SessionAwareHttpServletResponse actualResponse = withInitializeProtocolHeader(response);
+        serviceRequest(request, actualResponse);
+        bindSessionAttribution(request, actualResponse);
     }
     
     private boolean isJsonContentType(final HttpServletRequest request) {
@@ -179,30 +184,56 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         }
     }
     
-    private HttpServletResponse withInitializeProtocolHeader(final HttpServletResponse response) {
-        return new HttpServletResponseWrapper(response) {
+    private void bindSessionAttribution(final HttpServletRequest request, final SessionAwareHttpServletResponse response) {
+        String sessionId = response.getSessionId();
+        if (sessionId.isEmpty()) {
+            return;
+        }
+        sessionAttributionResolver.resolve(request).ifPresent(sessionAttribution -> sessionManager.bindSessionAttribution(sessionId, sessionAttribution));
+    }
+    
+    private SessionAwareHttpServletResponse withInitializeProtocolHeader(final HttpServletResponse response) {
+        return new SessionAwareHttpServletResponse(response) {
             
             @Override
             public void setHeader(final String name, final String value) {
                 super.setHeader(name, value);
-                addNegotiatedProtocolHeader(name, value);
+                addNegotiatedProtocolHeader(this, name, value);
             }
             
             @Override
             public void addHeader(final String name, final String value) {
                 super.addHeader(name, value);
-                addNegotiatedProtocolHeader(name, value);
-            }
-            
-            private void addNegotiatedProtocolHeader(final String name, final String sessionId) {
-                if (SESSION_HEADER.equalsIgnoreCase(name)) {
-                    super.setHeader(PROTOCOL_HEADER, findNegotiatedProtocolVersion(sessionId));
-                }
+                addNegotiatedProtocolHeader(this, name, value);
             }
         };
     }
     
+    private void addNegotiatedProtocolHeader(final SessionAwareHttpServletResponse response, final String name, final String sessionId) {
+        if (SESSION_HEADER.equalsIgnoreCase(name)) {
+            response.setSessionId(sessionId);
+            response.setHeader(PROTOCOL_HEADER, findNegotiatedProtocolVersion(sessionId));
+        }
+    }
+    
     private String findNegotiatedProtocolVersion(final String sessionId) {
         return sessionProtocolVersions.getOrDefault(Objects.toString(sessionId, ""), MCPTransportConstants.PROTOCOL_VERSION);
+    }
+    
+    private abstract static class SessionAwareHttpServletResponse extends HttpServletResponseWrapper {
+        
+        private String sessionId = "";
+        
+        SessionAwareHttpServletResponse(final HttpServletResponse response) {
+            super(response);
+        }
+        
+        protected final String getSessionId() {
+            return sessionId;
+        }
+        
+        protected final void setSessionId(final String sessionId) {
+            this.sessionId = Objects.toString(sessionId, "").trim();
+        }
     }
 }

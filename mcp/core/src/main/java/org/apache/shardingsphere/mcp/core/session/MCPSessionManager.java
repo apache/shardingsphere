@@ -19,12 +19,14 @@ package org.apache.shardingsphere.mcp.core.session;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPJdbcTransactionResourceManager;
 
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,6 +43,8 @@ public final class MCPSessionManager {
     
     private final Map<String, ReentrantLock> sessions = new ConcurrentHashMap<>();
     
+    private final Map<String, MCPSessionAttribution> sessionAttributions = new ConcurrentHashMap<>();
+    
     private final List<Consumer<String>> sessionCloseListeners = new CopyOnWriteArrayList<>();
     
     public MCPSessionManager(final Map<String, RuntimeDatabaseConfiguration> databases) {
@@ -54,6 +58,29 @@ public final class MCPSessionManager {
      */
     public void createSession(final String sessionId) {
         ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionId, new ReentrantLock(true)), () -> new IllegalStateException("Session already exists."));
+    }
+    
+    /**
+     * Bind session attribution to one existing session.
+     *
+     * @param sessionId session id
+     * @param sessionAttribution session attribution
+     */
+    public void bindSessionAttribution(final String sessionId, final MCPSessionAttribution sessionAttribution) {
+        ShardingSpherePreconditions.checkState(hasSession(sessionId), MCPSessionNotExistedException::new);
+        MCPSessionAttribution existing = sessionAttributions.putIfAbsent(sessionId, sessionAttribution);
+        ShardingSpherePreconditions.checkState(null == existing || existing.equals(sessionAttribution),
+                () -> new IllegalStateException(String.format("Session attribution does not match existing binding for session `%s`.", sessionId)));
+    }
+    
+    /**
+     * Find session attribution.
+     *
+     * @param sessionId session id
+     * @return session attribution
+     */
+    public Optional<MCPSessionAttribution> findSessionAttribution(final String sessionId) {
+        return Optional.ofNullable(sessionAttributions.get(sessionId));
     }
     
     /**
@@ -89,6 +116,7 @@ public final class MCPSessionManager {
             transactionResourceManager.closeSession(sessionId);
         } finally {
             if (sessions.remove(sessionId, executionLock)) {
+                sessionAttributions.remove(sessionId);
                 notifySessionCloseListeners(sessionId);
             }
         }

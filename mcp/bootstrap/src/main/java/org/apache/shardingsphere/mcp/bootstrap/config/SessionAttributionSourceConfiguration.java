@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.config.yaml.config;
+package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator.ValidHttpTransportConfiguration;
+import lombok.RequiredArgsConstructor;
 
 /**
- * YAML HTTP transport configuration.
+ * Session attribution source configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ValidHttpTransportConfiguration
-public final class YamlHttpTransportConfiguration implements YamlConfiguration {
+public final class SessionAttributionSourceConfiguration {
     
-    private String bindHost;
+    private final String subjectHeader;
     
-    private Integer port;
+    private final String sourceHeader;
     
-    private String endpointPath;
-    
-    private YamlSessionAttributionSourceConfiguration sessionAttributionSource;
+    private final String attributeHeaderPrefix;
 }

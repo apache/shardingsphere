@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
+import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlSessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
 import java.util.Objects;
 
@@ -34,12 +36,30 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     
     private static final String DEFAULT_ENDPOINT_PATH = "/mcp";
     
+    private static final String DEFAULT_SUBJECT_HEADER = "X-ShardingSphere-MCP-Subject";
+    
+    private static final String DEFAULT_SOURCE_HEADER = "X-ShardingSphere-MCP-Source";
+    
+    private static final String DEFAULT_ATTRIBUTE_HEADER_PREFIX = "X-ShardingSphere-MCP-Attribute-";
+    
     @Override
     public YamlHttpTransportConfiguration swapToYamlConfiguration(final HttpTransportConfiguration data) {
         YamlHttpTransportConfiguration result = new YamlHttpTransportConfiguration();
         result.setBindHost(data.getBindHost());
         result.setPort(data.getPort());
         result.setEndpointPath(data.getEndpointPath());
+        result.setSessionAttributionSource(swapToYamlConfiguration(data.getSessionAttributionSource()));
+        return result;
+    }
+    
+    private YamlSessionAttributionSourceConfiguration swapToYamlConfiguration(final SessionAttributionSourceConfiguration data) {
+        if (null == data) {
+            return null;
+        }
+        YamlSessionAttributionSourceConfiguration result = new YamlSessionAttributionSourceConfiguration();
+        result.setSubjectHeader(data.getSubjectHeader());
+        result.setSourceHeader(data.getSourceHeader());
+        result.setAttributeHeaderPrefix(data.getAttributeHeaderPrefix());
         return result;
     }
     
@@ -50,7 +70,15 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         }
         MCPYamlConfigurationValidator.validate(yamlConfig, "MCP HTTP transport configuration");
         return new HttpTransportConfiguration(getValueOrDefault(yamlConfig.getBindHost(), DEFAULT_BIND_HOST), null == yamlConfig.getPort() ? DEFAULT_PORT : yamlConfig.getPort(),
-                getValueOrDefault(yamlConfig.getEndpointPath(), DEFAULT_ENDPOINT_PATH));
+                getValueOrDefault(yamlConfig.getEndpointPath(), DEFAULT_ENDPOINT_PATH), swapToObject(yamlConfig.getSessionAttributionSource()));
+    }
+    
+    private SessionAttributionSourceConfiguration swapToObject(final YamlSessionAttributionSourceConfiguration yamlConfig) {
+        if (null == yamlConfig) {
+            return null;
+        }
+        return new SessionAttributionSourceConfiguration(getValueOrDefault(yamlConfig.getSubjectHeader(), DEFAULT_SUBJECT_HEADER),
+                getValueOrDefault(yamlConfig.getSourceHeader(), DEFAULT_SOURCE_HEADER), getValueOrDefault(yamlConfig.getAttributeHeaderPrefix(), DEFAULT_ATTRIBUTE_HEADER_PREFIX));
     }
     
     private String getValueOrDefault(final String value, final String defaultValue) {

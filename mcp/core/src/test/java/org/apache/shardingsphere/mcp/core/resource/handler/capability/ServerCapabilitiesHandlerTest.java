@@ -194,7 +194,7 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(actual.containsKey("stdio_stdout"));
         Map<?, ?> actualClientSafetyPolicy = (Map<?, ?>) actual.get("client_safety_policy");
         assertThat(actualClientSafetyPolicy.get("identity_scope"), is("mcp_session"));
-        assertTrue(String.valueOf(actualClientSafetyPolicy.get("transport_scope")).contains("no built-in authorization"));
+        assertTrue(String.valueOf(actualClientSafetyPolicy.get("transport_scope")).contains("trusted session attribution"));
         assertThat(((Map<?, ?>) actualClientSafetyPolicy.get("tool_call_limit")).get("scope"), is("session"));
         assertTrue(String.valueOf(actualClientSafetyPolicy.get("abuse_guard")).contains("counted before dispatch"));
     }

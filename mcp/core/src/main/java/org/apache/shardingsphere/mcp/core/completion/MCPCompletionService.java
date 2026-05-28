@@ -136,7 +136,7 @@ public final class MCPCompletionService {
         MCPCompletionRequestContext requestContext = new MCPCompletionRequestContext(sessionId, descriptor, argumentName, contextArguments);
         for (MCPCompletionProvider<?> each : completionProviders) {
             if (each.supports(requestContext)) {
-                try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
+                try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, sessionId)) {
                     return completeCandidates(requestScope, each, requestContext);
                 }
             }

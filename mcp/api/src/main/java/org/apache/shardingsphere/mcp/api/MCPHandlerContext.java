@@ -17,8 +17,21 @@
 
 package org.apache.shardingsphere.mcp.api;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+
+import java.util.Optional;
+
 /**
  * Marker interface for MCP handler execution context.
  */
 public interface MCPHandlerContext {
+    
+    /**
+     * Find session attribution.
+     *
+     * @return session attribution
+     */
+    default Optional<MCPSessionAttribution> findSessionAttribution() {
+        return Optional.empty();
+    }
 }

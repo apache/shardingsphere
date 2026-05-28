@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlSessionAttributionSourceConfiguration;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -44,6 +45,9 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
         }
         if (!isValidEndpointPath(value.getEndpointPath())) {
             addViolation(context, "endpointPath", "must be a single absolute path without query or fragment");
+            return false;
+        }
+        if (!isValidSessionAttributionSource(value.getSessionAttributionSource(), context)) {
             return false;
         }
         return true;
@@ -78,6 +82,50 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
         } catch (final IllegalArgumentException ignored) {
             return false;
         }
+    }
+    
+    private boolean isValidSessionAttributionSource(final YamlSessionAttributionSourceConfiguration value, final ConstraintValidatorContext context) {
+        if (null == value) {
+            return true;
+        }
+        if (!isValidHeaderName(value.getSubjectHeader())) {
+            addViolation(context, "sessionAttributionSource.subjectHeader", "must be a valid HTTP header name");
+            return false;
+        }
+        if (!isValidHeaderName(value.getSourceHeader())) {
+            addViolation(context, "sessionAttributionSource.sourceHeader", "must be a valid HTTP header name");
+            return false;
+        }
+        if (!isValidHeaderName(value.getAttributeHeaderPrefix())) {
+            addViolation(context, "sessionAttributionSource.attributeHeaderPrefix", "must be a valid HTTP header name prefix");
+            return false;
+        }
+        return true;
+    }
+    
+    private boolean isValidHeaderName(final String value) {
+        if (null == value) {
+            return true;
+        }
+        String actualValue = Objects.toString(value, "").trim();
+        if (actualValue.isEmpty()) {
+            return false;
+        }
+        for (char each : actualValue.toCharArray()) {
+            if (!isHttpTokenCharacter(each)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isHttpTokenCharacter(final char value) {
+        return value >= '0' && value <= '9' || value >= 'A' && value <= 'Z' || value >= 'a' && value <= 'z' || isHttpTokenSymbol(value);
+    }
+    
+    private boolean isHttpTokenSymbol(final char value) {
+        return '!' == value || '#' == value || '$' == value || '%' == value || '&' == value || '\'' == value || '*' == value || '+' == value || '-' == value || '.' == value
+                || '^' == value || '_' == value || '`' == value || '|' == value || '~' == value;
     }
     
     private void addViolation(final ConstraintValidatorContext context, final String propertyName, final String message) {
