@@ -81,15 +81,12 @@ final class MCPToolClarificationPolicy {
                 return Optional.empty();
             }
             ArgumentBinding argumentBinding = binding.get();
-            if (fieldBindings.containsKey(argumentBinding.formPropertyName())) {
-                return Optional.empty();
-            }
             properties.put(argumentBinding.formPropertyName(), createRequestedPropertySchema(question, argumentBinding));
             required.add(argumentBinding.formPropertyName());
             fieldBindings.put(argumentBinding.formPropertyName(), argumentBinding);
             questionIndex++;
         }
-        return properties.isEmpty() ? Optional.empty() : Optional.of(new ClarificationForm(createObjectSchema(properties, required), fieldBindings, planId));
+        return Optional.of(new ClarificationForm(createObjectSchema(properties, required), fieldBindings, planId));
     }
     
     boolean hasSensitiveClarificationQuestions(final Map<String, Object> payload) {
@@ -140,7 +137,7 @@ final class MCPToolClarificationPolicy {
         return value.replaceAll(CAMEL_CASE_SEPARATOR_PATTERN, "$1 $2").toLowerCase(Locale.ENGLISH).replaceAll(NON_ALPHANUMERIC_PATTERN, "");
     }
     
-    String getPlanId(final Map<String, Object> payload) {
+    private String getPlanId(final Map<String, Object> payload) {
         return Objects.toString(payload.get(WorkflowFieldNames.PLAN_ID), "");
     }
     
