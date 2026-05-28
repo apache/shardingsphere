@@ -37,20 +37,20 @@ import java.util.function.Consumer;
  * MCP session manager.
  */
 public final class MCPSessionManager {
-
+    
     @Getter
     private final MCPJdbcTransactionResourceManager transactionResourceManager;
-
+    
     private final Map<String, ReentrantLock> sessions = new ConcurrentHashMap<>();
-
+    
     private final Map<String, MCPSessionAttribution> sessionAttributions = new ConcurrentHashMap<>();
-
+    
     private final List<Consumer<String>> sessionCloseListeners = new CopyOnWriteArrayList<>();
-
+    
     public MCPSessionManager(final Map<String, RuntimeDatabaseConfiguration> databases) {
         transactionResourceManager = new MCPJdbcTransactionResourceManager(databases);
     }
-
+    
     /**
      * Create a new session.
      *
@@ -59,7 +59,7 @@ public final class MCPSessionManager {
     public void createSession(final String sessionId) {
         ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionId, new ReentrantLock(true)), () -> new IllegalStateException("Session already exists."));
     }
-
+    
     /**
      * Bind session attribution to one existing session.
      *
@@ -72,7 +72,7 @@ public final class MCPSessionManager {
         ShardingSpherePreconditions.checkState(null == existing || existing.equals(sessionAttribution),
                 () -> new IllegalStateException(String.format("Session attribution does not match existing binding for session `%s`.", sessionId)));
     }
-
+    
     /**
      * Find session attribution.
      *
@@ -82,7 +82,7 @@ public final class MCPSessionManager {
     public Optional<MCPSessionAttribution> findSessionAttribution(final String sessionId) {
         return Optional.ofNullable(sessionAttributions.get(sessionId));
     }
-
+    
     /**
      * Determine whether a session exists.
      *
@@ -92,7 +92,7 @@ public final class MCPSessionManager {
     public boolean hasSession(final String sessionId) {
         return sessions.containsKey(sessionId);
     }
-
+    
     /**
      * Add a callback invoked after one session is closed.
      *
@@ -101,7 +101,7 @@ public final class MCPSessionManager {
     public void addSessionCloseListener(final Consumer<String> sessionCloseListener) {
         sessionCloseListeners.add(sessionCloseListener);
     }
-
+    
     /**
      * Close the session and rollback any pending work.
      *
@@ -121,7 +121,7 @@ public final class MCPSessionManager {
             }
         }
     }
-
+    
     /**
      * Close all current sessions.
      */
@@ -130,11 +130,11 @@ public final class MCPSessionManager {
             closeSession(each);
         }
     }
-
+    
     ReentrantLock findExecutionLock(final String sessionId) {
         return sessions.get(sessionId);
     }
-
+    
     ReentrantLock getRequiredExecutionLock(final String sessionId) {
         ReentrantLock result = findExecutionLock(sessionId);
         if (null == result) {
@@ -142,11 +142,11 @@ public final class MCPSessionManager {
         }
         return result;
     }
-
+    
     Set<String> getSessionIds() {
         return new LinkedHashSet<>(sessions.keySet());
     }
-
+    
     private void notifySessionCloseListeners(final String sessionId) {
         for (Consumer<String> each : sessionCloseListeners) {
             each.accept(sessionId);

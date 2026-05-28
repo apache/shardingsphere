@@ -26,10 +26,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public final class SessionAttributionSourceConfiguration {
-
+    
     private final String subjectHeader;
-
+    
     private final String sourceHeader;
-
+    
     private final String attributeHeaderPrefix;
 }

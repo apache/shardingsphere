@@ -42,12 +42,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MCPSessionManagerTest {
-
+    
     @Test
     void assertCreateSession() {
         assertDoesNotThrow(() -> new MCPSessionManager(Collections.emptyMap()).createSession("session-1"));
     }
-
+    
     @Test
     void assertCreateSessionWithDuplicateSessionId() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
@@ -55,14 +55,14 @@ class MCPSessionManagerTest {
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> sessionManager.createSession("session-1"));
         assertThat(actual.getMessage(), is("Session already exists."));
     }
-
+    
     @Test
     void assertHasSession() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
         assertTrue(sessionManager.hasSession("session-1"));
     }
-
+    
     @Test
     void assertCloseSession() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
@@ -71,7 +71,7 @@ class MCPSessionManagerTest {
         sessionManager.closeSession("session-1");
         assertFalse(sessionManager.hasSession("session-1"));
     }
-
+    
     @Test
     void assertCloseSessionInvokesSessionCloseListener() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
@@ -81,7 +81,7 @@ class MCPSessionManagerTest {
         sessionManager.closeSession("session-1");
         assertThat(actualClosedSessions, is(List.of("session-1")));
     }
-
+    
     @Test
     void assertCloseSessionWithTransactionResourceManager() throws SQLException {
         Connection connection = mock(Connection.class);
@@ -96,7 +96,7 @@ class MCPSessionManagerTest {
         verify(connection).close();
         assertFalse(sessionManager.hasSession("session-1"));
     }
-
+    
     @Test
     void assertCloseSessionWithTransactionResourceManagerFailure() throws SQLException {
         Connection connection = mock(Connection.class);
@@ -112,7 +112,7 @@ class MCPSessionManagerTest {
         verify(connection).close();
         assertFalse(sessionManager.hasSession("session-1"));
     }
-
+    
     @Test
     void assertCloseAllSessions() throws SQLException {
         Connection firstConnection = mock(Connection.class);
@@ -134,7 +134,7 @@ class MCPSessionManagerTest {
         assertFalse(sessionManager.hasSession("session-1"));
         assertFalse(sessionManager.hasSession("session-2"));
     }
-
+    
     @Test
     void assertBindSessionAttribution() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
@@ -143,7 +143,7 @@ class MCPSessionManagerTest {
         assertDoesNotThrow(() -> sessionManager.bindSessionAttribution("session-1", sessionAttribution));
         assertThat(sessionManager.findSessionAttribution("session-1"), is(Optional.of(sessionAttribution)));
     }
-
+    
     @Test
     void assertBindSessionAttributionWithDifferentBinding() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
@@ -153,7 +153,7 @@ class MCPSessionManagerTest {
                 () -> sessionManager.bindSessionAttribution("session-1", new MCPSessionAttribution("other", "gateway", Map.of())));
         assertThat(actual.getMessage(), is("Session attribution does not match existing binding for session `session-1`."));
     }
-
+    
     @Test
     void assertCloseSessionRemovesSessionAttribution() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());

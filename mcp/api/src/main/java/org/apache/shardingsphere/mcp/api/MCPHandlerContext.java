@@ -25,7 +25,7 @@ import java.util.Optional;
  * Marker interface for MCP handler execution context.
  */
 public interface MCPHandlerContext {
-
+    
     /**
      * Find session attribution.
      *

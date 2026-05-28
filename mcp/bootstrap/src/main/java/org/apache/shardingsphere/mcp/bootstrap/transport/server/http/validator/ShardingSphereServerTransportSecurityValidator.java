@@ -37,13 +37,13 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public final class ShardingSphereServerTransportSecurityValidator implements ServerTransportSecurityValidator {
-
+    
     private final MCPSessionManager sessionManager;
-
+    
     private final List<TransportHeaderConstraint> constraints;
-
+    
     private final SessionAttributionResolver sessionAttributionResolver;
-
+    
     @Override
     public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
         validateSessionAttribution(headers);
@@ -57,7 +57,7 @@ public final class ShardingSphereServerTransportSecurityValidator implements Ser
             each.validate(getFirstHeaderValue(headers, each.getConstraintKey()));
         }
     }
-
+    
     private void validateSessionAttribution(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
         String sessionId = getFirstHeaderValue(headers, HttpHeaders.MCP_SESSION_ID);
         if (sessionId.isEmpty() || !sessionManager.hasSession(sessionId) || !sessionAttributionResolver.isEnabled()) {
@@ -72,7 +72,7 @@ public final class ShardingSphereServerTransportSecurityValidator implements Ser
             }
         }
     }
-
+    
     private String getFirstHeaderValue(final Map<String, List<String>> headers, final String headerName) {
         return headers.entrySet().stream()
                 .filter(entry -> headerName.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()).findFirst().map(optional -> Objects.toString(optional.getValue().get(0), "").trim())

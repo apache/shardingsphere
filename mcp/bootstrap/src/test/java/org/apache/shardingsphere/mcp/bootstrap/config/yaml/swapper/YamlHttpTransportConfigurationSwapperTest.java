@@ -29,9 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class YamlHttpTransportConfigurationSwapperTest {
-
+    
     private final YamlHttpTransportConfigurationSwapper swapper = new YamlHttpTransportConfigurationSwapper();
-
+    
     @Test
     void assertSwapToObject() {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("127.0.0.1", 18088, "/mcp"));
@@ -40,7 +40,7 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertThat(actual.getEndpointPath(), is("/mcp"));
         assertNull(actual.getSessionAttributionSource());
     }
-
+    
     @Test
     void assertSwapToObjectWithDefaults() {
         HttpTransportConfiguration actual = swapper.swapToObject(null);
@@ -48,7 +48,7 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertThat(actual.getPort(), is(18088));
         assertThat(actual.getEndpointPath(), is("/mcp"));
     }
-
+    
     @Test
     void assertSwapToObjectWithPartialDefaults() {
         YamlHttpTransportConfiguration yamlConfig = new YamlHttpTransportConfiguration();
@@ -58,67 +58,67 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertThat(actual.getPort(), is(0));
         assertThat(actual.getEndpointPath(), is("/mcp"));
     }
-
+    
     @Test
     void assertSwapToObjectWithLocalhostBindHost() {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("localhost", 18088, "/mcp"));
         assertThat(actual.getBindHost(), is("localhost"));
     }
-
+    
     @Test
     void assertSwapToObjectWithRemoteBindHost() {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("0.0.0.0", 18088, "/mcp"));
         assertThat(actual.getBindHost(), is("0.0.0.0"));
     }
-
+    
     @Test
     void assertSwapToObjectWithUrlBindHost() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(createYamlConfig("http://127.0.0.1:18088", 18088, "/mcp")));
         assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `bindHost` must be a local bind host or IP address."));
     }
-
+    
     @Test
     void assertSwapToObjectWithBlankBindHost() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(createYamlConfig("", 18088, "/mcp")));
         assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `bindHost` must be a local bind host or IP address."));
     }
-
+    
     @Test
     void assertSwapToObjectWithNegativePort() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(createYamlConfig("127.0.0.1", -1, "/mcp")));
         assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `port` must be between 0 and 65535."));
     }
-
+    
     @Test
     void assertSwapToObjectWithPortOutOfRange() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(createYamlConfig("127.0.0.1", 65536, "/mcp")));
         assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `port` must be between 0 and 65535."));
     }
-
+    
     @Test
     void assertSwapToObjectWithEndpointPathMissingLeadingSlash() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(createYamlConfig("127.0.0.1", 18088, "gateway")));
         assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `endpointPath` must be a single absolute path without query or fragment."));
     }
-
+    
     @Test
     void assertSwapToObjectWithEndpointPathDoubleSlash() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(createYamlConfig("127.0.0.1", 18088, "//mcp")));
         assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `endpointPath` must be a single absolute path without query or fragment."));
     }
-
+    
     @Test
     void assertSwapToObjectWithEndpointPathQuery() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(createYamlConfig("127.0.0.1", 18088, "/mcp?debug=true")));
         assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `endpointPath` must be a single absolute path without query or fragment."));
     }
-
+    
     @Test
     void assertSwapToObjectWithEndpointPathFragment() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(createYamlConfig("127.0.0.1", 18088, "/mcp#debug")));
         assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `endpointPath` must be a single absolute path without query or fragment."));
     }
-
+    
     @Test
     void assertSwapToYamlConfiguration() {
         YamlHttpTransportConfiguration actual = swapper.swapToYamlConfiguration(new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp"));
@@ -127,7 +127,7 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertThat(actual.getEndpointPath(), is("/mcp"));
         assertNull(actual.getSessionAttributionSource());
     }
-
+    
     @Test
     void assertSwapToObjectWithSessionAttributionSource() {
         YamlSessionAttributionSourceConfiguration sessionAttributionSource = new YamlSessionAttributionSourceConfiguration();
@@ -141,7 +141,7 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertThat(actual.getSessionAttributionSource().getSourceHeader(), is("X-Test-Source"));
         assertThat(actual.getSessionAttributionSource().getAttributeHeaderPrefix(), is("X-Test-Attr-"));
     }
-
+    
     @Test
     void assertSwapToYamlConfigurationWithSessionAttributionSource() {
         YamlHttpTransportConfiguration actual = swapper.swapToYamlConfiguration(
@@ -150,7 +150,7 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertThat(actual.getSessionAttributionSource().getSourceHeader(), is("X-Test-Source"));
         assertThat(actual.getSessionAttributionSource().getAttributeHeaderPrefix(), is("X-Test-Attr-"));
     }
-
+    
     private YamlHttpTransportConfiguration createYamlConfig(final String bindHost, final Integer port, final String endpointPath) {
         YamlHttpTransportConfiguration result = new YamlHttpTransportConfiguration();
         result.setBindHost(bindHost);

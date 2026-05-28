@@ -29,19 +29,19 @@ import java.util.Objects;
  * YAML HTTP transport configuration swapper.
  */
 public final class YamlHttpTransportConfigurationSwapper implements YamlConfigurationSwapper<YamlHttpTransportConfiguration, HttpTransportConfiguration> {
-
+    
     private static final String DEFAULT_BIND_HOST = "127.0.0.1";
-
+    
     private static final int DEFAULT_PORT = 18088;
-
+    
     private static final String DEFAULT_ENDPOINT_PATH = "/mcp";
-
+    
     private static final String DEFAULT_SUBJECT_HEADER = "X-ShardingSphere-MCP-Subject";
-
+    
     private static final String DEFAULT_SOURCE_HEADER = "X-ShardingSphere-MCP-Source";
-
+    
     private static final String DEFAULT_ATTRIBUTE_HEADER_PREFIX = "X-ShardingSphere-MCP-Attribute-";
-
+    
     @Override
     public YamlHttpTransportConfiguration swapToYamlConfiguration(final HttpTransportConfiguration data) {
         YamlHttpTransportConfiguration result = new YamlHttpTransportConfiguration();
@@ -51,7 +51,7 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         result.setSessionAttributionSource(swapToYamlConfiguration(data.getSessionAttributionSource()));
         return result;
     }
-
+    
     private YamlSessionAttributionSourceConfiguration swapToYamlConfiguration(final SessionAttributionSourceConfiguration data) {
         if (null == data) {
             return null;
@@ -62,7 +62,7 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         result.setAttributeHeaderPrefix(data.getAttributeHeaderPrefix());
         return result;
     }
-
+    
     @Override
     public HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig) {
         if (null == yamlConfig) {
@@ -72,7 +72,7 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         return new HttpTransportConfiguration(getValueOrDefault(yamlConfig.getBindHost(), DEFAULT_BIND_HOST), null == yamlConfig.getPort() ? DEFAULT_PORT : yamlConfig.getPort(),
                 getValueOrDefault(yamlConfig.getEndpointPath(), DEFAULT_ENDPOINT_PATH), swapToObject(yamlConfig.getSessionAttributionSource()));
     }
-
+    
     private SessionAttributionSourceConfiguration swapToObject(final YamlSessionAttributionSourceConfiguration yamlConfig) {
         if (null == yamlConfig) {
             return null;
@@ -80,7 +80,7 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         return new SessionAttributionSourceConfiguration(getValueOrDefault(yamlConfig.getSubjectHeader(), DEFAULT_SUBJECT_HEADER),
                 getValueOrDefault(yamlConfig.getSourceHeader(), DEFAULT_SOURCE_HEADER), getValueOrDefault(yamlConfig.getAttributeHeaderPrefix(), DEFAULT_ATTRIBUTE_HEADER_PREFIX));
     }
-
+    
     private String getValueOrDefault(final String value, final String defaultValue) {
         String result = Objects.toString(value, "").trim();
         return result.isEmpty() ? defaultValue : result;

@@ -41,25 +41,25 @@ import java.util.Optional;
  */
 @Getter
 public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatabaseHandlerContext, MCPWorkflowHandlerContext, AutoCloseable {
-
+    
     private final String activeTransport;
-
+    
     @Getter(AccessLevel.NONE)
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
-
+    
     @Getter(AccessLevel.NONE)
     private final RequestScopedMetadataContext metadataContext;
-
+    
     private final Optional<MCPSessionAttribution> sessionAttribution;
-
+    
     private final WorkflowSessionContext workflowSessionContext;
-
+    
     private final MCPMetadataQueryFacade metadataQueryFacade;
-
+    
     private final MCPFeatureExecutionFacade executionFacade;
-
+    
     private final MCPFeatureQueryFacade queryFacade;
-
+    
     /**
      * Create MCP request scope.
      *
@@ -68,7 +68,7 @@ public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatab
     public MCPRequestScope(final MCPRuntimeContext runtimeContext) {
         this(runtimeContext, "");
     }
-
+    
     /**
      * Create MCP request scope.
      *
@@ -86,22 +86,22 @@ public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatab
         executionFacade = new MCPSQLExecutionFacade(databaseCapabilityProvider, sessionManager);
         queryFacade = new WorkflowProxyQueryService(sessionManager, databaseCapabilityProvider);
     }
-
+    
     @Override
     public MCPDatabaseHandlerContext getDatabaseContext() {
         return this;
     }
-
+    
     @Override
     public MCPFeatureCapabilityFacade getCapabilityFacade() {
         return databaseCapabilityProvider;
     }
-
+    
     @Override
     public Optional<MCPSessionAttribution> findSessionAttribution() {
         return sessionAttribution;
     }
-
+    
     @Override
     public void close() {
         metadataContext.close();

@@ -24,19 +24,19 @@ import lombok.Getter;
  */
 @Getter
 public final class HttpTransportConfiguration {
-
+    
     private final String bindHost;
-
+    
     private final int port;
-
+    
     private final String endpointPath;
-
+    
     private final SessionAttributionSourceConfiguration sessionAttributionSource;
-
+    
     public HttpTransportConfiguration(final String bindHost, final int port, final String endpointPath) {
         this(bindHost, port, endpointPath, null);
     }
-
+    
     public HttpTransportConfiguration(final String bindHost, final int port, final String endpointPath, final SessionAttributionSourceConfiguration sessionAttributionSource) {
         this.bindHost = bindHost;
         this.port = port;

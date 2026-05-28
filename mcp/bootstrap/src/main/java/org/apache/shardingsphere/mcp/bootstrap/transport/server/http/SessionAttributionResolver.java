@@ -36,13 +36,13 @@ import java.util.Optional;
  */
 @Getter
 public final class SessionAttributionResolver {
-
+    
     private final SessionAttributionSourceConfiguration config;
-
+    
     public SessionAttributionResolver(final SessionAttributionSourceConfiguration config) {
         this.config = config;
     }
-
+    
     /**
      * Resolve session attribution from HTTP request.
      *
@@ -60,7 +60,7 @@ public final class SessionAttributionResolver {
         return Optional.of(new MCPSessionAttribution(subject, getHeaderValue(request, config.getSourceHeader()),
                 resolveAttributes(Collections.list(request.getHeaderNames()), name -> getHeaderValue(request, name))));
     }
-
+    
     /**
      * Resolve session attribution from header map.
      *
@@ -78,7 +78,7 @@ public final class SessionAttributionResolver {
         return Optional.of(new MCPSessionAttribution(subject, getHeaderValue(headers, config.getSourceHeader()),
                 resolveAttributes(headers.keySet(), name -> getHeaderValue(headers, name))));
     }
-
+    
     /**
      * Determine whether session attribution is enabled.
      *
@@ -87,7 +87,7 @@ public final class SessionAttributionResolver {
     public boolean isEnabled() {
         return null != config;
     }
-
+    
     /**
      * Get summary for diagnostics.
      *
@@ -96,7 +96,7 @@ public final class SessionAttributionResolver {
     public String getSummary() {
         return !isEnabled() ? "disabled" : String.format("trusted-header:%s", config.getSubjectHeader());
     }
-
+    
     private Map<String, String> resolveAttributes(final Iterable<String> headerNames, final HeaderValueReader headerValueReader) {
         Map<String, String> result = new LinkedHashMap<>();
         String attributeHeaderPrefix = config.getAttributeHeaderPrefix();
@@ -112,11 +112,11 @@ public final class SessionAttributionResolver {
         }
         return result;
     }
-
+    
     private String getHeaderValue(final HttpServletRequest request, final String headerName) {
         return Objects.toString(request.getHeader(headerName), "").trim();
     }
-
+    
     private String getHeaderValue(final Map<String, List<String>> headers, final String headerName) {
         for (Entry<String, List<String>> entry : headers.entrySet()) {
             if (headerName.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()) {
@@ -125,10 +125,10 @@ public final class SessionAttributionResolver {
         }
         return "";
     }
-
+    
     @FunctionalInterface
     private interface HeaderValueReader {
-
+        
         String read(String headerName);
     }
 }

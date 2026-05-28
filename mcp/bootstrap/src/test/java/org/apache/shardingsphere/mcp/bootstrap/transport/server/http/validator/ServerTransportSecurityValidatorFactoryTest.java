@@ -36,9 +36,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ServerTransportSecurityValidatorFactoryTest {
-
+    
     private static final SessionAttributionResolver DISABLED_SESSION_ATTRIBUTION_RESOLVER = new SessionAttributionResolver(null);
-
+    
     @Test
     void assertCreateWithoutOptionalRules() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
@@ -46,7 +46,7 @@ class ServerTransportSecurityValidatorFactoryTest {
         assertDoesNotThrow(() -> actual.validateHeaders(Map.of()));
         verifyNoInteractions(sessionManager);
     }
-
+    
     @Test
     void assertCreateWithLoopbackOrigin() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
@@ -54,7 +54,7 @@ class ServerTransportSecurityValidatorFactoryTest {
         assertDoesNotThrow(() -> actual.validateHeaders(Map.of("Origin", List.of("http://127.0.0.1:8080"))));
         verifyNoInteractions(sessionManager);
     }
-
+    
     @Test
     void assertCreateWithLoopbackOriginRejectsRemoteOrigin() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
@@ -65,7 +65,7 @@ class ServerTransportSecurityValidatorFactoryTest {
         assertThat(ex.getStatusCode(), is(403));
         verify(sessionManager).hasSession("session-id");
     }
-
+    
     @Test
     void assertCreateWithNonLoopbackBindingAcceptsMissingOrigin() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
@@ -73,7 +73,7 @@ class ServerTransportSecurityValidatorFactoryTest {
         assertDoesNotThrow(() -> actual.validateHeaders(Map.of()));
         verifyNoInteractions(sessionManager);
     }
-
+    
     @Test
     void assertCreateWithNonLoopbackBindingRejectsPresentOrigin() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
@@ -83,7 +83,7 @@ class ServerTransportSecurityValidatorFactoryTest {
         assertThat(ex.getStatusCode(), is(403));
         verifyNoInteractions(sessionManager);
     }
-
+    
     @Test
     void assertCreateRejectsInvalidOrigin() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
@@ -92,7 +92,7 @@ class ServerTransportSecurityValidatorFactoryTest {
         assertThat(ex.getStatusCode(), is(403));
         verifyNoInteractions(sessionManager);
     }
-
+    
     @Test
     void assertCreateWithProtocolVersionConstraintLast() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);

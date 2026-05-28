@@ -29,13 +29,13 @@ import java.util.Map;
 @Getter
 @EqualsAndHashCode
 public final class MCPSessionAttribution {
-
+    
     private final String subject;
-
+    
     private final String source;
-
+    
     private final Map<String, String> attributes;
-
+    
     public MCPSessionAttribution(final String subject, final String source, final Map<String, String> attributes) {
         this.subject = subject;
         this.source = source;
