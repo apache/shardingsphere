@@ -558,6 +558,27 @@
         <table name="t_order_item" start-index="16" stop-index="27" />
     </delete>
 
+    <delete sql-case-id="delete_multi_tables_with_qualified_source" parameters="1">
+        <table name="m" start-index="7" stop-index="7" />
+        <table name="r" start-index="10" stop-index="10" />
+        <where start-index="111" stop-index="124">
+            <expr>
+                <binary-operation-expression start-index="117" stop-index="124">
+                    <left>
+                        <column name="id" start-index="117" stop-index="120">
+                            <owner name="m" start-index="117" stop-index="117" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="124" stop-index="124" />
+                        <parameter-marker-expression parameter-index="0" start-index="124" stop-index="124" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </delete>
+
     <delete sql-case-id="delete_multi_tables_with_using" parameters="1">
         <where start-index="115" stop-index="138">
             <expr>
