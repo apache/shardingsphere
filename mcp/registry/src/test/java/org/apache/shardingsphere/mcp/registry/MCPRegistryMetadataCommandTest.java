@@ -125,21 +125,21 @@ class MCPRegistryMetadataCommandTest {
     void assertExecuteRejectsRequiredEnvironmentVariable() throws IOException {
         Map<String, Object> server = createServerMetadata();
         getConfigEnvironmentVariable(server).put("isRequired", true);
-        assertEnvironmentVariableRejected(server, "MCP Registry environment variable SHARDINGSPHERE_MCP_CONFIG must set isRequired to false.");
+        assertEnvironmentVariableRejected(server, "MCP Registry metadata for SHARDINGSPHERE_MCP_CONFIG must declare isRequired as false.");
     }
     
     @Test
     void assertExecuteRejectsNonStringEnvironmentVariableFormat() throws IOException {
         Map<String, Object> server = createServerMetadata();
         getConfigEnvironmentVariable(server).put("format", "path");
-        assertEnvironmentVariableRejected(server, "MCP Registry environment variable SHARDINGSPHERE_MCP_CONFIG format must be string.");
+        assertEnvironmentVariableRejected(server, "MCP Registry metadata for SHARDINGSPHERE_MCP_CONFIG format must be string.");
     }
     
     @Test
     void assertExecuteRejectsSecretEnvironmentVariable() throws IOException {
         Map<String, Object> server = createServerMetadata();
         getConfigEnvironmentVariable(server).put("isSecret", true);
-        assertEnvironmentVariableRejected(server, "MCP Registry environment variable SHARDINGSPHERE_MCP_CONFIG must set isSecret to false.");
+        assertEnvironmentVariableRejected(server, "MCP Registry metadata for SHARDINGSPHERE_MCP_CONFIG must declare isRequired as false.");
     }
     
     @Test
