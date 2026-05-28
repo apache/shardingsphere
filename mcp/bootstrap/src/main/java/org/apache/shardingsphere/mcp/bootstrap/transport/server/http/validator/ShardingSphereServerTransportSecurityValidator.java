@@ -54,6 +54,7 @@ public final class ShardingSphereServerTransportSecurityValidator implements Ser
     
     private String getFirstHeaderValue(final Map<String, List<String>> headers, final String headerName) {
         return headers.entrySet().stream()
-                .filter(entry -> headerName.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()).findFirst().map(entry -> Objects.toString(entry.getValue().get(0), "").trim()).orElse("");
+                .filter(entry -> headerName.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()).findFirst().map(optional -> Objects.toString(optional.getValue().get(0), "").trim())
+                .orElse("");
     }
 }

@@ -219,7 +219,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         String uriOrTemplate = descriptor.getUriTemplate();
         Optional<String> selfUri = new MCPUriTemplate(uriOrTemplate).expandIfComplete(uriVariables);
-        selfUri.ifPresent(uri -> result.put("self_uri", uri));
+        selfUri.ifPresent(optional -> result.put("self_uri", optional));
         String parentUri = createParentUri(selfUri.orElse(""));
         if (!parentUri.isEmpty()) {
             result.put(MCPPayloadFieldNames.PARENT_RESOURCE, MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent",
@@ -236,7 +236,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     
     private Optional<Map<String, Object>> createNextResourceHint(final String uriTemplate, final String description, final MCPUriVariables variables) {
         return new MCPUriTemplate(uriTemplate).expandIfComplete(variables)
-                .map(uri -> MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_detail", description, MCPPayloadFieldNames.NEXT_RESOURCES));
+                .map(optional -> MCPResourceHintUtils.create(optional, resolveResourceKind(optional), "inspect_detail", description, MCPPayloadFieldNames.NEXT_RESOURCES));
     }
     
     private String resolveResourceKind(final String uri) {

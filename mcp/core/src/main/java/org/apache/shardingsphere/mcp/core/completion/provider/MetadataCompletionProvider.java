@@ -96,8 +96,8 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
             return Map.of();
         }
         return handlerContext.getMetadataQueryFacade().queryDatabase(contextArguments.get("database"))
-                .filter(each -> 1 == each.getSchemas().size())
-                .map(each -> Map.<String, Object>of("schema", each.getSchemas().iterator().next().getSchema()))
+                .filter(optional -> 1 == optional.getSchemas().size())
+                .map(optional -> Map.<String, Object>of("schema", optional.getSchemas().iterator().next().getSchema()))
                 .orElseGet(Map::of);
     }
     

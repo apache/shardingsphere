@@ -89,7 +89,7 @@ class MCPDescriptorCatalogIndexTest {
     @Test
     void assertFindToolRuntimeDescriptor() {
         assertTrue(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor("database_gateway_apply_workflow")
-                .filter(each -> "apply".equals(each.getWorkflowRole()) && each.getSideEffectScope().contains("rule-metadata")).isPresent());
+                .filter(optional -> "apply".equals(optional.getWorkflowRole()) && optional.getSideEffectScope().contains("rule-metadata")).isPresent());
     }
     
     @Test

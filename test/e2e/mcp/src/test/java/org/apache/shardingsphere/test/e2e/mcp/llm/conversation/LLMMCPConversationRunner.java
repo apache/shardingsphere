@@ -429,10 +429,10 @@ public final class LLMMCPConversationRunner {
     private Optional<LLME2EArtifactBundle> validateToolCall(final LLME2EScenario scenario, final String toolName, final Map<String, Object> arguments,
                                                             final LLMMCPConversationArtifacts artifacts) {
         return safetyValidator.validate(toolName, arguments)
-                .map(each -> {
-                    artifacts.addInteractionTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), each.traceKind(), toolName, arguments,
-                            each.failureType()));
-                    return createFailureBundle(scenario, artifacts, each.failureType(), each.message());
+                .map(optional -> {
+                    artifacts.addInteractionTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), optional.traceKind(), toolName, arguments,
+                            optional.failureType()));
+                    return createFailureBundle(scenario, artifacts, optional.failureType(), optional.message());
                 });
     }
     
