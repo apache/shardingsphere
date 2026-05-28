@@ -64,12 +64,15 @@ public final class ShardingSphereServerTransportSecurityValidator implements Ser
             return;
         }
         Optional<MCPSessionAttribution> sessionAttribution = sessionAttributionResolver.resolve(headers);
-        if (sessionAttribution.isPresent()) {
-            try {
-                sessionManager.bindSessionAttribution(sessionId, sessionAttribution.get());
-            } catch (final IllegalStateException ex) {
-                throw new ServerTransportSecurityException(400, ex.getMessage());
-            }
+        if (sessionAttribution.isEmpty()) {
+            return;
+        }
+        Optional<MCPSessionAttribution> boundSessionAttribution = sessionManager.findSessionAttribution(sessionId);
+        if (boundSessionAttribution.isEmpty()) {
+            throw new ServerTransportSecurityException(400, String.format("Session attribution is not bound for session `%s`.", sessionId));
+        }
+        if (!boundSessionAttribution.get().equals(sessionAttribution.get())) {
+            throw new ServerTransportSecurityException(400, String.format("Session attribution does not match existing binding for session `%s`.", sessionId));
         }
     }
     

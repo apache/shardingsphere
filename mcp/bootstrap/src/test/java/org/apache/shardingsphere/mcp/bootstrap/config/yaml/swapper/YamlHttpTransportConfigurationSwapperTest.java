@@ -130,16 +130,36 @@ class YamlHttpTransportConfigurationSwapperTest {
     
     @Test
     void assertSwapToObjectWithSessionAttributionSource() {
-        YamlSessionAttributionSourceConfiguration sessionAttributionSource = new YamlSessionAttributionSourceConfiguration();
-        sessionAttributionSource.setSubjectHeader("X-Test-Subject");
-        sessionAttributionSource.setSourceHeader("X-Test-Source");
-        sessionAttributionSource.setAttributeHeaderPrefix("X-Test-Attr-");
         YamlHttpTransportConfiguration yamlConfig = createYamlConfig("127.0.0.1", 18088, "/mcp");
-        yamlConfig.setSessionAttributionSource(sessionAttributionSource);
+        yamlConfig.setSessionAttributionSource(createSessionAttributionSource("X-Test-Subject", "X-Test-Source", "X-Test-Attr-"));
         HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig);
         assertThat(actual.getSessionAttributionSource().getSubjectHeader(), is("X-Test-Subject"));
         assertThat(actual.getSessionAttributionSource().getSourceHeader(), is("X-Test-Source"));
         assertThat(actual.getSessionAttributionSource().getAttributeHeaderPrefix(), is("X-Test-Attr-"));
+    }
+    
+    @Test
+    void assertSwapToObjectWithInvalidSessionAttributionSubjectHeader() {
+        YamlHttpTransportConfiguration yamlConfig = createYamlConfig("127.0.0.1", 18088, "/mcp");
+        yamlConfig.setSessionAttributionSource(createSessionAttributionSource("X-Test,Subject", "X-Test-Source", "X-Test-Attr-"));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `sessionAttributionSource.subjectHeader` must be a valid HTTP header name."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithInvalidSessionAttributionSourceHeader() {
+        YamlHttpTransportConfiguration yamlConfig = createYamlConfig("127.0.0.1", 18088, "/mcp");
+        yamlConfig.setSessionAttributionSource(createSessionAttributionSource("X-Test-Subject", "X/Test-Source", "X-Test-Attr-"));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `sessionAttributionSource.sourceHeader` must be a valid HTTP header name."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithInvalidSessionAttributionAttributeHeaderPrefix() {
+        YamlHttpTransportConfiguration yamlConfig = createYamlConfig("127.0.0.1", 18088, "/mcp");
+        yamlConfig.setSessionAttributionSource(createSessionAttributionSource("X-Test-Subject", "X-Test-Source", "X-Test-Attr("));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `sessionAttributionSource.attributeHeaderPrefix` must be a valid HTTP header name prefix."));
     }
     
     @Test
@@ -156,6 +176,14 @@ class YamlHttpTransportConfigurationSwapperTest {
         result.setBindHost(bindHost);
         result.setPort(port);
         result.setEndpointPath(endpointPath);
+        return result;
+    }
+    
+    private YamlSessionAttributionSourceConfiguration createSessionAttributionSource(final String subjectHeader, final String sourceHeader, final String attributeHeaderPrefix) {
+        YamlSessionAttributionSourceConfiguration result = new YamlSessionAttributionSourceConfiguration();
+        result.setSubjectHeader(subjectHeader);
+        result.setSourceHeader(sourceHeader);
+        result.setAttributeHeaderPrefix(attributeHeaderPrefix);
         return result;
     }
 }

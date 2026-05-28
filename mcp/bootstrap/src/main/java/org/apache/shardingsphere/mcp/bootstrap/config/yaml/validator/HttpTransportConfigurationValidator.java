@@ -112,11 +112,20 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
             return false;
         }
         for (char each : actualValue.toCharArray()) {
-            if (Character.isWhitespace(each) || ':' == each) {
+            if (!isHttpTokenCharacter(each)) {
                 return false;
             }
         }
         return true;
+    }
+    
+    private boolean isHttpTokenCharacter(final char value) {
+        return value >= '0' && value <= '9' || value >= 'A' && value <= 'Z' || value >= 'a' && value <= 'z' || isHttpTokenSymbol(value);
+    }
+    
+    private boolean isHttpTokenSymbol(final char value) {
+        return '!' == value || '#' == value || '$' == value || '%' == value || '&' == value || '\'' == value || '*' == value || '+' == value || '-' == value || '.' == value
+                || '^' == value || '_' == value || '`' == value || '|' == value || '~' == value;
     }
     
     private void addViolation(final ConstraintValidatorContext context, final String propertyName, final String message) {

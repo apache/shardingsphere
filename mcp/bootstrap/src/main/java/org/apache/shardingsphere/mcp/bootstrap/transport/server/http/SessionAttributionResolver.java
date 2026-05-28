@@ -107,7 +107,7 @@ public final class SessionAttributionResolver {
         for (String each : headerNames) {
             String actualHeaderName = Objects.toString(each, "").trim();
             if (actualHeaderName.toLowerCase(Locale.ENGLISH).startsWith(normalizedPrefix)) {
-                result.put(actualHeaderName.substring(attributeHeaderPrefix.length()), headerValueReader.read(actualHeaderName));
+                result.put(actualHeaderName.substring(attributeHeaderPrefix.length()).toLowerCase(Locale.ENGLISH), headerValueReader.read(actualHeaderName));
             }
         }
         return result;

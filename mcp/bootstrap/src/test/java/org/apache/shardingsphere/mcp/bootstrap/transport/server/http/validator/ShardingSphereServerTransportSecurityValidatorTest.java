@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -56,5 +57,18 @@ class ShardingSphereServerTransportSecurityValidatorTest {
         ServerTransportSecurityException exception = assertThrows(ServerTransportSecurityException.class, () -> actual.validateHeaders(
                 Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), "X-Test-Subject", List.of("other"), "X-Test-Source", List.of("gateway"))));
         assertThat(exception.getMessage(), is("Session attribution does not match existing binding for session `session-1`."));
+    }
+    
+    @Test
+    void assertValidateHeadersWithUnboundSessionAttribution() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
+        sessionManager.createSession("session-1");
+        ShardingSphereServerTransportSecurityValidator actual = new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(),
+                new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
+        ServerTransportSecurityException exception = assertThrows(ServerTransportSecurityException.class, () -> actual.validateHeaders(
+                Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), "X-Test-Subject", List.of("subject"), "X-Test-Source", List.of("gateway"))));
+        assertThat(exception.getStatusCode(), is(400));
+        assertThat(exception.getMessage(), is("Session attribution is not bound for session `session-1`."));
+        assertThat(sessionManager.findSessionAttribution("session-1"), is(Optional.empty()));
     }
 }

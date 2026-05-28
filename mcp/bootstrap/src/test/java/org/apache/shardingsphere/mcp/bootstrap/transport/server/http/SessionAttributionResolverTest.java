@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,8 +38,8 @@ class SessionAttributionResolverTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader("X-Test-Subject")).thenReturn("subject");
         when(request.getHeader("X-Test-Source")).thenReturn("gateway");
-        when(request.getHeaderNames()).thenReturn(java.util.Collections.enumeration(List.of("X-Test-Subject", "X-Test-Source", "X-Test-Attr-region")));
-        when(request.getHeader("X-Test-Attr-region")).thenReturn("ap-south");
+        when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("X-Test-Subject", "X-Test-Source", "X-Test-ATTR-Region")));
+        when(request.getHeader("X-Test-ATTR-Region")).thenReturn("ap-south");
         SessionAttributionResolver resolver = new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-"));
         assertThat(resolver.resolve(request).map(each -> each.getAttributes().get("region")), is(Optional.of("ap-south")));
     }
@@ -46,6 +47,7 @@ class SessionAttributionResolverTest {
     @Test
     void assertResolveFromHeaders() {
         SessionAttributionResolver resolver = new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-"));
-        assertThat(resolver.resolve(Map.of("X-Test-Subject", List.of("subject"), "X-Test-Source", List.of("gateway"))).get().getSubject(), is("subject"));
+        assertThat(resolver.resolve(Map.of("X-Test-Subject", List.of("subject"), "X-Test-Source", List.of("gateway"), "x-test-attr-Region", List.of("ap-south"))).get()
+                .getAttributes().get("region"), is("ap-south"));
     }
 }
