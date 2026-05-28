@@ -72,14 +72,31 @@ description: >-
     If this pattern is absent and the path is high-frequency, bias to `Merge Verdict: Not Mergeable`.
 17. Do not use GitHub Actions, CI status, or check-run completion as part of the merge verdict unless explicitly requested by the user.
 18. Use repository-declared formatting/style gates as the formatting authority; do not introduce extra formatting blockers outside those gates by default.
+19. Treat GitHub PR metadata and `/pulls/{number}/files` as the authoritative scope boundary.
+    Before reporting unrelated changes or making any scope-based finding, verify that the local diff file list matches GitHub's file list.
+    If the lists differ, stop the review, refresh the PR refs, and resolve the diff-boundary mismatch before drawing conclusions.
 
 ## Review Boundary
 
 - Review PR code, tests, behavior, compatibility, regression risk, and scope.
+- For GitHub PRs, derive the reviewed file list from the latest PR head and GitHub `/pulls/{number}/files`, then use local git only to reproduce and inspect that scope.
 - Do not inspect or use GitHub Actions, CI status, or check-run completion for the merge verdict unless the user explicitly asks for CI review.
 - Do not treat CI pending, failing, or passing as a review finding by default; final approvers and mergers handle that gate.
 - Use the repository-declared formatting and style gates as authority. For ShardingSphere, Spotless and Checkstyle are the formatting/style gates.
 - Do not treat `git diff --check` as a blocker when it conflicts with Spotless/Checkstyle behavior, unless the user explicitly asks for that check.
+
+## PR Diff Boundary Rule
+
+When reviewing a GitHub PR locally, never use `base.sha..head.sha` or the current base branch tip as the PR scope boundary.
+Those ranges can include changes that landed on the base branch after the PR branch diverged.
+
+Always reproduce GitHub PR "Files changed" with triple-dot semantics:
+
+1. Fetch the latest base ref and PR head ref.
+2. Record the latest PR `head.sha`, base ref/SHA, and local `MERGE_BASE=$(git merge-base <base-ref> <head-ref>)`.
+3. Review local changes with `git diff <MERGE_BASE>..<head-ref>` or `git diff <base-ref>...<head-ref>`.
+4. Cross-check `git diff --name-status <MERGE_BASE>..<head-ref>` against GitHub `/pulls/{number}/files`.
+5. If the file count or path list differs, do not report unrelated changes or scope findings; refresh refs or use the GitHub file list until the mismatch is explained.
 
 ## Execution Boundary
 
@@ -237,7 +254,7 @@ If the root-cause chain cannot be fully proven fixed, set `Merge Verdict: Not Me
 
 Each review must declare:
 
-- `Reviewed Scope`: files/modules actually reviewed this round.
+- `Reviewed Scope`: files/modules actually reviewed this round, plus the latest PR head SHA, local merge-base SHA when local git is used, and whether the local file list matched GitHub `/pulls/{number}/files`.
 - `Not Reviewed Scope`: unreviewed or only superficially reviewed areas.
 - `Need Expert Review`: whether domain reviewers are required (security, concurrency, performance, protocol, etc.).
 - For SQL parser reviews, `Reviewed Scope` must explicitly name the target dialect, any related trunk / branch dialects checked, and the documentation pages / repo doc paths used to validate syntax behavior.
