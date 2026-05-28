@@ -162,7 +162,13 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     }
     
     private Object adjustValueForBinaryColumnType(final MySQLBinaryColumnType columnType, final Object value) {
-        return MySQLBinaryColumnType.YEAR == columnType && value instanceof Date ? ((Date) value).toLocalDate().getYear() : value;
+        if (MySQLBinaryColumnType.YEAR != columnType) {
+            return value;
+        }
+        if (value instanceof Date) {
+            return ((Date) value).toLocalDate().getYear();
+        }
+        return value instanceof Number ? ((Number) value).intValue() : value;
     }
     
     @Override

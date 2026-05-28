@@ -182,6 +182,84 @@ class MySQLComStmtPrepareExecutorTest {
     }
     
     @Test
+    void assertPrepareSelectYearAndDateColumnsExposesProtocolTypesFromLocalSchema() {
+        String sql = "SELECT birth_year, birth_date FROM foo_db.user";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
+        int connectionId = 5;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+        assertThat(actualIterator.next(), isA(MySQLComStmtPrepareOKPacket.class));
+        DatabasePacket yearPacket = actualIterator.next();
+        assertThat(yearPacket, isA(MySQLColumnDefinition41Packet.class));
+        assertThat(getColumnDefinitionType((MySQLColumnDefinition41Packet) yearPacket), is(MySQLBinaryColumnType.YEAR.getValue()));
+        DatabasePacket datePacket = actualIterator.next();
+        assertThat(datePacket, isA(MySQLColumnDefinition41Packet.class));
+        assertThat(getColumnDefinitionType((MySQLColumnDefinition41Packet) datePacket), is(MySQLBinaryColumnType.DATE.getValue()));
+        assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
+        assertFalse(actualIterator.hasNext());
+        MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
+    }
+    
+    @Test
+    void assertPrepareSelectWithYearAndDateParameterMarkersCarriesProtocolTypes() {
+        String sql = "SELECT name FROM foo_db.user WHERE birth_year = ? AND birth_date = ?";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
+        int connectionId = 6;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        new MySQLComStmtPrepareExecutor(packet, connectionSession).execute();
+        MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+        assertThat(actualPreparedStatement.getParameterColumnTypes(), is(Arrays.asList(MySQLBinaryColumnType.YEAR, MySQLBinaryColumnType.DATE)));
+        MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
+    }
+    
+    @Test
+    void assertPrepareSelectExpressionStatementByProbeReturnsYearProtocolType() throws Exception {
+        String sql = "SELECT YEAR(birth_date) AS year_value FROM foo_db.user";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
+        int connectionId = 7;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(actualPreparedStatement.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSetMetaData.getColumnName(1)).thenReturn("year_value");
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("year_value");
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.DATE);
+        when(resultSetMetaData.getColumnTypeName(1)).thenReturn("YEAR");
+        when(resultSetMetaData.getColumnDisplaySize(1)).thenReturn(4);
+        when(resultSetMetaData.getScale(1)).thenReturn(0);
+        when(resultSetMetaData.isSigned(1)).thenReturn(false);
+        when(resultSetMetaData.isNullable(1)).thenReturn(ResultSetMetaData.columnNoNulls);
+        when(resultSetMetaData.isAutoIncrement(1)).thenReturn(false);
+        when(resultSetMetaData.getTableName(1)).thenReturn("");
+        when(MySQLPreparedStatementMetadataFactory.load(eq(connectionSession), any(MySQLServerPreparedStatement.class))).thenReturn(actualPreparedStatement);
+        Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+        assertThat(actualIterator.next(), isA(MySQLComStmtPrepareOKPacket.class));
+        DatabasePacket actualProjectionPacket = actualIterator.next();
+        assertThat(actualProjectionPacket, isA(MySQLColumnDefinition41Packet.class));
+        assertThat(getColumnDefinitionType((MySQLColumnDefinition41Packet) actualProjectionPacket), is(MySQLBinaryColumnType.YEAR.getValue()));
+        assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
+        assertFalse(actualIterator.hasNext());
+        MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
+    }
+    
+    @Test
     void assertPrepareInsertStatement() {
         String sql = "INSERT INTO user (id, name, age) VALUES (1, ?, ?), (?, 'bar', ?)";
         when(packet.getSQL()).thenReturn(sql);
@@ -346,7 +424,9 @@ class MySQLComStmtPrepareExecutorTest {
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereTable table = new ShardingSphereTable("user", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
-                new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
+                new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false),
+                new ShardingSphereColumn("birth_year", Types.DATE, false, false, false, false, false, false, "YEAR"),
+                new ShardingSphereColumn("birth_date", Types.DATE, false, false, false, false, false, false, "DATE")), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList());
         return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
                 new ConfigurationProperties(new Properties()));
