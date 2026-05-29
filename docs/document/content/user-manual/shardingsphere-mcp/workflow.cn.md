@@ -3,7 +3,7 @@ title = "工作流"
 weight = 5
 +++
 
-工作流是 ShardingSphere-MCP 处理多步骤治理变更的共享机制。
+工作流是 ShardingSphere-MCP 处理多步骤治理变更的共享机制，不是一个独立的业务功能。
 当前它主要由功能插件使用：插件负责理解具体业务、生成 `plan_id` 和变更产物。
 MCP Server 负责保存当前会话中的计划，并提供通用的预览、执行、导出和校验工具。
 
@@ -85,6 +85,12 @@ ShardingSphere-MCP 不直接读取密钥管理系统。
 ## 执行与校验工具
 
 `database_gateway_apply_workflow` 和 `database_gateway_validate_workflow` 是通用工作流工具。
-用户只需要知道：功能插件返回 `plan_id` 后，后续预览、执行和校验都通过这两个工具完成。
+用户通常不会直接选择它们；模型或客户端在功能插件返回 `plan_id` 后再调用。
+
+| 工具 | 实际作用 | 使用时机 |
+| --- | --- | --- |
+| `database_gateway_apply_workflow` | 对已有 `plan_id` 做预览、审查后执行，或导出人工执行包；它不创建加密、脱敏等业务计划。 | 插件规划工具返回 `status = planned` 后。 |
+| `database_gateway_validate_workflow` | 根据可见元数据、规则状态和生成产物校验计划或执行结果；它不执行业务变更。 | 自动执行或人工执行完成后。 |
+
 它们不决定业务语义，只处理当前会话中已存在的工作流计划。
 具体规划工具由功能插件提供。

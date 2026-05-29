@@ -3,7 +3,7 @@ title = "Workflows"
 weight = 5
 +++
 
-Workflows are the shared mechanism that ShardingSphere-MCP uses for multi-step governance changes.
+Workflows are the shared mechanism that ShardingSphere-MCP uses for multi-step governance changes. They are not standalone business features.
 They are mainly used by feature plugins today.
 A plugin understands the concrete business semantics and creates `plan_id` plus change artifacts.
 The MCP Server stores the current-session plan and provides common preview, apply, export, and validation tools.
@@ -87,6 +87,12 @@ Example:
 ## Apply and validation tools
 
 `database_gateway_apply_workflow` and `database_gateway_validate_workflow` are common workflow tools.
-Users only need to know that after a feature plugin returns `plan_id`, preview, apply, and validation use these two tools.
+Users usually do not choose them directly. A model or client calls them after a feature plugin returns `plan_id`.
+
+| Tool | Actual role | When to use |
+| --- | --- | --- |
+| `database_gateway_apply_workflow` | Previews an existing `plan_id`, executes reviewed artifacts, or exports a manual package. It does not create encryption, masking, or other business plans. | After a plugin planning tool returns `status = planned`. |
+| `database_gateway_validate_workflow` | Validates a plan or execution result against visible metadata, rule state, and generated artifacts. It does not execute business changes. | After automatic or manual execution finishes. |
+
 They do not define business semantics; they operate on workflow plans that already exist in the current session.
 Feature plugins provide the concrete planning tools.

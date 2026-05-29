@@ -4,8 +4,9 @@ weight = 4
 +++
 
 Client integration is for desktop clients, IDE extensions, agent platforms, or custom LLM applications that connect to ShardingSphere-MCP.
-It is not a replacement for the curl-based smoke test in Quick Start.
-Its value is letting the client manage connection configuration, session headers, capability discovery, completion, and call orchestration while users focus on metadata or database governance tasks.
+It is not a replacement for the curl-based smoke test in Quick Start, and it is not a guide for users to hand-write JSON-RPC.
+Its value is letting models discover ShardingSphere metadata and governance capabilities through an MCP client, while the client manages connection configuration, session headers, completion, and call orchestration.
+Users only need to describe the metadata lookup, read-only SQL query, or database governance task they want to complete.
 
 Use client integration when:
 
@@ -22,6 +23,9 @@ If you only need to verify that the MCP Server is available, use the curl exampl
 - STDIO is suitable when a local MCP client starts ShardingSphere-MCP as a child process. The client owns the process lifecycle, and stdout carries only MCP protocol frames.
 
 ## HTTP configuration
+
+Add the following snippet to the MCP client's server configuration. The exact file location depends on the client.
+`url` points to an already running HTTP MCP Server.
 
 ```json
 {
@@ -44,12 +48,15 @@ After the session is closed, the session id cannot be reused.
 
 ## STDIO configuration
 
+Add the following snippet to the MCP client's server configuration. The exact file location depends on the client.
+`command` points to the packaged startup script, and `args` points to the STDIO configuration file.
+
 ```json
 {
   "mcpServers": {
     "shardingsphere": {
       "command": "/path/to/apache-shardingsphere-mcp/bin/start.sh",
-      "args": ["conf/mcp-stdio.yaml"]
+      "args": ["/path/to/apache-shardingsphere-mcp/conf/mcp-stdio.yaml"]
     }
   }
 }
@@ -57,6 +64,7 @@ After the session is closed, the session id cannot be reused.
 
 STDIO mode is for local MCP clients that launch ShardingSphere-MCP as a child process.
 It is not a human-oriented interactive shell.
+Replace `/path/to/apache-shardingsphere-mcp` with the actual distribution directory.
 
 In STDIO mode:
 
@@ -64,21 +72,15 @@ In STDIO mode:
 - Diagnostics are written to stderr or `logs/mcp.log`.
 - `command` and `args` in the client configuration should point to the packaged startup script and STDIO config file.
 
-## Capability discovery
+## Capability catalog
 
-MCP list methods discover protocol-level capabilities. `shardingsphere://capabilities` explains ShardingSphere domain capabilities.
-Clients do not need a fixed discovery order; call the method or resource that matches the task.
+See [Capability Catalog](../capabilities/) for the capability catalog and method semantics.
+This page only explains how to configure the MCP Server on the client side and where the call examples are used.
 
-| Capability | Purpose |
-| --- | --- |
-| `shardingsphere://capabilities` | Read the ShardingSphere domain capability catalog for resources, tools, prompts, completions, workflow relationships, and side-effect notes. |
-| `tools/list` | Discover callable tools. |
-| `resources/list` | Discover directly readable resources. |
-| `resources/templates/list` | Discover parameterized resource templates when the client needs to construct resource URIs. |
-| `prompts/list` | Discover available prompts. |
-| `completion/complete` | Get completion candidates for resources, prompts, or arguments. |
+## JSON-RPC call examples
 
-## Common calls
+The following JSON snippets are request examples sent by an MCP client or custom LLM application after session initialization.
+Regular users usually do not send them directly. They are mainly useful for custom clients, debugging, or troubleshooting client integration.
 
 Read runtime status:
 
