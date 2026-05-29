@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * MCP runtime launcher.
+ * MCP Server launcher.
  */
 @RequiredArgsConstructor
 @Slf4j
@@ -48,7 +48,7 @@ public final class MCPRuntimeLauncher {
      * Launch.
      *
      * @param config launch configuration
-     * @return MCP runtime server
+     * @return MCP Server
      * @throws IOException when the active server startup fails
      */
     public MCPRuntimeServer launch(final MCPLaunchConfiguration config) throws IOException {
@@ -74,12 +74,12 @@ public final class MCPRuntimeLauncher {
         int port = server instanceof StreamableHttpMCPServer ? ((StreamableHttpMCPServer) server).getLocalPort() : config.getHttpTransport().getPort();
         String endpoint = String.format("http://%s:%d%s", config.getHttpTransport().getBindHost(), port, config.getHttpTransport().getEndpointPath());
         SessionAttributionResolver sessionAttributionResolver = new SessionAttributionResolver(config.getHttpTransport().getSessionAttributionSource());
-        return List.of(String.format("ShardingSphere MCP runtime started, transport=http, config=%s, databases=%d, endpoint=%s, session_attribution=%s, logs=%s.",
+        return List.of(String.format("ShardingSphere MCP Server started, transport=http, config=%s, databases=%d, endpoint=%s, session_attribution=%s, logs=%s.",
                 configPath, config.getDatabases().size(), endpoint, sessionAttributionResolver.getSummary(), LOG_PATH));
     }
     
     private List<String> createStdioStartupLogMessages(final MCPLaunchConfiguration config) {
-        return List.of(String.format("ShardingSphere MCP runtime started, transport=stdio, config=%s, databases=%d, logs=%s. Stdout is reserved for MCP protocol frames.",
+        return List.of(String.format("ShardingSphere MCP Server started, transport=stdio, config=%s, databases=%d, logs=%s. Stdout is reserved for MCP protocol frames.",
                 configPath, config.getDatabases().size(), LOG_PATH));
     }
     

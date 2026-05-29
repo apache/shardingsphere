@@ -32,11 +32,11 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     @Test
     void assertSwapToObject() {
         RuntimeDatabaseConfiguration actual = swapper.swapToObject(createYamlConfig());
-        assertThat(actual.getDatabaseType(), is("H2"));
-        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:logic"));
+        assertThat(actual.getDatabaseType(), is("MySQL"));
+        assertThat(actual.getJdbcUrl(), is("jdbc:mysql://localhost:3306/logic_db"));
         assertThat(actual.getUsername(), is(" demo "));
         assertThat(actual.getPassword(), is(" secret "));
-        assertThat(actual.getDriverClassName(), is(" org.h2.Driver "));
+        assertThat(actual.getDriverClassName(), is(" com.mysql.cj.jdbc.Driver "));
     }
     
     @Test
@@ -104,21 +104,21 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     @Test
     void assertSwapToYamlConfiguration() {
         YamlRuntimeDatabaseConfiguration actual = swapper.swapToYamlConfiguration(
-                new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));
-        assertThat(actual.getDatabaseType(), is("H2"));
-        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:logic"));
+                new RuntimeDatabaseConfiguration("MySQL", "jdbc:mysql://localhost:3306/logic_db", "", "", "com.mysql.cj.jdbc.Driver"));
+        assertThat(actual.getDatabaseType(), is("MySQL"));
+        assertThat(actual.getJdbcUrl(), is("jdbc:mysql://localhost:3306/logic_db"));
         assertThat(actual.getUsername(), is(""));
         assertThat(actual.getPassword(), is(""));
-        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
+        assertThat(actual.getDriverClassName(), is("com.mysql.cj.jdbc.Driver"));
     }
     
     private YamlRuntimeDatabaseConfiguration createYamlConfig() {
         YamlRuntimeDatabaseConfiguration result = new YamlRuntimeDatabaseConfiguration();
-        result.setDatabaseType("H2");
-        result.setJdbcUrl("jdbc:h2:mem:logic");
+        result.setDatabaseType("MySQL");
+        result.setJdbcUrl("jdbc:mysql://localhost:3306/logic_db");
         result.setUsername(" demo ");
         result.setPassword(" secret ");
-        result.setDriverClassName(" org.h2.Driver ");
+        result.setDriverClassName(" com.mysql.cj.jdbc.Driver ");
         return result;
     }
 }

@@ -181,12 +181,12 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         try {
-            when(result.getDatabaseType()).thenReturn("H2");
+            when(result.getDatabaseType()).thenReturn("MySQL");
             when(result.openConnection("logic_db")).thenReturn(connection);
             when(connection.getMetaData()).thenReturn(databaseMetaData);
-            when(databaseMetaData.getDatabaseProductName()).thenReturn("H2");
+            when(databaseMetaData.getDatabaseProductName()).thenReturn("MySQL");
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
-            when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:facade-concurrency");
+            when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/facade_concurrency");
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }

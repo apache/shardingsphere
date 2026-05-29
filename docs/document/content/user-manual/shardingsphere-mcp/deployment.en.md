@@ -20,7 +20,6 @@ The distribution directory contains:
 - `lib/`: MCP Server dependencies and built-in MCP feature plugins.
 - `plugins/`: external JDBC drivers or extra MCP feature plugin jars.
 - `logs/`: runtime logs.
-- `data/`: data directory used by local file-based JDBC URLs or runtime temporary files.
 
 ## OCI image
 
@@ -55,6 +54,8 @@ docker run --rm -p 18088:18088 \
   -v /path/to/plugins:/opt/shardingsphere-mcp/plugins:ro \
   ghcr.io/apache/shardingsphere-mcp:${latest.release.version}
 ```
+
+`runtimeDatabases` in the configuration file must point to a ShardingSphere-Proxy logical database prepared by the user.
 
 ## Secure deployment
 

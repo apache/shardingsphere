@@ -17,17 +17,11 @@ transport:
   type: STREAMABLE_HTTP
 
 runtimeDatabases:
-  # Replace this demo runtime block for real deployments.
-  # For non-H2 databases, add the JDBC driver jar under plugins/ before startup.
-  orders:
-    databaseType: H2
-    jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
-    username: ""
-    password: ""
-    driverClassName: org.h2.Driver
-  billing:
-    databaseType: H2
-    jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
-    username: ""
-    password: ""
-    driverClassName: org.h2.Driver
+  # Configure this entry before startup.
+  # Replace logic_db, JDBC URL, username, and password with your ShardingSphere-Proxy logical database.
+  logic_db:
+    databaseType: MySQL
+    jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+    username: "proxy_user"
+    password: "proxy_password"
+    driverClassName: com.mysql.cj.jdbc.Driver

@@ -3,8 +3,8 @@ title = "Quick Start"
 weight = 1
 +++
 
-This page shows how to build ShardingSphere-MCP from source, configure an existing ShardingSphere-Proxy logical database, and verify metadata reads and read-only SQL queries over HTTP.
-The examples assume a logical database named `logic_db` with an `orders` table. Replace them with your own logical database and table names.
+This page shows how to build ShardingSphere-MCP from source, connect to a ShardingSphere-Proxy logical database prepared by the user, and verify metadata reads and read-only SQL queries over HTTP.
+`logic_db`, `sample_table`, username, and password are placeholders. Replace them with your own logical database, table, and account before running the commands.
 
 ## Prerequisites
 
@@ -40,8 +40,8 @@ runtimeDatabases:
   logic_db:
     databaseType: MySQL
     jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-    username: "root"
-    password: "root"
+    username: "proxy_user"
+    password: "proxy_password"
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
@@ -55,8 +55,7 @@ MCP_PID=$!
 ```
 
 The default configuration file is `conf/mcp-http.yaml`, and the default endpoint is `http://127.0.0.1:18088/mcp`.
-The startup script runs in the foreground by default. The quick start backgrounds it through the shell so the same terminal can continue running `curl`.
-Keep it in the foreground when running under containers, systemd, or another process manager.
+The command above starts the MCP Server in the background and stores the process id in `MCP_PID` so it can be stopped at the end.
 
 ## Initialize an MCP session
 
@@ -64,7 +63,7 @@ Keep it in the foreground when running under containers, systemd, or another pro
 curl -i -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
-  --data '{"jsonrpc":"2.0","id":"init-1","method":"initialize","params":{"capabilities":{},"clientInfo":{"name":"curl-demo","version":"1.0.0"}}}'
+  --data '{"jsonrpc":"2.0","id":"init-1","method":"initialize","params":{"capabilities":{},"clientInfo":{"name":"curl-client","version":"1.0.0"}}}'
 ```
 
 Expected result:
@@ -105,7 +104,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"logic_db","query":"order","object_types":["table","view"]}}}'
+  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"logic_db","query":"sample","object_types":["table","view"]}}}'
 ```
 
 Expected result:
@@ -129,7 +128,7 @@ curl -sS http://127.0.0.1:18088/mcp \
       "name":"database_gateway_execute_query",
       "arguments":{
         "database":"logic_db",
-        "sql":"SELECT status FROM orders ORDER BY order_id",
+        "sql":"SELECT * FROM sample_table LIMIT 10",
         "max_rows":10
       }
     }

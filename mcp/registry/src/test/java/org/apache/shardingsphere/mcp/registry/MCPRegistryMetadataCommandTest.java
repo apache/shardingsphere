@@ -259,7 +259,7 @@ class MCPRegistryMetadataCommandTest {
         result.put("$schema", "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json");
         result.put("name", "io.github.apache/shardingsphere-mcp");
         result.put("title", "Apache ShardingSphere MCP");
-        result.put("description", "MCP runtime for Apache ShardingSphere metadata discovery, SQL preview, and rule workflows");
+        result.put("description", "MCP Server for Apache ShardingSphere metadata discovery, SQL preview, and rule workflows");
         result.put("version", "5.5.4-SNAPSHOT");
         result.put("packages", List.of(createPackage("stdio", ""), createPackage("streamable-http", "http://127.0.0.1:18088/mcp")));
         return result;

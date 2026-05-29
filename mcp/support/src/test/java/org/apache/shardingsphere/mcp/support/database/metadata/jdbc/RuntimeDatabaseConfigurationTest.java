@@ -39,7 +39,7 @@ class RuntimeDatabaseConfigurationTest {
     @Test
     void assertOpenConnectionWithoutDriverClassName() throws SQLException {
         RecordingDriver.reset();
-        try (Connection actual = new RuntimeDatabaseConfiguration("H2", RecordingDriver.JDBC_URL, "", "", "").openConnection("logic_db")) {
+        try (Connection actual = new RuntimeDatabaseConfiguration("MySQL", RecordingDriver.JDBC_URL, "", "", "").openConnection("logic_db")) {
             assertThat(actual, is(RecordingDriver.CONNECTION));
             assertThat(RecordingDriver.lastUrl, is(RecordingDriver.JDBC_URL));
             assertTrue(RecordingDriver.lastProperties.isEmpty());
@@ -49,7 +49,7 @@ class RuntimeDatabaseConfigurationTest {
     @Test
     void assertOpenConnectionWithDriverClassNameAndCredentials() throws SQLException {
         RecordingDriver.reset();
-        try (Connection actual = new RuntimeDatabaseConfiguration("H2", RecordingDriver.JDBC_URL, "sa", "pwd", RecordingDriver.class.getName()).openConnection("logic_db")) {
+        try (Connection actual = new RuntimeDatabaseConfiguration("MySQL", RecordingDriver.JDBC_URL, "sa", "pwd", RecordingDriver.class.getName()).openConnection("logic_db")) {
             assertThat(actual, is(RecordingDriver.CONNECTION));
             assertThat(RecordingDriver.lastProperties.getProperty("user"), is("sa"));
             assertThat(RecordingDriver.lastProperties.getProperty("password"), is("pwd"));
@@ -60,7 +60,7 @@ class RuntimeDatabaseConfigurationTest {
     @Test
     void assertOpenConnectionWithUnavailableDriverClassName() {
         RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
-                () -> new RuntimeDatabaseConfiguration("H2", "jdbc:test:missing-driver", "", "", "org.example.MissingDriver").openConnection("logic_db"));
+                () -> new RuntimeDatabaseConfiguration("MySQL", "jdbc:test:missing-driver", "", "", "org.example.MissingDriver").openConnection("logic_db"));
         assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: missing_jdbc_driver."));
         assertThat(actual.getCategory(), is("missing_jdbc_driver"));
     }

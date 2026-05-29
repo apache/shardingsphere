@@ -28,7 +28,6 @@ if "%~1"=="" (
 )
 set "LIB_DIR=%APP_HOME%\lib"
 set "PLUGINS_DIR=%APP_HOME%\plugins"
-set "DATA_DIR=%APP_HOME%\data"
 set "LOG_DIR=%APP_HOME%\logs"
 
 if not exist "%CONF_FILE%" (
@@ -37,13 +36,10 @@ if not exist "%CONF_FILE%" (
 )
 
 if not exist "%LIB_DIR%" (
-    >&2 echo Error: MCP runtime libraries are missing under '%LIB_DIR%'.
+    >&2 echo Error: MCP Server libraries are missing under '%LIB_DIR%'.
     exit /b 1
 )
 
-if not exist "%DATA_DIR%" (
-    mkdir "%DATA_DIR%"
-)
 if not exist "%PLUGINS_DIR%" (
     mkdir "%PLUGINS_DIR%"
 )

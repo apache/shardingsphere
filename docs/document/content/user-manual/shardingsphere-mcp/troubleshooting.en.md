@@ -26,7 +26,7 @@ Check:
 - The port is not occupied.
 - `transport.type` is `STREAMABLE_HTTP`.
 - `transport.http.endpointPath` matches the client URL.
-- Remote machines cannot access a runtime bound to `127.0.0.1` directly.
+- Remote machines cannot access an MCP Server bound to `127.0.0.1` directly.
 - When binding to `0.0.0.0`, authentication and network access control should be handled by an upstream gateway.
 
 ## HTTP 403 response
@@ -56,7 +56,7 @@ Workflow `plan_id` values are valid only in the current session.
 
 ## No response in STDIO mode
 
-STDIO is for MCP clients that launch the runtime as a child process. It is not an interactive shell.
+STDIO is for MCP clients that launch the MCP Server as a child process. It is not an interactive shell.
 
 Check:
 

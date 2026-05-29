@@ -3,8 +3,8 @@ title = "快速开始"
 weight = 1
 +++
 
-本页演示如何从源码构建 ShardingSphere-MCP，配置一个已有的 ShardingSphere-Proxy 逻辑库，并通过 HTTP 验证元数据读取和只读 SQL 查询。
-示例假设逻辑库名为 `logic_db`，其中存在 `orders` 表；实际使用时请替换为自己的逻辑库和表名。
+本页演示如何从源码构建 ShardingSphere-MCP，连接一个用户已准备好的 ShardingSphere-Proxy 逻辑库，并通过 HTTP 验证元数据读取和只读 SQL 查询。
+文中的 `logic_db`、`sample_table`、用户名和密码都是占位符；运行前请替换为自己的逻辑库、表和账号。
 
 ## 前置条件
 
@@ -40,8 +40,8 @@ runtimeDatabases:
   logic_db:
     databaseType: MySQL
     jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-    username: "root"
-    password: "root"
+    username: "proxy_user"
+    password: "proxy_password"
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
@@ -55,8 +55,7 @@ MCP_PID=$!
 ```
 
 默认配置文件是 `conf/mcp-http.yaml`，默认端点是 `http://127.0.0.1:18088/mcp`。
-启动脚本默认以前台方式运行；快速开始通过 shell 将其放到后台，便于在同一个终端继续执行 `curl`。
-容器、systemd 或其他进程管理器场景建议保持前台运行。
+上面的命令会在当前终端后台启动 MCP Server，并把进程号保存到 `MCP_PID`，方便最后停止服务。
 
 ## 初始化 MCP 会话
 
@@ -64,7 +63,7 @@ MCP_PID=$!
 curl -i -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
-  --data '{"jsonrpc":"2.0","id":"init-1","method":"initialize","params":{"capabilities":{},"clientInfo":{"name":"curl-demo","version":"1.0.0"}}}'
+  --data '{"jsonrpc":"2.0","id":"init-1","method":"initialize","params":{"capabilities":{},"clientInfo":{"name":"curl-client","version":"1.0.0"}}}'
 ```
 
 预期结果：
@@ -105,7 +104,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"logic_db","query":"order","object_types":["table","view"]}}}'
+  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"logic_db","query":"sample","object_types":["table","view"]}}}'
 ```
 
 预期结果：
@@ -129,7 +128,7 @@ curl -sS http://127.0.0.1:18088/mcp \
       "name":"database_gateway_execute_query",
       "arguments":{
         "database":"logic_db",
-        "sql":"SELECT status FROM orders ORDER BY order_id",
+        "sql":"SELECT * FROM sample_table LIMIT 10",
         "max_rows":10
       }
     }

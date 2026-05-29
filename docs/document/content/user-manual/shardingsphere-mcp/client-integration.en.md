@@ -77,11 +77,11 @@ Read the capability catalog:
 Search metadata:
 
 ```json
-{"jsonrpc":"2.0","id":"search-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"logic_db","query":"orders","object_types":["table"]}}}
+{"jsonrpc":"2.0","id":"search-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"logic_db","query":"sample","object_types":["table"]}}}
 ```
 
 Execute read-only SQL:
 
 ```json
-{"jsonrpc":"2.0","id":"query-1","method":"tools/call","params":{"name":"database_gateway_execute_query","arguments":{"database":"logic_db","sql":"SELECT * FROM orders","max_rows":100}}}
+{"jsonrpc":"2.0","id":"query-1","method":"tools/call","params":{"name":"database_gateway_execute_query","arguments":{"database":"logic_db","sql":"SELECT * FROM sample_table LIMIT 100","max_rows":100}}}
 ```
