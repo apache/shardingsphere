@@ -17,7 +17,7 @@ It does not implement encryption algorithms inside the MCP Server. It generates 
 
 | Capability | How to call | When to use |
 | --- | --- | --- |
-| `database_gateway_plan_encrypt_rule` | Call through `tools/call`. | When a user asks to create or adjust an encryption rule. It creates `plan_id`, DDL, DistSQL, index suggestions, and validation steps. |
+| `database_gateway_plan_encrypt_rule` | Call through `tools/call`. | When a user asks to create, adjust, or drop an encryption rule. It creates `plan_id`, DistSQL, validation steps, and DDL or index suggestions when applicable. |
 | `database_gateway_apply_workflow` | Call through `tools/call` with the `plan_id` returned by planning. | Preview the plan, execute reviewed artifacts, or export a manual package. |
 | `database_gateway_validate_workflow` | Call through `tools/call` with the same `plan_id`. | After automatic or manual execution, validate rule state, logical metadata, and SQL executability. |
 | `shardingsphere://features/encrypt/algorithms` | Read through `resources/read`. | Before planning, inspect encryption algorithm types and required properties visible through Proxy. |
@@ -37,10 +37,17 @@ For creating or altering an encryption rule, the planning tool mainly uses these
 | `column` | Required | Logical column to configure. |
 | `schema` | Optional | Schema or namespace. Recommended for multi-schema logical databases. |
 | `natural_language_intent` | Recommended | Describes whether reversible encryption, equality query, or LIKE query support is needed. MCP uses it to infer planning intent when rule details are not explicit. |
-| `operation_type` | Optional | Rule operation type. This page documents `create` and `alter` only. If omitted, MCP infers it from natural language and existing rules. |
+| `operation_type` | Optional | Rule operation type. Supported values are `create`, `alter`, and `drop`. If omitted, MCP infers it from natural language and existing rules. |
 | `algorithm_type` | Optional | Primary encryption algorithm type. Omit it if you want MCP to recommend one from available algorithms. |
 | `primary_algorithm_properties` | Required by algorithm | Primary encryption algorithm properties, such as an AES key. The required properties come from the algorithm resource. |
 | `allow_index_ddl` | Optional | Whether physical index plans may be generated for assisted-query columns. |
+
+For dropping an encryption rule, provide at least:
+
+- `database`
+- `table`
+- `column`
+- `operation_type=drop`
 
 ## Plan an encryption rule
 
@@ -134,8 +141,33 @@ Validation focuses on:
 - `logical_metadata_validation`
 - `sql_executability_validation`
 
+## Drop an encryption rule
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "encrypt-drop-1",
+  "method": "tools/call",
+  "params": {
+    "name": "database_gateway_plan_encrypt_rule",
+    "arguments": {
+      "database": "<logic-database>",
+      "table": "orders",
+      "column": "status",
+      "operation_type": "drop"
+    }
+  }
+}
+```
+
+If sibling encryption columns still exist on the same table, MCP generates `ALTER ENCRYPT RULE` and keeps the sibling rules.
+It generates `DROP ENCRYPT RULE` only when no encryption column remains on the target table.
+Dropping an encryption rule removes the rule only. It does not restore historical plaintext data, and physical derived columns or indexes still require manual cleanup when they are no longer needed.
+
 ## Limitations
 
 - Supports ShardingSphere-Proxy logical databases only.
 - MCP generates derived column, index, and column type suggestions from logical metadata exposed by Proxy. It does not inspect every physical database directly. Review generated DDL against the real physical table structure before applying it.
+- Does not handle existing data migration or backfill.
+- Does not provide automatic rollback.
 - The planner accepts ordinary unquoted logical database, schema, table, and column names to reduce ambiguity in generated SQL. This is not a ShardingSphere SQL capability limit.

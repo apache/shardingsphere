@@ -17,7 +17,7 @@ weight = 2
 
 | 能力 | 怎么调用 | 什么时候用 |
 | --- | --- | --- |
-| `database_gateway_plan_mask_rule` | 通过 `tools/call` 调用。 | 用户提出创建或调整脱敏规则需求时，用它生成 `plan_id`、DistSQL 和校验步骤。 |
+| `database_gateway_plan_mask_rule` | 通过 `tools/call` 调用。 | 用户提出创建、调整或删除脱敏规则需求时，用它生成 `plan_id`、DistSQL 和校验步骤。 |
 | `database_gateway_apply_workflow` | 通过 `tools/call` 调用，并传入规划阶段返回的 `plan_id`。 | 先预览计划，再在审查后执行，或导出人工执行包。 |
 | `database_gateway_validate_workflow` | 通过 `tools/call` 调用，并传入同一个 `plan_id`。 | 自动执行或人工执行完成后，校验规则状态、逻辑元数据和 SQL 可执行性。 |
 | `shardingsphere://features/mask/algorithms` | 通过 `resources/read` 读取。 | 规划前查看 Proxy 当前可见的脱敏算法类型和参数要求。 |
@@ -37,9 +37,16 @@ weight = 2
 | `column` | 必填 | 要配置脱敏规则的逻辑列。 |
 | `schema` | 可选 | schema 或 namespace；多 schema 逻辑库建议填写。 |
 | `natural_language_intent` | 推荐 | 描述脱敏目标，例如手机号保留位数或替换字符；当未显式填写规则细节时，MCP 会用它推断规划意图。 |
-| `operation_type` | 可选 | 规则操作类型；当前文档只说明 `create` 和 `alter`。不填写时由 MCP 根据自然语言和现有规则推断。 |
+| `operation_type` | 可选 | 规则操作类型；支持 `create`、`alter` 和 `drop`。不填写时由 MCP 根据自然语言和现有规则推断。 |
 | `algorithm_type` | 可选 | 脱敏算法类型；如果希望 MCP 基于可用算法给出建议，可以先不填。 |
 | `primary_algorithm_properties` | 按算法必填 | 脱敏算法参数，例如保留位数和替换字符。具体参数以算法资源返回值为准。 |
+
+删除脱敏规则时，至少提供：
+
+- `database`
+- `table`
+- `column`
+- `operation_type=drop`
 
 ## 规划脱敏规则
 
@@ -125,8 +132,31 @@ weight = 2
 - `logical_metadata_validation`
 - `sql_executability_validation`
 
+## 删除脱敏规则
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "mask-drop-1",
+  "method": "tools/call",
+  "params": {
+    "name": "database_gateway_plan_mask_rule",
+    "arguments": {
+      "database": "<logic-database>",
+      "table": "orders",
+      "column": "phone",
+      "operation_type": "drop"
+    }
+  }
+}
+```
+
+如果同一个表上还有其他脱敏列，MCP 会生成 `ALTER MASK RULE` 并保留这些同表规则。
+只有目标表不再保留任何脱敏列时，MCP 才会生成 `DROP MASK RULE`。
+
 ## 限制
 
 - 仅支持 ShardingSphere-Proxy 逻辑库。
 - 逻辑列和规则校验以 Proxy 可见信息为准；直连真实数据库只能执行普通 SQL，不代表脱敏规则状态。
+- 不提供自动回滚。
 - 规划器只接受普通未加引号的逻辑库、schema、表和列名，用于降低自动生成 SQL 的歧义；这不是 ShardingSphere SQL 能力限制。

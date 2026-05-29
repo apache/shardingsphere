@@ -17,7 +17,7 @@ weight = 1
 
 | 能力 | 怎么调用 | 什么时候用 |
 | --- | --- | --- |
-| `database_gateway_plan_encrypt_rule` | 通过 `tools/call` 调用。 | 用户提出创建或调整加密规则需求时，用它生成 `plan_id`、DDL、DistSQL、索引建议和校验步骤。 |
+| `database_gateway_plan_encrypt_rule` | 通过 `tools/call` 调用。 | 用户提出创建、调整或删除加密规则需求时，用它生成 `plan_id`、DistSQL、校验步骤，以及适用场景下的 DDL 或索引建议。 |
 | `database_gateway_apply_workflow` | 通过 `tools/call` 调用，并传入规划阶段返回的 `plan_id`。 | 先预览计划，再在审查后执行，或导出人工执行包。 |
 | `database_gateway_validate_workflow` | 通过 `tools/call` 调用，并传入同一个 `plan_id`。 | 自动执行或人工执行完成后，校验规则状态、逻辑元数据和 SQL 可执行性。 |
 | `shardingsphere://features/encrypt/algorithms` | 通过 `resources/read` 读取。 | 规划前查看 Proxy 当前可见的加密算法类型和参数要求。 |
@@ -37,10 +37,17 @@ weight = 1
 | `column` | 必填 | 要配置加密规则的逻辑列。 |
 | `schema` | 可选 | schema 或 namespace；多 schema 逻辑库建议填写。 |
 | `natural_language_intent` | 推荐 | 描述是否需要可逆加密、等值查询或模糊查询；当未显式填写规则细节时，MCP 会用它推断规划意图。 |
-| `operation_type` | 可选 | 规则操作类型；当前文档只说明 `create` 和 `alter`。不填写时由 MCP 根据自然语言和现有规则推断。 |
+| `operation_type` | 可选 | 规则操作类型；支持 `create`、`alter` 和 `drop`。不填写时由 MCP 根据自然语言和现有规则推断。 |
 | `algorithm_type` | 可选 | 主加密算法类型；如果希望 MCP 基于可用算法给出建议，可以先不填。 |
 | `primary_algorithm_properties` | 按算法必填 | 主加密算法参数，例如 AES 密钥。具体参数以算法资源返回值为准。 |
 | `allow_index_ddl` | 可选 | 是否允许为辅助查询列生成物理索引计划。 |
+
+删除加密规则时，至少提供：
+
+- `database`
+- `table`
+- `column`
+- `operation_type=drop`
 
 ## 规划加密规则
 
@@ -134,8 +141,33 @@ weight = 1
 - `logical_metadata_validation`
 - `sql_executability_validation`
 
+## 删除加密规则
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "encrypt-drop-1",
+  "method": "tools/call",
+  "params": {
+    "name": "database_gateway_plan_encrypt_rule",
+    "arguments": {
+      "database": "<logic-database>",
+      "table": "orders",
+      "column": "status",
+      "operation_type": "drop"
+    }
+  }
+}
+```
+
+如果同一个表上还有其他加密列，MCP 会生成 `ALTER ENCRYPT RULE` 并保留这些同表规则。
+只有目标表不再保留任何加密列时，MCP 才会生成 `DROP ENCRYPT RULE`。
+删除加密规则只移除规则本身，不会恢复历史明文数据；不再需要的物理派生列或索引仍需人工清理。
+
 ## 限制
 
 - 仅支持 ShardingSphere-Proxy 逻辑库。
 - MCP 根据 Proxy 暴露的逻辑元数据生成派生列、索引和列类型建议；它不会直接检查每个物理库。执行前应结合真实物理库表结构审查生成的 DDL。
+- 不处理已有数据迁移或回填。
+- 不提供自动回滚。
 - 规划器只接受普通未加引号的逻辑库、schema、表和列名，用于降低自动生成 SQL 的歧义；这不是 ShardingSphere SQL 能力限制。
