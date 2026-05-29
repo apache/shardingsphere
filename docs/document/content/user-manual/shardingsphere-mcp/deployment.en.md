@@ -1,6 +1,6 @@
 +++
 title = "Deployment"
-weight = 5
+weight = 6
 +++
 
 ShardingSphere-MCP can run from the standalone distribution built from source or from the official OCI image.

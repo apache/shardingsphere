@@ -4,14 +4,12 @@ weight = 1
 +++
 
 本页演示如何从源码构建 ShardingSphere-MCP，连接一个用户已准备好的 ShardingSphere-Proxy 逻辑库，并通过 HTTP 验证元数据读取和只读 SQL 查询。
-文中的 `logic_db`、`sample_table`、用户名和密码都是占位符；运行前请替换为自己的逻辑库、表和账号。
 
 ## 前置条件
 
 - `JAVA_HOME` 或 `PATH` 中可用的 JDK 21。
 - 一个可通过 JDBC 访问的 ShardingSphere-Proxy 逻辑库。
 - `curl`，用于发送 HTTP 请求。
-- 支持 sh/bash 语法的终端。
 
 ## 构建发行包
 
@@ -37,25 +35,34 @@ cd distribution/mcp/target/apache-shardingsphere-mcp-*
 
 ```yaml
 runtimeDatabases:
-  logic_db:
+  "<logic-database>":
     databaseType: MySQL
-    jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-    username: "proxy_user"
-    password: "proxy_password"
+    jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
+    username: "<proxy-username>"
+    password: "<proxy-password>"
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
+将 `<logic-database>`、`<proxy-host>`、`<proxy-port>`、`<proxy-username>` 和 `<proxy-password>` 替换为 ShardingSphere-Proxy 的实际连接信息。
 如果目标数据库驱动没有随发行包提供，请在启动前把对应 JDBC 驱动 jar 放入 `plugins/`。
 
 ## 启动 HTTP MCP Server
+
+Unix-like 系统：
 
 ```bash
 bin/start.sh > logs/mcp-http.log 2>&1 &
 MCP_PID=$!
 ```
 
+Windows：
+
+```bat
+start "ShardingSphere MCP" cmd /c "bin\start.bat > logs\mcp-http.log 2>&1"
+```
+
 默认配置文件是 `conf/mcp-http.yaml`，默认端点是 `http://127.0.0.1:18088/mcp`。
-上面的命令会在当前终端后台启动 MCP Server，并把进程号保存到 `MCP_PID`，方便最后停止服务。
+Unix-like 示例会在当前终端后台启动 MCP Server，并把进程号保存到 `MCP_PID`，方便最后停止服务。
 
 ## 初始化 MCP 会话
 
@@ -72,21 +79,14 @@ curl -i -sS http://127.0.0.1:18088/mcp \
 - 响应头包含 `MCP-Protocol-Version`。
 - 后续 HTTP 请求必须携带这两个响应头。
 
-从响应头复制取值，并在当前终端设置变量：
-
-```bash
-export SESSION_ID="<MCP-Session-Id value>"
-export PROTOCOL_VERSION="<MCP-Protocol-Version value>"
-```
-
 ## 读取元数据资源
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
-  -H "MCP-Session-Id: ${SESSION_ID}" \
-  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  -H 'MCP-Session-Id: <MCP-Session-Id value>' \
+  -H 'MCP-Protocol-Version: <MCP-Protocol-Version value>' \
   --data '{"jsonrpc":"2.0","id":"resource-1","method":"resources/read","params":{"uri":"shardingsphere://databases"}}'
 ```
 
@@ -94,7 +94,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 - 响应类型是 `text/event-stream`。
 - JSON 负载位于 `data:` 行。
-- 返回内容包含 `logic_db`。
+- 返回内容包含 `<logic-database>` 对应的逻辑库名称。
 
 ## 搜索元数据
 
@@ -102,9 +102,21 @@ curl -sS http://127.0.0.1:18088/mcp \
 curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
-  -H "MCP-Session-Id: ${SESSION_ID}" \
-  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"logic_db","query":"sample","object_types":["table","view"]}}}'
+  -H 'MCP-Session-Id: <MCP-Session-Id value>' \
+  -H 'MCP-Protocol-Version: <MCP-Protocol-Version value>' \
+  --data '{
+    "jsonrpc":"2.0",
+    "id":"tool-1",
+    "method":"tools/call",
+    "params":{
+      "name":"database_gateway_search_metadata",
+      "arguments":{
+        "database":"<logic-database>",
+        "query":"<metadata-keyword>",
+        "object_types":["table","view"]
+      }
+    }
+  }'
 ```
 
 预期结果：
@@ -118,8 +130,8 @@ curl -sS http://127.0.0.1:18088/mcp \
 curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
-  -H "MCP-Session-Id: ${SESSION_ID}" \
-  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  -H 'MCP-Session-Id: <MCP-Session-Id value>' \
+  -H 'MCP-Protocol-Version: <MCP-Protocol-Version value>' \
   --data '{
     "jsonrpc":"2.0",
     "id":"tool-2",
@@ -127,8 +139,8 @@ curl -sS http://127.0.0.1:18088/mcp \
     "params":{
       "name":"database_gateway_execute_query",
       "arguments":{
-        "database":"logic_db",
-        "sql":"SELECT * FROM sample_table LIMIT 10",
+        "database":"<logic-database>",
+        "sql":"SELECT * FROM <table-name> LIMIT 10",
         "max_rows":10
       }
     }
@@ -143,13 +155,26 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 ## 关闭会话并停止服务
 
+Unix-like 系统：
+
 ```bash
 curl -sS -D - -o /dev/null \
   -X DELETE http://127.0.0.1:18088/mcp \
-  -H "MCP-Session-Id: ${SESSION_ID}" \
-  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}"
+  -H 'MCP-Session-Id: <MCP-Session-Id value>' \
+  -H 'MCP-Protocol-Version: <MCP-Protocol-Version value>'
 kill "${MCP_PID}"
 ```
+
+Windows：
+
+```bat
+curl -sS -D - -o NUL ^
+  -X DELETE http://127.0.0.1:18088/mcp ^
+  -H "MCP-Session-Id: <MCP-Session-Id value>" ^
+  -H "MCP-Protocol-Version: <MCP-Protocol-Version value>"
+```
+
+然后在 `ShardingSphere MCP` 启动窗口按 `Ctrl+C`，或直接关闭该窗口，停止 MCP Server 进程。
 
 预期结果：
 

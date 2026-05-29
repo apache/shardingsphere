@@ -1,9 +1,9 @@
 +++
-title = "Encrypt"
+title = "Data Encryption"
 weight = 1
 +++
 
-The Encrypt MCP feature helps MCP clients plan encryption requirements into DDL, DistSQL, index plans, and validation steps executable through ShardingSphere-Proxy.
+The Data Encryption MCP feature helps MCP clients plan encryption requirements into DDL, DistSQL, index plans, and validation steps executable through ShardingSphere-Proxy.
 It does not implement encryption algorithms inside the MCP Server. It generates and applies encryption rule changes for ShardingSphere logical databases.
 
 ## Prerequisites
@@ -59,7 +59,7 @@ For dropping an encryption rule, the minimum input is:
   "params": {
     "name": "database_gateway_plan_encrypt_rule",
     "arguments": {
-      "database": "logic_db",
+      "database": "<logic-database>",
       "table": "orders",
       "column": "status",
       "natural_language_intent": "Encrypt status reversibly with equality query support and without LIKE query support",
@@ -145,7 +145,7 @@ Validation focuses on:
   "params": {
     "name": "database_gateway_plan_encrypt_rule",
     "arguments": {
-      "database": "logic_db",
+      "database": "<logic-database>",
       "table": "orders",
       "column": "status",
       "operation_type": "drop"
@@ -160,7 +160,6 @@ It generates `DROP ENCRYPT RULE` only when no encryption column remains on the t
 ## Limitations
 
 - Supports ShardingSphere-Proxy logical databases only.
-- Supports `create`, `alter`, and `drop`.
 - `drop` removes rules only; physical derived columns and indexes still require manual cleanup.
 - Does not handle existing data migration or backfill.
 - Does not provide automatic rollback.

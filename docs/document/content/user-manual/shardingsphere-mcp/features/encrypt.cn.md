@@ -1,9 +1,9 @@
 +++
-title = "Encrypt"
+title = "数据加密"
 weight = 1
 +++
 
-Encrypt MCP 功能插件帮助 MCP 客户端把加密需求规划成 ShardingSphere-Proxy 可执行的 DDL、DistSQL、索引计划和校验步骤。
+数据加密 MCP 功能插件帮助 MCP 客户端把加密需求规划成 ShardingSphere-Proxy 可执行的 DDL、DistSQL、索引计划和校验步骤。
 它不在 MCP Server 内实现加密算法，而是面向 ShardingSphere 逻辑库生成和执行加密规则变更。
 
 ## 前置条件
@@ -59,7 +59,7 @@ Encrypt MCP 功能插件帮助 MCP 客户端把加密需求规划成 ShardingSph
   "params": {
     "name": "database_gateway_plan_encrypt_rule",
     "arguments": {
-      "database": "logic_db",
+      "database": "<logic-database>",
       "table": "orders",
       "column": "status",
       "natural_language_intent": "给 status 做可逆加密，需要等值查询，不需要模糊查询",
@@ -145,7 +145,7 @@ Encrypt MCP 功能插件帮助 MCP 客户端把加密需求规划成 ShardingSph
   "params": {
     "name": "database_gateway_plan_encrypt_rule",
     "arguments": {
-      "database": "logic_db",
+      "database": "<logic-database>",
       "table": "orders",
       "column": "status",
       "operation_type": "drop"
@@ -160,7 +160,6 @@ Encrypt MCP 功能插件帮助 MCP 客户端把加密需求规划成 ShardingSph
 ## 限制
 
 - 仅支持 ShardingSphere-Proxy 逻辑库。
-- 支持 `create`、`alter`、`drop`。
 - `drop` 只删除规则，不自动清理物理派生列和索引。
 - 不处理存量数据迁移或回填。
 - 不提供自动回滚能力。

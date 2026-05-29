@@ -1,9 +1,9 @@
 +++
-title = "Mask"
+title = "数据脱敏"
 weight = 2
 +++
 
-Mask MCP 功能插件帮助 MCP 客户端把脱敏需求规划成 ShardingSphere-Proxy 可执行的 DistSQL 和校验步骤。
+数据脱敏 MCP 功能插件帮助 MCP 客户端把脱敏需求规划成 ShardingSphere-Proxy 可执行的 DistSQL 和校验步骤。
 脱敏规则直接作用于逻辑列，不生成加密功能使用的物理派生列。
 
 ## 前置条件
@@ -58,7 +58,7 @@ Mask MCP 功能插件帮助 MCP 客户端把脱敏需求规划成 ShardingSphere
   "params": {
     "name": "database_gateway_plan_mask_rule",
     "arguments": {
-      "database": "logic_db",
+      "database": "<logic-database>",
       "table": "orders",
       "column": "phone",
       "natural_language_intent": "把 phone 当作手机号做脱敏，保留前3后4",
@@ -137,7 +137,7 @@ Mask MCP 功能插件帮助 MCP 客户端把脱敏需求规划成 ShardingSphere
   "params": {
     "name": "database_gateway_plan_mask_rule",
     "arguments": {
-      "database": "logic_db",
+      "database": "<logic-database>",
       "table": "orders",
       "column": "phone",
       "operation_type": "drop"
@@ -152,7 +152,5 @@ Mask MCP 功能插件帮助 MCP 客户端把脱敏需求规划成 ShardingSphere
 ## 限制
 
 - 仅支持 ShardingSphere-Proxy 逻辑库。
-- 支持 `create`、`alter`、`drop`。
-- 不生成物理派生列。
 - 不提供自动回滚能力。
 - 规划输入只接受标准未加引号的逻辑标识符。

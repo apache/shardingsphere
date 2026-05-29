@@ -1,9 +1,9 @@
 +++
-title = "Mask"
+title = "Data Masking"
 weight = 2
 +++
 
-The Mask MCP feature helps MCP clients plan masking requirements into DistSQL and validation steps executable through ShardingSphere-Proxy.
+The Data Masking MCP feature helps MCP clients plan masking requirements into DistSQL and validation steps executable through ShardingSphere-Proxy.
 Mask rules apply directly to logical columns and do not generate physical derived columns used by the Encrypt feature.
 
 ## Prerequisites
@@ -58,7 +58,7 @@ For dropping a mask rule, the minimum input is:
   "params": {
     "name": "database_gateway_plan_mask_rule",
     "arguments": {
-      "database": "logic_db",
+      "database": "<logic-database>",
       "table": "orders",
       "column": "phone",
       "natural_language_intent": "Mask phone as a phone number and keep the first 3 and last 4 characters",
@@ -137,7 +137,7 @@ Validation focuses on:
   "params": {
     "name": "database_gateway_plan_mask_rule",
     "arguments": {
-      "database": "logic_db",
+      "database": "<logic-database>",
       "table": "orders",
       "column": "phone",
       "operation_type": "drop"
@@ -152,7 +152,5 @@ It generates `DROP MASK RULE` only when no mask column remains on the target tab
 ## Limitations
 
 - Supports ShardingSphere-Proxy logical databases only.
-- Supports `create`, `alter`, and `drop`.
-- Does not generate physical derived columns.
 - Does not provide automatic rollback.
 - Planning input accepts only standard unquoted logical identifiers.
