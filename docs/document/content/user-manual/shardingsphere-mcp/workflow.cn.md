@@ -1,26 +1,26 @@
 +++
-title = "工作流"
+title = "插件工作流"
 weight = 5
 +++
 
-工作流是 ShardingSphere-MCP 处理多步骤治理变更的共享机制，不是一个独立的业务功能。
-当前它主要由功能插件使用：插件负责理解具体业务、生成 `plan_id` 和变更产物。
-MCP Server 负责保存当前会话中的计划，并提供通用的预览、执行、导出和校验工具。
+插件工作流是 ShardingSphere-MCP 处理多步骤治理变更的共享机制，不是一个独立的业务功能。
+功能插件负责理解具体业务、生成 `plan_id` 和变更产物；MCP Server 负责保存当前会话中的计划，并提供统一的预览、执行、导出和校验阶段接口。
 
-用户通常不会为了读取元数据、搜索对象或执行只读 SQL 单独使用工作流。
-只有当插件规划工具返回 `plan_id` 时，才需要继续按照本页完成审查、应用和校验。
-本页独立说明工作流，是因为不同插件共享同一套状态、执行模式和敏感输入处理方式；具体可规划的业务能力仍以各功能插件页面为准。
+用户不会为了读取元数据、搜索对象或执行只读 SQL 单独使用插件工作流。
+只有当插件规划工具返回 `plan_id` 时，模型或客户端才需要继续按照本页完成审查、应用和校验。
+本页说明插件工作流，是因为这些阶段工具会出现在 MCP 工具列表中，并且不同插件共享同一套状态、执行模式和敏感输入处理方式。
+具体可规划的业务能力仍以各功能插件页面为准。
 
 ## 基本阶段
 
 一个典型工作流包含：
 
-1. 调用插件自己的规划工具，生成计划并返回 `plan_id`。
+1. 调用功能插件规划工具，生成计划并返回 `plan_id`。
 2. 如果返回 `status = clarifying`，按 `clarification_questions` 补齐缺失输入。
 3. 如果返回 `status = planned`，审查生成的变更产物。
-4. 调用 `database_gateway_apply_workflow` 并先使用 `execution_mode=preview`。
-5. 审查预览结果后，使用 `execution_mode=review-then-execute` 执行，或使用 `manual-only` 导出人工执行包。
-6. 调用 `database_gateway_validate_workflow` 校验最终状态。
+4. 模型或客户端调用 `database_gateway_apply_workflow`，并先使用 `execution_mode=preview`。
+5. 用户审查预览结果后，模型或客户端使用 `execution_mode=review-then-execute` 执行，或使用 `manual-only` 导出人工执行包。
+6. 模型或客户端调用 `database_gateway_validate_workflow` 校验最终状态。
 
 ## 会话与 plan_id
 
@@ -82,10 +82,11 @@ ShardingSphere-MCP 不直接读取密钥管理系统。
 }
 ```
 
-## 执行与校验工具
+## 阶段工具
 
-`database_gateway_apply_workflow` 和 `database_gateway_validate_workflow` 是通用工作流工具。
-用户通常不会直接选择它们；模型或客户端在功能插件返回 `plan_id` 后再调用。
+`database_gateway_apply_workflow` 和 `database_gateway_validate_workflow` 会出现在 MCP 工具列表中，因此需要在文档中说明。
+它们不是独立业务功能，而是插件规划返回 `plan_id` 后使用的阶段接口。
+用户通常不需要直接选择它们；模型或客户端会在审查、执行和校验阶段调用。
 
 | 工具 | 实际作用 | 使用时机 |
 | --- | --- | --- |

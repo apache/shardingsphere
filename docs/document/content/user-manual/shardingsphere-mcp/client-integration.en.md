@@ -11,12 +11,12 @@ Users only need to describe the metadata lookup, read-only SQL query, or databas
 
 Use client integration when:
 
-- An MCP client needs to expose ShardingSphere metadata and governance tools to a model.
-- The same MCP Server configuration should be reused instead of hand-writing curl requests.
-- The client needs to keep HTTP session headers or manage a local ShardingSphere-MCP child process through STDIO.
-- The client needs to discover tools, resources, prompts, and completion targets per task instead of hardcoding the full capability catalog.
+- A model client, IDE extension, or agent platform that supports MCP needs to connect to ShardingSphere.
+- A model should use ShardingSphere metadata for query assistance, structure understanding, diagnostics, or governance planning.
+- A team needs a controlled database access path instead of handing database connection information directly to a model.
+- A custom agent platform needs ShardingSphere metadata, safe SQL, and governance plugin capabilities.
 
-If you only need to verify that the MCP Server is available, use the curl examples in Quick Start.
+See [Capability Catalog](../capabilities/) for the full list of resources, tools, prompts, and completion targets.
 
 ## Choose a transport
 
@@ -73,15 +73,11 @@ In STDIO mode:
 - Diagnostics are written to stderr or `logs/mcp.log`.
 - `command` and `args` in the client configuration should point to the packaged startup script and STDIO config file.
 
-## Capability catalog
+## Protocol call examples
 
-See [Capability Catalog](../capabilities/) for the capability catalog and method semantics.
-This page only explains how to configure the MCP Server on the client side and where the call examples are used.
-
-## JSON-RPC call examples
-
-The following JSON snippets are request examples sent by an MCP client or custom LLM application after session initialization.
-Regular users usually do not send them directly. They are mainly useful for custom clients, debugging, or troubleshooting client integration.
+When using an existing MCP client or agent platform, users usually describe tasks in natural language, such as "show tables in the logical database" or "inspect columns in the orders table".
+The client sends MCP protocol requests automatically based on the model's choices. Users do not paste the following JSON into a model chat.
+The examples below show protocol messages sent behind the scenes, and are useful for client development, integration debugging, or troubleshooting.
 
 Read runtime status:
 

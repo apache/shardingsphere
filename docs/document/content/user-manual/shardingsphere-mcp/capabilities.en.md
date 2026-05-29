@@ -25,15 +25,35 @@ Method names, tool names, and prompt names do not use a URI prefix. Only resourc
 | `completion/complete` | MCP protocol method | Gets completion candidates for resources, prompts, or arguments. |
 | `shardingsphere://capabilities` | ShardingSphere-MCP resource URI | Reads the ShardingSphere domain capability catalog. |
 
-## Capability Availability
+Capability discovery returns the protocol surface of the current MCP Server. Whether a capability is actually useful still depends on whether `runtimeDatabases` connects to ShardingSphere-Proxy or to a regular database.
+Clients should read `shardingsphere://runtime` and `shardingsphere://databases/{database}/capabilities` before deciding which resources to read or which tools to call.
 
-ShardingSphere-MCP exposes one protocol surface, but runtime availability depends on the target configured in `runtimeDatabases`.
+### Connecting to ShardingSphere-Proxy
 
-- When connected to ShardingSphere-Proxy, logical metadata, logical SQL, DistSQL, encryption or masking rules, and algorithm plugin capabilities are available. Physical metadata still follows what Proxy exposes.
-- When connected to a physical database, general JDBC metadata and SQL execution capabilities are available. ShardingSphere rules, algorithm plugins, and workflows that depend on DistSQL do not apply.
-- Clients should read `shardingsphere://runtime` and `shardingsphere://databases/{database}/capabilities` before assuming that every resource or tool behaves the same for every connection target.
+Use this mode when a model needs to understand ShardingSphere logical database structure, read governance rule state, execute controlled SQL, or create reviewable governance change plans through feature plugins.
+In this mode, logical metadata, logical SQL, DistSQL, rule state, algorithm plugins, and plugin workflows can be used through MCP capabilities.
+
+Usage limits:
+
+- Physical metadata follows what Proxy exposes and should not be treated as the complete catalog of every underlying physical database.
+- Capabilities that depend on ShardingSphere rules, algorithms, or DistSQL apply only to Proxy connections.
+- Planning capabilities create reviewable plans. Business impact still needs to be reviewed before execution.
+
+### Connecting directly to a database
+
+Use this mode when the MCP Server should act as a controlled access path to a regular database for reading JDBC metadata, searching objects, assisting query generation, or executing restricted SQL.
+In this mode, general database metadata and SQL tools are available.
+
+Usage limits:
+
+- ShardingSphere rules, algorithm plugins, and plugin workflows that depend on DistSQL do not apply.
+- Returned metadata is database-native metadata and does not include ShardingSphere logical rule views.
+- Clients must not assume that resources and tools behave exactly the same for direct database connections and Proxy connections.
 
 ## Resources
+
+Resources provide context to the model, such as runtime status, database lists, table structure, column information, or workflow plans.
+Clients or models read concrete resource URIs through `resources/read`; resource templates must be filled before they are read.
 
 | Resource URI or template | Type | Purpose |
 | --- | --- | --- |
@@ -58,31 +78,40 @@ ShardingSphere-MCP exposes one protocol surface, but runtime availability depend
 | `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}` | Resource template | Reads one view column. |
 | `shardingsphere://workflows/{plan_id}` | Resource template | Reads a current-session workflow plan, clarification questions, artifacts, and next actions. |
 
-Feature plugin resources, tools, prompts, and completion targets are documented on the corresponding plugin pages.
+Plugin resources, tools, prompts, and completion targets are documented on the corresponding plugin pages.
 
 ## Tools
+
+Tools execute actions, such as searching metadata, executing SQL, or handling plugin workflow phases.
+Models call tools through `tools/call`. Tools with side effects require an explicit execution mode and should be previewed or reviewed first.
 
 | Tool | Purpose | Side effects |
 | --- | --- | --- |
 | `database_gateway_search_metadata` | Search runtime database metadata by name fragment and object type, and return resource hints for follow-up reads. | None. |
 | `database_gateway_execute_query` | Execute exactly one classifier-approved `SELECT` or `EXPLAIN ANALYZE` statement. | None; rejects DML, DDL, DCL, transaction control, savepoints, and other side-effecting SQL. |
 | `database_gateway_execute_update` | Preview or execute one SQL statement that may mutate data, metadata, rules, or transaction state. | Yes; requires explicit `execution_mode=preview` or `execution_mode=execute`. |
-| `database_gateway_apply_workflow` | Preview, execute, or export a manual package for a planned workflow. | Depends on `execution_mode`; `preview` and `manual-only` do not change runtime state. |
-| `database_gateway_validate_workflow` | Validate a planned or applied workflow against visible metadata and generated artifacts. | None. |
+| `database_gateway_apply_workflow` | After plugin planning returns `plan_id`, preview, execute, or export a manual package. | Depends on `execution_mode`; `preview` and `manual-only` do not change runtime state. |
+| `database_gateway_validate_workflow` | After plugin workflow execution, validate the result against visible metadata and generated artifacts. | None. |
 
-Data Encryption, Data Masking, and other feature plugin tools are documented on the corresponding plugin pages.
+Plugin tools are documented on the corresponding plugin pages.
 
 ## Prompts
+
+Prompts guide the model through a task, such as which resources to read first, which tool to choose, or how to recover from failure.
+Clients fetch prompt content through `prompts/get` and provide it to the model for reasoning. Prompts are not commands that users need to run manually.
 
 | Prompt | Purpose |
 | --- | --- |
 | `inspect_metadata` | Guide the model to read database metadata before choosing a search tool or detail resource. |
 | `safe_sql_execution` | Guide the model to choose the correct SQL tool for read-only queries or side-effecting SQL. |
-| `recover_workflow` | Guide the model to recover or re-plan after workflow failure or unavailable `plan_id`. |
+| `recover_workflow` | Guide the model to recover or re-plan after plugin workflow failure or unavailable `plan_id`. |
 
-Data Encryption, Data Masking, and other feature plugin prompts are documented on the corresponding plugin pages.
+Plugin prompts are documented on the corresponding plugin pages.
 
 ## Completion targets
+
+Completion targets help clients or models fill resource URIs, prompt arguments, or tool arguments.
+For example, when a user provides only part of a database, schema, table, or column name, the client can request candidates through `completion/complete`.
 
 ### Resource completion targets
 
@@ -109,4 +138,4 @@ Data Encryption, Data Masking, and other feature plugin prompts are documented o
 | `safe_sql_execution` | `database`, `schema` |
 | `recover_workflow` | `plan_id` |
 
-Feature plugin prompt completion targets are documented on the corresponding plugin pages.
+Plugin prompt completion targets are documented on the corresponding plugin pages.

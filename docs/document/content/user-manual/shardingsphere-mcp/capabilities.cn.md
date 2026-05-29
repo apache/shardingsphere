@@ -25,15 +25,35 @@ weight = 2
 | `completion/complete` | MCP 协议方法 | 获取资源、提示或参数的补全候选。 |
 | `shardingsphere://capabilities` | ShardingSphere-MCP 资源 URI | 读取 ShardingSphere 领域能力目录。 |
 
-## 能力可用性说明
+能力发现返回的是当前 MCP Server 的协议表面；实际能否使用某项能力，还取决于 `runtimeDatabases` 连接的是 ShardingSphere-Proxy 还是普通数据库。
+客户端应先读取 `shardingsphere://runtime` 和 `shardingsphere://databases/{database}/capabilities`，再决定要读取哪些资源或调用哪些工具。
 
-ShardingSphere-MCP 的协议表面是统一的，但运行时可用性取决于 `runtimeDatabases` 的连接目标。
+### 连接 ShardingSphere-Proxy
 
-- 连接 ShardingSphere-Proxy 时，逻辑元数据、逻辑 SQL、DistSQL、加密或脱敏规则以及算法插件能力可用，但物理元数据以 Proxy 暴露结果为准。
-- 连接真实数据库时，通用 JDBC 元数据和 SQL 执行能力可用；ShardingSphere 规则、算法插件和依赖 DistSQL 的工作流不适用。
-- 客户端应优先读取 `shardingsphere://runtime` 和 `shardingsphere://databases/{database}/capabilities` 判断当前数据库能力，不应假设所有资源和工具在所有连接目标下等价。
+适合让模型理解 ShardingSphere 逻辑库结构、读取治理规则状态、执行受控 SQL，或通过功能插件生成可审查的治理变更计划。
+此模式下，逻辑元数据、逻辑 SQL、DistSQL、规则状态、算法插件和插件工作流可以被 MCP 能力使用。
+
+使用限制：
+
+- 物理元数据以 Proxy 暴露结果为准，不能等同于每个底层物理库的完整元数据。
+- 依赖 ShardingSphere 规则、算法或 DistSQL 的功能只适用于 Proxy 连接。
+- 规划类能力生成的是可审查计划，执行前仍需确认业务影响。
+
+### 直接连接数据库
+
+适合把 MCP Server 作为普通数据库的受控访问通路，用于读取 JDBC 元数据、搜索对象、辅助生成查询，或执行受限 SQL。
+此模式下，通用数据库元数据和 SQL 工具可用。
+
+使用限制：
+
+- ShardingSphere 规则、算法插件和依赖 DistSQL 的插件工作流不适用。
+- 返回的是数据库自身元数据，不包含 ShardingSphere 逻辑规则视图。
+- 客户端不能假设直接连接数据库和连接 Proxy 时暴露的资源、工具行为完全一致。
 
 ## 资源
+
+资源用于给模型提供上下文，例如运行时状态、数据库列表、表结构、列信息或工作流计划。
+客户端或模型通过 `resources/read` 读取具体资源 URI；资源模板需要先填充参数，再读取。
 
 | 资源 URI 或模板 | 类型 | 用途 |
 | --- | --- | --- |
@@ -58,31 +78,40 @@ ShardingSphere-MCP 的协议表面是统一的，但运行时可用性取决于 
 | `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}` | 资源模板 | 读取一个视图列的详情。 |
 | `shardingsphere://workflows/{plan_id}` | 资源模板 | 读取当前会话中的工作流计划、补问信息、变更产物和下一步动作。 |
 
-功能插件提供的资源、工具、提示和补全目标在对应插件页面说明。
+插件提供的资源、工具、提示和补全目标在对应插件页面说明。
 
 ## 工具
+
+工具用于执行动作，例如搜索元数据、执行 SQL，或处理插件工作流阶段。
+模型通过 `tools/call` 调用工具；有副作用的工具需要显式执行模式，并应先预览或审查。
 
 | 工具 | 用途 | 副作用 |
 | --- | --- | --- |
 | `database_gateway_search_metadata` | 按名称片段和对象类型搜索运行时数据库元数据，并返回后续资源读取提示。 | 无。 |
 | `database_gateway_execute_query` | 执行一个已判定为查询类的 `SELECT` 或 `EXPLAIN ANALYZE`。 | 无；拒绝 DML、DDL、DCL、事务控制、savepoint 和其他有副作用 SQL。 |
 | `database_gateway_execute_update` | 预览或执行一个可能修改数据、元数据、规则或事务状态的 SQL。 | 有；必须显式传入 `execution_mode=preview` 或 `execution_mode=execute`。 |
-| `database_gateway_apply_workflow` | 预览、执行或导出已规划工作流的人工执行包。 | 取决于 `execution_mode`；`preview` 和 `manual-only` 不修改运行时状态。 |
-| `database_gateway_validate_workflow` | 根据可见元数据和生成产物校验计划或执行结果。 | 无。 |
+| `database_gateway_apply_workflow` | 插件规划返回 `plan_id` 后，预览、执行或导出人工执行包。 | 取决于 `execution_mode`；`preview` 和 `manual-only` 不修改运行时状态。 |
+| `database_gateway_validate_workflow` | 插件工作流执行后，根据可见元数据和生成产物校验结果。 | 无。 |
 
-数据加密、数据脱敏等功能插件工具在对应插件页面说明。
+插件工具在对应插件页面说明。
 
 ## 提示
+
+提示用于给模型提供任务引导，例如先读取哪些资源、如何选择工具、如何处理失败恢复。
+客户端通过 `prompts/get` 取得提示内容后，将其交给模型参与推理；提示不是需要用户手工执行的命令。
 
 | 提示 | 用途 |
 | --- | --- |
 | `inspect_metadata` | 引导模型读取数据库元数据，再选择搜索工具或详情资源。 |
 | `safe_sql_execution` | 引导模型区分只读查询和有副作用 SQL，并选择正确 SQL 工具。 |
-| `recover_workflow` | 引导模型在工作流失败或 `plan_id` 不可用时恢复或重新规划。 |
+| `recover_workflow` | 引导模型在插件工作流失败或 `plan_id` 不可用时恢复或重新规划。 |
 
-数据加密、数据脱敏等功能插件提示在对应插件页面说明。
+插件提示在对应插件页面说明。
 
 ## 补全目标
+
+补全目标用于帮助客户端或模型填写资源 URI、提示参数或工具参数。
+例如用户只输入部分数据库、schema、表或列名时，客户端可以通过 `completion/complete` 获取候选值。
 
 ### 资源补全目标
 
@@ -109,4 +138,4 @@ ShardingSphere-MCP 的协议表面是统一的，但运行时可用性取决于 
 | `safe_sql_execution` | `database`、`schema` |
 | `recover_workflow` | `plan_id` |
 
-功能插件的提示补全目标在对应插件页面说明。
+插件提示补全目标在对应插件页面说明。

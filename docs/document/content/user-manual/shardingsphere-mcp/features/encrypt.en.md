@@ -15,20 +15,26 @@ It does not implement encryption algorithms inside the MCP Server. It generates 
 
 ## Public Surface
 
-| Capability | How to call | When to use |
-| --- | --- | --- |
-| `database_gateway_plan_encrypt_rule` | Call through `tools/call`. | When a user asks to create, adjust, or drop an encryption rule. It creates `plan_id`, DistSQL, validation steps, and DDL or index suggestions when applicable. |
-| `database_gateway_apply_workflow` | Call through `tools/call` with the `plan_id` returned by planning. | Preview the plan, execute reviewed artifacts, or export a manual package. |
-| `database_gateway_validate_workflow` | Call through `tools/call` with the same `plan_id`. | After automatic or manual execution, validate rule state, logical metadata, and SQL executability. |
-| `shardingsphere://features/encrypt/algorithms` | Read through `resources/read`. | Before planning, inspect encryption algorithm types and required properties visible through Proxy. |
-| `shardingsphere://features/encrypt/databases/{database}/rules` | Fill `{database}` and read through `resources/read`. | Before altering rules, inspect existing encryption rules in the logical database. |
-| `shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules` | Fill `{database}` and `{table}`, then read through `resources/read`. | Inspect one table's encryption rules or keep sibling column rules on the same table. |
-| `plan_encrypt_rule` | Get through `prompts/get`. | When a client wants to guide the model to read table metadata, algorithms, and existing rules before calling the planning tool. |
-| `plan_encrypt_rule` completion | Get candidates through `completion/complete`. | Completes `database`, `schema`, `table`, `column`, `algorithm_type`, `assisted_query_algorithm_type`, `like_query_algorithm_type`, or `plan_id`. |
+| MCP capability | Type | Call entry | Phase | Result |
+| --- | --- | --- | --- | --- |
+| `database_gateway_plan_encrypt_rule` | Tool | `tools/call` | Plan creation, alteration, or deletion of encryption rules. | Returns `plan_id`, planning status, DistSQL, validation steps, and DDL, derived column, or index suggestions when applicable. |
+| `database_gateway_apply_workflow` | Phase tool | `tools/call` with `plan_id`. | Preview, execute, or export a manual package after planning completes. | Returns preview artifacts, execution result, or manual execution package. |
+| `database_gateway_validate_workflow` | Phase tool | `tools/call` with the same `plan_id`. | Validate results after automatic or manual execution. | Returns rule state, logical metadata, and SQL executability validation results. |
+| `shardingsphere://features/encrypt/algorithms` | Resource | `resources/read` | Inspect encryption algorithms visible through Proxy before planning. | Returns algorithm types and required properties. |
+| `shardingsphere://features/encrypt/databases/{database}/rules` | Resource template | Fill `{database}` and read through `resources/read`. | Inspect existing encryption rules before altering a logical database. | Returns logical database-level encryption rules. |
+| `shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules` | Resource template | Fill `{database}` and `{table}`, then read through `resources/read`. | Inspect one table's rules or keep sibling column rules on the same table. | Returns table-level encryption rules. |
+| `plan_encrypt_rule` | Prompt | `prompts/get` | Guide the model to read table metadata, algorithms, and existing rules before planning. | Returns the model prompt for encryption rule planning. |
+| `plan_encrypt_rule` completion | Completion target | `completion/complete` | Fill planning arguments in a client. | Returns candidates for `database`, `schema`, `table`, `column`, algorithm types, or `plan_id`. |
 
-## Minimum input
+## Rule planning
 
-For creating or altering an encryption rule, the planning tool mainly uses these inputs:
+Rule planning is the first phase of the encryption plugin.
+The model usually reads algorithm and existing-rule resources first, then calls `database_gateway_plan_encrypt_rule` to create a reviewable plan.
+The planning tool does not modify the database directly. Preview, apply, and validation are handled by plugin workflow phase tools.
+
+### Planning input
+
+The planning tool uses these common inputs:
 
 | Argument | Required | Purpose |
 | --- | --- | --- |
@@ -42,17 +48,15 @@ For creating or altering an encryption rule, the planning tool mainly uses these
 | `primary_algorithm_properties` | Required by algorithm | Primary encryption algorithm properties, such as an AES key. The required properties come from the algorithm resource. |
 | `allow_index_ddl` | Optional | Whether physical index plans may be generated for assisted-query columns. |
 
-For dropping an encryption rule, provide at least:
+Different operations focus on different inputs:
 
-- `database`
-- `table`
-- `column`
-- `operation_type=drop`
+| Operation | Input focus | Planning result |
+| --- | --- | --- |
+| `create` | Provide the target column, encryption intent, algorithm type, and algorithm properties. If you want MCP to recommend an algorithm, start with natural-language intent. | Generates DistSQL for adding the rule, and physical derived-column DDL or index suggestions when needed. |
+| `alter` | Provide the target column and the algorithm, query capability, or algorithm properties to change. | Generates DistSQL that preserves sibling column rules on the same table, and updates DDL or index suggestions when needed. |
+| `drop` | Provide at least `database`, `table`, `column`, and `operation_type=drop`. | Generates `ALTER ENCRYPT RULE` when sibling encryption columns remain on the same table, or `DROP ENCRYPT RULE` when no encryption column remains on the target table. |
 
-## Plan an encryption rule
-
-Planning an encryption rule means calling `database_gateway_plan_encrypt_rule`.
-It creates a reviewable plan only and does not modify the database directly.
+### Call example
 
 ```json
 {
@@ -87,17 +91,20 @@ Typical result:
 If the response returns `clarifying`, continue with the same `plan_id`.
 Secret fields are not echoed in plain text. Obtain them through a secret manager, protected environment variable, or controlled operations channel before continuing.
 
-## Derived column rules
+## Derived columns and index plans
+
+Encryption rules may need physical derived columns to store ciphertext or support queries.
+MCP creates derived-column suggestions from the logical column, user intent, and existing rules, and writes the final names to `derived_column_plan`.
 
 - `*_cipher` stores ciphertext and is the default derived column for encryption rules.
 - If equality query is required, `*_assisted_query` is generated. Its index plan is generated when index DDL is allowed.
 - If LIKE query is required, `*_like_query` is generated for LIKE query scenarios.
 - If a default column name conflicts, the system appends a numeric suffix and returns the final name in `derived_column_plan`.
-- Validation checks rules, logical metadata, and generated artifacts. It does not replace human review of the real physical table structure.
 
 ## Apply and validate
 
-After the planning tool returns `plan_id`, use the common workflow tools for apply and validation.
+After the planning tool returns `plan_id`, use plugin workflow phase tools for apply and validation.
+Preview first, then review DistSQL, DDL, index plans, and side-effect scope before execution.
 
 Preview first:
 
@@ -141,33 +148,21 @@ Validation focuses on:
 - `logical_metadata_validation`
 - `sql_executability_validation`
 
-## Drop an encryption rule
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": "encrypt-drop-1",
-  "method": "tools/call",
-  "params": {
-    "name": "database_gateway_plan_encrypt_rule",
-    "arguments": {
-      "database": "<logic-database>",
-      "table": "orders",
-      "column": "status",
-      "operation_type": "drop"
-    }
-  }
-}
-```
-
-If sibling encryption columns still exist on the same table, MCP generates `ALTER ENCRYPT RULE` and keeps the sibling rules.
-It generates `DROP ENCRYPT RULE` only when no encryption column remains on the target table.
-Dropping an encryption rule removes the rule only. It does not restore historical plaintext data, and physical derived columns or indexes still require manual cleanup when they are no longer needed.
-
 ## Limitations
 
+### Supported scope
+
 - Supports ShardingSphere-Proxy logical databases only.
-- MCP generates derived column, index, and column type suggestions from logical metadata exposed by Proxy. It does not inspect every physical database directly. Review generated DDL against the real physical table structure before applying it.
-- Does not handle existing data migration or backfill.
-- Does not provide automatic rollback.
+- This feature does not apply to direct physical database connections.
+
+### Rule change boundaries
+
+- MCP generates derived-column, index, and column-type suggestions from logical metadata exposed by Proxy. It does not inspect every physical database directly.
+- Review generated DDL against the real physical table structure before applying it.
+- Existing data migration or backfill is not handled.
+- Automatic rollback is not provided.
+- Dropping an encryption rule removes the rule only. It does not restore historical plaintext data, and physical derived columns or indexes still require manual cleanup when they are no longer needed.
+
+### Planner input limits
+
 - The planner accepts ordinary unquoted logical database, schema, table, and column names to reduce ambiguity in generated SQL. This is not a ShardingSphere SQL capability limit.
