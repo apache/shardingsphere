@@ -58,17 +58,52 @@ runtimeDatabases:
 
 | 字段 | 是否必填 | 说明 |
 | --- | --- | --- |
-| `databaseType` | 是 | 数据库类型，例如 `MySQL` 或 `PostgreSQL`。 |
-| `jdbcUrl` | 是 | MCP Server 连接逻辑库的 JDBC URL。 |
-| `username` | 是 | 连接 ShardingSphere-Proxy 逻辑库的用户名。 |
-| `password` | 否 | 连接 ShardingSphere-Proxy 逻辑库的密码；无密码账号可以省略或写空字符串 `""`。 |
+| `databaseType` | 是 | 连接端点的数据库协议或方言类型，例如 `MySQL` 或 `PostgreSQL`。它用于选择 JDBC 元数据和能力判断逻辑，不表示连接目标一定是真实数据库或 ShardingSphere-Proxy。 |
+| `jdbcUrl` | 是 | MCP Server 连接运行时数据库的 JDBC URL；使用 ShardingSphere 规则能力时应指向 Proxy 逻辑库。 |
+| `username` | 是 | 连接运行时数据库的用户名，通常是 ShardingSphere-Proxy 逻辑库用户名。 |
+| `password` | 否 | 连接运行时数据库的密码；无密码账号可以省略或写空字符串 `""`。 |
 | `driverClassName` | 是 | JDBC 驱动类名，例如 MySQL 驱动使用 `com.mysql.cj.jdbc.Driver`。 |
 
 注意事项：
 
-- MCP 资源暴露的是 ShardingSphere 逻辑库，不是底层物理存储单元。
-- Schema、table、view、index 和 sequence 等元数据依赖目标数据库的 JDBC 元数据。
+- 连接 ShardingSphere-Proxy 时，MCP 资源暴露的是 ShardingSphere 逻辑库，不是底层物理存储单元。
+- 连接真实数据库时，MCP 资源反映该 JDBC 目标的元数据，不代表 ShardingSphere 规则状态。
+- Schema、table、view、index 和 sequence 等元数据依赖目标数据库的 JDBC 元数据；Proxy 和真实数据库的可见结果可能不同。
 - 如果目标 JDBC 驱动没有随发行包提供，请把驱动 jar 放入 `plugins/`。
+
+## 连接目标与能力边界
+
+`runtimeDatabases` 当前可以配置任意可用的 JDBC URL。不同连接目标的语义不同，能力边界也不同。
+
+### 连接 ShardingSphere-Proxy 逻辑库
+
+这是使用 ShardingSphere 规则能力时的推荐连接方式。该模式面向 Proxy 暴露的逻辑库和逻辑 SQL 视图，适合使用以下能力：
+
+- 读取 ShardingSphere 逻辑库、逻辑表和逻辑列元数据。
+- 查询 Proxy 可见的加密、脱敏算法插件。
+- 查询、规划、应用和校验加密或脱敏规则。
+- 通过 Proxy 执行逻辑 SQL 和工作流生成的 DistSQL。
+
+该模式受 Proxy 能力限制：
+
+- JDBC 元数据、`information_schema`、索引、sequence 和列类型信息以 Proxy 暴露结果为准，不等同于完整底层物理库元数据。
+- 物理列、物理索引和多存储节点一致性不作为 MCP 自动确认的稳定契约。
+- 可用 DistSQL、规则类型和算法插件取决于 Proxy 版本、已安装插件和当前账号权限。
+- 物理 DDL 产物应先审查；只有 Proxy 能安全路由并执行时才适合自动应用。
+
+### 连接真实数据库
+
+该模式只适合把 MCP 作为通用 JDBC 元数据和 SQL 入口使用，适合以下能力：
+
+- 浏览 database、schema、table、view、column、index 和 sequence 等 JDBC 元数据。
+- 搜索元数据。
+- 执行通用只读查询，或在明确授权后执行普通 DML、DDL、DCL。
+
+该模式不提供 ShardingSphere 规则能力：
+
+- 不能发现 Proxy 中可见的加密或脱敏算法插件。
+- 不能查询、规划、应用或校验 ShardingSphere 加密、脱敏规则。
+- 不能使用依赖 DistSQL 的工作流能力；真实数据库通常不识别 ShardingSphere DistSQL。
 
 ## 插件目录
 

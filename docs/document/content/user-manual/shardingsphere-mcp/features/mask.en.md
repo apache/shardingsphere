@@ -10,7 +10,8 @@ Mask rules apply directly to logical columns and do not generate physical derive
 
 - The current version supports logical databases exposed by ShardingSphere-Proxy only.
 - `runtimeDatabases` should point to Proxy logical databases, not physical storage databases.
-- The target logical table and column should be discoverable through JDBC metadata.
+- This feature does not apply to direct physical database connections. A physical database usually does not understand ShardingSphere masking DistSQL and cannot expose Proxy-visible masking algorithm plugins or rule state.
+- The target logical table and column should be discoverable through JDBC metadata exposed by Proxy. This metadata should not be treated as a complete physical database catalog.
 
 ## Public Surface
 
@@ -152,5 +153,6 @@ It generates `DROP MASK RULE` only when no mask column remains on the target tab
 ## Limitations
 
 - Supports ShardingSphere-Proxy logical databases only.
+- Logical column and rule validation are based on what Proxy exposes. Direct physical database connections can execute ordinary SQL only and do not represent masking rule state.
 - Does not provide automatic rollback.
 - Planning input accepts only standard unquoted logical identifiers.
