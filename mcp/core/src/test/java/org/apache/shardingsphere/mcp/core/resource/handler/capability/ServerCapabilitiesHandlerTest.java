@@ -196,6 +196,7 @@ class ServerCapabilitiesHandlerTest {
         assertThat(actualClientSafetyPolicy.get("identity_scope"), is("mcp_session"));
         assertTrue(String.valueOf(actualClientSafetyPolicy.get("transport_scope")).contains("trusted session attribution"));
         assertThat(((Map<?, ?>) actualClientSafetyPolicy.get("tool_call_limit")).get("scope"), is("session"));
+        assertThat(((Map<?, ?>) ((Map<?, ?>) actualClientSafetyPolicy.get("runtime_protection")).get("tool_call_limit")).get("scope"), is("session"));
         assertTrue(String.valueOf(actualClientSafetyPolicy.get("abuse_guard")).contains("counted before dispatch"));
     }
     

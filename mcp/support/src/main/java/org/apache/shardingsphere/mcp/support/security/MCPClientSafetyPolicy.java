@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.support.security;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,9 +29,9 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPClientSafetyPolicy {
     
-    public static final int DEFAULT_MAX_TOOL_CALLS_PER_SESSION = 10000;
+    public static final int DEFAULT_MAX_TOOL_CALLS_PER_SESSION = MCPRuntimeProtectionPolicy.DEFAULT_MAX_TOOL_CALLS_PER_SESSION;
     
-    public static final String MAX_TOOL_CALLS_PER_SESSION_PROPERTY = "shardingsphere.mcp.maxToolCallsPerSession";
+    public static final String MAX_TOOL_CALLS_PER_SESSION_PROPERTY = MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY;
     
     /**
      * Get maximum tool calls per MCP session.
@@ -40,8 +39,7 @@ public final class MCPClientSafetyPolicy {
      * @return maximum tool calls per MCP session
      */
     public static int getMaxToolCallsPerSession() {
-        Integer configuredValue = Integer.getInteger(MAX_TOOL_CALLS_PER_SESSION_PROPERTY, DEFAULT_MAX_TOOL_CALLS_PER_SESSION);
-        return configuredValue > 0 ? configuredValue : DEFAULT_MAX_TOOL_CALLS_PER_SESSION;
+        return MCPRuntimeProtectionPolicy.getMaxToolCallsPerSession();
     }
     
     /**
@@ -50,24 +48,16 @@ public final class MCPClientSafetyPolicy {
      * @return model-facing safety policy payload
      */
     public static Map<String, Object> createModelFacingPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("identity_scope", "mcp_session");
         result.put("transport_scope",
                 "HTTP transport can bind trusted session attribution when configured; "
                         + "authentication and authorization remain outside the runtime in this release. "
                         + "STDIO inherits the local process boundary.");
-        result.put("tool_call_limit", createToolCallLimitPayload());
+        result.put("tool_call_limit", MCPRuntimeProtectionPolicy.createToolCallLimitPayload());
+        result.put("runtime_protection", MCPRuntimeProtectionPolicy.createRuntimeProtectionPayload());
         result.put("abuse_guard", "Every tool call is counted before dispatch, including invalid calls, so runaway model loops stop at the session quota.");
         result.put("external_model_boundary", "The MCP runtime never calls external model providers; live LLM E2E clients call configured endpoints outside the server.");
-        return result;
-    }
-    
-    private static Map<String, Object> createToolCallLimitPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("scope", "session");
-        result.put("max_calls", getMaxToolCallsPerSession());
-        result.put("property", MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
-        result.put(MCPPayloadFieldNames.RECOVERY, "Close and recreate the MCP session after the quota is exhausted.");
         return result;
     }
 }

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
+import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -58,7 +59,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     public MCPResponse handle(final MCPDatabaseHandlerContext handlerContext, final MCPUriVariables uriVariables) {
         List<MCPDatabaseMetadata> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
         boolean hasConfiguredDatabase = !databases.isEmpty();
-        Map<String, Object> result = new LinkedHashMap<>(13, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(14, 1F);
         result.put("response_mode", MCPResponseMode.RUNTIME);
         result.put("server_status", hasConfiguredDatabase ? "ready" : "configuration_required");
         result.put("status", hasConfiguredDatabase ? "available" : "configuration_required");
@@ -67,6 +68,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("configured_database_count", databases.size());
         result.put("databases", databases.stream().map(each -> createDatabaseStatus(handlerContext, each)).toList());
         result.put("readiness", createReadiness(hasConfiguredDatabase));
+        result.put("runtime_protection", MCPRuntimeProtectionPolicy.createRuntimeProtectionPayload());
         result.put("redaction_summary", Map.of("categories", List.of(), "redacted_count", 0, "marker", "******"));
         result.put("diagnostics", createDiagnostics(hasConfiguredDatabase));
         result.put("capability_fingerprint", MCPDescriptorCatalogIndex.getDescriptorCatalogFingerprint());

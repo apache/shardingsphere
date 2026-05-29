@@ -18,8 +18,12 @@
 package org.apache.shardingsphere.mcp.support.security;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -27,14 +31,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPClientSafetyPolicyTest {
     
-    @Test
-    void assertGetMaxToolCallsPerSession() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertGetMaxToolCallsPerSessionCases")
+    void assertGetMaxToolCallsPerSession(final String name, final String configuredValue, final int expectedMaxToolCallsPerSession) {
         String previous = System.getProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
         try {
-            System.setProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, "8");
-            assertThat(MCPClientSafetyPolicy.getMaxToolCallsPerSession(), is(8));
-            System.setProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, "0");
-            assertThat(MCPClientSafetyPolicy.getMaxToolCallsPerSession(), is(MCPClientSafetyPolicy.DEFAULT_MAX_TOOL_CALLS_PER_SESSION));
+            if (null == configuredValue) {
+                System.clearProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
+            } else {
+                System.setProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, configuredValue);
+            }
+            assertThat(MCPClientSafetyPolicy.getMaxToolCallsPerSession(), is(expectedMaxToolCallsPerSession));
         } finally {
             restoreProperty(previous);
         }
@@ -49,6 +56,18 @@ class MCPClientSafetyPolicyTest {
         Map<?, ?> actualToolCallLimit = (Map<?, ?>) actual.get("tool_call_limit");
         assertThat(actualToolCallLimit.get("scope"), is("session"));
         assertThat(actualToolCallLimit.get("property"), is(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY));
+        Map<?, ?> actualRuntimeProtection = (Map<?, ?>) actual.get("runtime_protection");
+        assertThat(((Map<?, ?>) actualRuntimeProtection.get("tool_call_limit")).get("scope"), is("session"));
+        Map<?, ?> actualSQLExecutionLimits = (Map<?, ?>) actualRuntimeProtection.get("sql_execution_limits");
+        assertThat(((Map<?, ?>) actualSQLExecutionLimits.get("max_rows")).get("applied_field"), is("applied_max_rows"));
+        assertThat(((Map<?, ?>) actualSQLExecutionLimits.get("timeout_ms")).get("applied_field"), is("applied_timeout_ms"));
+    }
+    
+    private static Stream<Arguments> assertGetMaxToolCallsPerSessionCases() {
+        return Stream.of(
+                Arguments.of("configured value", "8", 8),
+                Arguments.of("non-positive value falls back to default", "0", MCPClientSafetyPolicy.DEFAULT_MAX_TOOL_CALLS_PER_SESSION),
+                Arguments.of("missing value falls back to default", null, MCPClientSafetyPolicy.DEFAULT_MAX_TOOL_CALLS_PER_SESSION));
     }
     
     private void restoreProperty(final String previous) {
