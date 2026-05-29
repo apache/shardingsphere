@@ -12,38 +12,37 @@ weight = 1
 - `runtimeDatabases` 应指向 Proxy 逻辑库，而不是底层物理存储库。
 - 直连真实数据库时，本功能不适用；真实数据库通常不识别 ShardingSphere 加密 DistSQL，也不能暴露 Proxy 中可见的加密算法插件和规则状态。
 - 目标逻辑表和逻辑列应能通过 Proxy 暴露的 JDBC 元数据发现；这些信息不保证等同于底层物理库的完整元数据。
-- 当前功能插件不处理存量数据迁移或回填。
 
 ## 可调用能力
 
-规划工具：
-
-- `database_gateway_plan_encrypt_rule`
-
-通用工作流工具：
-
-- `database_gateway_apply_workflow`
-- `database_gateway_validate_workflow`
-
-资源：
-
-- `shardingsphere://features/encrypt/algorithms`
-- `shardingsphere://features/encrypt/databases/{database}/rules`
-- `shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules`
+| 能力 | 怎么调用 | 什么时候用 |
+| --- | --- | --- |
+| `database_gateway_plan_encrypt_rule` | 通过 `tools/call` 调用。 | 用户提出创建、调整或删除加密规则需求时，用它生成 `plan_id`、DistSQL、校验步骤，以及适用场景下的 DDL 或索引建议。 |
+| `database_gateway_apply_workflow` | 通过 `tools/call` 调用，并传入规划阶段返回的 `plan_id`。 | 先预览计划，再在审查后执行，或导出人工执行包。 |
+| `database_gateway_validate_workflow` | 通过 `tools/call` 调用，并传入同一个 `plan_id`。 | 自动执行或人工执行完成后，校验规则状态、逻辑元数据和 SQL 可执行性。 |
+| `shardingsphere://features/encrypt/algorithms` | 通过 `resources/read` 读取。 | 规划前查看 Proxy 当前可见的加密算法类型和参数要求。 |
+| `shardingsphere://features/encrypt/databases/{database}/rules` | 填充 `{database}` 后通过 `resources/read` 读取。 | 规划修改前查看逻辑库已有加密规则。 |
+| `shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules` | 填充 `{database}` 和 `{table}` 后通过 `resources/read` 读取。 | 只关心单表加密规则，或需要保留同表其他列规则时读取。 |
+| `plan_encrypt_rule` | 通过 `prompts/get` 获取提示。 | 客户端希望先引导模型读取表结构、算法和已有规则，再调用规划工具时使用。 |
+| `plan_encrypt_rule` 补全 | 通过 `completion/complete` 获取候选值。 | 为 `database`、`schema`、`table`、`column`、`algorithm_type`、`assisted_query_algorithm_type`、`like_query_algorithm_type` 或 `plan_id` 补全。 |
 
 ## 最小输入
 
-创建或修改加密规则时，推荐至少提供：
+创建或修改加密规则时，规划工具主要使用以下输入：
 
-- `database`
-- `table`
-- `column`
-- `natural_language_intent`，或显式 `operation_type=create|alter`
-- `algorithm_type`，如果希望 MCP 推荐算法可以先省略
-- `primary_algorithm_properties`
-- `schema`，多 schema 逻辑库建议显式提供
+| 参数 | 是否必填 | 作用 |
+| --- | --- | --- |
+| `database` | 必填 | ShardingSphere-Proxy 暴露的逻辑库名称。 |
+| `table` | 必填 | 要配置加密规则的逻辑表。 |
+| `column` | 必填 | 要配置加密规则的逻辑列。 |
+| `schema` | 可选 | schema 或 namespace；多 schema 逻辑库建议填写。 |
+| `natural_language_intent` | 推荐 | 描述是否需要可逆加密、等值查询或模糊查询；当未显式填写规则细节时，MCP 会用它推断规划意图。 |
+| `operation_type` | 可选 | 规则操作类型；支持 `create`、`alter` 和 `drop`。不填写时由 MCP 根据自然语言和现有规则推断。 |
+| `algorithm_type` | 可选 | 主加密算法类型；如果希望 MCP 基于可用算法给出建议，可以先不填。 |
+| `primary_algorithm_properties` | 按算法必填 | 主加密算法参数，例如 AES 密钥。具体参数以算法资源返回值为准。 |
+| `allow_index_ddl` | 可选 | 是否允许为辅助查询列生成物理索引计划。 |
 
-删除加密规则时，最小输入是：
+删除加密规则时，至少提供：
 
 - `database`
 - `table`
@@ -51,6 +50,9 @@ weight = 1
 - `operation_type=drop`
 
 ## 规划加密规则
+
+规划加密规则就是调用 `database_gateway_plan_encrypt_rule`。
+它只生成可审查的计划，不直接修改数据库。
 
 ```json
 {
@@ -87,12 +89,15 @@ weight = 1
 
 ## 派生列规则
 
-- 默认生成 `*_cipher` 派生列。
-- 如果需要等值查询，会生成 `*_assisted_query` 及相应索引计划。
-- 如果需要模糊查询，会生成 `*_like_query`。
+- `*_cipher` 用于保存密文，是加密规则的默认派生列。
+- 如果需要等值查询，会生成 `*_assisted_query`，并在允许索引 DDL 时生成相应索引计划。
+- 如果需要模糊查询，会生成 `*_like_query`，用于支持 LIKE 查询场景。
 - 如果默认列名冲突，系统会追加数字后缀，并把最终命名写回 `derived_column_plan`。
+- 校验阶段只检查规则、逻辑元数据和生成产物，不替代人工审查真实物理表结构。
 
 ## 执行与校验
+
+规划工具返回 `plan_id` 后，再使用通用工作流工具处理执行和校验。
 
 执行前先预览：
 
@@ -155,14 +160,14 @@ weight = 1
 }
 ```
 
-如果同一张表仍有其他加密列，MCP 会生成保留同表其他规则的 `ALTER ENCRYPT RULE`。
-只有目标表不再剩余任何 encrypt 列时，才会生成 `DROP ENCRYPT RULE`。
+如果同一个表上还有其他加密列，MCP 会生成 `ALTER ENCRYPT RULE` 并保留这些同表规则。
+只有目标表不再保留任何加密列时，MCP 才会生成 `DROP ENCRYPT RULE`。
+删除加密规则只移除规则本身，不会恢复历史明文数据；不再需要的物理派生列或索引仍需人工清理。
 
 ## 限制
 
 - 仅支持 ShardingSphere-Proxy 逻辑库。
-- 物理派生列、物理索引和列类型推断以 Proxy 可见信息为准，执行前应审查生成的 DDL。
-- `drop` 只删除规则，不自动清理物理派生列和索引。
-- 不处理存量数据迁移或回填。
-- 不提供自动回滚能力。
-- 规划输入只接受标准未加引号的逻辑标识符。
+- MCP 根据 Proxy 暴露的逻辑元数据生成派生列、索引和列类型建议；它不会直接检查每个物理库。执行前应结合真实物理库表结构审查生成的 DDL。
+- 不处理已有数据迁移或回填。
+- 不提供自动回滚。
+- 规划器只接受普通未加引号的逻辑库、schema、表和列名，用于降低自动生成 SQL 的歧义；这不是 ShardingSphere SQL 能力限制。

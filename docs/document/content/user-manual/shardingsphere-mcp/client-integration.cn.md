@@ -4,8 +4,9 @@ weight = 4
 +++
 
 客户端集成面向把 ShardingSphere-MCP 接入桌面客户端、IDE 插件、Agent 平台或自研 LLM 应用的场景。
-它不是快速开始中 curl 手工验证流程的替代说明。
-它的价值是让客户端负责连接配置、会话头、能力发现、补全和调用编排，用户只关注要完成的元数据或数据库治理任务。
+它不是快速开始中 curl 手工验证流程的替代说明，也不是让用户手工拼 JSON-RPC 的操作手册。
+它的价值是让大模型通过 MCP 客户端主动发现 ShardingSphere 元数据和治理能力，再由客户端负责连接配置、会话头、补全和调用编排。
+用户只需要表达要完成的元数据查询、只读 SQL 查询或数据库治理任务。
 
 适合使用客户端集成的场景：
 
@@ -22,6 +23,9 @@ weight = 4
 - STDIO 适合本地 MCP 客户端拉起 ShardingSphere-MCP 子进程的场景。客户端负责进程生命周期，stdout 只传输 MCP 协议帧。
 
 ## HTTP 配置
+
+将下面片段写入 MCP 客户端的 server 配置；具体文件位置由客户端决定。
+`url` 指向已经启动的 HTTP MCP Server。
 
 ```json
 {
@@ -44,12 +48,15 @@ HTTP 客户端需要在正常 MCP 调用前完成会话生命周期：
 
 ## STDIO 配置
 
+将下面片段写入 MCP 客户端的 server 配置；具体文件位置由客户端决定。
+`command` 指向发行包内的启动脚本，`args` 指向 STDIO 配置文件。
+
 ```json
 {
   "mcpServers": {
     "shardingsphere": {
       "command": "/path/to/apache-shardingsphere-mcp/bin/start.sh",
-      "args": ["conf/mcp-stdio.yaml"]
+      "args": ["/path/to/apache-shardingsphere-mcp/conf/mcp-stdio.yaml"]
     }
   }
 }
@@ -57,6 +64,7 @@ HTTP 客户端需要在正常 MCP 调用前完成会话生命周期：
 
 STDIO 模式适合由本地 MCP 客户端拉起 ShardingSphere-MCP 子进程。
 它不是面向人工手输请求的交互式 Shell。
+将 `/path/to/apache-shardingsphere-mcp` 替换为实际发行包目录。
 
 STDIO 模式下：
 
@@ -64,21 +72,15 @@ STDIO 模式下：
 - 诊断日志写到 stderr 或 `logs/mcp.log`。
 - 客户端配置中的 `command` 和 `args` 应指向发行包内的启动脚本和 STDIO 配置文件。
 
-## 能力发现
+## 能力清单
 
-MCP 列表方法用于发现协议层能力；`shardingsphere://capabilities` 用于理解 ShardingSphere 领域能力。
-客户端不需要固定调用顺序，可以按任务需要选择。
+能力清单和方法语义见[能力清单](../capabilities/)。
+客户端集成页只说明客户端侧如何配置 MCP Server，以及调用示例应放在哪里使用。
 
-| 能力 | 作用 |
-| --- | --- |
-| `shardingsphere://capabilities` | 读取 ShardingSphere 领域能力目录，了解资源、工具、提示、补全、工作流关系和副作用提示。 |
-| `tools/list` | 发现可调用工具。 |
-| `resources/list` | 发现可直接读取的资源。 |
-| `resources/templates/list` | 发现带参数的资源模板；客户端需要构造资源 URI 时使用。 |
-| `prompts/list` | 发现可用提示。 |
-| `completion/complete` | 获取资源、提示或参数的补全候选。 |
+## JSON-RPC 调用示例
 
-## 常用调用
+下面的 JSON 是 MCP 客户端或自研 LLM 应用在会话初始化后发送的请求示例。
+普通用户通常不需要直接发送这些请求；它们主要用于自研客户端、调试或排查客户端集成问题。
 
 读取服务状态：
 

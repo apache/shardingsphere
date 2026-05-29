@@ -22,12 +22,13 @@ Run from the repository root:
 Enter the distribution directory:
 
 ```bash
-cd distribution/mcp/target/apache-shardingsphere-mcp-*
+cd distribution/mcp/target/apache-shardingsphere-mcp-${version}
 ```
 
 Expected result:
 
 - The current directory contains `bin/`, `conf/`, and `lib/`.
+- Replace `${version}` with the built distribution version, such as `5.5.4-SNAPSHOT`.
 
 ## Configure the database
 
@@ -44,7 +45,6 @@ runtimeDatabases:
 ```
 
 Replace `<logic-database>`, `<proxy-host>`, `<proxy-port>`, `<proxy-username>`, and `<proxy-password>` with the actual ShardingSphere-Proxy connection information.
-For a no-password Proxy account, omit `password` or set it to an empty string `""`.
 If the target database driver is not packaged, copy the corresponding JDBC driver jar to `plugins/` before startup.
 
 ## Start the HTTP MCP Server

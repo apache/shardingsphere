@@ -15,34 +15,33 @@ Mask rules apply directly to logical columns and do not generate physical derive
 
 ## Public Surface
 
-Planning tool:
-
-- `database_gateway_plan_mask_rule`
-
-Common workflow tools:
-
-- `database_gateway_apply_workflow`
-- `database_gateway_validate_workflow`
-
-Resources:
-
-- `shardingsphere://features/mask/algorithms`
-- `shardingsphere://features/mask/databases/{database}/rules`
-- `shardingsphere://features/mask/databases/{database}/tables/{table}/rules`
+| Capability | How to call | When to use |
+| --- | --- | --- |
+| `database_gateway_plan_mask_rule` | Call through `tools/call`. | When a user asks to create, adjust, or drop a masking rule. It creates `plan_id`, DistSQL, and validation steps. |
+| `database_gateway_apply_workflow` | Call through `tools/call` with the `plan_id` returned by planning. | Preview the plan, execute reviewed artifacts, or export a manual package. |
+| `database_gateway_validate_workflow` | Call through `tools/call` with the same `plan_id`. | After automatic or manual execution, validate rule state, logical metadata, and SQL executability. |
+| `shardingsphere://features/mask/algorithms` | Read through `resources/read`. | Before planning, inspect masking algorithm types and required properties visible through Proxy. |
+| `shardingsphere://features/mask/databases/{database}/rules` | Fill `{database}` and read through `resources/read`. | Before altering rules, inspect existing masking rules in the logical database. |
+| `shardingsphere://features/mask/databases/{database}/tables/{table}/rules` | Fill `{database}` and `{table}`, then read through `resources/read`. | Inspect one table's masking rules or keep sibling column rules on the same table. |
+| `plan_mask_rule` | Get through `prompts/get`. | When a client wants to guide the model to read table metadata, algorithms, and existing rules before calling the planning tool. |
+| `plan_mask_rule` completion | Get candidates through `completion/complete`. | Completes `database`, `schema`, `table`, `column`, `algorithm_type`, or `plan_id`. |
 
 ## Minimum input
 
-For creating or altering a mask rule, provide at least:
+For creating or altering a masking rule, the planning tool mainly uses these inputs:
 
-- `database`
-- `table`
-- `column`
-- `natural_language_intent`, or explicit `operation_type=create|alter`
-- `algorithm_type`, unless you want MCP to recommend one
-- `primary_algorithm_properties`
-- `schema`, recommended for multi-schema logical databases
+| Argument | Required | Purpose |
+| --- | --- | --- |
+| `database` | Required | Logical database name exposed by ShardingSphere-Proxy. |
+| `table` | Required | Logical table to configure. |
+| `column` | Required | Logical column to configure. |
+| `schema` | Optional | Schema or namespace. Recommended for multi-schema logical databases. |
+| `natural_language_intent` | Recommended | Describes the masking target, such as retained phone-number digits or replacement character. MCP uses it to infer planning intent when rule details are not explicit. |
+| `operation_type` | Optional | Rule operation type. Supported values are `create`, `alter`, and `drop`. If omitted, MCP infers it from natural language and existing rules. |
+| `algorithm_type` | Optional | Masking algorithm type. Omit it if you want MCP to recommend one from available algorithms. |
+| `primary_algorithm_properties` | Required by algorithm | Masking algorithm properties, such as retained characters and replacement character. The required properties come from the algorithm resource. |
 
-For dropping a mask rule, the minimum input is:
+For dropping a mask rule, provide at least:
 
 - `database`
 - `table`
@@ -50,6 +49,9 @@ For dropping a mask rule, the minimum input is:
 - `operation_type=drop`
 
 ## Plan a mask rule
+
+Planning a masking rule means calling `database_gateway_plan_mask_rule`.
+It creates a reviewable plan only and does not modify the database directly.
 
 ```json
 {
@@ -86,6 +88,8 @@ If the natural language input does not identify the algorithm clearly or require
 Continue with the same `plan_id` and provide fields requested by `clarification_questions`.
 
 ## Apply and validate
+
+After the planning tool returns `plan_id`, use the common workflow tools for apply and validation.
 
 Preview first:
 
@@ -155,4 +159,4 @@ It generates `DROP MASK RULE` only when no mask column remains on the target tab
 - Supports ShardingSphere-Proxy logical databases only.
 - Logical column and rule validation are based on what Proxy exposes. Direct physical database connections can execute ordinary SQL only and do not represent masking rule state.
 - Does not provide automatic rollback.
-- Planning input accepts only standard unquoted logical identifiers.
+- The planner accepts ordinary unquoted logical database, schema, table, and column names to reduce ambiguity in generated SQL. This is not a ShardingSphere SQL capability limit.

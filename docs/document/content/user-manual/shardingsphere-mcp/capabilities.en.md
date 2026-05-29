@@ -9,16 +9,19 @@ The documentation explains capability semantics. Clients should use MCP list met
 ## Capability discovery
 
 The following entries include MCP protocol methods and ShardingSphere-MCP resource URIs.
-MCP protocol methods do not use the `shardingsphere://` prefix. That prefix is used only for ShardingSphere-MCP resource URIs.
-Tools and prompts are invoked by name and are not resource URIs.
+`tools/list`, `resources/list`, `resources/read`, `prompts/list`, and `completion/complete` are MCP JSON-RPC method names.
+`shardingsphere://...` is the ShardingSphere-MCP resource URI prefix.
+Method names, tool names, and prompt names do not use a URI prefix. Only resource URIs and resource templates use it.
 
 | Method or resource | Type | Purpose |
 | --- | --- | --- |
 | `tools/list` | MCP protocol method | Lists callable tools. |
-| `resources/list` | MCP protocol method | Lists resources that can be read without template arguments. |
-| `resources/templates/list` | MCP protocol method | Lists parameterized resource URI templates. Clients fill the template before reading it through `resources/read`. |
-| `resources/read` | MCP protocol method | Reads one concrete resource URI. Reading `shardingsphere://capabilities` returns the ShardingSphere domain capability catalog. |
+| `tools/call` | MCP protocol method | Calls one tool by tool name. |
+| `resources/list` | MCP protocol method | Lists descriptors for resources that can be read without template arguments. It does not return resource content. |
+| `resources/templates/list` | MCP protocol method | Lists parameterized resource URI templates. Clients fill the template first. |
+| `resources/read` | MCP protocol method | Reads the content of one concrete resource URI. Reading `shardingsphere://capabilities` returns the ShardingSphere domain capability catalog. |
 | `prompts/list` | MCP protocol method | Lists available prompts. |
+| `prompts/get` | MCP protocol method | Reads one prompt and generates messages from its arguments. |
 | `completion/complete` | MCP protocol method | Gets completion candidates for resources, prompts, or arguments. |
 | `shardingsphere://capabilities` | ShardingSphere-MCP resource URI | Reads the ShardingSphere domain capability catalog. |
 
@@ -55,7 +58,7 @@ ShardingSphere-MCP exposes one protocol surface, but runtime availability depend
 | `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}` | Resource template | Reads one view column. |
 | `shardingsphere://workflows/{plan_id}` | Resource template | Reads a current-session workflow plan, clarification questions, artifacts, and next actions. |
 
-Feature plugin resources are documented on the corresponding plugin pages.
+Feature plugin resources, tools, prompts, and completion targets are documented on the corresponding plugin pages.
 
 ## Tools
 
@@ -66,8 +69,8 @@ Feature plugin resources are documented on the corresponding plugin pages.
 | `database_gateway_execute_update` | Preview or execute one SQL statement that may mutate data, metadata, rules, or transaction state. | Yes; requires explicit `execution_mode=preview` or `execution_mode=execute`. |
 | `database_gateway_apply_workflow` | Preview, execute, or export a manual package for a planned workflow. | Depends on `execution_mode`; `preview` and `manual-only` do not change runtime state. |
 | `database_gateway_validate_workflow` | Validate a planned or applied workflow against visible metadata and generated artifacts. | None. |
-| `database_gateway_plan_encrypt_rule` | Plan data encryption rule changes for Proxy logical databases and generate reviewable DDL, DistSQL, index plans, and validation steps. | None; creates a plan only. |
-| `database_gateway_plan_mask_rule` | Plan data masking rule changes for Proxy logical databases and generate reviewable DistSQL and validation steps. | None; creates a plan only. |
+
+Data Encryption, Data Masking, and other feature plugin tools are documented on the corresponding plugin pages.
 
 ## Prompts
 
@@ -76,8 +79,8 @@ Feature plugin resources are documented on the corresponding plugin pages.
 | `inspect_metadata` | Guide the model to read database metadata before choosing a search tool or detail resource. |
 | `safe_sql_execution` | Guide the model to choose the correct SQL tool for read-only queries or side-effecting SQL. |
 | `recover_workflow` | Guide the model to recover or re-plan after workflow failure or unavailable `plan_id`. |
-| `plan_encrypt_rule` | Guide the model to read logical metadata, available algorithms, and existing rules before planning data encryption. |
-| `plan_mask_rule` | Guide the model to read logical metadata, available algorithms, and existing rules before planning data masking. |
+
+Data Encryption, Data Masking, and other feature plugin prompts are documented on the corresponding plugin pages.
 
 ## Completion targets
 
@@ -105,5 +108,5 @@ Feature plugin resources are documented on the corresponding plugin pages.
 | `inspect_metadata` | `database`, `schema` |
 | `safe_sql_execution` | `database`, `schema` |
 | `recover_workflow` | `plan_id` |
-| `plan_encrypt_rule` | `database`, `schema`, `table`, `column`, `algorithm_type`, `assisted_query_algorithm_type`, `like_query_algorithm_type`, `plan_id` |
-| `plan_mask_rule` | `database`, `schema`, `table`, `column`, `algorithm_type`, `plan_id` |
+
+Feature plugin prompt completion targets are documented on the corresponding plugin pages.

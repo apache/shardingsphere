@@ -9,16 +9,19 @@ weight = 2
 ## 能力发现
 
 下面列出的是 MCP 协议方法和 ShardingSphere-MCP 资源 URI。
-MCP 协议方法不使用 `shardingsphere://` 前缀；这个前缀只用于 ShardingSphere-MCP 资源 URI。
-工具和提示使用名称调用，也不是资源 URI。
+`tools/list`、`resources/list`、`resources/read`、`prompts/list` 和 `completion/complete` 是 MCP JSON-RPC 方法名。
+`shardingsphere://...` 是 ShardingSphere-MCP 资源 URI 前缀。
+方法名、工具名和提示名不加 URI 前缀；只有资源 URI 和资源模板使用该前缀。
 
 | 方法或资源 | 类型 | 用途 |
 | --- | --- | --- |
 | `tools/list` | MCP 协议方法 | 列出可调用工具。 |
-| `resources/list` | MCP 协议方法 | 列出不需要参数即可读取的资源。 |
-| `resources/templates/list` | MCP 协议方法 | 列出带参数的资源 URI 模板；客户端需要先填充模板，再通过 `resources/read` 读取。 |
-| `resources/read` | MCP 协议方法 | 读取一个具体资源 URI；读取 `shardingsphere://capabilities` 可获得 ShardingSphere 领域能力目录。 |
+| `tools/call` | MCP 协议方法 | 按工具名调用一个工具。 |
+| `resources/list` | MCP 协议方法 | 列出不需要参数即可读取的资源描述；它不返回资源内容。 |
+| `resources/templates/list` | MCP 协议方法 | 列出带参数的资源 URI 模板；客户端需要先填充模板。 |
+| `resources/read` | MCP 协议方法 | 读取一个具体资源 URI 的内容；读取 `shardingsphere://capabilities` 可获得 ShardingSphere 领域能力目录。 |
 | `prompts/list` | MCP 协议方法 | 列出可用提示。 |
+| `prompts/get` | MCP 协议方法 | 读取一个提示内容，并按提示参数生成消息。 |
 | `completion/complete` | MCP 协议方法 | 获取资源、提示或参数的补全候选。 |
 | `shardingsphere://capabilities` | ShardingSphere-MCP 资源 URI | 读取 ShardingSphere 领域能力目录。 |
 
@@ -55,7 +58,7 @@ ShardingSphere-MCP 的协议表面是统一的，但运行时可用性取决于 
 | `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}` | 资源模板 | 读取一个视图列的详情。 |
 | `shardingsphere://workflows/{plan_id}` | 资源模板 | 读取当前会话中的工作流计划、补问信息、变更产物和下一步动作。 |
 
-功能插件提供的资源在对应插件页面说明。
+功能插件提供的资源、工具、提示和补全目标在对应插件页面说明。
 
 ## 工具
 
@@ -66,8 +69,8 @@ ShardingSphere-MCP 的协议表面是统一的，但运行时可用性取决于 
 | `database_gateway_execute_update` | 预览或执行一个可能修改数据、元数据、规则或事务状态的 SQL。 | 有；必须显式传入 `execution_mode=preview` 或 `execution_mode=execute`。 |
 | `database_gateway_apply_workflow` | 预览、执行或导出已规划工作流的人工执行包。 | 取决于 `execution_mode`；`preview` 和 `manual-only` 不修改运行时状态。 |
 | `database_gateway_validate_workflow` | 根据可见元数据和生成产物校验计划或执行结果。 | 无。 |
-| `database_gateway_plan_encrypt_rule` | 规划 Proxy 逻辑库的数据加密规则变更，生成可审查的 DDL、DistSQL、索引计划和校验步骤。 | 无；只生成计划。 |
-| `database_gateway_plan_mask_rule` | 规划 Proxy 逻辑库的数据脱敏规则变更，生成可审查的 DistSQL 和校验步骤。 | 无；只生成计划。 |
+
+数据加密、数据脱敏等功能插件工具在对应插件页面说明。
 
 ## 提示
 
@@ -76,8 +79,8 @@ ShardingSphere-MCP 的协议表面是统一的，但运行时可用性取决于 
 | `inspect_metadata` | 引导模型读取数据库元数据，再选择搜索工具或详情资源。 |
 | `safe_sql_execution` | 引导模型区分只读查询和有副作用 SQL，并选择正确 SQL 工具。 |
 | `recover_workflow` | 引导模型在工作流失败或 `plan_id` 不可用时恢复或重新规划。 |
-| `plan_encrypt_rule` | 引导模型在规划数据加密规则前读取逻辑元数据、可用算法和已有规则。 |
-| `plan_mask_rule` | 引导模型在规划数据脱敏规则前读取逻辑元数据、可用算法和已有规则。 |
+
+数据加密、数据脱敏等功能插件提示在对应插件页面说明。
 
 ## 补全目标
 
@@ -105,5 +108,5 @@ ShardingSphere-MCP 的协议表面是统一的，但运行时可用性取决于 
 | `inspect_metadata` | `database`、`schema` |
 | `safe_sql_execution` | `database`、`schema` |
 | `recover_workflow` | `plan_id` |
-| `plan_encrypt_rule` | `database`、`schema`、`table`、`column`、`algorithm_type`、`assisted_query_algorithm_type`、`like_query_algorithm_type`、`plan_id` |
-| `plan_mask_rule` | `database`、`schema`、`table`、`column`、`algorithm_type`、`plan_id` |
+
+功能插件的提示补全目标在对应插件页面说明。
