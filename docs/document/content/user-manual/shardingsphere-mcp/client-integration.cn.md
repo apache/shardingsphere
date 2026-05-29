@@ -18,12 +18,13 @@ MCP 客户端可以通过 Streamable HTTP 或 STDIO 连接 ShardingSphere-MCP。
 }
 ```
 
-HTTP 客户端需要先调用 `initialize`，并保存响应头中的：
+HTTP 客户端需要在正常 MCP 调用前完成会话生命周期：
 
-- `MCP-Session-Id`
-- `MCP-Protocol-Version`
+1. 调用 `initialize`。
+2. 保存 `MCP-Session-Id` 和 `MCP-Protocol-Version` 响应头。
+3. 携带这两个响应头发送 `notifications/initialized`，并预期 HTTP 状态码为 `202`。
+4. 后续 MCP 请求继续携带这两个响应头。
 
-后续请求必须继续携带这两个响应头。
 关闭会话后，该会话 ID 不能继续复用。
 
 ## STDIO 配置

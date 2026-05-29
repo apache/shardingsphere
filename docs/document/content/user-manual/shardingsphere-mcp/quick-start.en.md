@@ -70,13 +70,28 @@ The Unix-like example starts the MCP Server in the background and stores the pro
 curl -i -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
-  --data '{"jsonrpc":"2.0","id":"init-1","method":"initialize","params":{"capabilities":{},"clientInfo":{"name":"curl-client","version":"1.0.0"}}}'
+  --data '{"jsonrpc":"2.0","id":"init-1","method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"curl-client","version":"1.0.0"}}}'
 ```
 
 Expected result:
 
 - The response headers include `MCP-Session-Id`.
 - The response headers include `MCP-Protocol-Version`.
+
+Notify the server that the client has completed initialization:
+
+```bash
+curl -i -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H 'MCP-Session-Id: <MCP-Session-Id value>' \
+  -H 'MCP-Protocol-Version: <MCP-Protocol-Version value>' \
+  --data '{"jsonrpc":"2.0","method":"notifications/initialized","params":{}}'
+```
+
+Expected result:
+
+- The HTTP status code is `202`.
 - Later HTTP requests must include both response headers.
 
 ## Read a metadata resource

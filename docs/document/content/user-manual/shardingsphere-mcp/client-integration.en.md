@@ -18,12 +18,13 @@ Clients should use official MCP capability discovery methods first, then call to
 }
 ```
 
-An HTTP client must call `initialize` first and keep these response headers:
+An HTTP client must complete the session lifecycle before normal MCP calls:
 
-- `MCP-Session-Id`
-- `MCP-Protocol-Version`
+1. Call `initialize`.
+2. Keep the `MCP-Session-Id` and `MCP-Protocol-Version` response headers.
+3. Send `notifications/initialized` with both response headers and expect HTTP status code `202`.
+4. Include both headers on later MCP requests.
 
-Later requests must include both headers.
 After the session is closed, the session id cannot be reused.
 
 ## STDIO configuration
