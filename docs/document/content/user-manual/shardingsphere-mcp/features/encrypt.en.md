@@ -10,7 +10,8 @@ It does not implement encryption algorithms inside the MCP Server. It generates 
 
 - The current version supports logical databases exposed by ShardingSphere-Proxy only.
 - `runtimeDatabases` should point to Proxy logical databases, not physical storage databases.
-- The target logical table and column should be discoverable through JDBC metadata.
+- This feature does not apply to direct physical database connections. A physical database usually does not understand ShardingSphere encryption DistSQL and cannot expose Proxy-visible encryption algorithm plugins or rule state.
+- The target logical table and column should be discoverable through JDBC metadata exposed by Proxy. This metadata should not be treated as a complete physical database catalog.
 - This feature does not handle existing data migration or backfill.
 
 ## Public Surface
@@ -160,6 +161,7 @@ It generates `DROP ENCRYPT RULE` only when no encryption column remains on the t
 ## Limitations
 
 - Supports ShardingSphere-Proxy logical databases only.
+- Physical derived columns, physical indexes, and column type inference are based on what Proxy exposes. Review generated DDL before applying it.
 - `drop` removes rules only; physical derived columns and indexes still require manual cleanup.
 - Does not handle existing data migration or backfill.
 - Does not provide automatic rollback.
