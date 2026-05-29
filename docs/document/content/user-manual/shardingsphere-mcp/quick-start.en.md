@@ -3,72 +3,82 @@ title = "Quick Start"
 weight = 1
 +++
 
-This section uses the packaged H2 demo runtime to verify the ShardingSphere-MCP HTTP transport, metadata discovery, and read-only SQL query behavior.
+This page shows how to build ShardingSphere-MCP from source, configure an existing ShardingSphere-Proxy logical database, and verify metadata reads and read-only SQL queries over HTTP.
+The examples assume a logical database named `logic_db` with an `orders` table. Replace them with your own logical database and table names.
 
 ## Prerequisites
 
 - JDK 21 available from `JAVA_HOME` or `PATH`.
-- Maven Wrapper from the repository root.
-- A Unix-like shell with `curl`, `find`, `mktemp`, `sed`, and `tr`.
+- A ShardingSphere-Proxy logical database reachable through JDBC.
+- `curl` for HTTP requests.
+- A terminal that supports sh/bash syntax.
 
 ## Build the distribution
+
+Run from the repository root:
 
 ```bash
 ./mvnw -pl distribution/mcp -am -DskipTests package
 ```
 
-Resolve the distribution directory:
+Enter the distribution directory:
 
 ```bash
-DIST_DIR=$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | sed -n '1p')
-echo "${DIST_DIR}"
+cd distribution/mcp/target/apache-shardingsphere-mcp-*
 ```
 
 Expected result:
 
-- The command prints a non-empty distribution directory.
-- The directory contains `bin/`, `conf/`, and `lib/`.
+- The current directory contains `bin/`, `conf/`, and `lib/`.
 
-## Start the HTTP runtime
+## Configure the database
 
-```bash
-cd "${DIST_DIR}"
-bin/start.sh
+Edit `conf/mcp-http.yaml` and point `runtimeDatabases` to an existing ShardingSphere-Proxy logical database:
+
+```yaml
+runtimeDatabases:
+  logic_db:
+    databaseType: MySQL
+    jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+    username: "root"
+    password: "root"
+    driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
-On Windows:
+If the target database driver is not packaged, copy the corresponding JDBC driver jar to `plugins/` before startup.
 
-```bat
-cd /d "%DIST_DIR%"
-bin\start.bat
+## Start the HTTP MCP Server
+
+```bash
+bin/start.sh > logs/mcp-http.log 2>&1 &
+MCP_PID=$!
 ```
 
 The default configuration file is `conf/mcp-http.yaml`, and the default endpoint is `http://127.0.0.1:18088/mcp`.
-The process runs in the foreground and writes logs under `logs/`.
-Keep this terminal open, and run the following `curl` commands in a second terminal.
-
-The packaged demo runtime exposes two logical databases: `orders` and `billing`.
-They use the packaged H2 driver and seed data under `data/`.
+The startup script runs in the foreground by default. The quick start backgrounds it through the shell so the same terminal can continue running `curl`.
+Keep it in the foreground when running under containers, systemd, or another process manager.
 
 ## Initialize an MCP session
 
 ```bash
-INIT_HEADERS=$(mktemp)
-curl -sS -D "${INIT_HEADERS}" -o /dev/null http://127.0.0.1:18088/mcp \
+curl -i -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   --data '{"jsonrpc":"2.0","id":"init-1","method":"initialize","params":{"capabilities":{},"clientInfo":{"name":"curl-demo","version":"1.0.0"}}}'
-SESSION_ID=$(sed -n 's/^[Mm][Cc][Pp]-[Ss]ession-[Ii][Dd]: //p' "${INIT_HEADERS}" | tr -d '\r')
-PROTOCOL_VERSION=$(sed -n 's/^[Mm][Cc][Pp]-[Pp]rotocol-[Vv]ersion: //p' "${INIT_HEADERS}" | tr -d '\r')
-rm -f "${INIT_HEADERS}"
-printf 'SESSION_ID=%s\nPROTOCOL_VERSION=%s\n' "${SESSION_ID}" "${PROTOCOL_VERSION}"
 ```
 
 Expected result:
 
-- `SESSION_ID` is not empty.
-- `PROTOCOL_VERSION` is not empty.
-- Later HTTP requests must include both headers.
+- The response headers include `MCP-Session-Id`.
+- The response headers include `MCP-Protocol-Version`.
+- Later HTTP requests must include both response headers.
+
+Copy the values from the response headers and set them in the current terminal:
+
+```bash
+export SESSION_ID="<MCP-Session-Id value>"
+export PROTOCOL_VERSION="<MCP-Protocol-Version value>"
+```
 
 ## Read a metadata resource
 
@@ -78,14 +88,14 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"resource-1","method":"resources/read","params":{"uri":"shardingsphere://databases/orders/schemas/public/tables"}}'
+  --data '{"jsonrpc":"2.0","id":"resource-1","method":"resources/read","params":{"uri":"shardingsphere://databases"}}'
 ```
 
 Expected result:
 
 - The response type is `text/event-stream`.
 - The JSON payload is in the `data:` line.
-- The payload contains `orders`, `order_items`, and `active_orders`.
+- The payload contains `logic_db`.
 
 ## Search metadata
 
@@ -95,7 +105,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"orders","query":"order","object_types":["table","view"]}}}'
+  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"logic_db","query":"order","object_types":["table","view"]}}}'
 ```
 
 Expected result:
@@ -118,8 +128,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "params":{
       "name":"database_gateway_execute_query",
       "arguments":{
-        "database":"orders",
-        "schema":"public",
+        "database":"logic_db",
         "sql":"SELECT status FROM orders ORDER BY order_id",
         "max_rows":10
       }
@@ -133,13 +142,14 @@ Expected result:
 - `statement_class` is `query`.
 - The payload contains `columns`, `rows`, or `row_objects`.
 
-## Close the session
+## Close the session and stop the server
 
 ```bash
 curl -sS -D - -o /dev/null \
   -X DELETE http://127.0.0.1:18088/mcp \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}"
+kill "${MCP_PID}"
 ```
 
 Expected result:

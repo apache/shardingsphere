@@ -3,27 +3,27 @@ title = "Mask"
 weight = 2
 +++
 
-Mask MCP feature 帮助 MCP client 把脱敏需求规划成 ShardingSphere-Proxy 可执行的 DistSQL 和校验步骤。
-脱敏规则直接作用于逻辑列，不生成加密 feature 使用的物理派生列。
+Mask MCP 功能插件帮助 MCP 客户端把脱敏需求规划成 ShardingSphere-Proxy 可执行的 DistSQL 和校验步骤。
+脱敏规则直接作用于逻辑列，不生成加密功能使用的物理派生列。
 
 ## 前置条件
 
 - 当前版本只支持连接 ShardingSphere-Proxy 暴露的逻辑库。
 - `runtimeDatabases` 应指向 Proxy 逻辑库，而不是底层物理存储库。
-- 目标逻辑表和逻辑列应能通过 JDBC metadata 发现。
+- 目标逻辑表和逻辑列应能通过 JDBC 元数据发现。
 
-## Public Surface
+## 可调用能力
 
-Planning tool：
+规划工具：
 
 - `database_gateway_plan_mask_rule`
 
-通用 workflow tools：
+通用工作流工具：
 
 - `database_gateway_apply_workflow`
 - `database_gateway_validate_workflow`
 
-Resources：
+资源：
 
 - `shardingsphere://features/mask/algorithms`
 - `shardingsphere://features/mask/databases/{database}/rules`
@@ -98,7 +98,7 @@ Resources：
 }
 ```
 
-确认 artifacts 后执行：
+确认变更产物后执行：
 
 ```json
 {
@@ -146,7 +146,7 @@ Resources：
 }
 ```
 
-如果同一张表仍有其他脱敏列，MCP 会生成保留 sibling rules 的 `ALTER MASK RULE`。
+如果同一张表仍有其他脱敏列，MCP 会生成保留同表其他规则的 `ALTER MASK RULE`。
 只有目标表不再剩余任何 mask 列时，才会生成 `DROP MASK RULE`。
 
 ## 限制
@@ -155,4 +155,4 @@ Resources：
 - 支持 `create`、`alter`、`drop`。
 - 不生成物理派生列。
 - 不提供自动回滚能力。
-- 规划输入只接受标准未加引号的逻辑 identifier。
+- 规划输入只接受标准未加引号的逻辑标识符。

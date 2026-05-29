@@ -3,7 +3,7 @@ title = "Troubleshooting"
 weight = 6
 +++
 
-This section covers common MCP runtime, transport, session, SQL tool, and workflow mechanism issues.
+This page covers common MCP Server, transport, session, SQL tool, and workflow mechanism issues.
 For plugin-specific business issues, see the corresponding feature plugin documentation.
 
 ## Startup failure
@@ -14,7 +14,6 @@ Check:
 - The configuration file path is correct.
 - `conf/mcp-http.yaml` or `conf/mcp-stdio.yaml` exists.
 - The YAML file does not contain unsupported fields.
-- `runtimeDatabases` is present and not empty.
 - `username`, `password`, and `driverClassName` are explicitly declared; use an empty string `""` when no value is needed.
 
 When startup fails, inspect the terminal error and `logs/mcp.log` first.

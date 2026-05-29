@@ -3,28 +3,28 @@ title = "Encrypt"
 weight = 1
 +++
 
-Encrypt MCP feature 帮助 MCP client 把加密需求规划成 ShardingSphere-Proxy 可执行的 DDL、DistSQL、索引计划和校验步骤。
-它不在 MCP runtime 内实现加密算法，而是面向 ShardingSphere 逻辑库生成和执行加密规则变更。
+Encrypt MCP 功能插件帮助 MCP 客户端把加密需求规划成 ShardingSphere-Proxy 可执行的 DDL、DistSQL、索引计划和校验步骤。
+它不在 MCP Server 内实现加密算法，而是面向 ShardingSphere 逻辑库生成和执行加密规则变更。
 
 ## 前置条件
 
 - 当前版本只支持连接 ShardingSphere-Proxy 暴露的逻辑库。
 - `runtimeDatabases` 应指向 Proxy 逻辑库，而不是底层物理存储库。
-- 目标逻辑表和逻辑列应能通过 JDBC metadata 发现。
-- 当前 feature 不处理存量数据迁移或回填。
+- 目标逻辑表和逻辑列应能通过 JDBC 元数据发现。
+- 当前功能插件不处理存量数据迁移或回填。
 
-## Public Surface
+## 可调用能力
 
-Planning tool：
+规划工具：
 
 - `database_gateway_plan_encrypt_rule`
 
-通用 workflow tools：
+通用工作流工具：
 
 - `database_gateway_apply_workflow`
 - `database_gateway_validate_workflow`
 
-Resources：
+资源：
 
 - `shardingsphere://features/encrypt/algorithms`
 - `shardingsphere://features/encrypt/databases/{database}/rules`
@@ -82,7 +82,7 @@ Resources：
 - `index_plan` 可能包含辅助查询索引。
 
 如果返回 `clarifying`，继续使用同一个 `plan_id` 补齐缺失字段。
-敏感字段不会明文回显，应通过 secret manager、受保护环境变量或运维控制通道取得后再继续。
+敏感字段不会明文回显，应通过密钥管理系统、受保护环境变量或运维控制通道取得后再继续。
 
 ## 派生列规则
 
@@ -105,7 +105,7 @@ Resources：
 }
 ```
 
-确认 artifacts 后执行：
+确认变更产物后执行：
 
 ```json
 {
@@ -154,7 +154,7 @@ Resources：
 }
 ```
 
-如果同一张表仍有其他加密列，MCP 会生成保留 sibling rules 的 `ALTER ENCRYPT RULE`。
+如果同一张表仍有其他加密列，MCP 会生成保留同表其他规则的 `ALTER ENCRYPT RULE`。
 只有目标表不再剩余任何 encrypt 列时，才会生成 `DROP ENCRYPT RULE`。
 
 ## 限制
@@ -164,4 +164,4 @@ Resources：
 - `drop` 只删除规则，不自动清理物理派生列和索引。
 - 不处理存量数据迁移或回填。
 - 不提供自动回滚能力。
-- 规划输入只接受标准未加引号的逻辑 identifier。
+- 规划输入只接受标准未加引号的逻辑标识符。

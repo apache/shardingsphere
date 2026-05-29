@@ -3,74 +3,84 @@ title = "快速开始"
 weight = 1
 +++
 
-本节使用发行包内置的 H2 demo runtime 验证 ShardingSphere-MCP 的 HTTP transport、metadata discovery 和只读 SQL 查询。
+本页演示如何从源码构建 ShardingSphere-MCP，配置一个已有的 ShardingSphere-Proxy 逻辑库，并通过 HTTP 验证元数据读取和只读 SQL 查询。
+示例假设逻辑库名为 `logic_db`，其中存在 `orders` 表；实际使用时请替换为自己的逻辑库和表名。
 
 ## 前置条件
 
 - `JAVA_HOME` 或 `PATH` 中可用的 JDK 21。
-- 仓库根目录下的 Maven Wrapper。
-- 类 Unix Shell，并包含 `curl`、`find`、`mktemp`、`sed` 和 `tr`。
+- 一个可通过 JDBC 访问的 ShardingSphere-Proxy 逻辑库。
+- `curl`，用于发送 HTTP 请求。
+- 支持 sh/bash 语法的终端。
 
 ## 构建发行包
+
+在仓库根目录执行：
 
 ```bash
 ./mvnw -pl distribution/mcp -am -DskipTests package
 ```
 
-解析发行包目录：
+进入发行包目录：
 
 ```bash
-DIST_DIR=$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | sed -n '1p')
-echo "${DIST_DIR}"
+cd distribution/mcp/target/apache-shardingsphere-mcp-*
 ```
 
 预期结果：
 
-- 命令打印一个非空发行包目录。
-- 该目录包含 `bin/`、`conf/`、`lib/`。
+- 当前目录包含 `bin/`、`conf/`、`lib/`。
 
-## 启动 HTTP runtime
+## 配置数据库
 
-```bash
-cd "${DIST_DIR}"
-bin/start.sh
+编辑 `conf/mcp-http.yaml`，将 `runtimeDatabases` 指向已有的 ShardingSphere-Proxy 逻辑库：
+
+```yaml
+runtimeDatabases:
+  logic_db:
+    databaseType: MySQL
+    jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+    username: "root"
+    password: "root"
+    driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
-Windows 使用：
+如果目标数据库驱动没有随发行包提供，请在启动前把对应 JDBC 驱动 jar 放入 `plugins/`。
 
-```bat
-cd /d "%DIST_DIR%"
-bin\start.bat
+## 启动 HTTP MCP Server
+
+```bash
+bin/start.sh > logs/mcp-http.log 2>&1 &
+MCP_PID=$!
 ```
 
 默认配置文件是 `conf/mcp-http.yaml`，默认端点是 `http://127.0.0.1:18088/mcp`。
-进程以前台方式运行，日志写入 `logs/` 目录。
-请保持当前终端不退出，并在第二个终端执行后续 `curl` 命令。
+启动脚本默认以前台方式运行；快速开始通过 shell 将其放到后台，便于在同一个终端继续执行 `curl`。
+容器、systemd 或其他进程管理器场景建议保持前台运行。
 
-发行包内置 demo runtime 暴露两个逻辑库：`orders` 和 `billing`。
-它们使用发行包自带 H2 驱动和 `data/` 下的种子数据。
-
-## 初始化 MCP session
+## 初始化 MCP 会话
 
 ```bash
-INIT_HEADERS=$(mktemp)
-curl -sS -D "${INIT_HEADERS}" -o /dev/null http://127.0.0.1:18088/mcp \
+curl -i -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   --data '{"jsonrpc":"2.0","id":"init-1","method":"initialize","params":{"capabilities":{},"clientInfo":{"name":"curl-demo","version":"1.0.0"}}}'
-SESSION_ID=$(sed -n 's/^[Mm][Cc][Pp]-[Ss]ession-[Ii][Dd]: //p' "${INIT_HEADERS}" | tr -d '\r')
-PROTOCOL_VERSION=$(sed -n 's/^[Mm][Cc][Pp]-[Pp]rotocol-[Vv]ersion: //p' "${INIT_HEADERS}" | tr -d '\r')
-rm -f "${INIT_HEADERS}"
-printf 'SESSION_ID=%s\nPROTOCOL_VERSION=%s\n' "${SESSION_ID}" "${PROTOCOL_VERSION}"
 ```
 
 预期结果：
 
-- `SESSION_ID` 非空。
-- `PROTOCOL_VERSION` 非空。
-- 后续 HTTP 请求必须携带这两个 header。
+- 响应头包含 `MCP-Session-Id`。
+- 响应头包含 `MCP-Protocol-Version`。
+- 后续 HTTP 请求必须携带这两个响应头。
 
-## 读取 metadata resource
+从响应头复制取值，并在当前终端设置变量：
+
+```bash
+export SESSION_ID="<MCP-Session-Id value>"
+export PROTOCOL_VERSION="<MCP-Protocol-Version value>"
+```
+
+## 读取元数据资源
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
@@ -78,16 +88,16 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"resource-1","method":"resources/read","params":{"uri":"shardingsphere://databases/orders/schemas/public/tables"}}'
+  --data '{"jsonrpc":"2.0","id":"resource-1","method":"resources/read","params":{"uri":"shardingsphere://databases"}}'
 ```
 
 预期结果：
 
 - 响应类型是 `text/event-stream`。
-- JSON payload 位于 `data:` 行。
-- 返回内容包含 `orders`、`order_items`、`active_orders`。
+- JSON 负载位于 `data:` 行。
+- 返回内容包含 `logic_db`。
 
-## 搜索 metadata
+## 搜索元数据
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
@@ -95,13 +105,13 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"orders","query":"order","object_types":["table","view"]}}}'
+  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"logic_db","query":"order","object_types":["table","view"]}}}'
 ```
 
 预期结果：
 
-- JSON payload 包含匹配到的表或视图。
-- 结果项会携带可继续读取的 resource hint。
+- JSON 负载包含匹配到的表或视图。
+- 结果项可包含后续读取用的资源提示。
 
 ## 执行只读查询
 
@@ -118,8 +128,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "params":{
       "name":"database_gateway_execute_query",
       "arguments":{
-        "database":"orders",
-        "schema":"public",
+        "database":"logic_db",
         "sql":"SELECT status FROM orders ORDER BY order_id",
         "max_rows":10
       }
@@ -131,15 +140,16 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 - `result_kind` 为 `result_set`。
 - `statement_class` 为 `query`。
-- payload 包含 `columns`、`rows` 或 `row_objects`。
+- 负载包含 `columns`、`rows` 或 `row_objects`。
 
-## 关闭 session
+## 关闭会话并停止服务
 
 ```bash
 curl -sS -D - -o /dev/null \
   -X DELETE http://127.0.0.1:18088/mcp \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}"
+kill "${MCP_PID}"
 ```
 
 预期结果：

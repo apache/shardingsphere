@@ -4,7 +4,7 @@ weight = 4
 +++
 
 ShardingSphere-MCP feature plugins can use the shared workflow mechanism to implement complex governance tasks.
-The MCP runtime provides the common workflow mechanism, while each plugin provides its own business semantics.
+The MCP Server provides the common workflow mechanism, while each plugin provides its own business semantics.
 
 ## Basic phases
 
@@ -12,9 +12,9 @@ A typical workflow contains:
 
 1. Call the plugin planning tool to create a plan and return `plan_id`.
 2. If the response returns `status = clarifying`, provide the missing inputs from `clarification_questions`.
-3. If the response returns `status = planned`, review the generated artifacts.
+3. If the response returns `status = planned`, review the generated change artifacts.
 4. Call `database_gateway_apply_workflow` with `execution_mode=preview` first.
-5. After reviewing the preview, call with `execution_mode=review-then-execute`, or use `manual-only` to export an artifact package.
+5. After reviewing the preview, call with `execution_mode=review-then-execute`, or use `manual-only` to export a manual execution package.
 6. Call `database_gateway_validate_workflow` to validate the final state.
 
 ## Session and plan_id
@@ -28,9 +28,9 @@ A typical workflow contains:
 ## Common statuses
 
 - `clarifying`: more input is required.
-- `planned`: the plan is ready and artifacts should be reviewed.
+- `planned`: the plan is ready and change artifacts should be reviewed.
 - `completed`: apply has completed.
-- `awaiting-manual-execution`: `manual-only` was selected; execute the returned artifacts manually.
+- `awaiting-manual-execution`: `manual-only` was selected; execute the returned change artifacts manually.
 - `validated`: validation passed.
 - `failed`: the current phase failed; inspect `issues`, `mismatches`, and `recovery_guidance`.
 
@@ -38,8 +38,8 @@ A typical workflow contains:
 
 `database_gateway_apply_workflow` requires an explicit `execution_mode`:
 
-- `preview`: preview artifacts and side-effect scope without changing runtime state.
-- `review-then-execute`: execute artifacts after review.
+- `preview`: preview change artifacts and side-effect scope without changing server state.
+- `review-then-execute`: execute change artifacts after review.
 - `manual-only`: export a manual artifact package without automatic execution.
 
 When using `approved_steps` for partial execution, pass only values returned by `preview_artifacts[].approval_step`.
