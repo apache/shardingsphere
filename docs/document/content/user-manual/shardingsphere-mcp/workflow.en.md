@@ -1,28 +1,26 @@
 +++
-title = "Workflows"
+title = "Plugin Workflows"
 weight = 5
 +++
 
-Workflows are the shared mechanism that ShardingSphere-MCP uses for multi-step governance changes. They are not standalone business features.
-They are mainly used by feature plugins today.
-A plugin understands the concrete business semantics and creates `plan_id` plus change artifacts.
-The MCP Server stores the current-session plan and provides common preview, apply, export, and validation tools.
+Plugin workflows are the shared mechanism that ShardingSphere-MCP uses for multi-step governance changes. They are not standalone business features.
+Feature plugins understand concrete business semantics and create `plan_id` plus change artifacts. The MCP Server stores the current-session plan and provides shared phase interfaces for preview, apply, export, and validation.
 
-Users usually do not use workflows just to read metadata, search objects, or run read-only SQL.
-Follow this page only after a plugin planning tool returns `plan_id`, then review, apply, and validate that plan.
-This page is separate because multiple plugins share the same state model, execution modes, and sensitive-input handling.
+Users do not use plugin workflows just to read metadata, search objects, or run read-only SQL.
+Follow this page only after a plugin planning tool returns `plan_id`; then the model or client can review, apply, and validate that plan.
+This page explains plugin workflows because these phase tools appear in the MCP tool list, and multiple plugins share the same state model, execution modes, and sensitive-input handling.
 The concrete planning capabilities are still documented on the corresponding feature plugin pages.
 
 ## Basic phases
 
 A typical workflow contains:
 
-1. Call the plugin planning tool to create a plan and return `plan_id`.
+1. Call the feature plugin planning tool to create a plan and return `plan_id`.
 2. If the response returns `status = clarifying`, provide the missing inputs from `clarification_questions`.
 3. If the response returns `status = planned`, review the generated change artifacts.
-4. Call `database_gateway_apply_workflow` with `execution_mode=preview` first.
-5. After reviewing the preview, call with `execution_mode=review-then-execute`, or use `manual-only` to export a manual execution package.
-6. Call `database_gateway_validate_workflow` to validate the final state.
+4. The model or client calls `database_gateway_apply_workflow` with `execution_mode=preview` first.
+5. After the user reviews the preview, the model or client calls with `execution_mode=review-then-execute`, or uses `manual-only` to export a manual execution package.
+6. The model or client calls `database_gateway_validate_workflow` to validate the final state.
 
 ## Session and plan_id
 
@@ -84,10 +82,11 @@ Example:
 }
 ```
 
-## Apply and validation tools
+## Phase tools
 
-`database_gateway_apply_workflow` and `database_gateway_validate_workflow` are common workflow tools.
-Users usually do not choose them directly. A model or client calls them after a feature plugin returns `plan_id`.
+`database_gateway_apply_workflow` and `database_gateway_validate_workflow` appear in the MCP tool list, so they need to be documented.
+They are not standalone business features. They are phase interfaces used after plugin planning returns `plan_id`.
+Users usually do not choose them directly. A model or client calls them during review, apply, and validation phases.
 
 | Tool | Actual role | When to use |
 | --- | --- | --- |
