@@ -90,7 +90,7 @@ class YamlMCPTransportConfigurationSwapperTest {
         result.setRuntimeDatabases(Map.of("logic_db", Map.of(
                 "databaseType", "MySQL",
                 "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
-                "username", "",
+                "username", "demo",
                 "password", "",
                 "driverClassName", "com.mysql.cj.jdbc.Driver")));
         return result;

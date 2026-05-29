@@ -60,9 +60,9 @@ runtimeDatabases:
 | --- | --- | --- |
 | `databaseType` | 是 | 数据库类型，例如 `MySQL` 或 `PostgreSQL`。 |
 | `jdbcUrl` | 是 | MCP Server 连接逻辑库的 JDBC URL。 |
-| `username` | 是 | 连接逻辑库的用户名；无用户名时写空字符串 `""`。 |
-| `password` | 是 | 连接逻辑库的密码；无密码时写空字符串 `""`。 |
-| `driverClassName` | 是 | JDBC 驱动类名；如果 JDBC 4 驱动可自动注册且不需要显式覆盖，写空字符串 `""`。 |
+| `username` | 是 | 连接 ShardingSphere-Proxy 逻辑库的用户名。 |
+| `password` | 否 | 连接 ShardingSphere-Proxy 逻辑库的密码；无密码账号可以省略或写空字符串 `""`。 |
+| `driverClassName` | 是 | JDBC 驱动类名，例如 MySQL 驱动使用 `com.mysql.cj.jdbc.Driver`。 |
 
 注意事项：
 

@@ -44,6 +44,7 @@ runtimeDatabases:
 ```
 
 Replace `<logic-database>`, `<proxy-host>`, `<proxy-port>`, `<proxy-username>`, and `<proxy-password>` with the actual ShardingSphere-Proxy connection information.
+For a no-password Proxy account, omit `password` or set it to an empty string `""`.
 If the target database driver is not packaged, copy the corresponding JDBC driver jar to `plugins/` before startup.
 
 ## Start the HTTP MCP Server

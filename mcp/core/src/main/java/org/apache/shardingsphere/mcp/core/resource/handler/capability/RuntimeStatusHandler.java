@@ -102,6 +102,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         return List.of(
                 RuntimeDatabaseConnectionException.CATEGORY_MISSING_JDBC_DRIVER,
                 RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED,
+                RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED,
                 RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT,
                 RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION,
                 RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE,
@@ -112,6 +113,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         return List.of(
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_MISSING_JDBC_DRIVER, "Install the configured runtime database JDBC driver."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED, "Check runtime database credentials outside MCP."),
+                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED, "Check metadata and SQL privileges for the configured runtime database account."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT, "Check database reachability and timeout settings."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION, "Fix runtimeDatabases databaseType, driver, or binding configuration."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE, "Check database service availability and network access."),

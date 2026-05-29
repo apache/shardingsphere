@@ -49,7 +49,7 @@ class MCPConfigurationLoaderTest {
               logic_db:
                 databaseType: MySQL
                 jdbcUrl: jdbc:mysql://localhost:3306/logic_db
-                username: ''
+                username: demo
                 password: ''
                 driverClassName: com.mysql.cj.jdbc.Driver
             """;
@@ -61,7 +61,7 @@ class MCPConfigurationLoaderTest {
               logic_db:
                 databaseType: MySQL
                 jdbcUrl: jdbc:mysql://localhost:3306/logic_db
-                username: ''
+                username: demo
                 password: ''
                 driverClassName: com.mysql.cj.jdbc.Driver
             """;

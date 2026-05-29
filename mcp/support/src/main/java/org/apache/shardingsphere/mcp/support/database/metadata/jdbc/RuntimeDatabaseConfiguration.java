@@ -23,6 +23,7 @@ import lombok.Getter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -52,10 +53,10 @@ public final class RuntimeDatabaseConfiguration {
     public Connection openConnection(final String databaseName) throws SQLException {
         loadDriver(databaseName);
         Properties props = new Properties();
-        if (!username.isEmpty()) {
+        if (!Objects.toString(username, "").isEmpty()) {
             props.setProperty("user", username);
         }
-        if (!password.isEmpty()) {
+        if (!Objects.toString(password, "").isEmpty()) {
             props.setProperty("password", password);
         }
         try {
@@ -66,11 +67,8 @@ public final class RuntimeDatabaseConfiguration {
     }
     
     private void loadDriver(final String databaseName) {
-        if (driverClassName.isEmpty()) {
-            return;
-        }
         try {
-            Class.forName(driverClassName);
+            Class.forName(Objects.toString(driverClassName, ""));
         } catch (final ClassNotFoundException ex) {
             throw RuntimeDatabaseConnectionException.missingJdbcDriver(databaseName, ex);
         }

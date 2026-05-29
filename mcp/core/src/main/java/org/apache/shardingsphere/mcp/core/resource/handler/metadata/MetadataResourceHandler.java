@@ -49,6 +49,14 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     
     private static final int LARGE_RESULT_THRESHOLD = 100;
     
+    private static final String CATEGORY_NO_RUNTIME_DATABASE = "no_runtime_database";
+    
+    private static final String CATEGORY_UNKNOWN_DATABASE = "unknown_database";
+    
+    private static final String CATEGORY_NOT_FOUND = "not_found";
+    
+    private static final String CATEGORY_EMPTY_SCOPE = "empty_scope";
+    
     private final String uriTemplate;
     
     private final BiFunction<MCPDatabaseHandlerContext, MCPUriVariables, List<?>> metadataLoader;
@@ -71,14 +79,14 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         Map<String, Object> navigationPayload = createNavigationPayload(descriptor, uriVariables);
         if (isDetailResource(metadata)) {
             if (items.isEmpty()) {
-                appendEmptyStateGuidance(navigationPayload, metadata, uriVariables);
+                appendEmptyStateGuidance(navigationPayload, metadata, databaseContext, uriVariables);
             }
             return new MCPMapResponse(createDetailPayload(metadata, items, navigationPayload));
         }
         List<?> returnedItems = capListItems(items);
         appendListSizeMetadata(navigationPayload, items.size(), returnedItems.size());
         if (items.isEmpty()) {
-            appendEmptyStateGuidance(navigationPayload, metadata, uriVariables);
+            appendEmptyStateGuidance(navigationPayload, metadata, databaseContext, uriVariables);
         } else if (isTruncated(items, returnedItems)) {
             appendLargeResultGuidance(navigationPayload, metadata, uriVariables, items.size());
         }
@@ -120,28 +128,54 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         return result;
     }
     
-    private void appendEmptyStateGuidance(final Map<String, Object> payload, final ShardingSphereMCPResourceMetadata descriptor, final MCPUriVariables uriVariables) {
-        Map<String, Object> emptyState = new LinkedHashMap<>(3, 1F);
+    private void appendEmptyStateGuidance(final Map<String, Object> payload, final ShardingSphereMCPResourceMetadata descriptor,
+                                          final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
+        Map<String, Object> emptyState = new LinkedHashMap<>(4, 1F);
         String resourceKind = null == descriptor.getObjectScope() ? "metadata" : descriptor.getObjectScope();
-        String recoveryCategory;
-        if (isDetailResource(descriptor)) {
+        String recoveryCategory = resolveEmptyStateCategory(descriptor, databaseContext, uriVariables);
+        if (CATEGORY_NOT_FOUND.equals(recoveryCategory)) {
             emptyState.put("state", "not_found");
-            emptyState.put("category", "not_found");
-            emptyState.put(MCPPayloadFieldNames.REASON, String.format("%s detail resource was not found for this URI.", resourceKind));
-            recoveryCategory = "not_found";
+            emptyState.put("category", recoveryCategory);
         } else {
             emptyState.put("state", "no_items");
-            emptyState.put("category", "empty_scope");
-            emptyState.put(MCPPayloadFieldNames.REASON, "No metadata items are available in this scope.");
-            recoveryCategory = "empty_scope";
+            emptyState.put("category", recoveryCategory);
         }
+        String reason = createEmptyStateReason(recoveryCategory, resourceKind);
+        emptyState.put(MCPPayloadFieldNames.REASON, reason);
         emptyState.put(MCPPayloadFieldNames.RESOURCE_KIND, resourceKind);
         payload.put("empty_state", emptyState);
         String parentUri = getResourceHintUri(payload.get(MCPPayloadFieldNames.PARENT_RESOURCE));
         payload.put(MCPPayloadFieldNames.RECOVERY, createRecovery(recoveryCategory, resourceKind, parentUri, uriVariables));
         payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, parentUri.isEmpty()
-                ? List.of(MCPNextActionUtils.stop("No metadata items are available in this scope."))
+                ? List.of(MCPNextActionUtils.stop(reason))
                 : List.of(MCPNextActionUtils.readResource(parentUri, "Read the parent metadata resource before broadening or correcting the request.")));
+    }
+    
+    private String resolveEmptyStateCategory(final ShardingSphereMCPResourceMetadata descriptor, final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
+        if ("shardingsphere://databases".equals(uriTemplate)) {
+            return CATEGORY_NO_RUNTIME_DATABASE;
+        }
+        if (uriVariables.containsVariable("database") && !isKnownDatabase(databaseContext, uriVariables.getValue("database"))) {
+            return CATEGORY_UNKNOWN_DATABASE;
+        }
+        return isDetailResource(descriptor) ? CATEGORY_NOT_FOUND : CATEGORY_EMPTY_SCOPE;
+    }
+    
+    private boolean isKnownDatabase(final MCPDatabaseHandlerContext databaseContext, final String databaseName) {
+        return Optional.ofNullable(databaseContext.getCapabilityFacade()).flatMap(capabilityFacade -> capabilityFacade.findDatabaseProfile(databaseName)).isPresent();
+    }
+    
+    private String createEmptyStateReason(final String category, final String resourceKind) {
+        switch (category) {
+            case CATEGORY_NO_RUNTIME_DATABASE:
+                return "No ShardingSphere-Proxy logical database is available to MCP. Configure runtimeDatabases before reading metadata.";
+            case CATEGORY_UNKNOWN_DATABASE:
+                return "The requested logical database is not visible to MCP. Check runtimeDatabases and ShardingSphere-Proxy connectivity.";
+            case CATEGORY_NOT_FOUND:
+                return String.format("%s detail resource was not found for this URI.", resourceKind);
+            default:
+                return "No metadata items are visible in this scope. Check metadata permissions if objects are expected.";
+        }
     }
     
     private Map<String, Object> createRecovery(final String category, final String resourceKind, final String parentUri, final MCPUriVariables uriVariables) {

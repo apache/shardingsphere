@@ -44,6 +44,7 @@ runtimeDatabases:
 ```
 
 将 `<logic-database>`、`<proxy-host>`、`<proxy-port>`、`<proxy-username>` 和 `<proxy-password>` 替换为 ShardingSphere-Proxy 的实际连接信息。
+如果 Proxy 账号无密码，可以省略 `password`，或把它写成空字符串 `""`。
 如果目标数据库驱动没有随发行包提供，请在启动前把对应 JDBC 驱动 jar 放入 `plugins/`。
 
 ## 启动 HTTP MCP Server

@@ -51,20 +51,20 @@ class OriginHeaderConstraintTest {
     void assertValidateWithRemoteOriginOnLoopbackBinding() {
         ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> new OriginHeaderConstraint(true).validate("http://example.com:8080"));
         assertThat(actual.getStatusCode(), is(403));
-        assertThat(actual.getMessage(), is("Origin is not allowed for the current binding."));
+        assertThat(actual.getMessage(), is("Origin is not allowed by MCP HTTP transport policy."));
     }
     
     @Test
     void assertValidateWithLoopbackOriginOnNonLoopbackBinding() {
         ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> new OriginHeaderConstraint(false).validate("http://127.0.0.1:8080"));
         assertThat(actual.getStatusCode(), is(403));
-        assertThat(actual.getMessage(), is("Origin is not allowed for the current binding."));
+        assertThat(actual.getMessage(), is("Origin is not allowed by MCP HTTP transport policy."));
     }
     
     @Test
     void assertValidateWithInvalidOrigin() {
         ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> new OriginHeaderConstraint(true).validate("://bad-origin"));
         assertThat(actual.getStatusCode(), is(403));
-        assertThat(actual.getMessage(), is("Origin is not allowed for the current binding."));
+        assertThat(actual.getMessage(), is("Origin is not allowed by MCP HTTP transport policy."));
     }
 }

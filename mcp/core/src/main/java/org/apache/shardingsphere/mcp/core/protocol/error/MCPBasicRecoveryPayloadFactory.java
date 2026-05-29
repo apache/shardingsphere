@@ -216,6 +216,9 @@ final class MCPBasicRecoveryPayloadFactory {
         if (RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED.equals(cause.getCategory())) {
             return "Check the runtime database credentials outside MCP, then retry.";
         }
+        if (RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED.equals(cause.getCategory())) {
+            return "Check runtime database account privileges outside MCP, then retry.";
+        }
         if (RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT.equals(cause.getCategory())) {
             return "Check database reachability and timeout settings, then retry.";
         }

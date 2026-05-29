@@ -21,18 +21,22 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MetadataResourceHandlerTest {
     
@@ -74,6 +78,37 @@ class MetadataResourceHandlerTest {
     }
     
     @Test
+    void assertHandleRootListResourceWithoutRuntimeDatabase() {
+        MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> List.of());
+        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of()));
+        Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+        assertThat(actualEmptyState.get("category"), is("no_runtime_database"));
+        assertThat(actualEmptyState.get("reason"), is("No ShardingSphere-Proxy logical database is available to MCP. Configure runtimeDatabases before reading metadata."));
+        assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("recovery_category"), is("no_runtime_database"));
+    }
+    
+    @Test
+    void assertHandleListResourceWithUnknownDatabase() {
+        MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas", (requestContext, uriVariables) -> List.of());
+        MCPResponse actual = handler.handle(createDatabaseContext(Optional.empty()), new MCPUriVariables(Map.of("database", "missing_db")));
+        Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+        assertThat(actualEmptyState.get("category"), is("unknown_database"));
+        assertThat(actualEmptyState.get("reason"), is("The requested logical database is not visible to MCP. Check runtimeDatabases and ShardingSphere-Proxy connectivity."));
+        assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("recovery_category"), is("unknown_database"));
+    }
+    
+    @Test
+    void assertHandleListResourceWithEmptyScope() {
+        MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas", (requestContext, uriVariables) -> List.of());
+        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0"))),
+                new MCPUriVariables(Map.of("database", "logic_db")));
+        Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+        assertThat(actualEmptyState.get("category"), is("empty_scope"));
+        assertThat(actualEmptyState.get("reason"), is("No metadata items are visible in this scope. Check metadata permissions if objects are expected."));
+        assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("recovery_category"), is("empty_scope"));
+    }
+    
+    @Test
     void assertHandleDetailResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}",
                 (requestContext, uriVariables) -> List.of(Map.of("database", uriVariables.getValue("database"))));
@@ -97,6 +132,15 @@ class MetadataResourceHandlerTest {
         assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("recovery_category"), is("not_found"));
         assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("category"), is("not_found"));
         assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).get(0)).get("type"), is("terminal"));
+    }
+    
+    private MCPDatabaseHandlerContext createDatabaseContext(final Optional<RuntimeDatabaseProfile> databaseProfile) {
+        MCPFeatureCapabilityFacade capabilityFacade = mock(MCPFeatureCapabilityFacade.class);
+        when(capabilityFacade.findDatabaseProfile("logic_db")).thenReturn(databaseProfile);
+        when(capabilityFacade.findDatabaseProfile("missing_db")).thenReturn(Optional.empty());
+        MCPDatabaseHandlerContext result = mock(MCPDatabaseHandlerContext.class);
+        when(result.getCapabilityFacade()).thenReturn(capabilityFacade);
+        return result;
     }
     
     private List<Map<String, String>> createDatabases(final int count) {

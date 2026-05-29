@@ -90,14 +90,15 @@ class RuntimeStatusHandlerTest {
         List<?> actualSafeCategories = (List<?>) actualDiagnostics.get("safe_categories");
         assertTrue(actualSafeCategories.contains("missing_jdbc_driver"));
         assertTrue(actualSafeCategories.contains("authentication_failed"));
+        assertTrue(actualSafeCategories.contains("authorization_failed"));
         assertTrue(actualSafeCategories.contains("connection_timeout"));
         assertTrue(actualSafeCategories.contains("invalid_configuration"));
         assertTrue(actualSafeCategories.contains("database_unavailable"));
         assertTrue(actualSafeCategories.contains("connection_failed"));
         List<?> actualOperatorNextActions = (List<?>) actualDiagnostics.get("operator_next_actions");
-        assertThat(actualOperatorNextActions.size(), is(6));
-        assertThat(((Map<?, ?>) actualOperatorNextActions.get(3)).get("category"), is("invalid_configuration"));
-        assertTrue((Boolean) ((Map<?, ?>) actualOperatorNextActions.get(3)).get("secret_safe"));
+        assertThat(actualOperatorNextActions.size(), is(7));
+        assertThat(((Map<?, ?>) actualOperatorNextActions.get(4)).get("category"), is("invalid_configuration"));
+        assertTrue((Boolean) ((Map<?, ?>) actualOperatorNextActions.get(4)).get("secret_safe"));
     }
     
     private void assertRuntimeProtection(final Map<String, Object> payload) {

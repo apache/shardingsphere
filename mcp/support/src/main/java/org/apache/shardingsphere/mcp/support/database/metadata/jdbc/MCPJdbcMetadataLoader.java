@@ -73,13 +73,13 @@ public final class MCPJdbcMetadataLoader {
      * @param runtimeDatabaseConfig runtime database configuration
      * @param databaseProfile runtime database profile
      * @return database metadata
-     * @throws IllegalStateException when metadata loading fails
+     * @throws RuntimeDatabaseConnectionException when metadata loading fails
      */
     public MCPDatabaseMetadata load(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final RuntimeDatabaseProfile databaseProfile) {
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
             return loadDatabaseMetadata(databaseName, databaseProfile, connection, connection.getMetaData());
         } catch (final SQLException ex) {
-            throw new IllegalStateException(String.format("Failed to load metadata for database `%s`.", databaseName), ex);
+            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
         }
     }
     
