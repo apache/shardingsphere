@@ -3,9 +3,10 @@ title = "Client Integration"
 weight = 4
 +++
 
-Client integration is for desktop clients, IDE extensions, agent platforms, or custom LLM applications that connect to ShardingSphere-MCP.
+Client integration connects this controlled database access path to desktop clients, IDE extensions, agent platforms, or custom LLM applications.
+After integration, the model does not connect to the database directly. It calls the resources, tools, prompts, and completion capabilities exposed by ShardingSphere-MCP through an MCP client.
 It is not a replacement for the curl-based smoke test in Quick Start, and it is not a guide for users to hand-write JSON-RPC.
-Its value is letting models discover ShardingSphere metadata and governance capabilities through an MCP client, while the client manages connection configuration, session headers, completion, and call orchestration.
+The client manages connection configuration, session headers, completion, and call orchestration.
 Users only need to describe the metadata lookup, read-only SQL query, or database governance task they want to complete.
 
 Use client integration when:

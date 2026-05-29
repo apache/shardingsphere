@@ -6,7 +6,8 @@ chapter = true
 +++
 
 ShardingSphere-MCP is the MCP Server for Apache ShardingSphere. It can run independently and expose ShardingSphere logical database metadata, safe SQL access, and plugin workflows to MCP clients.
-It is designed for models or agents to understand database structure, read governance state, and call controlled tools when they need to query data or create reviewable governance change plans.
+ShardingSphere-MCP provides models and agents with a controlled access path to ShardingSphere logical databases.
+Through an MCP client, a model can actively discover database structure, read governance state, and call SQL tools or create reviewable governance change plans within defined boundaries. Database connections, sessions, and execution boundaries are managed by the MCP Server.
 
 ShardingSphere-MCP configuration starts from databases: configure the ShardingSphere logical databases that the MCP Server can connect to, then read metadata or call SQL tools through an MCP client.
 

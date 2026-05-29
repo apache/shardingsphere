@@ -6,7 +6,8 @@ chapter = true
 +++
 
 ShardingSphere-MCP 是 Apache ShardingSphere 的 MCP Server，可以独立启动，并向 MCP 客户端暴露 ShardingSphere 逻辑库的元数据、安全 SQL 访问能力和插件工作流。
-它面向大模型或 Agent 主动理解数据库结构、读取治理状态，并在需要时调用受控工具完成查询或生成可审查的治理变更计划。
+ShardingSphere-MCP 为大模型和 Agent 提供一条受控访问 ShardingSphere 逻辑库的通路。
+模型通过 MCP 客户端主动发现数据库结构、读取治理状态，并在权限边界内调用 SQL 工具或生成可审查的治理变更计划；数据库连接、会话和执行边界由 MCP Server 管理。
 
 ShardingSphere-MCP 的配置以数据库为核心：先配置 MCP Server 可以连接的 ShardingSphere 逻辑库，再通过 MCP 客户端读取元数据或调用 SQL 工具。
 
