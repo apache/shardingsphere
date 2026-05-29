@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
+import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -45,6 +46,7 @@ class RuntimeStatusHandlerTest {
             assertTrue(((List<?>) actual.get("databases")).stream().map(each -> ((Map<?, ?>) each).get("database")).anyMatch("logic_db"::equals));
             assertThat(((Map<?, ?>) actual.get("redaction_summary")).get("marker"), is("******"));
             assertRuntimeDiagnostics(actual, "ready");
+            assertRuntimeProtection(actual);
             assertTrue(String.valueOf(actual.get("capability_fingerprint")).matches("[0-9a-f]{64}"));
             assertRuntimeCapability((List<?>) actual.get("databases"), "logic_db");
             assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities", "shardingsphere://databases")));
@@ -73,6 +75,7 @@ class RuntimeStatusHandlerTest {
             assertFalse((Boolean) readiness.get("ready"));
             assertThat(readiness.get("reason"), is("No runtime databases are configured."));
             assertRuntimeDiagnostics(actual, "invalid_configuration");
+            assertRuntimeProtection(actual);
             assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities")));
             List<?> nextActions = (List<?>) actual.get("next_actions");
             assertThat(((Map<?, ?>) nextActions.get(0)).get("type"), is("resource_read"));
@@ -95,6 +98,24 @@ class RuntimeStatusHandlerTest {
         assertThat(actualOperatorNextActions.size(), is(6));
         assertThat(((Map<?, ?>) actualOperatorNextActions.get(3)).get("category"), is("invalid_configuration"));
         assertTrue((Boolean) ((Map<?, ?>) actualOperatorNextActions.get(3)).get("secret_safe"));
+    }
+    
+    private void assertRuntimeProtection(final Map<String, Object> payload) {
+        Map<?, ?> actualRuntimeProtection = (Map<?, ?>) payload.get("runtime_protection");
+        Map<?, ?> actualToolCallLimit = (Map<?, ?>) actualRuntimeProtection.get("tool_call_limit");
+        assertThat(actualToolCallLimit.get("scope"), is("session"));
+        assertThat(actualToolCallLimit.get("property"), is(MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY));
+        Map<?, ?> actualSQLExecutionLimits = (Map<?, ?>) actualRuntimeProtection.get("sql_execution_limits");
+        Map<?, ?> actualMaxRows = (Map<?, ?>) actualSQLExecutionLimits.get("max_rows");
+        assertThat(actualMaxRows.get("default_value"), is(MCPRuntimeProtectionPolicy.DEFAULT_MAX_ROWS));
+        assertThat(actualMaxRows.get("maximum_value"), is(MCPRuntimeProtectionPolicy.MAX_ROWS_LIMIT));
+        assertThat(actualMaxRows.get("applied_field"), is("applied_max_rows"));
+        assertThat(actualMaxRows.get("truncation_field"), is("truncated"));
+        Map<?, ?> actualTimeout = (Map<?, ?>) actualSQLExecutionLimits.get("timeout_ms");
+        assertThat(actualTimeout.get("default_value"), is(MCPRuntimeProtectionPolicy.DEFAULT_TIMEOUT_MILLISECONDS));
+        assertThat(actualTimeout.get("maximum_value"), is(MCPRuntimeProtectionPolicy.MAX_TIMEOUT_MILLISECONDS));
+        assertThat(actualTimeout.get("applied_field"), is("applied_timeout_ms"));
+        assertThat(actualTimeout.get("zero_means"), is("server_default"));
     }
     
     private void assertRuntimeCapability(final List<?> databases, final String databaseName) {
