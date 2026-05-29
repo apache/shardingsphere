@@ -5,18 +5,17 @@ weight = 7
 chapter = true
 +++
 
-ShardingSphere-MCP is the standalone Model Context Protocol runtime for Apache ShardingSphere.
-It exposes logical database metadata, safe SQL access, and plugin-provided governance workflows through MCP tools, resources, prompts, and completions.
+ShardingSphere-MCP is the MCP Server for Apache ShardingSphere. It can run independently and expose ShardingSphere logical database metadata, safe SQL access, and plugin workflows to MCP clients.
+This manual uses the MCP terms tools, resources, prompts, and completions for the corresponding protocol capabilities. Protocol method names and JSON field names stay in their original form, such as `tools/list` and `resources/read`.
 
-This chapter is written for users who need to start the MCP runtime, connect an MCP client, configure logical runtime databases,
-deploy the official distribution, and troubleshoot common runtime issues.
+ShardingSphere-MCP configuration starts from databases: configure the ShardingSphere logical databases that the MCP Server can connect to, then read metadata or call SQL tools through an MCP client.
 
 ## Structure
 
-- Quick Start: verify metadata discovery and query behavior with the packaged demo runtime.
-- Configuration: configure transport, runtimeDatabases, plugin directories, and launch parameters.
-- Client Integration: use HTTP, STDIO, session headers, and discovery calls.
-- Workflow Basics: understand the shared plan, apply, and validate flow used by feature plugins.
+- Quick Start: build the distribution, configure a reachable logical database, start the HTTP MCP Server, and verify metadata reads and read-only SQL queries.
+- Configuration: configure transport, `runtimeDatabases`, plugin directories, and launch parameters.
+- Client Integration: use HTTP, STDIO, session response headers, and capability discovery calls.
+- Workflow Basics: understand the shared planning, apply, and validation flow used by feature plugins.
 - Feature Plugins: use official MCP feature plugins.
 - Deployment: deploy the binary distribution and OCI image safely.
-- Troubleshooting: diagnose common MCP runtime, transport, session, and SQL tool issues.
+- Troubleshooting: diagnose common MCP Server, transport, session, and SQL tool issues.

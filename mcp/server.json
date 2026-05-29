@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.apache/shardingsphere-mcp",
   "title": "Apache ShardingSphere MCP",
-  "description": "Apache ShardingSphere MCP runtime for metadata discovery, SQL preview, and encrypt/mask workflows",
+  "description": "Apache ShardingSphere MCP Server for metadata discovery, SQL preview, and encrypt/mask workflows",
   "websiteUrl": "https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-mcp/",
   "repository": {
     "url": "https://github.com/apache/shardingsphere",

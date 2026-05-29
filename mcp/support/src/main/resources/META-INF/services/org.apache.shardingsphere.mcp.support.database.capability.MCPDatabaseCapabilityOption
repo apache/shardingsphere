@@ -26,4 +26,3 @@ org.apache.shardingsphere.mcp.support.database.capability.dialect.DorisMCPDataba
 org.apache.shardingsphere.mcp.support.database.capability.dialect.HiveMCPDatabaseCapabilityOption
 org.apache.shardingsphere.mcp.support.database.capability.dialect.PrestoMCPDatabaseCapabilityOption
 org.apache.shardingsphere.mcp.support.database.capability.dialect.FirebirdMCPDatabaseCapabilityOption
-org.apache.shardingsphere.mcp.support.database.capability.dialect.H2MCPDatabaseCapabilityOption

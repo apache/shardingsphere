@@ -156,7 +156,6 @@ class MCPDatabaseCapabilityProviderTest {
                 Arguments.of("doris", "Doris", true, false, true, false, SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Arguments.of("hive", "Hive", false, false, false, false, SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Arguments.of("presto", "Presto", true, false, false, false, SchemaExecutionSemantics.BEST_EFFORT),
-                Arguments.of("firebird", "Firebird", true, true, true, true, SchemaExecutionSemantics.BEST_EFFORT),
-                Arguments.of("h2", "H2", true, true, true, true, SchemaExecutionSemantics.BEST_EFFORT));
+                Arguments.of("firebird", "Firebird", true, true, true, true, SchemaExecutionSemantics.BEST_EFFORT));
     }
 }

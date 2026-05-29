@@ -4,7 +4,7 @@ weight = 1
 +++
 
 The Encrypt MCP feature helps MCP clients plan encryption requirements into DDL, DistSQL, index plans, and validation steps executable through ShardingSphere-Proxy.
-It does not implement encryption algorithms inside the MCP runtime. It generates and applies encryption rule changes for ShardingSphere logical databases.
+It does not implement encryption algorithms inside the MCP Server. It generates and applies encryption rule changes for ShardingSphere logical databases.
 
 ## Prerequisites
 

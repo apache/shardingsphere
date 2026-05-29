@@ -51,11 +51,6 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
@@ -142,7 +137,6 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/data" />
                                 <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/plugins" />
                                 <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/logs" />
                                 <chmod file="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/bin/start.sh" perm="755" />

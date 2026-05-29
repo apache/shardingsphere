@@ -134,8 +134,8 @@ class MCPLaunchConfigurationTest {
     
     private Map<String, Map<String, Object>> createRuntimeDatabases() {
         return Collections.singletonMap("logic_db", Map.of(
-                "databaseType", "H2",
-                "jdbcUrl", "jdbc:h2:mem:logic",
+                "databaseType", "MySQL",
+                "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
                 "username", "",
                 "password", "",
                 "driverClassName", ""));

@@ -16,11 +16,10 @@ Build the distribution:
 The distribution directory contains:
 
 - `bin/`: startup scripts.
-- `conf/`: default configuration, logging configuration, and demo SQL.
-- `lib/`: official runtime dependencies and built-in MCP features.
-- `plugins/`: external JDBC drivers or extra MCP feature jars.
+- `conf/`: default configuration and logging configuration.
+- `lib/`: MCP Server dependencies and built-in MCP feature plugins.
+- `plugins/`: external JDBC drivers or extra MCP feature plugin jars.
 - `logs/`: runtime logs.
-- `data/`: data directory used by the demo runtime.
 
 ## OCI image
 
@@ -56,9 +55,11 @@ docker run --rm -p 18088:18088 \
   ghcr.io/apache/shardingsphere-mcp:${latest.release.version}
 ```
 
+`runtimeDatabases` in the configuration file must point to a ShardingSphere-Proxy logical database prepared by the user.
+
 ## Secure deployment
 
-The built-in HTTP runtime does not provide authentication or authorization.
+The built-in HTTP Server does not provide authentication or authorization.
 For remote access, place it in a trusted network or behind a reverse proxy or gateway that handles:
 
 - TLS termination.
@@ -71,7 +72,7 @@ HTTP binding recommendations:
 
 - Use `127.0.0.1` for local debugging.
 - Use a controlled network interface for container or intranet deployments.
-- Avoid exposing the MCP runtime directly to remote clients.
+- Avoid exposing the MCP Server directly to remote clients.
 
 ## Logs
 

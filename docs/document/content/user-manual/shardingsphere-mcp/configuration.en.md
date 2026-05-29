@@ -3,12 +3,12 @@ title = "Configuration"
 weight = 2
 +++
 
-ShardingSphere-MCP uses YAML files to configure the transport and runtime logical databases.
+ShardingSphere-MCP uses YAML files to configure the transport and the databases that the MCP Server can connect to.
 The packaged distribution reads `conf/mcp-http.yaml` by default and also ships `conf/mcp-stdio.yaml`.
 
 ## Transport configuration
 
-Each MCP runtime process must select exactly one transport.
+Each MCP Server process must select exactly one transport.
 
 HTTP example:
 
@@ -36,10 +36,10 @@ Notes:
 - `127.0.0.1`, `localhost`, and `::1` are local-only bindings.
 - `0.0.0.0` or a specific intranet IP exposes the matching network interface.
 
-## Runtime Databases
+## Database configuration
 
-`runtimeDatabases` defines the ShardingSphere logical databases visible to the MCP runtime.
-Each entry key is the logical database name exposed through MCP.
+`runtimeDatabases` defines the databases that the MCP Server can connect to and expose through MCP.
+Each entry key is the database name used in MCP calls. It usually maps to a logical database exposed by ShardingSphere-Proxy.
 
 ```yaml
 runtimeDatabases:
@@ -53,8 +53,8 @@ runtimeDatabases:
 
 Fields:
 
-- `databaseType`: required database type, such as `MySQL`, `PostgreSQL`, or `H2`.
-- `jdbcUrl`: required JDBC URL used by the MCP runtime to connect to the logical database.
+- `databaseType`: required database type, such as `MySQL` or `PostgreSQL`.
+- `jdbcUrl`: required JDBC URL used by the MCP Server to connect to the database.
 - `username`: required field; use an empty string `""` when no username is needed.
 - `password`: required field; use an empty string `""` when no password is needed.
 - `driverClassName`: required field; use an empty string `""` when a JDBC 4 driver auto-registers and no explicit override is needed.
@@ -64,12 +64,12 @@ Notes:
 - MCP resources expose ShardingSphere logical databases, not physical storage units.
 - Encrypt and Mask plugin workflows should connect to logical databases exposed by ShardingSphere-Proxy.
 - Schema, table, view, index, and sequence metadata depends on target JDBC metadata.
-- Non-H2 databases usually require the target JDBC driver jar under `plugins/`.
+- If the target JDBC driver is not packaged, copy the driver jar under `plugins/`.
 
 ## Plugin directory
 
-The packaged distribution keeps the official MCP baseline jars under `lib/`, including Encrypt and Mask features.
-If your target database driver or an extra MCP feature jar is not packaged, copy it under the distribution `plugins/` directory before starting the runtime.
+The packaged distribution keeps MCP Server dependencies and official feature plugin jars under `lib/`, including Encrypt and Mask plugins.
+If your target database driver or an extra MCP feature plugin jar is not packaged, copy it under the distribution `plugins/` directory before starting the MCP Server.
 
 ## Custom configuration file
 

@@ -47,11 +47,11 @@ class MCPConfigurationLoaderTest {
                 endpointPath: /gateway
             runtimeDatabases:
               logic_db:
-                databaseType: H2
-                jdbcUrl: jdbc:h2:mem:logic
+                databaseType: MySQL
+                jdbcUrl: jdbc:mysql://localhost:3306/logic_db
                 username: ''
                 password: ''
-                driverClassName: org.h2.Driver
+                driverClassName: com.mysql.cj.jdbc.Driver
             """;
     
     private static final String RUNTIME_DATABASE_CONFIGURATION_YAML = """
@@ -59,11 +59,11 @@ class MCPConfigurationLoaderTest {
               type: STDIO
             runtimeDatabases:
               logic_db:
-                databaseType: H2
-                jdbcUrl: jdbc:h2:mem:logic
+                databaseType: MySQL
+                jdbcUrl: jdbc:mysql://localhost:3306/logic_db
                 username: ''
                 password: ''
-                driverClassName: org.h2.Driver
+                driverClassName: com.mysql.cj.jdbc.Driver
             """;
     
     @TempDir
@@ -75,8 +75,8 @@ class MCPConfigurationLoaderTest {
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         assertThat(actual.getTransportType(), is(MCPTransportType.STDIO));
         assertThat(actual.getDatabases().size(), is(1));
-        assertThat(actual.getDatabases().get("logic_db").getDatabaseType(), is("H2"));
-        assertThat(actual.getDatabases().get("logic_db").getJdbcUrl(), is("jdbc:h2:mem:logic"));
+        assertThat(actual.getDatabases().get("logic_db").getDatabaseType(), is("MySQL"));
+        assertThat(actual.getDatabases().get("logic_db").getJdbcUrl(), is("jdbc:mysql://localhost:3306/logic_db"));
     }
     
     @ParameterizedTest(name = "{0}")

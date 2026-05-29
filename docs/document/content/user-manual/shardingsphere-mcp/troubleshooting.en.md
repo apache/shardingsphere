@@ -3,7 +3,7 @@ title = "Troubleshooting"
 weight = 6
 +++
 
-This section covers common MCP runtime, transport, session, SQL tool, and workflow mechanism issues.
+This page covers common MCP Server, transport, session, SQL tool, and workflow mechanism issues.
 For plugin-specific business issues, see the corresponding feature plugin documentation.
 
 ## Startup failure
@@ -14,7 +14,6 @@ Check:
 - The configuration file path is correct.
 - `conf/mcp-http.yaml` or `conf/mcp-stdio.yaml` exists.
 - The YAML file does not contain unsupported fields.
-- `runtimeDatabases` is present and not empty.
 - `username`, `password`, and `driverClassName` are explicitly declared; use an empty string `""` when no value is needed.
 
 When startup fails, inspect the terminal error and `logs/mcp.log` first.
@@ -27,7 +26,7 @@ Check:
 - The port is not occupied.
 - `transport.type` is `STREAMABLE_HTTP`.
 - `transport.http.endpointPath` matches the client URL.
-- Remote machines cannot access a runtime bound to `127.0.0.1` directly.
+- Remote machines cannot access an MCP Server bound to `127.0.0.1` directly.
 - When binding to `0.0.0.0`, authentication and network access control should be handled by an upstream gateway.
 
 ## HTTP 403 response
@@ -57,7 +56,7 @@ Workflow `plan_id` values are valid only in the current session.
 
 ## No response in STDIO mode
 
-STDIO is for MCP clients that launch the runtime as a child process. It is not an interactive shell.
+STDIO is for MCP clients that launch the MCP Server as a child process. It is not an interactive shell.
 
 Check:
 

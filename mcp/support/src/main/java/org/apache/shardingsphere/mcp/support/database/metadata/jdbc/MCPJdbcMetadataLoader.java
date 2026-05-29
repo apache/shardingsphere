@@ -177,8 +177,6 @@ public final class MCPJdbcMetadataLoader {
                 return Optional.of(MARIADB_SEQUENCE_QUERY);
             case "FIREBIRD":
                 return Optional.of(FIREBIRD_SEQUENCE_QUERY);
-            case "H2":
-                return Optional.of("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM INFORMATION_SCHEMA.SEQUENCES");
             default:
                 return Optional.empty();
         }

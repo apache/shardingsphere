@@ -132,9 +132,6 @@ public final class MCPJdbcDatabaseProfileLoader {
             if (productName.toUpperCase(Locale.ENGLISH).contains("FIREBIRD")) {
                 return Optional.of("Firebird");
             }
-            if (productName.toUpperCase(Locale.ENGLISH).contains("H2")) {
-                return Optional.of("H2");
-            }
         }
         return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, productName).map(MCPDatabaseCapabilityOption::getType);
     }
@@ -161,9 +158,6 @@ public final class MCPJdbcDatabaseProfileLoader {
         }
         if (actualJdbcUrl.startsWith("jdbc:firebirdsql:")) {
             return Optional.of("Firebird");
-        }
-        if (actualJdbcUrl.startsWith("jdbc:h2:")) {
-            return Optional.of("H2");
         }
         return Optional.empty();
     }

@@ -5,7 +5,7 @@ chapter = true
 +++
 
 ShardingSphere-MCP extends domain capabilities through feature plugins.
-The MCP runtime provides transport, sessions, descriptor discovery, metadata, and workflow infrastructure. Feature plugins provide concrete tools, resources, and business semantics.
+The MCP Server provides transport, sessions, descriptor discovery, metadata, and workflow infrastructure. Feature plugins provide concrete tools, resources, and business semantics.
 
 The packaged distribution includes these official MCP feature plugins:
 

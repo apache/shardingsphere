@@ -62,7 +62,7 @@ final class DatabaseTestDataFactory {
                                 List.of(new MCPViewMetadata("logic_db", "public", "orders_view",
                                         List.of(new MCPColumnMetadata("logic_db", "public", "", "orders_view", "order_id")))),
                                 List.of()))),
-                new MCPDatabaseMetadata("runtime_db", "H2", "", List.of(
+                new MCPDatabaseMetadata("runtime_db", "PostgreSQL", "", List.of(
                         new MCPSchemaMetadata("runtime_db", "public", List.of(), List.of(), List.of(new MCPSequenceMetadata("runtime_db", "public", "order_seq"))))),
                 new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
                         new MCPSchemaMetadata("warehouse", "warehouse", List.of(new MCPTableMetadata("warehouse", "warehouse", "facts", List.of(), List.of())), List.of(), List.of()))));

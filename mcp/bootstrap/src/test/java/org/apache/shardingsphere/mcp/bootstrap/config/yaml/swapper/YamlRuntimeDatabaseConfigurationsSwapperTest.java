@@ -35,14 +35,14 @@ class YamlRuntimeDatabaseConfigurationsSwapperTest {
     @Test
     void assertSwapToObject() {
         Map<String, RuntimeDatabaseConfiguration> actual = swapper.swapToObject(Map.of("logic_db", Map.of(
-                "databaseType", "H2",
-                "jdbcUrl", "jdbc:h2:mem:logic",
+                "databaseType", "MySQL",
+                "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
                 "username", "",
                 "password", "",
-                "driverClassName", "org.h2.Driver")));
+                "driverClassName", "com.mysql.cj.jdbc.Driver")));
         
-        assertThat(actual.get("logic_db").getDatabaseType(), is("H2"));
-        assertThat(actual.get("logic_db").getJdbcUrl(), is("jdbc:h2:mem:logic"));
+        assertThat(actual.get("logic_db").getDatabaseType(), is("MySQL"));
+        assertThat(actual.get("logic_db").getJdbcUrl(), is("jdbc:mysql://localhost:3306/logic_db"));
     }
     
     @Test
@@ -65,11 +65,11 @@ class YamlRuntimeDatabaseConfigurationsSwapperTest {
     @Test
     void assertSwapToObjectWithUnsupportedRuntimeDatabaseProperty() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(Map.of("logic_db", Map.of(
-                "databaseType", "H2",
-                "jdbcUrl", "jdbc:h2:mem:logic",
+                "databaseType", "MySQL",
+                "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
                 "username", "",
                 "password", "",
-                "driverClassName", "org.h2.Driver",
+                "driverClassName", "com.mysql.cj.jdbc.Driver",
                 "unsupported", true))));
         
         assertThat(actual.getMessage(), is("Unsupported runtime database property `unsupported`."));
@@ -78,10 +78,10 @@ class YamlRuntimeDatabaseConfigurationsSwapperTest {
     @Test
     void assertSwapToYamlConfiguration() {
         Map<String, Map<String, Object>> actual = swapper.swapToYamlConfiguration(Map.of(
-                "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver")));
+                "logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mysql://localhost:3306/logic_db", "", "", "com.mysql.cj.jdbc.Driver")));
         
-        assertThat(String.valueOf(actual.get("logic_db").get("databaseType")), is("H2"));
-        assertThat(String.valueOf(actual.get("logic_db").get("driverClassName")), is("org.h2.Driver"));
+        assertThat(String.valueOf(actual.get("logic_db").get("databaseType")), is("MySQL"));
+        assertThat(String.valueOf(actual.get("logic_db").get("driverClassName")), is("com.mysql.cj.jdbc.Driver"));
     }
     
     @Test

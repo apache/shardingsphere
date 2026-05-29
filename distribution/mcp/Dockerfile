@@ -18,7 +18,7 @@ FROM eclipse-temurin:21-jre
 ARG MCP_SERVER_NAME=io.github.apache/shardingsphere-mcp
 ARG MCP_IMAGE_VERSION=unknown
 ARG MCP_SOURCE_URL=https://github.com/apache/shardingsphere
-ARG MCP_DESCRIPTION="Standalone MCP runtime for Apache ShardingSphere metadata and SQL access"
+ARG MCP_DESCRIPTION="Standalone MCP Server for Apache ShardingSphere metadata and SQL access"
 
 LABEL org.opencontainers.image.authors="ShardingSphere dev@shardingsphere.apache.org" \
       org.opencontainers.image.description="${MCP_DESCRIPTION}" \

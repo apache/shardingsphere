@@ -299,13 +299,13 @@ class SearchMetadataToolServiceTest {
                         new MCPTableMetadata("warehouse", "warehouse", "facts",
                                 List.of(new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())),
                         List.of(), List.of()))));
-        result.add(new MCPDatabaseMetadata("runtime_db", "H2", "", List.of(
+        result.add(new MCPDatabaseMetadata("runtime_db", "PostgreSQL", "", List.of(
                 new MCPSchemaMetadata("runtime_db", "public", List.of(), List.of(), List.of(new MCPSequenceMetadata("runtime_db", "public", "order_seq"))))));
         return result;
     }
     
     private List<MCPDatabaseMetadata> createDatabaseMetadataWithEmptySchema() {
-        return List.of(new MCPDatabaseMetadata("schema_less_db", "H2", "",
+        return List.of(new MCPDatabaseMetadata("schema_less_db", "PostgreSQL", "",
                 List.of(new MCPSchemaMetadata("schema_less_db", "", List.of(new MCPTableMetadata("schema_less_db", "", "schema_less_orders", List.of(), List.of())), List.of(), List.of()))));
     }
     
@@ -316,7 +316,7 @@ class SearchMetadataToolServiceTest {
     }
     
     private List<MCPDatabaseMetadata> createDatabaseMetadataWithNullViewColumn() {
-        return List.of(new MCPDatabaseMetadata("null_view_db", "H2", "",
+        return List.of(new MCPDatabaseMetadata("null_view_db", "MySQL", "",
                 List.of(new MCPSchemaMetadata("null_view_db", "public", List.of(),
                         List.of(new MCPViewMetadata("null_view_db", "public", "active_view", List.of(new MCPColumnMetadata("null_view_db", "public", "", null, "status")))), List.of()))));
     }

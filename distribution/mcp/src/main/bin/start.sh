@@ -22,7 +22,6 @@ APP_HOME=$(cd "${SCRIPT_DIR}/.." && pwd)
 CONF_FILE=${1:-"${APP_HOME}/conf/mcp-http.yaml"}
 LIB_DIR="${APP_HOME}/lib"
 PLUGINS_DIR="${APP_HOME}/plugins"
-DATA_DIR="${APP_HOME}/data"
 LOG_DIR="${APP_HOME}/logs"
 
 if [ ! -f "${CONF_FILE}" ]; then
@@ -31,11 +30,11 @@ if [ ! -f "${CONF_FILE}" ]; then
 fi
 
 if [ ! -d "${LIB_DIR}" ]; then
-  echo "Error: MCP runtime libraries are missing under '${LIB_DIR}'." 1>&2
+  echo "Error: MCP Server libraries are missing under '${LIB_DIR}'." 1>&2
   exit 1
 fi
 
-mkdir -p "${DATA_DIR}" "${PLUGINS_DIR}" "${LOG_DIR}"
+mkdir -p "${PLUGINS_DIR}" "${LOG_DIR}"
 
 if [ -n "${JAVA_HOME:-}" ] && [ -x "${JAVA_HOME}/bin/java" ]; then
   JAVA="${JAVA_HOME}/bin/java"

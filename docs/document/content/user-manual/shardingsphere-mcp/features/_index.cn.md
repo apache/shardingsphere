@@ -1,16 +1,16 @@
 +++
-title = "Feature Plugins"
+title = "功能插件"
 weight = 7
 chapter = true
 +++
 
-ShardingSphere-MCP 通过 feature plugin 扩展领域能力。
-MCP runtime 负责 transport、session、descriptor discovery、metadata 和 workflow 基础设施；feature plugin 负责提供具体 tools、resources 和业务语义。
+ShardingSphere-MCP 通过功能插件扩展领域能力。
+MCP Server 负责传输方式、会话、描述符发现、元数据和工作流基础设施；功能插件负责提供具体工具、资源和业务语义。
 
-发行包默认包含以下官方 MCP feature plugin：
+发行包默认包含以下官方 MCP 功能插件：
 
 - Encrypt：规划、执行和校验数据加密规则。
 - Mask：规划、执行和校验数据脱敏规则。
 
-新增或第三方 feature plugin 可以通过 `plugins/` 目录加入运行时 classpath。
-如果 feature plugin 未随发行包提供，启动前需要同时准备它依赖的 ShardingSphere 模块和第三方 jar。
+新增或第三方功能插件可以通过 `plugins/` 目录加入运行时类路径。
+如果功能插件未随发行包提供，启动前需要同时准备它依赖的 ShardingSphere 模块和第三方 jar。

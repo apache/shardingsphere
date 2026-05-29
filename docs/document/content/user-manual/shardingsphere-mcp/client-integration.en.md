@@ -4,9 +4,9 @@ weight = 3
 +++
 
 MCP clients can connect to ShardingSphere-MCP through Streamable HTTP or STDIO.
-Clients should use official MCP discovery methods first, then call tools, resources, prompts, or completions for the target task.
+Clients should use official MCP capability discovery methods first, then call tools, resources, prompts, or completions for the target task.
 
-## HTTP configuration shape
+## HTTP configuration
 
 ```json
 {
@@ -26,7 +26,7 @@ An HTTP client must call `initialize` first and keep these response headers:
 Later requests must include both headers.
 After the session is closed, the session id cannot be reused.
 
-## STDIO configuration shape
+## STDIO configuration
 
 ```json
 {
@@ -48,7 +48,7 @@ In STDIO mode:
 - Diagnostics are written to stderr or `logs/mcp.log`.
 - `command` and `args` in the client configuration should point to the packaged startup script and STDIO config file.
 
-## Discovery order
+## Capability discovery order
 
 Recommended client discovery order:
 
@@ -77,11 +77,11 @@ Read the capability catalog:
 Search metadata:
 
 ```json
-{"jsonrpc":"2.0","id":"search-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"logic_db","query":"orders","object_types":["table"]}}}
+{"jsonrpc":"2.0","id":"search-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"logic_db","query":"sample","object_types":["table"]}}}
 ```
 
 Execute read-only SQL:
 
 ```json
-{"jsonrpc":"2.0","id":"query-1","method":"tools/call","params":{"name":"database_gateway_execute_query","arguments":{"database":"logic_db","sql":"SELECT * FROM orders","max_rows":100}}}
+{"jsonrpc":"2.0","id":"query-1","method":"tools/call","params":{"name":"database_gateway_execute_query","arguments":{"database":"logic_db","sql":"SELECT * FROM sample_table LIMIT 100","max_rows":100}}}
 ```
