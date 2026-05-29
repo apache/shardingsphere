@@ -364,6 +364,17 @@ class MCPErrorConverterTest {
     }
     
     @Test
+    void assertConvertRuntimeDatabaseAuthorizationWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new RuntimeDatabaseConnectionException("logic_db",
+                RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED, new SQLException("permission denied"))).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("authorization_failed"));
+        assertThat(actualRecovery.get("recovery_category"), is("unavailable_runtime"));
+        assertThat(actualRecovery.get("database"), is("logic_db"));
+        assertThat(actualRecovery.get("model_action"), is("Check runtime database account privileges outside MCP, then retry."));
+    }
+    
+    @Test
     void assertConvertToolCallLimitExceededWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPToolCallLimitExceededException("session-1", "database_gateway_search_metadata", 1)).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");

@@ -136,8 +136,8 @@ class MCPLaunchConfigurationTest {
         return Collections.singletonMap("logic_db", Map.of(
                 "databaseType", "MySQL",
                 "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
-                "username", "",
+                "username", "demo",
                 "password", "",
-                "driverClassName", ""));
+                "driverClassName", "com.mysql.cj.jdbc.Driver"));
     }
 }

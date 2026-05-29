@@ -55,6 +55,13 @@ class RuntimeDatabaseConnectionExceptionTest {
     }
     
     @Test
+    void assertConnectionFailedAsAuthorization() {
+        RuntimeDatabaseConnectionException actual = RuntimeDatabaseConnectionException.connectionFailed("logic_db", new SQLException("permission denied", "42501"));
+        assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: authorization_failed."));
+        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED));
+    }
+    
+    @Test
     void assertConnectionFailedAsDatabaseUnavailable() {
         RuntimeDatabaseConnectionException actual = RuntimeDatabaseConnectionException.connectionFailed("logic_db", new SQLException("Connection refused", "08001"));
         assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE));

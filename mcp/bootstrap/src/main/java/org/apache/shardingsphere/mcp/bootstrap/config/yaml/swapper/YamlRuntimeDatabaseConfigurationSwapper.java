@@ -41,6 +41,7 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
     @Override
     public RuntimeDatabaseConfiguration swapToObject(final YamlRuntimeDatabaseConfiguration yamlConfig) {
         MCPYamlConfigurationValidator.validate(yamlConfig, "MCP runtime database configuration");
-        return new RuntimeDatabaseConfiguration(yamlConfig.getDatabaseType(), yamlConfig.getJdbcUrl(), yamlConfig.getUsername(), yamlConfig.getPassword(), yamlConfig.getDriverClassName());
+        return new RuntimeDatabaseConfiguration(yamlConfig.getDatabaseType(), yamlConfig.getJdbcUrl(), yamlConfig.getUsername(),
+                null == yamlConfig.getPassword() ? "" : yamlConfig.getPassword(), yamlConfig.getDriverClassName());
     }
 }

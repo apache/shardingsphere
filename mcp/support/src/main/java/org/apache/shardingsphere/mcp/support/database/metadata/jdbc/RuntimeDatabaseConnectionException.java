@@ -34,6 +34,8 @@ public final class RuntimeDatabaseConnectionException extends RuntimeException {
     
     public static final String CATEGORY_AUTHENTICATION_FAILED = "authentication_failed";
     
+    public static final String CATEGORY_AUTHORIZATION_FAILED = "authorization_failed";
+    
     public static final String CATEGORY_CONNECTION_TIMEOUT = "connection_timeout";
     
     public static final String CATEGORY_INVALID_CONFIGURATION = "invalid_configuration";
@@ -92,6 +94,9 @@ public final class RuntimeDatabaseConnectionException extends RuntimeException {
         String message = Objects.toString(cause.getMessage(), "").toLowerCase(Locale.ENGLISH);
         if (cause instanceof SQLTimeoutException || message.contains("timeout") || message.contains("timed out")) {
             return CATEGORY_CONNECTION_TIMEOUT;
+        }
+        if (sqlState.startsWith("42501") || message.contains("permission denied") || message.contains("insufficient privilege") || message.contains("not authorized")) {
+            return CATEGORY_AUTHORIZATION_FAILED;
         }
         if (sqlState.startsWith("28") || message.contains("authentication") || message.contains("access denied") || message.contains("password")) {
             return CATEGORY_AUTHENTICATION_FAILED;

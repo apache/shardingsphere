@@ -65,6 +65,34 @@ class YamlMCPLaunchConfigurationSwapperTest {
     }
     
     @Test
+    void assertSwapToObjectWithPasswordMissing() {
+        String yamlContent = "transport:\n"
+                + "  type: STDIO\n"
+                + "runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    databaseType: MySQL\n"
+                + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
+                + "    username: demo\n"
+                + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
+        MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class));
+        assertThat(actual.getDatabases().get("logic_db").getPassword(), is(""));
+    }
+    
+    @Test
+    void assertSwapToObjectWithBlankDriverClassName() {
+        String yamlContent = "transport:\n"
+                + "  type: STDIO\n"
+                + "runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    databaseType: MySQL\n"
+                + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
+                + "    username: demo\n"
+                + "    driverClassName: ''\n";
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` contains database `logic_db` property `driverClassName` is required."));
+    }
+    
+    @Test
     void assertSwapToObjectWithNullConfiguration() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null));
         assertThat(actual.getMessage(), is("MCP launch configuration cannot be null."));
@@ -82,7 +110,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  logic_db:\n"
                 + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
-                + "    username: ''\n"
+                + "    username: demo\n"
                 + "    password: ''\n"
                 + "    driverClassName: com.mysql.cj.jdbc.Driver\n", YamlMCPLaunchConfiguration.class)));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport` is required."));
@@ -141,7 +169,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  1:\n"
                 + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
-                + "    username: ''\n"
+                + "    username: demo\n"
                 + "    password: ''\n"
                 + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
         MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class));
@@ -156,7 +184,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  '':\n"
                 + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
-                + "    username: ''\n"
+                + "    username: demo\n"
                 + "    password: ''\n"
                 + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
         ConstructorException actual = assertThrows(ConstructorException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
@@ -171,7 +199,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  null:\n"
                 + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
-                + "    username: ''\n"
+                + "    username: demo\n"
                 + "    password: ''\n"
                 + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
         ConstructorException actual = assertThrows(ConstructorException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
@@ -196,7 +224,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  logic_db:\n"
                 + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
-                + "    username: ''\n"
+                + "    username: demo\n"
                 + "    password: ''\n"
                 + "    driverClassName: com.mysql.cj.jdbc.Driver\n"
                 + "    unsupported: true\n";
@@ -207,11 +235,11 @@ class YamlMCPLaunchConfigurationSwapperTest {
     @Test
     void assertSwapToYamlConfigurationWithRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> databases = new LinkedHashMap<>(1, 1F);
-        databases.put("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mysql://localhost:3306/logic_db", "", "", "com.mysql.cj.jdbc.Driver"));
+        databases.put("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver"));
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(MCPTransportType.STREAMABLE_HTTP, new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp"), databases);
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         assertThat(String.valueOf(actual.getRuntimeDatabases().get("logic_db").get("databaseType")), is("MySQL"));
-        assertThat(String.valueOf(actual.getRuntimeDatabases().get("logic_db").get("username")), is(""));
+        assertThat(String.valueOf(actual.getRuntimeDatabases().get("logic_db").get("username")), is("demo"));
         assertThat(actual.getTransport().getType(), is(MCPTransportType.STREAMABLE_HTTP));
         assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
     }
@@ -229,7 +257,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  logic_db:\n"
                 + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
-                + "    username: ''\n"
+                + "    username: demo\n"
                 + "    password: ''\n"
                 + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
     }

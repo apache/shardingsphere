@@ -62,7 +62,7 @@ public final class MCPJdbcDatabaseProfileLoader {
      * @param runtimeDatabaseConfig runtime database configuration
      * @return runtime database profile
      * @throws RuntimeDatabaseConnectionException when runtime database connection or configuration fails
-     * @throws IllegalStateException when profile metadata loading fails
+     * @throws RuntimeDatabaseConnectionException when profile metadata loading fails
      */
     public RuntimeDatabaseProfile load(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
@@ -71,7 +71,7 @@ public final class MCPJdbcDatabaseProfileLoader {
             String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
             return new RuntimeDatabaseProfile(databaseName, databaseType, databaseVersion);
         } catch (final SQLException ex) {
-            throw new IllegalStateException(String.format("Failed to load database profile for database `%s`.", databaseName), ex);
+            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
         }
     }
     

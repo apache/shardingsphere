@@ -96,7 +96,7 @@ class MCPJdbcMetadataLoaderTest {
         Driver mockDriver = new MockDriver("jdbc:mock:no-schema", createConnectionWithoutSchema("MySQL"));
         DriverManager.registerDriver(mockDriver);
         try {
-            LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mock:no-schema", "", "", "")));
+            LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mock:no-schema", "", "", MockDriver.class.getName())));
             MCPDatabaseMetadata databaseMetadata = actual.findMetadata("logic_db").orElseThrow();
             assertThat(databaseMetadata.getSchemas().size(), is(1));
             assertThat(databaseMetadata.getSchemas().get(0).getSchema(), is("logic_db"));
@@ -186,9 +186,9 @@ class MCPJdbcMetadataLoaderTest {
         SQLException expected = new SQLException("connection failed");
         when(runtimeDatabaseConfiguration.openConnection("logic_db")).thenThrow(expected);
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-        IllegalStateException actual = assertThrows(IllegalStateException.class,
+        RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
                 () -> metadataLoader.load("logic_db", runtimeDatabaseConfiguration, new RuntimeDatabaseProfile("logic_db", "PostgreSQL", "")));
-        assertThat(actual.getMessage(), is("Failed to load metadata for database `logic_db`."));
+        assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: connection_failed."));
         assertThat(actual.getCause(), is(expected));
     }
     
@@ -305,9 +305,9 @@ class MCPJdbcMetadataLoaderTest {
         Driver mockDriver = new MockDriver("jdbc:mock:failed-sequence-query", createConnectionWithFailedSequenceMetadataQuery());
         DriverManager.registerDriver(mockDriver);
         try {
-            IllegalStateException actual = assertThrows(IllegalStateException.class,
-                    () -> load(Map.of("logic_db", new RuntimeDatabaseConfiguration("PostgreSQL", "jdbc:mock:failed-sequence-query", "", "", ""))));
-            assertThat(actual.getMessage(), is("Failed to load metadata for database `logic_db`."));
+            RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
+                    () -> load(Map.of("logic_db", new RuntimeDatabaseConfiguration("PostgreSQL", "jdbc:mock:failed-sequence-query", "", "", MockDriver.class.getName()))));
+            assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: connection_failed."));
             assertThat(actual.getCause().getMessage(), is("sequence metadata query failed"));
         } finally {
             DriverManager.deregisterDriver(mockDriver);
@@ -353,7 +353,7 @@ class MCPJdbcMetadataLoaderTest {
         Driver mockDriver = new MockDriver(jdbcUrl, createConnectionWithSequenceMetadata(databaseType, sequenceSchema, sequenceName, sequenceQuery));
         DriverManager.registerDriver(mockDriver);
         try {
-            LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration(databaseType, jdbcUrl, "", "", "")));
+            LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration(databaseType, jdbcUrl, "", "", MockDriver.class.getName())));
             assertTrue(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), SupportedMCPMetadataObjectType.SEQUENCE, sequenceName));
         } finally {
             DriverManager.deregisterDriver(mockDriver);

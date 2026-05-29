@@ -60,9 +60,9 @@ runtimeDatabases:
 | --- | --- | --- |
 | `databaseType` | Yes | Database type, such as `MySQL` or `PostgreSQL`. |
 | `jdbcUrl` | Yes | JDBC URL used by the MCP Server to connect to the logical database. |
-| `username` | Yes | Username for the logical database; use an empty string `""` when no username is needed. |
-| `password` | Yes | Password for the logical database; use an empty string `""` when no password is needed. |
-| `driverClassName` | Yes | JDBC driver class name; use an empty string `""` when a JDBC 4 driver auto-registers and no explicit override is needed. |
+| `username` | Yes | Username for the ShardingSphere-Proxy logical database. |
+| `password` | No | Password for the ShardingSphere-Proxy logical database. Omit it or use an empty string `""` for a no-password account. |
+| `driverClassName` | Yes | JDBC driver class name, such as `com.mysql.cj.jdbc.Driver` for the MySQL driver. |
 
 Notes:
 

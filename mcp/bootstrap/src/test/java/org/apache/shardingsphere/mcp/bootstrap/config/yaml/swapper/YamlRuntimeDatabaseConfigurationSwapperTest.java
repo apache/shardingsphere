@@ -76,15 +76,23 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
         yamlConfig.setUsername(null);
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        assertThat(actual.getMessage(), is("MCP runtime database configuration property `username` is required. Use an empty string when no value is needed."));
+        assertThat(actual.getMessage(), is("MCP runtime database configuration property `username` is required."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithBlankUsername() {
+        YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
+        yamlConfig.setUsername("   ");
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP runtime database configuration property `username` is required."));
     }
     
     @Test
     void assertSwapToObjectWithPasswordMissing() {
         YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
         yamlConfig.setPassword(null);
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        assertThat(actual.getMessage(), is("MCP runtime database configuration property `password` is required. Use an empty string when no value is needed."));
+        RuntimeDatabaseConfiguration actual = swapper.swapToObject(yamlConfig);
+        assertThat(actual.getPassword(), is(""));
     }
     
     @Test
@@ -92,7 +100,15 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
         yamlConfig.setDriverClassName(null);
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        assertThat(actual.getMessage(), is("MCP runtime database configuration property `driverClassName` is required. Use an empty string when no value is needed."));
+        assertThat(actual.getMessage(), is("MCP runtime database configuration property `driverClassName` is required."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithBlankDriverClassName() {
+        YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
+        yamlConfig.setDriverClassName("   ");
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP runtime database configuration property `driverClassName` is required."));
     }
     
     @Test
@@ -104,10 +120,10 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     @Test
     void assertSwapToYamlConfiguration() {
         YamlRuntimeDatabaseConfiguration actual = swapper.swapToYamlConfiguration(
-                new RuntimeDatabaseConfiguration("MySQL", "jdbc:mysql://localhost:3306/logic_db", "", "", "com.mysql.cj.jdbc.Driver"));
+                new RuntimeDatabaseConfiguration("MySQL", "jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver"));
         assertThat(actual.getDatabaseType(), is("MySQL"));
         assertThat(actual.getJdbcUrl(), is("jdbc:mysql://localhost:3306/logic_db"));
-        assertThat(actual.getUsername(), is(""));
+        assertThat(actual.getUsername(), is("demo"));
         assertThat(actual.getPassword(), is(""));
         assertThat(actual.getDriverClassName(), is("com.mysql.cj.jdbc.Driver"));
     }

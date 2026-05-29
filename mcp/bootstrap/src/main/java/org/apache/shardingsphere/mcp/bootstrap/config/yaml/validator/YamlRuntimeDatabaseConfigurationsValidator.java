@@ -63,9 +63,8 @@ public final class YamlRuntimeDatabaseConfigurationsValidator implements Constra
     private boolean validateRequiredProperties(final Entry<String, Map<String, Object>> databaseEntry, final ConstraintValidatorContext context) {
         boolean result = validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.DATABASE_TYPE, context);
         result = validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.JDBC_URL, context) && result;
-        result = validateExplicitText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.USERNAME, context) && result;
-        result = validateExplicitText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.PASSWORD, context) && result;
-        return validateExplicitText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.DRIVER_CLASS_NAME, context) && result;
+        result = validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.USERNAME, context) && result;
+        return validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.DRIVER_CLASS_NAME, context) && result;
     }
     
     private boolean validateRequiredText(final Entry<String, Map<String, Object>> databaseEntry, final String key, final ConstraintValidatorContext context) {
@@ -74,14 +73,6 @@ public final class YamlRuntimeDatabaseConfigurationsValidator implements Constra
             return true;
         }
         addViolation(context, String.format("contains database `%s` property `%s` is required", databaseEntry.getKey(), key));
-        return false;
-    }
-    
-    private boolean validateExplicitText(final Entry<String, Map<String, Object>> databaseEntry, final String key, final ConstraintValidatorContext context) {
-        if (null != databaseEntry.getValue().get(key)) {
-            return true;
-        }
-        addViolation(context, String.format("contains database `%s` property `%s` is required. Use an empty string when no value is needed", databaseEntry.getKey(), key));
         return false;
     }
     

@@ -18,10 +18,11 @@ transport:
 
 runtimeDatabases:
   # Configure this entry before startup.
-  # Replace logic_db, JDBC URL, username, and password with your ShardingSphere-Proxy logical database.
-  logic_db:
+  # Replace the placeholders with your ShardingSphere-Proxy logical database.
+  # Omit password or set it to an empty string when the Proxy account has no password.
+  "<logic-database>":
     databaseType: MySQL
-    jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-    username: "proxy_user"
-    password: "proxy_password"
-    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
+    username: "<proxy-username>"
+    password: "<proxy-password>"
+    driverClassName: "com.mysql.cj.jdbc.Driver"
