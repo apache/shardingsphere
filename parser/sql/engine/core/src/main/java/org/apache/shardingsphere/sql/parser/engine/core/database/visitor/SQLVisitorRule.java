@@ -599,6 +599,8 @@ public enum SQLVisitorRule {
     
     ADMIN_CLEAN_TRASH("AdminCleanTrash", SQLStatementType.DAL),
     
+    ADMIN_REBALANCE_DISK("AdminRebalanceDisk", SQLStatementType.DAL),
+    
     CLEAN_ALL_PROFILE("CleanAllProfile", SQLStatementType.DAL),
     
     PLAN_REPLAYER_PLAY("PlanReplayerPlay", SQLStatementType.DAL),

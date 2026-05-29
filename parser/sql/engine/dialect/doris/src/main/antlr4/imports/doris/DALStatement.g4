@@ -442,6 +442,10 @@ adminCleanTrash
     : ADMIN CLEAN TRASH (ON LP_ string_ (COMMA_ string_)* RP_)?
     ;
 
+adminRebalanceDisk
+    : ADMIN CANCEL? REBALANCE DISK (ON LP_ string_ (COMMA_ string_)* RP_)?
+    ;
+
 // DORIS ADDED BEGIN
 cleanAllProfile
     : CLEAN ALL PROFILE
