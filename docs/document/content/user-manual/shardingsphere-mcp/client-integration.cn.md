@@ -3,8 +3,23 @@ title = "客户端集成"
 weight = 4
 +++
 
-MCP 客户端可以通过 Streamable HTTP 或 STDIO 连接 ShardingSphere-MCP。
-客户端应优先使用 MCP 官方能力发现方法获取工具、资源、提示和补全列表，再按任务发起调用。
+客户端集成面向把 ShardingSphere-MCP 接入桌面客户端、IDE 插件、Agent 平台或自研 LLM 应用的场景。
+它不是快速开始中 curl 手工验证流程的替代说明。
+它的价值是让客户端负责连接配置、会话头、能力发现、补全和调用编排，用户只关注要完成的元数据或数据库治理任务。
+
+适合使用客户端集成的场景：
+
+- 已有 MCP 客户端，需要把 ShardingSphere 元数据和治理工具暴露给模型。
+- 需要长期复用同一个 MCP Server 配置，而不是每次手写 curl 请求。
+- 需要客户端保存 HTTP 会话头，或通过 STDIO 管理本地 MCP Server 子进程。
+- 需要按任务发现工具、资源、提示和补全目标，避免在客户端硬编码完整能力清单。
+
+如果只是验证 MCP Server 是否可用，使用快速开始中的 curl 示例即可。
+
+## 选择传输方式
+
+- HTTP 适合 MCP Server 独立启动，客户端通过固定端点访问的场景。客户端需要完成会话初始化，并在后续请求中携带会话响应头。
+- STDIO 适合本地 MCP 客户端拉起 ShardingSphere-MCP 子进程的场景。客户端负责进程生命周期，stdout 只传输 MCP 协议帧。
 
 ## HTTP 配置
 
@@ -51,7 +66,7 @@ STDIO 模式下：
 
 ## 能力发现
 
-MCP 官方列表方法用于发现协议层能力；`shardingsphere://capabilities` 用于理解 ShardingSphere 领域能力。
+MCP 列表方法用于发现协议层能力；`shardingsphere://capabilities` 用于理解 ShardingSphere 领域能力。
 客户端不需要固定调用顺序，可以按任务需要选择。
 
 | 能力 | 作用 |
@@ -80,11 +95,35 @@ MCP 官方列表方法用于发现协议层能力；`shardingsphere://capabiliti
 搜索元数据：
 
 ```json
-{"jsonrpc":"2.0","id":"search-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"<logic-database>","query":"<metadata-keyword>","object_types":["table"]}}}
+{
+  "jsonrpc": "2.0",
+  "id": "search-1",
+  "method": "tools/call",
+  "params": {
+    "name": "database_gateway_search_metadata",
+    "arguments": {
+      "database": "<logic-database>",
+      "query": "<metadata-keyword>",
+      "object_types": ["table"]
+    }
+  }
+}
 ```
 
 执行只读 SQL：
 
 ```json
-{"jsonrpc":"2.0","id":"query-1","method":"tools/call","params":{"name":"database_gateway_execute_query","arguments":{"database":"<logic-database>","sql":"SELECT * FROM <table-name> LIMIT 100","max_rows":100}}}
+{
+  "jsonrpc": "2.0",
+  "id": "query-1",
+  "method": "tools/call",
+  "params": {
+    "name": "database_gateway_execute_query",
+    "arguments": {
+      "database": "<logic-database>",
+      "sql": "SELECT * FROM <table-name> LIMIT 100",
+      "max_rows": 100
+    }
+  }
+}
 ```
