@@ -1,6 +1,6 @@
 +++
 title = "部署说明"
-weight = 5
+weight = 6
 +++
 
 ShardingSphere-MCP 可以通过源码构建的独立发行包运行，也可以通过官方 OCI 镜像运行。

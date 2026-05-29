@@ -1,6 +1,6 @@
 +++
 title = "Configuration"
-weight = 2
+weight = 3
 +++
 
 ShardingSphere-MCP uses YAML files to configure the transport and the databases that the MCP Server can connect to.
@@ -28,13 +28,18 @@ transport:
   type: STDIO
 ```
 
-Notes:
+| Configuration item | Description |
+| --- | --- |
+| `transport.type` | Transport type. Supported values are `STREAMABLE_HTTP` and `STDIO`. |
+| `transport.http` | HTTP transport configuration, used only when `transport.type` is `STREAMABLE_HTTP`. |
+| `transport.http.bindHost` | HTTP bind host. The default value is `127.0.0.1`. |
+| `transport.http.port` | HTTP bind port. The default value is `18088`. |
+| `transport.http.endpointPath` | HTTP endpoint path. The default value is `/mcp`. |
 
-- `transport.type` supports `STREAMABLE_HTTP` and `STDIO`.
-- `transport.http` is valid only when `transport.type` is `STREAMABLE_HTTP`.
-- In HTTP mode, `transport.http` can be omitted. The default `bindHost`, `port`, and `endpointPath` are `127.0.0.1`, `18088`, and `/mcp`.
-- `127.0.0.1`, `localhost`, and `::1` are local-only bindings.
-- `0.0.0.0` or a specific intranet IP exposes the matching network interface.
+| Bind address | Description |
+| --- | --- |
+| `127.0.0.1`, `localhost`, `::1` | Allows local access only. |
+| `0.0.0.0` or a specific intranet IP | Allows access through the matching network interface. |
 
 ## Database configuration
 
@@ -43,32 +48,31 @@ Each entry key is the database name used in MCP calls. It usually maps to a logi
 
 ```yaml
 runtimeDatabases:
-  logic_db:
+  "<logic-database>":
     databaseType: MySQL
-    jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db"
-    username: "root"
-    password: "root"
+    jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
+    username: "<proxy-username>"
+    password: "<proxy-password>"
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
-Fields:
-
-- `databaseType`: required database type, such as `MySQL` or `PostgreSQL`.
-- `jdbcUrl`: required JDBC URL used by the MCP Server to connect to the database.
-- `username`: required field; use an empty string `""` when no username is needed.
-- `password`: required field; use an empty string `""` when no password is needed.
-- `driverClassName`: required field; use an empty string `""` when a JDBC 4 driver auto-registers and no explicit override is needed.
+| Field | Required | Description |
+| --- | --- | --- |
+| `databaseType` | Yes | Database type, such as `MySQL` or `PostgreSQL`. |
+| `jdbcUrl` | Yes | JDBC URL used by the MCP Server to connect to the logical database. |
+| `username` | Yes | Username for the logical database; use an empty string `""` when no username is needed. |
+| `password` | Yes | Password for the logical database; use an empty string `""` when no password is needed. |
+| `driverClassName` | Yes | JDBC driver class name; use an empty string `""` when a JDBC 4 driver auto-registers and no explicit override is needed. |
 
 Notes:
 
 - MCP resources expose ShardingSphere logical databases, not physical storage units.
-- Encrypt and Mask plugin workflows should connect to logical databases exposed by ShardingSphere-Proxy.
 - Schema, table, view, index, and sequence metadata depends on target JDBC metadata.
 - If the target JDBC driver is not packaged, copy the driver jar under `plugins/`.
 
 ## Plugin directory
 
-The packaged distribution keeps MCP Server dependencies and official feature plugin jars under `lib/`, including Encrypt and Mask plugins.
+The packaged distribution keeps MCP Server dependencies and built-in MCP feature plugin jars under `lib/`.
 If your target database driver or an extra MCP feature plugin jar is not packaged, copy it under the distribution `plugins/` directory before starting the MCP Server.
 
 ## Custom configuration file
@@ -86,17 +90,3 @@ bin\start.bat path\to\mcp-http.yaml
 ```
 
 For Docker, set `SHARDINGSPHERE_MCP_CONFIG` to an absolute config path inside the container.
-
-## JVM options
-
-Unix-like systems:
-
-```bash
-JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh
-```
-
-Windows:
-
-```bat
-set "JAVA_OPTS=-Xms256m -Xmx256m" && bin\start.bat
-```

@@ -1,6 +1,6 @@
 +++
 title = "Client Integration"
-weight = 3
+weight = 4
 +++
 
 MCP clients can connect to ShardingSphere-MCP through Streamable HTTP or STDIO.
@@ -18,12 +18,13 @@ Clients should use official MCP capability discovery methods first, then call to
 }
 ```
 
-An HTTP client must call `initialize` first and keep these response headers:
+An HTTP client must complete the session lifecycle before normal MCP calls:
 
-- `MCP-Session-Id`
-- `MCP-Protocol-Version`
+1. Call `initialize`.
+2. Keep the `MCP-Session-Id` and `MCP-Protocol-Version` response headers.
+3. Send `notifications/initialized` with both response headers and expect HTTP status code `202`.
+4. Include both headers on later MCP requests.
 
-Later requests must include both headers.
 After the session is closed, the session id cannot be reused.
 
 ## STDIO configuration
@@ -48,17 +49,19 @@ In STDIO mode:
 - Diagnostics are written to stderr or `logs/mcp.log`.
 - `command` and `args` in the client configuration should point to the packaged startup script and STDIO config file.
 
-## Capability discovery order
+## Capability discovery
 
-Recommended client discovery order:
+Official MCP list methods discover protocol-level capabilities. `shardingsphere://capabilities` explains ShardingSphere domain capabilities.
+Clients do not need a fixed discovery order; call the method or resource that matches the task.
 
-1. `tools/list`
-2. `resources/list`
-3. `resources/templates/list`
-4. `prompts/list`
-5. `completion/complete`
-
-`shardingsphere://capabilities` is a ShardingSphere domain catalog resource. It can help models understand available capabilities, but it does not replace official MCP list methods.
+| Capability | Purpose |
+| --- | --- |
+| `shardingsphere://capabilities` | Read the ShardingSphere domain capability catalog for resources, tools, prompts, completions, workflow relationships, and side-effect notes. |
+| `tools/list` | Discover callable tools. |
+| `resources/list` | Discover directly readable resources. |
+| `resources/templates/list` | Discover parameterized resource templates when the client needs to construct resource URIs. |
+| `prompts/list` | Discover available prompts. |
+| `completion/complete` | Get completion candidates for resources, prompts, or arguments. |
 
 ## Common calls
 
@@ -77,11 +80,11 @@ Read the capability catalog:
 Search metadata:
 
 ```json
-{"jsonrpc":"2.0","id":"search-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"logic_db","query":"sample","object_types":["table"]}}}
+{"jsonrpc":"2.0","id":"search-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"<logic-database>","query":"<metadata-keyword>","object_types":["table"]}}}
 ```
 
 Execute read-only SQL:
 
 ```json
-{"jsonrpc":"2.0","id":"query-1","method":"tools/call","params":{"name":"database_gateway_execute_query","arguments":{"database":"logic_db","sql":"SELECT * FROM sample_table LIMIT 100","max_rows":100}}}
+{"jsonrpc":"2.0","id":"query-1","method":"tools/call","params":{"name":"database_gateway_execute_query","arguments":{"database":"<logic-database>","sql":"SELECT * FROM <table-name> LIMIT 100","max_rows":100}}}
 ```

@@ -1,135 +1,61 @@
 +++
 title = "Troubleshooting"
-weight = 6
+weight = 7
 +++
 
-This page covers common MCP Server, transport, session, SQL tool, and workflow mechanism issues.
-For plugin-specific business issues, see the corresponding feature plugin documentation.
+This page organizes troubleshooting by symptom for the MCP Server, transport, sessions, SQL tools, and workflow mechanism.
+For feature-specific business rule issues, see the corresponding feature plugin documentation.
 
-## Startup failure
+## Troubleshooting index
 
-Check:
+| Symptom | Possible cause | Action | Needs code improvement |
+| --- | --- | --- | --- |
+| Startup failure | JDK, config path, YAML field, or required field is wrong. | Inspect terminal output and `logs/mcp.log`. | Partially: optional field support can be improved. |
+| HTTP connection failure | Port, endpoint path, transport type, or bind address is wrong. | Check `port`, `endpointPath`, `bindHost`, and client URL. | Usually no. |
+| HTTP 403 response | Request `Origin` does not match the bind-address policy. | Use loopback locally; use a controlled gateway for remote access. | Yes: error response can give clearer hints. |
+| Session request failure | Session was not initialized, headers are missing, or a closed session is reused. | Call `initialize` first and keep sending the response headers. | Usually no. |
+| No response in STDIO mode | STDIO is used as a shell, or stdout is polluted by logs. | Let an MCP client launch the process; read stderr or logs for diagnostics. | Yes: keep protecting stdout. |
+| Logical database or metadata is empty | Config, driver, or permission is wrong. | Confirm Proxy logical database, driver, and permissions. | Yes: empty results can include diagnostics. |
+| JDBC driver error | Driver is not on classpath, or `driverClassName` is wrong. | Put the driver jar under `plugins/`, or add it to the embedded runtime classpath. | Partially: optional field support can be improved. |
+| SQL tool call failure | Wrong tool, multiple statements, or argument out of range. | Use `execute_query` for queries; use `execute_update` with preview for side effects. | Usually no; messages can improve. |
+| Workflow failure | `plan_id`, session, execution mode, or manual step is wrong. | Reuse `plan_id` in one session; preview first; validate after manual execution. | Usually no. |
+| Secret input cannot be passed safely | A clarification asks for a key or credential. | Resolve it outside the server, then pass it through a protected MCP call. | Server-side secret references require code changes. |
 
-- JDK version is JDK 21.
-- The configuration file path is correct.
-- `conf/mcp-http.yaml` or `conf/mcp-stdio.yaml` exists.
-- The YAML file does not contain unsupported fields.
-- `username`, `password`, and `driverClassName` are explicitly declared; use an empty string `""` when no value is needed.
+Additional notes:
 
-When startup fails, inspect the terminal error and `logs/mcp.log` first.
+- `username`, `password`, and `driverClassName` must currently be declared explicitly; use `""` when no value is needed.
+- `MCP-Session-Id` and `MCP-Protocol-Version` come from the `initialize` response headers and cannot be reused after close.
+- After `manual-only`, execute the returned SQL or DistSQL manually before calling validation.
+- Secret placeholders in manual packages should be replaced by operators in a controlled environment.
 
-## HTTP connection failure
+## SQL tool selection
 
-Check:
+| SQL type | Tool | Recommendation |
+| --- | --- | --- |
+| `SELECT` | `database_gateway_execute_query` | Use for read-only queries. |
+| `EXPLAIN ANALYZE` | `database_gateway_execute_query` | Use only when the target logical database capability allows it. |
+| DML, DDL, DCL, transaction control, savepoint | `database_gateway_execute_update` | Preview with `execution_mode=preview` before deciding whether to execute. |
 
-- The default endpoint is `http://127.0.0.1:18088/mcp`.
-- The port is not occupied.
-- `transport.type` is `STREAMABLE_HTTP`.
-- `transport.http.endpointPath` matches the client URL.
-- Remote machines cannot access an MCP Server bound to `127.0.0.1` directly.
-- When binding to `0.0.0.0`, authentication and network access control should be handled by an upstream gateway.
-
-## HTTP 403 response
-
-Origin validation rules:
-
-- For loopback bindings, if the request carries `Origin`, the Origin must also be loopback.
-- For non-loopback bindings, non-browser requests without `Origin` are accepted.
-- For non-loopback bindings, any explicit `Origin` is rejected.
-
-Possible actions:
-
-- Adjust the client Origin behavior.
-- Use local loopback access.
-- Forward requests through a controlled gateway.
-
-## Session or protocol header issues
-
-After an HTTP client calls `initialize`, it must keep:
-
-- `MCP-Session-Id`
-- `MCP-Protocol-Version`
-
-Later requests must include both headers.
-After the session is closed, it cannot be reused.
-Workflow `plan_id` values are valid only in the current session.
-
-## No response in STDIO mode
-
-STDIO is for MCP clients that launch the MCP Server as a child process. It is not an interactive shell.
-
-Check:
-
-- `command` points to `bin/start.sh` or `bin\start.bat`.
-- `args` includes `conf/mcp-stdio.yaml`.
-- stdout is not polluted by logs.
-- Diagnostics are read from stderr or `logs/mcp.log`.
-
-## Logical database not found or metadata is empty
-
-Check:
-
-- `runtimeDatabases` contains the target logical database.
-- MCP exposes ShardingSphere logical databases, not physical storage units.
-- `databaseType` and `jdbcUrl` match the target logical database.
-- The target JDBC driver jar is under `plugins/`.
-- The connection user has permission to read JDBC metadata.
-
-## JDBC driver errors
-
-The distribution only packages a limited set of JDBC drivers.
-If the target database driver is missing, place the driver jar under `plugins/`.
-
-If embedding `shardingsphere-mcp-bootstrap` directly, add the driver to the runtime classpath.
-
-The `driverClassName` field must be explicitly present.
-When the driver auto-registers and no explicit override is needed, set it to `""`.
-
-## SQL tool call failure
-
-`database_gateway_execute_query` is for:
-
-- `SELECT`
-- `EXPLAIN ANALYZE`
-
-Use `database_gateway_execute_update` for DML, DDL, DCL, transaction control, savepoints, and other side-effecting SQL.
-
-For side-effecting SQL, preview first:
+Preview parameter for `database_gateway_execute_update`:
 
 ```json
 {"execution_mode":"preview"}
 ```
 
-Then execute after review:
+Execute after review:
 
 ```json
 {"execution_mode":"execute"}
 ```
 
-Other limits:
-
-- Multiple statements are rejected.
-- `max_rows` range is `0..5000`.
-- `timeout_ms` range is `0..300000`.
-
-## Common workflow issues
-
-Check:
-
-- `plan_id` was not lost.
-- The same `MCP-Session-Id` is used for apply and validate.
-- `database_gateway_apply_workflow` includes `execution_mode`.
-- After `manual-only`, the returned SQL or DistSQL artifacts have been executed manually.
-- `approved_steps` values come from `preview_artifacts[].approval_step`.
-
-## Collect diagnostics
+## Diagnostics
 
 When reporting an issue, provide:
 
 - Startup command.
-- MCP configuration file, with passwords and keys removed.
+- MCP configuration file, with passwords, keys, and tokens removed.
 - Transport type and endpoint.
-- Whether `MCP-Session-Id` was initialized. Do not publish sensitive real headers.
+- Whether `initialize` has completed. Do not publish a real `MCP-Session-Id`.
 - Tool or resource request body.
 - JSON-RPC error payload.
 - Relevant errors from `logs/mcp.log`.

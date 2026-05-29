@@ -1,6 +1,6 @@
 +++
 title = "客户端集成"
-weight = 3
+weight = 4
 +++
 
 MCP 客户端可以通过 Streamable HTTP 或 STDIO 连接 ShardingSphere-MCP。
@@ -18,12 +18,13 @@ MCP 客户端可以通过 Streamable HTTP 或 STDIO 连接 ShardingSphere-MCP。
 }
 ```
 
-HTTP 客户端需要先调用 `initialize`，并保存响应头中的：
+HTTP 客户端需要在正常 MCP 调用前完成会话生命周期：
 
-- `MCP-Session-Id`
-- `MCP-Protocol-Version`
+1. 调用 `initialize`。
+2. 保存 `MCP-Session-Id` 和 `MCP-Protocol-Version` 响应头。
+3. 携带这两个响应头发送 `notifications/initialized`，并预期 HTTP 状态码为 `202`。
+4. 后续 MCP 请求继续携带这两个响应头。
 
-后续请求必须继续携带这两个响应头。
 关闭会话后，该会话 ID 不能继续复用。
 
 ## STDIO 配置
@@ -48,17 +49,19 @@ STDIO 模式下：
 - 诊断日志写到 stderr 或 `logs/mcp.log`。
 - 客户端配置中的 `command` 和 `args` 应指向发行包内的启动脚本和 STDIO 配置文件。
 
-## 能力发现顺序
+## 能力发现
 
-建议客户端按下面顺序发现能力：
+MCP 官方列表方法用于发现协议层能力；`shardingsphere://capabilities` 用于理解 ShardingSphere 领域能力。
+客户端不需要固定调用顺序，可以按任务需要选择。
 
-1. `tools/list`
-2. `resources/list`
-3. `resources/templates/list`
-4. `prompts/list`
-5. `completion/complete`
-
-`shardingsphere://capabilities` 是 ShardingSphere 领域目录资源，可作为模型理解可用能力的补充信息，但不替代 MCP 官方列表方法。
+| 能力 | 作用 |
+| --- | --- |
+| `shardingsphere://capabilities` | 读取 ShardingSphere 领域能力目录，了解资源、工具、提示、补全、工作流关系和副作用提示。 |
+| `tools/list` | 发现可调用工具。 |
+| `resources/list` | 发现可直接读取的资源。 |
+| `resources/templates/list` | 发现带参数的资源模板；客户端需要构造资源 URI 时使用。 |
+| `prompts/list` | 发现可用提示。 |
+| `completion/complete` | 获取资源、提示或参数的补全候选。 |
 
 ## 常用调用
 
@@ -77,11 +80,11 @@ STDIO 模式下：
 搜索元数据：
 
 ```json
-{"jsonrpc":"2.0","id":"search-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"logic_db","query":"sample","object_types":["table"]}}}
+{"jsonrpc":"2.0","id":"search-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"<logic-database>","query":"<metadata-keyword>","object_types":["table"]}}}
 ```
 
 执行只读 SQL：
 
 ```json
-{"jsonrpc":"2.0","id":"query-1","method":"tools/call","params":{"name":"database_gateway_execute_query","arguments":{"database":"logic_db","sql":"SELECT * FROM sample_table LIMIT 100","max_rows":100}}}
+{"jsonrpc":"2.0","id":"query-1","method":"tools/call","params":{"name":"database_gateway_execute_query","arguments":{"database":"<logic-database>","sql":"SELECT * FROM <table-name> LIMIT 100","max_rows":100}}}
 ```
