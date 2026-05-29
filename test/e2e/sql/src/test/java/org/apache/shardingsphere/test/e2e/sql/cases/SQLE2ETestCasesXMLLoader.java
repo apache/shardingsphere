@@ -36,10 +36,10 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -74,8 +74,12 @@ public final class SQLE2ETestCasesXMLLoader {
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
     private Collection<SQLE2ETestCaseContext> loadE2ETestCaseContexts(final SQLCommandType sqlCommandType) {
-        URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("cases/"));
-        return loadE2ETestCaseContexts(url, sqlCommandType);
+        URL url = Thread.currentThread().getContextClassLoader().getResource("cases/");
+        if (null != url) {
+            return loadE2ETestCaseContexts(url, sqlCommandType);
+        }
+        Path fallbackCasesPath = Paths.get(SQLE2ETestCasesXMLLoader.class.getProtectionDomain().getCodeSource().getLocation().toURI()).resolve("cases");
+        return Files.exists(fallbackCasesPath) ? loadE2ETestCaseContexts(fallbackCasesPath.toUri().toURL(), sqlCommandType) : Collections.emptyList();
     }
     
     private Collection<SQLE2ETestCaseContext> loadE2ETestCaseContexts(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException, JAXBException {
