@@ -20,8 +20,9 @@ model_first_summary:
   official_discovery_methods: {tools: tools/list, resources: resources/list, resource_templates: resources/templates/list,
     prompts: prompts/list}
   argument_completion_method: completion/complete
-  catalog_resource_role: shardingsphere://capabilities is an optional ShardingSphere
-    domain catalog resource, not the MCP protocol discovery source.
+  catalog_resource_role: shardingsphere://capabilities complements MCP list methods
+    with ShardingSphere domain capability guidance, workflow guidance, and side-effect
+    notes.
   optional_catalog_resource: shardingsphere://capabilities
   metadata_rule: {first_resource: 'shardingsphere://databases', search_tool: database_gateway_search_metadata,
     detail_rule: Read the returned resource.uri when the list or search response points
@@ -43,8 +44,8 @@ model_first_summary:
   recovery_rule: Follow structured recovery.next_actions before inventing a replacement
     call.
 model_contract:
-  public_surface_source: 'Official MCP list methods: tools/list, resources/list, resources/templates/list,
-    prompts/list.'
+  public_surface_source: 'MCP list methods expose the protocol surface: tools/list,
+    resources/list, resources/templates/list, prompts/list.'
   official_discovery_methods: {tools: tools/list, resources: resources/list, resource_templates: resources/templates/list,
     prompts: prompts/list}
   argument_completion_method: completion/complete

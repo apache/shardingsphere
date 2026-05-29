@@ -39,7 +39,7 @@ final class MCPModelFirstContractPayloadBuilder {
     
     private static final String ARGUMENT_COMPLETION_METHOD = "completion/complete";
     
-    private static final String OFFICIAL_DISCOVERY_SOURCE = "Official MCP list methods: tools/list, resources/list, resources/templates/list, prompts/list.";
+    private static final String MCP_LIST_METHODS_SOURCE = "MCP list methods expose the protocol surface: tools/list, resources/list, resources/templates/list, prompts/list.";
     
     private final MCPDescriptorCatalog catalog;
     
@@ -47,7 +47,8 @@ final class MCPModelFirstContractPayloadBuilder {
         Map<String, Object> result = new LinkedHashMap<>(10, 1F);
         result.put("official_discovery_methods", createOfficialDiscoveryMethods());
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
-        result.put("catalog_resource_role", CATALOG_RESOURCE_URI + " is an optional ShardingSphere domain catalog resource, not the MCP protocol discovery source.");
+        result.put("catalog_resource_role", CATALOG_RESOURCE_URI
+                + " complements MCP list methods with ShardingSphere domain capability guidance, workflow guidance, and side-effect notes.");
         result.put("optional_catalog_resource", CATALOG_RESOURCE_URI);
         result.put("metadata_rule", createMetadataRule());
         result.put("sql_tool_selection", createSqlToolSelection());
@@ -60,7 +61,7 @@ final class MCPModelFirstContractPayloadBuilder {
     
     Map<String, Object> createModelContract() {
         Map<String, Object> result = new LinkedHashMap<>(11, 1F);
-        result.put("public_surface_source", OFFICIAL_DISCOVERY_SOURCE);
+        result.put("public_surface_source", MCP_LIST_METHODS_SOURCE);
         result.put("official_discovery_methods", createOfficialDiscoveryMethods());
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
         result.put("optional_catalog_resource", CATALOG_RESOURCE_URI);

@@ -37,7 +37,8 @@ class MCPModelFirstContractPayloadBuilderTest {
         Map<String, Object> actual = builder.createModelFirstSummary();
         assertThat(castToMap(actual.get("official_discovery_methods")), is(createOfficialDiscoveryMethods()));
         assertThat(actual.get("argument_completion_method"), is("completion/complete"));
-        assertThat(actual.get("catalog_resource_role"), is("shardingsphere://capabilities is an optional ShardingSphere domain catalog resource, not the MCP protocol discovery source."));
+        assertThat(actual.get("catalog_resource_role"),
+                is("shardingsphere://capabilities complements MCP list methods with ShardingSphere domain capability guidance, workflow guidance, and side-effect notes."));
         assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
         assertFalse(actual.containsKey("safe_first_resource"));
         assertThat(castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting")).get("execute_requires"), is("execution_mode=execute"));
@@ -50,7 +51,7 @@ class MCPModelFirstContractPayloadBuilderTest {
     @Test
     void assertCreateModelContract() {
         Map<String, Object> actual = builder.createModelContract();
-        assertThat(actual.get("public_surface_source"), is("Official MCP list methods: tools/list, resources/list, resources/templates/list, prompts/list."));
+        assertThat(actual.get("public_surface_source"), is("MCP list methods expose the protocol surface: tools/list, resources/list, resources/templates/list, prompts/list."));
         assertThat(castToMap(actual.get("official_discovery_methods")), is(createOfficialDiscoveryMethods()));
         assertThat(actual.get("argument_completion_method"), is("completion/complete"));
         assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
