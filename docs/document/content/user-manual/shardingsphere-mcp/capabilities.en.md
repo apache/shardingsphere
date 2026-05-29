@@ -1,21 +1,26 @@
 +++
-title = "Capabilities"
+title = "Capability Catalog"
 weight = 2
 +++
 
-This page lists the protocol capabilities exposed by ShardingSphere-MCP.
-The runtime source of truth is `shardingsphere://capabilities` plus the official MCP list methods.
+This page explains the core capabilities of ShardingSphere-MCP and how protocol methods, resource URIs, tools, and prompts relate to each other.
+The documentation explains capability semantics. Clients should use MCP list methods and `shardingsphere://capabilities` to read what the current MCP Server actually exposes.
 
-## Discovery entry points
+## Capability discovery
 
-| Protocol capability | Purpose |
-| --- | --- |
-| `tools/list` | Discover callable tools. |
-| `resources/list` | Discover directly readable resources. |
-| `resources/templates/list` | Discover parameterized resource templates. |
-| `prompts/list` | Discover available prompts. |
-| `completion/complete` | Get completion candidates for resources, prompts, or arguments. |
-| `resources/read` with `shardingsphere://capabilities` | Read the ShardingSphere domain capability catalog. |
+The following entries include MCP protocol methods and ShardingSphere-MCP resource URIs.
+MCP protocol methods do not use the `shardingsphere://` prefix. That prefix is used only for ShardingSphere-MCP resource URIs.
+Tools and prompts are invoked by name and are not resource URIs.
+
+| Method or resource | Type | Purpose |
+| --- | --- | --- |
+| `tools/list` | MCP protocol method | Lists callable tools. |
+| `resources/list` | MCP protocol method | Lists resources that can be read without template arguments. |
+| `resources/templates/list` | MCP protocol method | Lists parameterized resource URI templates. Clients fill the template before reading it through `resources/read`. |
+| `resources/read` | MCP protocol method | Reads one concrete resource URI. Reading `shardingsphere://capabilities` returns the ShardingSphere domain capability catalog. |
+| `prompts/list` | MCP protocol method | Lists available prompts. |
+| `completion/complete` | MCP protocol method | Gets completion candidates for resources, prompts, or arguments. |
+| `shardingsphere://capabilities` | ShardingSphere-MCP resource URI | Reads the ShardingSphere domain capability catalog. |
 
 ## Capability Availability
 
@@ -25,41 +30,32 @@ ShardingSphere-MCP exposes one protocol surface, but runtime availability depend
 - When connected to a physical database, general JDBC metadata and SQL execution capabilities are available. ShardingSphere rules, algorithm plugins, and workflows that depend on DistSQL do not apply.
 - Clients should read `shardingsphere://runtime` and `shardingsphere://databases/{database}/capabilities` before assuming that every resource or tool behaves the same for every connection target.
 
-## Static resources
+## Resources
 
-| Resource | Purpose |
-| --- | --- |
-| `shardingsphere://capabilities` | Read resources, resource templates, tools, prompts, completions, workflow relationships, and side-effect notes. |
-| `shardingsphere://runtime` | Read the current transport, runtime status, and configured runtime database summary. |
-| `shardingsphere://databases` | List runtime databases reachable by the current MCP Server. When connected to Proxy, they correspond to ShardingSphere logical databases. |
-| `shardingsphere://features/encrypt/algorithms` | List data encryption algorithm plugins visible from the current ShardingSphere-Proxy runtime. |
-| `shardingsphere://features/mask/algorithms` | List data masking algorithm plugins visible from the current ShardingSphere-Proxy runtime. |
+| Resource URI or template | Type | Purpose |
+| --- | --- | --- |
+| `shardingsphere://capabilities` | Resource URI | Reads resource URIs, resource templates, tools, prompts, completions, workflow relationships, and side-effect notes. |
+| `shardingsphere://runtime` | Resource URI | Reads the current transport, runtime status, and configured runtime database summary. |
+| `shardingsphere://databases` | Resource URI | Lists runtime databases reachable by the current MCP Server. When connected to Proxy, they correspond to ShardingSphere logical databases. |
+| `shardingsphere://databases/{database}` | Resource template | Reads one runtime database and its metadata summary. |
+| `shardingsphere://databases/{database}/capabilities` | Resource template | Reads SQL, transaction, schema, and metadata-object capabilities for one runtime database. |
+| `shardingsphere://databases/{database}/schemas` | Resource template | Lists schemas or namespaces inside one runtime database. |
+| `shardingsphere://databases/{database}/schemas/{schema}` | Resource template | Reads one schema or namespace. |
+| `shardingsphere://databases/{database}/schemas/{schema}/sequences` | Resource template | Lists sequences in one schema. |
+| `shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}` | Resource template | Reads one sequence. |
+| `shardingsphere://databases/{database}/schemas/{schema}/tables` | Resource template | Lists tables in one schema. |
+| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}` | Resource template | Reads one table. |
+| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns` | Resource template | Lists columns for one table. |
+| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}` | Resource template | Reads one table column. |
+| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes` | Resource template | Lists indexes for one table. |
+| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}` | Resource template | Reads one table index. |
+| `shardingsphere://databases/{database}/schemas/{schema}/views` | Resource template | Lists views in one schema. |
+| `shardingsphere://databases/{database}/schemas/{schema}/views/{view}` | Resource template | Reads one view. |
+| `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns` | Resource template | Lists columns for one view. |
+| `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}` | Resource template | Reads one view column. |
+| `shardingsphere://workflows/{plan_id}` | Resource template | Reads a current-session workflow plan, clarification questions, artifacts, and next actions. |
 
-## Resource templates
-
-| Resource template | Purpose |
-| --- | --- |
-| `shardingsphere://databases/{database}` | Read one runtime database and its metadata summary. |
-| `shardingsphere://databases/{database}/capabilities` | Read SQL, transaction, schema, and metadata-object capabilities for one runtime database. |
-| `shardingsphere://databases/{database}/schemas` | List schemas or namespaces inside one runtime database. |
-| `shardingsphere://databases/{database}/schemas/{schema}` | Read one schema or namespace. |
-| `shardingsphere://databases/{database}/schemas/{schema}/sequences` | List sequences in one schema. |
-| `shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}` | Read one sequence. |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables` | List tables in one schema. |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}` | Read one table. |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns` | List columns for one table. |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}` | Read one table column. |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes` | List indexes for one table. |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}` | Read one table index. |
-| `shardingsphere://databases/{database}/schemas/{schema}/views` | List views in one schema. |
-| `shardingsphere://databases/{database}/schemas/{schema}/views/{view}` | Read one view. |
-| `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns` | List columns for one view. |
-| `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}` | Read one view column. |
-| `shardingsphere://workflows/{plan_id}` | Read a current-session workflow plan, clarification questions, artifacts, and next actions. |
-| `shardingsphere://features/encrypt/databases/{database}/rules` | List data encryption rules in one logical database. |
-| `shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules` | Read data encryption rules for one logical table. |
-| `shardingsphere://features/mask/databases/{database}/rules` | List data masking rules in one logical database. |
-| `shardingsphere://features/mask/databases/{database}/tables/{table}/rules` | Read data masking rules for one logical table. |
+Feature plugin resources are documented on the corresponding plugin pages.
 
 ## Tools
 
@@ -85,24 +81,29 @@ ShardingSphere-MCP exposes one protocol surface, but runtime availability depend
 
 ## Completion targets
 
-| Target type | Target | Completed arguments |
-| --- | --- | --- |
-| resource | `shardingsphere://databases/{database}` | `database` |
-| resource | `shardingsphere://databases/{database}/schemas` | `database` |
-| resource | `shardingsphere://databases/{database}/schemas/{schema}` | `database`, `schema` |
-| resource | `shardingsphere://databases/{database}/schemas/{schema}/tables` | `database`, `schema` |
-| resource | `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}` | `database`, `schema`, `table` |
-| resource | `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns` | `database`, `schema`, `table` |
-| resource | `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}` | `database`, `schema`, `table`, `column` |
-| resource | `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes` | `database`, `schema`, `table` |
-| resource | `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}` | `database`, `schema`, `table`, `index` |
-| resource | `shardingsphere://databases/{database}/schemas/{schema}/sequences` | `database`, `schema` |
-| resource | `shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}` | `database`, `schema`, `sequence` |
-| resource | `shardingsphere://workflows/{plan_id}` | `plan_id` |
-| resource | `shardingsphere://features/encrypt/algorithms` | `algorithm_type`, `assisted_query_algorithm_type`, `like_query_algorithm_type` |
-| resource | `shardingsphere://features/mask/algorithms` | `algorithm_type` |
-| prompt | `inspect_metadata` | `database`, `schema` |
-| prompt | `safe_sql_execution` | `database`, `schema` |
-| prompt | `recover_workflow` | `plan_id` |
-| prompt | `plan_encrypt_rule` | `database`, `schema`, `table`, `column`, `algorithm_type`, `assisted_query_algorithm_type`, `like_query_algorithm_type`, `plan_id` |
-| prompt | `plan_mask_rule` | `database`, `schema`, `table`, `column`, `algorithm_type`, `plan_id` |
+### Resource completion targets
+
+| Target | Completed arguments |
+| --- | --- |
+| `shardingsphere://databases/{database}` | `database` |
+| `shardingsphere://databases/{database}/schemas` | `database` |
+| `shardingsphere://databases/{database}/schemas/{schema}` | `database`, `schema` |
+| `shardingsphere://databases/{database}/schemas/{schema}/tables` | `database`, `schema` |
+| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}` | `database`, `schema`, `table` |
+| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns` | `database`, `schema`, `table` |
+| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}` | `database`, `schema`, `table`, `column` |
+| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes` | `database`, `schema`, `table` |
+| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}` | `database`, `schema`, `table`, `index` |
+| `shardingsphere://databases/{database}/schemas/{schema}/sequences` | `database`, `schema` |
+| `shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}` | `database`, `schema`, `sequence` |
+| `shardingsphere://workflows/{plan_id}` | `plan_id` |
+
+### Prompt completion targets
+
+| Target | Completed arguments |
+| --- | --- |
+| `inspect_metadata` | `database`, `schema` |
+| `safe_sql_execution` | `database`, `schema` |
+| `recover_workflow` | `plan_id` |
+| `plan_encrypt_rule` | `database`, `schema`, `table`, `column`, `algorithm_type`, `assisted_query_algorithm_type`, `like_query_algorithm_type`, `plan_id` |
+| `plan_mask_rule` | `database`, `schema`, `table`, `column`, `algorithm_type`, `plan_id` |

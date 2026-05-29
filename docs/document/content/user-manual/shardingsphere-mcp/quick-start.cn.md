@@ -52,8 +52,7 @@ runtimeDatabases:
 Unix-like 系统：
 
 ```bash
-bin/start.sh > logs/mcp-http.log 2>&1 &
-MCP_PID=$!
+bin/start.sh > logs/mcp-http.log 2>&1 & MCP_PID=$!
 ```
 
 Windows：

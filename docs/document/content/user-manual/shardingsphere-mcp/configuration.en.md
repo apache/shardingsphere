@@ -32,14 +32,9 @@ transport:
 | --- | --- |
 | `transport.type` | Transport type. Supported values are `STREAMABLE_HTTP` and `STDIO`. |
 | `transport.http` | HTTP transport configuration, used only when `transport.type` is `STREAMABLE_HTTP`. |
-| `transport.http.bindHost` | HTTP bind host. The default value is `127.0.0.1`. |
+| `transport.http.bindHost` | HTTP bind host. Defaults to `127.0.0.1`. Loopback values allow local access only. `0.0.0.0` or an intranet IP allows access through that interface. |
 | `transport.http.port` | HTTP bind port. The default value is `18088`. |
 | `transport.http.endpointPath` | HTTP endpoint path. The default value is `/mcp`. |
-
-| Bind address | Description |
-| --- | --- |
-| `127.0.0.1`, `localhost`, `::1` | Allows local access only. |
-| `0.0.0.0` or a specific intranet IP | Allows access through the matching network interface. |
 
 ## Database configuration
 

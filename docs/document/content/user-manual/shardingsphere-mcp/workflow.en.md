@@ -3,11 +3,15 @@ title = "Workflows"
 weight = 5
 +++
 
-ShardingSphere-MCP feature plugins can use the shared workflow mechanism to implement complex governance tasks.
-The MCP Server provides the common workflow mechanism, while each plugin provides its own business semantics.
+Workflows are the shared mechanism that ShardingSphere-MCP uses for multi-step governance changes.
+They are mainly used by feature plugins today.
+A plugin understands the concrete business semantics and creates `plan_id` plus change artifacts.
+The MCP Server stores the current-session plan and provides common preview, apply, export, and validation tools.
 
-Workflows are useful for multi-step governance changes that need planning, review, execution, and validation, such as planning data encryption or data masking rules.
-For metadata reads or read-only SQL, workflows are usually unnecessary.
+Users usually do not use workflows just to read metadata, search objects, or run read-only SQL.
+Follow this page only after a plugin planning tool returns `plan_id`, then review, apply, and validate that plan.
+This page is separate because multiple plugins share the same state model, execution modes, and sensitive-input handling.
+The concrete planning capabilities are still documented on the corresponding feature plugin pages.
 
 ## Basic phases
 

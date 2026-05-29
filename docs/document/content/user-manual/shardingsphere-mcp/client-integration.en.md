@@ -3,8 +3,23 @@ title = "Client Integration"
 weight = 4
 +++
 
-MCP clients can connect to ShardingSphere-MCP through Streamable HTTP or STDIO.
-Clients should use official MCP capability discovery methods first, then call tools, resources, prompts, or completions for the target task.
+Client integration is for desktop clients, IDE extensions, agent platforms, or custom LLM applications that connect to ShardingSphere-MCP.
+It is not a replacement for the curl-based smoke test in Quick Start.
+Its value is letting the client manage connection configuration, session headers, capability discovery, completion, and call orchestration while users focus on metadata or database governance tasks.
+
+Use client integration when:
+
+- An MCP client needs to expose ShardingSphere metadata and governance tools to a model.
+- The same MCP Server configuration should be reused instead of hand-writing curl requests.
+- The client needs to keep HTTP session headers or manage a local ShardingSphere-MCP child process through STDIO.
+- The client needs to discover tools, resources, prompts, and completion targets per task instead of hardcoding the full capability catalog.
+
+If you only need to verify that the MCP Server is available, use the curl examples in Quick Start.
+
+## Choose a transport
+
+- HTTP is suitable when the MCP Server is started independently and clients use a fixed endpoint. The client must initialize the session and keep session response headers.
+- STDIO is suitable when a local MCP client starts ShardingSphere-MCP as a child process. The client owns the process lifecycle, and stdout carries only MCP protocol frames.
 
 ## HTTP configuration
 
@@ -51,7 +66,7 @@ In STDIO mode:
 
 ## Capability discovery
 
-Official MCP list methods discover protocol-level capabilities. `shardingsphere://capabilities` explains ShardingSphere domain capabilities.
+MCP list methods discover protocol-level capabilities. `shardingsphere://capabilities` explains ShardingSphere domain capabilities.
 Clients do not need a fixed discovery order; call the method or resource that matches the task.
 
 | Capability | Purpose |
@@ -80,11 +95,35 @@ Read the capability catalog:
 Search metadata:
 
 ```json
-{"jsonrpc":"2.0","id":"search-1","method":"tools/call","params":{"name":"database_gateway_search_metadata","arguments":{"database":"<logic-database>","query":"<metadata-keyword>","object_types":["table"]}}}
+{
+  "jsonrpc": "2.0",
+  "id": "search-1",
+  "method": "tools/call",
+  "params": {
+    "name": "database_gateway_search_metadata",
+    "arguments": {
+      "database": "<logic-database>",
+      "query": "<metadata-keyword>",
+      "object_types": ["table"]
+    }
+  }
+}
 ```
 
 Execute read-only SQL:
 
 ```json
-{"jsonrpc":"2.0","id":"query-1","method":"tools/call","params":{"name":"database_gateway_execute_query","arguments":{"database":"<logic-database>","sql":"SELECT * FROM <table-name> LIMIT 100","max_rows":100}}}
+{
+  "jsonrpc": "2.0",
+  "id": "query-1",
+  "method": "tools/call",
+  "params": {
+    "name": "database_gateway_execute_query",
+    "arguments": {
+      "database": "<logic-database>",
+      "sql": "SELECT * FROM <table-name> LIMIT 100",
+      "max_rows": 100
+    }
+  }
+}
 ```

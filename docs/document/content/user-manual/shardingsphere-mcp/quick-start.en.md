@@ -52,8 +52,7 @@ If the target database driver is not packaged, copy the corresponding JDBC drive
 Unix-like systems:
 
 ```bash
-bin/start.sh > logs/mcp-http.log 2>&1 &
-MCP_PID=$!
+bin/start.sh > logs/mcp-http.log 2>&1 & MCP_PID=$!
 ```
 
 Windows:
