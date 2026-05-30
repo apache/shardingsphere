@@ -73,7 +73,8 @@ final class MCPToolElicitationHandler {
             return Optional.of(fallbackResponseFactory.create(payload, MCPToolElicitationFallbackReason.REMOTE_IDENTITY_REQUIRED, clientCapabilities));
         }
         FormContinuationContext continuationContext = new FormContinuationContext(
-                definition.getDescriptor().getName(), exchange.sessionId(), clarificationForm.get().planId(), arguments.hashCode(), clock.instant().plus(FORM_CONTINUATION_TTL), UUID.randomUUID().toString());
+                definition.getDescriptor().getName(), exchange.sessionId(), clarificationForm.get().planId(), arguments.hashCode(), clock.instant().plus(FORM_CONTINUATION_TTL),
+                UUID.randomUUID().toString());
         McpSchema.ElicitResult elicitedResult;
         try {
             elicitedResult = exchange.createElicitation(createElicitRequest(definition.getDescriptor().getName(), clarificationForm.get(), continuationContext.formRequestId()));
