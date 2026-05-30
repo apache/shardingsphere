@@ -26,8 +26,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * MCP client elicitation capabilities.
  */
-@Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public final class MCPClientElicitationCapabilities {
     
     private final boolean formModeSupported;
