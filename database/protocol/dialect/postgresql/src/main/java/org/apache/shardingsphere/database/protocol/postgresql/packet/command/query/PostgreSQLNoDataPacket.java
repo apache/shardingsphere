@@ -34,9 +34,9 @@ public final class PostgreSQLNoDataPacket extends PostgreSQLPacket {
     private static final PostgreSQLNoDataPacket INSTANCE = new PostgreSQLNoDataPacket();
     
     /**
-     * Get instance of {@link PostgreSQLNoDataPacket}.
+     * Get instance of PostgreSQL no data packet.
      *
-     * @return instance of {@link PostgreSQLNoDataPacket}
+     * @return got instance
      */
     public static PostgreSQLNoDataPacket getInstance() {
         return INSTANCE;

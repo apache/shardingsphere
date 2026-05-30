@@ -60,7 +60,7 @@ public final class FirebirdAcceptPacket extends FirebirdPacket {
     }
     
     /**
-     * Set accept data packet.
+     * Set accepted data packet.
      *
      * @param salt salt value
      * @param publicKey public key
