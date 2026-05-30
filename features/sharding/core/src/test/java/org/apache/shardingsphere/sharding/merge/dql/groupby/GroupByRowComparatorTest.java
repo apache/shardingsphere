@@ -172,9 +172,9 @@ class GroupByRowComparatorTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, Arrays.asList(false, false));
-        MemoryQueryResultRow smaller = new MemoryQueryResultRow(mockQueryResult((Object) new byte[]{1, 2}));
-        MemoryQueryResultRow larger = new MemoryQueryResultRow(mockQueryResult((Object) new byte[]{(byte) 0x80}));
-        MemoryQueryResultRow equalToSmaller = new MemoryQueryResultRow(mockQueryResult((Object) new byte[]{1, 2}));
+        MemoryQueryResultRow smaller = new MemoryQueryResultRow(mockQueryResult(new byte[]{1, 2}));
+        MemoryQueryResultRow larger = new MemoryQueryResultRow(mockQueryResult(new byte[]{(byte) 0x80}));
+        MemoryQueryResultRow equalToSmaller = new MemoryQueryResultRow(mockQueryResult(new byte[]{1, 2}));
         assertTrue(groupByRowComparator.compare(smaller, larger) < 0);
         assertThat(groupByRowComparator.compare(smaller, equalToSmaller), is(0));
     }

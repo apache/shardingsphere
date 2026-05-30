@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
@@ -39,6 +40,6 @@ class ColumnShadowValueValidatorTest {
     
     @Test
     void assertValidateAcceptedType() {
-        ColumnShadowValueValidator.validate("foo_tbl", "foo_col", "");
+        assertDoesNotThrow(() -> ColumnShadowValueValidator.validate("foo_tbl", "foo_col", ""));
     }
 }
