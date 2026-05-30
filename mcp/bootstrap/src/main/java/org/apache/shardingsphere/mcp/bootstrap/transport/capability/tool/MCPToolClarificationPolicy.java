@@ -52,14 +52,14 @@ final class MCPToolClarificationPolicy {
     private static final List<String> SENSITIVE_FIELD_NAME_MARKERS = List.of(
             "password", "passwd", "passphrase", "secret", "token", "accesstoken", "apikey", "privatekey", "credential", "card", "cvv", "payment", "key");
     
-    boolean requiresPlanningClarification(final MCPToolDescriptor toolDescriptor, final Map<String, Object> payload) {
+    boolean requiresPlanningClarification(final MCPToolDescriptor descriptor, final Map<String, Object> payload) {
         Object clarificationQuestions = payload.get(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS);
-        return MCPDescriptorCatalogIndex.findToolRuntimeDescriptor(toolDescriptor.getName())
+        return MCPDescriptorCatalogIndex.findToolRuntimeDescriptor(descriptor.getName())
                 .map(optional -> PLANNING_WORKFLOW_ROLE.equals(optional.getWorkflowRole())).orElse(false)
                 && clarificationQuestions instanceof List<?> questions && !questions.isEmpty();
     }
     
-    Optional<ClarificationForm> createClarificationForm(final Map<String, Object> payload, final MCPToolDescriptor toolDescriptor) {
+    Optional<ClarificationForm> createClarificationForm(final Map<String, Object> payload, final MCPToolDescriptor descriptor) {
         String planId = getPlanId(payload).trim();
         if (planId.isEmpty()) {
             return Optional.empty();
@@ -76,7 +76,7 @@ final class MCPToolClarificationPolicy {
             if (!(each instanceof Map<?, ?> question) || isSensitiveClarificationQuestion(question)) {
                 return Optional.empty();
             }
-            Optional<ArgumentBinding> binding = createArgumentBinding(question, toolDescriptor, questionIndex);
+            Optional<ArgumentBinding> binding = createArgumentBinding(question, descriptor, questionIndex);
             if (binding.isEmpty()) {
                 return Optional.empty();
             }
@@ -102,13 +102,13 @@ final class MCPToolClarificationPolicy {
         return false;
     }
     
-    private Optional<ArgumentBinding> createArgumentBinding(final Map<?, ?> question, final MCPToolDescriptor toolDescriptor, final int questionIndex) {
+    private Optional<ArgumentBinding> createArgumentBinding(final Map<?, ?> question, final MCPToolDescriptor descriptor, final int questionIndex) {
         String field = getField(question);
         if (field.isEmpty()) {
             return Optional.empty();
         }
         String formPropertyName = FORM_PROPERTY_PREFIX + questionIndex;
-        return findArgumentBinding(field, toolDescriptor, formPropertyName, getInputType(question), getAllowedValues(question));
+        return findArgumentBinding(field, descriptor, formPropertyName, getInputType(question), getAllowedValues(question));
     }
     
     private boolean isSensitiveClarificationQuestion(final Map<?, ?> question) {
