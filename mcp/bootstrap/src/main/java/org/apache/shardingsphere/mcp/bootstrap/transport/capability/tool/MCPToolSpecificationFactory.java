@@ -97,7 +97,7 @@ public final class MCPToolSpecificationFactory {
             MCPResponse response = controller.handle(exchange.sessionId(), definition, arguments);
             Map<String, Object> payload = response.toPayload();
             return elicitationHandler.shouldHandle(definition.getDescriptor(), payload)
-                    ? callToolResultFactory.create(definition.getDescriptor(), elicitationHandler.handle(exchange, definition, arguments, response, payload))
+                    ? callToolResultFactory.create(definition.getDescriptor(), elicitationHandler.handle(exchange, definition, arguments, payload).orElse(response))
                     : callToolResultFactory.create(definition.getDescriptor(), response);
         } catch (final UnsupportedToolException ignored) {
             throw MCPTransportErrorFactory.createError(new UnsupportedToolException(request.name()));

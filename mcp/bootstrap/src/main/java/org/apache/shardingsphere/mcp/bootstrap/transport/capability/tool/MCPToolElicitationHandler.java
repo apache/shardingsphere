@@ -60,51 +60,50 @@ final class MCPToolElicitationHandler {
         return clarificationPolicy.requiresPlanningClarification(toolDescriptor, payload);
     }
     
-    MCPResponse handle(final McpSyncServerExchange exchange, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments,
-                       final MCPResponse fallbackResponse, final Map<String, Object> payload) {
+    Optional<MCPResponse> handle(final McpSyncServerExchange exchange, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments, final Map<String, Object> payload) {
         MCPToolDescriptor toolDescriptor = toolDefinition.getDescriptor();
         MCPClientElicitationCapabilities clientCapabilities = MCPClientElicitationCapabilities.from(exchange);
         Optional<MCPToolClarificationPolicy.ClarificationForm> clarificationForm = clarificationPolicy.createClarificationForm(payload, toolDescriptor);
         if (clarificationForm.isEmpty()) {
-            return createFallbackResponse(payload, getUnavailableFormFallbackReason(payload, clientCapabilities), clientCapabilities);
+            return Optional.of(createFallbackResponse(payload, getUnavailableFormFallbackReason(payload, clientCapabilities), clientCapabilities));
         }
         if (!clientCapabilities.isFormModeSupported()) {
-            return createFallbackResponse(payload, MCPToolElicitationFallbackReason.CLIENT_UNSUPPORTED, clientCapabilities);
+            return Optional.of(createFallbackResponse(payload, MCPToolElicitationFallbackReason.CLIENT_UNSUPPORTED, clientCapabilities));
         }
         if (!STDIO_TRANSPORT.equals(activeTransport)) {
-            return createFallbackResponse(payload, MCPToolElicitationFallbackReason.REMOTE_IDENTITY_REQUIRED, clientCapabilities);
+            return Optional.of(createFallbackResponse(payload, MCPToolElicitationFallbackReason.REMOTE_IDENTITY_REQUIRED, clientCapabilities));
         }
         FormContinuationContext continuationContext = createContinuationContext(exchange, toolDescriptor, arguments, clarificationForm.get());
         McpSchema.ElicitResult elicitedResult;
         try {
             elicitedResult = exchange.createElicitation(createElicitRequest(toolDescriptor.getName(), clarificationForm.get(), continuationContext.formRequestId()));
         } catch (final McpError | IllegalStateException | UnsupportedOperationException ignored) {
-            return createFallbackResponse(payload, MCPToolElicitationFallbackReason.ELICITATION_FAILED, clientCapabilities);
+            return Optional.of(createFallbackResponse(payload, MCPToolElicitationFallbackReason.ELICITATION_FAILED, clientCapabilities));
         }
-        return continueOrFallback(exchange, toolDefinition, arguments, fallbackResponse, payload, clarificationForm.get(), continuationContext, elicitedResult, clientCapabilities);
+        return continueOrFallback(exchange, toolDefinition, arguments, payload, clarificationForm.get(), continuationContext, elicitedResult, clientCapabilities);
     }
     
-    private MCPResponse continueOrFallback(final McpSyncServerExchange exchange, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments,
-                                           final MCPResponse fallbackResponse, final Map<String, Object> payload,
+    private Optional<MCPResponse> continueOrFallback(final McpSyncServerExchange exchange, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments,
+                                           final Map<String, Object> payload,
                                            final MCPToolClarificationPolicy.ClarificationForm clarificationForm,
                                            final FormContinuationContext continuationContext, final McpSchema.ElicitResult elicitedResult,
                                            final MCPClientElicitationCapabilities clientCapabilities) {
         if (null == elicitedResult || null == elicitedResult.action()) {
-            return createFallbackResponse(payload, MCPToolElicitationFallbackReason.MALFORMED_ELICITATION_RESULT, clientCapabilities);
+            return Optional.of(createFallbackResponse(payload, MCPToolElicitationFallbackReason.MALFORMED_ELICITATION_RESULT, clientCapabilities));
         }
         if (McpSchema.ElicitResult.Action.ACCEPT != elicitedResult.action()) {
-            return fallbackResponse;
+            return Optional.empty();
         }
         if (null == elicitedResult.content()) {
-            return createFallbackResponse(payload, MCPToolElicitationFallbackReason.MALFORMED_ELICITATION_RESULT, clientCapabilities);
+            return Optional.of(createFallbackResponse(payload, MCPToolElicitationFallbackReason.MALFORMED_ELICITATION_RESULT, clientCapabilities));
         }
         if (!continuationContext.isActive(activeTransport, clock, exchange, toolDefinition.getDescriptor(), arguments, clarificationForm)) {
-            return createFallbackResponse(payload, MCPToolElicitationFallbackReason.STALE_ELICITATION, clientCapabilities);
+            return Optional.of(createFallbackResponse(payload, MCPToolElicitationFallbackReason.STALE_ELICITATION, clientCapabilities));
         }
         if (!clarificationPolicy.isValidElicitedContent(clarificationForm, elicitedResult.content())) {
-            return createFallbackResponse(payload, MCPToolElicitationFallbackReason.INVALID_ELICITED_CONTENT, clientCapabilities);
+            return Optional.of(createFallbackResponse(payload, MCPToolElicitationFallbackReason.INVALID_ELICITED_CONTENT, clientCapabilities));
         }
-        return toolController.handle(exchange.sessionId(), toolDefinition, clarificationPolicy.mergeArguments(arguments, clarificationForm, elicitedResult.content()));
+        return Optional.of(toolController.handle(exchange.sessionId(), toolDefinition, clarificationPolicy.mergeArguments(arguments, clarificationForm, elicitedResult.content())));
     }
     
     private MCPResponse createFallbackResponse(final Map<String, Object> payload, final MCPToolElicitationFallbackReason fallbackReason,
