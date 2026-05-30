@@ -20,13 +20,14 @@ package org.apache.shardingsphere.agent.plugin.core.config.validator;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PluginConfigurationValidatorTest {
     
     @Test
     void assertValidateHostAndPortSuccess() {
-        PluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration("localhost", 8080, "pwd", null));
+        assertDoesNotThrow(() -> PluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration("localhost", 8080, "pwd", null)));
     }
     
     @Test
