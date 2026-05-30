@@ -71,7 +71,7 @@ class MySQLIdentifierCaseRuleProviderTest {
     
     @Test
     void assertProvideWithQuotedTableName() throws SQLException {
-        IdentifierCaseRule actual = provider.provide(new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockDataSource(true, 1)))
+        IdentifierCaseRule actual = provider.provide(new IdentifierCaseRuleProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 1)))
                 .map(ruleSet -> ruleSet.getRule(IdentifierScope.TABLE)).orElseThrow(AssertionError::new);
         assertThat(actual.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
         assertThat(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE), is(Boolean.TRUE));
@@ -96,38 +96,26 @@ class MySQLIdentifierCaseRuleProviderTest {
     private static Stream<Arguments> provideArguments() throws SQLException {
         return Stream.of(
                 Arguments.of("null_data_source", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, null), null, null, null),
-                Arguments.of("null_connection", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockNullConnectionDataSource()), null, null, null),
-                Arguments.of("lower_case_table_names_0", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockDataSource(true, 0)),
+                Arguments.of("null_connection", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, new NullConnectionFixtureDataSource()), null, null, null),
+                Arguments.of("lower_case_table_names_0", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 0)),
                         LookupMode.EXACT, LookupMode.EXACT, Boolean.FALSE),
-                Arguments.of("lower_case_table_names_1", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockDataSource(true, 1)),
+                Arguments.of("lower_case_table_names_1", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 1)),
                         LookupMode.NORMALIZED, LookupMode.NORMALIZED, Boolean.TRUE),
-                Arguments.of("lower_case_table_names_2", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockDataSource(true, 2)),
+                Arguments.of("lower_case_table_names_2", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 2)),
                         LookupMode.NORMALIZED, LookupMode.NORMALIZED, Boolean.TRUE),
-                Arguments.of("no_result_row", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockDataSource(false, 0)), null, null, null),
-                Arguments.of("sql_exception", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockFailingDataSource()), null, null, null));
+                Arguments.of("no_result_row", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, new FixtureDataSource(false, 0)), null, null, null),
+                Arguments.of("sql_exception", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, new FailingFixtureDataSource()), null, null, null));
     }
     
     @Test
     void assertProvideWithLowerCaseTableNamesZeroUsesScopedRules() throws SQLException {
-        IdentifierCaseRuleProviderContext context = new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockDataSource(true, 0));
+        IdentifierCaseRuleProviderContext context = new IdentifierCaseRuleProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 0));
         IdentifierCaseRuleSet actual = provider.provide(context).orElseThrow(AssertionError::new);
         assertThat(actual.getRule(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE), is(Boolean.TRUE));
         assertThat(actual.getRule(IdentifierScope.TABLE).matches("foo_tbl", "FOO_TBL", QuoteCharacter.NONE), is(Boolean.FALSE));
         assertThat(actual.getRule(IdentifierScope.VIEW).matches("foo_view", "FOO_VIEW", QuoteCharacter.NONE), is(Boolean.FALSE));
         assertThat(actual.getRule(IdentifierScope.COLUMN).matches("foo_col", "FOO_COL", QuoteCharacter.NONE), is(Boolean.TRUE));
         assertThat(actual.getRule(IdentifierScope.INDEX).matches("foo_idx", "FOO_IDX", QuoteCharacter.NONE), is(Boolean.TRUE));
-    }
-    
-    private static DataSource mockDataSource(final boolean hasResultSetRow, final int lowerCaseTableNames) throws SQLException {
-        return new FixtureDataSource(hasResultSetRow, lowerCaseTableNames);
-    }
-    
-    private static DataSource mockFailingDataSource() throws SQLException {
-        return new FailingFixtureDataSource();
-    }
-    
-    private static DataSource mockNullConnectionDataSource() {
-        return new NullConnectionFixtureDataSource();
     }
     
     private static Object getDefaultValue(final Class<?> returnType) {

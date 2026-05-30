@@ -31,9 +31,9 @@ public final class PostgreSQLCloseCompletePacket extends PostgreSQLPacket {
     private static final PostgreSQLCloseCompletePacket INSTANCE = new PostgreSQLCloseCompletePacket();
     
     /**
-     * Get instance of {@link PostgreSQLCloseCompletePacket}.
+     * Get instance of PostgreSQL close complete packet.
      *
-     * @return instance of {@link PostgreSQLCloseCompletePacket}
+     * @return got instance
      */
     public static PostgreSQLCloseCompletePacket getInstance() {
         return INSTANCE;

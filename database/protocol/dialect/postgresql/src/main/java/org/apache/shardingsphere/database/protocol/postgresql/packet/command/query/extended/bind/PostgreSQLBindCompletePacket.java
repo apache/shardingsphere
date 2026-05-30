@@ -34,9 +34,9 @@ public final class PostgreSQLBindCompletePacket extends PostgreSQLPacket {
     private static final PostgreSQLBindCompletePacket INSTANCE = new PostgreSQLBindCompletePacket();
     
     /**
-     * Get instance of {@link PostgreSQLBindCompletePacket}.
+     * Get instance of PostgreSQL bind complete packet.
      *
-     * @return instance of {@link PostgreSQLBindCompletePacket}
+     * @return got instance
      */
     public static PostgreSQLBindCompletePacket getInstance() {
         return INSTANCE;
