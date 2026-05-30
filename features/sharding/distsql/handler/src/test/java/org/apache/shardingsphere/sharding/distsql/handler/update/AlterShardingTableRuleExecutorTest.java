@@ -58,6 +58,7 @@ import java.util.Properties;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -179,7 +180,7 @@ class AlterShardingTableRuleExecutorTest {
                 + "TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='6')),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,GENERATOR=existing_snowflake))";
         AlterShardingTableRuleStatement distSQLStatement = (AlterShardingTableRuleStatement) getDistSQLStatement(sql);
-        executor.checkBeforeUpdate(distSQLStatement);
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(distSQLStatement));
     }
     
     @Test

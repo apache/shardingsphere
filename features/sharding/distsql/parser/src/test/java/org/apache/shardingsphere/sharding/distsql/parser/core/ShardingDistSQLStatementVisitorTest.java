@@ -43,6 +43,8 @@ import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingDistSQLStatementVisitorTest {
@@ -51,12 +53,12 @@ class ShardingDistSQLStatementVisitorTest {
     void assertCreateColumnStrategyWithAlgorithm() {
         CreateShardingKeyGenerateStrategyStatement actual = (CreateShardingKeyGenerateStrategyStatement) parse(
                 "CREATE SHARDING KEY GENERATE STRATEGY order_id_strategy (TABLE=t_order, COLUMN=order_id, TYPE(NAME='snowflake', PROPERTIES('worker-id'=1)))");
-        assertTrue(actual.getKeyGenerateStrategySegment() instanceof ColumnKeyGenerateStrategyDefinitionSegment);
+        assertThat(actual.getKeyGenerateStrategySegment(), isA(ColumnKeyGenerateStrategyDefinitionSegment.class));
         ColumnKeyGenerateStrategyDefinitionSegment actualSegment = (ColumnKeyGenerateStrategyDefinitionSegment) actual.getKeyGenerateStrategySegment();
         assertThat(actual.getName(), is("order_id_strategy"));
         assertThat(actualSegment.getTableName(), is("t_order"));
         assertThat(actualSegment.getColumnName(), is("order_id"));
-        assertTrue(!actualSegment.getKeyGeneratorName().isPresent());
+        assertFalse(actualSegment.getKeyGeneratorName().isPresent());
         assertThat(actualSegment.getAlgorithmSegment().get().getName(), is("snowflake"));
         assertThat(actualSegment.getAlgorithmSegment().get().getProps().getProperty("worker-id"), is("1"));
     }
@@ -74,26 +76,26 @@ class ShardingDistSQLStatementVisitorTest {
     void assertCreateColumnStrategyWithGenerator() {
         CreateShardingKeyGenerateStrategyStatement actual = (CreateShardingKeyGenerateStrategyStatement) parse(
                 "CREATE SHARDING KEY GENERATE STRATEGY order_id_strategy (TABLE=t_order, COLUMN=order_id, GENERATOR=snowflake_generator)");
-        assertTrue(actual.getKeyGenerateStrategySegment() instanceof ColumnKeyGenerateStrategyDefinitionSegment);
+        assertThat(actual.getKeyGenerateStrategySegment(), isA(ColumnKeyGenerateStrategyDefinitionSegment.class));
         ColumnKeyGenerateStrategyDefinitionSegment actualSegment = (ColumnKeyGenerateStrategyDefinitionSegment) actual.getKeyGenerateStrategySegment();
         assertThat(actual.getName(), is("order_id_strategy"));
         assertThat(actualSegment.getTableName(), is("t_order"));
         assertThat(actualSegment.getColumnName(), is("order_id"));
         assertThat(actualSegment.getKeyGeneratorName().get(), is("snowflake_generator"));
-        assertTrue(!actualSegment.getAlgorithmSegment().isPresent());
+        assertFalse(actualSegment.getAlgorithmSegment().isPresent());
     }
     
     @Test
     void assertAlterColumnStrategyWithGenerator() {
         AlterShardingKeyGenerateStrategyStatement actual = (AlterShardingKeyGenerateStrategyStatement) parse(
                 "ALTER SHARDING KEY GENERATE STRATEGY order_id_strategy (TABLE=t_order, COLUMN=order_id, GENERATOR=snowflake_generator)");
-        assertTrue(actual.getKeyGenerateStrategySegment() instanceof ColumnKeyGenerateStrategyDefinitionSegment);
+        assertThat(actual.getKeyGenerateStrategySegment(), isA(ColumnKeyGenerateStrategyDefinitionSegment.class));
         ColumnKeyGenerateStrategyDefinitionSegment actualSegment = (ColumnKeyGenerateStrategyDefinitionSegment) actual.getKeyGenerateStrategySegment();
         assertThat(actual.getName(), is("order_id_strategy"));
         assertThat(actualSegment.getTableName(), is("t_order"));
         assertThat(actualSegment.getColumnName(), is("order_id"));
         assertThat(actualSegment.getKeyGeneratorName().get(), is("snowflake_generator"));
-        assertTrue(!actualSegment.getAlgorithmSegment().isPresent());
+        assertFalse(actualSegment.getAlgorithmSegment().isPresent());
     }
     
     @Test
@@ -108,11 +110,11 @@ class ShardingDistSQLStatementVisitorTest {
     void assertCreateSequenceStrategyWithAlgorithm() {
         CreateShardingKeyGenerateStrategyStatement actual = (CreateShardingKeyGenerateStrategyStatement) parse(
                 "CREATE SHARDING KEY GENERATE STRATEGY order_sequence_strategy (SEQUENCE='order_seq', TYPE(NAME='redis_cluster_auto_increment', PROPERTIES('increment'=1)))");
-        assertTrue(actual.getKeyGenerateStrategySegment() instanceof SequenceKeyGenerateStrategyDefinitionSegment);
+        assertThat(actual.getKeyGenerateStrategySegment(), isA(SequenceKeyGenerateStrategyDefinitionSegment.class));
         SequenceKeyGenerateStrategyDefinitionSegment actualSegment = (SequenceKeyGenerateStrategyDefinitionSegment) actual.getKeyGenerateStrategySegment();
         assertThat(actual.getName(), is("order_sequence_strategy"));
         assertThat(actualSegment.getSequenceName(), is("order_seq"));
-        assertTrue(!actualSegment.getKeyGeneratorName().isPresent());
+        assertFalse(actualSegment.getKeyGeneratorName().isPresent());
         assertThat(actualSegment.getAlgorithmSegment().get().getName(), is("redis_cluster_auto_increment"));
         assertThat(actualSegment.getAlgorithmSegment().get().getProps().getProperty("increment"), is("1"));
     }
@@ -121,14 +123,14 @@ class ShardingDistSQLStatementVisitorTest {
     void assertShowStrategies() {
         ShowShardingKeyGenerateStrategiesStatement actual = (ShowShardingKeyGenerateStrategiesStatement) parse(
                 "SHOW SHARDING KEY GENERATE STRATEGIES FROM sharding_db");
-        assertTrue(!actual.getName().isPresent());
+        assertFalse(actual.getName().isPresent());
         assertThat(actual.getFromDatabase().getDatabase().getIdentifier().getValue(), is("sharding_db"));
     }
     
     @Test
     void assertShowKeyGenerators() {
         ShowShardingKeyGeneratorsStatement actual = (ShowShardingKeyGeneratorsStatement) parse("SHOW SHARDING KEY GENERATORS FROM sharding_db");
-        assertTrue(!actual.getName().isPresent());
+        assertFalse(actual.getName().isPresent());
         assertThat(actual.getFromDatabase().getDatabase().getIdentifier().getValue(), is("sharding_db"));
     }
     
@@ -171,7 +173,7 @@ class ShardingDistSQLStatementVisitorTest {
         TableRuleSegment actualSegment = (TableRuleSegment) actual.getRules().iterator().next();
         assertThat(actualSegment.getKeyGenerateStrategySegment().getKeyGenerateColumn(), is("order_id"));
         assertThat(actualSegment.getKeyGenerateStrategySegment().getKeyGeneratorName().get(), is("snowflake_generator"));
-        assertTrue(!actualSegment.getKeyGenerateStrategySegment().getAlgorithmSegment().isPresent());
+        assertFalse(actualSegment.getKeyGenerateStrategySegment().getAlgorithmSegment().isPresent());
     }
     
     @Test
@@ -183,7 +185,7 @@ class ShardingDistSQLStatementVisitorTest {
         AutoTableRuleSegment actualSegment = (AutoTableRuleSegment) actual.getRules().iterator().next();
         assertThat(actualSegment.getKeyGenerateStrategySegment().getKeyGenerateColumn(), is("order_id"));
         assertThat(actualSegment.getKeyGenerateStrategySegment().getKeyGeneratorName().get(), is("snowflake_generator"));
-        assertTrue(!actualSegment.getKeyGenerateStrategySegment().getAlgorithmSegment().isPresent());
+        assertFalse(actualSegment.getKeyGenerateStrategySegment().getAlgorithmSegment().isPresent());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
