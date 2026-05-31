@@ -173,6 +173,15 @@ class ProxyConfigurationLoaderTest {
         assertTrue(actual.getDatabaseConfigurations().isEmpty());
     }
     
+    @Test
+    void assertLoadFromClasspathWhenFilesystemParentExistsButTargetDoesNot(@TempDir final Path tempDir) throws IOException {
+        Path parentDir = tempDir.resolve("conf");
+        Files.createDirectories(parentDir);
+        YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/config_loader/");
+        assertNotNull(actual.getServerConfiguration());
+        assertThat(actual.getDatabaseConfigurations().size(), is(3));
+    }
+    
     private void assertShardingRuleConfiguration(final YamlProxyDatabaseConfiguration actual) {
         assertThat(actual.getDatabaseName(), is("sharding_db"));
         assertThat(actual.getDataSources().size(), is(2));
