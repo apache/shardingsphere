@@ -73,56 +73,17 @@ In STDIO mode:
 - Diagnostics are written to stderr or `logs/mcp.log`.
 - `command` and `args` in the client configuration should point to the packaged startup script and STDIO config file.
 
-## Protocol call examples
+## Using the integration
 
-When using an existing MCP client or agent platform, users usually describe tasks in natural language, such as "show tables in the logical database" or "inspect columns in the orders table".
-The client sends MCP protocol requests automatically based on the model's choices. Users do not paste the following JSON into a model chat.
-The examples below show protocol messages sent behind the scenes, and are useful for client development, integration debugging, or troubleshooting.
+After the client is configured with the MCP Server, users describe tasks directly in the model conversation.
+The client handles session initialization, capability discovery, completion, and tool calls; the model chooses which resources to read or which tools to call.
 
-Read runtime status:
+Examples:
 
-```json
-{"jsonrpc":"2.0","id":"runtime-1","method":"resources/read","params":{"uri":"shardingsphere://runtime"}}
-```
+- Show the tables in `<logic-database>`.
+- Inspect columns and indexes for `<table-name>`.
+- Run a read-only query and limit the result to 100 rows.
+- Plan a data encryption or data masking rule and preview it without execution.
 
-Read the capability catalog:
-
-```json
-{"jsonrpc":"2.0","id":"capabilities-1","method":"resources/read","params":{"uri":"shardingsphere://capabilities"}}
-```
-
-Search metadata:
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": "search-1",
-  "method": "tools/call",
-  "params": {
-    "name": "database_gateway_search_metadata",
-    "arguments": {
-      "database": "<logic-database>",
-      "query": "<metadata-keyword>",
-      "object_types": ["table"]
-    }
-  }
-}
-```
-
-Execute read-only SQL:
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": "query-1",
-  "method": "tools/call",
-  "params": {
-    "name": "database_gateway_execute_query",
-    "arguments": {
-      "database": "<logic-database>",
-      "sql": "SELECT * FROM <table-name> LIMIT 100",
-      "max_rows": 100
-    }
-  }
-}
-```
+If the client provides a tool approval UI, pay special attention to side-effecting calls such as SQL execution, rule changes, and plugin workflow execution.
+For custom clients or protocol debugging, use the [Capability Catalog](../capabilities/) to confirm resources, tools, prompts, and completion targets.

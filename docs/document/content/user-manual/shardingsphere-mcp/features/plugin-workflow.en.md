@@ -1,6 +1,6 @@
 +++
 title = "Plugin Workflows"
-weight = 5
+weight = 3
 +++
 
 Plugin workflows are the shared mechanism that ShardingSphere-MCP uses for multi-step governance changes. They are not standalone business features.

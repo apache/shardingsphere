@@ -73,56 +73,17 @@ STDIO 模式下：
 - 诊断日志写到 stderr 或 `logs/mcp.log`。
 - 客户端配置中的 `command` 和 `args` 应指向发行包内的启动脚本和 STDIO 配置文件。
 
-## 协议调用示例
+## 集成后的使用方式
 
-使用现成 MCP 客户端或 Agent 平台时，用户通常通过自然语言提出任务，例如“查看逻辑库有哪些表”或“查询订单表的字段”。
-客户端会根据模型选择自动发送 MCP 协议请求，用户不需要把下面的 JSON 粘贴到模型对话框。
-下面的示例用于说明客户端背后发送的协议消息，适合客户端开发、集成调试或排查问题。
+客户端完成 MCP Server 配置后，用户在模型对话中直接描述任务。
+客户端负责会话初始化、能力发现、补全和工具调用；模型根据任务选择读取资源或调用工具。
 
-读取服务状态：
+示例：
 
-```json
-{"jsonrpc":"2.0","id":"runtime-1","method":"resources/read","params":{"uri":"shardingsphere://runtime"}}
-```
+- 查看 `<logic-database>` 中有哪些表。
+- 查询 `<table-name>` 的字段和索引。
+- 执行一条只读查询，并限制返回 100 行。
+- 规划一个数据加密或数据脱敏规则，先预览不要执行。
 
-读取能力目录：
-
-```json
-{"jsonrpc":"2.0","id":"capabilities-1","method":"resources/read","params":{"uri":"shardingsphere://capabilities"}}
-```
-
-搜索元数据：
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": "search-1",
-  "method": "tools/call",
-  "params": {
-    "name": "database_gateway_search_metadata",
-    "arguments": {
-      "database": "<logic-database>",
-      "query": "<metadata-keyword>",
-      "object_types": ["table"]
-    }
-  }
-}
-```
-
-执行只读 SQL：
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": "query-1",
-  "method": "tools/call",
-  "params": {
-    "name": "database_gateway_execute_query",
-    "arguments": {
-      "database": "<logic-database>",
-      "sql": "SELECT * FROM <table-name> LIMIT 100",
-      "max_rows": 100
-    }
-  }
-}
-```
+如果客户端提供工具调用审批界面，应重点审查 SQL 执行、规则变更、插件工作流执行等有副作用的调用。
+自研客户端或协议调试场景，可结合[能力清单](../capabilities/)确认资源、工具、提示和补全目标。
