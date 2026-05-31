@@ -51,7 +51,7 @@ class DerivedColumnNamingServiceTest {
     @Test
     void assertCreatePlanWithUnsafeOverride() {
         EncryptWorkflowRequest request = createRequest(false, false);
-        request.getOptions().setCipherColumnName("phone-cipher");
+        request.getOptions().setCipherColumnName("phone\ncipher");
         List<WorkflowIssue> issues = new LinkedList<>();
         DerivedColumnPlan actual = service.createPlan(request, new LinkedHashSet<>(), issues);
         assertThat(actual.getCipherColumnName(), is("phone_cipher"));

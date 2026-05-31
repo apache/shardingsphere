@@ -243,7 +243,7 @@ public final class MySQLRuntimeTestSupport {
      */
     public static String detectSchema(final GenericContainer<?> container) throws SQLException {
         try (
-                Connection connection = getConnection(container, DATABASE_NAME)) {
+                Connection connection = getConnection(container, DATABASE_NAME, USERNAME, PASSWORD)) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             try (ResultSet resultSet = databaseMetaData.getTables(null, null, "orders", new String[]{"TABLE"})) {
                 while (resultSet.next()) {
@@ -267,7 +267,7 @@ public final class MySQLRuntimeTestSupport {
      */
     public static int querySingleInt(final GenericContainer<?> container, final String sql) throws SQLException {
         try (
-                Connection connection = getConnection(container, DATABASE_NAME);
+                Connection connection = getConnection(container, DATABASE_NAME, USERNAME, PASSWORD);
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
@@ -285,7 +285,7 @@ public final class MySQLRuntimeTestSupport {
      */
     public static String querySingleString(final GenericContainer<?> container, final String sql) throws SQLException {
         try (
-                Connection connection = getConnection(container, DATABASE_NAME);
+                Connection connection = getConnection(container, DATABASE_NAME, USERNAME, PASSWORD);
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
@@ -295,7 +295,7 @@ public final class MySQLRuntimeTestSupport {
     
     private static void executeStatements(final GenericContainer<?> container, final String databaseName, final String... sqls) throws SQLException {
         try (
-                Connection connection = getConnection(container, databaseName);
+                Connection connection = getConnection(container, databaseName, USERNAME, PASSWORD);
                 Statement statement = connection.createStatement()) {
             for (String each : sqls) {
                 try {
@@ -313,20 +313,20 @@ public final class MySQLRuntimeTestSupport {
         return 1061 == ex.getErrorCode();
     }
     
-    private static Connection getConnection(final GenericContainer<?> container, final String databaseName) throws SQLException {
+    private static Connection getConnection(final GenericContainer<?> container, final String databaseName, final String username, final String password) throws SQLException {
         String jdbcUrl = createJdbcUrl(container.getHost(), container.getMappedPort(3306), databaseName);
         try {
             return new ReadinessProbe(JDBC_READY_TIMEOUT.toMillis(), JDBC_READY_INITIAL_INTERVAL_MILLIS, JDBC_READY_MAX_INTERVAL_MILLIS)
-                    .waitUntilReady(() -> getConnectionIfReady(jdbcUrl), MySQLRuntimeTestSupport::createJdbcReadyException);
+                    .waitUntilReady(() -> getConnectionIfReady(jdbcUrl, username, password), MySQLRuntimeTestSupport::createJdbcReadyException);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new SQLException("Interrupted while waiting for MySQL JDBC readiness.", ex);
         }
     }
     
-    private static ReadinessProbe.ReadinessResult<Connection> getConnectionIfReady(final String jdbcUrl) {
+    private static ReadinessProbe.ReadinessResult<Connection> getConnectionIfReady(final String jdbcUrl, final String username, final String password) {
         try {
-            return ReadinessProbe.ReadinessResult.ready(DriverManager.getConnection(jdbcUrl, USERNAME, PASSWORD));
+            return ReadinessProbe.ReadinessResult.ready(DriverManager.getConnection(jdbcUrl, username, password));
         } catch (final SQLException ex) {
             return ReadinessProbe.ReadinessResult.retry(ex);
         }
@@ -360,7 +360,7 @@ public final class MySQLRuntimeTestSupport {
     
     private static void executeRootStatements(final GenericContainer<?> container, final String... sqls) throws SQLException {
         try (
-                Connection connection = DriverManager.getConnection(createJdbcUrl(container.getHost(), container.getMappedPort(3306), ""), "root", ROOT_PASSWORD);
+                Connection connection = getConnection(container, "", "root", ROOT_PASSWORD);
                 Statement statement = connection.createStatement()) {
             for (String each : sqls) {
                 statement.execute(each);
