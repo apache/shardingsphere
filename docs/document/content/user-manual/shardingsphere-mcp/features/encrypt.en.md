@@ -53,8 +53,8 @@ The planning tool uses these common inputs:
 | `allow_index_ddl` | Optional | Whether physical index plans may be generated for assisted-query columns. |
 
 `database`, `schema`, `table`, and `column` can be ordinary identifiers or delimited identifiers wrapped in backticks, double quotes, or square brackets.
-MCP preserves case, spaces, and other special characters during planning. Generated DistSQL renders identifiers with backticks.
-Generated physical DDL, index plans, and validation SQL render identifiers with the target database dialect quote character, such as backticks for MySQL/MariaDB and double quotes for PostgreSQL/openGauss.
+MCP preserves ordinary identifiers as written and preserves explicitly delimited identifiers during planning. Generated DistSQL adds backticks when an unquoted identifier would conflict with DistSQL syntax.
+Generated physical DDL, index plans, and validation SQL add the target database dialect quote character when an unquoted identifier would conflict with SQL syntax, such as backticks for MySQL/MariaDB and double quotes for PostgreSQL/openGauss.
 Identifiers must not contain NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.
 
 Different operations focus on different inputs:

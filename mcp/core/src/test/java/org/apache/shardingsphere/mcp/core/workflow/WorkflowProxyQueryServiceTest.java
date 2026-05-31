@@ -115,7 +115,7 @@ class WorkflowProxyQueryServiceTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT `amount` FROM `orders` WHERE 1 = 0")).thenReturn(resultSet);
+        when(statement.executeQuery("SELECT amount FROM orders WHERE 1 = 0")).thenReturn(resultSet);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.DECIMAL);
@@ -136,7 +136,7 @@ class WorkflowProxyQueryServiceTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT `amount` FROM `orders` WHERE 1 = 0")).thenReturn(resultSet);
+        when(statement.executeQuery("SELECT amount FROM orders WHERE 1 = 0")).thenReturn(resultSet);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(0);
         WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));

@@ -61,9 +61,9 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
-    void assertFormatDistSQLIdentifierQuotesSafeIdentifier() {
+    void assertFormatDistSQLIdentifierKeepsSafeIdentifier() {
         String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("orders_01");
-        assertThat(actualValue, is("`orders_01`"));
+        assertThat(actualValue, is("orders_01"));
     }
     
     @Test
@@ -79,9 +79,9 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
-    void assertFormatDistSQLIdentifierQuotesMixedCaseIdentifier() {
+    void assertFormatDistSQLIdentifierKeepsMixedCaseIdentifier() {
         String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("Phone");
-        assertThat(actualValue, is("`Phone`"));
+        assertThat(actualValue, is("Phone"));
     }
     
     @Test
@@ -103,15 +103,27 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertFormatSQLIdentifierKeepsSafeIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "orders_01");
+        assertThat(actualValue, is("orders_01"));
+    }
+    
+    @Test
+    void assertFormatSQLIdentifierKeepsPostgreSQLMixedCaseIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "Phone");
+        assertThat(actualValue, is("Phone"));
+    }
+    
+    @Test
     void assertFormatSQLIdentifierUsesFallbackQuoteStyle() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("", "orders");
-        assertThat(actualValue, is("`orders`"));
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("", "order detail");
+        assertThat(actualValue, is("`order detail`"));
     }
     
     @Test
     void assertFormatSQLIdentifierUsesPostgreSQLQuoteStyle() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "orders");
-        assertThat(actualValue, is("\"orders\""));
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "order detail");
+        assertThat(actualValue, is("\"order detail\""));
     }
     
     @Test

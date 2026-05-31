@@ -41,10 +41,10 @@ class EncryptRuleDistSQLPlanningServiceTest {
         List<RuleArtifact> actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of(), "MySQL");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getOperationType(), is("create"));
-        assertTrue(actual.get(0).getSql().startsWith("CREATE ENCRYPT RULE `orders`"));
-        assertTrue(actual.get(0).getSql().contains("NAME=`phone`"));
-        assertTrue(actual.get(0).getSql().contains("ASSISTED_QUERY_COLUMN=`phone_assisted_query`"));
-        assertTrue(actual.get(0).getSql().contains("LIKE_QUERY_COLUMN=`phone_like_query`"));
+        assertTrue(actual.get(0).getSql().startsWith("CREATE ENCRYPT RULE orders"));
+        assertTrue(actual.get(0).getSql().contains("NAME=phone"));
+        assertTrue(actual.get(0).getSql().contains("ASSISTED_QUERY_COLUMN=phone_assisted_query"));
+        assertTrue(actual.get(0).getSql().contains("LIKE_QUERY_COLUMN=phone_like_query"));
     }
     
     @Test
@@ -55,10 +55,10 @@ class EncryptRuleDistSQLPlanningServiceTest {
                 Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")), "MySQL");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getOperationType(), is("alter"));
-        assertTrue(actual.get(0).getSql().startsWith("ALTER ENCRYPT RULE `orders`"));
-        assertTrue(actual.get(0).getSql().contains("NAME=`email`"));
-        assertTrue(actual.get(0).getSql().contains("NAME=`phone`"));
-        assertTrue(actual.get(0).getSql().contains("CIPHER=`phone_cipher`"));
+        assertTrue(actual.get(0).getSql().startsWith("ALTER ENCRYPT RULE orders"));
+        assertTrue(actual.get(0).getSql().contains("NAME=email"));
+        assertTrue(actual.get(0).getSql().contains("NAME=phone"));
+        assertTrue(actual.get(0).getSql().contains("CIPHER=phone_cipher"));
     }
     
     @Test
@@ -89,7 +89,7 @@ class EncryptRuleDistSQLPlanningServiceTest {
         request.setTable("key");
         List<RuleArtifact> actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of(), "MySQL");
         assertTrue(actual.get(0).getSql().startsWith("CREATE ENCRYPT RULE `key`"));
-        assertTrue(actual.get(0).getSql().contains("NAME=`phone`"));
+        assertTrue(actual.get(0).getSql().contains("NAME=phone"));
     }
     
     @Test
@@ -106,7 +106,7 @@ class EncryptRuleDistSQLPlanningServiceTest {
         List<RuleArtifact> actual = service.planEncryptDropRule(request, List.of(Map.of("logic_column", "phone", "cipher_column", "phone_cipher")), "MySQL");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getOperationType(), is("drop"));
-        assertThat(actual.get(0).getSql(), is("DROP ENCRYPT RULE `orders`"));
+        assertThat(actual.get(0).getSql(), is("DROP ENCRYPT RULE orders"));
     }
     
     @Test
@@ -117,9 +117,9 @@ class EncryptRuleDistSQLPlanningServiceTest {
                 Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")), "MySQL");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getOperationType(), is("drop"));
-        assertTrue(actual.get(0).getSql().startsWith("ALTER ENCRYPT RULE `orders`"));
-        assertTrue(actual.get(0).getSql().contains("NAME=`email`"));
-        assertTrue(actual.get(0).getSql().contains("CIPHER=`email_cipher`"));
+        assertTrue(actual.get(0).getSql().startsWith("ALTER ENCRYPT RULE orders"));
+        assertTrue(actual.get(0).getSql().contains("NAME=email"));
+        assertTrue(actual.get(0).getSql().contains("CIPHER=email_cipher"));
     }
     
     @Test
@@ -130,9 +130,9 @@ class EncryptRuleDistSQLPlanningServiceTest {
                 Map.of("logic_column", "Phone", "cipher_column", "Phone_cipher"),
                 Map.of("logic_column", "phone", "cipher_column", "phone_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")), "PostgreSQL");
         assertThat(actual.size(), is(1));
-        assertTrue(actual.get(0).getSql().startsWith("ALTER ENCRYPT RULE `orders`"));
-        assertTrue(actual.get(0).getSql().contains("NAME=`phone`"));
-        assertTrue(actual.get(0).getSql().contains("CIPHER=`phone_cipher`"));
+        assertTrue(actual.get(0).getSql().startsWith("ALTER ENCRYPT RULE orders"));
+        assertTrue(actual.get(0).getSql().contains("NAME=phone"));
+        assertTrue(actual.get(0).getSql().contains("CIPHER=phone_cipher"));
     }
     
     @Test
@@ -142,7 +142,7 @@ class EncryptRuleDistSQLPlanningServiceTest {
         List<RuleArtifact> actual = service.planEncryptDropRule(request, List.of(Map.of("logic_column", "phone", "cipher_column", "phone_cipher")), "MySQL");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getOperationType(), is("drop"));
-        assertThat(actual.get(0).getSql(), is("DROP ENCRYPT RULE `orders`"));
+        assertThat(actual.get(0).getSql(), is("DROP ENCRYPT RULE orders"));
     }
     
     private EncryptWorkflowRequest createRequest(final String operationType, final boolean equalityFilter, final boolean likeQuery) {
