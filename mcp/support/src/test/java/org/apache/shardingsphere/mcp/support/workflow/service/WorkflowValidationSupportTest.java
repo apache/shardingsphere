@@ -124,6 +124,14 @@ class WorkflowValidationSupportTest {
     }
     
     @Test
+    void assertCreateProjectionValidationSqlWithSpecialCharacterIdentifiers() {
+        WorkflowContextSnapshot snapshot = createSnapshot();
+        snapshot.getRequest().setTable("order detail");
+        snapshot.getRequest().setColumn("Phone Number");
+        assertThat(validationSupport.createProjectionValidationSql(snapshot), is("SELECT `Phone Number` FROM `order detail`"));
+    }
+    
+    @Test
     void assertValidateSqlExecutability() {
         ValidationReport validationReport = new ValidationReport();
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);

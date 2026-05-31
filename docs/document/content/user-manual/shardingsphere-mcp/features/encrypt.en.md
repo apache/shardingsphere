@@ -23,6 +23,7 @@ Examples:
 
 - Check whether `<logic-database>.orders.status` already has an encryption rule.
 - Plan reversible encryption for `<logic-database>.orders.status` with equality query support, and preview it without execution.
+- Plan reversible encryption for column `Phone Number` in logical table `order detail`, preserving object-name case.
 - Continue the previous plan with the AES algorithm and provide the key through a protected channel.
 - Confirm and execute the previous encryption rule plan, then validate the result.
 
@@ -50,6 +51,10 @@ The planning tool uses these common inputs:
 | `algorithm_type` | Optional | Primary encryption algorithm type. Omit it if you want MCP to recommend one from available algorithms. |
 | `primary_algorithm_properties` | Required by algorithm | Primary encryption algorithm properties, such as an AES key. The required properties come from the algorithm resource. |
 | `allow_index_ddl` | Optional | Whether physical index plans may be generated for assisted-query columns. |
+
+`database`, `schema`, `table`, and `column` can be ordinary identifiers or delimited identifiers wrapped in backticks, double quotes, or square brackets.
+MCP preserves case, spaces, and other special characters during planning. When it generates DistSQL, DDL, index plans, or validation SQL, identifiers that need quoting are escaped with backticks.
+Identifiers must not contain NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.
 
 Different operations focus on different inputs:
 
@@ -146,4 +151,4 @@ Regular users usually only need to describe tasks in natural language.
 
 ### Planner input limits
 
-- The planner accepts ordinary unquoted logical database, schema, table, and column names to reduce ambiguity in generated SQL. This is not a ShardingSphere SQL capability limit.
+- Identifiers must not contain NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.

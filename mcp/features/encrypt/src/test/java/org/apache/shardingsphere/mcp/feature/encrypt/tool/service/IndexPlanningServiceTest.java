@@ -50,6 +50,15 @@ class IndexPlanningServiceTest {
     }
     
     @Test
+    void assertPlanIndexesFormatsSpecialCharacterIdentifiers() {
+        DerivedColumnPlan derivedColumnPlan = createDerivedColumnPlan(true, false);
+        derivedColumnPlan.setAssistedQueryColumnName("phone assisted");
+        List<IndexPlan> actual = service.planIndexes("order detail", derivedColumnPlan, new LinkedHashSet<>());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getSql(), is("CREATE INDEX `idx_order detail_phone assisted` ON `order detail` (`phone assisted`)"));
+    }
+    
+    @Test
     void assertPlanIndexesWithoutOptionalColumns() {
         List<IndexPlan> actual = service.planIndexes("orders", createDerivedColumnPlan(false, false), new LinkedHashSet<>());
         assertTrue(actual.isEmpty());

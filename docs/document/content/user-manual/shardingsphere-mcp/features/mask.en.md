@@ -23,6 +23,7 @@ Examples:
 
 - Check whether `<logic-database>.orders.phone` already has a masking rule.
 - Plan phone-number masking for `<logic-database>.orders.phone`, keep the first 3 and last 4 characters, and preview it without execution.
+- Plan phone-number masking for column `Phone Number` in logical table `order detail`, preserving object-name case.
 - Adjust the previous plan to use `*` as the replacement character.
 - Confirm and execute the previous masking rule plan, then validate the result.
 
@@ -49,6 +50,10 @@ The planning tool uses these common inputs:
 | `operation_type` | Optional | Rule operation type. Supported values are `create`, `alter`, and `drop`. If omitted, MCP infers it from natural language and existing rules. |
 | `algorithm_type` | Optional | Masking algorithm type. Omit it if you want MCP to recommend one from available algorithms. |
 | `primary_algorithm_properties` | Required by algorithm | Masking algorithm properties, such as retained characters and replacement character. The required properties come from the algorithm resource. |
+
+`database`, `schema`, `table`, and `column` can be ordinary identifiers or delimited identifiers wrapped in backticks, double quotes, or square brackets.
+MCP preserves case, spaces, and other special characters during planning. When it generates DistSQL or validation SQL, identifiers that need quoting are escaped with backticks.
+Identifiers must not contain NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.
 
 Different operations focus on different inputs:
 
@@ -131,4 +136,4 @@ Regular users usually only need to describe tasks in natural language.
 
 ### Planner input limits
 
-- The planner accepts ordinary unquoted logical database, schema, table, and column names to reduce ambiguity in generated SQL. This is not a ShardingSphere SQL capability limit.
+- Identifiers must not contain NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
@@ -184,22 +185,22 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
             return result;
         }
         if (Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter())) {
-            result.add(String.format("SELECT %s FROM %s WHERE %s = 'sample'", snapshot.getRequest().getColumn(),
-                    snapshot.getRequest().getTable(), snapshot.getRequest().getColumn()));
+            result.add(String.format("SELECT %s FROM %s WHERE %s = 'sample'", WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getColumn()),
+                    WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getTable()), WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getColumn())));
         }
         if (Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery())) {
-            result.add(String.format("SELECT %s FROM %s WHERE %s LIKE 'sample%%'", snapshot.getRequest().getColumn(),
-                    snapshot.getRequest().getTable(), snapshot.getRequest().getColumn()));
+            result.add(String.format("SELECT %s FROM %s WHERE %s LIKE 'sample%%'", WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getColumn()),
+                    WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getTable()), WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getColumn())));
         }
         return result;
     }
     
     private Optional<Map<String, Object>> findEncryptRule(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> encryptRules) {
-        return encryptRules.stream().filter(each -> snapshot.getRequest().getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))).findFirst();
+        return encryptRules.stream().filter(each -> snapshot.getRequest().getColumn().equals(WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))).findFirst();
     }
     
     private void addDerivedColumnMismatch(final List<Map<String, Object>> mismatches, final String fieldName, final String expected, final String actual, final String impact) {
-        if (matchesValue(expected, actual)) {
+        if (expected.equals(actual)) {
             return;
         }
         mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", formatFieldValue(fieldName, expected), formatFieldValue(fieldName, actual), impact,

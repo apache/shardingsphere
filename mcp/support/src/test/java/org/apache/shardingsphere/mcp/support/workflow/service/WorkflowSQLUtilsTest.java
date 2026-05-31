@@ -38,19 +38,37 @@ class WorkflowSQLUtilsTest {
     
     @Test
     void assertCheckSafeIdentifierAllowsSafeIdentifier() {
-        assertDoesNotThrow(() -> WorkflowSQLUtils.checkSafeIdentifier("table", "orders_01"));
+        assertDoesNotThrow(() -> WorkflowSQLUtils.checkSupportedIdentifier("table", "orders_01"));
     }
     
     @Test
-    void assertCheckSafeIdentifierRejectsUnsafeIdentifier() {
-        Exception actualException = assertThrows(RuntimeException.class, () -> WorkflowSQLUtils.checkSafeIdentifier("table", "bad table"));
-        assertThat(actualException.getMessage(), is("table `bad table` contains unsupported characters. Workflow and generated SQL planning support standard unquoted identifiers only."));
+    void assertCheckSupportedIdentifierAllowsSpecialCharacterIdentifier() {
+        assertDoesNotThrow(() -> WorkflowSQLUtils.checkSupportedIdentifier("table", "bad table"));
+    }
+    
+    @Test
+    void assertCheckSupportedIdentifierRejectsLineTerminator() {
+        Exception actualException = assertThrows(RuntimeException.class, () -> WorkflowSQLUtils.checkSupportedIdentifier("table", "bad\ntable"));
+        assertThat(actualException.getMessage(), is("table `bad\ntable` contains unsupported characters that cannot be rendered as a reviewable SQL identifier."));
+    }
+    
+    @Test
+    void assertNormalizeIdentifierUnwrapsDelimitedIdentifier() {
+        assertThat(WorkflowSQLUtils.normalizeIdentifier("`bad table`"), is("bad table"));
+        assertThat(WorkflowSQLUtils.normalizeIdentifier("\"Order Detail\""), is("Order Detail"));
+        assertThat(WorkflowSQLUtils.normalizeIdentifier("[Order Detail]"), is("Order Detail"));
     }
     
     @Test
     void assertFormatDistSQLIdentifierKeepsSafeIdentifier() {
         String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("orders_01");
         assertThat(actualValue, is("orders_01"));
+    }
+    
+    @Test
+    void assertFormatDistSQLIdentifierQuotesDelimitedSafeIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("`orders`");
+        assertThat(actualValue, is("`orders`"));
     }
     
     @Test

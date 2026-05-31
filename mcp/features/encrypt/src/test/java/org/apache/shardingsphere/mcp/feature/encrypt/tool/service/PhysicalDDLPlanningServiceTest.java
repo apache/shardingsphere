@@ -57,19 +57,28 @@ class PhysicalDDLPlanningServiceTest {
     }
     
     @Test
-    void assertPlanAddColumnArtifactsRejectsUnsafeTable() {
-        MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class,
-                () -> service.planAddColumnArtifacts("orders;drop", createDerivedColumnPlan(false, false), new LinkedHashSet<>(), ""));
-        assertThat(actualException.getMessage(), is("table `orders;drop` contains unsupported characters. Workflow and generated SQL planning support standard unquoted identifiers only."));
+    void assertPlanAddColumnArtifactsFormatsSpecialCharacterIdentifiers() {
+        DerivedColumnPlan derivedColumnPlan = createDerivedColumnPlan(false, false);
+        derivedColumnPlan.setCipherColumnName("phone cipher");
+        List<DDLArtifact> actual = service.planAddColumnArtifacts("order detail", derivedColumnPlan, new LinkedHashSet<>(), "");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getSql(), is("ALTER TABLE `order detail` ADD COLUMN `phone cipher` VARCHAR(4000)"));
     }
     
     @Test
-    void assertPlanAddColumnArtifactsRejectsUnsafeDerivedColumn() {
+    void assertPlanAddColumnArtifactsRejectsLineTerminatorTable() {
+        MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class,
+                () -> service.planAddColumnArtifacts("orders\ndrop", createDerivedColumnPlan(false, false), new LinkedHashSet<>(), ""));
+        assertThat(actualException.getMessage(), is("table `orders\ndrop` contains unsupported characters that cannot be rendered as a reviewable SQL identifier."));
+    }
+    
+    @Test
+    void assertPlanAddColumnArtifactsRejectsLineTerminatorDerivedColumn() {
         DerivedColumnPlan derivedColumnPlan = createDerivedColumnPlan(false, false);
-        derivedColumnPlan.setCipherColumnName("phone cipher");
+        derivedColumnPlan.setCipherColumnName("phone\ncipher");
         MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class,
                 () -> service.planAddColumnArtifacts("orders", derivedColumnPlan, new LinkedHashSet<>(), ""));
-        assertThat(actualException.getMessage(), is("cipher_column `phone cipher` contains unsupported characters. Workflow and generated SQL planning support standard unquoted identifiers only."));
+        assertThat(actualException.getMessage(), is("cipher_column `phone\ncipher` contains unsupported characters that cannot be rendered as a reviewable SQL identifier."));
     }
     
     private DerivedColumnPlan createDerivedColumnPlan(final boolean assistedQuery, final boolean likeQuery) {

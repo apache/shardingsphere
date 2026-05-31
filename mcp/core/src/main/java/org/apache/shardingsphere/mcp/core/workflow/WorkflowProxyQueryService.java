@@ -56,8 +56,9 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     
     @Override
     public List<Map<String, Object>> query(final String databaseName, final String schemaName, final String sql) {
+        String actualDatabaseName = WorkflowSQLUtils.normalizeIdentifier(databaseName);
         try (
-                Connection connection = openConnection(databaseName);
+                Connection connection = openConnection(actualDatabaseName);
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = executeQuery(connection, statement, schemaName, sql)) {
             return extractRows(resultSet);
@@ -75,15 +76,15 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     
     @Override
     public String queryColumnDefinition(final String databaseName, final String schemaName, final String tableName, final String columnName) {
-        WorkflowSQLUtils.checkSafeIdentifier("database", databaseName);
-        WorkflowSQLUtils.checkSafeIdentifier("schema", schemaName);
-        WorkflowSQLUtils.checkSafeIdentifier("table", tableName);
-        WorkflowSQLUtils.checkSafeIdentifier("column", columnName);
-        String sql = String.format("SELECT %s FROM %s WHERE 1 = 0", columnName, tableName);
+        WorkflowSQLUtils.checkSupportedIdentifier("database", databaseName);
+        WorkflowSQLUtils.checkSupportedIdentifier("schema", schemaName);
+        String actualDatabaseName = WorkflowSQLUtils.normalizeIdentifier(databaseName);
+        String actualSchemaName = WorkflowSQLUtils.normalizeIdentifier(schemaName);
+        String sql = String.format("SELECT %s FROM %s WHERE 1 = 0", WorkflowSQLUtils.formatDistSQLIdentifier(columnName), WorkflowSQLUtils.formatDistSQLIdentifier(tableName));
         try (
-                Connection connection = openConnection(databaseName);
+                Connection connection = openConnection(actualDatabaseName);
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = executeQuery(connection, statement, schemaName, sql)) {
+                ResultSet resultSet = executeQuery(connection, statement, actualSchemaName, sql)) {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             if (0 == resultSetMetaData.getColumnCount()) {
                 return DEFAULT_COLUMN_DEFINITION;
@@ -97,23 +98,25 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     
     @Override
     public Set<String> queryInformationSchemaColumnNames(final String databaseName, final String schemaName, final String tableName, final Collection<String> columnNames) {
-        WorkflowSQLUtils.checkSafeIdentifier("database", databaseName);
-        WorkflowSQLUtils.checkSafeIdentifier("schema", schemaName);
-        WorkflowSQLUtils.checkSafeIdentifier("table", tableName);
+        WorkflowSQLUtils.checkSupportedIdentifier("database", databaseName);
+        WorkflowSQLUtils.checkSupportedIdentifier("schema", schemaName);
+        WorkflowSQLUtils.checkSupportedIdentifier("table", tableName);
+        String actualDatabaseName = WorkflowSQLUtils.normalizeIdentifier(databaseName);
+        String actualSchemaName = WorkflowSQLUtils.normalizeIdentifier(schemaName);
         if (columnNames.isEmpty()) {
             return Set.of();
         }
         StringBuilder result = new StringBuilder(columnNames.size() * 8);
         for (String each : columnNames) {
-            WorkflowSQLUtils.checkSafeIdentifier("column", each);
+            WorkflowSQLUtils.checkSupportedIdentifier("column", each);
             if (!result.isEmpty()) {
                 result.append(", ");
             }
-            result.append('\'').append(WorkflowSQLUtils.escapeLiteral(each)).append('\'');
+            result.append('\'').append(WorkflowSQLUtils.escapeLiteral(WorkflowSQLUtils.normalizeIdentifier(each))).append('\'');
         }
-        String sql = createInformationSchemaColumnQuery(databaseName, schemaName, tableName, result.toString());
+        String sql = createInformationSchemaColumnQuery(actualDatabaseName, actualSchemaName, WorkflowSQLUtils.normalizeIdentifier(tableName), result.toString());
         Set<String> actualResult = new LinkedHashSet<>(columnNames.size(), 1F);
-        for (Map<String, Object> each : query(databaseName, "", sql)) {
+        for (Map<String, Object> each : query(actualDatabaseName, "", sql)) {
             String actualColumnName = Objects.toString(each.get("column_name"), "").trim();
             if (!actualColumnName.isEmpty()) {
                 actualResult.add(actualColumnName);
@@ -151,7 +154,7 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     }
     
     private ResultSet executeQuery(final Connection connection, final Statement statement, final String schemaName, final String sql) throws SQLException {
-        String actualSchemaName = normalize(schemaName);
+        String actualSchemaName = WorkflowSQLUtils.normalizeIdentifier(schemaName);
         if (!actualSchemaName.isEmpty()) {
             connection.setSchema(actualSchemaName);
         }

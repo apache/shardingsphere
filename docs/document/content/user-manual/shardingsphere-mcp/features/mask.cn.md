@@ -23,6 +23,7 @@ weight = 2
 
 - 检查 `<logic-database>.orders.phone` 当前是否已有脱敏规则。
 - 为 `<logic-database>.orders.phone` 规划手机号脱敏，保留前 3 后 4，先预览不要执行。
+- 为逻辑表 `order detail` 的 `Phone Number` 列规划手机号脱敏，保留对象名大小写。
 - 调整刚才的计划，把替换字符改成 `*`。
 - 确认并执行刚才的脱敏规则计划，然后校验结果。
 
@@ -49,6 +50,10 @@ weight = 2
 | `operation_type` | 可选 | 规则操作类型；支持 `create`、`alter` 和 `drop`。不填写时由 MCP 根据自然语言和已有规则推断。 |
 | `algorithm_type` | 可选 | 脱敏算法类型；如果希望 MCP 基于可用算法给出建议，可以先不填。 |
 | `primary_algorithm_properties` | 按算法必填 | 脱敏算法参数，例如保留位数和替换字符。具体参数以算法资源返回值为准。 |
+
+`database`、`schema`、`table` 和 `column` 可以使用普通标识符，也可以使用反引号、双引号或方括号包裹的定界标识符。
+MCP 会在规划时保留大小写、空格和其他特殊字符；生成 DistSQL 和校验 SQL 时，会对需要引用的标识符使用反引号转义。
+标识符不能包含 NUL、回车或换行等无法生成可审查 SQL 的字符。
 
 不同操作的输入重点如下：
 
@@ -131,4 +136,4 @@ weight = 2
 
 ### 规划器输入限制
 
-- 规划器只接受普通未加引号的逻辑库、schema、表和列名，用于降低自动生成 SQL 的歧义；这不是 ShardingSphere SQL 能力限制。
+- 标识符不能包含 NUL、回车或换行等无法生成可审查 SQL 的字符。

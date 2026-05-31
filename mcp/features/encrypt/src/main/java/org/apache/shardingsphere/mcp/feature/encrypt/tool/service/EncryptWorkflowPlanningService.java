@@ -144,7 +144,7 @@ public final class EncryptWorkflowPlanningService {
     
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request,
                                          final List<Map<String, Object>> encryptRules, final WorkflowContextSnapshot snapshot) {
-        boolean ruleExists = encryptRules.stream().anyMatch(each -> request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.getRuleValue(each, "logic_column")));
+        boolean ruleExists = encryptRules.stream().anyMatch(each -> request.getColumn().equals(WorkflowRuleValueUtils.getRuleValue(each, "logic_column")));
         return planningSupport.ensureLifecycleState("Encrypt rule", clarifiedIntent, ruleExists, snapshot);
     }
     
@@ -348,7 +348,7 @@ public final class EncryptWorkflowPlanningService {
     }
     
     private Optional<Map<String, Object>> findEncryptRule(final List<Map<String, Object>> encryptRules, final String columnName) {
-        return encryptRules.stream().filter(each -> columnName.equalsIgnoreCase(WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))).findFirst();
+        return encryptRules.stream().filter(each -> columnName.equals(WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))).findFirst();
     }
     
     private String resolveDerivedColumnDefinition(final MCPFeatureQueryFacade queryFacade, final EncryptWorkflowRequest request, final WorkflowContextSnapshot snapshot) {

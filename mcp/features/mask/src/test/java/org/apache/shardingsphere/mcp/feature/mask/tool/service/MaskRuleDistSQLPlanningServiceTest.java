@@ -64,10 +64,20 @@ class MaskRuleDistSQLPlanningServiceTest {
     }
     
     @Test
-    void assertPlanMaskRuleRejectsUnsafeExistingColumn() {
+    void assertPlanMaskRuleFormatsSpecialCharacterIdentifiers() {
+        WorkflowRequest request = createRequest("create");
+        request.setTable("order detail");
+        request.setColumn("Phone Number");
+        RuleArtifact actual = service.planMaskRule(request, List.of());
+        assertTrue(actual.getSql().startsWith("CREATE MASK RULE `order detail`"));
+        assertTrue(actual.getSql().contains("NAME=`Phone Number`"));
+    }
+    
+    @Test
+    void assertPlanMaskRuleRejectsLineTerminatorExistingColumn() {
         MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class,
-                () -> service.planMaskRule(createRequest("alter"), List.of(Map.of("column", "bad column", "algorithm_type", "MD5"))));
-        assertThat(actualException.getMessage(), is("column `bad column` contains unsupported characters. Workflow and generated SQL planning support standard unquoted identifiers only."));
+                () -> service.planMaskRule(createRequest("alter"), List.of(Map.of("column", "bad\ncolumn", "algorithm_type", "MD5"))));
+        assertThat(actualException.getMessage(), is("column `bad\ncolumn` contains unsupported characters that cannot be rendered as a reviewable SQL identifier."));
     }
     
     @Test
@@ -85,6 +95,18 @@ class MaskRuleDistSQLPlanningServiceTest {
         assertThat(actual.getOperationType(), is("drop"));
         assertTrue(actual.getSql().startsWith("ALTER MASK RULE orders"));
         assertTrue(actual.getSql().contains("NAME=email"));
+    }
+    
+    @Test
+    void assertPlanMaskDropRulePreservesCaseSensitiveSiblingColumn() {
+        WorkflowRequest request = createRequest("drop");
+        request.setColumn("Phone");
+        RuleArtifact actual = service.planMaskDropRule(request, List.of(
+                Map.of("column", "Phone", "algorithm_type", "MD5"),
+                Map.of("column", "phone", "algorithm_type", "KEEP_FIRST_N_LAST_M")));
+        assertThat(actual.getOperationType(), is("drop"));
+        assertTrue(actual.getSql().startsWith("ALTER MASK RULE orders"));
+        assertTrue(actual.getSql().contains("NAME=phone"));
     }
     
     private WorkflowRequest createRequest(final String operationType) {

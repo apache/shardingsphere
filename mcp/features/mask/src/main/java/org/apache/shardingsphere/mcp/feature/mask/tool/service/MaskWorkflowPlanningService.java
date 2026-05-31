@@ -118,7 +118,7 @@ public final class MaskWorkflowPlanningService {
     
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
                                          final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot) {
-        boolean ruleExists = maskRules.stream().anyMatch(each -> request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.getRuleValue(each, "column")));
+        boolean ruleExists = maskRules.stream().anyMatch(each -> request.getColumn().equals(WorkflowRuleValueUtils.getRuleValue(each, "column")));
         return planningSupport.ensureLifecycleState("Mask rule", clarifiedIntent, ruleExists, snapshot);
     }
     
@@ -153,7 +153,7 @@ public final class MaskWorkflowPlanningService {
     }
     
     private boolean ensureSupportedTableRuleExpansion(final WorkflowRequest request, final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot) {
-        if (maskRules.isEmpty() || maskRules.stream().anyMatch(each -> request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.getRuleValue(each, "column")))) {
+        if (maskRules.isEmpty() || maskRules.stream().anyMatch(each -> request.getColumn().equals(WorkflowRuleValueUtils.getRuleValue(each, "column")))) {
             return true;
         }
         snapshot.getClarifiedIntent().getClarificationMessages().add(

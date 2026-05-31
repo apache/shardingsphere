@@ -40,6 +40,10 @@ public final class WorkflowSQLUtils {
     
     private static final String SAFE_IDENTIFIER_PATTERN = "[A-Za-z0-9_$]+";
     
+    private static final char BACK_QUOTE = '`';
+    
+    private static final char DOUBLE_QUOTE = '"';
+    
     /**
      * Check whether an identifier can be used as an unquoted SQL identifier.
      *
@@ -51,17 +55,47 @@ public final class WorkflowSQLUtils {
     }
     
     /**
-     * Validate an unquoted SQL identifier.
+     * Normalize a SQL identifier from user input.
+     *
+     * @param identifier identifier to normalize
+     * @return normalized identifier
+     */
+    public static String normalizeIdentifier(final String identifier) {
+        String result = trimToEmpty(identifier);
+        if (isDelimitedIdentifier(result, BACK_QUOTE, BACK_QUOTE)) {
+            return result.substring(1, result.length() - 1).replace("``", "`");
+        }
+        if (isDelimitedIdentifier(result, DOUBLE_QUOTE, DOUBLE_QUOTE)) {
+            return result.substring(1, result.length() - 1).replace("\"\"", "\"");
+        }
+        if (isDelimitedIdentifier(result, '[', ']')) {
+            return result.substring(1, result.length() - 1).replace("]]", "]");
+        }
+        return result;
+    }
+    
+    /**
+     * Check whether an identifier is supported by workflow planning.
+     *
+     * @param identifier identifier to check
+     * @return whether the identifier is supported
+     */
+    public static boolean isSupportedIdentifier(final String identifier) {
+        return !containsUnsupportedIdentifierCharacter(normalizeIdentifier(identifier));
+    }
+    
+    /**
+     * Validate a workflow SQL identifier.
      *
      * @param fieldName field name for error reporting
      * @param identifier identifier to check
      * @throws MCPInvalidRequestException when the identifier contains unsupported characters
      */
-    public static void checkSafeIdentifier(final String fieldName, final String identifier) {
-        String actualIdentifier = trimToEmpty(identifier);
-        ShardingSpherePreconditions.checkState(actualIdentifier.isEmpty() || isSafeIdentifier(actualIdentifier),
+    public static void checkSupportedIdentifier(final String fieldName, final String identifier) {
+        String actualIdentifier = normalizeIdentifier(identifier);
+        ShardingSpherePreconditions.checkState(!containsUnsupportedIdentifierCharacter(actualIdentifier),
                 () -> new MCPInvalidRequestException(String.format(
-                        "%s `%s` contains unsupported characters. Workflow and generated SQL planning support standard unquoted identifiers only.", fieldName, actualIdentifier)));
+                        "%s `%s` contains unsupported characters that cannot be rendered as a reviewable SQL identifier.", fieldName, actualIdentifier)));
     }
     
     /**
@@ -71,8 +105,12 @@ public final class WorkflowSQLUtils {
      * @return formatted DistSQL identifier
      */
     public static String formatDistSQLIdentifier(final String identifier) {
-        String actualIdentifier = trimToEmpty(identifier);
-        return actualIdentifier.isEmpty() || isSafeIdentifier(actualIdentifier) ? actualIdentifier : String.format("`%s`", actualIdentifier.replace("`", "``"));
+        String rawIdentifier = trimToEmpty(identifier);
+        String actualIdentifier = normalizeIdentifier(rawIdentifier);
+        checkSupportedIdentifier("identifier", actualIdentifier);
+        return actualIdentifier.isEmpty() || isSafeIdentifier(actualIdentifier) && !isDelimitedIdentifier(rawIdentifier)
+                ? actualIdentifier
+                : String.format("`%s`", actualIdentifier.replace("`", "``"));
     }
     
     /**
@@ -181,6 +219,18 @@ public final class WorkflowSQLUtils {
             }
         }
         return result;
+    }
+    
+    private static boolean isDelimitedIdentifier(final String identifier) {
+        return isDelimitedIdentifier(identifier, BACK_QUOTE, BACK_QUOTE) || isDelimitedIdentifier(identifier, DOUBLE_QUOTE, DOUBLE_QUOTE) || isDelimitedIdentifier(identifier, '[', ']');
+    }
+    
+    private static boolean isDelimitedIdentifier(final String identifier, final char startDelimiter, final char endDelimiter) {
+        return identifier.length() >= 2 && startDelimiter == identifier.charAt(0) && endDelimiter == identifier.charAt(identifier.length() - 1);
+    }
+    
+    private static boolean containsUnsupportedIdentifierCharacter(final String identifier) {
+        return identifier.chars().anyMatch(each -> 0 == each || '\r' == each || '\n' == each);
     }
     
     private static Map<String, String> parsePropertyString(final String value) {

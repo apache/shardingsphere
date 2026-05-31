@@ -181,6 +181,7 @@ public final class WorkflowPlanningSupport {
      */
     public boolean ensurePlanningContext(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
                                          final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
+        normalizeIdentifiers(request);
         if (request.getDatabase().isEmpty()) {
             clarifiedIntent.getClarificationMessages().add("Please provide logical database first.");
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
@@ -211,6 +212,13 @@ public final class WorkflowPlanningSupport {
         return true;
     }
     
+    private void normalizeIdentifiers(final WorkflowRequest request) {
+        request.setDatabase(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()));
+        request.setSchema(WorkflowSQLUtils.normalizeIdentifier(request.getSchema()));
+        request.setTable(WorkflowSQLUtils.normalizeIdentifier(request.getTable()));
+        request.setColumn(WorkflowSQLUtils.normalizeIdentifier(request.getColumn()));
+    }
+    
     private void addMissingQuestions(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         if (request.getSchema().isEmpty()) {
             clarifiedIntent.getClarificationMessages().add("Please specify schema.");
@@ -224,12 +232,12 @@ public final class WorkflowPlanningSupport {
     }
     
     private boolean ensureSupportedIdentifier(final String fieldName, final String identifier, final WorkflowContextSnapshot snapshot) {
-        if (identifier.isEmpty() || WorkflowSQLUtils.isSafeIdentifier(identifier)) {
+        if (WorkflowSQLUtils.isSupportedIdentifier(identifier)) {
             return true;
         }
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", "discovering",
                 String.format("%s identifier `%s` contains unsupported characters.", fieldName, identifier),
-                "Use standard unquoted logical identifiers for workflow planning.", false, Map.of("field", fieldName, "identifier", identifier)));
+                "Use a reviewable logical identifier without NUL or line terminators.", false, Map.of("field", fieldName, "identifier", identifier)));
         return false;
     }
     

@@ -63,9 +63,10 @@ public final class DerivedColumnNamingService {
     private String resolveName(final String defaultName, final String overrideName, final Set<String> existingNames,
                                final List<WorkflowIssue> issues, final DerivedColumnPlan plan) {
         String candidate = overrideName.isEmpty() ? defaultName : overrideName;
-        if (!WorkflowSQLUtils.isSafeIdentifier(candidate)) {
+        candidate = WorkflowSQLUtils.normalizeIdentifier(candidate);
+        if (!WorkflowSQLUtils.isSupportedIdentifier(candidate)) {
             issues.add(new WorkflowIssue(WorkflowIssueCode.USER_OVERRIDE_NAME_UNSAFE, "error", "planning-artifacts",
-                    String.format("Generated column name `%s` is unsafe.", candidate), "Use standard SQL identifiers only.", false, Map.of("candidate", candidate)));
+                    String.format("Generated column name `%s` is unsafe.", candidate), "Use a reviewable SQL identifier without NUL or line terminators.", false, Map.of("candidate", candidate)));
             candidate = defaultName;
         }
         if (!existingNames.contains(candidate)) {

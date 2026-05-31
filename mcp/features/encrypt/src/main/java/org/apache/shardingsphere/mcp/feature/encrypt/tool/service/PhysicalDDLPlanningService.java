@@ -43,30 +43,30 @@ public final class PhysicalDDLPlanningService {
      */
     public List<DDLArtifact> planAddColumnArtifacts(final String tableName, final DerivedColumnPlan derivedColumnPlan,
                                                     final Set<String> existingPhysicalNames, final String derivedColumnDefinition) {
-        WorkflowSQLUtils.checkSafeIdentifier("table", tableName);
+        WorkflowSQLUtils.checkSupportedIdentifier("table", tableName);
         validateDerivedColumnIdentifiers(derivedColumnPlan);
         String actualDerivedColumnDefinition = null == derivedColumnDefinition || derivedColumnDefinition.isBlank() ? DEFAULT_DERIVED_COLUMN_DATA_TYPE : derivedColumnDefinition;
         List<String> clauses = new LinkedList<>();
         if (derivedColumnPlan.isCipherColumnRequired() && !existingPhysicalNames.contains(derivedColumnPlan.getCipherColumnName())) {
-            clauses.add(String.format("ADD COLUMN %s %s", derivedColumnPlan.getCipherColumnName(), actualDerivedColumnDefinition));
+            clauses.add(String.format("ADD COLUMN %s %s", WorkflowSQLUtils.formatDistSQLIdentifier(derivedColumnPlan.getCipherColumnName()), actualDerivedColumnDefinition));
         }
         if (derivedColumnPlan.isAssistedQueryColumnRequired() && !derivedColumnPlan.getAssistedQueryColumnName().isEmpty()
                 && !existingPhysicalNames.contains(derivedColumnPlan.getAssistedQueryColumnName())) {
-            clauses.add(String.format("ADD COLUMN %s %s", derivedColumnPlan.getAssistedQueryColumnName(), actualDerivedColumnDefinition));
+            clauses.add(String.format("ADD COLUMN %s %s", WorkflowSQLUtils.formatDistSQLIdentifier(derivedColumnPlan.getAssistedQueryColumnName()), actualDerivedColumnDefinition));
         }
         if (derivedColumnPlan.isLikeQueryColumnRequired() && !derivedColumnPlan.getLikeQueryColumnName().isEmpty()
                 && !existingPhysicalNames.contains(derivedColumnPlan.getLikeQueryColumnName())) {
-            clauses.add(String.format("ADD COLUMN %s %s", derivedColumnPlan.getLikeQueryColumnName(), actualDerivedColumnDefinition));
+            clauses.add(String.format("ADD COLUMN %s %s", WorkflowSQLUtils.formatDistSQLIdentifier(derivedColumnPlan.getLikeQueryColumnName()), actualDerivedColumnDefinition));
         }
         if (clauses.isEmpty()) {
             return List.of();
         }
-        return List.of(new DDLArtifact("add-column", String.format("ALTER TABLE %s %s", tableName, String.join(", ", clauses)), 10));
+        return List.of(new DDLArtifact("add-column", String.format("ALTER TABLE %s %s", WorkflowSQLUtils.formatDistSQLIdentifier(tableName), String.join(", ", clauses)), 10));
     }
     
     private void validateDerivedColumnIdentifiers(final DerivedColumnPlan derivedColumnPlan) {
-        WorkflowSQLUtils.checkSafeIdentifier("cipher_column", derivedColumnPlan.getCipherColumnName());
-        WorkflowSQLUtils.checkSafeIdentifier("assisted_query_column", derivedColumnPlan.getAssistedQueryColumnName());
-        WorkflowSQLUtils.checkSafeIdentifier("like_query_column", derivedColumnPlan.getLikeQueryColumnName());
+        WorkflowSQLUtils.checkSupportedIdentifier("cipher_column", derivedColumnPlan.getCipherColumnName());
+        WorkflowSQLUtils.checkSupportedIdentifier("assisted_query_column", derivedColumnPlan.getAssistedQueryColumnName());
+        WorkflowSQLUtils.checkSupportedIdentifier("like_query_column", derivedColumnPlan.getLikeQueryColumnName());
     }
 }

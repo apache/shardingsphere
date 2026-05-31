@@ -145,6 +145,24 @@ class WorkflowProxyQueryServiceTest {
     }
     
     @Test
+    void assertQueryColumnDefinitionFormatsSpecialCharacterIdentifiers() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        Connection connection = mock(Connection.class);
+        Statement statement = mock(Statement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery("SELECT `amount due` FROM `order detail` WHERE 1 = 0")).thenReturn(resultSet);
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSetMetaData.getColumnCount()).thenReturn(0);
+        WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
+        String actual = service.queryColumnDefinition("`logic_db`", "`public`", "order detail", "amount due");
+        assertThat(actual, is("VARCHAR(4000)"));
+        verify(connection).setSchema("public");
+    }
+    
+    @Test
     void assertQueryInformationSchemaColumnNamesSkipsSchemaFilterWhenSchemaIsEmpty() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);

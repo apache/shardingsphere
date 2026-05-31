@@ -104,9 +104,9 @@ public final class WorkflowValidationSupport {
      * @return projection validation SQL
      */
     public String createProjectionValidationSql(final WorkflowContextSnapshot snapshot) {
-        WorkflowSQLUtils.checkSafeIdentifier(WorkflowFieldNames.TABLE, snapshot.getRequest().getTable());
-        WorkflowSQLUtils.checkSafeIdentifier(WorkflowFieldNames.COLUMN, snapshot.getRequest().getColumn());
-        return String.format("SELECT %s FROM %s", snapshot.getRequest().getColumn(), snapshot.getRequest().getTable());
+        String columnName = WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getColumn());
+        String tableName = WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getTable());
+        return String.format("SELECT %s FROM %s", columnName, tableName);
     }
     
     /**
