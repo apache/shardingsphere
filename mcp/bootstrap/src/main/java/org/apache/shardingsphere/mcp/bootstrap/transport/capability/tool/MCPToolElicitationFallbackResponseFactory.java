@@ -52,8 +52,7 @@ public final class MCPToolElicitationFallbackResponseFactory {
      * @param clientCapabilities client elicitation capabilities
      * @return MCP response
      */
-    public MCPResponse create(final Map<String, Object> payload, final MCPToolElicitationFallbackReason fallbackReason,
-                              final MCPClientElicitationCapabilities clientCapabilities) {
+    public MCPResponse create(final Map<String, Object> payload, final MCPToolElicitationFallbackReason fallbackReason, final MCPClientElicitationCapabilities clientCapabilities) {
         Map<String, Object> result = new LinkedHashMap<>(payload);
         if (clarificationPolicy.hasSensitiveClarificationQuestions(payload)) {
             result.put(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS, createSanitizedClarificationQuestions(payload));
