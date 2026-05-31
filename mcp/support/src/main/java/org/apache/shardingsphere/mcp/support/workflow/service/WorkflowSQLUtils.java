@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -40,12 +39,6 @@ import java.util.stream.Collectors;
 public final class WorkflowSQLUtils {
     
     private static final String SAFE_IDENTIFIER_PATTERN = "[A-Za-z0-9_$]+";
-    
-    private static final String UNQUOTED_IDENTIFIER_PATTERN = "[A-Za-z_][A-Za-z0-9_$]*";
-    
-    private static final Set<String> RESERVED_IDENTIFIERS = Set.of(
-            "alter", "and", "by", "column", "columns", "create", "delete", "drop", "encrypt", "from", "group", "index", "insert", "mask", "name", "order", "rule", "select", "table", "type",
-            "update", "where");
     
     private static final char BACK_QUOTE = '`';
     
@@ -112,12 +105,9 @@ public final class WorkflowSQLUtils {
      * @return formatted DistSQL identifier
      */
     public static String formatDistSQLIdentifier(final String identifier) {
-        String rawIdentifier = trimToEmpty(identifier);
-        String actualIdentifier = normalizeIdentifier(rawIdentifier);
+        String actualIdentifier = normalizeIdentifier(identifier);
         checkSupportedIdentifier("identifier", actualIdentifier);
-        return actualIdentifier.isEmpty() || !isDistSQLIdentifierQuoteRequired(actualIdentifier) && !isDelimitedIdentifier(rawIdentifier)
-                ? actualIdentifier
-                : IdentifierQuoteStyle.BACK_QUOTE.wrap(actualIdentifier);
+        return actualIdentifier.isEmpty() ? actualIdentifier : IdentifierQuoteStyle.BACK_QUOTE.wrap(actualIdentifier);
     }
     
     /**
@@ -128,12 +118,9 @@ public final class WorkflowSQLUtils {
      * @return formatted SQL identifier
      */
     public static String formatSQLIdentifier(final String databaseType, final String identifier) {
-        String rawIdentifier = trimToEmpty(identifier);
-        String actualIdentifier = normalizeIdentifier(rawIdentifier);
+        String actualIdentifier = normalizeIdentifier(identifier);
         checkSupportedIdentifier("identifier", actualIdentifier);
-        return actualIdentifier.isEmpty() || !isSQLIdentifierQuoteRequired(databaseType, actualIdentifier) && !isDelimitedIdentifier(rawIdentifier)
-                ? actualIdentifier
-                : getSQLIdentifierQuoteStyle(databaseType).wrap(actualIdentifier);
+        return actualIdentifier.isEmpty() ? actualIdentifier : getSQLIdentifierQuoteStyle(databaseType).wrap(actualIdentifier);
     }
     
     /**
@@ -268,22 +255,6 @@ public final class WorkflowSQLUtils {
     
     private static boolean containsUnsupportedIdentifierCharacter(final String identifier) {
         return identifier.chars().anyMatch(each -> 0 == each || '\r' == each || '\n' == each);
-    }
-    
-    private static boolean isDistSQLIdentifierQuoteRequired(final String identifier) {
-        return isSpecialIdentifier(identifier) || !identifier.equals(identifier.toLowerCase(Locale.ENGLISH));
-    }
-    
-    private static boolean isSQLIdentifierQuoteRequired(final String databaseType, final String identifier) {
-        return isSpecialIdentifier(identifier) || isCaseSensitiveSQLIdentifierDatabase(databaseType) && !identifier.equals(identifier.toLowerCase(Locale.ENGLISH));
-    }
-    
-    private static boolean isSpecialIdentifier(final String identifier) {
-        return !identifier.matches(UNQUOTED_IDENTIFIER_PATTERN) || RESERVED_IDENTIFIERS.contains(identifier.toLowerCase(Locale.ENGLISH));
-    }
-    
-    private static boolean isCaseSensitiveSQLIdentifierDatabase(final String databaseType) {
-        return !isCaseInsensitiveIdentifierDatabase(databaseType);
     }
     
     private static boolean isCaseInsensitiveIdentifierDatabase(final String databaseType) {

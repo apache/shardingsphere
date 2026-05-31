@@ -61,9 +61,9 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
-    void assertFormatDistSQLIdentifierKeepsSafeIdentifier() {
+    void assertFormatDistSQLIdentifierQuotesSafeIdentifier() {
         String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("orders_01");
-        assertThat(actualValue, is("orders_01"));
+        assertThat(actualValue, is("`orders_01`"));
     }
     
     @Test
@@ -74,8 +74,8 @@ class WorkflowSQLUtilsTest {
     
     @Test
     void assertFormatDistSQLIdentifierQuotesReservedIdentifier() {
-        String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("order");
-        assertThat(actualValue, is("`order`"));
+        String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("key");
+        assertThat(actualValue, is("`key`"));
     }
     
     @Test
@@ -98,20 +98,20 @@ class WorkflowSQLUtilsTest {
     
     @Test
     void assertFormatSQLIdentifierUsesMysqlQuoteStyle() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "order detail");
-        assertThat(actualValue, is("`order detail`"));
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "key");
+        assertThat(actualValue, is("`key`"));
     }
     
     @Test
     void assertFormatSQLIdentifierUsesFallbackQuoteStyle() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("", "order detail");
-        assertThat(actualValue, is("`order detail`"));
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("", "orders");
+        assertThat(actualValue, is("`orders`"));
     }
     
     @Test
     void assertFormatSQLIdentifierUsesPostgreSQLQuoteStyle() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "order detail");
-        assertThat(actualValue, is("\"order detail\""));
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "orders");
+        assertThat(actualValue, is("\"orders\""));
     }
     
     @Test

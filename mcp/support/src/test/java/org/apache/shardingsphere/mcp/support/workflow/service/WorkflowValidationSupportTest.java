@@ -120,7 +120,7 @@ class WorkflowValidationSupportTest {
     
     @Test
     void assertCreateProjectionValidationSql() {
-        assertThat(validationSupport.createProjectionValidationSql(createSnapshot()), is("SELECT phone FROM orders"));
+        assertThat(validationSupport.createProjectionValidationSql(createSnapshot()), is("SELECT `phone` FROM `orders`"));
     }
     
     @Test

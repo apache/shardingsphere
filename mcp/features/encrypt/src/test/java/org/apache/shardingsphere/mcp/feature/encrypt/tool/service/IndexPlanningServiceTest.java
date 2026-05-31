@@ -75,6 +75,13 @@ class IndexPlanningServiceTest {
     }
     
     @Test
+    void assertPlanIndexesFormatsReservedIdentifiers() {
+        List<IndexPlan> actual = service.planIndexes("MySQL", "key", createDerivedColumnPlan(true, false), new LinkedHashSet<>());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getSql(), is("CREATE INDEX `idx_key_phone_assisted_query` ON `key` (`phone_assisted_query`)"));
+    }
+    
+    @Test
     void assertPlanIndexesFormatsPostgreSQLIdentifiers() {
         DerivedColumnPlan derivedColumnPlan = createDerivedColumnPlan(true, false);
         derivedColumnPlan.setAssistedQueryColumnName("phone assisted");

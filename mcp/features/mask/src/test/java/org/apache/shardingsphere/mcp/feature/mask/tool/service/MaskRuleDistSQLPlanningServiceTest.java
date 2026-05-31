@@ -38,7 +38,7 @@ class MaskRuleDistSQLPlanningServiceTest {
     void assertPlanMaskRuleWithCreate() {
         RuleArtifact actual = service.planMaskRule(createRequest("create"), List.of(), "MySQL");
         assertThat(actual.getOperationType(), is("create"));
-        assertTrue(actual.getSql().startsWith("CREATE MASK RULE orders"));
+        assertTrue(actual.getSql().startsWith("CREATE MASK RULE `orders`"));
         assertTrue(actual.getSql().contains("TYPE(NAME='mask_from_x_to_y'"));
     }
     
@@ -48,9 +48,9 @@ class MaskRuleDistSQLPlanningServiceTest {
                 Map.of("column", "phone", "algorithm_type", "MD5"),
                 Map.of("column", "email", "algorithm_type", "KEEP_FIRST_N_LAST_M", "algorithm_props", "first-n=1")), "MySQL");
         assertThat(actual.getOperationType(), is("alter"));
-        assertTrue(actual.getSql().startsWith("ALTER MASK RULE orders"));
-        assertTrue(actual.getSql().contains("NAME=email"));
-        assertTrue(actual.getSql().contains("NAME=phone"));
+        assertTrue(actual.getSql().startsWith("ALTER MASK RULE `orders`"));
+        assertTrue(actual.getSql().contains("NAME=`email`"));
+        assertTrue(actual.getSql().contains("NAME=`phone`"));
     }
     
     @Test
@@ -74,6 +74,15 @@ class MaskRuleDistSQLPlanningServiceTest {
     }
     
     @Test
+    void assertPlanMaskRuleFormatsReservedIdentifiers() {
+        WorkflowRequest request = createRequest("create");
+        request.setTable("key");
+        RuleArtifact actual = service.planMaskRule(request, List.of(), "MySQL");
+        assertTrue(actual.getSql().startsWith("CREATE MASK RULE `key`"));
+        assertTrue(actual.getSql().contains("NAME=`phone`"));
+    }
+    
+    @Test
     void assertPlanMaskRuleRejectsLineTerminatorExistingColumn() {
         MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class,
                 () -> service.planMaskRule(createRequest("alter"), List.of(Map.of("column", "bad\ncolumn", "algorithm_type", "MD5")), "MySQL"));
@@ -84,7 +93,7 @@ class MaskRuleDistSQLPlanningServiceTest {
     void assertPlanMaskDropRuleWithoutRemainingColumns() {
         RuleArtifact actual = service.planMaskDropRule(createRequest("drop"), List.of(Map.of("column", "phone", "algorithm_type", "MD5")), "MySQL");
         assertThat(actual.getOperationType(), is("drop"));
-        assertThat(actual.getSql(), is("DROP MASK RULE orders"));
+        assertThat(actual.getSql(), is("DROP MASK RULE `orders`"));
     }
     
     @Test
@@ -93,8 +102,8 @@ class MaskRuleDistSQLPlanningServiceTest {
                 Map.of("column", "phone", "algorithm_type", "MD5"),
                 Map.of("column", "email", "algorithm_type", "KEEP_FIRST_N_LAST_M")), "MySQL");
         assertThat(actual.getOperationType(), is("drop"));
-        assertTrue(actual.getSql().startsWith("ALTER MASK RULE orders"));
-        assertTrue(actual.getSql().contains("NAME=email"));
+        assertTrue(actual.getSql().startsWith("ALTER MASK RULE `orders`"));
+        assertTrue(actual.getSql().contains("NAME=`email`"));
     }
     
     @Test
@@ -105,8 +114,8 @@ class MaskRuleDistSQLPlanningServiceTest {
                 Map.of("column", "Phone", "algorithm_type", "MD5"),
                 Map.of("column", "phone", "algorithm_type", "KEEP_FIRST_N_LAST_M")), "PostgreSQL");
         assertThat(actual.getOperationType(), is("drop"));
-        assertTrue(actual.getSql().startsWith("ALTER MASK RULE orders"));
-        assertTrue(actual.getSql().contains("NAME=phone"));
+        assertTrue(actual.getSql().startsWith("ALTER MASK RULE `orders`"));
+        assertTrue(actual.getSql().contains("NAME=`phone`"));
     }
     
     @Test
@@ -115,7 +124,7 @@ class MaskRuleDistSQLPlanningServiceTest {
         request.setColumn("Phone");
         RuleArtifact actual = service.planMaskDropRule(request, List.of(Map.of("column", "phone", "algorithm_type", "MD5")), "MySQL");
         assertThat(actual.getOperationType(), is("drop"));
-        assertThat(actual.getSql(), is("DROP MASK RULE orders"));
+        assertThat(actual.getSql(), is("DROP MASK RULE `orders`"));
     }
     
     private WorkflowRequest createRequest(final String operationType) {

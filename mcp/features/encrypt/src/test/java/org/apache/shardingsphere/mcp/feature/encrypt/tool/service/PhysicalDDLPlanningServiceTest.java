@@ -39,7 +39,7 @@ class PhysicalDDLPlanningServiceTest {
         List<DDLArtifact> actual = service.planAddColumnArtifacts("MySQL", "orders", createDerivedColumnPlan(true, true), new LinkedHashSet<>(), "");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getSql(), is(
-                "ALTER TABLE orders ADD COLUMN phone_cipher VARCHAR(4000), ADD COLUMN phone_assisted_query VARCHAR(4000), ADD COLUMN phone_like_query VARCHAR(4000)"));
+                "ALTER TABLE `orders` ADD COLUMN `phone_cipher` VARCHAR(4000), ADD COLUMN `phone_assisted_query` VARCHAR(4000), ADD COLUMN `phone_like_query` VARCHAR(4000)"));
     }
     
     @Test
@@ -59,14 +59,21 @@ class PhysicalDDLPlanningServiceTest {
     void assertPlanAddColumnArtifactsKeepsCaseSensitiveExistingColumnsDistinct() {
         List<DDLArtifact> actual = service.planAddColumnArtifacts("PostgreSQL", "orders", createDerivedColumnPlan(false, false), new LinkedHashSet<>(List.of("PHONE_CIPHER")), "");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getSql(), is("ALTER TABLE orders ADD COLUMN phone_cipher VARCHAR(4000)"));
+        assertThat(actual.get(0).getSql(), is("ALTER TABLE \"orders\" ADD COLUMN \"phone_cipher\" VARCHAR(4000)"));
     }
     
     @Test
     void assertPlanAddColumnArtifactsWithCustomDefinition() {
         List<DDLArtifact> actual = service.planAddColumnArtifacts("MySQL", "orders", createDerivedColumnPlan(false, true), new LinkedHashSet<>(), "VARCHAR(64)");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getSql(), is("ALTER TABLE orders ADD COLUMN phone_cipher VARCHAR(64), ADD COLUMN phone_like_query VARCHAR(64)"));
+        assertThat(actual.get(0).getSql(), is("ALTER TABLE `orders` ADD COLUMN `phone_cipher` VARCHAR(64), ADD COLUMN `phone_like_query` VARCHAR(64)"));
+    }
+    
+    @Test
+    void assertPlanAddColumnArtifactsFormatsReservedIdentifiers() {
+        List<DDLArtifact> actual = service.planAddColumnArtifacts("MySQL", "key", createDerivedColumnPlan(false, false), new LinkedHashSet<>(), "");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getSql(), is("ALTER TABLE `key` ADD COLUMN `phone_cipher` VARCHAR(4000)"));
     }
     
     @Test
