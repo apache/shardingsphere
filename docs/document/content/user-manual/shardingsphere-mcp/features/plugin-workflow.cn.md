@@ -1,6 +1,6 @@
 +++
 title = "插件工作流"
-weight = 5
+weight = 3
 +++
 
 插件工作流是 ShardingSphere-MCP 处理多步骤治理变更的共享机制，不是一个独立的业务功能。

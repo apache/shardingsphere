@@ -5,7 +5,7 @@ chapter = true
 +++
 
 ShardingSphere-MCP extends domain capabilities through feature plugins.
-When a feature plugin needs a multi-step governance change, it uses [Plugin Workflows](../workflow/) for planning, preview, apply, and validation phases.
+When a feature plugin needs a multi-step governance change, it uses [Plugin Workflows](plugin-workflow/) for planning, preview, apply, and validation phases.
 
 The packaged distribution includes these official MCP feature plugins:
 
