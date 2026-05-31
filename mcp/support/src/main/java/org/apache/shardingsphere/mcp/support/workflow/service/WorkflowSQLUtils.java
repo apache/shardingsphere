@@ -44,8 +44,10 @@ public final class WorkflowSQLUtils {
     private static final String UNQUOTED_IDENTIFIER_PATTERN = "[A-Za-z_][A-Za-z0-9_$]*";
     
     private static final Set<String> RESERVED_IDENTIFIERS = Set.of(
-            "alter", "and", "by", "column", "columns", "create", "delete", "drop", "encrypt", "from", "group", "index", "insert", "key", "mask", "name", "order", "rule", "select", "table",
-            "type", "update", "where");
+            "address_random_replace", "aes", "algorithm", "alter", "and", "assisted_query", "assisted_query_algorithm", "assisted_query_column", "by", "cipher", "column", "columns", "count",
+            "create", "delete", "drop", "encrypt", "encrypt_algorithm", "exists", "false", "from", "generic_table_random_replace", "group", "if", "index", "insert", "keep_first_n_last_m",
+            "keep_from_x_to_y", "key", "like_query", "like_query_algorithm", "like_query_column", "mask", "mask_after_special_chars", "mask_before_special_chars", "mask_first_n_last_m",
+            "mask_from_x_to_y", "md5", "name", "not", "order", "plugins", "properties", "rule", "rules", "select", "show", "table", "true", "type", "update", "where");
     
     private static final char BACK_QUOTE = '`';
     
@@ -267,7 +269,7 @@ public final class WorkflowSQLUtils {
     }
     
     private static boolean containsUnsupportedIdentifierCharacter(final String identifier) {
-        return identifier.chars().anyMatch(each -> 0 == each || '\r' == each || '\n' == each);
+        return identifier.chars().anyMatch(each -> BACK_QUOTE == each || 0 == each || '\r' == each || '\n' == each);
     }
     
     private static boolean isSpecialIdentifier(final String identifier) {

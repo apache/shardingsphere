@@ -18,10 +18,14 @@
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -54,6 +58,12 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertCheckSupportedIdentifierRejectsBackQuote() {
+        Exception actualException = assertThrows(RuntimeException.class, () -> WorkflowSQLUtils.checkSupportedIdentifier("table", "bad`table"));
+        assertThat(actualException.getMessage(), is("table `bad`table` contains unsupported characters that cannot be rendered as a reviewable SQL identifier."));
+    }
+    
+    @Test
     void assertNormalizeIdentifierUnwrapsDelimitedIdentifier() {
         assertThat(WorkflowSQLUtils.normalizeIdentifier("`bad table`"), is("bad table"));
         assertThat(WorkflowSQLUtils.normalizeIdentifier("\"Order Detail\""), is("Order Detail"));
@@ -78,6 +88,13 @@ class WorkflowSQLUtilsTest {
         assertThat(actualValue, is("`key`"));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getDistSQLKeywordCases")
+    void assertFormatDistSQLIdentifierQuotesDistSQLKeyword(final String name, final String identifier, final String expectedValue) {
+        String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier(identifier);
+        assertThat(actualValue, is(expectedValue));
+    }
+    
     @Test
     void assertFormatDistSQLIdentifierKeepsMixedCaseIdentifier() {
         String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("Phone");
@@ -91,9 +108,9 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
-    void assertFormatDistSQLIdentifierEscapesQuoteDelimiter() {
-        String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("bad`table");
-        assertThat(actualValue, is("`bad``table`"));
+    void assertFormatDistSQLIdentifierRejectsBackQuote() {
+        Exception actualException = assertThrows(RuntimeException.class, () -> WorkflowSQLUtils.formatDistSQLIdentifier("bad`table"));
+        assertThat(actualException.getMessage(), is("identifier `bad`table` contains unsupported characters that cannot be rendered as a reviewable SQL identifier."));
     }
     
     @Test
@@ -204,5 +221,18 @@ class WorkflowSQLUtilsTest {
     void assertCreatePropertyMapHandlesString() {
         Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap("{'aes-key-value':'123456','iv':'abc'}");
         assertThat(actualEntries, is(Map.of("aes-key-value", "123456", "iv", "abc")));
+    }
+    
+    private static Stream<Arguments> getDistSQLKeywordCases() {
+        return Stream.of(
+                Arguments.of("quote if keyword", "if", "`if`"),
+                Arguments.of("quote exists keyword", "exists", "`exists`"),
+                Arguments.of("quote true keyword", "true", "`true`"),
+                Arguments.of("quote false keyword", "false", "`false`"),
+                Arguments.of("quote properties keyword", "properties", "`properties`"),
+                Arguments.of("quote encrypt algorithm keyword", "encrypt_algorithm", "`encrypt_algorithm`"),
+                Arguments.of("quote assisted query column keyword", "assisted_query_column", "`assisted_query_column`"),
+                Arguments.of("quote mask algorithm keyword", "keep_from_x_to_y", "`keep_from_x_to_y`"),
+                Arguments.of("quote uppercase algorithm keyword", "AES", "`AES`"));
     }
 }

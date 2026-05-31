@@ -110,6 +110,22 @@ class WorkflowValidationSupportTest {
     }
     
     @Test
+    void assertValidateLogicalMetadataNormalizesDelimitedIdentifiers() {
+        WorkflowContextSnapshot snapshot = createSnapshot();
+        snapshot.getRequest().setDatabase("`logic_db`");
+        snapshot.getRequest().setSchema("`public`");
+        snapshot.getRequest().setTable("`orders`");
+        snapshot.getRequest().setColumn("`phone`");
+        ValidationReport validationReport = new ValidationReport();
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone"))
+                .thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
+        ValidationSection actualValidationSection = validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, validationReport);
+        assertThat(actualValidationSection.getStatus(), is("passed"));
+        assertThat(validationReport.getMismatches(), is(List.of()));
+    }
+    
+    @Test
     void assertValidateLogicalMetadataWhenColumnMissing() {
         WorkflowContextSnapshot snapshot = createSnapshot();
         ValidationReport validationReport = new ValidationReport();

@@ -181,8 +181,7 @@ public final class WorkflowPlanningSupport {
      */
     public boolean ensurePlanningContext(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
                                          final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
-        normalizeIdentifiers(request);
-        if (request.getDatabase().isEmpty()) {
+        if (isEmptyIdentifier(request.getDatabase())) {
             clarifiedIntent.getClarificationMessages().add("Please provide logical database first.");
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
                     "Database is required before planning.", "Provide the logical database name.", true, Map.of()));
@@ -201,7 +200,7 @@ public final class WorkflowPlanningSupport {
             return false;
         }
         addMissingQuestions(request, clarifiedIntent);
-        if (request.getSchema().isEmpty() || request.getTable().isEmpty() || request.getColumn().isEmpty()) {
+        if (isEmptyIdentifier(request.getSchema()) || isEmptyIdentifier(request.getTable()) || isEmptyIdentifier(request.getColumn())) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
@@ -212,21 +211,18 @@ public final class WorkflowPlanningSupport {
         return true;
     }
     
-    private void normalizeIdentifiers(final WorkflowRequest request) {
-        request.setDatabase(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()));
-        request.setSchema(WorkflowSQLUtils.normalizeIdentifier(request.getSchema()));
-        request.setTable(WorkflowSQLUtils.normalizeIdentifier(request.getTable()));
-        request.setColumn(WorkflowSQLUtils.normalizeIdentifier(request.getColumn()));
+    private boolean isEmptyIdentifier(final String identifier) {
+        return WorkflowSQLUtils.normalizeIdentifier(identifier).isEmpty();
     }
     
     private void addMissingQuestions(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
-        if (request.getSchema().isEmpty()) {
+        if (isEmptyIdentifier(request.getSchema())) {
             clarifiedIntent.getClarificationMessages().add("Please specify schema.");
         }
-        if (request.getTable().isEmpty()) {
+        if (isEmptyIdentifier(request.getTable())) {
             clarifiedIntent.getClarificationMessages().add("Please specify target table.");
         }
-        if (request.getColumn().isEmpty()) {
+        if (isEmptyIdentifier(request.getColumn())) {
             clarifiedIntent.getClarificationMessages().add("Please specify target column.");
         }
     }
@@ -243,14 +239,14 @@ public final class WorkflowPlanningSupport {
     
     private String resolveSchema(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         String actualSchema = request.getSchema();
-        if (!actualSchema.isEmpty()) {
+        if (!isEmptyIdentifier(actualSchema)) {
             return actualSchema;
         }
-        Optional<MCPDatabaseMetadata> databaseMetadata = metadataQueryFacade.queryDatabase(request.getDatabase());
+        Optional<MCPDatabaseMetadata> databaseMetadata = metadataQueryFacade.queryDatabase(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()));
         if (databaseMetadata.isEmpty()) {
             return "";
         }
-        String tableName = request.getTable();
+        String tableName = WorkflowSQLUtils.normalizeIdentifier(request.getTable());
         if (!tableName.isEmpty()) {
             List<String> result = new LinkedList<>();
             for (MCPSchemaMetadata each : databaseMetadata.get().getSchemas()) {
@@ -274,7 +270,8 @@ public final class WorkflowPlanningSupport {
     
     private boolean ensureTableExists(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
                                       final WorkflowContextSnapshot snapshot) {
-        if (metadataQueryFacade.queryTable(request.getDatabase(), request.getSchema(), request.getTable()).isPresent()) {
+        if (metadataQueryFacade.queryTable(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()), WorkflowSQLUtils.normalizeIdentifier(request.getSchema()),
+                WorkflowSQLUtils.normalizeIdentifier(request.getTable())).isPresent()) {
             return true;
         }
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.TABLE_NOT_FOUND, "error", "discovering",
@@ -284,7 +281,8 @@ public final class WorkflowPlanningSupport {
     
     private boolean ensureColumnExists(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
                                        final WorkflowContextSnapshot snapshot) {
-        if (metadataQueryFacade.queryTableColumn(request.getDatabase(), request.getSchema(), request.getTable(), request.getColumn()).isPresent()) {
+        if (metadataQueryFacade.queryTableColumn(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()), WorkflowSQLUtils.normalizeIdentifier(request.getSchema()),
+                WorkflowSQLUtils.normalizeIdentifier(request.getTable()), WorkflowSQLUtils.normalizeIdentifier(request.getColumn())).isPresent()) {
             return true;
         }
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.COLUMN_NOT_FOUND, "error", "discovering",

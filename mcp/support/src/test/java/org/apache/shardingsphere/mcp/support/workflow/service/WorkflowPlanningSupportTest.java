@@ -90,7 +90,7 @@ class WorkflowPlanningSupportTest {
     }
     
     @Test
-    void assertEnsurePlanningContextNormalizesDelimitedIdentifiers() {
+    void assertEnsurePlanningContextPreservesDelimitedIdentifiers() {
         WorkflowRequest request = new WorkflowRequest();
         request.setDatabase("`logic_db`");
         request.setSchema("`public`");
@@ -103,10 +103,10 @@ class WorkflowPlanningSupportTest {
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders-detail", "Phone Number")).thenReturn(Optional.of(createColumnMetadata("orders-detail", "Phone Number")));
         boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
         assertTrue(actual);
-        assertThat(request.getDatabase(), is("logic_db"));
-        assertThat(request.getSchema(), is("public"));
-        assertThat(request.getTable(), is("orders-detail"));
-        assertThat(request.getColumn(), is("Phone Number"));
+        assertThat(request.getDatabase(), is("`logic_db`"));
+        assertThat(request.getSchema(), is("`public`"));
+        assertThat(request.getTable(), is("`orders-detail`"));
+        assertThat(request.getColumn(), is("\"Phone Number\""));
     }
     
     @Test

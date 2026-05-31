@@ -87,7 +87,8 @@ public final class WorkflowValidationSupport {
     public ValidationSection validateLogicalMetadata(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
                                                      final ValidationReport validationReport) {
         if (metadataQueryFacade.queryTableColumn(
-                snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), snapshot.getRequest().getTable(), snapshot.getRequest().getColumn()).isPresent()) {
+                WorkflowSQLUtils.normalizeIdentifier(snapshot.getRequest().getDatabase()), WorkflowSQLUtils.normalizeIdentifier(snapshot.getRequest().getSchema()),
+                WorkflowSQLUtils.normalizeIdentifier(snapshot.getRequest().getTable()), WorkflowSQLUtils.normalizeIdentifier(snapshot.getRequest().getColumn())).isPresent()) {
             return new ValidationSection(WorkflowLifecycle.STATUS_PASSED,
                     Map.of(WorkflowFieldNames.TABLE, snapshot.getRequest().getTable(), WorkflowFieldNames.COLUMN, snapshot.getRequest().getColumn()),
                     "Logical table and column are still visible from Proxy metadata.");

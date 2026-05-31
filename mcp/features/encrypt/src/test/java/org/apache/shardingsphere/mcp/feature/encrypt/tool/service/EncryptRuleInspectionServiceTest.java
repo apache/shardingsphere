@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -63,12 +65,9 @@ class EncryptRuleInspectionServiceTest {
     }
     
     @Test
-    void assertQueryEncryptRulesEscapesQuoteDelimiter() {
+    void assertQueryEncryptRulesRejectsBackQuote() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("逻`辑库", "", "SHOW ENCRYPT TABLE RULE `订``单` FROM `逻``辑库`"))
-                .thenReturn(List.of(Map.of("logic_column", "phone")));
-        List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "逻`辑库", "订`单");
-        assertThat(actual.get(0).get("logic_column"), is("phone"));
+        assertThrows(MCPInvalidRequestException.class, () -> service.queryEncryptRules(queryFacade, "逻`辑库", "订`单"));
     }
     
     @Test
