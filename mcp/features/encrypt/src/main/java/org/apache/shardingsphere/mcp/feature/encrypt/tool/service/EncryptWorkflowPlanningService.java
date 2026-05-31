@@ -240,10 +240,10 @@ public final class EncryptWorkflowPlanningService {
     private void planEncryptArtifacts(final MCPMetadataQueryFacade metadataQueryService, final MCPFeatureQueryFacade queryFacade, final EncryptWorkflowState workflowState,
                                       final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptRules,
                                       final WorkflowContextSnapshot snapshot, final String databaseType) {
-        DerivedColumnPlan derivedColumnPlan = createDerivedColumnPlan(metadataQueryService, request, encryptRules, snapshot, databaseType);
+        Set<String> existingNames = createExistingPhysicalNames(metadataQueryService, request, encryptRules);
+        DerivedColumnPlan derivedColumnPlan = createDerivedColumnPlan(request, encryptRules, snapshot, databaseType, existingNames);
         workflowState.setDerivedColumnPlan(derivedColumnPlan);
         addShrinkAlterCleanupWarning(request, clarifiedIntent, encryptRules, snapshot, databaseType);
-        Set<String> existingNames = createExistingPhysicalNames(metadataQueryService, request, encryptRules);
         String derivedColumnDefinition = resolveDerivedColumnDefinition(queryFacade, request, snapshot);
         List<DDLArtifact> ddlArtifacts = physicalDDLPlanningService.planAddColumnArtifacts(databaseType, request.getTable(), derivedColumnPlan, existingNames, derivedColumnDefinition);
         snapshot.getDdlArtifacts().addAll(ddlArtifacts);
@@ -269,9 +269,8 @@ public final class EncryptWorkflowPlanningService {
         }
     }
     
-    private DerivedColumnPlan createDerivedColumnPlan(final MCPMetadataQueryFacade metadataQueryService, final EncryptWorkflowRequest request,
-                                                      final List<Map<String, Object>> encryptRules, final WorkflowContextSnapshot snapshot, final String databaseType) {
-        Set<String> existingNames = createExistingPhysicalNames(metadataQueryService, request, encryptRules);
+    private DerivedColumnPlan createDerivedColumnPlan(final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptRules,
+                                                      final WorkflowContextSnapshot snapshot, final String databaseType, final Set<String> existingNames) {
         DerivedColumnPlan result = derivedColumnNamingService.createPlan(request, existingNames, snapshot.getIssues());
         Map<String, Object> existingRule = findEncryptRule(encryptRules, request.getColumn(), databaseType).orElse(Map.of());
         String actualCipherColumn = WorkflowRuleValueUtils.getRuleValue(existingRule, "cipher_column");
@@ -318,7 +317,10 @@ public final class EncryptWorkflowPlanningService {
     private Set<String> createExistingPhysicalNames(final MCPMetadataQueryFacade metadataQueryService, final EncryptWorkflowRequest request,
                                                     final List<Map<String, Object>> encryptRules) {
         Set<String> result = new LinkedHashSet<>();
-        for (MCPColumnMetadata each : metadataQueryService.queryTableColumns(request.getDatabase(), request.getSchema(), request.getTable())) {
+        String databaseName = WorkflowSQLUtils.normalizeIdentifier(request.getDatabase());
+        String schemaName = WorkflowSQLUtils.normalizeIdentifier(request.getSchema());
+        String tableName = WorkflowSQLUtils.normalizeIdentifier(request.getTable());
+        for (MCPColumnMetadata each : metadataQueryService.queryTableColumns(databaseName, schemaName, tableName)) {
             result.add(each.getColumn());
         }
         for (Map<String, Object> each : encryptRules) {
@@ -339,7 +341,10 @@ public final class EncryptWorkflowPlanningService {
     private Set<String> createExistingIndexes(final MCPMetadataQueryFacade metadataQueryService, final EncryptWorkflowRequest request) {
         Set<String> result = new LinkedHashSet<>();
         try {
-            for (MCPIndexMetadata each : metadataQueryService.queryIndexes(request.getDatabase(), request.getSchema(), request.getTable())) {
+            String databaseName = WorkflowSQLUtils.normalizeIdentifier(request.getDatabase());
+            String schemaName = WorkflowSQLUtils.normalizeIdentifier(request.getSchema());
+            String tableName = WorkflowSQLUtils.normalizeIdentifier(request.getTable());
+            for (MCPIndexMetadata each : metadataQueryService.queryIndexes(databaseName, schemaName, tableName)) {
                 result.add(each.getIndex());
             }
             // CHECKSTYLE:OFF

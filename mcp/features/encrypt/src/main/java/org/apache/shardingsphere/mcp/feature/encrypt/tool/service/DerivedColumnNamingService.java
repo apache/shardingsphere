@@ -45,7 +45,7 @@ public final class DerivedColumnNamingService {
         boolean requiresAssistedQuery = Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter());
         boolean requiresLikeQuery = Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery());
         DerivedColumnPlan result = new DerivedColumnPlan();
-        String logicalColumn = request.getColumn();
+        String logicalColumn = WorkflowSQLUtils.normalizeIdentifier(request.getColumn());
         result.setLogicalColumn(logicalColumn);
         result.setCipherColumnRequired(true);
         result.setAssistedQueryColumnRequired(requiresAssistedQuery);

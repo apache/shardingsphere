@@ -53,7 +53,7 @@ public final class IndexPlanningService {
     
     private IndexPlan createIndexPlan(final String databaseType, final String tableName, final String columnName, final String reason, final Set<String> existingIndexes) {
         WorkflowSQLUtils.checkSupportedIdentifier("column", columnName);
-        String baseIndexName = "idx_" + tableName + "_" + columnName;
+        String baseIndexName = "idx_" + WorkflowSQLUtils.normalizeIdentifier(tableName) + "_" + WorkflowSQLUtils.normalizeIdentifier(columnName);
         String actualIndexName = baseIndexName;
         int suffix = 1;
         while (containsIdentifier(databaseType, existingIndexes, actualIndexName)) {

@@ -59,6 +59,19 @@ class DerivedColumnNamingServiceTest {
     }
     
     @Test
+    void assertCreatePlanNormalizesDelimitedSourceColumn() {
+        EncryptWorkflowRequest request = createRequest(true, false);
+        request.setColumn("`phone`");
+        Set<String> existingNames = new LinkedHashSet<>(List.of("phone_cipher"));
+        List<WorkflowIssue> issues = new LinkedList<>();
+        DerivedColumnPlan actual = service.createPlan(request, existingNames, issues);
+        assertThat(actual.getLogicalColumn(), is("phone"));
+        assertThat(actual.getCipherColumnName(), is("phone_cipher_1"));
+        assertThat(actual.getAssistedQueryColumnName(), is("phone_assisted_query"));
+        assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.AUTO_RENAMED_DUE_TO_CONFLICT));
+    }
+    
+    @Test
     void assertCreatePlanWithNameCollision() {
         EncryptWorkflowRequest request = createRequest(false, false);
         Set<String> existingNames = new LinkedHashSet<>(List.of("phone_cipher", "phone_cipher_1"));

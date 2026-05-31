@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
@@ -305,6 +306,42 @@ class EncryptWorkflowPlanningServiceTest {
                 "session-1", request);
         assertThat(actual.getStatus(), is("planned"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.LOGICAL_METADATA_UNAVAILABLE));
+    }
+    
+    @Test
+    void assertPlanNormalizesDelimitedIdentifiersForPhysicalDiscovery() {
+        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
+        EncryptAlgorithmRecommendationService algorithmRecommendationService = mock(EncryptAlgorithmRecommendationService.class);
+        when(algorithmRecommendationService.recommendEncryptAlgorithms(any(), any(), any()))
+                .thenReturn(List.of(new AlgorithmCandidate("primary", "AES", true, true, false, 100, "reason", ""),
+                        new AlgorithmCandidate("assisted_query", "MD5", false, true, false, 90, "reason", "")));
+        EncryptAlgorithmPropertyTemplateService propertyTemplateService = mock(EncryptAlgorithmPropertyTemplateService.class);
+        when(propertyTemplateService.findRequirements(any(), any(), any())).thenReturn(List.of());
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.queryTable("logic_db", "public", "orders")).thenReturn(Optional.of(createTableMetadata()));
+        when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(createColumnMetadata()));
+        when(metadataQueryFacade.queryTableColumns("logic_db", "public", "orders")).thenReturn(List.of(createColumnMetadata(), createColumnMetadata("phone_cipher")));
+        when(metadataQueryFacade.queryIndexes("logic_db", "public", "orders"))
+                .thenReturn(List.of(new MCPIndexMetadata("logic_db", "public", "orders", "idx_orders_phone_assisted_query")));
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.getDatabaseType("`logic_db`")).thenReturn("MySQL");
+        when(queryFacade.queryColumnDefinition("`logic_db`", "`public`", "`orders`", "`phone`")).thenReturn("VARCHAR(32)");
+        final EncryptWorkflowPlanningService service = createService(ruleInspectionService, algorithmRecommendationService, propertyTemplateService,
+                new DerivedColumnNamingService(), new PhysicalDDLPlanningService(), new IndexPlanningService(), new EncryptRuleDistSQLPlanningService());
+        EncryptWorkflowRequest request = createRequest("create");
+        request.setDatabase("`logic_db`");
+        request.setSchema("`public`");
+        request.setTable("`orders`");
+        request.setColumn("`phone`");
+        request.getOptions().setRequiresEqualityFilter(true);
+        WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), metadataQueryFacade, queryFacade, "session-1", request);
+        assertThat(actual.getStatus(), is("planned"));
+        assertThat(((EncryptWorkflowState) actual.getFeatureData()).getDerivedColumnPlan().getCipherColumnName(), is("phone_cipher_1"));
+        assertThat(actual.getIndexPlans().get(0).getIndexName(), is("idx_orders_phone_assisted_query_1"));
+        verify(metadataQueryFacade).queryTableColumns("logic_db", "public", "orders");
+        verify(metadataQueryFacade).queryIndexes("logic_db", "public", "orders");
     }
     
     private MCPMetadataQueryFacade createResolvedMetadataQueryFacade() {

@@ -75,6 +75,14 @@ class IndexPlanningServiceTest {
     }
     
     @Test
+    void assertPlanIndexesNormalizesDelimitedTableForIndexName() {
+        List<IndexPlan> actual = service.planIndexes("MySQL", "`orders`", createDerivedColumnPlan(true, false), new LinkedHashSet<>());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getIndexName(), is("idx_orders_phone_assisted_query"));
+        assertThat(actual.get(0).getSql(), is("CREATE INDEX idx_orders_phone_assisted_query ON `orders` (phone_assisted_query)"));
+    }
+    
+    @Test
     void assertPlanIndexesFormatsReservedIdentifiers() {
         List<IndexPlan> actual = service.planIndexes("MySQL", "key", createDerivedColumnPlan(true, false), new LinkedHashSet<>());
         assertThat(actual.size(), is(1));
