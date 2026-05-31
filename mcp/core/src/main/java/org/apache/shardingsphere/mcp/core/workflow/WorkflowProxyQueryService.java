@@ -75,12 +75,18 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     }
     
     @Override
+    public String getDatabaseType(final String databaseName) {
+        return databaseCapabilityProvider.provide(WorkflowSQLUtils.normalizeIdentifier(databaseName)).map(MCPDatabaseCapability::getDatabaseType).orElse("");
+    }
+    
+    @Override
     public String queryColumnDefinition(final String databaseName, final String schemaName, final String tableName, final String columnName) {
         WorkflowSQLUtils.checkSupportedIdentifier("database", databaseName);
         WorkflowSQLUtils.checkSupportedIdentifier("schema", schemaName);
         String actualDatabaseName = WorkflowSQLUtils.normalizeIdentifier(databaseName);
         String actualSchemaName = WorkflowSQLUtils.normalizeIdentifier(schemaName);
-        String sql = String.format("SELECT %s FROM %s WHERE 1 = 0", WorkflowSQLUtils.formatDistSQLIdentifier(columnName), WorkflowSQLUtils.formatDistSQLIdentifier(tableName));
+        String databaseType = getDatabaseType(actualDatabaseName);
+        String sql = String.format("SELECT %s FROM %s WHERE 1 = 0", WorkflowSQLUtils.formatSQLIdentifier(databaseType, columnName), WorkflowSQLUtils.formatSQLIdentifier(databaseType, tableName));
         try (
                 Connection connection = openConnection(actualDatabaseName);
                 Statement statement = connection.createStatement();

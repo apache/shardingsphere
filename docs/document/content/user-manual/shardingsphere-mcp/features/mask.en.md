@@ -52,7 +52,8 @@ The planning tool uses these common inputs:
 | `primary_algorithm_properties` | Required by algorithm | Masking algorithm properties, such as retained characters and replacement character. The required properties come from the algorithm resource. |
 
 `database`, `schema`, `table`, and `column` can be ordinary identifiers or delimited identifiers wrapped in backticks, double quotes, or square brackets.
-MCP preserves case, spaces, and other special characters during planning. When it generates DistSQL or validation SQL, identifiers that need quoting are escaped with backticks.
+MCP preserves case, spaces, and other special characters during planning. Generated DistSQL uses backticks for quoted identifiers.
+Generated validation SQL uses the target database dialect quote character, such as backticks for MySQL/MariaDB and double quotes for PostgreSQL/openGauss.
 Identifiers must not contain NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.
 
 Different operations focus on different inputs:

@@ -26,6 +26,7 @@ import java.util.Properties;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -72,6 +73,18 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertFormatDistSQLIdentifierQuotesReservedIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("order");
+        assertThat(actualValue, is("`order`"));
+    }
+    
+    @Test
+    void assertFormatDistSQLIdentifierQuotesMixedCaseIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("Phone");
+        assertThat(actualValue, is("`Phone`"));
+    }
+    
+    @Test
     void assertFormatDistSQLIdentifierQuotesUnicodeIdentifier() {
         String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("订单");
         assertThat(actualValue, is("`订单`"));
@@ -81,6 +94,40 @@ class WorkflowSQLUtilsTest {
     void assertFormatDistSQLIdentifierEscapesQuoteDelimiter() {
         String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("bad`table");
         assertThat(actualValue, is("`bad``table`"));
+    }
+    
+    @Test
+    void assertFormatSQLIdentifierUsesMysqlQuoteStyle() {
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "order detail");
+        assertThat(actualValue, is("`order detail`"));
+    }
+    
+    @Test
+    void assertFormatSQLIdentifierUsesFallbackQuoteStyle() {
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("", "order detail");
+        assertThat(actualValue, is("`order detail`"));
+    }
+    
+    @Test
+    void assertFormatSQLIdentifierUsesPostgreSQLQuoteStyle() {
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "order detail");
+        assertThat(actualValue, is("\"order detail\""));
+    }
+    
+    @Test
+    void assertFormatSQLIdentifierPreservesDelimitedSafeIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "\"orders\"");
+        assertThat(actualValue, is("\"orders\""));
+    }
+    
+    @Test
+    void assertIsSameIdentifierWithCaseInsensitiveDatabase() {
+        assertTrue(WorkflowSQLUtils.isSameIdentifier("MySQL", "Phone", "phone"));
+    }
+    
+    @Test
+    void assertIsSameIdentifierWithCaseSensitiveDatabase() {
+        assertFalse(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "Phone", "phone"));
     }
     
     @Test

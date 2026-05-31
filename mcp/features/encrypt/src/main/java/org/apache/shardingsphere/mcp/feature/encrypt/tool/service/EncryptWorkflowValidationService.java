@@ -86,11 +86,12 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         ValidationReport result = new ValidationReport();
         EncryptWorkflowRequest request = getWorkflowRequest(snapshot);
         EncryptWorkflowState workflowState = getWorkflowState(snapshot);
+        String databaseType = queryFacade.getDatabaseType(request.getDatabase());
         List<Map<String, Object>> encryptRules = ruleInspectionService.queryEncryptRules(queryFacade, request.getDatabase(), request.getTable());
-        result.setDdlValidation(validateDdl(snapshot, workflowState, encryptRules, result));
-        result.setRuleValidation(validateRules(snapshot, request, encryptRules, result));
+        result.setDdlValidation(validateDdl(snapshot, workflowState, encryptRules, result, databaseType));
+        result.setRuleValidation(validateRules(snapshot, request, encryptRules, result, databaseType));
         result.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, result));
-        result.setSqlExecutabilityValidation(validateSqlExecutability(executionFacade, sessionId, snapshot, request, result));
+        result.setSqlExecutabilityValidation(validateSqlExecutability(executionFacade, sessionId, snapshot, request, result, databaseType));
         result.setOverallStatus(validationSupport.resolveOverallStatus(result.getDdlValidation(), result.getRuleValidation(),
                 result.getLogicalMetadataValidation(), result.getSqlExecutabilityValidation()));
         return result;
@@ -109,14 +110,14 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     }
     
     private ValidationSection validateDdl(final WorkflowContextSnapshot snapshot, final EncryptWorkflowState workflowState,
-                                          final List<Map<String, Object>> encryptRules, final ValidationReport validationReport) {
+                                          final List<Map<String, Object>> encryptRules, final ValidationReport validationReport, final String databaseType) {
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
             return new ValidationSection(WorkflowLifecycle.STATUS_SKIPPED, List.of(), "Encrypt drop does not validate physical cleanup in V1.");
         }
         if (null == workflowState.getDerivedColumnPlan()) {
             return new ValidationSection(WorkflowLifecycle.STATUS_SKIPPED, List.of(), "No derived column plan is available for validation.");
         }
-        Optional<Map<String, Object>> actualRule = findEncryptRule(snapshot, encryptRules);
+        Optional<Map<String, Object>> actualRule = findEncryptRule(snapshot, encryptRules, databaseType);
         if (actualRule.isEmpty()) {
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", createExpectedDerivedColumnSummary(workflowState), "",
                     "Encrypt rule is missing, so derived column mappings cannot be validated.", "Create or alter the encrypt rule again."));
@@ -141,8 +142,8 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     }
     
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot,
-                                            final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptRules, final ValidationReport validationReport) {
-        Optional<Map<String, Object>> actualRule = findEncryptRule(snapshot, encryptRules);
+                                            final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptRules, final ValidationReport validationReport, final String databaseType) {
+        Optional<Map<String, Object>> actualRule = findEncryptRule(snapshot, encryptRules, databaseType);
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
             if (actualRule.isEmpty()) {
                 return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, List.of(), "Encrypt rule has been removed.");
@@ -173,30 +174,31 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     }
     
     private ValidationSection validateSqlExecutability(final MCPFeatureExecutionFacade executionFacade, final String sessionId, final WorkflowContextSnapshot snapshot,
-                                                       final EncryptWorkflowRequest request, final ValidationReport validationReport) {
+                                                       final EncryptWorkflowRequest request, final ValidationReport validationReport, final String databaseType) {
         return validationSupport.validateSqlExecutability(executionFacade, sessionId, snapshot, validationReport,
-                createValidationSqls(snapshot, request), "Validation SQLs are executable from the logical view.");
+                createValidationSqls(snapshot, request, databaseType), "Validation SQLs are executable from the logical view.");
     }
     
-    private List<String> createValidationSqls(final WorkflowContextSnapshot snapshot, final EncryptWorkflowRequest request) {
+    private List<String> createValidationSqls(final WorkflowContextSnapshot snapshot, final EncryptWorkflowRequest request, final String databaseType) {
         List<String> result = new LinkedList<>();
-        result.add(validationSupport.createProjectionValidationSql(snapshot));
+        result.add(validationSupport.createProjectionValidationSql(snapshot, databaseType));
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
             return result;
         }
         if (Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter())) {
-            result.add(String.format("SELECT %s FROM %s WHERE %s = 'sample'", WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getColumn()),
-                    WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getTable()), WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getColumn())));
+            result.add(String.format("SELECT %s FROM %s WHERE %s = 'sample'", WorkflowSQLUtils.formatSQLIdentifier(databaseType, snapshot.getRequest().getColumn()),
+                    WorkflowSQLUtils.formatSQLIdentifier(databaseType, snapshot.getRequest().getTable()), WorkflowSQLUtils.formatSQLIdentifier(databaseType, snapshot.getRequest().getColumn())));
         }
         if (Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery())) {
-            result.add(String.format("SELECT %s FROM %s WHERE %s LIKE 'sample%%'", WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getColumn()),
-                    WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getTable()), WorkflowSQLUtils.formatDistSQLIdentifier(snapshot.getRequest().getColumn())));
+            result.add(String.format("SELECT %s FROM %s WHERE %s LIKE 'sample%%'", WorkflowSQLUtils.formatSQLIdentifier(databaseType, snapshot.getRequest().getColumn()),
+                    WorkflowSQLUtils.formatSQLIdentifier(databaseType, snapshot.getRequest().getTable()), WorkflowSQLUtils.formatSQLIdentifier(databaseType, snapshot.getRequest().getColumn())));
         }
         return result;
     }
     
-    private Optional<Map<String, Object>> findEncryptRule(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> encryptRules) {
-        return encryptRules.stream().filter(each -> snapshot.getRequest().getColumn().equals(WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))).findFirst();
+    private Optional<Map<String, Object>> findEncryptRule(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> encryptRules, final String databaseType) {
+        return encryptRules.stream()
+                .filter(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, snapshot.getRequest().getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))).findFirst();
     }
     
     private void addDerivedColumnMismatch(final List<Map<String, Object>> mismatches, final String fieldName, final String expected, final String actual, final String impact) {

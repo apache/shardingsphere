@@ -52,7 +52,8 @@ weight = 2
 | `primary_algorithm_properties` | 按算法必填 | 脱敏算法参数，例如保留位数和替换字符。具体参数以算法资源返回值为准。 |
 
 `database`、`schema`、`table` 和 `column` 可以使用普通标识符，也可以使用反引号、双引号或方括号包裹的定界标识符。
-MCP 会在规划时保留大小写、空格和其他特殊字符；生成 DistSQL 和校验 SQL 时，会对需要引用的标识符使用反引号转义。
+MCP 会在规划时保留大小写、空格和其他特殊字符；生成 DistSQL 时使用反引号引用标识符。
+生成校验 SQL 时使用目标数据库方言的引用字符，例如 MySQL/MariaDB 使用反引号，PostgreSQL/openGauss 使用双引号。
 标识符不能包含 NUL、回车或换行等无法生成可审查 SQL 的字符。
 
 不同操作的输入重点如下：

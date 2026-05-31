@@ -36,12 +36,13 @@ public final class MaskRuleDistSQLPlanningService {
      *
      * @param request workflow request
      * @param existingRules existing table rule rows
+     * @param databaseType database type
      * @return rule artifact
      */
-    public RuleArtifact planMaskRule(final WorkflowRequest request, final List<Map<String, Object>> existingRules) {
+    public RuleArtifact planMaskRule(final WorkflowRequest request, final List<Map<String, Object>> existingRules, final String databaseType) {
         validateMaskIdentifiers(request);
         String prefix = "alter".equalsIgnoreCase(request.getOperationType()) || !existingRules.isEmpty() ? "ALTER MASK RULE" : "CREATE MASK RULE";
-        return new RuleArtifact(request.getOperationType(), createMaskRuleSql(prefix, request.getTable(), buildMaskColumnSegments(request, existingRules)));
+        return new RuleArtifact(request.getOperationType(), createMaskRuleSql(prefix, request.getTable(), buildMaskColumnSegments(request, existingRules, databaseType)));
     }
     
     /**
@@ -49,13 +50,14 @@ public final class MaskRuleDistSQLPlanningService {
      *
      * @param request workflow request
      * @param existingRules existing table rule rows
+     * @param databaseType database type
      * @return rule artifact
      */
-    public RuleArtifact planMaskDropRule(final WorkflowRequest request, final List<Map<String, Object>> existingRules) {
+    public RuleArtifact planMaskDropRule(final WorkflowRequest request, final List<Map<String, Object>> existingRules, final String databaseType) {
         validateMaskIdentifiers(request);
         List<String> remainingColumnSegments = new LinkedList<>();
         for (Map<String, Object> each : existingRules) {
-            if (!request.getColumn().equals(WorkflowRuleValueUtils.getRuleValue(each, "column"))) {
+            if (!WorkflowSQLUtils.isSameIdentifier(databaseType, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column"))) {
                 remainingColumnSegments.add(createExistingMaskColumnSegment(each));
             }
         }
@@ -69,11 +71,11 @@ public final class MaskRuleDistSQLPlanningService {
         WorkflowSQLUtils.checkSupportedIdentifier("column", request.getColumn());
     }
     
-    private List<String> buildMaskColumnSegments(final WorkflowRequest request, final List<Map<String, Object>> existingRules) {
+    private List<String> buildMaskColumnSegments(final WorkflowRequest request, final List<Map<String, Object>> existingRules, final String databaseType) {
         List<String> result = new LinkedList<>();
         boolean targetColumnHandled = false;
         for (Map<String, Object> each : existingRules) {
-            if (request.getColumn().equals(WorkflowRuleValueUtils.getRuleValue(each, "column"))) {
+            if (WorkflowSQLUtils.isSameIdentifier(databaseType, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column"))) {
                 result.add(createTargetMaskColumnSegment(request));
                 targetColumnHandled = true;
                 continue;

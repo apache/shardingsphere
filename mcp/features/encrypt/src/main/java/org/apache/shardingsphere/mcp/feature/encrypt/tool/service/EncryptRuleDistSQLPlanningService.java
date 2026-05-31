@@ -38,13 +38,15 @@ public final class EncryptRuleDistSQLPlanningService {
      * @param request workflow request
      * @param derivedColumnPlan derived column plan
      * @param existingRules existing table rule rows
+     * @param databaseType database type
      * @return rule artifacts
      */
     public List<RuleArtifact> planEncryptRule(final EncryptWorkflowRequest request, final DerivedColumnPlan derivedColumnPlan,
-                                              final List<Map<String, Object>> existingRules) {
+                                              final List<Map<String, Object>> existingRules, final String databaseType) {
         validateEncryptIdentifiers(request, derivedColumnPlan);
         String prefix = "alter".equalsIgnoreCase(request.getOperationType()) || !existingRules.isEmpty() ? "ALTER ENCRYPT RULE" : "CREATE ENCRYPT RULE";
-        return List.of(new RuleArtifact(request.getOperationType(), createEncryptRuleSql(prefix, request.getTable(), buildEncryptColumnSegments(request, derivedColumnPlan, existingRules))));
+        return List.of(new RuleArtifact(request.getOperationType(),
+                createEncryptRuleSql(prefix, request.getTable(), buildEncryptColumnSegments(request, derivedColumnPlan, existingRules, databaseType))));
     }
     
     /**
@@ -52,13 +54,14 @@ public final class EncryptRuleDistSQLPlanningService {
      *
      * @param request workflow request
      * @param existingRules existing table rule rows
+     * @param databaseType database type
      * @return rule artifacts
      */
-    public List<RuleArtifact> planEncryptDropRule(final EncryptWorkflowRequest request, final List<Map<String, Object>> existingRules) {
+    public List<RuleArtifact> planEncryptDropRule(final EncryptWorkflowRequest request, final List<Map<String, Object>> existingRules, final String databaseType) {
         validateEncryptDropIdentifiers(request);
         List<String> remainingColumnSegments = new LinkedList<>();
         for (Map<String, Object> each : existingRules) {
-            if (!request.getColumn().equals(WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))) {
+            if (!WorkflowSQLUtils.isSameIdentifier(databaseType, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))) {
                 remainingColumnSegments.add(createExistingEncryptColumnSegment(each));
             }
         }
@@ -91,11 +94,11 @@ public final class EncryptRuleDistSQLPlanningService {
     }
     
     private List<String> buildEncryptColumnSegments(final EncryptWorkflowRequest request, final DerivedColumnPlan derivedColumnPlan,
-                                                    final List<Map<String, Object>> existingRules) {
+                                                    final List<Map<String, Object>> existingRules, final String databaseType) {
         List<String> result = new LinkedList<>();
         boolean targetColumnHandled = false;
         for (Map<String, Object> each : existingRules) {
-            if (request.getColumn().equals(WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))) {
+            if (WorkflowSQLUtils.isSameIdentifier(databaseType, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))) {
                 result.add(createTargetEncryptColumnSegment(request, derivedColumnPlan));
                 targetColumnHandled = true;
                 continue;

@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,12 @@ import java.util.stream.Collectors;
 public final class WorkflowSQLUtils {
     
     private static final String SAFE_IDENTIFIER_PATTERN = "[A-Za-z0-9_$]+";
+    
+    private static final String UNQUOTED_IDENTIFIER_PATTERN = "[A-Za-z_][A-Za-z0-9_$]*";
+    
+    private static final Set<String> RESERVED_IDENTIFIERS = Set.of(
+            "alter", "and", "by", "column", "columns", "create", "delete", "drop", "encrypt", "from", "group", "index", "insert", "mask", "name", "order", "rule", "select", "table", "type",
+            "update", "where");
     
     private static final char BACK_QUOTE = '`';
     
@@ -108,9 +115,39 @@ public final class WorkflowSQLUtils {
         String rawIdentifier = trimToEmpty(identifier);
         String actualIdentifier = normalizeIdentifier(rawIdentifier);
         checkSupportedIdentifier("identifier", actualIdentifier);
-        return actualIdentifier.isEmpty() || isSafeIdentifier(actualIdentifier) && !isDelimitedIdentifier(rawIdentifier)
+        return actualIdentifier.isEmpty() || !isDistSQLIdentifierQuoteRequired(actualIdentifier) && !isDelimitedIdentifier(rawIdentifier)
                 ? actualIdentifier
-                : String.format("`%s`", actualIdentifier.replace("`", "``"));
+                : IdentifierQuoteStyle.BACK_QUOTE.wrap(actualIdentifier);
+    }
+    
+    /**
+     * Format a database SQL identifier.
+     *
+     * @param databaseType database type
+     * @param identifier identifier to format
+     * @return formatted SQL identifier
+     */
+    public static String formatSQLIdentifier(final String databaseType, final String identifier) {
+        String rawIdentifier = trimToEmpty(identifier);
+        String actualIdentifier = normalizeIdentifier(rawIdentifier);
+        checkSupportedIdentifier("identifier", actualIdentifier);
+        return actualIdentifier.isEmpty() || !isSQLIdentifierQuoteRequired(databaseType, actualIdentifier) && !isDelimitedIdentifier(rawIdentifier)
+                ? actualIdentifier
+                : getSQLIdentifierQuoteStyle(databaseType).wrap(actualIdentifier);
+    }
+    
+    /**
+     * Judge whether two workflow identifiers are semantically equal for the target database type.
+     *
+     * @param databaseType database type
+     * @param left left identifier
+     * @param right right identifier
+     * @return whether two identifiers are equal
+     */
+    public static boolean isSameIdentifier(final String databaseType, final String left, final String right) {
+        String actualLeft = normalizeIdentifier(left);
+        String actualRight = normalizeIdentifier(right);
+        return isCaseInsensitiveIdentifierDatabase(databaseType) ? actualLeft.equalsIgnoreCase(actualRight) : actualLeft.equals(actualRight);
     }
     
     /**
@@ -231,6 +268,57 @@ public final class WorkflowSQLUtils {
     
     private static boolean containsUnsupportedIdentifierCharacter(final String identifier) {
         return identifier.chars().anyMatch(each -> 0 == each || '\r' == each || '\n' == each);
+    }
+    
+    private static boolean isDistSQLIdentifierQuoteRequired(final String identifier) {
+        return isSpecialIdentifier(identifier) || !identifier.equals(identifier.toLowerCase(Locale.ENGLISH));
+    }
+    
+    private static boolean isSQLIdentifierQuoteRequired(final String databaseType, final String identifier) {
+        return isSpecialIdentifier(identifier) || isCaseSensitiveSQLIdentifierDatabase(databaseType) && !identifier.equals(identifier.toLowerCase(Locale.ENGLISH));
+    }
+    
+    private static boolean isSpecialIdentifier(final String identifier) {
+        return !identifier.matches(UNQUOTED_IDENTIFIER_PATTERN) || RESERVED_IDENTIFIERS.contains(identifier.toLowerCase(Locale.ENGLISH));
+    }
+    
+    private static boolean isCaseSensitiveSQLIdentifierDatabase(final String databaseType) {
+        return !isCaseInsensitiveIdentifierDatabase(databaseType);
+    }
+    
+    private static boolean isCaseInsensitiveIdentifierDatabase(final String databaseType) {
+        String actualDatabaseType = trimToEmpty(databaseType).toLowerCase(Locale.ENGLISH);
+        return "mysql".equals(actualDatabaseType) || "mariadb".equals(actualDatabaseType) || "doris".equals(actualDatabaseType);
+    }
+    
+    private static IdentifierQuoteStyle getSQLIdentifierQuoteStyle(final String databaseType) {
+        String actualDatabaseType = trimToEmpty(databaseType).toLowerCase(Locale.ENGLISH);
+        if (actualDatabaseType.isEmpty() || "mysql".equals(actualDatabaseType) || "mariadb".equals(actualDatabaseType) || "doris".equals(actualDatabaseType) || "hive".equals(actualDatabaseType)) {
+            return IdentifierQuoteStyle.BACK_QUOTE;
+        }
+        return "sqlserver".equals(actualDatabaseType) ? IdentifierQuoteStyle.BRACKETS : IdentifierQuoteStyle.DOUBLE_QUOTE;
+    }
+    
+    private enum IdentifierQuoteStyle {
+        
+        BACK_QUOTE("`", "`"),
+        
+        DOUBLE_QUOTE("\"", "\""),
+        
+        BRACKETS("[", "]");
+        
+        private final String startDelimiter;
+        
+        private final String endDelimiter;
+        
+        IdentifierQuoteStyle(final String startDelimiter, final String endDelimiter) {
+            this.startDelimiter = startDelimiter;
+            this.endDelimiter = endDelimiter;
+        }
+        
+        private String wrap(final String value) {
+            return startDelimiter + value.replace(endDelimiter, endDelimiter + endDelimiter) + endDelimiter;
+        }
     }
     
     private static Map<String, String> parsePropertyString(final String value) {

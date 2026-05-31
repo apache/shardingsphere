@@ -95,7 +95,7 @@ class MaskWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED));
         assertThat(actual.getRuleArtifacts().size(), is(0));
-        verify(ruleDistSQLPlanningService, never()).planMaskRule(any(), any());
+        verify(ruleDistSQLPlanningService, never()).planMaskRule(any(), any(), any());
     }
     
     @Test
@@ -103,7 +103,7 @@ class MaskWorkflowPlanningServiceTest {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone")));
         MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(MaskRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planMaskDropRule(any(), any())).thenReturn(new RuleArtifact("drop", "DROP MASK RULE orders"));
+        when(ruleDistSQLPlanningService.planMaskDropRule(any(), any(), any())).thenReturn(new RuleArtifact("drop", "DROP MASK RULE orders"));
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MaskWorkflowPlanningService service = createService(ruleInspectionService, mock(MaskAlgorithmRecommendationService.class),
                 mock(MaskAlgorithmPropertyTemplateService.class), ruleDistSQLPlanningService);
@@ -136,7 +136,7 @@ class MaskWorkflowPlanningServiceTest {
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of(Map.of("type", "MD5")));
         MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(MaskRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planMaskRule(any(), any())).thenReturn(new RuleArtifact("create", "CREATE MASK RULE orders"));
+        when(ruleDistSQLPlanningService.planMaskRule(any(), any(), any())).thenReturn(new RuleArtifact("create", "CREATE MASK RULE orders"));
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MaskWorkflowPlanningService service = createService(ruleInspectionService, new MaskAlgorithmRecommendationService(),
                 new MaskAlgorithmPropertyTemplateService(), ruleDistSQLPlanningService);
@@ -195,7 +195,7 @@ class MaskWorkflowPlanningServiceTest {
         MaskAlgorithmPropertyTemplateService propertyTemplateService = mock(MaskAlgorithmPropertyTemplateService.class);
         when(propertyTemplateService.findRequirements("MASK_FROM_X_TO_Y")).thenReturn(List.of());
         MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(MaskRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planMaskRule(any(), any())).thenReturn(new RuleArtifact("create", "CREATE MASK RULE orders"));
+        when(ruleDistSQLPlanningService.planMaskRule(any(), any(), any())).thenReturn(new RuleArtifact("create", "CREATE MASK RULE orders"));
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MaskWorkflowPlanningService service = createService(ruleInspectionService, algorithmRecommendationService, propertyTemplateService, ruleDistSQLPlanningService);
         WorkflowContextSnapshot actual = service.plan(workflowSessionContext, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create"));

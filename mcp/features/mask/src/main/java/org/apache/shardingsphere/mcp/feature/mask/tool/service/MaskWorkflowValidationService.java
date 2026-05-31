@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
@@ -85,11 +86,12 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
                                                     final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId) {
         ValidationReport result = new ValidationReport();
+        String databaseType = queryFacade.getDatabaseType(snapshot.getRequest().getDatabase());
         List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(queryFacade, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
         result.setDdlValidation(validateDdl());
-        result.setRuleValidation(validateRules(snapshot, maskRules, result));
+        result.setRuleValidation(validateRules(snapshot, maskRules, result, databaseType));
         result.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, result));
-        result.setSqlExecutabilityValidation(validateSqlExecutability(executionFacade, sessionId, snapshot, result));
+        result.setSqlExecutabilityValidation(validateSqlExecutability(executionFacade, sessionId, snapshot, result, databaseType));
         result.setOverallStatus(validationSupport.resolveOverallStatus(result.getDdlValidation(), result.getRuleValidation(),
                 result.getLogicalMetadataValidation(), result.getSqlExecutabilityValidation()));
         return result;
@@ -100,9 +102,9 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     }
     
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> maskRules,
-                                            final ValidationReport validationReport) {
+                                            final ValidationReport validationReport, final String databaseType) {
         Optional<Map<String, Object>> actualRule = maskRules.stream()
-                .filter(each -> snapshot.getRequest().getColumn().equals(WorkflowRuleValueUtils.getRuleValue(each, "column"))).findFirst();
+                .filter(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, snapshot.getRequest().getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column"))).findFirst();
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
             if (actualRule.isEmpty()) {
                 return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, List.of(), "Mask rule has been removed.");
@@ -126,8 +128,8 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     }
     
     private ValidationSection validateSqlExecutability(final MCPFeatureExecutionFacade executionFacade, final String sessionId,
-                                                       final WorkflowContextSnapshot snapshot, final ValidationReport validationReport) {
+                                                       final WorkflowContextSnapshot snapshot, final ValidationReport validationReport, final String databaseType) {
         return validationSupport.validateSqlExecutability(executionFacade, sessionId, snapshot, validationReport,
-                List.of(validationSupport.createProjectionValidationSql(snapshot)), "Validation SQL is executable from the logical view.");
+                List.of(validationSupport.createProjectionValidationSql(snapshot, databaseType)), "Validation SQL is executable from the logical view.");
     }
 }
