@@ -71,6 +71,22 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertCanonicalizeIdentifierFoldsPostgreSQLUnquotedIdentifier() {
+        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "Phone"), is("phone"));
+        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("openGauss", "Phone"), is("phone"));
+    }
+    
+    @Test
+    void assertCanonicalizeIdentifierPreservesSpecialIdentifier() {
+        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "Phone Number"), is("Phone Number"));
+    }
+    
+    @Test
+    void assertCanonicalizeIdentifierPreservesDelimitedIdentifier() {
+        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "\"Phone\""), is("Phone"));
+    }
+    
+    @Test
     void assertFormatDistSQLIdentifierKeepsSafeIdentifier() {
         String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("orders_01");
         assertThat(actualValue, is("orders_01"));
@@ -155,8 +171,19 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
-    void assertIsSameIdentifierWithCaseSensitiveDatabase() {
-        assertFalse(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "Phone", "phone"));
+    void assertIsSameIdentifierFoldsPostgreSQLUnquotedIdentifier() {
+        assertTrue(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "Phone", "phone"));
+    }
+    
+    @Test
+    void assertIsSameIdentifierPreservesPostgreSQLDelimitedIdentifier() {
+        assertFalse(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "\"Phone\"", "phone"));
+    }
+    
+    @Test
+    void assertIsSameIdentifierKeepsPostgreSQLExistingQuotedIdentifierDistinct() {
+        assertFalse(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "Phone", "Phone"));
+        assertTrue(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "\"Phone\"", "Phone"));
     }
     
     @Test

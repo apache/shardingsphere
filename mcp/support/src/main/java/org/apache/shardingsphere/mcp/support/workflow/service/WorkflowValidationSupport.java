@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
@@ -86,9 +87,12 @@ public final class WorkflowValidationSupport {
      */
     public ValidationSection validateLogicalMetadata(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
                                                      final ValidationReport validationReport) {
+        String databaseName = WorkflowSQLUtils.normalizeIdentifier(snapshot.getRequest().getDatabase());
+        String databaseType = metadataQueryFacade.queryDatabase(databaseName).map(MCPDatabaseMetadata::getDatabaseType).orElse("");
         if (metadataQueryFacade.queryTableColumn(
-                WorkflowSQLUtils.normalizeIdentifier(snapshot.getRequest().getDatabase()), WorkflowSQLUtils.normalizeIdentifier(snapshot.getRequest().getSchema()),
-                WorkflowSQLUtils.normalizeIdentifier(snapshot.getRequest().getTable()), WorkflowSQLUtils.normalizeIdentifier(snapshot.getRequest().getColumn())).isPresent()) {
+                databaseName, WorkflowSQLUtils.canonicalizeIdentifier(databaseType, snapshot.getRequest().getSchema()),
+                WorkflowSQLUtils.canonicalizeIdentifier(databaseType, snapshot.getRequest().getTable()), WorkflowSQLUtils.canonicalizeIdentifier(databaseType, snapshot.getRequest().getColumn()))
+                .isPresent()) {
             return new ValidationSection(WorkflowLifecycle.STATUS_PASSED,
                     Map.of(WorkflowFieldNames.TABLE, snapshot.getRequest().getTable(), WorkflowFieldNames.COLUMN, snapshot.getRequest().getColumn()),
                     "Logical table and column are still visible from Proxy metadata.");

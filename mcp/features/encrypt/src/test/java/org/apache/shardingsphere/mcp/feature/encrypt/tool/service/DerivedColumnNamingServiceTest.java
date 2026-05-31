@@ -72,6 +72,49 @@ class DerivedColumnNamingServiceTest {
     }
     
     @Test
+    void assertCreatePlanCanonicalizesPostgreSQLUnquotedSourceColumn() {
+        EncryptWorkflowRequest request = createRequest(false, false);
+        request.setColumn("Phone");
+        List<WorkflowIssue> issues = new LinkedList<>();
+        DerivedColumnPlan actual = service.createPlan(request, new LinkedHashSet<>(), issues, "PostgreSQL");
+        assertThat(actual.getLogicalColumn(), is("phone"));
+        assertThat(actual.getCipherColumnName(), is("phone_cipher"));
+        assertThat(issues.size(), is(0));
+    }
+    
+    @Test
+    void assertCreatePlanPreservesPostgreSQLDelimitedSourceColumn() {
+        EncryptWorkflowRequest request = createRequest(false, false);
+        request.setColumn("\"Phone\"");
+        List<WorkflowIssue> issues = new LinkedList<>();
+        DerivedColumnPlan actual = service.createPlan(request, new LinkedHashSet<>(), issues, "PostgreSQL");
+        assertThat(actual.getLogicalColumn(), is("Phone"));
+        assertThat(actual.getCipherColumnName(), is("phone_cipher"));
+        assertThat(issues.size(), is(0));
+    }
+    
+    @Test
+    void assertCreatePlanPreservesPostgreSQLDelimitedOverrideName() {
+        EncryptWorkflowRequest request = createRequest(false, false);
+        request.getOptions().setCipherColumnName("\"Phone_Cipher\"");
+        List<WorkflowIssue> issues = new LinkedList<>();
+        DerivedColumnPlan actual = service.createPlan(request, new LinkedHashSet<>(), issues, "PostgreSQL");
+        assertThat(actual.getCipherColumnName(), is("\"Phone_Cipher\""));
+        assertThat(issues.size(), is(0));
+    }
+    
+    @Test
+    void assertCreatePlanRenamesPostgreSQLDelimitedOverrideName() {
+        EncryptWorkflowRequest request = createRequest(false, false);
+        request.getOptions().setCipherColumnName("\"Phone_Cipher\"");
+        Set<String> existingNames = new LinkedHashSet<>(List.of("Phone_Cipher"));
+        List<WorkflowIssue> issues = new LinkedList<>();
+        DerivedColumnPlan actual = service.createPlan(request, existingNames, issues, "PostgreSQL");
+        assertThat(actual.getCipherColumnName(), is("\"Phone_Cipher_1\""));
+        assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.AUTO_RENAMED_DUE_TO_CONFLICT));
+    }
+    
+    @Test
     void assertCreatePlanWithNameCollision() {
         EncryptWorkflowRequest request = createRequest(false, false);
         Set<String> existingNames = new LinkedHashSet<>(List.of("phone_cipher", "phone_cipher_1"));

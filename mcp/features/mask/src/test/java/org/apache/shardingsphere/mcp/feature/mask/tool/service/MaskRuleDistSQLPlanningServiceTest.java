@@ -109,13 +109,22 @@ class MaskRuleDistSQLPlanningServiceTest {
     @Test
     void assertPlanMaskDropRulePreservesCaseSensitiveSiblingColumn() {
         WorkflowRequest request = createRequest("drop");
-        request.setColumn("Phone");
+        request.setColumn("\"Phone\"");
         RuleArtifact actual = service.planMaskDropRule(request, List.of(
                 Map.of("column", "Phone", "algorithm_type", "MD5"),
                 Map.of("column", "phone", "algorithm_type", "KEEP_FIRST_N_LAST_M")), "PostgreSQL");
         assertThat(actual.getOperationType(), is("drop"));
         assertTrue(actual.getSql().startsWith("ALTER MASK RULE orders"));
         assertTrue(actual.getSql().contains("NAME=phone"));
+    }
+    
+    @Test
+    void assertPlanMaskDropRuleMatchesPostgreSQLUnquotedColumn() {
+        WorkflowRequest request = createRequest("drop");
+        request.setColumn("Phone");
+        RuleArtifact actual = service.planMaskDropRule(request, List.of(Map.of("column", "phone", "algorithm_type", "MD5")), "PostgreSQL");
+        assertThat(actual.getOperationType(), is("drop"));
+        assertThat(actual.getSql(), is("DROP MASK RULE orders"));
     }
     
     @Test

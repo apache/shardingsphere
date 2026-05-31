@@ -95,6 +95,15 @@ class PhysicalDDLPlanningServiceTest {
     }
     
     @Test
+    void assertPlanAddColumnArtifactsPreservesPostgreSQLDelimitedIdentifiers() {
+        DerivedColumnPlan derivedColumnPlan = createDerivedColumnPlan(false, false);
+        derivedColumnPlan.setCipherColumnName("\"Phone_Cipher\"");
+        List<DDLArtifact> actual = service.planAddColumnArtifacts("PostgreSQL", "\"Orders\"", derivedColumnPlan, new LinkedHashSet<>(), "");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getSql(), is("ALTER TABLE \"Orders\" ADD COLUMN \"Phone_Cipher\" VARCHAR(4000)"));
+    }
+    
+    @Test
     void assertPlanAddColumnArtifactsRejectsLineTerminatorTable() {
         MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class,
                 () -> service.planAddColumnArtifacts("MySQL", "orders\ndrop", createDerivedColumnPlan(false, false), new LinkedHashSet<>(), ""));

@@ -130,6 +130,62 @@ class WorkflowPlanningSupportTest {
     }
     
     @Test
+    void assertEnsurePlanningContextCanonicalizesPostgreSQLUnquotedIdentifiers() {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setSchema("Public");
+        request.setTable("Orders");
+        request.setColumn("Phone");
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata("PostgreSQL", "public", "orders", "phone")));
+        when(metadataQueryFacade.queryTable("logic_db", "public", "orders")).thenReturn(Optional.of(createTableMetadata("orders", "phone")));
+        when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(createColumnMetadata("orders", "phone")));
+        boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
+        assertTrue(actual);
+        assertTrue(snapshot.getIssues().isEmpty());
+    }
+    
+    @Test
+    void assertEnsurePlanningContextPreservesPostgreSQLDelimitedIdentifiers() {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setSchema("\"Public\"");
+        request.setTable("\"Orders\"");
+        request.setColumn("\"Phone\"");
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata("PostgreSQL", "Public", "Orders", "Phone")));
+        when(metadataQueryFacade.queryTable("logic_db", "Public", "Orders")).thenReturn(Optional.of(createTableMetadata("Orders", "Phone")));
+        when(metadataQueryFacade.queryTableColumn("logic_db", "Public", "Orders", "Phone")).thenReturn(Optional.of(createColumnMetadata("Orders", "Phone")));
+        boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
+        assertTrue(actual);
+        assertTrue(snapshot.getIssues().isEmpty());
+    }
+    
+    @Test
+    void assertEnsurePlanningContextDoesNotInferSchemaFromPostgreSQLQuotedTable() {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setTable("Orders");
+        request.setColumn("Phone");
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(new MCPDatabaseMetadata("logic_db", "PostgreSQL", "16",
+                List.of(new MCPSchemaMetadata("logic_db", "quoted_schema",
+                        List.of(new MCPTableMetadata("logic_db", "quoted_schema", "Orders", List.of(createColumnMetadata("Orders", "Phone")), List.of())), List.of(), List.of()),
+                        new MCPSchemaMetadata("logic_db", "other_schema",
+                                List.of(new MCPTableMetadata("logic_db", "other_schema", "customers", List.of(createColumnMetadata("customers", "id")), List.of())), List.of(), List.of())))));
+        boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
+        assertFalse(actual);
+        assertThat(snapshot.getStatus(), is("clarifying"));
+        assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please specify schema.")));
+    }
+    
+    @Test
     void assertApplyResolvedIntent() {
         WorkflowRequest request = new WorkflowRequest();
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
@@ -223,7 +279,12 @@ class WorkflowPlanningSupportTest {
     }
     
     private MCPDatabaseMetadata createDatabaseMetadata() {
-        return new MCPDatabaseMetadata("logic_db", "MySQL", "8.0", List.of(new MCPSchemaMetadata("logic_db", "public", List.of(createTableMetadata("orders", "phone")), List.of(), List.of())));
+        return createDatabaseMetadata("MySQL", "public", "orders", "phone");
+    }
+    
+    private MCPDatabaseMetadata createDatabaseMetadata(final String databaseType, final String schemaName, final String tableName, final String columnName) {
+        return new MCPDatabaseMetadata("logic_db", databaseType, "8.0",
+                List.of(new MCPSchemaMetadata("logic_db", schemaName, List.of(createTableMetadata(tableName, columnName)), List.of(), List.of())));
     }
     
     private MCPTableMetadata createTableMetadata(final String tableName, final String columnName) {

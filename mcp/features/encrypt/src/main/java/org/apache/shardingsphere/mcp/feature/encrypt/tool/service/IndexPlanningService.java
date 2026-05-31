@@ -68,6 +68,6 @@ public final class IndexPlanningService {
     }
     
     private boolean containsIdentifier(final String databaseType, final Set<String> identifiers, final String targetIdentifier) {
-        return identifiers.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, each, targetIdentifier));
+        return identifiers.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, targetIdentifier, each));
     }
 }

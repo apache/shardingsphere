@@ -84,6 +84,19 @@ public final class WorkflowSQLUtils {
     }
     
     /**
+     * Canonicalize a workflow identifier for metadata lookup or identifier comparison.
+     *
+     * @param databaseType database type
+     * @param identifier identifier to canonicalize
+     * @return canonicalized identifier
+     */
+    public static String canonicalizeIdentifier(final String databaseType, final String identifier) {
+        String rawIdentifier = trimToEmpty(identifier);
+        String result = normalizeIdentifier(rawIdentifier);
+        return !isDelimitedIdentifier(rawIdentifier) && isLowerCaseFoldedIdentifierDatabase(databaseType) && !isSpecialIdentifier(result) ? result.toLowerCase(Locale.ENGLISH) : result;
+    }
+    
+    /**
      * Check whether an identifier is supported by workflow planning.
      *
      * @param identifier identifier to check
@@ -139,17 +152,22 @@ public final class WorkflowSQLUtils {
     }
     
     /**
-     * Judge whether two workflow identifiers are semantically equal for the target database type.
+     * Judge whether a workflow identifier token references an existing identifier for the target database type.
      *
      * @param databaseType database type
-     * @param left left identifier
-     * @param right right identifier
-     * @return whether two identifiers are equal
+     * @param identifier identifier token
+     * @param existingIdentifier existing identifier
+     * @return whether the identifier references the existing identifier
      */
-    public static boolean isSameIdentifier(final String databaseType, final String left, final String right) {
-        String actualLeft = normalizeIdentifier(left);
-        String actualRight = normalizeIdentifier(right);
-        return isCaseInsensitiveIdentifierDatabase(databaseType) ? actualLeft.equalsIgnoreCase(actualRight) : actualLeft.equals(actualRight);
+    public static boolean isSameIdentifier(final String databaseType, final String identifier, final String existingIdentifier) {
+        String actualIdentifier = normalizeIdentifier(identifier);
+        String actualExistingIdentifier = normalizeIdentifier(existingIdentifier);
+        if (isCaseInsensitiveIdentifierDatabase(databaseType)) {
+            return actualIdentifier.equalsIgnoreCase(actualExistingIdentifier);
+        }
+        return isLowerCaseFoldedIdentifierDatabase(databaseType)
+                ? canonicalizeIdentifier(databaseType, identifier).equals(actualExistingIdentifier)
+                : actualIdentifier.equals(actualExistingIdentifier);
     }
     
     /**
@@ -279,6 +297,11 @@ public final class WorkflowSQLUtils {
     private static boolean isCaseInsensitiveIdentifierDatabase(final String databaseType) {
         String actualDatabaseType = trimToEmpty(databaseType).toLowerCase(Locale.ENGLISH);
         return "mysql".equals(actualDatabaseType) || "mariadb".equals(actualDatabaseType) || "doris".equals(actualDatabaseType);
+    }
+    
+    private static boolean isLowerCaseFoldedIdentifierDatabase(final String databaseType) {
+        String actualDatabaseType = trimToEmpty(databaseType).toLowerCase(Locale.ENGLISH);
+        return "postgresql".equals(actualDatabaseType) || "opengauss".equals(actualDatabaseType);
     }
     
     private static IdentifierQuoteStyle getSQLIdentifierQuoteStyle(final String databaseType) {
