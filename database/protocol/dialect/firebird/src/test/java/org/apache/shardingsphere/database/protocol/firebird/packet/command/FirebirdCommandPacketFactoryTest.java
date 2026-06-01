@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
@@ -100,6 +101,7 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("batch_create", FirebirdCommandPacketType.BATCH_CREATE, FirebirdBatchCreateCommandPacket.class),
                 Arguments.of("batch_msg", FirebirdCommandPacketType.BATCH_MSG, FirebirdBatchSendMessageCommandPacket.class),
                 Arguments.of("batch_exec", FirebirdCommandPacketType.BATCH_EXEC, FirebirdBatchExecuteCommandPacket.class),
+                Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, FirebirdBatchReleaseCommandPacket.class),
                 Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, FirebirdBatchCancelCommandPacket.class),
                 Arguments.of("void_as_default", FirebirdCommandPacketType.VOID, FirebirdUnsupportedCommandPacket.class));
     }
@@ -130,6 +132,7 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("batch_create", FirebirdCommandPacketType.BATCH_CREATE, 12),
                 Arguments.of("batch_msg", FirebirdCommandPacketType.BATCH_MSG, -1),
                 Arguments.of("batch_exec", FirebirdCommandPacketType.BATCH_EXEC, 12),
+                Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, 8),
                 Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, 8),
                 Arguments.of("void_as_default", FirebirdCommandPacketType.VOID, 0));
     }

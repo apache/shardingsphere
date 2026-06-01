@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -30,17 +30,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdBatchCancelCommandExecutorTest {
+class FirebirdBatchReleaseCommandExecutorTest {
     
     private static final int CONNECTION_ID = 2;
     
@@ -50,22 +49,18 @@ class FirebirdBatchCancelCommandExecutorTest {
     private ConnectionSession connectionSession;
     
     @Mock
-    private FirebirdBatchCancelCommandPacket packet;
+    private FirebirdBatchReleaseCommandPacket packet;
     
     @Test
     void assertExecute() throws SQLException {
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(STATEMENT_ID);
-        batchStatement.addParameterValues(Arrays.asList(1, "foo"));
-        FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batchStatement);
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, new FirebirdBatchStatement(STATEMENT_ID));
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
-        Collection<DatabasePacket> actual = new FirebirdBatchCancelCommandExecutor(packet, connectionSession).execute();
+        Collection<DatabasePacket> actual = new FirebirdBatchReleaseCommandExecutor(packet, connectionSession).execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
-        FirebirdBatchStatement actualBatchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID);
-        assertThat(actualBatchStatement, is(batchStatement));
-        assertTrue(actualBatchStatement.getParameterValues().isEmpty());
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
         FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
 }

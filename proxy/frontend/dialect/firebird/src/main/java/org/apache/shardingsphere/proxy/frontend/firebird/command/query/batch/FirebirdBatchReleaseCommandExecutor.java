@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -31,21 +30,18 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Batch cancel command executor for Firebird.
+ * Batch release command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdBatchCancelCommandExecutor implements CommandExecutor {
+public final class FirebirdBatchReleaseCommandExecutor implements CommandExecutor {
     
-    private final FirebirdBatchCancelCommandPacket packet;
+    private final FirebirdBatchReleaseCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
-        if (null != batchStatement) {
-            batchStatement.clearParameterValues();
-        }
+        FirebirdBatchRegistry.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
@@ -109,6 +110,8 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdBatchSendMessageCommandPacket();
             case BATCH_EXEC:
                 return new FirebirdBatchExecuteCommandPacket(payload);
+            case BATCH_RLS:
+                return new FirebirdBatchReleaseCommandPacket(payload);
             case BATCH_CANCEL:
                 return new FirebirdBatchCancelCommandPacket(payload);
             default:
@@ -175,6 +178,8 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdBatchSendMessageCommandPacket.getLength(payload, connectionId);
             case BATCH_EXEC:
                 return FirebirdBatchExecuteCommandPacket.getLength();
+            case BATCH_RLS:
+                return FirebirdBatchReleaseCommandPacket.getLength();
             case BATCH_CANCEL:
                 return FirebirdBatchCancelCommandPacket.getLength();
             default:
