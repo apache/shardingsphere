@@ -63,6 +63,7 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authen
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -147,7 +148,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     
     private String getNormalizedClientEncoding(final String clientEncoding) {
         String formattedClientEncoding = formatClientEncoding(clientEncoding);
-        String lowerCaseClientEncoding = formattedClientEncoding.toLowerCase();
+        String lowerCaseClientEncoding = formattedClientEncoding.toLowerCase(Locale.ROOT);
         boolean isDefault = "default".equals(lowerCaseClientEncoding);
         boolean isUtf8 = "utf8".equals(lowerCaseClientEncoding) || "utf-8".equals(lowerCaseClientEncoding) || "utf_8".equals(lowerCaseClientEncoding)
                 || "unicode".equals(lowerCaseClientEncoding);
