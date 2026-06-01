@@ -17,49 +17,63 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(MockitoExtension.class)
 class FirebirdBooleanBinaryProtocolValueTest {
     
-    @Mock
-    private FirebirdPacketPayload payload;
+    @Test
+    void assertReadTrue() {
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(new byte[]{1, 0, 0, 0});
+        assertTrue((Boolean) new FirebirdBooleanBinaryProtocolValue().read(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8)));
+        assertThat(byteBuf.readerIndex(), is(4));
+    }
     
     @Test
-    void assertRead() {
-        when(payload.readInt4()).thenReturn(1);
-        assertThat(new FirebirdBooleanBinaryProtocolValue().read(payload), is(1));
+    void assertReadFalse() {
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(new byte[]{0, 0, 0, 0});
+        assertFalse((Boolean) new FirebirdBooleanBinaryProtocolValue().read(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8)));
+        assertThat(byteBuf.readerIndex(), is(4));
+    }
+    
+    @Test
+    void assertReadFalseWithUnexpectedValue() {
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(new byte[]{2, 0, 0, 0});
+        assertFalse((Boolean) new FirebirdBooleanBinaryProtocolValue().read(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8)));
+        assertThat(byteBuf.readerIndex(), is(4));
     }
     
     @Test
     void assertWriteWithTrue() {
-        new FirebirdBooleanBinaryProtocolValue().write(payload, true);
-        verify(payload).writeInt4(1);
+        ByteBuf byteBuf = Unpooled.buffer();
+        new FirebirdBooleanBinaryProtocolValue().write(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8), true);
+        assertThat(byteBuf.readByte(), is((byte) 1));
+        assertThat(byteBuf.readByte(), is((byte) 0));
+        assertThat(byteBuf.readByte(), is((byte) 0));
+        assertThat(byteBuf.readByte(), is((byte) 0));
     }
     
     @Test
     void assertWriteWithFalse() {
-        new FirebirdBooleanBinaryProtocolValue().write(payload, false);
-        verify(payload).writeInt4(0);
-    }
-    
-    @Test
-    void assertWriteWithInteger() {
-        new FirebirdBooleanBinaryProtocolValue().write(payload, 1);
-        verify(payload).writeInt4(1);
+        ByteBuf byteBuf = Unpooled.buffer();
+        new FirebirdBooleanBinaryProtocolValue().write(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8), false);
+        assertThat(byteBuf.readByte(), is((byte) 0));
+        assertThat(byteBuf.readByte(), is((byte) 0));
+        assertThat(byteBuf.readByte(), is((byte) 0));
+        assertThat(byteBuf.readByte(), is((byte) 0));
     }
     
     @Test
     void assertGetLength() {
-        assertThat(new FirebirdBooleanBinaryProtocolValue().getLength(payload), is(4));
+        assertThat(new FirebirdBooleanBinaryProtocolValue().getLength(new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8)), is(4));
     }
 }
