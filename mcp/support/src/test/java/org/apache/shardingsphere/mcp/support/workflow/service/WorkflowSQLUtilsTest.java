@@ -82,6 +82,12 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertCanonicalizeIdentifierPreservesPostgreSQLReservedIdentifier() {
+        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "User"), is("User"));
+        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("openGauss", "User"), is("User"));
+    }
+    
+    @Test
     void assertCanonicalizeIdentifierPreservesDelimitedIdentifier() {
         assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "\"Phone\""), is("Phone"));
     }
@@ -102,6 +108,12 @@ class WorkflowSQLUtilsTest {
     void assertFormatDistSQLIdentifierQuotesReservedIdentifier() {
         String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("key");
         assertThat(actualValue, is("`key`"));
+    }
+    
+    @Test
+    void assertFormatDistSQLIdentifierKeepsSQLReservedIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("rank");
+        assertThat(actualValue, is("rank"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -135,6 +147,13 @@ class WorkflowSQLUtilsTest {
         assertThat(actualValue, is("`key`"));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getSQLKeywordCases")
+    void assertFormatSQLIdentifierQuotesDatabaseKeyword(final String name, final String databaseType, final String identifier, final String expectedValue) {
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier(databaseType, identifier);
+        assertThat(actualValue, is(expectedValue));
+    }
+    
     @Test
     void assertFormatSQLIdentifierKeepsSafeIdentifier() {
         String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "orders_01");
@@ -145,6 +164,13 @@ class WorkflowSQLUtilsTest {
     void assertFormatSQLIdentifierKeepsPostgreSQLMixedCaseIdentifier() {
         String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "Phone");
         assertThat(actualValue, is("Phone"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getSQLNonReservedKeywordCases")
+    void assertFormatSQLIdentifierKeepsDatabaseNonReservedKeyword(final String name, final String databaseType, final String identifier, final String expectedValue) {
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier(databaseType, identifier);
+        assertThat(actualValue, is(expectedValue));
     }
     
     @Test
@@ -261,5 +287,20 @@ class WorkflowSQLUtilsTest {
                 Arguments.of("quote assisted query column keyword", "assisted_query_column", "`assisted_query_column`"),
                 Arguments.of("quote mask algorithm keyword", "keep_from_x_to_y", "`keep_from_x_to_y`"),
                 Arguments.of("quote uppercase algorithm keyword", "AES", "`AES`"));
+    }
+    
+    private static Stream<Arguments> getSQLKeywordCases() {
+        return Stream.of(
+                Arguments.of("quote MySQL rank keyword", "MySQL", "rank", "`rank`"),
+                Arguments.of("quote MySQL filename keyword", "MySQL", "_filename", "`_filename`"),
+                Arguments.of("quote PostgreSQL user keyword", "PostgreSQL", "user", "\"user\""),
+                Arguments.of("quote openGauss user keyword", "openGauss", "user", "\"user\""),
+                Arguments.of("quote fallback common keyword", "", "user", "`user`"));
+    }
+    
+    private static Stream<Arguments> getSQLNonReservedKeywordCases() {
+        return Stream.of(
+                Arguments.of("keep MySQL user identifier", "MySQL", "user", "user"),
+                Arguments.of("keep PostgreSQL key identifier", "PostgreSQL", "key", "key"));
     }
 }
