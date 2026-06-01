@@ -43,7 +43,7 @@ proxy 已包含 PostgreSQL JDBC 和 openGauss JDBC 驱动。
 
 | 数据库   | JDBC 驱动                                                                                          |
 |-------|--------------------------------------------------------------------------------------------------|
-| MySQL | [mysql-connector-j-8.3.0.jar](https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.3.0/) |
+| MySQL | [mysql-connector-j-8.4.0.jar](https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.4.0/) |
 
 如果是异构迁移，源端支持范围更广的数据库。JDBC 驱动处理方式同上。
 

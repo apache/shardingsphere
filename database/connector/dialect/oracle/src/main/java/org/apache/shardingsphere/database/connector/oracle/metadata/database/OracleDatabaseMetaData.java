@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.altertable.DialectAddColumnOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
@@ -89,7 +90,7 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public Optional<DialectAlterTableOption> getAlterTableOption() {
-        return Optional.of(new DialectAlterTableOption(true, true));
+        return Optional.of(new DialectAlterTableOption(true, true, true, new DialectAddColumnOption("ADD", "")));
     }
     
     @Override

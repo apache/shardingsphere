@@ -20,12 +20,16 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.RefreshTableMetaDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.identifier.ExpectedIdentifier;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.RefreshTableMetaDataStatementTestCase;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Refresh table meta data statement assert.
@@ -43,14 +47,20 @@ public final class RefreshTableMetaDataStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final RefreshTableMetaDataStatement actual, final RefreshTableMetaDataStatementTestCase expected) {
         if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             if (null != expected.getTableName()) {
-                assertThat(assertContext.getText("Table name assertion error"), actual.getTableName().get(), is(expected.getTableName()));
+                assertNotNull(actual.getTableName().orElse(null), assertContext.getText("Table name assertion error"));
+                assertIdentifier(assertContext, actual.getTableName().get(), expected.getTableName(), "Table name");
             }
             if (null != expected.getStorageUnitName()) {
                 assertThat(assertContext.getText("Storage unit name assertion error"), actual.getStorageUnitName().get(), is(expected.getStorageUnitName()));
             }
             if (null != expected.getSchemaName()) {
-                assertThat(assertContext.getText("Schema name assertion error"), actual.getSchemaName().get(), is(expected.getSchemaName()));
+                assertNotNull(actual.getSchemaName().orElse(null), assertContext.getText("Schema name assertion error"));
+                assertIdentifier(assertContext, actual.getSchemaName().get(), expected.getSchemaName(), "Schema name");
             }
         }
+    }
+    
+    private static void assertIdentifier(final SQLCaseAssertContext assertContext, final IdentifierValue actual, final ExpectedIdentifier expected, final String type) {
+        IdentifierValueAssert.assertIs(assertContext, actual, expected, type);
     }
 }

@@ -67,6 +67,7 @@ import java.util.Properties;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -132,7 +133,7 @@ class CreateShardingTableRuleExecutorTest {
                 + "TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='6')),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        executor.checkBeforeUpdate(distSQLStatement);
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(distSQLStatement));
     }
     
     @Test
@@ -148,7 +149,7 @@ class CreateShardingTableRuleExecutorTest {
                 + "TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='6')),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,GENERATOR=existing_snowflake))";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        executor.checkBeforeUpdate(distSQLStatement);
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(distSQLStatement));
     }
     
     @Test
@@ -186,7 +187,7 @@ class CreateShardingTableRuleExecutorTest {
                 + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"
                 + ");";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        executor.checkBeforeUpdate(distSQLStatement);
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(distSQLStatement));
     }
     
     @Test
@@ -208,7 +209,7 @@ class CreateShardingTableRuleExecutorTest {
                 + "TABLE_STRATEGY(TYPE='NONE')"
                 + ");";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        executor.checkBeforeUpdate(distSQLStatement);
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(distSQLStatement));
     }
     
     @Test

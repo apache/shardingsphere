@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -105,6 +106,9 @@ public final class ColumnProjection implements Projection {
      * @return original table
      */
     public IdentifierValue getOriginalTable() {
+        if (null != columnBoundInfo && TableSourceType.TEMPORARY_TABLE == columnBoundInfo.getTableSourceType()) {
+            return columnBoundInfo.getOriginalTable();
+        }
         if (null == columnBoundInfo || null == columnBoundInfo.getOriginalTable() || Strings.isNullOrEmpty(columnBoundInfo.getOriginalTable().getValue())) {
             return null == owner ? new IdentifierValue("") : owner;
         }

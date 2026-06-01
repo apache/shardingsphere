@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.backend.response.header.query;
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.ColumnIndexOutOfRangeException;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
@@ -44,16 +44,16 @@ class QueryHeaderBuilderEngineTest {
     
     @Test
     void assertBuildWithoutProjections() throws SQLException {
-        QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
-        when(queryResultMetaData.getColumnName(1)).thenReturn("col_name");
-        when(queryResultMetaData.getColumnLabel(1)).thenReturn("col_label");
+        ShardingSphereResultSetMetaData resultSetMetaData = mock(ShardingSphereResultSetMetaData.class);
+        when(resultSetMetaData.getColumnName(1)).thenReturn("col_name");
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("col_label");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         QueryHeader expectedQueryHeader = mock(QueryHeader.class);
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
-            when(queryHeaderBuilder.build(queryResultMetaData, database, "col_name", "col_label", 1)).thenReturn(expectedQueryHeader);
+            when(queryHeaderBuilder.build(resultSetMetaData, database, "col_name", "col_label", 1)).thenReturn(expectedQueryHeader);
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(queryHeaderBuilder);
-            QueryHeader actualQueryHeader = new QueryHeaderBuilderEngine(databaseType).build(queryResultMetaData, database, 1);
+            QueryHeader actualQueryHeader = new QueryHeaderBuilderEngine(databaseType).build(resultSetMetaData, database, 1);
             assertThat(actualQueryHeader, is(expectedQueryHeader));
         }
     }
@@ -65,14 +65,14 @@ class QueryHeaderBuilderEngineTest {
         when(projection.getColumnLabel()).thenReturn("l1");
         when(projection.getExpression()).thenReturn("c1");
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projection));
-        QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
+        ShardingSphereResultSetMetaData resultSetMetaData = mock(ShardingSphereResultSetMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         QueryHeader expectedQueryHeader = mock(QueryHeader.class);
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
-            when(queryHeaderBuilder.build(queryResultMetaData, database, "c1", "l1", 1)).thenReturn(expectedQueryHeader);
+            when(queryHeaderBuilder.build(resultSetMetaData, database, "c1", "l1", 1)).thenReturn(expectedQueryHeader);
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(queryHeaderBuilder);
-            QueryHeader actualQueryHeader = new QueryHeaderBuilderEngine(databaseType).build(projectionsContext, queryResultMetaData, database, 1);
+            QueryHeader actualQueryHeader = new QueryHeaderBuilderEngine(databaseType).build(projectionsContext, resultSetMetaData, database, 1);
             assertThat(actualQueryHeader, is(expectedQueryHeader));
         }
     }
@@ -84,6 +84,10 @@ class QueryHeaderBuilderEngineTest {
         when(projection.getColumnName()).thenReturn("column");
         when(projection.getExpression()).thenReturn("column");
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projection));
-        assertThrows(ColumnIndexOutOfRangeException.class, () -> new QueryHeaderBuilderEngine(databaseType).build(projectionsContext, mock(), mock(), 2));
+        try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(mock(QueryHeaderBuilder.class));
+            assertThrows(ColumnIndexOutOfRangeException.class,
+                    () -> new QueryHeaderBuilderEngine(databaseType).build(projectionsContext, mock(ShardingSphereResultSetMetaData.class), mock(), 2));
+        }
     }
 }

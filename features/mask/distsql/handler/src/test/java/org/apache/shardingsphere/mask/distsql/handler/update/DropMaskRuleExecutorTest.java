@@ -40,6 +40,7 @@ import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,7 +65,7 @@ class DropMaskRuleExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(createSQLStatement(false, "T_MASK"), "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
-        metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfigurationWithoutIfExists));
+        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfigurationWithoutIfExists)));
     }
     
     private boolean assertRuleConfigurationWithoutIfExists(final MaskRuleConfiguration actual) {
@@ -83,7 +84,7 @@ class DropMaskRuleExecutorTest {
         new DistSQLUpdateExecuteEngine(createSQLStatement(true, "T_USER"), "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfigurationWithoutIfExists));
-        metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfigurationWithIfExists));
+        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfigurationWithIfExists)));
     }
     
     private DropMaskRuleStatement createSQLStatement(final boolean ifExists, final String tableName) {

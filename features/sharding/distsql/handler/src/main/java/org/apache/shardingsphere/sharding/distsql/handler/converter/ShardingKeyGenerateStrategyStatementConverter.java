@@ -58,11 +58,11 @@ public final class ShardingKeyGenerateStrategyStatementConverter {
     public static String getKeyGeneratorName(final String strategyName, final AbstractKeyGenerateStrategyDefinitionSegment keyGenerateStrategySegment) {
         if (keyGenerateStrategySegment.getKeyGeneratorName().isPresent()) {
             return keyGenerateStrategySegment.getKeyGeneratorName().get();
-        } else if (keyGenerateStrategySegment.getAlgorithmSegment().isPresent()) {
-            return ShardingKeyGenerateStrategyStatementConverter.createKeyGeneratorName(strategyName, keyGenerateStrategySegment.getAlgorithmSegment().get());
-        } else {
-            throw new IllegalArgumentException("Either key generator name or algorithm segment must be provided.");
         }
+        if (keyGenerateStrategySegment.getAlgorithmSegment().isPresent()) {
+            return createKeyGeneratorName(strategyName, keyGenerateStrategySegment.getAlgorithmSegment().get());
+        }
+        throw new IllegalArgumentException("Either key generator name or algorithm segment must be provided.");
     }
     
     private static String createKeyGeneratorName(final String strategyName, final AlgorithmSegment algorithmSegment) {

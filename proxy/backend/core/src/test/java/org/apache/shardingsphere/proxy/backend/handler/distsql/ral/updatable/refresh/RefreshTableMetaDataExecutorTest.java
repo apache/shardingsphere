@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -41,6 +42,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -58,40 +60,44 @@ class RefreshTableMetaDataExecutorTest {
     void assertExecuteUpdateWithReloadTableWithStorageUnit() {
         ShardingSphereDatabase database = mockDatabase(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable("t_order")).thenReturn(true);
-        when(database.getSchema("logic_schema")).thenReturn(schema);
+        when(schema.getName()).thenReturn("logic_schema");
+        when(schema.containsTable(new IdentifierValue("t_order"))).thenReturn(true);
+        when(database.getSchema(new IdentifierValue("logic_schema"))).thenReturn(schema);
         ContextManager contextManager = mock(ContextManager.class);
         executor.setDatabase(database);
-        executor.executeUpdate(new RefreshTableMetaDataStatement("t_order", "ds_0", "logic_schema"), contextManager);
-        verify(contextManager).reloadTable(database, "logic_schema", "ds_0", "t_order");
+        executor.executeUpdate(new RefreshTableMetaDataStatement(new IdentifierValue("t_order"), "ds_0", new IdentifierValue("logic_schema")), contextManager);
+        verify(contextManager).reloadTable(database, "logic_schema", "ds_0", new IdentifierValue("t_order"));
     }
     
     @Test
     void assertExecuteUpdateWithReloadSchemaWithStorageUnit() {
-        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement(null, "ds_0", "logic_schema");
         ShardingSphereDatabase database = mockDatabase(true);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getName()).thenReturn("logic_schema");
+        when(database.getSchema(new IdentifierValue("logic_schema"))).thenReturn(schema);
         ContextManager contextManager = mock(ContextManager.class);
         executor.setDatabase(database);
-        executor.executeUpdate(sqlStatement, contextManager);
+        executor.executeUpdate(new RefreshTableMetaDataStatement(null, "ds_0", new IdentifierValue("logic_schema")), contextManager);
         verify(contextManager).reloadSchema(database, "logic_schema", "ds_0");
     }
     
     @Test
     void assertExecuteUpdateWithReloadTableWithoutStorageUnit() {
-        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement("t_order", null, null);
+        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement(new IdentifierValue("t_order"), null, null);
         ShardingSphereDatabase database = mockDatabase(true);
         when(database.getProtocolType()).thenReturn(databaseType);
         DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable("t_order")).thenReturn(true);
-        when(database.getSchema("public")).thenReturn(schema);
+        when(schema.getName()).thenReturn("public");
+        when(schema.containsTable(new IdentifierValue("t_order"))).thenReturn(true);
+        when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
         ContextManager contextManager = mock(ContextManager.class);
         executor.setDatabase(database);
         try (MockedStatic<DatabaseTypedSPILoader> mockedStatic = mockStatic(DatabaseTypedSPILoader.class)) {
             mockedStatic.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
             executor.executeUpdate(sqlStatement, contextManager);
         }
-        verify(contextManager).reloadTable(database, "public", "t_order");
+        verify(contextManager).reloadTable(database, "public", new IdentifierValue("t_order"));
     }
     
     @Test
@@ -140,7 +146,7 @@ class RefreshTableMetaDataExecutorTest {
     
     @Test
     void assertExecuteUpdateWhenSchemaMissing() {
-        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement(null, null, "absent_schema");
+        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement(null, null, new IdentifierValue("absent_schema"));
         ShardingSphereDatabase database = mockDatabase(false);
         executor.setDatabase(database);
         assertThrows(SchemaNotFoundException.class, () -> executor.executeUpdate(sqlStatement, mock(ContextManager.class)));
@@ -150,10 +156,11 @@ class RefreshTableMetaDataExecutorTest {
     void assertExecuteUpdateWhenTableMissing() {
         ShardingSphereDatabase database = mockDatabase(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable("missing_table")).thenReturn(false);
-        when(database.getSchema("logic_schema")).thenReturn(schema);
+        when(schema.containsTable(new IdentifierValue("missing_table"))).thenReturn(false);
+        when(database.getSchema(new IdentifierValue("logic_schema"))).thenReturn(schema);
         executor.setDatabase(database);
-        assertThrows(TableNotFoundException.class, () -> executor.executeUpdate(new RefreshTableMetaDataStatement("missing_table", null, "logic_schema"), mock(ContextManager.class)));
+        assertThrows(TableNotFoundException.class,
+                () -> executor.executeUpdate(new RefreshTableMetaDataStatement(new IdentifierValue("missing_table"), null, new IdentifierValue("logic_schema")), mock(ContextManager.class)));
     }
     
     private ShardingSphereDatabase mockDatabase(final boolean schemaExists) {
@@ -161,6 +168,7 @@ class RefreshTableMetaDataExecutorTest {
         when(result.getName()).thenReturn("logic_db");
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
         when(result.containsSchema(anyString())).thenReturn(schemaExists);
+        when(result.containsSchema(any(IdentifierValue.class))).thenReturn(schemaExists);
         return result;
     }
     

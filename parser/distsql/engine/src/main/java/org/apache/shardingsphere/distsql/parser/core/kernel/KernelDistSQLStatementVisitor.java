@@ -135,7 +135,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowTableMetadata(final ShowTableMetadataContext ctx) {
-        Collection<String> tableNames = ctx.tableName().stream().map(IdentifierValueUtils::getValue).collect(Collectors.toSet());
+        Collection<IdentifierValue> tableNames = ctx.tableName().stream().map(each -> new IdentifierValue(each.getText())).collect(Collectors.toSet());
         return new ShowTableMetaDataStatement(tableNames, null == ctx.databaseName()
                 ? null
                 : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
@@ -263,12 +263,12 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
             return new RefreshTableMetaDataStatement();
         }
         String storageUnitName = null;
-        String schemaName = null;
-        String tableName = IdentifierValueUtils.getValue(ctx.refreshScope().tableName());
+        IdentifierValue schemaName = null;
+        IdentifierValue tableName = null == ctx.refreshScope().tableName() ? null : new IdentifierValue(ctx.refreshScope().tableName().getText());
         if (null != ctx.refreshScope().fromSegment()) {
             FromSegmentContext fromSegment = ctx.refreshScope().fromSegment();
             storageUnitName = IdentifierValueUtils.getValue(fromSegment.storageUnitName());
-            schemaName = null == fromSegment.schemaName() ? null : IdentifierValueUtils.getValue(fromSegment.schemaName());
+            schemaName = null == fromSegment.schemaName() ? null : new IdentifierValue(fromSegment.schemaName().getText());
         }
         return new RefreshTableMetaDataStatement(tableName, storageUnitName, schemaName);
     }

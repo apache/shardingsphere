@@ -120,19 +120,19 @@ showLoadBalanceAlgorithmPlugins
     ;
 
 confPath
-    : STRING_
+    : distSQLString
     ;
 
 filePath
-    : STRING_
+    : distSQLString
     ;
 
 metaDataValue
-    : STRING_
+    : distSQLString
     ;
 
 variableName
-    : IDENTIFIER_ | STRING_
+    : IDENTIFIER_ | distSQLString
     ;
 
 variableValues
@@ -144,7 +144,7 @@ variableValue
     ;
 
 instanceId
-    : IDENTIFIER_ | STRING_
+    : IDENTIFIER_ | distSQLString
     ;
 
 refreshScope
@@ -168,9 +168,9 @@ showLike
     ;
 
 likePattern
-    : STRING_
+    : distSQLString
     ;
 
 pluginClass
-    : STRING_
+    : distSQLString
     ;

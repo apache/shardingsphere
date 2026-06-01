@@ -53,6 +53,13 @@ class ColumnProjectionTest {
     }
     
     @Test
+    void assertGetOriginalTableWithTemporaryTableAndEmptyOriginalTableAndWithOwner() {
+        ColumnProjection projection = new ColumnProjection(new IdentifierValue("owner"), new IdentifierValue("name"), new IdentifierValue("alias"), databaseType, null, null,
+                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(null, null), new IdentifierValue(""), new IdentifierValue("name"), TableSourceType.TEMPORARY_TABLE));
+        assertThat(projection.getOriginalTable(), is(new IdentifierValue("")));
+    }
+    
+    @Test
     void assertGetOriginalTable() {
         ColumnProjection projection = new ColumnProjection(new IdentifierValue("owner"), new IdentifierValue("name"), new IdentifierValue("alias"), databaseType,
                 null, null, new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(null, null), new IdentifierValue("tbl"), new IdentifierValue(""), TableSourceType.PHYSICAL_TABLE));

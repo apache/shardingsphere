@@ -18,9 +18,29 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Architecture**: follow SOLID, DRY, separation of concerns, and YAGNI (build only what you need).
 - **Code Quality**:
     - Use clear naming and reasonable abstractions.
+    - Do not introduce package-private top-level helper types by default.
+      Keep very small, single-owner state or continuation helpers as private nested types, but avoid accumulating multiple nested collaborators inside one class.
+      When a helper has cohesive behavior, multiple callers, direct test value, or enough logic to distract from the owner class, split it into a public top-level type with a clear contract and direct tests.
+      If neither private nor public fits, pause before coding and explain why.
+    - Every new public production type must have direct, focused tests.
+      Broad workflow tests do not replace public contract tests unless they explicitly exercise that public type's behavior.
+    - New internal abstractions must reduce cognitive complexity instead of merely wrapping branches in more types.
+      For simple internal two-path flows, avoid marker interfaces, multi-type result hierarchies, or extra DTO-style helpers.
+      Add them only when they define a stable boundary, keep owner classes readable, or remove meaningful duplicated logic.
     - Delete unused code; when changing functionality, remove legacy compatibility shims.
     - Keep variable declarations adjacent to first use; if a value must be retained, declare it `final` to satisfy Checkstyle VariableDeclarationUsageDistance.
     - Single-use local variables must be inlined by default; keep a local variable only when it is reused (for stubbing/verification/assertions) or materially improves readability.
+    - Do not add explicit defensive immutable collection copies in constructors or method return values by default.
+      Avoid `List.copyOf`, `Set.copyOf`, `Map.copyOf`, `Collections.unmodifiableList`, `Collections.unmodifiableSet`, `Collections.unmodifiableMap`,
+      `Collectors.toUnmodifiableList`, `Collectors.toUnmodifiableSet`, `Collectors.toUnmodifiableMap`,
+      Guava `ImmutableList` / `ImmutableSet` / `ImmutableMap`, or similar explicit immutable copy/wrapper APIs
+      when the only reason is defensive programming.
+    - Ordinary collection literals or stream collection results are allowed when they express direct data construction or transformation.
+      Do not flag `List.of`, `Set.of`, `Map.of`, or `Stream.toList()` by default, and do not replace `Stream.toList()` with a mutable collector
+      unless the code has a concrete mutability requirement.
+    - Explicit immutable collection copies or wrappers are allowed only with a concrete semantic reason, such as enforcing a documented public API contract,
+      preserving a snapshot across shared ownership or asynchronous execution, protecting cached/global state from mutation, or satisfying an external API requirement.
+      Record the reason in the plan, review note, or nearby code rationale.
 - **Complete Implementation**: no MVPs/placeholders/TODOs—deliver fully runnable solutions.
 
 ### Performance Standards
@@ -32,10 +52,14 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Test-Driven**: design for testability, ensure unit-test coverage, and keep background unit tests under 60s to avoid job stalls.
 - **Quality Assurance**: run static checks, formatting, and code reviews.
 - **Checkstyle Gate**: do not hand off code with Checkstyle/Spotless failures—run the relevant module check locally and fix before completion.
+- **Formatting Gate**: after code or documentation changes, format only with `./mvnw spotless:apply -Pcheck -T1C`, then check style with `./mvnw checkstyle:check -Pcheck -T1C`; do not use any other formatting method.
+  Spotless must run after the last file-changing action and before Checkstyle/tests in the final handoff sequence.
+  If any file is edited, generated, moved, or manually whitespace-cleaned after Spotless, rerun Spotless before replying.
 - **Continuous Verification**: rely on automated tests and integration validation.
 - **Test Naming Simplicity**: keep test names concise and scenario-focused (avoid “ReturnsXXX”/overly wordy or AI-like phrasing); describe the scenario directly.
 - **Coverage Discipline**: follow the dedicated coverage & branch checklist before coding when coverage targets are stated.
 - **Dedicated and scoped tests**: each public production method must be covered by dedicated test methods; each test method covers only one scenario and invokes the target public method at most once (repeat only when the same scenario needs extra assertions), and different branches/inputs belong in separate test methods.
+- **No interface-only tests**: do not create unit tests for interfaces themselves; cover behavior through concrete implementations instead, and avoid dedicated test classes for pure contracts such as `MCPHandlerProvider`.
 - **Parameterized tests naming**: all parameterized tests must set an explicit `name` and use the `"{0}"` template for display names.
 - **Mocking Rule**: default to mocks; see Mocking & SPI Guidance for static/constructor mocking and spy avoidance details.
 - **Reflection Rule**: when tests must touch fields or methods via reflection, use `Plugins.getMemberAccessor()`—direct reflection APIs are forbidden.
@@ -77,10 +101,25 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 
 Dangerous operation detected! Operation type: [specific action] Scope of impact: [affected area] Risk assessment: [potential consequence] Please confirm whether to continue. [Requires explicit “yes”, “confirm”, or “proceed”]
 
+## Coding Execution Principles
+- **Think before coding**: inspect existing code, contracts, tests, and relevant standards before editing; do not guess, hide uncertainty, or invent unsupported facts.
+- **Simple first**: solve the verified goal with the smallest clear implementation that preserves existing behavior.
+- **Precise modification**: change only the files and code paths required by the task; avoid drive-by refactors and unrelated cleanup.
+- **Goal-driven execution**: convert the request into verifiable outcomes before implementation, then validate those outcomes with scoped checks.
+
+## Coding Skill Guidance
+- When the named third-party skills are available in the current environment, use them for the matching work:
+  `source-driven-development` for official-source checks, `api-and-interface-design` for public contracts,
+  `doubt-driven-development` for non-trivial decisions, `code-simplification` after implementation, and `code-review-and-quality` before handoff.
+- If a named third-party skill is unavailable, do not install it automatically or block the task.
+  Apply an equivalent manual checklist for the same intent, record the fallback in the plan or final response, and continue.
+
 ## Workflow
 - Use Sequential Thinking when tasks need decomposition: 6-10 steps (fallback 3-5), one sentence each, actionable.
-- Intake: choose the strategy for the task, confirm tool availability/fallbacks, and capture constraints (forbidden APIs, output format, coverage/test expectations).
-- Plan: inspect existing code with tools before edits, finish the plan before coding, and set the quality/verification bar.
+- Intake: choose the strategy for the task, confirm tool availability/fallbacks, capture constraints (forbidden APIs, output format, coverage/test expectations),
+  and use `source-driven-development` when available, or equivalent source-checking, to verify facts that depend on authoritative sources.
+- Plan: inspect existing code with tools before edits, finish the plan before coding, use `doubt-driven-development` when available for non-trivial decisions,
+  and set the quality/verification bar.
 - Implement: keep scope minimal, follow quality standards, record decisions, and handle edge cases; honor instruction precedence from Core Principle #7.
 - Validate: run the narrowest meaningful checks (see Verification & Commands) and prefer scoped runs; note any sandbox or limit blocks and alternatives.
 - Report & self-check: share intent, edits, verification results, and next steps; ensure all required instructions, coverage, and mocking rules are satisfied, with remaining risks called out.
@@ -90,8 +129,23 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - **Risk gate:** if any action fits the Dangerous Operation Checklist, pause and use the confirmation template before proceeding.
 - **Planning rules:** use Sequential Thinking with 3-10 actionable steps (no single-step plans) via the plan tool for non-trivial tasks; convert all hard requirements (SPI usage, mocking rules, coverage/test naming, forbidden APIs) into a checklist inside the plan and do not code until each item is addressed or explicitly waived.
 - **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use and mark retained values `final`; inline single-use locals by default unless reuse/readability justifies retention; delete dead code and avoid placeholders/TODOs.
+- **AGENTS.md maintenance:** do not add or update a `Session Notes` section in `AGENTS.md`. Keep task-specific notes in the active conversation, issue, or PR; only stable project-level rules may be generalized into this file.
 - **Post-task self-check (before replying):** confirm all instructions were honored; verify no placeholders/unused code; ensure Checkstyle/Spotless gates for touched modules are satisfied or explain why not run and what to run; list commands with exit codes; call out risks and follow-ups; complete all applicable checks before replying and do not rely on users to find missed rule violations.
+- **End-of-task format/style gate:** for any task that edits files, run `./mvnw spotless:apply -Pcheck -T1C` after the final edit, then run `./mvnw checkstyle:check -Pcheck -T1C` when production, test, or project-rule files are touched.
+  Do not perform manual formatting or whitespace cleanup after the final Spotless run; if a later cleanup is required, repeat Spotless and then Checkstyle before the final response.
 - **Final response template:** include intent/why, changed files with paths, rationale per file/section, commands run (with exit codes), verification status, and remaining risks/next actions (if tests skipped, state reason and the exact command to run); include a concise self-check result statement confirming final clean status after fixes.
+
+## Final Self-Iteration Gate
+- Apply this gate only to implementation tasks where the user has requested or authorized code or documentation edits.
+  For review-only, analysis-only, triage-only, or plan-only tasks, report findings and suggested follow-ups without modifying the reviewed target.
+- Before finishing an authorized implementation task, ask whether this task created in-scope legacy or dead code that can be safely removed,
+  whether the changed implementation can be simpler without changing behavior,
+  whether existing public behavior and contracts are preserved, and whether `code-review-and-quality` or equivalent review still has in-scope required findings.
+- Use `doubt-driven-development` when available, or equivalent adversarial self-review, to keep raising and resolving valuable in-scope questions until the stop condition is met.
+  Stop when no actionable findings remain, the same findings repeat, 3 doubt cycles complete, or the user explicitly overrides.
+- If any answer reveals an in-scope, behavior-preserving, low-risk required fix, make the fix and rerun relevant checks.
+- Repeat the review-fix-verify loop until no in-scope required findings remain.
+- Do not continue iterating for optional polish, broad cleanup, risky refactors, or unrelated code. Record those as follow-up suggestions instead of expanding the task.
 
 ## Coverage & Branch Checklist
 - When coverage targets are declared (including 100%), list every branch/path with its planned test before coding.
@@ -179,15 +233,17 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 
 ## Design Playbook
 - **Preferred styles:** elegant, minimal solutions that keep methods/tests lean, use guard clauses, and delete dead code immediately.
-- **Patterns to lean on:** builders/factories from `infra`, SPI-driven extensions, immutable DTOs for plan descriptions, explicit strategy enums.
+- **Patterns to lean on:** builders/factories from `infra`, SPI-driven extensions, DTOs with explicit ownership contracts, explicit strategy enums.
 - **Anti-patterns:** duplicating parsing logic, bypassing metadata caches, silently accepting invalid configs, static singletons in shared modules, or overbuilt helpers.
 - **Known pitfalls:** routing regressions when shadow rules are skipped, timezone drift from poor time-mocking, forgetting standalone vs cluster (`mode`) validation, missing ASF headers, Mockito inline mocks breaking on JDKs that block self-attach.
 - **Success recipe:** explain why the change exists, cite the affected data-flow step, keep public APIs backward compatible, and record defaults/knobs alongside code changes.
 
 ## Verification & Commands
-- Core commands: `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw spotless:apply -Pcheck [-pl <module>]` (format), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test` (fast verification), `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
+- Core commands: `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test` (fast verification), `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
 - Coverage: when tests change or targets demand it, run `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` or scoped `-pl <module> -am -Djacoco.skip=false test jacoco:report`; pair with the Coverage & Branch Checklist.
-- Style: `./mvnw checkstyle:check -Pcheck` (scoped with `-pl <module> -am -Pcheck` when possible) unless told otherwise.
+- Format: after code or documentation changes, run `./mvnw spotless:apply -Pcheck -T1C`; do not use any other formatting method.
+  This must be repeated after the last file-changing action before handoff.
+- Style: after formatting, run `./mvnw checkstyle:check -Pcheck -T1C` when production, test, or project-rule files are touched.
 - Scoped defaults: prefer module-scoped runs over whole-repo builds; include `-Dsurefire.failIfNoSpecifiedTests=false` when targeting specific tests.
 - Testing ground rules: JUnit 5 + Mockito, `ClassNameTest` naming, Arrange–Act–Assert, mock external systems/time/network, reset static caches, and reuse swappers/helpers for complex configs.
 - API bans: if a user forbids a tool/assertion, add it to the plan, avoid it during implementation, and cite verification searches (e.g., `rg assertEquals`) in the final report.
@@ -236,6 +292,3 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - If the class under test implements `TypedSPI` or `DatabaseTypedSPI`, instantiate it via `TypedSPILoader` or `DatabaseTypedSPILoader` instead of calling `new` directly.
 - Do not mix Mockito matchers with raw arguments; choose a single style per invocation, and ensure the Mockito extension aligns with the mocking approach.
 - Compliance is mandatory: before any coding, re-read AGENTS.md and convert all hard requirements (SPI usage, no FQCN, mocking rules, coverage targets, planning steps) into a checklist in the plan; do not proceed or report completion until every item is satisfied or explicitly waived by the user.
-
-## Session Notes
-- MySQLSchemataQueryExecutorFactoryTest：public 方法分别测试，`accept` 与 `newInstance` 各自使用独立测试方法。

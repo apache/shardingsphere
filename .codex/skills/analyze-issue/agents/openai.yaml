@@ -17,5 +17,5 @@
 
 interface:
   display_name: "Analyze Issue"
-  short_description: "Root-cause triage for ShardingSphere issue reports"
-  default_prompt: "Use $analyze-issue to analyze this ShardingSphere issue with a root-cause-first conclusion (analysis only, no code changes)."
+  short_description: "Maintainer replies with traceable issue analysis"
+  default_prompt: "Use $analyze-issue to draft a maintainer reply plus reference analysis for this ShardingSphere issue (analysis only, no code changes)."

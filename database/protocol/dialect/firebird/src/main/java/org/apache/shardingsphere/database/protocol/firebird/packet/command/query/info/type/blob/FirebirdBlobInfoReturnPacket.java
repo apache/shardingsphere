@@ -56,8 +56,6 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
                 writeIntValue(payload, type, getSegmentCount());
                 return;
             case MAX_SEGMENT:
-                writeIntValue(payload, type, getSegmentLength());
-                return;
             case TOTAL_LENGTH:
                 writeIntValue(payload, type, getSegmentLength());
                 return;

@@ -37,7 +37,7 @@ class ClassPathLocalFileURLLoaderTest {
     @Test
     @EnabledOnOs(OS.WINDOWS)
     void assertGetContentOnWindows() {
-        assertGetContent(1839);
+        assertGetContent(1932);
     }
     
     private void assertGetContent(final int expectedLength) {

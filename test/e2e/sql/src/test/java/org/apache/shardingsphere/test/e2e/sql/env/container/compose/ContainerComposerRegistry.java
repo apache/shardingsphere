@@ -56,6 +56,7 @@ public final class ContainerComposerRegistry implements AutoCloseable {
         }
         synchronized (containerComposers) {
             if (!containerComposers.containsKey(key)) {
+                close();
                 containerComposers.put(key, createContainerComposer(isClusterMode(mode, adapter), scenario, databaseType, adapter));
             }
             return containerComposers.get(key);
@@ -72,12 +73,14 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     
     @Override
     public void close() {
-        for (ContainerComposer each : containerComposers.values()) {
-            closeTargetDataSource(each.getTargetDataSource());
-            closeActualDataSourceMap(each.getActualDataSourceMap());
-            closeContainer(each);
+        synchronized (containerComposers) {
+            for (ContainerComposer each : containerComposers.values()) {
+                closeTargetDataSource(each.getTargetDataSource());
+                closeActualDataSourceMap(each.getActualDataSourceMap());
+                closeContainer(each);
+            }
+            containerComposers.clear();
         }
-        containerComposers.clear();
     }
     
     @SneakyThrows(Exception.class)

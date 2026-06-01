@@ -64,6 +64,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -89,7 +90,7 @@ class ShardingTableRuleStatementCheckerTest {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createCompleteAutoTableRule());
         rules.add(createCompleteTableRule());
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
@@ -99,7 +100,7 @@ class ShardingTableRuleStatementCheckerTest {
         autoTableRuleSegment.setShardingColumn("order_id");
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "2"))));
         rules.add(autoTableRuleSegment);
-        ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig));
     }
     
     @Test
@@ -115,7 +116,7 @@ class ShardingTableRuleStatementCheckerTest {
         autoTable2.setShardingColumn("order_id");
         autoTable2.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "2"))));
         rules.add(autoTable2);
-        ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig));
     }
     
     @Test
@@ -158,7 +159,7 @@ class ShardingTableRuleStatementCheckerTest {
         autoTableRuleSegment.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", "existing_snowflake"));
         autoTableRuleSegment.setShardingColumn("product_id");
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("FOO.DISTSQL.FIXTURE", PropertiesBuilder.build(new Property("", ""))));
-        ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(autoTableRuleSegment), false, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(autoTableRuleSegment), false, shardingRuleConfig));
     }
     
     @Test
@@ -285,7 +286,7 @@ class ShardingTableRuleStatementCheckerTest {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "4"))));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(autoTableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
@@ -293,7 +294,7 @@ class ShardingTableRuleStatementCheckerTest {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createCompleteAutoTableRule());
         rules.add(createCompleteTableRule());
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, true, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, rules, true, shardingRuleConfig));
     }
     
     @Test
@@ -307,7 +308,7 @@ class ShardingTableRuleStatementCheckerTest {
     void assertCheckTableRuleWithNoneStrategyTypeSuccess() {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createCompleteTableRuleWithNoneTypeStrategy());
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     private static ShardingRuleConfiguration createShardingRuleConfiguration() {

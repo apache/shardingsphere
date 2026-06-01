@@ -59,7 +59,7 @@ class ConstructorAdviceExecutorTest {
         assertDoesNotThrow(() -> executor.advice(new SimpleTargetAdviceObject(), new Object[]{new LinkedList<>()}));
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     void assertIntercept() {
         Builder<?> builder = mock(Builder.class);

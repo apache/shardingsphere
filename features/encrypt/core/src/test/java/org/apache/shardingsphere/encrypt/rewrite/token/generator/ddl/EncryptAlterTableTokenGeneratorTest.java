@@ -47,17 +47,21 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class EncryptAlterTableTokenGeneratorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class, RETURNS_DEEP_STUBS);
     
     private EncryptAlterTableTokenGenerator generator;
     
@@ -80,21 +84,23 @@ class EncryptAlterTableTokenGeneratorTest {
         when(result.getEncryptColumn("certificate_number")).thenReturn(mockEncryptColumn());
         when(result.isEncryptColumn("certificate_number_new")).thenReturn(true);
         when(result.getEncryptColumn("certificate_number_new")).thenReturn(mockNewEncryptColumn());
+        when(result.findEncryptor("certificate_number")).thenReturn(Optional.of(encryptAlgorithm));
+        when(result.findEncryptor("certificate_number_new")).thenReturn(Optional.of(encryptAlgorithm));
         return result;
     }
     
     private EncryptColumn mockEncryptColumn() {
-        EncryptColumn result = new EncryptColumn("certificate_number", new CipherColumnItem("cipher_certificate_number", mock(EncryptAlgorithm.class)));
-        result.setAssistedQuery(new AssistedQueryColumnItem("assisted_certificate_number", mock(EncryptAlgorithm.class)));
-        result.setLikeQuery(new LikeQueryColumnItem("like_certificate_number", mock(EncryptAlgorithm.class)));
+        EncryptColumn result = new EncryptColumn("certificate_number", new CipherColumnItem("cipher_certificate_number", encryptAlgorithm));
+        result.setAssistedQuery(new AssistedQueryColumnItem("assisted_certificate_number", encryptAlgorithm));
+        result.setLikeQuery(new LikeQueryColumnItem("like_certificate_number", encryptAlgorithm));
         return result;
     }
     
     private EncryptColumn mockNewEncryptColumn() {
         EncryptColumn result = new EncryptColumn(
-                "certificate_number_new", new CipherColumnItem("cipher_certificate_number_new", mock(EncryptAlgorithm.class)));
-        result.setAssistedQuery(new AssistedQueryColumnItem("assisted_certificate_number_new", mock(EncryptAlgorithm.class)));
-        result.setLikeQuery(new LikeQueryColumnItem("like_certificate_number_new", mock(EncryptAlgorithm.class)));
+                "certificate_number_new", new CipherColumnItem("cipher_certificate_number_new", encryptAlgorithm));
+        result.setAssistedQuery(new AssistedQueryColumnItem("assisted_certificate_number_new", encryptAlgorithm));
+        result.setLikeQuery(new LikeQueryColumnItem("like_certificate_number_new", encryptAlgorithm));
         return result;
     }
     
@@ -119,8 +125,13 @@ class EncryptAlterTableTokenGeneratorTest {
     }
     
     private SQLStatement createAddColumnStatement() {
+        return createAddColumnStatement(false);
+    }
+    
+    private SQLStatement createAddColumnStatement(final boolean notNull) {
         ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
-                33, 67, new ColumnSegment(33, 50, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, "");
+                33, 67, new ColumnSegment(33, 50, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, notNull,
+                notNull ? "certificate_number VARCHAR(10) DEFAULT 'foo' NOT NULL" : "");
         return AlterTableStatement.builder().databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))))
                 .addColumnDefinition(new AddColumnDefinitionSegment(22, 67, Collections.singleton(columnDefinitionSegment))).build();

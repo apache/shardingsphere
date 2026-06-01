@@ -51,6 +51,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.ProxyJDBCExecutor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
+import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
@@ -71,6 +72,7 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -177,7 +179,6 @@ class ProxySQLExecutorTest {
         when(metaData.getAllDatabases()).thenReturn(Collections.singleton(database));
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
-        when(metaData.getProps().<Boolean>getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED)).thenReturn(true);
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.XA);
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mock(SQLFederationRule.class), transactionRule)));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -185,6 +186,12 @@ class ProxySQLExecutorTest {
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         when(contextManager.getDatabaseType()).thenReturn(fixtureDatabaseType);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        BackendExecutorContext.getInstance().init();
+    }
+    
+    @AfterEach
+    void tearDown() {
+        BackendExecutorContext.getInstance().shutdown();
     }
     
     @Test

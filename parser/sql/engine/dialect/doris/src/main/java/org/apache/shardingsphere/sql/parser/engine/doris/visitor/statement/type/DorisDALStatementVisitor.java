@@ -174,6 +174,10 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowBui
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowAlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowLoadWarningsContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowResourcesNameWhereConditionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowResourcesResourceTypeWhereConditionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowResourcesWhereClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowLoadWarningsWhereConditionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowStreamLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BackupContext;
@@ -266,8 +270,11 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowCreateL
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowCreateRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowLoadWarningsStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowResourcesStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowStreamLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSyncStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowResourcesNameConditionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowResourcesResourceTypeConditionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RepositoryNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowBuildIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowAlterTableStatement;
@@ -1397,6 +1404,38 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         IdentifierValue identifierValue = (IdentifierValue) visit(ctx.identifier());
         result.setLoadName(new LoadNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), identifierValue));
         return result;
+    }
+    
+    @Override
+    public ASTNode visitShowResources(final ShowResourcesContext ctx) {
+        DorisShowResourcesStatement result = new DorisShowResourcesStatement(getDatabaseType());
+        if (null != ctx.showResourcesWhereClause()) {
+            setShowResourcesWhereClause(result, ctx.showResourcesWhereClause());
+        }
+        if (null != ctx.showLike()) {
+            result.setLike((ShowLikeSegment) visit(ctx.showLike()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
+        return result;
+    }
+    
+    private void setShowResourcesWhereClause(final DorisShowResourcesStatement result, final ShowResourcesWhereClauseContext ctx) {
+        ShowResourcesNameWhereConditionContext nameWhereCondition = ctx.showResourcesWhereCondition().showResourcesNameWhereCondition();
+        if (null != nameWhereCondition) {
+            String type = null != nameWhereCondition.LIKE() ? "LIKE" : "=";
+            String value = SQLUtils.getExactlyValue(nameWhereCondition.string_().getText());
+            result.setNameCondition(new ShowResourcesNameConditionSegment(nameWhereCondition.start.getStartIndex(), nameWhereCondition.stop.getStopIndex(), type, value));
+        }
+        ShowResourcesResourceTypeWhereConditionContext resourceTypeWhereCondition = ctx.showResourcesWhereCondition().showResourcesResourceTypeWhereCondition();
+        if (null != resourceTypeWhereCondition) {
+            String value = SQLUtils.getExactlyValue(resourceTypeWhereCondition.string_().getText());
+            result.setResourceTypeCondition(new ShowResourcesResourceTypeConditionSegment(resourceTypeWhereCondition.start.getStartIndex(), resourceTypeWhereCondition.stop.getStopIndex(), value));
+        }
     }
     
     @Override

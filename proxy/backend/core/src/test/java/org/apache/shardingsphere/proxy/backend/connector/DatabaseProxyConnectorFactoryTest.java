@@ -33,9 +33,11 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -62,6 +64,11 @@ class DatabaseProxyConnectorFactoryTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
+    @AfterEach
+    void tearDown() {
+        BackendExecutorContext.getInstance().shutdown();
+    }
+    
     @Test
     void assertNewDatabaseProxyConnectorWithoutParameter() {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class, RETURNS_DEEP_STUBS);
@@ -75,7 +82,7 @@ class DatabaseProxyConnectorFactoryTest {
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), metaData);
         ContextManager contextManager = mockContextManager(database);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        initBackendExecutorContext(contextManager);
         DatabaseProxyConnector engine = DatabaseProxyConnectorFactory.newInstance(queryContext, databaseConnectionManager, false);
         assertThat(engine, isA(DatabaseProxyConnector.class));
     }
@@ -98,7 +105,7 @@ class DatabaseProxyConnectorFactoryTest {
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         ContextManager contextManager = mockContextManager(database);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        initBackendExecutorContext(contextManager);
         assertThat(DatabaseProxyConnectorFactory.newInstance(
                 new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), metaData), databaseConnectionManager, false),
                 isA(DatabaseProxyConnector.class));
@@ -116,9 +123,14 @@ class DatabaseProxyConnectorFactoryTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         QueryContext queryContext = new QueryContext(sqlStatementContext, "schemaName", parameters, new HintValueContext(), mockConnectionContext(), metaData);
         ContextManager contextManager = mockContextManager(database);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        initBackendExecutorContext(contextManager);
         DatabaseProxyConnector connector = DatabaseProxyConnectorFactory.newInstance(queryContext, databaseConnectionManager, preferPreparedStatement);
         assertThat((JDBCDriverType) Plugins.getMemberAccessor().get(connector.getClass().getDeclaredField("driverType"), connector), is(expected));
+    }
+    
+    private void initBackendExecutorContext(final ContextManager contextManager) {
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        BackendExecutorContext.getInstance().init();
     }
     
     private ContextManager mockContextManager(final ShardingSphereDatabase database) {

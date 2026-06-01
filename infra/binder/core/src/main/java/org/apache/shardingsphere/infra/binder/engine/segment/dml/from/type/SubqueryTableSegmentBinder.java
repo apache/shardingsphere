@@ -92,6 +92,15 @@ public final class SubqueryTableSegmentBinder {
         SimpleTableSegmentBinderContext tableBinderContext = new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE);
         tableBinderContext.setFromWithSegment(fromWithSegment);
         tableBinderContexts.put(CaseInsensitiveString.of(subqueryTableName.getValue()), tableBinderContext);
+        segment.getPivot().map(optional -> PivotSegmentBinder.bind(optional, binderContext,
+                createTableBinderContexts(subqueryTableName, tableBinderContext), outerTableBinderContexts)).ifPresent(result::setPivot);
+        return result;
+    }
+    
+    private static Multimap<CaseInsensitiveString, TableSegmentBinderContext> createTableBinderContexts(final IdentifierValue subqueryTableName,
+                                                                                                        final TableSegmentBinderContext tableBinderContext) {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
+        result.put(CaseInsensitiveString.of(subqueryTableName.getValue()), tableBinderContext);
         return result;
     }
     

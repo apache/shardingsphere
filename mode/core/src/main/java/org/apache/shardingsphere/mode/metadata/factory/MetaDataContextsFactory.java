@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
@@ -76,7 +75,7 @@ public final class MetaDataContextsFactory {
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
         MetaDataContextsInitFactory initFactory = containsRegisteredDatabases(persistFacade.getRepository())
                 ? new RegisterCenterMetaDataContextsInitFactory(persistFacade.getRepository(), instanceContext)
-                : new LocalConfigurationMetaDataContextsInitFactory(persistFacade.getRepository(), instanceContext, param.getProps());
+                : new LocalConfigurationMetaDataContextsInitFactory(persistFacade.getRepository(), instanceContext);
         return initFactory.create(param);
     }
     
@@ -88,15 +87,13 @@ public final class MetaDataContextsFactory {
      * Create meta data contexts by switch resource.
      *
      * @param databaseName database name
-     * @param isLoadSchemasFromRegisterCenter is load schemas from register center or not
      * @param switchingResource switching resource
      * @param originalMetaDataContexts original meta data contexts
      * @return meta data contexts
-     * @throws SQLException SQL exception
      */
-    public MetaDataContexts createBySwitchResource(final String databaseName, final boolean isLoadSchemasFromRegisterCenter,
-                                                   final SwitchingResource switchingResource, final MetaDataContexts originalMetaDataContexts) throws SQLException {
-        ShardingSphereDatabase changedDatabase = createChangedDatabase(databaseName, isLoadSchemasFromRegisterCenter, switchingResource, null, originalMetaDataContexts);
+    public MetaDataContexts createBySwitchResource(final String databaseName, final SwitchingResource switchingResource,
+                                                   final MetaDataContexts originalMetaDataContexts) {
+        ShardingSphereDatabase changedDatabase = createChangedDatabase(databaseName, switchingResource, null, originalMetaDataContexts);
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         ShardingSphereMetaData clonedMetaData = cloneMetaData(originalMetaDataContexts.getMetaData(), changedDatabase);
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
@@ -111,15 +108,13 @@ public final class MetaDataContextsFactory {
      * Create meta data contexts by alter rule.
      *
      * @param databaseName database name
-     * @param isLoadSchemasFromRegisterCenter is load schemas from register center or not
      * @param ruleConfigs rule configs
      * @param originalMetaDataContexts original meta data contexts
      * @return meta data contexts
-     * @throws SQLException SQL exception
      */
-    public MetaDataContexts createByAlterRule(final String databaseName, final boolean isLoadSchemasFromRegisterCenter,
-                                              final Collection<RuleConfiguration> ruleConfigs, final MetaDataContexts originalMetaDataContexts) throws SQLException {
-        ShardingSphereDatabase changedDatabase = createChangedDatabase(databaseName, isLoadSchemasFromRegisterCenter, null, ruleConfigs, originalMetaDataContexts);
+    public MetaDataContexts createByAlterRule(final String databaseName, final Collection<RuleConfiguration> ruleConfigs,
+                                              final MetaDataContexts originalMetaDataContexts) {
+        ShardingSphereDatabase changedDatabase = createChangedDatabase(databaseName, null, ruleConfigs, originalMetaDataContexts);
         ShardingSphereMetaData clonedMetaData = cloneMetaData(originalMetaDataContexts.getMetaData(), changedDatabase);
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
@@ -138,49 +133,46 @@ public final class MetaDataContextsFactory {
         return result;
     }
     
+    private ShardingSphereDatabase createChangedDatabase(final String databaseName, final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs,
+                                                         final MetaDataContexts originalMetaDataContext) {
+        ShardingSphereDatabase database = originalMetaDataContext.getMetaData().getDatabase(databaseName);
+        ResourceMetaData effectiveResourceMetaData = getEffectiveResourceMetaData(database, switchingResource);
+        Collection<RuleConfiguration> toBeCreatedRuleConfigs = null == ruleConfigs ? database.getRuleMetaData().getConfigurations() : ruleConfigs;
+        DatabaseConfiguration toBeCreatedDatabaseConfig = getDatabaseConfiguration(effectiveResourceMetaData, switchingResource, toBeCreatedRuleConfigs, originalMetaDataContext);
+        return createChangedDatabaseByLoad(database.getName(), toBeCreatedDatabaseConfig, originalMetaDataContext);
+    }
+    
+    private ShardingSphereDatabase createChangedDatabaseByLoad(final String databaseName, final DatabaseConfiguration databaseConfig, final MetaDataContexts originalMetaDataContext) {
+        ConfigurationProperties props = originalMetaDataContext.getMetaData().getProps();
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
+        Collection<ShardingSphereSchema> schemas = persistFacade.getDatabaseMetaDataFacade().getSchema().load(databaseName, protocolType);
+        return ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, props, instanceContext, schemas);
+    }
+    
     /**
-     * Create changed database.
+     * Create changed database by reloading schema from data sources.
      *
      * @param databaseName database name
-     * @param isLoadSchemasFromRegisterCenter is load schemas from register center or not
      * @param switchingResource switching resource
      * @param ruleConfigs rule configurations
      * @param originalMetaDataContext original meta data contexts
      * @return changed database
      * @throws SQLException SQL exception
      */
-    public ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean isLoadSchemasFromRegisterCenter,
-                                                        final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs,
-                                                        final MetaDataContexts originalMetaDataContext) throws SQLException {
+    public ShardingSphereDatabase createChangedDatabaseByRebuild(final String databaseName, final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs,
+                                                                 final MetaDataContexts originalMetaDataContext) throws SQLException {
         ShardingSphereDatabase database = originalMetaDataContext.getMetaData().getDatabase(databaseName);
         ResourceMetaData effectiveResourceMetaData = getEffectiveResourceMetaData(database, switchingResource);
         Collection<RuleConfiguration> toBeCreatedRuleConfigs = null == ruleConfigs ? database.getRuleMetaData().getConfigurations() : ruleConfigs;
         DatabaseConfiguration toBeCreatedDatabaseConfig = getDatabaseConfiguration(effectiveResourceMetaData, switchingResource, toBeCreatedRuleConfigs, originalMetaDataContext);
-        return createChangedDatabase(database.getName(), isLoadSchemasFromRegisterCenter, toBeCreatedDatabaseConfig, originalMetaDataContext);
+        return createChangedDatabaseByRebuild(databaseName, toBeCreatedDatabaseConfig, originalMetaDataContext);
     }
     
-    private ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean isLoadSchemasFromRegisterCenter, final DatabaseConfiguration databaseConfig,
-                                                         final MetaDataContexts originalMetaDataContext) throws SQLException {
+    private ShardingSphereDatabase createChangedDatabaseByRebuild(final String databaseName, final DatabaseConfiguration databaseConfig,
+                                                                  final MetaDataContexts originalMetaDataContext) throws SQLException {
         ConfigurationProperties props = originalMetaDataContext.getMetaData().getProps();
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
-        return isLoadSchemasFromRegisterCenter
-                ? createFromRegisterCenter(databaseName, protocolType, databaseConfig, originalMetaDataContext)
-                : ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, props, instanceContext);
-    }
-    
-    private ShardingSphereDatabase createFromRegisterCenter(final String databaseName, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
-                                                            final MetaDataContexts originalMetaDataContext) {
-        Collection<ShardingSphereSchema> schemas = persistFacade.getDatabaseMetaDataFacade().getSchema().load(databaseName, protocolType);
-        boolean persistSchemasEnabled = originalMetaDataContext.getMetaData().getProps().getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED);
-        if (!persistSchemasEnabled) {
-            for (ShardingSphereSchema schema : schemas) {
-                if (originalMetaDataContext.getMetaData().getDatabase(databaseName).containsSchema(schema.getName())) {
-                    ShardingSphereSchema originSchema = originalMetaDataContext.getMetaData().getDatabase(databaseName).getSchema(schema.getName());
-                    originSchema.getAllTables().forEach(schema::putTable);
-                }
-            }
-        }
-        return ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, originalMetaDataContext.getMetaData().getProps(), instanceContext, schemas);
+        return ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, props, instanceContext);
     }
     
     private ResourceMetaData getEffectiveResourceMetaData(final ShardingSphereDatabase database, final SwitchingResource switchingResource) {

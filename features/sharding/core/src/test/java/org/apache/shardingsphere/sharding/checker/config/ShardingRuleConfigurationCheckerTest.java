@@ -45,6 +45,7 @@ import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ShardingRuleConfigurationCheckerTest {
@@ -66,7 +67,7 @@ class ShardingRuleConfigurationCheckerTest {
         ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig)));
         ruleConfig.getKeyGenerateStrategies().put("foo_column_strategy", createColumnKeyGenerateStrategyRuleConfiguration("foo_keygen"));
         ruleConfig.getKeyGenerateStrategies().put("foo_sequence_strategy", createSequenceKeyGenerateStrategyRuleConfiguration("foo_keygen"));
-        checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
+        assertDoesNotThrow(() -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
     }
     
     @Test

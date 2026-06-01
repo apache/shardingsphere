@@ -19,8 +19,9 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.sharding.merge.dql.ComparableByteArray;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -43,8 +44,12 @@ public final class GroupByValue {
     private List<?> getGroupByValues(final QueryResult queryResult, final Collection<OrderByItem> groupByItems) throws SQLException {
         List<Object> result = new ArrayList<>(groupByItems.size());
         for (OrderByItem each : groupByItems) {
-            result.add(queryResult.getValue(each.getIndex(), Object.class));
+            result.add(normalizeForEquality(queryResult.getValue(each.getIndex(), Object.class)));
         }
         return result;
+    }
+    
+    private static Object normalizeForEquality(final Object value) {
+        return value instanceof byte[] ? new ComparableByteArray((byte[]) value) : value;
     }
 }

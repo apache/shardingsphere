@@ -1,0 +1,122 @@
++++
+title = "Configuration"
+weight = 3
++++
+
+ShardingSphere-MCP uses YAML files to configure the transport and the databases that the MCP Server can connect to.
+The packaged distribution reads `conf/mcp-http.yaml` by default and also ships `conf/mcp-stdio.yaml`.
+
+## Transport configuration
+
+Each MCP Server process must select exactly one transport.
+
+HTTP example:
+
+```yaml
+transport:
+  type: STREAMABLE_HTTP
+  http:
+    bindHost: 127.0.0.1
+    port: 18088
+    endpointPath: /mcp
+```
+
+STDIO example:
+
+```yaml
+transport:
+  type: STDIO
+```
+
+| Configuration item | Description |
+| --- | --- |
+| `transport.type` | Transport type. Supported values are `STREAMABLE_HTTP` and `STDIO`. |
+| `transport.http` | HTTP transport configuration, used only when `transport.type` is `STREAMABLE_HTTP`. |
+| `transport.http.bindHost` | HTTP bind host. Defaults to `127.0.0.1`. Loopback values allow local access only. `0.0.0.0` or an intranet IP allows access through that interface. |
+| `transport.http.port` | HTTP bind port. The default value is `18088`. |
+| `transport.http.endpointPath` | HTTP endpoint path. The default value is `/mcp`. |
+
+## Database configuration
+
+`runtimeDatabases` defines the databases that the MCP Server can connect to and expose through MCP.
+Each entry key is the database name used in MCP calls. It usually maps to a logical database exposed by ShardingSphere-Proxy.
+
+```yaml
+runtimeDatabases:
+  "<logic-database>":
+    databaseType: MySQL
+    jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
+    username: "<proxy-username>"
+    password: "<proxy-password>"
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+```
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `databaseType` | Yes | Database protocol or dialect type of the connection endpoint, such as `MySQL` or `PostgreSQL`. It selects JDBC metadata and capability logic; it does not mean the endpoint is necessarily a physical database or ShardingSphere-Proxy. |
+| `jdbcUrl` | Yes | JDBC URL used by the MCP Server to connect to the runtime database. Point it to a Proxy logical database when using ShardingSphere rule capabilities. |
+| `username` | Yes | Username for the runtime database, usually the ShardingSphere-Proxy logical database username. |
+| `password` | No | Password for the runtime database. Omit it or use an empty string `""` for a no-password account. |
+| `driverClassName` | Yes | JDBC driver class name, such as `com.mysql.cj.jdbc.Driver` for the MySQL driver. |
+
+Notes:
+
+- When the target is ShardingSphere-Proxy, MCP resources expose ShardingSphere logical databases, not physical storage units.
+- When the target is a physical database, MCP resources reflect metadata from that JDBC target and do not represent ShardingSphere rule state.
+- Schema, table, view, index, and sequence metadata depends on target JDBC metadata. Proxy-visible metadata and physical database metadata may differ.
+- If the target JDBC driver is not packaged, copy the driver jar under `plugins/`.
+
+## Connection Targets and Capability Boundaries
+
+`runtimeDatabases` currently accepts any reachable JDBC URL. Different targets have different semantics and capability boundaries.
+
+### Connecting to a ShardingSphere-Proxy logical database
+
+This is the recommended target when using ShardingSphere rule capabilities. In this mode, MCP works against the logical database and logical SQL view exposed by Proxy, and is suitable for these capabilities:
+
+- Reading ShardingSphere logical database, table, and column metadata.
+- Listing encryption and masking algorithm plugins visible from Proxy.
+- Querying, planning, applying, and validating encryption or masking rules.
+- Executing logical SQL and workflow-generated DistSQL through Proxy.
+
+This mode is constrained by Proxy capabilities:
+
+- JDBC metadata, `information_schema`, indexes, sequences, and column type information follow what Proxy exposes. They are not equivalent to a complete physical database catalog.
+- Physical columns, physical indexes, and consistency across multiple storage nodes are not stable contracts that MCP can automatically confirm.
+- Available DistSQL statements, rule types, and algorithm plugins depend on the Proxy version, installed plugins, and current account privileges.
+- Physical DDL artifacts should be reviewed first. They are suitable for automatic execution only when Proxy can route and execute them safely.
+
+### Connecting to a physical database
+
+This mode is suitable only when MCP is used as a general JDBC metadata and SQL entry point, including these capabilities:
+
+- Browsing JDBC metadata for databases, schemas, tables, views, columns, indexes, and sequences.
+- Searching metadata.
+- Executing general read-only queries, or ordinary DML, DDL, and DCL after explicit authorization.
+
+This mode does not provide ShardingSphere rule capabilities:
+
+- It cannot discover encryption or masking algorithm plugins visible from Proxy.
+- It cannot query, plan, apply, or validate ShardingSphere encryption or masking rules.
+- It cannot use workflows that depend on DistSQL. Physical databases usually do not understand ShardingSphere DistSQL.
+
+## Plugin directory
+
+The packaged distribution keeps MCP Server dependencies and built-in MCP feature plugin jars under `lib/`.
+If your target database driver or an extra MCP feature plugin jar is not packaged, copy it under the distribution `plugins/` directory before starting the MCP Server.
+
+## Custom configuration file
+
+Unix-like systems:
+
+```bash
+bin/start.sh /path/to/mcp-http.yaml
+```
+
+Windows:
+
+```bat
+bin\start.bat path\to\mcp-http.yaml
+```
+
+For Docker, set `SHARDINGSPHERE_MCP_CONFIG` to an absolute config path inside the container.

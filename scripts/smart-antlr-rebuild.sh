@@ -37,10 +37,39 @@ STATE_FILE=".antlr_last_commit"
 CURRENT_COMMIT=$(git rev-parse HEAD)
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 MAVEN_COMMAND="./mvnw"
+# State format: active:<branch>:<commit> tracks generated output, branch:<branch>:<commit> preserves branch progress.
+FORCE_REBUILD=false
+ACTIVE_COMMIT=""
+BRANCH_STATE_LINES=()
 
 if [ ! -x "$MAVEN_COMMAND" ]; then
     MAVEN_COMMAND="mvn"
 fi
+
+print_usage() {
+    echo "Usage: $0 [-f|--force]"
+    echo
+    echo "Options:"
+    echo "  -f, --force    Rebuild all ANTLR4 modules and refresh state."
+    echo "  -h, --help     Show this help message."
+}
+
+for each in "$@"; do
+    case "$each" in
+        -f|--force)
+            FORCE_REBUILD=true
+            ;;
+        -h|--help)
+            print_usage
+            exit 0
+            ;;
+        *)
+            echo "Error: Unknown option '$each'." >&2
+            print_usage >&2
+            exit 1
+            ;;
+    esac
+done
 
 resolve_module_for_path() {
     local current_dir="$1"
@@ -54,8 +83,99 @@ resolve_module_for_path() {
     return 1
 }
 
+record_branch_state() {
+    local record="$1"
+    local branch=${record%%:*}
+    local commit=${record#*:}
+    if [ -n "$branch" ] && [ -n "$commit" ] && [ "$branch" != "$commit" ]; then
+        BRANCH_STATE_LINES+=("$branch:$commit")
+    fi
+}
+
+read_state_file() {
+    local each
+    if [ ! -f "$STATE_FILE" ]; then
+        return 0
+    fi
+    while IFS= read -r each || [ -n "$each" ]; do
+        case "$each" in
+            active:*)
+                ACTIVE_COMMIT=${each#active:}
+                ACTIVE_COMMIT=${ACTIVE_COMMIT#*:}
+                ;;
+            branch:*)
+                record_branch_state "${each#branch:}"
+                ;;
+            *:*)
+                ACTIVE_COMMIT=${each#*:}
+                record_branch_state "$each"
+                ;;
+        esac
+    done < "$STATE_FILE"
+}
+
+is_valid_commit() {
+    local commit="$1"
+    [ -n "$commit" ] && git rev-parse --verify "$commit^{commit}" >/dev/null 2>&1
+}
+
+find_branch_commit() {
+    local target_branch="$1"
+    local result=""
+    local each
+    local branch
+    local commit
+    for each in "${BRANCH_STATE_LINES[@]}"; do
+        branch=${each%%:*}
+        commit=${each#*:}
+        if [ "$target_branch" = "$branch" ]; then
+            result="$commit"
+        fi
+    done
+    if [ -n "$result" ]; then
+        printf "%s\n" "$result"
+    fi
+}
+
+resolve_last_commit() {
+    local branch_commit
+    if is_valid_commit "$ACTIVE_COMMIT"; then
+        printf "%s\n" "$ACTIVE_COMMIT"
+        return 0
+    fi
+    branch_commit=$(find_branch_commit "$CURRENT_BRANCH")
+    if is_valid_commit "$branch_commit"; then
+        printf "%s\n" "$branch_commit"
+        return 0
+    fi
+    branch_commit=$(find_branch_commit "master")
+    if is_valid_commit "$branch_commit"; then
+        printf "%s\n" "$branch_commit"
+    fi
+}
+
 write_state_file() {
-    printf "%s:%s\n" "$CURRENT_BRANCH" "$CURRENT_COMMIT" > "$STATE_FILE"
+    local temp_file
+    local updated_current=false
+    local each
+    local branch
+    local commit
+    temp_file=$(mktemp "${STATE_FILE}.XXXXXX") || exit 1
+    printf "active:%s:%s\n" "$CURRENT_BRANCH" "$CURRENT_COMMIT" > "$temp_file"
+    for each in "${BRANCH_STATE_LINES[@]}"; do
+        branch=${each%%:*}
+        commit=${each#*:}
+        if [ "$CURRENT_BRANCH" = "$branch" ]; then
+            printf "branch:%s:%s\n" "$CURRENT_BRANCH" "$CURRENT_COMMIT" >> "$temp_file"
+            updated_current=true
+        else
+            printf "branch:%s:%s\n" "$branch" "$commit" >> "$temp_file"
+        fi
+    done
+    if [ "$updated_current" = "false" ]; then
+        printf "branch:%s:%s\n" "$CURRENT_BRANCH" "$CURRENT_COMMIT" >> "$temp_file"
+    fi
+    mv "$temp_file" "$STATE_FILE"
 }
 
 # 2. Function to find all modules containing .g4 files
@@ -86,19 +206,18 @@ collect_changed_g4_files() {
 }
 
 # 3. Determine change set
-if [ -f "$STATE_FILE" ]; then
-    read -r stored_data < "$STATE_FILE"
-    LAST_BRANCH=${stored_data%%:*}
-    LAST_COMMIT=${stored_data#*:}
-
-    if [ "$CURRENT_BRANCH" = "$LAST_BRANCH" ] && git rev-parse "$LAST_COMMIT" >/dev/null 2>&1; then
-        echo "Branch: $CURRENT_BRANCH. Comparing changes since $LAST_COMMIT..." >&2
+read_state_file
+if [ "$FORCE_REBUILD" = "true" ]; then
+    echo "Force rebuild requested. Recompiling all ANTLR4 modules..." >&2
+    changed_files="FORCE_ALL"
+else
+    LAST_COMMIT=$(resolve_last_commit)
+    if [ -n "$LAST_COMMIT" ]; then
+        echo "Branch: $CURRENT_BRANCH. Comparing grammar changes since $LAST_COMMIT..." >&2
         changed_files=$(collect_changed_g4_files "$LAST_COMMIT")
     else
         changed_files="FORCE_ALL"
     fi
-else
-    changed_files="FORCE_ALL"
 fi
 
 # 4. Resolve modules to recompile

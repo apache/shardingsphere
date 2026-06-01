@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.UnsupportedActualDataNodeStructureException;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -56,9 +56,11 @@ public final class SchemaMetaDataUtils {
      *
      * @param tableNames table name collection
      * @param material material
+     * @param isSameProtocolAndStorageTypes whether protocol and storage types are the same
      * @return meta data loader materials
      */
-    public static Collection<MetaDataLoaderMaterial> getMetaDataLoaderMaterials(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) {
+    public static Collection<MetaDataLoaderMaterial> getMetaDataLoaderMaterials(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material,
+                                                                                final boolean isSameProtocolAndStorageTypes) {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
         Collection<DatabaseType> unsupportedThreeTierStorageStructureDatabaseTypes = getUnsupportedThreeTierStorageStructureDatabaseTypes(material.getStorageUnits().values());
         DataNodes dataNodes = new DataNodes(material.getRules());
@@ -76,20 +78,27 @@ public final class SchemaMetaDataUtils {
         for (Entry<String, Collection<String>> entry : dataSourceTableGroups.entrySet()) {
             DatabaseType storageType = material.getStorageUnits().get(entry.getKey()).getStorageType();
             String defaultSchemaName = new DatabaseTypeRegistry(storageType).getDefaultSchemaName(material.getDefaultSchemaName());
-            result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), storageType, defaultSchemaName, loadTableMetadataBatchSize));
+            result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), storageType, defaultSchemaName, loadTableMetadataBatchSize, isSameProtocolAndStorageTypes));
         }
         return result;
     }
     
     private static Collection<MetaDataLoaderMaterial> buildMaterials(final GenericSchemaBuilderMaterial material, final String dataSourceName, final Collection<String> actualTableNames,
-                                                                     final DatabaseType storageType, final String defaultSchemaName, final int loadTableMetadataBatchSize) {
+                                                                     final DatabaseType storageType, final String defaultSchemaName, final int loadTableMetadataBatchSize,
+                                                                     final boolean isSameProtocolAndStorageTypes) {
         Collection<MetaDataLoaderMaterial> result = new LinkedList<>();
         DataSource dataSource = getDataSource(material, dataSourceName);
-        IdentifierCaseRule tableIdentifierRule = material.getIdentifierContext().getRule(IdentifierScope.TABLE);
         for (List<String> each : Lists.partition(new ArrayList<>(actualTableNames), loadTableMetadataBatchSize)) {
-            result.add(new MetaDataLoaderMaterial(each.stream().map(tableIdentifierRule::normalize).collect(Collectors.toList()), dataSourceName, dataSource, storageType, defaultSchemaName));
+            result.add(new MetaDataLoaderMaterial(normalize(each, material.getIdentifierContext(), isSameProtocolAndStorageTypes), dataSourceName, dataSource, storageType, defaultSchemaName));
         }
         return result;
+    }
+    
+    private static Collection<String> normalize(final Collection<String> tableNames, final DatabaseIdentifierContext identifierContext, final boolean isSameProtocolAndStorageTypes) {
+        if (isSameProtocolAndStorageTypes) {
+            return tableNames;
+        }
+        return tableNames.stream().map(each -> identifierContext.getRule(IdentifierScope.TABLE).normalize(each)).collect(Collectors.toList());
     }
     
     private static DataSource getDataSource(final GenericSchemaBuilderMaterial material, final String dataSourceName) {

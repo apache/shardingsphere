@@ -82,7 +82,7 @@ class SchemaMetaDataUtilsTest {
                                           final List<List<String>> expectedActualTableNames, final List<String> expectedDefaultSchemaNames) {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(mockDataNodeRule(dataNodes)), props, defaultSchemaName,
                 DatabaseIdentifierContextFactory.createDefault());
-        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material));
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material, true));
         assertThat(actual.size(), is(expectedStorageUnitNames.size()));
         for (int i = 0; i < actual.size(); i++) {
             assertThat(actual.get(i).getStorageUnitName(), is(expectedStorageUnitNames.get(i)));
@@ -100,7 +100,7 @@ class SchemaMetaDataUtilsTest {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,
                 Collections.singleton(mockDataNodeRule(Collections.singleton(new DataNode("ds.foo_db", "foo_db", "foo_tbl")))),
                 createProperties(Boolean.FALSE, null), "foo_db", DatabaseIdentifierContextFactory.createDefault());
-        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material));
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material, true));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getStorageUnitName(), is("ds.foo_db"));
         assertThat(actual.get(0).getDataSource(), is(dataSource));
@@ -118,7 +118,7 @@ class SchemaMetaDataUtilsTest {
                 Collections.singleton(mockDataNodeRule(Collections.singleton(new DataNode("ds.foo_db", "foo_db", "foo_tbl")))),
                 createProperties(Boolean.FALSE, null), "foo_db", DatabaseIdentifierContextFactory.createDefault());
         UnsupportedActualDataNodeStructureException actual = assertThrows(UnsupportedActualDataNodeStructureException.class,
-                () -> SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material));
+                () -> SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material, true));
         assertThat(actual.getMessage(), is("Can not support 3-tier structure for actual data node 'ds.foo_db.foo_tbl' with JDBC 'jdbc:mock'."));
     }
     
@@ -129,7 +129,7 @@ class SchemaMetaDataUtilsTest {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(
                 mockDataNodeRule(Arrays.asList(new DataNode("ds_0.foo_tbl_0"), new DataNode("ds_0.foo_tbl_1"), new DataNode("ds_0.foo_tbl_2")))),
                 createProperties(Boolean.TRUE, 2), "foo_db", DatabaseIdentifierContextFactory.createDefault());
-        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material));
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material, true));
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getStorageUnitName(), is("ds_0"));
         assertThat(new ArrayList<>(actual.get(0).getActualTableNames()), is(Arrays.asList("foo_tbl_0", "foo_tbl_1")));
@@ -144,7 +144,7 @@ class SchemaMetaDataUtilsTest {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,
                 Collections.singleton(mockDataNodeRule(Collections.singleton(new DataNode("ds_0.t_user")))), props, "foo_db",
                 DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), storageUnits), props));
-        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material));
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material, false));
         assertThat(actual.size(), is(1));
         assertThat(new ArrayList<>(actual.get(0).getActualTableNames()), is(Collections.singletonList("T_USER")));
     }
@@ -158,7 +158,7 @@ class SchemaMetaDataUtilsTest {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(
                 mockDataNodeRule(Arrays.asList(new DataNode("ds_mysql.t_order"), new DataNode("ds_oracle.t_user")))), props, "foo_db",
                 DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), storageUnits), props));
-        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material));
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material, false));
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getStorageUnitName(), is("ds_mysql"));
         assertThat(new ArrayList<>(actual.get(0).getActualTableNames()), is(Collections.singletonList("t_order")));

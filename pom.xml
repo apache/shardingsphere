@@ -43,6 +43,7 @@
         
         <module>features</module>
         <module>agent</module>
+        <module>mcp</module>
         
         <module>test</module>
         
@@ -74,7 +75,7 @@
         <guava.version>33.4.6-jre</guava.version>
         <checker-qual.version>3.39.0</checker-qual.version>
         <error_prone_annotations.version>2.22.0</error_prone_annotations.version>
-        <java-util.version>4.90.0</java-util.version>
+        <java-util.version>4.103.0</java-util.version>
         <calcite.version>1.40.0</calcite.version>
         
         <commons-lang3.version>3.18.0</commons-lang3.version>
@@ -102,7 +103,7 @@
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
         
         <netty.version>4.2.9.Final</netty.version>
-        <bouncycastle.version>1.79</bouncycastle.version>
+        <bouncycastle.version>1.84</bouncycastle.version>
         
         <curator.version>5.7.0</curator.version>
         <zookeeper.version>3.9.5</zookeeper.version>
@@ -125,7 +126,7 @@
         <immutables.version>2.10.1</immutables.version>
         
         <postgresql.version>42.7.8</postgresql.version>
-        <mysql-connector-java.version>8.3.0</mysql-connector-java.version>
+        <mysql-connector-java.version>8.4.0</mysql-connector-java.version>
         <mssql.version>12.10.2.jre8</mssql.version>
         <h2.version>2.2.224</h2.version>
         <opengauss.version>3.1.0-og</opengauss.version>

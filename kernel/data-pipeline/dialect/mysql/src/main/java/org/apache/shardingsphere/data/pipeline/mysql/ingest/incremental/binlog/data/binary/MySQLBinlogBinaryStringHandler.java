@@ -41,7 +41,7 @@ public final class MySQLBinlogBinaryStringHandler {
      * @return handled value
      */
     public static Serializable handle(final PipelineColumnMetaData columnMetaData, final MySQLBinaryString value) {
-        return new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, "MySQL")).getDialectDatabaseMetaData().getDataTypeOption().isBinaryDataType(columnMetaData.getDataType())
+        return new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, "MySQL")).getDialectDatabaseMetaData().getDataTypeOption().isBinaryDataType(columnMetaData.getDataType(), null)
                 ? value.getBytes()
                 : new String(value.getBytes(), Charset.defaultCharset());
     }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -94,13 +95,22 @@ public final class SimpleTableSegmentBinder {
         Optional<ShardingSphereSchema> schema = schemaName.map(identifierValue -> binderContext.getMetaData().getDatabase(databaseName).getSchema(identifierValue));
         checkTableExists(binderContext, schema.orElse(null), tableName, segment);
         checkTableMetadata(binderContext, schema.orElse(null), schemaName.map(IdentifierValue::getValue).orElse(null), tableName);
-        createSimpleTableBinderContext(segment, schema.orElse(null), databaseName, schemaName.orElse(null), binderContext)
-                .ifPresent(context -> tableBinderContexts.put(CaseInsensitiveString.of(segment.getAliasName().orElseGet(tableName::getValue)), context));
+        String tableAliasOrName = segment.getAliasName().orElseGet(tableName::getValue);
+        Optional<SimpleTableSegmentBinderContext> tableBinderContext = createSimpleTableBinderContext(segment, schema.orElse(null), databaseName, schemaName.orElse(null), binderContext);
+        tableBinderContext.ifPresent(context -> tableBinderContexts.put(CaseInsensitiveString.of(tableAliasOrName), context));
         TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName);
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName.orElse(null)));
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
         segment.getOwner().ifPresent(result::setOwner);
         segment.getAliasSegment().ifPresent(result::setAlias);
+        tableBinderContext.flatMap(context -> segment.getPivot()
+                .map(optional -> PivotSegmentBinder.bind(optional, binderContext, createTableBinderContexts(tableAliasOrName, context), LinkedHashMultimap.create()))).ifPresent(result::setPivot);
+        return result;
+    }
+    
+    private static Multimap<CaseInsensitiveString, TableSegmentBinderContext> createTableBinderContexts(final String tableAliasOrName, final TableSegmentBinderContext tableBinderContext) {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
+        result.put(CaseInsensitiveString.of(tableAliasOrName), tableBinderContext);
         return result;
     }
     
@@ -245,6 +255,10 @@ public final class SimpleTableSegmentBinder {
     private static Optional<SimpleTableSegmentBinderContext> createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue databaseName,
                                                                                             final IdentifierValue schemaName, final SQLStatementBinderContext binderContext) {
         IdentifierValue tableName = segment.getTableName().getIdentifier();
+        Optional<SimpleTableSegmentBinderContext> externalTableBinderContext = createExternalTableBinderContext(segment, tableName, binderContext);
+        if (externalTableBinderContext.isPresent()) {
+            return externalTableBinderContext;
+        }
         if (null != schema && schema.containsTable(tableName)) {
             return createSimpleTableSegmentBinderContextWithMetaData(segment, schema, databaseName, schemaName, binderContext, tableName);
         }
@@ -252,16 +266,27 @@ public final class SimpleTableSegmentBinder {
             Collection<ProjectionSegment> projectionSegments = createProjectionSegments((CreateTableStatement) binderContext.getSqlStatement(), databaseName, schemaName, tableName);
             return Optional.of(new SimpleTableSegmentBinderContext(projectionSegments, TableSourceType.PHYSICAL_TABLE));
         }
-        CaseInsensitiveString caseInsensitiveTableName = CaseInsensitiveString.of(tableName.getValue());
-        if (binderContext.getExternalTableBinderContexts().containsKey(caseInsensitiveTableName)) {
-            TableSegmentBinderContext tableSegmentBinderContext = binderContext.getExternalTableBinderContexts().get(caseInsensitiveTableName).iterator().next();
-            Collection<ProjectionSegment> subqueryProjections =
-                    SubqueryTableBindUtils.createSubqueryProjections(tableSegmentBinderContext.getProjectionSegments(), tableName, binderContext.getSqlStatement().getDatabaseType(),
-                            TableSourceType.TEMPORARY_TABLE);
-            return Optional.of(new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE));
-        }
         SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
         segment.getDbLink().ifPresent(optional -> result.setContainsDBLink(true));
+        return Optional.of(result);
+    }
+    
+    private static Optional<SimpleTableSegmentBinderContext> createExternalTableBinderContext(final SimpleTableSegment segment, final IdentifierValue tableName,
+                                                                                              final SQLStatementBinderContext binderContext) {
+        if (segment.getOwner().isPresent()) {
+            return Optional.empty();
+        }
+        CaseInsensitiveString caseInsensitiveTableName = CaseInsensitiveString.of(tableName.getValue());
+        if (!binderContext.getExternalTableBinderContexts().containsKey(caseInsensitiveTableName)) {
+            return Optional.empty();
+        }
+        TableSegmentBinderContext tableSegmentBinderContext = binderContext.getExternalTableBinderContexts().get(caseInsensitiveTableName).iterator().next();
+        Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
+                tableSegmentBinderContext.getProjectionSegments(), tableName, binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
+        SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE);
+        if (tableSegmentBinderContext instanceof SimpleTableSegmentBinderContext && ((SimpleTableSegmentBinderContext) tableSegmentBinderContext).isFromWithSegment()) {
+            result.setFromWithSegment(true);
+        }
         return Optional.of(result);
     }
     

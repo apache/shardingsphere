@@ -86,6 +86,7 @@ public final class MaskRule implements DatabaseRule, PartialRuleUpdateSupported<
     public boolean partialUpdate(final MaskRuleConfiguration toBeUpdatedRuleConfig) {
         handleAddedMaskAlgorithm(toBeUpdatedRuleConfig);
         handleRemovedMaskAlgorithm(toBeUpdatedRuleConfig);
+        handleUpdatedMaskAlgorithm(toBeUpdatedRuleConfig);
         Collection<String> toBeUpdatedTablesNames = toBeUpdatedRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toCollection(CaseInsensitiveSet::new));
         Collection<String> toBeRemovedTableNames = tables.keySet().stream().filter(each -> !toBeUpdatedTablesNames.contains(each)).collect(Collectors.toList());
         if (!toBeRemovedTableNames.isEmpty()) {
@@ -108,6 +109,11 @@ public final class MaskRule implements DatabaseRule, PartialRuleUpdateSupported<
         maskAlgorithms.entrySet().stream()
                 .filter(entry -> !toBeUpdatedRuleConfig.getMaskAlgorithms().containsKey(entry.getKey()))
                 .forEach(entry -> maskAlgorithms.remove(entry.getKey()));
+    }
+    
+    private void handleUpdatedMaskAlgorithm(final MaskRuleConfiguration toBeUpdatedRuleConfig) {
+        toBeUpdatedRuleConfig.getMaskAlgorithms().forEach((key1, value1) -> maskAlgorithms
+                .computeIfPresent(key1, (key, value) -> TypedSPILoader.getService(MaskAlgorithm.class, value1.getType(), value1.getProps())));
     }
     
     @Override

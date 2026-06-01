@@ -51,6 +51,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -185,8 +187,21 @@ class SelectInformationSchemataExecutorTest {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/foo_ds");
         when(result.getCatalog()).thenReturn("foo_ds");
+        PreparedStatement lowerCasePreparedStatement = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
+        PreparedStatement queryPreparedStatement = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
         ResultSet resultSet = mockResultSet(expectedResultSetMap);
-        when(result.prepareStatement(any(String.class)).executeQuery()).thenReturn(resultSet);
+        ResultSet lowerCaseResultSet = mockLowerCaseResultSet();
+        when(lowerCasePreparedStatement.executeQuery()).thenReturn(lowerCaseResultSet);
+        when(queryPreparedStatement.executeQuery()).thenReturn(resultSet);
+        when(result.prepareStatement(any(String.class))).thenReturn(queryPreparedStatement);
+        when(result.prepareStatement(eq("SELECT @@lower_case_table_names"))).thenReturn(lowerCasePreparedStatement);
+        return result;
+    }
+    
+    private ResultSet mockLowerCaseResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
+        when(result.next()).thenReturn(true);
+        when(result.getInt(1)).thenReturn(1);
         return result;
     }
     

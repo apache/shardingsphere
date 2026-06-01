@@ -41,7 +41,7 @@ class SchemaMetaDataPersistServiceTest {
     
     private FixturePersistRepository repository;
     
-    private TableMetaDataPersistEnabledService tableMetaDataPersistService;
+    private TableMetaDataPersistService tableMetaDataPersistService;
     
     private ViewMetaDataPersistService viewMetaDataPersistService;
     
@@ -50,7 +50,7 @@ class SchemaMetaDataPersistServiceTest {
     @BeforeEach
     void setUp() {
         repository = new FixturePersistRepository();
-        tableMetaDataPersistService = new TableMetaDataPersistEnabledService(repository, new VersionPersistService(repository));
+        tableMetaDataPersistService = new TableMetaDataPersistService(repository, new VersionPersistService(repository));
         viewMetaDataPersistService = new ViewMetaDataPersistService(repository, new VersionPersistService(repository));
         persistService = new SchemaMetaDataPersistService(repository, tableMetaDataPersistService, viewMetaDataPersistService);
         databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");

@@ -49,7 +49,7 @@ public final class ShardingSphereAgent {
      * @throws IOException IO exception
      */
     public static void premain(final String args, final Instrumentation instrumentation) throws IOException {
-        File rootPath = AgentPath.getRootPath();
+        File rootPath = AgentPath.getRootPath(ClassLoader.getSystemClassLoader());
         Map<String, PluginConfiguration> pluginConfigs = PluginConfigurationLoader.load(rootPath);
         Collection<JarFile> pluginJars = PluginJarLoader.load(rootPath);
         Map<String, AdvisorConfiguration> advisorConfigs = AdvisorConfigurationLoader.load(pluginJars, pluginConfigs.keySet());

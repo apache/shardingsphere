@@ -57,6 +57,7 @@ import java.util.logging.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatabaseIdentifierContextFactoryTest {
@@ -75,11 +76,19 @@ class DatabaseIdentifierContextFactoryTest {
     
     private static final ResourceMetaData MYSQL_QUOTED_INSENSITIVE_RESOURCE_META_DATA = createResourceMetaDataWithMySQLLowerCaseTableNames(2);
     
+    private static final ResourceMetaData MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA = createResourceMetaDataWithMySQLLowerCaseTableNames(0);
+    
     private static final ResourceMetaData POSTGRESQL_RESOURCE_META_DATA = createResourceMetaDataWithStorageUrls("jdbc:postgresql://localhost:5432/foo_db");
     
     private static final ResourceMetaData OPEN_GAUSS_RESOURCE_META_DATA = createResourceMetaDataWithStorageUrls("jdbc:opengauss://localhost:5432/foo_db");
     
     private static final ResourceMetaData ORACLE_RESOURCE_META_DATA = createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe");
+    
+    private static final ResourceMetaData MYSQL_ORACLE_MIXED_RESOURCE_META_DATA = createResourceMetaDataWithStorageUrls(
+            "jdbc:mysql://localhost:3306/foo_db", "jdbc:oracle:thin:@localhost:1521:xe");
+    
+    private static final ResourceMetaData ORACLE_MYSQL_MIXED_RESOURCE_META_DATA = createResourceMetaDataWithStorageUrls(
+            "jdbc:oracle:thin:@localhost:1521:xe", "jdbc:mysql://localhost:3306/foo_db");
     
     @Test
     void assertCreateDefault() {
@@ -150,6 +159,93 @@ class DatabaseIdentifierContextFactoryTest {
         IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
         assertTrue(actualSchemaRule.matches("test_db", "TEST_DB", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertCreateUsesProtocolRuleForLogicalTableAndEnablesHeterogeneousLookup() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        assertTrue(actual.isHeterogeneousTableLookupEnabled());
+        assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertRefreshUsesProtocolRuleForLogicalTableAndEnablesHeterogeneousLookup() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        assertTrue(actual.isHeterogeneousTableLookupEnabled());
+        assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertCreateUsesInsensitiveRuleForLogicalTableWhenMySQLLowerCaseTableNamesIsZero() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertFalse(actualTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertRefreshUsesInsensitiveRuleForLogicalTableWhenMySQLLowerCaseTableNamesIsZero() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertFalse(actualTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertCreateKeepsPostgreSQLLogicalTableRuleWithResourceMetadata() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertTrue(actualTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertFalse(actualLogicalTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+        assertFalse(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertCreateDisablesHeterogeneousLookupWhenProtocolAndStorageAreHomogeneous() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertFalse(actual.isHeterogeneousTableLookupEnabled());
+    }
+    
+    @Test
+    void assertRefreshDisablesHeterogeneousLookupWhenProtocolAndStorageAreHomogeneous() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertFalse(actual.isHeterogeneousTableLookupEnabled());
+    }
+    
+    @Test
+    void assertCreateEnablesHeterogeneousLookupWhenAnyStorageTypeDiffersFromProtocolEvenIfFirstMatches() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_ORACLE_MIXED_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(actual.isHeterogeneousTableLookupEnabled());
+    }
+    
+    @Test
+    void assertRefreshEnablesHeterogeneousLookupWhenAnyStorageTypeDiffersFromProtocolEvenIfFirstMatches() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_ORACLE_MIXED_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(actual.isHeterogeneousTableLookupEnabled());
+    }
+    
+    @Test
+    void assertCreateEnablesHeterogeneousLookupRegardlessOfStorageUnitIterationOrder() {
+        DatabaseIdentifierContext mysqlFirstActual = DatabaseIdentifierContextFactory.create(
+                MYSQL_DATABASE_TYPE, MYSQL_ORACLE_MIXED_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        DatabaseIdentifierContext oracleFirstActual = DatabaseIdentifierContextFactory.create(
+                MYSQL_DATABASE_TYPE, ORACLE_MYSQL_MIXED_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(mysqlFirstActual.isHeterogeneousTableLookupEnabled());
+        assertTrue(oracleFirstActual.isHeterogeneousTableLookupEnabled());
     }
     
     @Test
@@ -320,9 +416,9 @@ class DatabaseIdentifierContextFactoryTest {
     
     private static Stream<Arguments> createWithSupportedDatabaseSchemaLookupArguments() {
         return Stream.of(
-                createInsensitiveQuotedExactLookupArguments("mysql schema", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_schema", "`"),
-                createLowerCaseLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
-                createLowerCaseLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createNormalizedLookupArguments("mysql schema", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_schema", "`"),
+                createInsensitiveQuotedExactLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
+                createInsensitiveQuotedExactLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
                 createUpperCaseLookupArguments("oracle schema", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_schema", "\""))
                 .flatMap(each -> each);
     }
@@ -377,9 +473,9 @@ class DatabaseIdentifierContextFactoryTest {
     
     private static Stream<Arguments> createWithMixedStoredCaseSchemaLookupArguments() {
         return Stream.of(
-                createInsensitiveQuotedExactMixedLookupArguments("mysql schema", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_schema", "`"),
-                createLowerCaseMixedLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
-                createLowerCaseMixedLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createNormalizedMixedLookupArguments("mysql schema", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_schema", "`"),
+                createInsensitiveQuotedExactMixedLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
+                createInsensitiveQuotedExactMixedLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
                 createUpperCaseMixedLookupArguments("oracle schema", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_schema", "\""))
                 .flatMap(each -> each);
     }

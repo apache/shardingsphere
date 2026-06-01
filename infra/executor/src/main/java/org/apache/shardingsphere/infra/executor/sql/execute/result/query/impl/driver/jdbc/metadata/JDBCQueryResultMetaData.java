@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 
@@ -30,6 +31,7 @@ import java.sql.SQLFeatureNotSupportedException;
 @RequiredArgsConstructor
 public final class JDBCQueryResultMetaData implements QueryResultMetaData {
     
+    @Getter
     private final ResultSetMetaData resultSetMetaData;
     
     @Override

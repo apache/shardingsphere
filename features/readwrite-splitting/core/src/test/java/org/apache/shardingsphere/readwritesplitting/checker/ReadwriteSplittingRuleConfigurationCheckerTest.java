@@ -45,6 +45,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -108,7 +109,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
         DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
         when(ruleAttribute.getDataSourceMapper().containsKey("otherDatasourceName")).thenReturn(true);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
-        checker.check("test", ruleConfig, mockDataSources(), Collections.singleton(rule));
+        assertDoesNotThrow(() -> checker.check("test", ruleConfig, mockDataSources(), Collections.singleton(rule)));
     }
     
     private ReadwriteSplittingRuleConfiguration createContainsOtherRulesDatasourceConfiguration() {

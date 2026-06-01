@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.executor.engine.pushdown.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteCallbackFactory;
@@ -137,8 +136,8 @@ public final class DriverJDBCPushDownExecuteExecutor {
     }
     
     private boolean isNeedImplicitCommit(final SQLStatement sqlStatement) {
-        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
-        return !connection.getAutoCommit() && sqlStatement instanceof DDLStatement && transactionOption.isDDLNeedImplicitCommit();
+        return !connection.getAutoCommit() && sqlStatement instanceof DDLStatement
+                && new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption().isDDLNeedImplicitCommit();
     }
     
     /**

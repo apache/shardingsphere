@@ -19,9 +19,13 @@ package org.apache.shardingsphere.database.connector.opengauss.metadata.identifi
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -33,7 +37,10 @@ public final class OpenGaussIdentifierCaseRuleProvider implements IdentifierCase
     @Override
     public Optional<IdentifierCaseRuleSet> provide(final IdentifierCaseRuleProviderContext context) {
         Objects.requireNonNull(context, "context cannot be null.");
-        return Optional.of(IdentifierCaseRuleSets.newLowerCaseRuleSet());
+        IdentifierCaseRuleSet lowerCaseRuleSet = IdentifierCaseRuleSets.newLowerCaseRuleSet();
+        Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
+        scopedRules.put(IdentifierScope.SCHEMA, IdentifierCaseRuleSets.newInsensitiveRuleSet().getRule(IdentifierScope.SCHEMA));
+        return Optional.of(new IdentifierCaseRuleSet(lowerCaseRuleSet.getRule(IdentifierScope.TABLE), scopedRules));
     }
     
     @Override

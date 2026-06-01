@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath;
-import org.apache.shardingsphere.mode.persist.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;

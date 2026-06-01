@@ -743,6 +743,42 @@
                         </projections>
                     </select>
                 </subquery>
+                <pivot start-index="47" stop-index="104">
+                    <aggregation-columns>
+                        <column name="amount" start-index="58" stop-index="63" />
+                    </aggregation-columns>
+                    <for-columns>
+                        <column name="month" start-index="70" stop-index="74" />
+                    </for-columns>
+                </pivot>
+            </subquery-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_pivot_xml">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="77">
+            <subquery-table start-index="14" stop-index="34">
+                <subquery>
+                    <select>
+                        <from start-index="24" stop-index="33">
+                            <simple-table name="sales" start-index="29" stop-index="33"/>
+                        </from>
+                        <projections start-index="22" stop-index="22">
+                            <shorthand-projection start-index="22" stop-index="22"/>
+                        </projections>
+                    </select>
+                </subquery>
+                <pivot xml="true" start-index="36" stop-index="77">
+                    <aggregation-columns>
+                        <column name="amount" start-index="51" stop-index="56" />
+                    </aggregation-columns>
+                    <for-columns>
+                        <column name="month" start-index="63" stop-index="67" />
+                    </for-columns>
+                </pivot>
             </subquery-table>
         </from>
     </select>
@@ -5239,7 +5275,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_last_insert_id">
         <projections start-index="7" stop-index="22">
             <expression-projection start-index="7" stop-index="22" text="LAST_INSERT_ID()">

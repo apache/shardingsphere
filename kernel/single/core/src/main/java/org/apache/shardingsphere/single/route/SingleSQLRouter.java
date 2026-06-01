@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.single.route;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -108,23 +107,24 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
     }
     
     private Collection<QualifiedTable> getSingleTables(final ShardingSphereDatabase database, final SingleRule rule, final SQLStatementContext sqlStatementContext) {
-        Collection<QualifiedTable> qualifiedTables = rule.getQualifiedTables(sqlStatementContext, database);
-        Collection<String> distributedTableNames = getDistributedTableNames(database);
         Collection<QualifiedTable> result = new LinkedList<>();
-        for (QualifiedTable each : qualifiedTables) {
-            if (!distributedTableNames.contains(each.getTableName())) {
+        Collection<TableMapperRuleAttribute> tableMapperRuleAttributes = database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class);
+        for (QualifiedTable each : rule.getQualifiedTables(sqlStatementContext, database)) {
+            if (!isDistributedTable(tableMapperRuleAttributes, each.getTableName())) {
                 result.add(each);
             }
         }
         return sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? result : rule.getSingleTables(result, database);
     }
     
-    private Collection<String> getDistributedTableNames(final ShardingSphereDatabase database) {
-        Collection<String> result = new CaseInsensitiveSet<>();
-        for (TableMapperRuleAttribute each : database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)) {
-            result.addAll(each.getDistributedTableNames());
+    private boolean isDistributedTable(final Collection<TableMapperRuleAttribute> tableMapperRuleAttributes, final String tableName) {
+        for (TableMapperRuleAttribute each : tableMapperRuleAttributes) {
+            Collection<String> distributedTableNames = each.getDistributedTableNames();
+            if (!distributedTableNames.isEmpty() && distributedTableNames.contains(tableName)) {
+                return true;
+            }
         }
-        return result;
+        return false;
     }
     
     @Override

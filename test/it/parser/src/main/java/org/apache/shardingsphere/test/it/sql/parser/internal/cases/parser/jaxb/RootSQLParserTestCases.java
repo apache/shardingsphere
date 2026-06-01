@@ -44,6 +44,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisStopSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCancelMaterializedViewTaskStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCancelTaskStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateStreamingJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateSyncJobStatementTestCase;
@@ -51,6 +52,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowCreateLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowResourcesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowLoadWarningsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowStreamLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowCreateRoutineLoadStatementTestCase;
@@ -514,6 +516,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.CommitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.LockStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.PrepareTransactionTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.ReleaseSavepointStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.RollbackStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.SavepointStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
@@ -594,6 +597,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "stop-sync-job")
     private final List<DorisStopSyncJobStatementTestCase> stopSyncJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-resources")
+    private final List<DorisShowResourcesStatementTestCase> dorisShowResourcesTestCases = new LinkedList<>();
     
     @XmlElement(name = "doris-show-load")
     private final List<DorisShowLoadStatementTestCase> dorisShowLoadTestCases = new LinkedList<>();
@@ -747,6 +753,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "savepoint")
     private final List<SavepointStatementTestCase> savepointTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "release-savepoint")
+    private final List<ReleaseSavepointStatementTestCase> releaseSavepointTestCases = new LinkedList<>();
     
     @XmlElement(name = "grant")
     private final List<GrantStatementTestCase> grantTestCases = new LinkedList<>();
@@ -1374,6 +1383,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "cancel-task")
     private final List<DorisCancelTaskStatementTestCase> cancelTaskTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "cancel-materialized-view-task")
+    private final List<DorisCancelMaterializedViewTaskStatementTestCase> cancelMaterializedViewTaskTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-shadow-algorithm")
     private final List<DropShadowAlgorithmStatementTestCase> dropShadowAlgorithmTestCases = new LinkedList<>();

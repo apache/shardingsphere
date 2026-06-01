@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
@@ -81,7 +82,8 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
                 .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
         String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
-        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
+        DatabaseType databaseType = insertStatementContext.getSqlStatement().getDatabaseType();
+        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter();
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnAssignmentSegment each : onDuplicateKeyColumnsSegments) {
             boolean leftColumnIsEncrypt = encryptTable.isEncryptColumn(each.getColumns().get(0).getIdentifier().getValue());

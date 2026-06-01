@@ -293,7 +293,7 @@
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
-            <version>8.3.0</version>
+            <version>8.4.0</version>
         </dependency>
         
         <dependency>

@@ -73,6 +73,7 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -287,7 +288,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithOtherSelectStatementForDatabaseName() {
-        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource()));
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource(mock(Connection.class, RETURNS_DEEP_STUBS))));
         ShardingSphereDatabase database =
                 new ShardingSphereDatabase("db_0", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         initProxyContext(Collections.singleton(database));
@@ -306,7 +307,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithOtherSelectStatementForNullDatabaseName() {
-        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds_0", new MockedDataSource()));
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds_0", new MockedDataSource(mock(Connection.class, RETURNS_DEEP_STUBS))));
         ShardingSphereDatabase database =
                 new ShardingSphereDatabase("db_0", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         initProxyContext(Collections.singleton(database));
@@ -420,7 +421,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithNoFromAndMultiProjectionsSkipsAdmin() {
-        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds_0", new MockedDataSource()));
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds_0", new MockedDataSource(mock(Connection.class, RETURNS_DEEP_STUBS))));
         ShardingSphereDatabase database =
                 new ShardingSphereDatabase("db_0", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         initProxyContext(Collections.singleton(database));

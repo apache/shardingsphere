@@ -39,7 +39,8 @@ public final class MD5MaskAlgorithm implements MaskAlgorithm<Object, String> {
     @HighFrequencyInvocation
     @Override
     public String mask(final Object plainValue) {
-        return digestAlgorithm.digest(plainValue);
+        Object result = digestAlgorithm.digest(plainValue);
+        return null == result ? null : String.valueOf(result);
     }
     
     @Override

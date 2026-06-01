@@ -24,20 +24,29 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HierarchicalQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
@@ -47,7 +56,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -114,6 +122,38 @@ class SelectStatementBinderTest {
     }
     
     @Test
+    void assertBindHierarchicalQuery() {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        HierarchicalQuerySegment hierarchicalQuerySegment = new HierarchicalQuerySegment(0, 0);
+        hierarchicalQuerySegment.setNoCycle(true);
+        hierarchicalQuerySegment.setStartWith(new BinaryOperationExpression(
+                0, 0, new ColumnSegment(0, 0, new IdentifierValue("user_id")), new LiteralExpressionSegment(0, 0, 1), "=", "user_id = 1"));
+        hierarchicalQuerySegment.setConnectBy(new BinaryOperationExpression(
+                0, 0, new ColumnSegment(0, 0, new IdentifierValue("order_id")), new ColumnSegment(0, 0, new IdentifierValue("user_id")), "=", "order_id = user_id"));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))).hierarchicalQuery(hierarchicalQuerySegment).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
+                new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        assertTrue(actual.getHierarchicalQuery().isPresent());
+        assertThat(actual.getHierarchicalQuery().get(), not(hierarchicalQuerySegment));
+        assertTrue(actual.getHierarchicalQuery().get().isNoCycle());
+        BinaryOperationExpression actualStartWith = (BinaryOperationExpression) actual.getHierarchicalQuery().get().getStartWith();
+        assertThat(actualStartWith, not(hierarchicalQuerySegment.getStartWith()));
+        ColumnSegment actualStartWithColumn = (ColumnSegment) actualStartWith.getLeft();
+        assertThat(actualStartWithColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertThat(actualStartWithColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        BinaryOperationExpression actualConnectBy = (BinaryOperationExpression) actual.getHierarchicalQuery().get().getConnectBy();
+        assertThat(actualConnectBy, not(hierarchicalQuerySegment.getConnectBy()));
+        ColumnSegment actualConnectByLeftColumn = (ColumnSegment) actualConnectBy.getLeft();
+        assertThat(actualConnectByLeftColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
+        assertThat(actualConnectByLeftColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        ColumnSegment actualConnectByRightColumn = (ColumnSegment) actualConnectBy.getRight();
+        assertThat(actualConnectByRightColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertThat(actualConnectByRightColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+    }
+    
+    @Test
     void assertBindWindow() {
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
@@ -152,6 +192,34 @@ class SelectStatementBinderTest {
     }
     
     @Test
+    void assertBindWithLikeSubquery() {
+        ProjectionsSegment subqueryProjections = new ProjectionsSegment(0, 0);
+        subqueryProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("email"))));
+        BinaryOperationExpression subqueryWhereExpression =
+                new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("user_id")), new LiteralExpressionSegment(0, 0, 1), "=", "user_id = 1");
+        SelectStatement subquerySelect = SelectStatement.builder().databaseType(databaseType).projections(subqueryProjections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).where(new WhereSegment(0, 0, subqueryWhereExpression)).build();
+        ListExpression likeExpression = new ListExpression(0, 0);
+        likeExpression.getItems().add(new SubqueryExpressionSegment(new SubquerySegment(0, 0, subquerySelect, "")));
+        BinaryOperationExpression whereExpression =
+                new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("email")), likeExpression, "LIKE", "email LIKE (SELECT email FROM t_user WHERE user_id = 1)");
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).where(new WhereSegment(0, 0, whereExpression)).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
+                new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        BinaryOperationExpression actualWhereExpression = (BinaryOperationExpression) actual.getWhere().get().getExpr();
+        ListExpression actualLikeExpression = (ListExpression) actualWhereExpression.getRight();
+        SubqueryExpressionSegment actualSubqueryExpression = (SubqueryExpressionSegment) actualLikeExpression.getItems().iterator().next();
+        SelectStatement actualSubquerySelect = actualSubqueryExpression.getSubquery().getSelect();
+        ColumnSegment actualSubqueryProjection = ((ColumnProjectionSegment) actualSubquerySelect.getProjections().getProjections().iterator().next()).getColumn();
+        BinaryOperationExpression actualSubqueryWhere = (BinaryOperationExpression) actualSubquerySelect.getWhere().get().getExpr();
+        assertThat(actualSubqueryProjection.getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+        assertThat(((ColumnSegment) actualSubqueryWhere.getLeft()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    @Test
     void assertBindWithSameNameAsPhysicalTable() {
         ProjectionsSegment withProjections = new ProjectionsSegment(0, 0);
         withProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
@@ -174,6 +242,81 @@ class SelectStatementBinderTest {
         ProjectionSegment actualProjection = actual.getProjections().getProjections().iterator().next();
         assertThat(actualProjection, isA(ShorthandProjectionSegment.class));
         assertThat(((ShorthandProjectionSegment) actualProjection).getActualProjectionSegments().size(), is(3));
+        List<ProjectionSegment> actualProjectionSegments = new ArrayList<>(((ShorthandProjectionSegment) actualProjection).getActualProjectionSegments());
+        assertThat(((ColumnProjectionSegment) actualProjectionSegments.get(0)).getColumn().getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+        assertThat(((ColumnProjectionSegment) actualProjectionSegments.get(1)).getColumn().getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+        assertThat(((ColumnProjectionSegment) actualProjectionSegments.get(2)).getColumn().getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+        assertThat(((ColumnProjectionSegment) actualProjectionSegments.get(1)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is(""));
+    }
+    
+    @Test
+    void assertBindWithCipherDerivedExpression() {
+        ProjectionsSegment withProjections = new ProjectionsSegment(0, 0);
+        withProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        FunctionSegment ifNullFunction = new FunctionSegment(0, 0, "IFNULL", "IFNULL(user_name, 'N/A')");
+        ifNullFunction.getParameters().add(new ColumnSegment(0, 0, new IdentifierValue("user_name")));
+        ifNullFunction.getParameters().add(new LiteralExpressionSegment(0, 0, "N/A"));
+        ExpressionProjectionSegment userNameProjection = new ExpressionProjectionSegment(0, 0, "IFNULL(user_name, 'N/A')", ifNullFunction);
+        userNameProjection.setAlias(new AliasSegment(0, 0, new IdentifierValue("user_name")));
+        withProjections.getProjections().add(userNameProjection);
+        SelectStatement withSelectStatement = SelectStatement.builder().databaseType(databaseType).projections(withProjections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).build();
+        WithSegment withSegment = new WithSegment(0, 0,
+                new LinkedList<>(Collections.singleton(createCommonTableExpression("ifnulled", withSelectStatement))), false);
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ShorthandProjectionSegment(0, 0));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).with(withSegment).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("ifnulled")))).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
+                new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        ProjectionSegment actualProjection = actual.getProjections().getProjections().iterator().next();
+        List<ProjectionSegment> actualProjectionSegments = new ArrayList<>(((ShorthandProjectionSegment) actualProjection).getActualProjectionSegments());
+        assertThat(((ColumnProjectionSegment) actualProjectionSegments.get(1)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+        assertThat(((ColumnProjectionSegment) actualProjectionSegments.get(1)).getColumn().getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+    }
+    
+    @Test
+    void assertBindWithAggregationDerivedExpression() {
+        ProjectionsSegment withProjections = new ProjectionsSegment(0, 0);
+        withProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        AggregationProjectionSegment maxOrderIdProjection = new AggregationProjectionSegment(0, 0, AggregationType.MAX, "MAX(order_id)");
+        maxOrderIdProjection.getParameters().add(new ColumnSegment(0, 0, new IdentifierValue("order_id")));
+        maxOrderIdProjection.setAlias(new AliasSegment(0, 0, new IdentifierValue("max_id")));
+        withProjections.getProjections().add(maxOrderIdProjection);
+        SelectStatement withSelectStatement = SelectStatement.builder().databaseType(databaseType).projections(withProjections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))).build();
+        WithSegment withSegment = new WithSegment(0, 0,
+                new LinkedList<>(Collections.singleton(createCommonTableExpression("max_order", withSelectStatement))), false);
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ShorthandProjectionSegment(0, 0));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).with(withSegment).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("max_order")))).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
+                new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        ProjectionSegment actualProjection = actual.getProjections().getProjections().iterator().next();
+        List<ProjectionSegment> actualProjectionSegments = new ArrayList<>(((ShorthandProjectionSegment) actualProjection).getActualProjectionSegments());
+        assertThat(((ColumnProjectionSegment) actualProjectionSegments.get(1)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is(""));
+        assertThat(((ColumnProjectionSegment) actualProjectionSegments.get(1)).getColumn().getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+    }
+    
+    @Test
+    void assertBindWithPhysicalTableColumnAndCteColumn() {
+        ProjectionsSegment withProjections = new ProjectionsSegment(0, 0);
+        withProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        SelectStatement withSelectStatement = SelectStatement.builder().databaseType(databaseType).projections(withProjections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))).build();
+        WithSegment withSegment = new WithSegment(0, 0,
+                new LinkedList<>(Collections.singleton(createCommonTableExpression("order_users", withSelectStatement))), false);
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_name"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).with(withSegment).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
+                new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        List<ProjectionSegment> actualProjections = new ArrayList<>(actual.getProjections().getProjections());
+        assertThat(((ColumnProjectionSegment) actualProjections.get(0)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+        assertThat(((ColumnProjectionSegment) actualProjections.get(1)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
     }
     
     @Test
@@ -209,6 +352,66 @@ class SelectStatementBinderTest {
         assertThat(actualOrderByItem.getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
     }
     
+    @Test
+    void assertBindRecursiveCteJoinCondition() {
+        SelectStatement anchorSelect = SelectStatement.builder().databaseType(databaseType).projections(createOrderProjections())
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))).build();
+        ColumnSegment leftOnColumn = createOwnerColumnSegment("child", "user_id");
+        ColumnSegment rightOnColumn = createOwnerColumnSegment("product_tree", "user_id");
+        JoinTableSegment recursiveJoinTableSegment = new JoinTableSegment();
+        recursiveJoinTableSegment.setLeft(createAliasedSimpleTableSegment("t_order", "child"));
+        recursiveJoinTableSegment.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("product_tree"))));
+        recursiveJoinTableSegment.setCondition(new BinaryOperationExpression(0, 0, leftOnColumn, rightOnColumn, "=", "child.user_id = product_tree.user_id"));
+        SelectStatement recursiveSelect = SelectStatement.builder().databaseType(databaseType).projections(createChildOrderProjections()).from(recursiveJoinTableSegment).build();
+        SelectStatement withSelectStatement = SelectStatement.builder().databaseType(databaseType).projections(createOrderProjections())
+                .combine(new CombineSegment(0, 0, new SubquerySegment(0, 0, anchorSelect, ""), CombineType.UNION_ALL, new SubquerySegment(0, 0, recursiveSelect, ""))).build();
+        CommonTableExpressionSegment commonTableExpressionSegment = createCommonTableExpression("product_tree", withSelectStatement);
+        commonTableExpressionSegment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
+        commonTableExpressionSegment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("order_id")));
+        WithSegment withSegment = new WithSegment(0, 0, new LinkedList<>(Collections.singleton(commonTableExpressionSegment)), true);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).with(withSegment).projections(createOrderProjections())
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("product_tree")))).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
+                new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        List<ProjectionSegment> actualProjections = new ArrayList<>(actual.getProjections().getProjections());
+        assertThat(((ColumnProjectionSegment) actualProjections.get(0)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnProjectionSegment) actualProjections.get(1)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        CommonTableExpressionSegment actualCommonTableExpression = actual.getWith().get().getCommonTableExpressions().iterator().next();
+        SelectStatement actualRecursiveSelect = actualCommonTableExpression.getSubquery().getSelect().getCombine().get().getRight().getSelect();
+        BinaryOperationExpression actualJoinCondition = (BinaryOperationExpression) ((JoinTableSegment) actualRecursiveSelect.getFrom().get()).getCondition();
+        assertThat(((ColumnSegment) actualJoinCondition.getLeft()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnSegment) actualJoinCondition.getRight()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnSegment) actualJoinCondition.getRight()).getColumnBoundInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertThat(((ColumnSegment) actualJoinCondition.getRight()).getColumnBoundInfo().getTableSourceType().name(), is("TEMPORARY_TABLE"));
+    }
+    
+    @Test
+    void assertBindRecursiveCteSearchAndCycleColumns() {
+        SelectStatement anchorSelect = SelectStatement.builder().databaseType(databaseType).projections(createOrderProjections())
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))).build();
+        SelectStatement withSelectStatement = SelectStatement.builder().databaseType(databaseType).projections(createOrderProjections())
+                .combine(new CombineSegment(0, 0, new SubquerySegment(0, 0, anchorSelect, ""), CombineType.UNION_ALL, new SubquerySegment(0, 0, anchorSelect, ""))).build();
+        CommonTableExpressionSegment commonTableExpressionSegment = createCommonTableExpression("product_tree", withSelectStatement);
+        commonTableExpressionSegment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
+        commonTableExpressionSegment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("order_id")));
+        commonTableExpressionSegment.getSearchColumns().add(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
+        commonTableExpressionSegment.getCycleColumns().add(new ColumnSegment(0, 0, new IdentifierValue("order_id")));
+        WithSegment withSegment = new WithSegment(0, 0, new LinkedList<>(Collections.singleton(commonTableExpressionSegment)), true);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).with(withSegment).projections(createOrderProjections())
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("product_tree")))).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
+                new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        CommonTableExpressionSegment actualCommonTableExpression = actual.getWith().get().getCommonTableExpressions().iterator().next();
+        ColumnSegment actualSearchColumn = actualCommonTableExpression.getSearchColumns().iterator().next();
+        assertThat(actualSearchColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualSearchColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertThat(actualSearchColumn.getColumnBoundInfo().getTableSourceType().name(), is("TEMPORARY_TABLE"));
+        ColumnSegment actualCycleColumn = actualCommonTableExpression.getCycleColumns().iterator().next();
+        assertThat(actualCycleColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualCycleColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
+        assertThat(actualCycleColumn.getColumnBoundInfo().getTableSourceType().name(), is("TEMPORARY_TABLE"));
+    }
+    
     private WhereSegment createWhereSegment() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "nvl", "nvl(status, 0)");
         functionSegment.getParameters().add(new ColumnSegment(0, 0, new IdentifierValue("status")));
@@ -218,6 +421,20 @@ class SelectStatementBinderTest {
     
     private CommonTableExpressionSegment createCommonTableExpression(final String alias, final SelectStatement selectStatement) {
         return new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue(alias)), new SubquerySegment(0, 0, selectStatement, ""));
+    }
+    
+    private ProjectionsSegment createOrderProjections() {
+        ProjectionsSegment result = new ProjectionsSegment(0, 0);
+        result.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        result.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        return result;
+    }
+    
+    private ProjectionsSegment createChildOrderProjections() {
+        ProjectionsSegment result = new ProjectionsSegment(0, 0);
+        result.getProjections().add(new ColumnProjectionSegment(createOwnerColumnSegment("child", "user_id")));
+        result.getProjections().add(new ColumnProjectionSegment(createOwnerColumnSegment("child", "order_id")));
+        return result;
     }
     
     private SelectStatement createUserOrdersSelectStatement() {

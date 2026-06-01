@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<mcp_builder_evaluation version="2026-05-16"
+                        standard_reference="MCP 2025-11-25"
+                        operation_mode="read_only"
+                        requires_external_model="false">
+  <qa_pair id="q01" category="protocol_discovery" read_only="true">
+    <question>
+      A new MCP client is attached to a ShardingSphere MCP server with no cached tool names, resource URIs, or schema hints. Describe the
+      read-only discovery sequence it should use before deciding whether an encrypt or mask workflow is possible.
+    </question>
+    <answer>tools/list|resources/templates/list|resources/read</answer>
+    <expected_answer>
+      The client should discover the server surface before choosing any workflow action. It should call tools/list to inspect callable tools
+      and their input schemas, call resources/templates/list to learn the parameterized ShardingSphere metadata URI patterns, and read safe
+      resources such as shardingsphere://runtime or shardingsphere://databases only after selecting a concrete URI. The answer must not
+      guess tool names, skip schema inspection, or execute workflow apply actions during discovery.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer uses tools/list for tool discovery and schema inspection.</step>
+      <step>Confirm the answer uses resources/templates/list before constructing ShardingSphere metadata URIs.</step>
+      <step>Confirm the answer keeps the sequence read-only and avoids workflow apply or SQL mutation.</step>
+    </verification>
+  </qa_pair>
+  <qa_pair id="q02" category="protocol_discovery" read_only="true">
+    <question>
+      An AI assistant needs to inspect a logical table but the user only supplied a database name and a partial table name. Explain how it should
+      combine MCP resource discovery with ShardingSphere metadata search without relying on placeholder text from tool descriptions.
+    </question>
+    <answer>resources/templates/list|database_gateway_search_metadata|resources/read</answer>
+    <expected_answer>
+      The assistant should use resources/templates/list to learn valid URI templates, use shardingsphere://databases or metadata search to
+      disambiguate the logical database and schema, and then read the exact table resource with resources/read when a concrete URI is known.
+      If the metadata search returns multiple candidates, the assistant should ask for or derive a safe disambiguation rather than inventing a
+      URI from schema examples. All steps remain read-only.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer names resources/templates/list as the template source.</step>
+      <step>Confirm the answer uses metadata search or shardingsphere://databases for disambiguation.</step>
+      <step>Confirm the answer reads only concrete resource URIs and rejects placeholder URI guessing.</step>
+    </verification>
+  </qa_pair>
+  <qa_pair id="q03" category="metadata" read_only="true">
+    <question>
+      A release reviewer asks the model to prove that the orders table exists in the transactional logical database rather than an analytics
+      snapshot. Describe the safest MCP evidence path the model should follow before it runs a count query.
+    </question>
+    <answer>shardingsphere://databases|metadata_resource|database_gateway_execute_query</answer>
+    <expected_answer>
+      The model should read shardingsphere://databases to enumerate logical databases, inspect the selected schema and table resource for the
+      transactional database, and use database_gateway_search_metadata when the table name is ambiguous. Only after the table and schema are
+      confirmed should it call database_gateway_execute_query with a SELECT count. The answer should include the resource evidence and the
+      query result, and should not use update, workflow apply, or guessed database names.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer reads shardingsphere://databases before selecting the logical database.</step>
+      <step>Confirm the answer inspects table metadata or search results before executing SELECT.</step>
+      <step>Confirm the answer rejects mutation tools and guessed database selection.</step>
+    </verification>
+  </qa_pair>
+  <qa_pair id="q04" category="read_only_sql" read_only="true">
+    <question>
+      An operator asks for current order counts and an execution explanation on a configured runtime database. Explain how the model should
+      answer using MCP while preserving a read-only SQL boundary.
+    </question>
+    <answer>metadata_resources|database_gateway_execute_query|no_update_or_apply</answer>
+    <expected_answer>
+      The model should confirm the target database and schema through metadata resources, then call database_gateway_execute_query for SELECT
+      or supported EXPLAIN style statements with a bounded max_rows value. It should report the structured result evidence instead of guessing
+      counts, and it must not call database_gateway_execute_update, database_gateway_apply_workflow, or any approval-gated side-effect path for
+      this read-only request.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer uses database_gateway_execute_query for SELECT or EXPLAIN style SQL.</step>
+      <step>Confirm the answer requires metadata-backed database and schema selection before the query.</step>
+      <step>Confirm the answer forbids update and workflow apply tools for this request.</step>
+    </verification>
+  </qa_pair>
+  <qa_pair id="q05" category="read_only_sql" read_only="true">
+    <question>
+      A user wants to review an UPDATE statement but has not approved any data change. Describe the preview-only, non-mutating MCP-safe path
+      that lets the model explain the side-effect scope and then independently verify that visible data is unchanged.
+    </question>
+    <answer>execute_update_preview|execute_query_verify|no_execute_without_approval</answer>
+    <expected_answer>
+      The model should treat the UPDATE as a preview-only, non-mutating operation by using database_gateway_execute_update with execution_mode
+      set to preview. It should explain the planned side-effect scope from the preview response,
+      then run an independent SELECT through database_gateway_execute_query to confirm the current state. It must not switch to execution_mode
+      execute in this read-only review path.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer uses execution_mode preview as a non-mutating review path.</step>
+      <step>Confirm the answer performs independent read-only verification with database_gateway_execute_query.</step>
+      <step>Confirm the answer forbids execute mode in the read-only review path.</step>
+    </verification>
+  </qa_pair>
+  <qa_pair id="q06" category="workflow" read_only="true">
+    <question>
+      A model has created a mask workflow plan and needs reviewable artifacts for manual execution, not a database change through MCP. Explain
+      the sequence it should use with plan identifiers, preview/manual modes, and validation timing.
+    </question>
+    <answer>plan_id|apply_workflow_preview_or_manual|validate_after_external_execution</answer>
+    <expected_answer>
+      The model should keep the plan_id returned by database_gateway_plan_mask_rule, call database_gateway_apply_workflow in preview or
+      manual-artifact export mode for human-run changes, and report the returned DistSQL or review artifact for the human
+      operator. It should not validate the workflow as successful until the manual artifacts have actually been executed outside MCP and the
+      runtime metadata can be checked afterward.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer preserves the exact plan_id from the planning response.</step>
+      <step>Confirm the answer uses database_gateway_apply_workflow with preview or manual-artifact behavior for externally executed changes.</step>
+      <step>Confirm the answer delays success validation until after external manual execution is complete.</step>
+    </verification>
+  </qa_pair>
+  <qa_pair id="q07" category="workflow" read_only="true">
+    <question>
+      A workflow was executed in a controlled environment and the reviewer asks the model to prove the outcome against current metadata. Describe
+      the validation evidence path and the conditions under which the model must report an incomplete workflow instead of success.
+    </question>
+    <answer>validate_workflow|live_metadata_check|report_failed_layer</answer>
+    <expected_answer>
+      The model should call database_gateway_validate_workflow with the relevant plan_id or workflow context after the controlled execution has
+      occurred, then compare the validation layers against live metadata resources and any independent read-only query evidence. If required
+      physical columns, DistSQL rule metadata, or table metadata are missing, it should report the specific failed validation layer and next
+      actions rather than declaring success from the earlier planning response.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer uses database_gateway_validate_workflow only after execution evidence exists.</step>
+      <step>Confirm the answer cross-checks validation output against current metadata or read-only query evidence.</step>
+      <step>Confirm the answer reports failed validation layers instead of treating a plan response as success.</step>
+    </verification>
+  </qa_pair>
+  <qa_pair id="q08" category="encrypt" read_only="true">
+    <question>
+      A user asks for an encrypt rule for a logical column that may need cipher, assisted query, and like query columns. Explain how the model
+      should build a reviewable plan without applying changes to the runtime database.
+    </question>
+    <answer>metadata|encrypt_algorithms|plan_encrypt_rule|no_apply_execute</answer>
+    <expected_answer>
+      The model should inspect the table and column metadata first, use completion or descriptor information to choose supported encrypt
+      algorithms, and call database_gateway_plan_encrypt_rule with explicit logical, cipher, assisted query, and like query intent where needed.
+      The response should be treated as a reviewable workflow plan containing rule details, DistSQL, physical DDL where applicable, validation
+      layers, and next_actions. It must not call workflow apply in execute mode or perform data migration.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer starts from table and column metadata rather than guessed columns.</step>
+      <step>Confirm the answer uses database_gateway_plan_encrypt_rule for the encrypt workflow plan.</step>
+      <step>Confirm the answer covers cipher, assisted query, like query, validation, and no data migration.</step>
+    </verification>
+  </qa_pair>
+  <qa_pair id="q09" category="mask" read_only="true">
+    <question>
+      A user asks for a mask rule on a column but gives an algorithm name that may be unsupported and a field semantic that may be incomplete.
+      Describe how the model should recover while staying read-only.
+    </question>
+    <answer>mask_descriptors_or_completion|plan_mask_rule_when_complete|return_recovery_next_actions</answer>
+    <expected_answer>
+      The model should inspect mask descriptors and algorithm completion data before planning, then call database_gateway_plan_mask_rule only
+      when the table, column, algorithm, and field semantics are specific enough. If the algorithm or semantic details are missing, it should
+      return the recovery message and next_actions from the planning response or ask for the missing information. It must not invent an
+      algorithm, apply a workflow, or alter runtime metadata while recovering.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer uses descriptor or completion evidence before planning a mask rule.</step>
+      <step>Confirm the answer uses database_gateway_plan_mask_rule only after required inputs are specific.</step>
+      <step>Confirm the answer preserves recovery next_actions and forbids invented algorithms or metadata changes.</step>
+    </verification>
+  </qa_pair>
+  <qa_pair id="q10" category="transport_security" read_only="true">
+    <question>
+      During Streamable HTTP deployment, an operator sets transport.type to STREAMABLE_HTTP and bindHost to 0.0.0.0 for a trusted gateway.
+      Explain what built-in authorization exists, how present Origin headers are treated, and where authentication must happen.
+    </question>
+    <answer>no_builtin_auth|origin_403|gateway_auth_boundary</answer>
+    <expected_answer>
+      The built-in ShardingSphere MCP HTTP runtime does not provide authorization in this release; transport.type only selects the active
+      transport, and bindHost controls the listener address. Missing Origin is accepted for non-browser clients, but any present Origin on a
+      non-loopback binding is rejected with 403. Authentication and authorization must be enforced by the trusted network, reverse proxy, or
+      gateway, and the answer should not invent OAuth or token YAML fields.
+    </expected_answer>
+    <verification>
+      <step>Confirm the answer says built-in Streamable HTTP authorization is absent in this release.</step>
+      <step>Confirm the answer states present Origin headers are rejected for non-loopback bindings.</step>
+      <step>Confirm the answer places authentication at a trusted gateway or network boundary.</step>
+    </verification>
+  </qa_pair>
+</mcp_builder_evaluation>

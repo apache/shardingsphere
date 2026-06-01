@@ -76,10 +76,13 @@ class DatabaseRuleConfigurationManagerTest {
         when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
+                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME),
+                                any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
             new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
-            verify(ignored.constructed().iterator().next()).createByAlterRule(eq(DATABASE_NAME), eq(false),
-                    argThat(actual -> 2 == actual.size() && actual.contains(ruleConfig) && actual.contains(otherRuleConfig)), eq(metaDataContexts));
+            verify(ignored.constructed().iterator().next()).createByAlterRule(
+                    eq(DATABASE_NAME),
+                    argThat(actual -> 2 == actual.size() && actual.contains(ruleConfig) && actual.contains(otherRuleConfig)),
+                    eq(metaDataContexts));
             verify((PartialRuleUpdateSupported) closableRule).updateConfiguration(ruleConfig);
             verify(metaDataContexts).update(any(MetaDataContexts.class));
             assertDoesNotThrow(() -> verify((AutoCloseable) closableRule).close());
@@ -108,9 +111,9 @@ class DatabaseRuleConfigurationManagerTest {
         when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
+                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
             new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
-            verify(ignored.constructed().iterator().next()).createByAlterRule(eq(DATABASE_NAME), eq(false), argThat(Collection::isEmpty), eq(metaDataContexts));
+            verify(ignored.constructed().iterator().next()).createByAlterRule(eq(DATABASE_NAME), argThat(Collection::isEmpty), eq(metaDataContexts));
             verify((PartialRuleUpdateSupported) partialRule, never()).partialUpdate(ruleConfig);
             verify((PartialRuleUpdateSupported) partialRule, never()).updateConfiguration(ruleConfig);
             verify(metaDataContexts).update(any(MetaDataContexts.class));
@@ -129,10 +132,12 @@ class DatabaseRuleConfigurationManagerTest {
         when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
+                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
             new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
-            verify(ignored.constructed().iterator().next()).createByAlterRule(eq(DATABASE_NAME), eq(false),
-                    argThat(actual -> 1 == actual.size() && actual.contains(ruleConfig)), eq(metaDataContexts));
+            verify(ignored.constructed().iterator().next()).createByAlterRule(
+                    eq(DATABASE_NAME),
+                    argThat(actual -> 1 == actual.size() && actual.contains(ruleConfig)),
+                    eq(metaDataContexts));
             verify(metaDataContexts).update(any(MetaDataContexts.class));
             verify(updater).updateConfiguration(ruleConfig);
         }
@@ -149,10 +154,12 @@ class DatabaseRuleConfigurationManagerTest {
         when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
+                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
             new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
-            verify(ignored.constructed().iterator().next()).createByAlterRule(eq(DATABASE_NAME), eq(false),
-                    argThat(actual -> 2 == actual.size() && actual.contains(ruleConfig) && actual.contains(otherRuleConfig)), eq(metaDataContexts));
+            verify(ignored.constructed().iterator().next()).createByAlterRule(
+                    eq(DATABASE_NAME),
+                    argThat(actual -> 2 == actual.size() && actual.contains(ruleConfig) && actual.contains(otherRuleConfig)),
+                    eq(metaDataContexts));
             verify(metaDataContexts).update(any(MetaDataContexts.class));
         }
     }
@@ -167,10 +174,12 @@ class DatabaseRuleConfigurationManagerTest {
         when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
+                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
             new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
-            verify(ignored.constructed().iterator().next()).createByAlterRule(eq(DATABASE_NAME), eq(false),
-                    argThat(actual -> 1 == actual.size() && actual.contains(ruleConfig)), eq(metaDataContexts));
+            verify(ignored.constructed().iterator().next()).createByAlterRule(
+                    eq(DATABASE_NAME),
+                    argThat(actual -> 1 == actual.size() && actual.contains(ruleConfig)),
+                    eq(metaDataContexts));
             verify(metaDataContexts).update(any(MetaDataContexts.class));
         }
     }
@@ -185,8 +194,8 @@ class DatabaseRuleConfigurationManagerTest {
         when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenThrow(SQLException.class))) {
-            assertThrows(SQLException.class, () -> new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig));
+                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), any(Collection.class), eq(metaDataContexts))).thenThrow(new RuntimeException("mocked")))) {
+            assertThrows(RuntimeException.class, () -> new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig));
         }
     }
     
@@ -203,7 +212,7 @@ class DatabaseRuleConfigurationManagerTest {
         when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
+                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
             assertThrows(Exception.class, () -> new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig));
         }
     }

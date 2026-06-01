@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.context;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -26,14 +27,17 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -42,11 +46,49 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class BackendExecutorContextTest {
     
+    @AfterEach
+    void tearDown() {
+        BackendExecutorContext.getInstance().shutdown();
+    }
+    
     @Test
-    void assertGetInstance() {
+    void assertGetExecutorEngine() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThat(BackendExecutorContext.getInstance().getExecutorEngine(), is(BackendExecutorContext.getInstance().getExecutorEngine()));
+        BackendExecutorContext.getInstance().init();
+        ExecutorEngine actual = BackendExecutorContext.getInstance().getExecutorEngine();
+        assertThat(actual, is(BackendExecutorContext.getInstance().getExecutorEngine()));
+    }
+    
+    @Test
+    void assertInit() {
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        BackendExecutorContext.getInstance().init();
+        ExecutorEngine actual = BackendExecutorContext.getInstance().getExecutorEngine();
+        BackendExecutorContext.getInstance().init();
+        assertThat(BackendExecutorContext.getInstance().getExecutorEngine(), is(not(actual)));
+    }
+    
+    @Test
+    void assertShutdown() {
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        BackendExecutorContext.getInstance().init();
+        BackendExecutorContext.getInstance().shutdown();
+        assertThrows(IllegalStateException.class, () -> BackendExecutorContext.getInstance().getExecutorEngine());
+    }
+    
+    @Test
+    void assertInitAfterShutdown() {
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        BackendExecutorContext.getInstance().init();
+        final ExecutorEngine actual = BackendExecutorContext.getInstance().getExecutorEngine();
+        BackendExecutorContext.getInstance().shutdown();
+        assertThrows(IllegalStateException.class, () -> BackendExecutorContext.getInstance().getExecutorEngine());
+        BackendExecutorContext.getInstance().init();
+        assertThat(BackendExecutorContext.getInstance().getExecutorEngine(), is(not(actual)));
     }
     
     private ContextManager mockContextManager() {

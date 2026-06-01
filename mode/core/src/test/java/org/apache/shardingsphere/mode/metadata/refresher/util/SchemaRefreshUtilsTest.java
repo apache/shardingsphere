@@ -35,8 +35,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.De
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -69,14 +72,39 @@ class SchemaRefreshUtilsTest {
         assertThat(SchemaRefreshUtils.getActualSchemaName(createDatabase(), new IdentifierValue("Foo_Schema"), new ConfigurationProperties(new Properties())), is("foo_schema"));
     }
     
+    @Test
+    void assertGetActualSchemaNameWithQuotedSchemaFromContext() {
+        Properties props = new Properties();
+        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
+        assertThat(SchemaRefreshUtils.getActualSchemaName(createDatabaseWithSchema("Foo_Schema"), createSQLStatementContextWithSchema(new IdentifierValue("Foo_Schema", QuoteCharacter.QUOTE)),
+                new ConfigurationProperties(props)), is("Foo_Schema"));
+    }
+    
+    @Test
+    void assertGetActualSchemaNames() {
+        List<IdentifierValue> schemaIdentifiers = Arrays.asList(new IdentifierValue("Foo_Schema"), new IdentifierValue("bar_schema"), new IdentifierValue("new_schema"));
+        assertThat(SchemaRefreshUtils.getActualSchemaNames(createDatabaseWithSchema("foo_schema", "bar_schema"), schemaIdentifiers, new ConfigurationProperties(new Properties())),
+                is(Arrays.asList("foo_schema", "bar_schema", "new_schema")));
+    }
+    
     private ShardingSphereDatabase createDatabase() {
         return new ShardingSphereDatabase("FOO_DB", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
                 new ConfigurationProperties(new Properties()));
     }
     
+    private ShardingSphereDatabase createDatabaseWithSchema(final String... schemaNames) {
+        List<ShardingSphereSchema> schemas = Arrays.stream(schemaNames).map(each -> new ShardingSphereSchema(each, databaseType)).collect(Collectors.toList());
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas,
+                new ConfigurationProperties(new Properties()));
+    }
+    
     private SQLStatementContext createSQLStatementContextWithSchema(final String schemaName) {
+        return createSQLStatementContextWithSchema(new IdentifierValue(schemaName));
+    }
+    
+    private SQLStatementContext createSQLStatementContextWithSchema(final IdentifierValue schemaIdentifier) {
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("t_order"));
-        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue(schemaName)));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), schemaIdentifier));
         TablesContext tablesContext = new TablesContext(new SimpleTableSegment(tableNameSegment));
         SQLStatement sqlStatement = DeleteStatement.builder().databaseType(databaseType).build();
         return new FixtureSQLStatementContext(sqlStatement, tablesContext);

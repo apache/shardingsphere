@@ -45,7 +45,7 @@ class PluginJarLoaderTest {
             jarOutputStream.write("sample".getBytes());
             jarOutputStream.closeEntry();
         }
-        Files.write(pluginsDir.resolve("README.txt"), "ignored".getBytes(StandardCharsets.UTF_8));
+        Files.write(pluginsDir.resolve("ignored-file.txt"), "ignored".getBytes(StandardCharsets.UTF_8));
         Collection<JarFile> actual = PluginJarLoader.load(tempDir.toFile());
         assertThat(actual.size(), is(1));
         JarFile jarFile = actual.iterator().next();

@@ -36,6 +36,7 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +45,11 @@ import java.util.Map;
  */
 public final class NativeStorageContainer implements StorageContainer {
     
+    private static final Collection<String> INITIALIZED_DATABASES = new HashSet<>();
+    
     private final NativeDatabaseEnvironment env;
     
+    @Getter
     private final DatabaseType databaseType;
     
     private final String scenario;
@@ -73,10 +77,26 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private void initDatabase() {
-        if (null != option) {
-            DataSource dataSource = StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType)), env.getUser(), env.getPassword(), 2);
-            new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
+        if (null == option) {
+            return;
         }
+        synchronized (INITIALIZED_DATABASES) {
+            String initDatabaseCacheKey = getInitDatabaseCacheKey();
+            if (!INITIALIZED_DATABASES.contains(initDatabaseCacheKey)) {
+                initDatabase(initDatabaseCacheKey);
+            }
+        }
+    }
+    
+    private void initDatabase(final String initDatabaseCacheKey) {
+        DataSource dataSource = StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType)),
+                env.getUser(), env.getPassword(), 2);
+        new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
+        INITIALIZED_DATABASES.add(initDatabaseCacheKey);
+    }
+    
+    private String getInitDatabaseCacheKey() {
+        return String.join(":", String.valueOf(scenario), databaseType.getType(), env.getHost(), String.valueOf(env.getPort(databaseType)));
     }
     
     private Map<String, DataSource> createDataSourceMap(final Type type) {
@@ -86,7 +106,8 @@ public final class NativeStorageContainer implements StorageContainer {
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {
         Map<String, DataSource> result = new HashMap<>(databaseNames.size(), 1F);
         for (String each : databaseNames) {
-            DataSource dataSource = StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType), each), env.getUser(), env.getPassword(), 2);
+            DataSource dataSource = StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType), each),
+                    env.getUser(), env.getPassword(), 2);
             result.put(each, dataSource);
         }
         return result;

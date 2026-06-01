@@ -45,4 +45,7 @@ public final class ExpectedSimpleTable extends AbstractExpectedIdentifierSQLSegm
     
     @XmlElement(name = "index-hint")
     private final Collection<ExpectedIndexHint> indexHints = new LinkedList<>();
+    
+    @XmlElement
+    private ExpectedPivot pivot;
 }

@@ -30,14 +30,13 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.file.Files;
-import java.util.LinkedHashMap;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -102,9 +101,7 @@ class YamlPluginsConfigurationSwapperTest {
     @Test
     void assertSwapWithNullPluginConfigurationValue() {
         YamlPluginCategoryConfiguration yamlPluginCategoryConfig = new YamlPluginCategoryConfiguration();
-        Map<String, YamlPluginConfiguration> logging = new LinkedHashMap<>();
-        logging.put("log_fixture", null);
-        yamlPluginCategoryConfig.setLogging(logging);
+        yamlPluginCategoryConfig.setLogging(Collections.singletonMap("log_fixture", null));
         YamlAgentConfiguration yamlAgentConfig = new YamlAgentConfiguration();
         yamlAgentConfig.setPlugins(yamlPluginCategoryConfig);
         Map<String, PluginConfiguration> actual = YamlPluginsConfigurationSwapper.swap(yamlAgentConfig);

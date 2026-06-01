@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.PivotSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -97,6 +98,24 @@ class ShorthandProjectionSegmentBinderTest {
         ProjectionSegment visibleColumn = actual.getActualProjectionSegments().iterator().next();
         assertThat(visibleColumn.getColumnLabel(), is("order_id"));
         assertTrue(visibleColumn.isVisible());
+    }
+    
+    @Test
+    void assertBindWithoutOwnerForPivotTableSegment() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        tableBinderContexts.put(CaseInsensitiveString.of("o"),
+                new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))),
+                        new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("category_id"))),
+                        new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("price")))), TableSourceType.TEMPORARY_TABLE));
+        SubqueryTableSegment boundTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, mock(SelectStatement.class), ""));
+        boundTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        PivotSegment pivotSegment =
+                new PivotSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("status"))), Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("on_sale"))));
+        pivotSegment.getPivotAggregationColumns().add(new ColumnSegment(0, 0, new IdentifierValue("price")));
+        boundTableSegment.setPivot(pivotSegment);
+        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(new ShorthandProjectionSegment(0, 0), boundTableSegment, tableBinderContexts);
+        assertThat(actual.getActualProjectionSegments().size(), is(1));
+        assertThat(actual.getActualProjectionSegments().iterator().next().getColumnLabel(), is("category_id"));
     }
     
     @Test

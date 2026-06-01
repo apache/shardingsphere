@@ -1,0 +1,138 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.bootstrap.config.loader;
+
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.stream.Stream;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class MCPConfigurationLoaderTest {
+    
+    private static final String HTTP_CONFIGURATION_YAML = """
+            transport:
+              type: STREAMABLE_HTTP
+              http:
+                bindHost: 127.0.0.1
+                port: 9090
+                endpointPath: /gateway
+            runtimeDatabases:
+              logic_db:
+                databaseType: MySQL
+                jdbcUrl: jdbc:mysql://localhost:3306/logic_db
+                username: demo
+                password: ''
+                driverClassName: com.mysql.cj.jdbc.Driver
+            """;
+    
+    private static final String RUNTIME_DATABASE_CONFIGURATION_YAML = """
+            transport:
+              type: STDIO
+            runtimeDatabases:
+              logic_db:
+                databaseType: MySQL
+                jdbcUrl: jdbc:mysql://localhost:3306/logic_db
+                username: demo
+                password: ''
+                driverClassName: com.mysql.cj.jdbc.Driver
+            """;
+    
+    @TempDir
+    private Path tempDir;
+    
+    @Test
+    void assertLoadWithExistingConfigurationFile() throws IOException {
+        Path configFile = createConfigFile(tempDir, "mcp-http.yaml", RUNTIME_DATABASE_CONFIGURATION_YAML);
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
+        assertThat(actual.getTransportType(), is(MCPTransportType.STDIO));
+        assertThat(actual.getDatabases().size(), is(1));
+        assertThat(actual.getDatabases().get("logic_db").getDatabaseType(), is("MySQL"));
+        assertThat(actual.getDatabases().get("logic_db").getJdbcUrl(), is("jdbc:mysql://localhost:3306/logic_db"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("blankConfigurationPaths")
+    void assertLoadWithBlankConfigurationPath(final String name, final String configPath) {
+        FileNotFoundException actual = assertThrows(FileNotFoundException.class, () -> MCPConfigurationLoader.load(configPath));
+        assertThat(actual.getMessage(), is("MCP configuration path cannot be blank."));
+    }
+    
+    @Test
+    void assertLoadWithMissingConfigurationFile() {
+        String actualConfigPath = tempDir.resolve("missing.yaml").toString();
+        FileNotFoundException actual = assertThrows(FileNotFoundException.class, () -> MCPConfigurationLoader.load(actualConfigPath));
+        assertThat(actual.getMessage(), is(String.format("MCP configuration file `%s` does not exist.", actualConfigPath)));
+    }
+    
+    @Test
+    void assertLoadWithConfigurationFileInParentDirectory() throws IOException {
+        Path searchBaseDirectory = Files.createTempDirectory(Path.of("").toAbsolutePath().resolve("..").normalize(), "mcp-config-loader-");
+        try {
+            createConfigFile(searchBaseDirectory, "conf/mcp-http.yaml", HTTP_CONFIGURATION_YAML);
+            String actualConfigPath = searchBaseDirectory.getFileName().resolve("conf").resolve("mcp-http.yaml").toString();
+            MCPLaunchConfiguration actual = MCPConfigurationLoader.load(actualConfigPath);
+            assertThat(actual.getTransportType(), is(MCPTransportType.STREAMABLE_HTTP));
+            assertThat(actual.getHttpTransport().getBindHost(), is("127.0.0.1"));
+            assertThat(actual.getHttpTransport().getPort(), is(9090));
+            assertThat(actual.getDatabases().size(), is(1));
+        } finally {
+            deleteDirectory(searchBaseDirectory);
+        }
+    }
+    
+    private static Stream<Arguments> blankConfigurationPaths() {
+        return Stream.of(
+                Arguments.of("empty configuration path", ""),
+                Arguments.of("single blank configuration path", " "),
+                Arguments.of("multi blank configuration path", "   "));
+    }
+    
+    private Path createConfigFile(final Path baseDirectory, final String relativePath, final String yamlContent) throws IOException {
+        Path result = baseDirectory.resolve(relativePath);
+        if (null != result.getParent()) {
+            Files.createDirectories(result.getParent());
+        }
+        Files.writeString(result, yamlContent);
+        return result;
+    }
+    
+    private void deleteDirectory(final Path directory) throws IOException {
+        if (Files.notExists(directory)) {
+            return;
+        }
+        try (Stream<Path> paths = Files.walk(directory)) {
+            for (Path each : paths.sorted(Comparator.reverseOrder()).toList()) {
+                Files.deleteIfExists(each);
+            }
+        }
+    }
+}
