@@ -53,7 +53,7 @@ The planning tool uses these common inputs:
 
 `database`, `schema`, `table`, and `column` can be ordinary identifiers or delimited identifiers wrapped in backticks, double quotes, or square brackets.
 MCP preserves ordinary identifiers as written and preserves explicitly delimited identifiers during planning. Generated DistSQL adds backticks when an unquoted identifier would conflict with DistSQL syntax.
-Generated validation SQL adds the target database dialect quote character when an unquoted identifier would conflict with SQL syntax, such as backticks for MySQL/MariaDB and double quotes for PostgreSQL/openGauss.
+Generated validation SQL preserves ordinary identifiers as written, and renders explicitly delimited or non-ordinary identifiers with the target database dialect quote character.
 Identifier content must not contain backticks, NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.
 
 Different operations focus on different inputs:

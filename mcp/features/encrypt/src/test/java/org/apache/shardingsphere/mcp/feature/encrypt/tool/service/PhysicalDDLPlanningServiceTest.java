@@ -70,8 +70,8 @@ class PhysicalDDLPlanningServiceTest {
     }
     
     @Test
-    void assertPlanAddColumnArtifactsFormatsReservedIdentifiers() {
-        List<DDLArtifact> actual = service.planAddColumnArtifacts("MySQL", "key", createDerivedColumnPlan(false, false), new LinkedHashSet<>(), "");
+    void assertPlanAddColumnArtifactsFormatsDelimitedIdentifiers() {
+        List<DDLArtifact> actual = service.planAddColumnArtifacts("MySQL", "`key`", createDerivedColumnPlan(false, false), new LinkedHashSet<>(), "");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getSql(), is("ALTER TABLE `key` ADD COLUMN phone_cipher VARCHAR(4000)"));
     }
