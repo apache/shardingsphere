@@ -27,9 +27,24 @@ on:
       - ready_for_review
     paths:
       - '.github/workflows/mcp-llm-e2e.yml'
-      - 'mcp/**'
-      - 'distribution/mcp/**'
-      - 'test/e2e/mcp/**'
+      - 'mcp/pom.xml'
+      - 'mcp/api/**'
+      - 'mcp/bootstrap/**'
+      - 'mcp/core/**'
+      - 'mcp/features/**'
+      - 'mcp/support/**'
+      - 'test/e2e/pom.xml'
+      - 'test/e2e/mcp/pom.xml'
+      - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/env/**'
+      - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/**'
+      - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/assertion/**'
+      - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/runtime/**'
+      - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/transport/**'
+      - 'test/e2e/mcp/src/test/resources/META-INF/**'
+      - 'test/e2e/mcp/src/test/resources/docker/llm-runtime/**'
+      - 'test/e2e/mcp/src/test/resources/env/**'
+      - 'test/e2e/mcp/src/test/resources/llm/**'
+      - 'test/e2e/mcp/src/test/resources/proxy/**'
   schedule:
     - cron: '0 17 * * 1-5'
   workflow_dispatch:

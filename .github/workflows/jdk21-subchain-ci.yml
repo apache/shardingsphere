@@ -29,7 +29,6 @@ on:
       - 'test/e2e/pom.xml'
       - 'test/e2e/mcp/**'
       - '.specify/specs/*mcp*/**'
-      - '.github/workflows/mcp-llm-usability-e2e.yml'
       - '.github/workflows/mcp-build.yml'
   workflow_dispatch:
 
@@ -48,10 +47,85 @@ jobs:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
-  mcp-default-e2e:
-    name: MCP E2E - Default Reactor
+  detect-changed-files:
+    name: Detect Changed Files
     if: github.repository == 'apache/shardingsphere'
-    needs: global-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d
+        id: filter
+        with:
+          token: ${{ github.token }}
+          filters: |
+            mcp_http_contract:
+              - '.github/workflows/jdk21-subchain-ci.yml'
+              - 'pom.xml'
+              - 'mcp/pom.xml'
+              - 'mcp/api/**'
+              - 'mcp/bootstrap/**'
+              - 'mcp/core/**'
+              - 'mcp/features/**'
+              - 'mcp/support/**'
+              - 'test/e2e/pom.xml'
+              - 'test/e2e/mcp/pom.xml'
+              - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/env/**'
+              - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/programmatic/**'
+              - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/**'
+              - 'test/e2e/mcp/src/test/resources/META-INF/**'
+              - 'test/e2e/mcp/src/test/resources/baseline-contract/**'
+              - 'test/e2e/mcp/src/test/resources/env/**'
+              - 'test/e2e/mcp/src/test/resources/proxy/**'
+              - '.specify/specs/*mcp*/**'
+            mcp_mysql:
+              - '.github/workflows/jdk21-subchain-ci.yml'
+              - 'pom.xml'
+              - 'mcp/pom.xml'
+              - 'mcp/api/**'
+              - 'mcp/bootstrap/**'
+              - 'mcp/core/**'
+              - 'mcp/features/**'
+              - 'mcp/support/**'
+              - 'test/e2e/pom.xml'
+              - 'test/e2e/mcp/pom.xml'
+              - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/env/**'
+              - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/**'
+              - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/runtime/**'
+              - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/transport/**'
+              - 'test/e2e/mcp/src/test/resources/env/**'
+              - 'test/e2e/mcp/src/test/resources/proxy/**'
+              - '.specify/specs/*mcp*/**'
+            mcp_distribution:
+              - '.github/workflows/jdk21-subchain-ci.yml'
+              - '.github/workflows/mcp-build.yml'
+              - 'pom.xml'
+              - 'distribution/pom.xml'
+              - 'distribution/mcp/**'
+              - 'mcp/pom.xml'
+              - 'mcp/server.json'
+              - 'mcp/registry/**'
+              - 'test/e2e/pom.xml'
+              - 'test/e2e/mcp/pom.xml'
+              - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/runtime/production/PackagedDistributionE2ETest.java'
+              - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/distribution/**'
+              - 'test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/support/transport/client/*Distribution*'
+              - '.specify/specs/*mcp*/**'
+      - name: Logs
+        run: |
+          echo "changed-categories=${{ steps.filter.outputs.changes }}"
+          echo "mcp-http-contract=${{ steps.filter.outputs.mcp_http_contract }}"
+          echo "mcp-mysql=${{ steps.filter.outputs.mcp_mysql }}"
+          echo "mcp-distribution=${{ steps.filter.outputs.mcp_distribution }}"
+    outputs:
+      mcp_http_contract: ${{ steps.filter.outputs.mcp_http_contract }}
+      mcp_mysql: ${{ steps.filter.outputs.mcp_mysql }}
+      mcp_distribution: ${{ steps.filter.outputs.mcp_distribution }}
+
+  mcp-http-contract-e2e:
+    name: MCP E2E - HTTP Contract
+    if: github.repository == 'apache/shardingsphere' && (github.event_name == 'workflow_dispatch' || needs.detect-changed-files.outputs.mcp_http_contract == 'true')
+    needs: [ global-environment, detect-changed-files ]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -62,13 +136,13 @@ jobs:
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
           cache-suffix: 'mcp'
           enable-docker-setup: 'true'
-      - name: Run MCP Default E2E
+      - name: Run MCP HTTP Contract E2E
         run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -Dmcp.e2e.contract.enabled=true -B -ntp
 
   mcp-mysql-e2e:
     name: MCP E2E - MySQL HTTP and STDIO
-    if: github.repository == 'apache/shardingsphere'
-    needs: global-environment
+    if: github.repository == 'apache/shardingsphere' && (github.event_name == 'workflow_dispatch' || needs.detect-changed-files.outputs.mcp_mysql == 'true')
+    needs: [ global-environment, detect-changed-files ]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -93,8 +167,8 @@ jobs:
 
   mcp-distribution-e2e:
     name: MCP E2E - Distribution
-    if: github.repository == 'apache/shardingsphere'
-    needs: global-environment
+    if: github.repository == 'apache/shardingsphere' && (github.event_name == 'workflow_dispatch' || needs.detect-changed-files.outputs.mcp_distribution == 'true')
+    needs: [ global-environment, detect-changed-files ]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
