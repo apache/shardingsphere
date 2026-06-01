@@ -103,34 +103,34 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyContext.class, ProxySSLContext.class})
 class PostgreSQLAuthenticationEngineTest {
-
+    
     private static final String USERNAME = "root";
-
+    
     private static final String PASSWORD = "sharding";
-
+    
     private static final String DATABASE_NAME = "sharding_db";
-
+    
     private final PostgreSQLAuthenticationEngine authenticationEngine = new PostgreSQLAuthenticationEngine();
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext channelHandlerContext;
-
+    
     @Mock
     private Attribute<Charset> charsetAttribute;
-
+    
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setup() {
         when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(charsetAttribute);
     }
-
+    
     @SneakyThrows(ReflectiveOperationException.class)
     @Test
     void assertHandshakeAssignsNextConnectionId() {
         Plugins.getMemberAccessor().set(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance(), 0);
         assertThat(authenticationEngine.handshake(channelHandlerContext), is(1));
     }
-
+    
     @Test
     void assertSSLUnwilling() {
         ByteBuf byteBuf = createByteBuf(8, 8);
@@ -141,7 +141,7 @@ class PostgreSQLAuthenticationEngineTest {
         verify(context).writeAndFlush(any(PostgreSQLSSLUnwillingPacket.class));
         assertFalse(actual.isFinished());
     }
-
+    
     @Test
     void assertSSLWilling() {
         ByteBuf byteBuf = createByteBuf(8, 8);
@@ -154,7 +154,7 @@ class PostgreSQLAuthenticationEngineTest {
         verify(context.pipeline()).addFirst(eq(SslHandler.class.getSimpleName()), any(SslHandler.class));
         assertFalse(actual.isFinished());
     }
-
+    
     @Test
     void assertSSLRequestCodeMismatchFallsBackToStartup() {
         ByteBuf byteBuf = createByteBuf(8, 8);
@@ -167,7 +167,7 @@ class PostgreSQLAuthenticationEngineTest {
         when(proxyContext.getContextManager()).thenReturn(contextManager);
         assertThrows(EmptyUsernameException.class, () -> authenticationEngine.authenticate(channelHandlerContext, new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8)));
     }
-
+    
     @Test
     void assertUserNotSet() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 512), StandardCharsets.UTF_8);
@@ -179,7 +179,7 @@ class PostgreSQLAuthenticationEngineTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThrows(EmptyUsernameException.class, () -> authenticationEngine.authenticate(channelHandlerContext, payload));
     }
-
+    
     @Test
     void assertStartupUsesPasswordAuthenticator() {
         UserConfiguration userConfig = new UserConfiguration(USERNAME, PASSWORD, "", PostgreSQLAuthenticationMethod.PASSWORD.getMethodName(), false);
@@ -195,7 +195,7 @@ class PostgreSQLAuthenticationEngineTest {
         assertThat(argumentCaptor.getValue().getClass(), is((Object) PostgreSQLPasswordAuthenticationPacket.class));
         assertFalse(actual.isFinished());
     }
-
+    
     @Test
     void assertStartupRejectsInvalidClientEncoding() {
         AuthorityRule authorityRule = createAuthorityRule(new UserConfiguration(USERNAME, PASSWORD, "", null, false), Collections.emptyMap(), null);
@@ -206,7 +206,7 @@ class PostgreSQLAuthenticationEngineTest {
         assertThrows(InvalidParameterValueException.class, () -> authenticationEngine.authenticate(channelHandlerContext, payload));
         verify(channelHandlerContext, never()).writeAndFlush(any(PostgreSQLPasswordAuthenticationPacket.class));
     }
-
+    
     @Test
     void assertAuthenticateWithNonPasswordMessage() {
         setAlreadyReceivedStartupMessage(authenticationEngine);
@@ -217,12 +217,12 @@ class PostgreSQLAuthenticationEngineTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThrows(ProtocolViolationException.class, () -> authenticationEngine.authenticate(channelHandlerContext, payload));
     }
-
+    
     @SneakyThrows(ReflectiveOperationException.class)
     private void setAlreadyReceivedStartupMessage(final PostgreSQLAuthenticationEngine target) {
         Plugins.getMemberAccessor().set(PostgreSQLAuthenticationEngine.class.getDeclaredField("startupMessageReceived"), target, true);
     }
-
+    
     @Test
     void assertLoginFailed() {
         AuthorityRule authorityRule = createAuthorityRule(new UserConfiguration(USERNAME, PASSWORD, "", null, false), Collections.emptyMap(), null);
@@ -234,7 +234,7 @@ class PostgreSQLAuthenticationEngineTest {
         PostgreSQLPacketPayload passwordPayload = createPasswordMessage(createMd5Digest(USERNAME, "wrong" + PASSWORD, md5Salt));
         assertThrows(InvalidPasswordException.class, () -> authenticationEngine.authenticate(channelHandlerContext, passwordPayload));
     }
-
+    
     @Test
     void assertLoginWithUnknownDatabase() {
         PostgreSQLPacketPayload payload = createStartupPayload(USERNAME, "missing_db");
@@ -247,7 +247,7 @@ class PostgreSQLAuthenticationEngineTest {
         PostgreSQLPacketPayload passwordPayload = createPasswordMessage(createMd5Digest(USERNAME, PASSWORD, md5Salt));
         assertThrows(UnknownDatabaseException.class, () -> authenticationEngine.authenticate(channelHandlerContext, passwordPayload));
     }
-
+    
     @Test
     void assertLoginWithUnknownUsername() {
         PostgreSQLPacketPayload payload = createStartupPayload(USERNAME, null);
@@ -261,7 +261,7 @@ class PostgreSQLAuthenticationEngineTest {
         PostgreSQLPacketPayload passwordPayload = createPasswordMessage(createMd5Digest(USERNAME, PASSWORD, md5Salt));
         assertThrows(UnknownUsernameException.class, () -> authenticationEngine.authenticate(channelHandlerContext, passwordPayload));
     }
-
+    
     @Test
     void assertLoginWithoutPrivilege() {
         AuthorityRule authorityRule = mock(AuthorityRule.class);
@@ -279,7 +279,7 @@ class PostgreSQLAuthenticationEngineTest {
         PostgreSQLPacketPayload passwordPayload = createPasswordMessage(createMd5Digest(USERNAME, PASSWORD, md5Salt));
         assertThrows(PrivilegeNotGrantedException.class, () -> authenticationEngine.authenticate(channelHandlerContext, passwordPayload));
     }
-
+    
     @Test
     void assertLoginWithAuthorizedDatabase() {
         PostgreSQLPacketPayload payload = createStartupPayload(USERNAME, DATABASE_NAME);
@@ -295,7 +295,7 @@ class PostgreSQLAuthenticationEngineTest {
         verify(channelHandlerContext).writeAndFlush(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
         assertTrue(actual.isFinished());
     }
-
+    
     @Test
     void assertLoginWithNullDatabase() {
         PostgreSQLPacketPayload payload = createStartupPayload(USERNAME, null);
@@ -311,25 +311,25 @@ class PostgreSQLAuthenticationEngineTest {
         verify(channelHandlerContext).writeAndFlush(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
         assertTrue(actual.isFinished());
     }
-
+    
     @Test
     void assertStartupUsesDefaultClientEncoding() throws ReflectiveOperationException {
         assertAuthenticateAndClientEncodingParameterStatus(USERNAME, DATABASE_NAME, null);
         verify(charsetAttribute).set(StandardCharsets.UTF_8);
     }
-
+    
     @Test
     void assertStartupNormalizesUtf8DashAlias() throws ReflectiveOperationException {
         assertAuthenticateAndClientEncodingParameterStatus(USERNAME, DATABASE_NAME, "UTF-8");
         verify(charsetAttribute).set(StandardCharsets.UTF_8);
     }
-
+    
     @Test
     void assertStartupNormalizesUnicodeAlias() throws ReflectiveOperationException {
         assertAuthenticateAndClientEncodingParameterStatus(USERNAME, DATABASE_NAME, "UNICODE");
         verify(charsetAttribute).set(StandardCharsets.UTF_8);
     }
-
+    
     @Test
     void assertStartupNormalizesUnicodeAliasUnderTurkishLocale() throws ReflectiveOperationException {
         Locale originalLocale = Locale.getDefault();
@@ -341,15 +341,15 @@ class PostgreSQLAuthenticationEngineTest {
             Locale.setDefault(originalLocale);
         }
     }
-
+    
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {
         return new UnpooledHeapByteBuf(UnpooledByteBufAllocator.DEFAULT, initialCapacity, maxCapacity);
     }
-
+    
     private PostgreSQLPacketPayload createStartupPayload(final String username, final String databaseName) {
         return createStartupPayload(username, databaseName, "UTF8");
     }
-
+    
     private PostgreSQLPacketPayload createStartupPayload(final String username, final String databaseName, final String clientEncoding) {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(32, 256), StandardCharsets.UTF_8);
         payload.writeInt4(64);
@@ -366,7 +366,7 @@ class PostgreSQLAuthenticationEngineTest {
         }
         return payload;
     }
-
+    
     private PostgreSQLPacketPayload createPasswordMessage(final String digest) {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
         payload.writeInt1('p');
@@ -374,20 +374,20 @@ class PostgreSQLAuthenticationEngineTest {
         payload.writeStringNul(digest);
         return payload;
     }
-
+    
     private ContextManager mockContextManager(final MetaDataContexts metaDataContexts) {
         ContextManager result = mock(ContextManager.class);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }
-
+    
     private MetaDataContexts createMetaDataContexts(final AuthorityRule authorityRule, final boolean containsDatabase, final String databaseName) {
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(authorityRule));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(containsDatabase && null != databaseName ? Collections.singleton(createDatabase(databaseName)) : Collections.emptyList(),
                 mock(ResourceMetaData.class), ruleMetaData, new ConfigurationProperties(new Properties()));
         return new MetaDataContexts(metaData, new ShardingSphereStatistics());
     }
-
+    
     private ShardingSphereDatabase createDatabase(final String databaseName) {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(databaseName);
@@ -395,13 +395,13 @@ class PostgreSQLAuthenticationEngineTest {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         return database;
     }
-
+    
     private AuthorityRule createAuthorityRule(final UserConfiguration userConfig, final Map<String, AlgorithmConfiguration> authenticators, final String defaultAuthenticator) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
                 Collections.singleton(userConfig), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), authenticators, defaultAuthenticator);
         return new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyList(), mock(ConfigurationProperties.class));
     }
-
+    
     private String createMd5Digest(final String username, final String password, final byte[] md5Salt) {
         String passwordHash = new String(Hex.encodeHex(DigestUtils.md5(password + username), true));
         MessageDigest messageDigest = DigestUtils.getMd5Digest();
@@ -409,12 +409,12 @@ class PostgreSQLAuthenticationEngineTest {
         messageDigest.update(md5Salt);
         return "md5" + new String(Hex.encodeHex(messageDigest.digest(), true));
     }
-
+    
     @SneakyThrows(ReflectiveOperationException.class)
     private byte[] getMd5Salt(final PostgreSQLAuthenticationEngine target) {
         return (byte[]) Plugins.getMemberAccessor().get(PostgreSQLAuthenticationEngine.class.getDeclaredField("md5Salt"), target);
     }
-
+    
     private void assertAuthenticateAndClientEncodingParameterStatus(final String username, final String databaseName, final String startupClientEncoding) throws ReflectiveOperationException {
         AuthorityRule authorityRule = createAuthorityRule(new UserConfiguration(username, PASSWORD, "", null, false), Collections.emptyMap(), null);
         MetaDataContexts metaDataContexts = createMetaDataContexts(authorityRule, true, databaseName);
@@ -428,7 +428,7 @@ class PostgreSQLAuthenticationEngineTest {
         String actualClientEncoding = getClientEncodingValue(extractParameterStatusPackets(writeArgumentCaptor.getAllValues()));
         assertThat(actualClientEncoding, is("UTF8"));
     }
-
+    
     private Collection<PostgreSQLParameterStatusPacket> extractParameterStatusPackets(final List<Object> packets) {
         Collection<PostgreSQLParameterStatusPacket> result = new LinkedList<>();
         for (Object each : packets) {
@@ -438,7 +438,7 @@ class PostgreSQLAuthenticationEngineTest {
         }
         return result;
     }
-
+    
     private String getClientEncodingValue(final Collection<PostgreSQLParameterStatusPacket> packets) throws ReflectiveOperationException {
         for (PostgreSQLParameterStatusPacket each : packets) {
             String actualKey = (String) Plugins.getMemberAccessor().get(PostgreSQLParameterStatusPacket.class.getDeclaredField("key"), each);
