@@ -33,33 +33,41 @@ public final class IndexPlanningService {
     /**
      * Plan index artifacts.
      *
+     * @param databaseType database type
      * @param tableName table name
      * @param derivedColumnPlan derived column plan
      * @param existingIndexes existing indexes
      * @return index plans
      */
-    public List<IndexPlan> planIndexes(final String tableName, final DerivedColumnPlan derivedColumnPlan, final Set<String> existingIndexes) {
-        WorkflowSQLUtils.checkSafeIdentifier("table", tableName);
+    public List<IndexPlan> planIndexes(final String databaseType, final String tableName, final DerivedColumnPlan derivedColumnPlan, final Set<String> existingIndexes) {
+        WorkflowSQLUtils.checkSupportedIdentifier("table", tableName);
         List<IndexPlan> result = new LinkedList<>();
         if (derivedColumnPlan.isAssistedQueryColumnRequired() && !derivedColumnPlan.getAssistedQueryColumnName().isEmpty()) {
-            result.add(createIndexPlan(tableName, derivedColumnPlan.getAssistedQueryColumnName(), "Recommended for assisted query performance.", existingIndexes));
+            result.add(createIndexPlan(databaseType, tableName, derivedColumnPlan.getAssistedQueryColumnName(), "Recommended for assisted query performance.", existingIndexes));
         }
         if (derivedColumnPlan.isLikeQueryColumnRequired() && !derivedColumnPlan.getLikeQueryColumnName().isEmpty()) {
-            result.add(createIndexPlan(tableName, derivedColumnPlan.getLikeQueryColumnName(), "Recommended for like-query performance.", existingIndexes));
+            result.add(createIndexPlan(databaseType, tableName, derivedColumnPlan.getLikeQueryColumnName(), "Recommended for like-query performance.", existingIndexes));
         }
         return result;
     }
     
-    private IndexPlan createIndexPlan(final String tableName, final String columnName, final String reason, final Set<String> existingIndexes) {
-        WorkflowSQLUtils.checkSafeIdentifier("column", columnName);
-        String baseIndexName = "idx_" + tableName + "_" + columnName;
+    private IndexPlan createIndexPlan(final String databaseType, final String tableName, final String columnName, final String reason, final Set<String> existingIndexes) {
+        WorkflowSQLUtils.checkSupportedIdentifier("column", columnName);
+        String baseIndexName = "idx_" + WorkflowSQLUtils.normalizeIdentifier(tableName) + "_" + WorkflowSQLUtils.normalizeIdentifier(columnName);
         String actualIndexName = baseIndexName;
         int suffix = 1;
-        while (existingIndexes.contains(actualIndexName)) {
+        while (containsIdentifier(databaseType, existingIndexes, actualIndexName)) {
             actualIndexName = baseIndexName + "_" + suffix;
             suffix++;
         }
         existingIndexes.add(actualIndexName);
-        return new IndexPlan(actualIndexName, columnName, reason, String.format("CREATE INDEX %s ON %s (%s)", actualIndexName, tableName, columnName));
+        WorkflowSQLUtils.checkSupportedIdentifier("index", actualIndexName);
+        return new IndexPlan(actualIndexName, columnName, reason,
+                String.format("CREATE INDEX %s ON %s (%s)", WorkflowSQLUtils.formatSQLIdentifier(databaseType, actualIndexName),
+                        WorkflowSQLUtils.formatSQLIdentifier(databaseType, tableName), WorkflowSQLUtils.formatSQLIdentifier(databaseType, columnName)));
+    }
+    
+    private boolean containsIdentifier(final String databaseType, final Set<String> identifiers, final String targetIdentifier) {
+        return identifiers.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, targetIdentifier, each));
     }
 }

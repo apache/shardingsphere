@@ -38,7 +38,7 @@ class EncryptRuleDistSQLPlanningServiceTest {
     @Test
     void assertPlanEncryptRuleWithCreate() {
         EncryptWorkflowRequest request = createRequest("create", true, true);
-        List<RuleArtifact> actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of());
+        List<RuleArtifact> actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of(), "MySQL");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getOperationType(), is("create"));
         assertTrue(actual.get(0).getSql().startsWith("CREATE ENCRYPT RULE orders"));
@@ -52,7 +52,7 @@ class EncryptRuleDistSQLPlanningServiceTest {
         EncryptWorkflowRequest request = createRequest("alter", true, false);
         List<RuleArtifact> actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of(
                 Map.of("logic_column", "phone", "cipher_column", "old_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old"),
-                Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")));
+                Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")), "MySQL");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getOperationType(), is("alter"));
         assertTrue(actual.get(0).getSql().startsWith("ALTER ENCRYPT RULE orders"));
@@ -66,22 +66,44 @@ class EncryptRuleDistSQLPlanningServiceTest {
         EncryptWorkflowRequest request = createRequest("create", false, false);
         request.setAlgorithmType("AES'X");
         request.getPrimaryAlgorithmProperties().put("aes-key-value", "s'1");
-        List<RuleArtifact> actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of());
+        List<RuleArtifact> actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of(), "MySQL");
         assertTrue(actual.get(0).getSql().contains("TYPE(NAME='aes''x', PROPERTIES('aes-key-value'='s''1'))"));
     }
     
     @Test
-    void assertPlanEncryptRuleRejectsUnsafeColumn() {
+    void assertPlanEncryptRuleFormatsSpecialCharacterIdentifiers() {
         EncryptWorkflowRequest request = createRequest("create", false, false);
-        request.setColumn("phone;drop");
-        MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class, () -> service.planEncryptRule(request, createDerivedColumnPlan(), List.of()));
-        assertThat(actualException.getMessage(), is("column `phone;drop` contains unsupported characters. Workflow and generated SQL planning support standard unquoted identifiers only."));
+        request.setTable("order detail");
+        request.setColumn("Phone Number");
+        DerivedColumnPlan derivedColumnPlan = createDerivedColumnPlan();
+        derivedColumnPlan.setCipherColumnName("Phone Number Cipher");
+        List<RuleArtifact> actual = service.planEncryptRule(request, derivedColumnPlan, List.of(), "MySQL");
+        assertTrue(actual.get(0).getSql().startsWith("CREATE ENCRYPT RULE `order detail`"));
+        assertTrue(actual.get(0).getSql().contains("NAME=`Phone Number`"));
+        assertTrue(actual.get(0).getSql().contains("CIPHER=`Phone Number Cipher`"));
+    }
+    
+    @Test
+    void assertPlanEncryptRuleFormatsReservedIdentifiers() {
+        EncryptWorkflowRequest request = createRequest("create", false, false);
+        request.setTable("key");
+        List<RuleArtifact> actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of(), "MySQL");
+        assertTrue(actual.get(0).getSql().startsWith("CREATE ENCRYPT RULE `key`"));
+        assertTrue(actual.get(0).getSql().contains("NAME=phone"));
+    }
+    
+    @Test
+    void assertPlanEncryptRuleRejectsLineTerminatorColumn() {
+        EncryptWorkflowRequest request = createRequest("create", false, false);
+        request.setColumn("phone\ndrop");
+        MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class, () -> service.planEncryptRule(request, createDerivedColumnPlan(), List.of(), "MySQL"));
+        assertThat(actualException.getMessage(), is("column `phone\ndrop` contains unsupported characters that cannot be rendered as a reviewable SQL identifier."));
     }
     
     @Test
     void assertPlanEncryptDropRuleWithoutRemainingColumns() {
         EncryptWorkflowRequest request = createRequest("drop", false, false);
-        List<RuleArtifact> actual = service.planEncryptDropRule(request, List.of(Map.of("logic_column", "phone", "cipher_column", "phone_cipher")));
+        List<RuleArtifact> actual = service.planEncryptDropRule(request, List.of(Map.of("logic_column", "phone", "cipher_column", "phone_cipher")), "MySQL");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getOperationType(), is("drop"));
         assertThat(actual.get(0).getSql(), is("DROP ENCRYPT RULE orders"));
@@ -92,12 +114,45 @@ class EncryptRuleDistSQLPlanningServiceTest {
         EncryptWorkflowRequest request = createRequest("drop", false, false);
         List<RuleArtifact> actual = service.planEncryptDropRule(request, List.of(
                 Map.of("logic_column", "phone", "cipher_column", "phone_cipher"),
-                Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")));
+                Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")), "MySQL");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getOperationType(), is("drop"));
         assertTrue(actual.get(0).getSql().startsWith("ALTER ENCRYPT RULE orders"));
         assertTrue(actual.get(0).getSql().contains("NAME=email"));
         assertTrue(actual.get(0).getSql().contains("CIPHER=email_cipher"));
+    }
+    
+    @Test
+    void assertPlanEncryptDropRulePreservesCaseSensitiveSiblingColumn() {
+        EncryptWorkflowRequest request = createRequest("drop", false, false);
+        request.setColumn("\"Phone\"");
+        List<RuleArtifact> actual = service.planEncryptDropRule(request, List.of(
+                Map.of("logic_column", "Phone", "cipher_column", "Phone_cipher"),
+                Map.of("logic_column", "phone", "cipher_column", "phone_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")), "PostgreSQL");
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.get(0).getSql().startsWith("ALTER ENCRYPT RULE orders"));
+        assertTrue(actual.get(0).getSql().contains("NAME=phone"));
+        assertTrue(actual.get(0).getSql().contains("CIPHER=phone_cipher"));
+    }
+    
+    @Test
+    void assertPlanEncryptDropRuleMatchesPostgreSQLUnquotedColumn() {
+        EncryptWorkflowRequest request = createRequest("drop", false, false);
+        request.setColumn("Phone");
+        List<RuleArtifact> actual = service.planEncryptDropRule(request, List.of(Map.of("logic_column", "phone", "cipher_column", "phone_cipher")), "PostgreSQL");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getOperationType(), is("drop"));
+        assertThat(actual.get(0).getSql(), is("DROP ENCRYPT RULE orders"));
+    }
+    
+    @Test
+    void assertPlanEncryptDropRuleMatchesCaseInsensitiveColumn() {
+        EncryptWorkflowRequest request = createRequest("drop", false, false);
+        request.setColumn("Phone");
+        List<RuleArtifact> actual = service.planEncryptDropRule(request, List.of(Map.of("logic_column", "phone", "cipher_column", "phone_cipher")), "MySQL");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getOperationType(), is("drop"));
+        assertThat(actual.get(0).getSql(), is("DROP ENCRYPT RULE orders"));
     }
     
     private EncryptWorkflowRequest createRequest(final String operationType, final boolean equalityFilter, final boolean likeQuery) {

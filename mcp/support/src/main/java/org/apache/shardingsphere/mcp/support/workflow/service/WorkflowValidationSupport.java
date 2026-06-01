@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
@@ -86,8 +87,12 @@ public final class WorkflowValidationSupport {
      */
     public ValidationSection validateLogicalMetadata(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
                                                      final ValidationReport validationReport) {
+        String databaseName = WorkflowSQLUtils.normalizeIdentifier(snapshot.getRequest().getDatabase());
+        String databaseType = metadataQueryFacade.queryDatabase(databaseName).map(MCPDatabaseMetadata::getDatabaseType).orElse("");
         if (metadataQueryFacade.queryTableColumn(
-                snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), snapshot.getRequest().getTable(), snapshot.getRequest().getColumn()).isPresent()) {
+                databaseName, WorkflowSQLUtils.canonicalizeIdentifier(databaseType, snapshot.getRequest().getSchema()),
+                WorkflowSQLUtils.canonicalizeIdentifier(databaseType, snapshot.getRequest().getTable()), WorkflowSQLUtils.canonicalizeIdentifier(databaseType, snapshot.getRequest().getColumn()))
+                .isPresent()) {
             return new ValidationSection(WorkflowLifecycle.STATUS_PASSED,
                     Map.of(WorkflowFieldNames.TABLE, snapshot.getRequest().getTable(), WorkflowFieldNames.COLUMN, snapshot.getRequest().getColumn()),
                     "Logical table and column are still visible from Proxy metadata.");
@@ -104,9 +109,20 @@ public final class WorkflowValidationSupport {
      * @return projection validation SQL
      */
     public String createProjectionValidationSql(final WorkflowContextSnapshot snapshot) {
-        WorkflowSQLUtils.checkSafeIdentifier(WorkflowFieldNames.TABLE, snapshot.getRequest().getTable());
-        WorkflowSQLUtils.checkSafeIdentifier(WorkflowFieldNames.COLUMN, snapshot.getRequest().getColumn());
-        return String.format("SELECT %s FROM %s", snapshot.getRequest().getColumn(), snapshot.getRequest().getTable());
+        return createProjectionValidationSql(snapshot, "MySQL");
+    }
+    
+    /**
+     * Create the baseline projection SQL used by workflow validation.
+     *
+     * @param snapshot workflow snapshot
+     * @param databaseType database type
+     * @return projection validation SQL
+     */
+    public String createProjectionValidationSql(final WorkflowContextSnapshot snapshot, final String databaseType) {
+        String columnName = WorkflowSQLUtils.formatSQLIdentifier(databaseType, snapshot.getRequest().getColumn());
+        String tableName = WorkflowSQLUtils.formatSQLIdentifier(databaseType, snapshot.getRequest().getTable());
+        return String.format("SELECT %s FROM %s", columnName, tableName);
     }
     
     /**

@@ -35,7 +35,7 @@ class IndexPlanningServiceTest {
     
     @Test
     void assertPlanIndexesWithRequiredDerivedColumns() {
-        List<IndexPlan> actual = service.planIndexes("orders", createDerivedColumnPlan(true, true), new LinkedHashSet<>());
+        List<IndexPlan> actual = service.planIndexes("MySQL", "orders", createDerivedColumnPlan(true, true), new LinkedHashSet<>());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getIndexName(), is("idx_orders_phone_assisted_query"));
         assertThat(actual.get(1).getIndexName(), is("idx_orders_phone_like_query"));
@@ -44,14 +44,63 @@ class IndexPlanningServiceTest {
     @Test
     void assertPlanIndexesWithIndexNameCollision() {
         Set<String> existingIndexes = new LinkedHashSet<>(List.of("idx_orders_phone_assisted_query"));
-        List<IndexPlan> actual = service.planIndexes("orders", createDerivedColumnPlan(true, false), existingIndexes);
+        List<IndexPlan> actual = service.planIndexes("MySQL", "orders", createDerivedColumnPlan(true, false), existingIndexes);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getIndexName(), is("idx_orders_phone_assisted_query_1"));
     }
     
     @Test
+    void assertPlanIndexesMatchesCaseInsensitiveIndexNameCollision() {
+        Set<String> existingIndexes = new LinkedHashSet<>(List.of("IDX_ORDERS_PHONE_ASSISTED_QUERY"));
+        List<IndexPlan> actual = service.planIndexes("MySQL", "orders", createDerivedColumnPlan(true, false), existingIndexes);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getIndexName(), is("idx_orders_phone_assisted_query_1"));
+    }
+    
+    @Test
+    void assertPlanIndexesKeepsCaseSensitiveIndexNamesDistinct() {
+        Set<String> existingIndexes = new LinkedHashSet<>(List.of("IDX_ORDERS_PHONE_ASSISTED_QUERY"));
+        List<IndexPlan> actual = service.planIndexes("PostgreSQL", "orders", createDerivedColumnPlan(true, false), existingIndexes);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getIndexName(), is("idx_orders_phone_assisted_query"));
+    }
+    
+    @Test
+    void assertPlanIndexesFormatsSpecialCharacterIdentifiers() {
+        DerivedColumnPlan derivedColumnPlan = createDerivedColumnPlan(true, false);
+        derivedColumnPlan.setAssistedQueryColumnName("phone assisted");
+        List<IndexPlan> actual = service.planIndexes("MySQL", "order detail", derivedColumnPlan, new LinkedHashSet<>());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getSql(), is("CREATE INDEX `idx_order detail_phone assisted` ON `order detail` (`phone assisted`)"));
+    }
+    
+    @Test
+    void assertPlanIndexesNormalizesDelimitedTableForIndexName() {
+        List<IndexPlan> actual = service.planIndexes("MySQL", "`orders`", createDerivedColumnPlan(true, false), new LinkedHashSet<>());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getIndexName(), is("idx_orders_phone_assisted_query"));
+        assertThat(actual.get(0).getSql(), is("CREATE INDEX idx_orders_phone_assisted_query ON `orders` (phone_assisted_query)"));
+    }
+    
+    @Test
+    void assertPlanIndexesFormatsDelimitedIdentifiers() {
+        List<IndexPlan> actual = service.planIndexes("MySQL", "`key`", createDerivedColumnPlan(true, false), new LinkedHashSet<>());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getSql(), is("CREATE INDEX idx_key_phone_assisted_query ON `key` (phone_assisted_query)"));
+    }
+    
+    @Test
+    void assertPlanIndexesFormatsPostgreSQLIdentifiers() {
+        DerivedColumnPlan derivedColumnPlan = createDerivedColumnPlan(true, false);
+        derivedColumnPlan.setAssistedQueryColumnName("phone assisted");
+        List<IndexPlan> actual = service.planIndexes("PostgreSQL", "order detail", derivedColumnPlan, new LinkedHashSet<>());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getSql(), is("CREATE INDEX \"idx_order detail_phone assisted\" ON \"order detail\" (\"phone assisted\")"));
+    }
+    
+    @Test
     void assertPlanIndexesWithoutOptionalColumns() {
-        List<IndexPlan> actual = service.planIndexes("orders", createDerivedColumnPlan(false, false), new LinkedHashSet<>());
+        List<IndexPlan> actual = service.planIndexes("MySQL", "orders", createDerivedColumnPlan(false, false), new LinkedHashSet<>());
         assertTrue(actual.isEmpty());
     }
     

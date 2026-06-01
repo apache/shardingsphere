@@ -51,6 +51,11 @@ The planning tool uses these common inputs:
 | `primary_algorithm_properties` | Required by algorithm | Primary encryption algorithm properties, such as an AES key. The required properties come from the algorithm resource. |
 | `allow_index_ddl` | Optional | Whether physical index plans may be generated for assisted-query columns. |
 
+`database`, `schema`, `table`, and `column` are structured tool arguments, not SQL snippets parsed from `natural_language_intent`.
+A client or model should resolve object names from Proxy metadata, resources, or completions before filling these arguments.
+MCP renders reviewable DistSQL and SQL artifacts from those arguments. Explicit delimiter intent is preserved; DistSQL identifiers are quoted only when DistSQL syntax requires it; physical SQL identifiers use the target database quote style only when the argument is explicitly delimited or cannot be rendered as a plain SQL token.
+Identifier content must not contain backticks, NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.
+
 Different operations focus on different inputs:
 
 | Operation | Input focus | Planning result |
@@ -146,4 +151,4 @@ Regular users usually only need to describe tasks in natural language.
 
 ### Planner input limits
 
-- The planner accepts ordinary unquoted logical database, schema, table, and column names to reduce ambiguity in generated SQL. This is not a ShardingSphere SQL capability limit.
+- Identifier content must not contain backticks, NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.

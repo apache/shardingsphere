@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -80,12 +82,9 @@ class MaskRuleInspectionServiceTest {
     }
     
     @Test
-    void assertQueryMaskRulesEscapesQuoteDelimiter() {
+    void assertQueryMaskRulesRejectsBackQuote() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("逻`辑库", "", "SHOW MASK RULE `订``单` FROM `逻``辑库`"))
-                .thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
-        List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "逻`辑库", "订`单");
-        assertThat(actual.get(0).get("column"), is("phone"));
+        assertThrows(MCPInvalidRequestException.class, () -> service.queryMaskRules(queryFacade, "逻`辑库", "订`单"));
     }
     
     @Test
