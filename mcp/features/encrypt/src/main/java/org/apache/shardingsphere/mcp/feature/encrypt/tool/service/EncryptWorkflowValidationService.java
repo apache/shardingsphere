@@ -86,7 +86,8 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         ValidationReport result = new ValidationReport();
         EncryptWorkflowRequest request = getWorkflowRequest(snapshot);
         EncryptWorkflowState workflowState = getWorkflowState(snapshot);
-        String databaseType = queryFacade.getDatabaseType(request.getDatabase());
+        String databaseType = metadataQueryFacade.queryDatabase(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()))
+                .map(each -> each.getDatabaseType()).orElse("");
         List<Map<String, Object>> encryptRules = ruleInspectionService.queryEncryptRules(queryFacade, request.getDatabase(), request.getTable());
         result.setDdlValidation(validateDdl(snapshot, workflowState, encryptRules, result, databaseType));
         result.setRuleValidation(validateRules(snapshot, request, encryptRules, result, databaseType));

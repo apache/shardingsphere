@@ -347,7 +347,6 @@ class EncryptWorkflowPlanningServiceTest {
         when(metadataQueryFacade.queryIndexes("logic_db", "public", "orders"))
                 .thenReturn(List.of(new MCPIndexMetadata("logic_db", "public", "orders", "idx_orders_phone_assisted_query")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.getDatabaseType("`logic_db`")).thenReturn("MySQL");
         when(queryFacade.queryColumnDefinition("`logic_db`", "`public`", "`orders`", "`phone`")).thenReturn("VARCHAR(32)");
         final EncryptWorkflowPlanningService service = createService(ruleInspectionService, algorithmRecommendationService, propertyTemplateService,
                 new DerivedColumnNamingService(), new PhysicalDDLPlanningService(), new IndexPlanningService(), new EncryptRuleDistSQLPlanningService());
@@ -381,14 +380,12 @@ class EncryptWorkflowPlanningServiceTest {
     
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType("logic_db")).thenReturn("MySQL");
         when(result.queryColumnDefinition("logic_db", "public", "orders", "phone")).thenReturn("VARCHAR(32)");
         return result;
     }
     
     private MCPFeatureQueryFacade createUnavailableColumnDefinitionQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType("logic_db")).thenReturn("MySQL");
         when(result.queryColumnDefinition("logic_db", "public", "orders", "phone")).thenThrow(new IllegalStateException("metadata unavailable"));
         return result;
     }

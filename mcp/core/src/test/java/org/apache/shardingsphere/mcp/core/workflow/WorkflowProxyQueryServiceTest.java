@@ -181,12 +181,6 @@ class WorkflowProxyQueryServiceTest {
     }
     
     @Test
-    void assertGetDatabaseType() {
-        WorkflowProxyQueryService service = createService(Map.of("logic_db", mock(RuntimeDatabaseConfiguration.class)), "PostgreSQL");
-        assertThat(service.getDatabaseType("`logic_db`"), is("PostgreSQL"));
-    }
-    
-    @Test
     void assertQueryInformationSchemaColumnNamesSkipsSchemaFilterWhenSchemaIsEmpty() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);

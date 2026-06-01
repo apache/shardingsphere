@@ -46,16 +46,6 @@ public interface MCPFeatureQueryFacade {
     List<Map<String, Object>> queryWithAnyDatabase(String sql);
     
     /**
-     * Get database type.
-     *
-     * @param databaseName database name
-     * @return database type
-     */
-    default String getDatabaseType(final String databaseName) {
-        return "";
-    }
-    
-    /**
      * Query column definition.
      *
      * @param databaseName database name

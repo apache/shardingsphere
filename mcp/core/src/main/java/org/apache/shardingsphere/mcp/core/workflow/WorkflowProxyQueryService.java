@@ -74,8 +74,7 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
         return query(databaseName, "", sql);
     }
     
-    @Override
-    public String getDatabaseType(final String databaseName) {
+    private String getDatabaseType(final String databaseName) {
         return databaseCapabilityProvider.provide(WorkflowSQLUtils.normalizeIdentifier(databaseName)).map(MCPDatabaseCapability::getDatabaseType).orElse("");
     }
     

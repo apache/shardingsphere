@@ -23,7 +23,6 @@ Examples:
 
 - Check whether `<logic-database>.orders.phone` already has a masking rule.
 - Plan phone-number masking for `<logic-database>.orders.phone`, keep the first 3 and last 4 characters, and preview it without execution.
-- Plan phone-number masking for column `Phone Number` in logical table `order detail`, preserving object-name case.
 - Adjust the previous plan to use `*` as the replacement character.
 - Confirm and execute the previous masking rule plan, then validate the result.
 
@@ -51,9 +50,9 @@ The planning tool uses these common inputs:
 | `algorithm_type` | Optional | Masking algorithm type. Omit it if you want MCP to recommend one from available algorithms. |
 | `primary_algorithm_properties` | Required by algorithm | Masking algorithm properties, such as retained characters and replacement character. The required properties come from the algorithm resource. |
 
-`database`, `schema`, `table`, and `column` can be ordinary identifiers or delimited identifiers wrapped in backticks, double quotes, or square brackets.
-MCP preserves ordinary identifiers as written and preserves explicitly delimited identifiers during planning. Generated DistSQL adds backticks when an unquoted identifier would conflict with DistSQL syntax.
-Generated validation SQL preserves ordinary identifiers as written, and renders explicitly delimited or non-ordinary identifiers with the target database dialect quote character.
+`database`, `schema`, `table`, and `column` are structured tool arguments, not SQL snippets parsed from `natural_language_intent`.
+A client or model should resolve object names from Proxy metadata, resources, or completions before filling these arguments.
+MCP renders reviewable DistSQL and SQL artifacts from those arguments. Explicit delimiter intent is preserved; DistSQL identifiers are quoted only when DistSQL syntax requires it; physical SQL identifiers use the target database quote style only when the argument is explicitly delimited or cannot be rendered as a plain SQL token.
 Identifier content must not contain backticks, NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.
 
 Different operations focus on different inputs:

@@ -23,7 +23,6 @@ weight = 1
 
 - 检查 `<logic-database>.orders.status` 当前是否已有加密规则。
 - 为 `<logic-database>.orders.status` 规划可逆加密，需要支持等值查询，先预览不要执行。
-- 为逻辑表 `order detail` 的 `Phone Number` 列规划可逆加密，保留对象名大小写。
 - 使用 AES 算法继续刚才的计划，密钥通过受保护渠道提供。
 - 确认并执行刚才的加密规则计划，然后校验结果。
 
@@ -52,9 +51,9 @@ weight = 1
 | `primary_algorithm_properties` | 按算法必填 | 主加密算法参数，例如 AES 密钥。具体参数以算法资源返回值为准。 |
 | `allow_index_ddl` | 可选 | 是否允许为辅助查询列生成物理索引计划。 |
 
-`database`、`schema`、`table` 和 `column` 可以使用普通标识符，也可以使用反引号、双引号或方括号包裹的定界标识符。
-MCP 会在规划时保留普通标识符的原始写法，并保留显式定界标识符；当未定界标识符会与 DistSQL 语法冲突时，生成的 DistSQL 会添加反引号。
-生成物理 DDL、索引计划和校验 SQL 时，会保留普通标识符的原始写法，并对显式定界或非普通形态的标识符使用目标数据库方言的引用字符。
+`database`、`schema`、`table` 和 `column` 是结构化工具参数，不是从 `natural_language_intent` 中解析出来的 SQL 片段。
+MCP 客户端或模型应先通过 Proxy 元数据、资源或补全确认对象名，再把选中的对象名填入这些参数。
+MCP 会基于这些参数生成可审查的 DistSQL 和 SQL 产物。显式定界的意图会被保留；DistSQL 只在自身语法需要时补反引号；物理 SQL 只在参数显式定界或无法作为普通 SQL token 输出时使用目标数据库的引用字符。
 标识符内容不能包含反引号、NUL、回车或换行等无法生成可审查 SQL 的字符。
 
 不同操作的输入重点如下：

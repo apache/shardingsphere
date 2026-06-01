@@ -23,7 +23,6 @@ Examples:
 
 - Check whether `<logic-database>.orders.status` already has an encryption rule.
 - Plan reversible encryption for `<logic-database>.orders.status` with equality query support, and preview it without execution.
-- Plan reversible encryption for column `Phone Number` in logical table `order detail`, preserving object-name case.
 - Continue the previous plan with the AES algorithm and provide the key through a protected channel.
 - Confirm and execute the previous encryption rule plan, then validate the result.
 
@@ -52,9 +51,9 @@ The planning tool uses these common inputs:
 | `primary_algorithm_properties` | Required by algorithm | Primary encryption algorithm properties, such as an AES key. The required properties come from the algorithm resource. |
 | `allow_index_ddl` | Optional | Whether physical index plans may be generated for assisted-query columns. |
 
-`database`, `schema`, `table`, and `column` can be ordinary identifiers or delimited identifiers wrapped in backticks, double quotes, or square brackets.
-MCP preserves ordinary identifiers as written and preserves explicitly delimited identifiers during planning. Generated DistSQL adds backticks when an unquoted identifier would conflict with DistSQL syntax.
-Generated physical DDL, index plans, and validation SQL preserve ordinary identifiers as written, and render explicitly delimited or non-ordinary identifiers with the target database dialect quote character.
+`database`, `schema`, `table`, and `column` are structured tool arguments, not SQL snippets parsed from `natural_language_intent`.
+A client or model should resolve object names from Proxy metadata, resources, or completions before filling these arguments.
+MCP renders reviewable DistSQL and SQL artifacts from those arguments. Explicit delimiter intent is preserved; DistSQL identifiers are quoted only when DistSQL syntax requires it; physical SQL identifiers use the target database quote style only when the argument is explicitly delimited or cannot be rendered as a plain SQL token.
 Identifier content must not contain backticks, NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.
 
 Different operations focus on different inputs:
