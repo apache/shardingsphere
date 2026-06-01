@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.UnpooledByteBufAllocator;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.firebirdsql.gds.BlrConstants;
@@ -58,10 +56,7 @@ class FirebirdExecuteStatementPacketTest {
     
     @BeforeEach
     void setUp() {
-        FirebirdBlobRegistry.clearSegment();
         lenient().when(byteBuf.duplicate()).thenReturn(byteBuf);
-        lenient().when(byteBuf.alloc()).thenReturn(UnpooledByteBufAllocator.DEFAULT);
-        lenient().when(payload.getByteBuf()).thenReturn(byteBuf);
     }
     
     @ParameterizedTest(name = "{0}")
@@ -69,6 +64,9 @@ class FirebirdExecuteStatementPacketTest {
     void assertExecuteStatementPacket(final String name, final short blrType, final FirebirdBinaryColumnType expectedParameterType, final Object expectedParameterValue) {
         when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1, 123);
         when(payload.readInt1()).thenReturn(0);
+        if (FirebirdBinaryColumnType.BLOB == expectedParameterType) {
+            when(payload.readInt8()).thenReturn(123L);
+        }
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, blrType, (short) BlrConstants.blr_end);
@@ -164,7 +162,7 @@ class FirebirdExecuteStatementPacketTest {
                 Arguments.of("skip_count_2", (short) BlrConstants.blr_text, FirebirdBinaryColumnType.LEGACY_TEXT, null),
                 Arguments.of("skip_count_1", (short) BlrConstants.blr_long, FirebirdBinaryColumnType.LONG, 123),
                 Arguments.of("skip_count_0", (short) BlrConstants.blr_bool, FirebirdBinaryColumnType.BOOLEAN, 0),
-                Arguments.of("blob_parameter", (short) BlrConstants.blr_quad, FirebirdBinaryColumnType.BLOB, null));
+                Arguments.of("blob_parameter", (short) BlrConstants.blr_quad, FirebirdBinaryColumnType.BLOB, 123L));
     }
     
     private static Stream<Arguments> assertIsStoredProcedureArguments() {
