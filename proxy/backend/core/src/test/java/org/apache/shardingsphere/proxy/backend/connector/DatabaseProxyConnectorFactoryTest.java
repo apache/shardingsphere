@@ -78,7 +78,6 @@ class DatabaseProxyConnectorFactoryTest {
         when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mockDatabase();
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), metaData);
         ContextManager contextManager = mockContextManager(database);
@@ -102,7 +101,6 @@ class DatabaseProxyConnectorFactoryTest {
         when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mockDatabase();
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         ContextManager contextManager = mockContextManager(database);
         initBackendExecutorContext(contextManager);
