@@ -8,15 +8,18 @@ chapter = true
 ShardingSphere-MCP 是 Apache ShardingSphere 的 MCP Server，可以独立启动。
 MCP 是连接 AI 应用与外部数据源和工具的开放协议，协议说明参见 [MCP 官方文档](https://modelcontextprotocol.io/docs/learn/architecture)。
 
-用户在支持 MCP 的大模型客户端中描述数据库任务后，可以通过 ShardingSphere-MCP 查看 ShardingSphere 逻辑库元数据、执行受控 SQL 查询，并生成可审查的治理变更计划。
+AI 应用开发者可以将 ShardingSphere-MCP 作为数据库访问能力接入应用。
+用户通过自然语言描述数据库任务后，AI 应用在需要数据库上下文或数据库操作时，通过 MCP Client 调用 ShardingSphere-MCP；ShardingSphere-MCP 再访问 ShardingSphere 逻辑库或普通数据库。
+
+通过这种方式，AI 应用可以查看 ShardingSphere 逻辑库元数据、执行受控 SQL 查询，并生成可审查的治理变更计划。
 治理变更计划用于描述数据加密、数据脱敏等规则变更的目标对象、影响范围和待执行语句，便于用户在执行前审查。
 
-ShardingSphere-MCP 的配置以数据库为核心：先配置 MCP Server 可以连接的 ShardingSphere 逻辑库，再在客户端中描述要完成的数据库任务。
+ShardingSphere-MCP 的配置以数据库为核心：先配置 MCP Server 可以连接的 ShardingSphere 逻辑库或普通数据库，再在 AI 应用中完成 MCP 集成。
 
-## 在大模型客户端中使用
+## 面向 AI 应用的数据库访问
 
-ShardingSphere-MCP 面向支持 MCP 的客户端、IDE 插件和 Agent 平台使用。
-完成客户端集成后，用户可以在客户端对话中通过自然语言描述数据库任务。
+ShardingSphere-MCP 面向支持 MCP 的 AI 应用、IDE 插件和 Agent 平台使用。
+完成 MCP 集成后，用户可以在 AI 应用中通过自然语言描述数据库任务。
 
 常见任务示例：
 
@@ -33,7 +36,7 @@ ShardingSphere-MCP 面向支持 MCP 的客户端、IDE 插件和 Agent 平台使
 - 快速开始：构建发行包，配置一个可连接的逻辑库，启动 HTTP MCP Server，并验证基础任务。
 - 能力清单：说明 MCP Server 可以完成的数据库任务、可读取的信息和使用边界。
 - 配置说明：说明传输方式、`runtimeDatabases`、插件目录和启动参数。
-- 客户端集成：说明如何通过 HTTP 或 STDIO 把 MCP Server 接入客户端，以及集成后的使用方式。
+- 客户端集成：说明如何通过 HTTP 或 STDIO 把 MCP Server 接入 AI 应用或 MCP 客户端，以及集成后的使用方式。
 - 部署说明：说明发行包、OCI 镜像和安全部署建议。
 - 常见问题：排查 MCP Server、连接、配置、元数据和 SQL 执行的通用问题。
 - 功能插件：说明官方 MCP 功能插件能力，以及插件变更的审查、执行和校验流程。

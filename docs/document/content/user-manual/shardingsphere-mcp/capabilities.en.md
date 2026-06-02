@@ -3,18 +3,19 @@ title = "Capability Catalog"
 weight = 2
 +++
 
-This page explains the information that ShardingSphere-MCP can read, the actions it can perform, and the usage boundaries for different connection targets.
-Clients discover the capabilities currently available from the MCP Server automatically. Users usually only need to describe the database task they want to complete.
+This page explains the information that ShardingSphere-MCP can read, the actions it can perform, and the usage boundaries for different connection targets from the perspective of AI application developers and integrators.
+AI applications that integrate MCP discover the capabilities currently available from the MCP Server. Users usually only need to describe the database task they want to complete in the AI application.
 
 ## Capability discovery
 
-Capability discovery lets clients confirm which databases the current MCP Server can access, which tasks it supports, and which tasks may have side effects.
+Capability discovery is the process by which an MCP client or an AI application that integrates MCP reads the capabilities available from ShardingSphere-MCP.
+When using an existing client, users usually only describe database tasks. AI application developers need to read tools, resources, resource templates, and prompts after the application establishes an MCP connection, then make those capabilities available to the model or application orchestration logic.
 
-| Discovery content | Purpose | User-facing result |
-| --- | --- | --- |
-| Basic capability list | Confirms readable information and executable actions from the current MCP Server. | The client can determine whether metadata inspection, SQL query, or governance changes are supported. |
-| ShardingSphere capability summary | Summarizes runtime databases, connection targets, feature plugins, and side-effect boundaries. | Users can ask, "Which governance tasks does this logical database support?" |
-| Database capability summary | Confirms SQL, transaction, schema, and metadata-object capabilities for one runtime database. | Users can ask, "Does this database support read-only queries and rule planning?" |
+| Entry | Type | Returned content | Usage scenario |
+| --- | --- | --- | --- |
+| `tools/list`, `resources/list`, `resources/templates/list`, `prompts/list` | MCP protocol capabilities | Tools, resources, resource templates, and prompts exposed by the current MCP Server. | Build the callable capability catalog for an AI application and select available context or actions by task. |
+| `shardingsphere://capabilities` | ShardingSphere service capability | Runtime databases, connection targets, feature plugins, and side-effect boundaries. | Determine whether the current MCP Server can be used for metadata inspection, SQL execution, or governance changes. |
+| `shardingsphere://databases/{database}/capabilities` | Database capability | SQL, transaction, schema, and metadata-object capabilities of the specified runtime database. | Determine available operations and limits for a specific database. |
 
 Capability discovery represents what the current MCP Server actually makes available. Whether a capability is actually useful still depends on whether `runtimeDatabases` connects to ShardingSphere-Proxy or to a regular database.
 Clients select available capabilities according to the connection target.
@@ -79,28 +80,13 @@ Actions with side effects should be previewed or reviewed first.
 | Tool | Purpose | Natural language example | Side effects |
 | --- | --- | --- | --- |
 | `database_gateway_search_metadata` | Search runtime database metadata by name fragment and object type, and return resource hints for follow-up reads. | "Find tables whose names contain `order`." | None. |
-| `database_gateway_validate_proxy_connectivity` | Validate a configured runtime database, including driver loading, JDBC connectivity, metadata readability, and database visibility before formal onboarding. | "Check whether configured database `logic_db` is ready before we register it." | None. |
+| `database_gateway_validate_proxy_connectivity` | Validate whether the runtime database configuration is usable, for diagnosing connection issues during integration. | "Check why `logic_db` cannot be accessed." | None. |
 | `database_gateway_execute_query` | Execute exactly one classifier-approved `SELECT` or `EXPLAIN ANALYZE` statement. | "Query the first 10 rows from `orders`." | None; rejects DML, DDL, DCL, transaction control, savepoints, and other side-effecting SQL. |
 | `database_gateway_execute_update` | Preview or execute one SQL statement that may mutate data, metadata, rules, or transaction state. | "Preview this change SQL without executing it." | Yes; preview and confirmation are recommended first. |
 | `database_gateway_apply_workflow` | Preview, execute, or export a governance change plan created by a feature plugin. | "Preview the previous encryption rule plan first." | Depends on the execution choice; preview and manual packages do not change runtime state. |
 | `database_gateway_validate_workflow` | After plugin workflow execution, validate the result against visible metadata and generated artifacts. | "Validate whether the previous masking rule has taken effect." | None. |
 
 Plugin tools are documented on the corresponding plugin pages.
-
-### Proxy preflight validation output
-
-`database_gateway_validate_proxy_connectivity` returns a structured validation payload with these top-level fields:
-
-- `response_mode`
-- `status`
-- `database`
-- `checks`
-- `category`
-- `recovery`
-
-Common failure categories include `missing_jdbc_driver`, `authentication_failed`, `authorization_failed`, `connection_timeout`, `invalid_configuration`, `database_unavailable`, `connection_failed`, and `database_not_visible`.
-The `recovery` field follows the same secret-safe runtime recovery style used by runtime database connection failures.
-The tool only accepts the configured `database` name. Connection details such as JDBC URL, username, password, and driver class stay in the runtime configuration.
 
 ## Prompts
 

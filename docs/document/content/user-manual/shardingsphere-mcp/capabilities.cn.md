@@ -3,18 +3,19 @@ title = "能力清单"
 weight = 2
 +++
 
-本页从用户任务角度说明 ShardingSphere-MCP 可以读取哪些信息、执行哪些动作，以及不同连接目标下的使用边界。
-客户端会自动发现当前 MCP Server 实际可用的能力；用户通常只需要在客户端中描述要完成的数据库任务。
+本页从 AI 应用开发者和集成者视角说明 ShardingSphere-MCP 可以读取哪些信息、执行哪些动作，以及不同连接目标下的使用边界。
+集成 MCP 的 AI 应用会发现当前 MCP Server 实际可用的能力；用户通常只需要在 AI 应用中描述要完成的数据库任务。
 
 ## 能力发现
 
-能力发现用于让客户端确认当前 MCP Server 可以访问哪些数据库、支持哪些任务，以及哪些任务可能产生副作用。
+能力发现是 MCP 客户端或集成 MCP 的 AI 应用读取 ShardingSphere-MCP 可用能力的过程。
+使用现成客户端时，用户通常只需要描述数据库任务；AI 应用开发者需要在应用建立 MCP 连接后读取工具、资源、资源模板和提示，并把这些能力提供给模型或应用编排逻辑。
 
-| 发现内容 | 用途 | 用户侧效果 |
-| --- | --- | --- |
-| 基础能力列表 | 确认当前 MCP Server 可读取的信息和可执行的动作。 | 客户端可以判断是否支持元数据查看、SQL 查询或治理变更。 |
-| ShardingSphere 能力摘要 | 汇总运行时数据库、连接目标、功能插件和副作用边界。 | 用户可以询问“这个逻辑库支持哪些治理任务？” |
-| 数据库能力摘要 | 确认某个运行时数据库支持的 SQL、事务、schema 和元数据对象能力。 | 用户可以询问“这个库支持只读查询和规则规划吗？” |
+| 入口 | 类型 | 返回内容 | 使用场景 |
+| --- | --- | --- | --- |
+| `tools/list`、`resources/list`、`resources/templates/list`、`prompts/list` | MCP 协议能力 | 当前 MCP Server 暴露的工具、资源、资源模板和提示。 | AI 应用建立可调用能力清单，并按任务选择可用上下文或动作。 |
+| `shardingsphere://capabilities` | ShardingSphere 服务能力 | 运行时数据库、连接目标、功能插件和副作用边界。 | 判断当前 MCP Server 可用于元数据查看、SQL 执行或治理变更。 |
+| `shardingsphere://databases/{database}/capabilities` | 数据库能力 | 指定运行时数据库的 SQL、事务、schema 和元数据对象能力。 | 针对某个数据库判断可用操作和限制。 |
 
 能力发现结果代表当前 MCP Server 实际对外可用的内容；实际能否使用某项能力，还取决于 `runtimeDatabases` 连接的是 ShardingSphere-Proxy 还是普通数据库。
 客户端会根据连接目标选择可用能力。
@@ -79,28 +80,13 @@ weight = 2
 | 工具 | 用途 | 自然语言示例 | 副作用 |
 | --- | --- | --- | --- |
 | `database_gateway_search_metadata` | 按名称片段和对象类型搜索运行时数据库元数据，并返回后续资源读取提示。 | “查找名字包含 `order` 的表。” | 无。 |
-| `database_gateway_validate_proxy_connectivity` | 在正式接入前校验已配置的运行时数据库，包括驱动加载、JDBC 连通性、metadata 可读性和数据库可见性。 | “先检查已配置的 `logic_db` 能不能接入，再注册。” | 无。 |
+| `database_gateway_validate_proxy_connectivity` | 校验运行时数据库配置是否可用，用于接入失败时定位连接问题。 | “检查 `logic_db` 为什么无法访问。” | 无。 |
 | `database_gateway_execute_query` | 执行一个已判定为查询类的 `SELECT` 或 `EXPLAIN ANALYZE`。 | “查询 `orders` 表前 10 行。” | 无；拒绝 DML、DDL、DCL、事务控制、savepoint 和其他有副作用 SQL。 |
 | `database_gateway_execute_update` | 预览或执行一个可能修改数据、元数据、规则或事务状态的 SQL。 | “预览这条变更 SQL，先不要执行。” | 有；应先预览并确认。 |
 | `database_gateway_apply_workflow` | 预览、执行或导出功能插件生成的治理变更计划。 | “先预览刚才的加密规则计划。” | 取决于执行方式；预览和人工执行包不修改运行时状态。 |
 | `database_gateway_validate_workflow` | 插件工作流执行后，根据可见元数据和生成产物校验结果。 | “校验刚才的脱敏规则是否生效。” | 无。 |
 
 插件工具在对应插件页面说明。
-
-### Proxy 预检结果
-
-`database_gateway_validate_proxy_connectivity` 返回固定结构的校验结果，顶层字段包括：
-
-- `response_mode`
-- `status`
-- `database`
-- `checks`
-- `category`
-- `recovery`
-
-常见失败分类包括 `missing_jdbc_driver`、`authentication_failed`、`authorization_failed`、`connection_timeout`、`invalid_configuration`、`database_unavailable`、`connection_failed` 和 `database_not_visible`。
-`recovery` 字段沿用运行时数据库连接失败的 secret-safe 恢复风格。
-该工具只接受已配置的 `database` 名称。JDBC URL、用户名、密码和驱动类名等连接细节保留在运行时配置中。
 
 ## 提示
 
