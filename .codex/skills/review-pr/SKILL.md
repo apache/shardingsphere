@@ -33,7 +33,10 @@ description: >-
 4. If evidence is insufficient, risk is unclear, or validation is incomplete, always set `Merge Verdict: Not Mergeable`,
    and list the minimum additional information required.
 5. Change request replies must be gentle in tone and contain no emojis.
-6. If unrelated changes exist, you must explicitly ask for rollback; if none exist, do not output that section.
+6. If substantive unrelated changes exist, you must explicitly ask for rollback; if none exist, do not output that section.
+   Non-behavioral import-only, whitespace-only, formatter-only, or IDE cleanup changes do not count as substantive unrelated changes by default.
+   `import-only` includes normal imports, static imports, import ordering, import grouping, and unused-import cleanup when there is no behavior change.
+   These changes must not affect `Merge Verdict` unless they cause repository-declared formatting/style gate failures, hide behavior changes, touch broad unrelated areas, or violate an explicit user/repo scope rule.
 7. Any "fallback-only without root-cause repair" or "unresolved risk" must not receive `Merge Verdict: Mergeable`.
 8. Review only the PR's latest code version; do not reuse conclusions from older versions.
 9. If a patch changes name resolution, default schema, fallback binding, routing precedence, or identifier interpretation,
@@ -84,6 +87,14 @@ description: >-
 - Do not treat CI pending, failing, or passing as a review finding by default; final approvers and mergers handle that gate.
 - Use the repository-declared formatting and style gates as authority. For ShardingSphere, Spotless and Checkstyle are the formatting/style gates.
 - Do not treat `git diff --check` as a blocker when it conflicts with Spotless/Checkstyle behavior, unless the user explicitly asks for that check.
+
+## Non-Behavioral Churn Rule
+
+- Still include import-only, whitespace-only, and formatter-only files in `Reviewed Scope` when GitHub `/pulls/{number}/files` includes them.
+- `import-only` includes normal imports, static imports, import ordering, import grouping, and unused-import cleanup when there is no production or test behavior change.
+- Do not report import-only, whitespace-only, or formatter-only changes as `Major Issues`, `Unrelated Changes`, or rollback requests by default.
+- Do not set `Merge Verdict: Not Mergeable` solely because of import ordering, unused-import cleanup, whitespace normalization, or IDE/formatter cleanup.
+- Mention them only when they are excessive, obscure the real diff, fail Spotless/Checkstyle, touch many unrelated files, or conflict with an explicit reviewer/user/repo scope rule.
 
 ## PR Diff Boundary Rule
 
@@ -151,7 +162,8 @@ Triage policy:
 
 - Information complete: proceed with full review.
 - Missing evidence: mark as "not mergeable" and request minimum additional info.
-- Any off-topic/unrelated changes: mark as "not mergeable" and require scope narrowing.
+- Any substantive off-topic/unrelated changes: mark as "not mergeable" and require scope narrowing.
+  Ignore non-behavioral import-only, whitespace-only, and formatter-only churn for mergeability unless it meets the Non-Behavioral Churn Rule escalation conditions.
 - Change set too large: request split first, and provide only blocker-level feedback for current version.
 
 ## Minimum Additional Information List (Fixed Template)
@@ -198,7 +210,8 @@ CI/check-run review is not part of this workflow unless explicitly requested; do
 6. Supply-chain and license gates (triggered by changes):
    - If dependency manifests or lockfiles changed, check vulnerability severity and license constraints
    - Mark whether extra security review is required
-7. Unrelated-change screening: identify code/format/refactor changes not directly tied to PR goal; require removal or rollback.
+7. Unrelated-change screening: identify substantive code/config/refactor changes not directly tied to PR goal; require removal or rollback.
+   Ignore non-behavioral import-only, whitespace-only, and formatter-only churn for mergeability unless it meets the Non-Behavioral Churn Rule escalation conditions.
 8. Version baseline control:
    - Base conclusion only on PR latest code version
    - If new commits are added, current conclusion becomes invalid and must be re-reviewed on latest version
@@ -337,7 +350,7 @@ Use committer tone, gentle wording, no emojis; use this GitHub Markdown skeleton
 
 ### Unrelated Changes
 
-- Include only when unrelated changes exist, and explicitly ask for rollback.
+- Include only when substantive unrelated changes exist, and explicitly ask for rollback.
 
 ### Next Steps
 
@@ -392,7 +405,7 @@ Use this GitHub Markdown skeleton:
 - Do not use "fallback logic passes tests" to replace proof of root-cause repair.
 - Do not treat fixture-injected or mocked-path tests as full end-to-end proof without explicitly stating the gap.
 - Do not output `Mergeable` only because previous-round blockers were closed; always do one fresh-pass semantic and regression scan on the latest head.
-- Do not ignore unrelated changes.
+- Do not ignore substantive unrelated changes.
 - Do not reuse old conclusions after new commits are added without re-review.
 - Do not include emojis in change request text.
 - Do not inspect or report GitHub Actions / CI status unless explicitly requested.
