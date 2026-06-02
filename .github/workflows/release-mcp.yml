@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: MCP - Release
+name: Release - MCP
 
 on:
   release:
@@ -28,7 +28,7 @@ on:
         type: string
 
 concurrency:
-  group: mcp-release-${{ github.event_name }}-${{ github.event_name == 'release' && github.event.release.tag_name || inputs.version }}
+  group: release-mcp-${{ github.event_name }}-${{ github.event_name == 'release' && github.event.release.tag_name || inputs.version }}
   cancel-in-progress: true
 
 permissions:
@@ -47,8 +47,8 @@ jobs:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
-  mcp-release:
-    name: MCP - Release
+  release-mcp:
+    name: Release - MCP
     if: github.repository == 'apache/shardingsphere'
     needs: global-environment
     runs-on: ubuntu-latest
@@ -65,7 +65,7 @@ jobs:
         with:
           java-version: '21'
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
-          cache-suffix: 'mcp-release'
+          cache-suffix: 'release-mcp'
           enable-docker-setup: 'true'
       - name: Resolve Release Version
         id: release-version

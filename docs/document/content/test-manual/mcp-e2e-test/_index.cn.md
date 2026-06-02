@@ -97,7 +97,7 @@ test/e2e/mcp/target/llm-e2e/
 
 GitHub Actions 入口：
 
-- `.github/workflows/mcp-e2e.yml`
+- `.github/workflows/e2e-mcp.yml`
 
 这条 workflow 是 MCP runtime E2E 的必跑入口。
 如果超大 PR 因 path filter 限制漏触发，可以使用 `workflow_dispatch` 手动补充 evidence。

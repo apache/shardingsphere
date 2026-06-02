@@ -610,7 +610,7 @@ docker logout
 
 3.8 ShardingSphere MCP publication
 
-ShardingSphere MCP is published through the repository workflow [`.github/workflows/mcp-release.yml`](https://github.com/apache/shardingsphere/blob/master/.github/workflows/mcp-release.yml).
+ShardingSphere MCP is published through the repository workflow [`.github/workflows/release-mcp.yml`](https://github.com/apache/shardingsphere/blob/master/.github/workflows/release-mcp.yml).
 The workflow builds the MCP distribution, pushes `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}` to GHCR,
 pushes `latest` for stable releases, and then publishes `mcp/server.json` to the official MCP Registry through GitHub OIDC.
 
@@ -622,7 +622,7 @@ Edit release version and release notes, select `Set as the latest release`, clic
 
 After the GitHub release is published:
 
-- wait for the `MCP - Release` workflow to finish successfully
+- wait for the `Release - MCP` workflow to finish successfully
 - confirm [GitHub Packages](https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-mcp) contains `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}`
 - confirm the official MCP Registry returns the published metadata:
 
