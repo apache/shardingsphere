@@ -798,34 +798,16 @@ tools:
   - name: database_gateway_validate_proxy_connectivity
     title: Validate Proxy Connectivity
     description: >-
-      Validate ShardingSphere-Proxy or direct JDBC connectivity before formal onboarding. Use this to preflight the configured database type,
-      JDBC driver, JDBC connectivity, metadata readability, and optional database visibility without executing SQL tools.
+      Validate one configured ShardingSphere-MCP runtime database before formal onboarding. Use this to preflight the configured database type,
+      JDBC driver, JDBC connectivity, metadata readability, and database visibility without executing SQL tools.
     inputSchema:
       type: object
       properties:
-        databaseType:
-          type: string
-          description: "Configured database protocol or dialect type, such as MySQL or PostgreSQL."
-        jdbcUrl:
-          type: string
-          description: "JDBC URL used for the preflight validation target."
-        username:
-          type: string
-          description: "Username for the target JDBC endpoint."
-        password:
-          type: string
-          description: "Optional password for the target JDBC endpoint. Omit it or pass an empty string when the account has no password."
-        driverClassName:
-          type: string
-          description: "JDBC driver class name for the target endpoint."
         database:
           type: string
-          description: "Optional logical database, catalog, or schema name to validate for visibility after the metadata read succeeds."
+          description: "Configured runtime database name to validate."
       required:
-        - databaseType
-        - jdbcUrl
-        - username
-        - driverClassName
+        - database
       additionalProperties: false
     outputSchema:
       type: object
@@ -843,10 +825,10 @@ tools:
             - failed
         database:
           type: string
-          description: "Validated database name when the caller supplied it, or an empty string when no explicit database visibility check was requested."
+          description: "Validated runtime database name."
         checks:
           type: array
-          description: "Ordered per-step validation results for configuration, driver loading, JDBC connectivity, metadata readability, and optional database visibility."
+          description: "Ordered per-step validation results for configuration lookup, driver loading, JDBC connectivity, metadata readability, and database visibility."
           items:
             type: object
             description: "One preflight validation check result."
@@ -881,7 +863,7 @@ tools:
             - name: configuration
               status: passed
               category: ready
-              message: Validated the required JDBC connection fields.
+              message: Resolved the configured runtime database.
             - name: jdbc_driver
               status: passed
               category: ready

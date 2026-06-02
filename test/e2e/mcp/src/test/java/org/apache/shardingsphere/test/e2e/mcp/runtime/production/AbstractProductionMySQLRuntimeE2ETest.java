@@ -246,10 +246,12 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         Map<String, Object> modelFirstSummary = getMap(capabilities.get("model_first_summary"));
         assertThat(getMap(modelFirstSummary.get("official_discovery_methods")).get("tools"), is("tools/list"));
         assertThat(modelFirstSummary.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
+        assertThat(getMap(modelFirstSummary.get("preflight_rule")).get("tool"), is("database_gateway_validate_proxy_connectivity"));
         assertThat(getMap(getMap(modelFirstSummary.get("sql_tool_selection")).get("read_only")).get("tool"), is("database_gateway_execute_query"));
         assertThat(getMap(getMap(modelFirstSummary.get("workflow_rule")).get("preview_tool")).get("tool"), is("database_gateway_apply_workflow"));
         Map<String, Object> surfaceSummary = getMap(capabilities.get("surface_summary"));
         assertThat(getMap(surfaceSummary.get("official_discovery_methods")).get("resources"), is("resources/list"));
+        assertThat(surfaceSummary.get("preflight_validation_tool"), is("database_gateway_validate_proxy_connectivity"));
         assertThat(surfaceSummary.get("read_only_sql_tool"), is("database_gateway_execute_query"));
         assertThat(surfaceSummary.get("side_effect_sql_tool"), is("database_gateway_execute_update"));
     }

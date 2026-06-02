@@ -35,6 +35,8 @@ final class MCPModelFirstContractPayloadBuilder {
     
     private static final String PLANNING_TOOL_NAME_PREFIX = "database_gateway_plan_";
     
+    private static final String PREFLIGHT_TOOL_NAME = "database_gateway_validate_proxy_connectivity";
+    
     private static final String CATALOG_RESOURCE_URI = "shardingsphere://capabilities";
     
     private static final String ARGUMENT_COMPLETION_METHOD = "completion/complete";
@@ -44,13 +46,14 @@ final class MCPModelFirstContractPayloadBuilder {
     private final MCPDescriptorCatalog catalog;
     
     Map<String, Object> createModelFirstSummary() {
-        Map<String, Object> result = new LinkedHashMap<>(10, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(11, 1F);
         result.put("official_discovery_methods", createOfficialDiscoveryMethods());
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
         result.put("catalog_resource_role", CATALOG_RESOURCE_URI
                 + " complements MCP list methods with ShardingSphere domain capability guidance, workflow guidance, and side-effect notes.");
         result.put("optional_catalog_resource", CATALOG_RESOURCE_URI);
         result.put("metadata_rule", createMetadataRule());
+        result.put("preflight_rule", createPreflightRule());
         result.put("sql_tool_selection", createSqlToolSelection());
         result.put("side_effect_rule", "Preview side effects first; execute only when the requested side effect is still intended.");
         result.put("workflow_rule", createWorkflowRule());
@@ -60,12 +63,13 @@ final class MCPModelFirstContractPayloadBuilder {
     }
     
     Map<String, Object> createModelContract() {
-        Map<String, Object> result = new LinkedHashMap<>(11, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(12, 1F);
         result.put("public_surface_source", MCP_LIST_METHODS_SOURCE);
         result.put("official_discovery_methods", createOfficialDiscoveryMethods());
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
         result.put("optional_catalog_resource", CATALOG_RESOURCE_URI);
         result.put("metadata_first_resource", "shardingsphere://databases");
+        result.put("preflight_rule", "Use database_gateway_validate_proxy_connectivity with a configured database name before onboarding or troubleshooting runtime connectivity.");
         result.put("sql_tool_selection", Map.of(
                 "read_only", "Use database_gateway_execute_query for one classifier-approved SELECT or EXPLAIN ANALYZE statement.",
                 "side_effecting", "Use database_gateway_execute_update with execution_mode=preview before execution."));
@@ -78,12 +82,13 @@ final class MCPModelFirstContractPayloadBuilder {
     }
     
     Map<String, Object> createSurfaceSummary() {
-        Map<String, Object> result = new LinkedHashMap<>(10, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(11, 1F);
         result.put("official_discovery_methods", createOfficialDiscoveryMethods());
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
         result.put("optional_catalog_resource", CATALOG_RESOURCE_URI);
         result.put("metadata_resource", "shardingsphere://databases");
         result.put("metadata_search_tool", "database_gateway_search_metadata");
+        result.put("preflight_validation_tool", PREFLIGHT_TOOL_NAME);
         result.put("read_only_sql_tool", "database_gateway_execute_query");
         result.put("side_effect_sql_tool", "database_gateway_execute_update");
         result.put("workflow_tools", List.of("database_gateway_apply_workflow", "database_gateway_validate_workflow"));
@@ -126,6 +131,9 @@ final class MCPModelFirstContractPayloadBuilder {
                         "call_tool database_gateway_search_metadata", "read_resource returned resource.uri"),
                         "Stop when the requested metadata detail resource is read.",
                         List.of("database_gateway_search_metadata"), List.of("shardingsphere://databases")),
+                createCommonFlow("validate_runtime_database", List.of("read_resource shardingsphere://databases", "call_tool database_gateway_validate_proxy_connectivity"),
+                        "Stop after the configured runtime database reports ready or returns structured recovery guidance.",
+                        List.of(PREFLIGHT_TOOL_NAME), List.of("shardingsphere://databases")),
                 createCommonFlow("read_only_sql", List.of("read_resource shardingsphere://databases/{database}/capabilities", "call_tool database_gateway_execute_query"),
                         "Use one SELECT or EXPLAIN ANALYZE statement and stop after the result is reported.",
                         List.of("database_gateway_execute_query"), List.of("shardingsphere://databases/{database}/capabilities")),
@@ -173,6 +181,14 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("first_resource", "shardingsphere://databases");
         result.put("search_tool", "database_gateway_search_metadata");
         result.put("detail_rule", "Read the returned resource.uri when the list or search response points to a detail resource.");
+        return result;
+    }
+    
+    private Map<String, Object> createPreflightRule() {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("tool", PREFLIGHT_TOOL_NAME);
+        result.put("input_rule", "Pass only a configured runtime database name.");
+        result.put("secret_rule", "Connection details stay in administrator runtime configuration and are not tool arguments.");
         return result;
     }
     

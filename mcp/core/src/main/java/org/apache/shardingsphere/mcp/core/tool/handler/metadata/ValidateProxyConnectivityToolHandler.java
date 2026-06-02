@@ -56,7 +56,7 @@ public final class ValidateProxyConnectivityToolHandler implements MCPToolHandle
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
-        return validationService.validate(ProxyPreflightValidationRequest.from(toolCall.getArguments()), this::createRecoveryPayload);
+        return validationService.validate(ProxyPreflightValidationRequest.from(toolCall.getArguments()), databaseContext::findRuntimeDatabaseConfiguration, this::createRecoveryPayload);
     }
     
     @SuppressWarnings("unchecked")

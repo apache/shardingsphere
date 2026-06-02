@@ -44,9 +44,9 @@ ShardingSphere-MCP does not require roots and does not send `sampling/createMess
 
 `database_gateway_validate_proxy_connectivity`
 
-- Validates preflight JDBC configuration before formal onboarding.
-- Required inputs are `databaseType`, `jdbcUrl`, `username`, and `driverClassName`.
-- Optional inputs are `password` and `database`; omit `password` or pass an empty string for no-password accounts.
+- Validates a configured runtime database before formal onboarding.
+- Required input is `database`.
+- Uses the administrator-configured runtime database connection details; JDBC URL, username, password, and driver class are not tool inputs.
 - Returns `status`, ordered `checks`, overall `category`, and a structured `recovery` object.
 - Common failure categories include `missing_jdbc_driver`, `authentication_failed`, `authorization_failed`, `connection_timeout`, `invalid_configuration`, `database_unavailable`, `connection_failed`, and `database_not_visible`.
 

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPSQLExecutionFa
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowProxyQueryService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.context.RequestScopedMetadataContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -46,6 +48,9 @@ public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatab
     
     @Getter(AccessLevel.NONE)
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
+    
+    @Getter(AccessLevel.NONE)
+    private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
     
     @Getter(AccessLevel.NONE)
     private final RequestScopedMetadataContext metadataContext;
@@ -79,7 +84,8 @@ public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatab
         MCPSessionManager sessionManager = runtimeContext.getSessionManager();
         activeTransport = runtimeContext.getActiveTransport();
         databaseCapabilityProvider = runtimeContext.getDatabaseCapabilityProvider();
-        metadataContext = new RequestScopedMetadataContext(sessionManager.getTransactionResourceManager().getRuntimeDatabases(), databaseCapabilityProvider);
+        runtimeDatabases = sessionManager.getTransactionResourceManager().getRuntimeDatabases();
+        metadataContext = new RequestScopedMetadataContext(runtimeDatabases, databaseCapabilityProvider);
         sessionAttribution = sessionManager.findSessionAttribution(sessionId);
         workflowSessionContext = runtimeContext.getWorkflowSessionContext();
         metadataQueryFacade = new MetadataQueryService(databaseCapabilityProvider, metadataContext);
@@ -95,6 +101,11 @@ public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatab
     @Override
     public MCPFeatureCapabilityFacade getCapabilityFacade() {
         return databaseCapabilityProvider;
+    }
+    
+    @Override
+    public Optional<RuntimeDatabaseConfiguration> findRuntimeDatabaseConfiguration(final String databaseName) {
+        return Optional.ofNullable(runtimeDatabases.get(databaseName));
     }
     
     @Override

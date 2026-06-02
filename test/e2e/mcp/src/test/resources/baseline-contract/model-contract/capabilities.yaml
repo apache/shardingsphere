@@ -27,6 +27,9 @@ model_first_summary:
   metadata_rule: {first_resource: 'shardingsphere://databases', search_tool: database_gateway_search_metadata,
     detail_rule: Read the returned resource.uri when the list or search response points
       to a detail resource.}
+  preflight_rule: {tool: database_gateway_validate_proxy_connectivity, input_rule: Pass
+      only a configured runtime database name., secret_rule: Connection details stay
+      in administrator runtime configuration and are not tool arguments.}
   sql_tool_selection:
     read_only: {tool: database_gateway_execute_query, statement_rule: Use for one
         SELECT or EXPLAIN ANALYZE statement.}
@@ -51,6 +54,8 @@ model_contract:
   argument_completion_method: completion/complete
   optional_catalog_resource: shardingsphere://capabilities
   metadata_first_resource: shardingsphere://databases
+  preflight_rule: Use database_gateway_validate_proxy_connectivity with a configured
+    database name before onboarding or troubleshooting runtime connectivity.
   sql_tool_selection: {side_effecting: Use database_gateway_execute_update with execution_mode=preview
       before execution., read_only: Use database_gateway_execute_query for one classifier-approved
       SELECT or EXPLAIN ANALYZE statement.}
@@ -71,6 +76,7 @@ surface_summary:
   optional_catalog_resource: shardingsphere://capabilities
   metadata_resource: shardingsphere://databases
   metadata_search_tool: database_gateway_search_metadata
+  preflight_validation_tool: database_gateway_validate_proxy_connectivity
   read_only_sql_tool: database_gateway_execute_query
   side_effect_sql_tool: database_gateway_execute_update
   workflow_tools: [database_gateway_apply_workflow, database_gateway_validate_workflow]
@@ -121,6 +127,12 @@ common_flows:
   stop_condition: Stop when the requested metadata detail resource is read.
   referenced_tools: [database_gateway_search_metadata]
   referenced_resources: ['shardingsphere://databases']
+- flow_id: validate_runtime_database
+  steps: [read_resource shardingsphere://databases, call_tool database_gateway_validate_proxy_connectivity]
+  stop_condition: Stop after the configured runtime database reports ready or returns
+    structured recovery guidance.
+  referenced_tools: [database_gateway_validate_proxy_connectivity]
+  referenced_resources: ['shardingsphere://databases']
 - flow_id: read_only_sql
   steps: ['read_resource shardingsphere://databases/{database}/capabilities', call_tool
       database_gateway_execute_query]
@@ -152,9 +164,9 @@ common_flows:
   referenced_resources: ['shardingsphere://capabilities']
 protocolAvailability: {resources: true, resourceTemplates: true, tools: true, toolAnnotations: true,
   toolOutputSchemas: true, prompts: true, completions: true, resourceNavigation: true}
-fingerprints: {algorithm: sha256, descriptorCatalog: f4ad81145c1af6bb9223e71ee783865c29edbf9b25d9ecc6999a1934fbc929e8,
+fingerprints: {algorithm: sha256, descriptorCatalog: 48d9d27f8c40295dcd4f44fbaeaca59d963e90848bbc1f20f66fc150a358a096,
   promptSet: 3ce46d5c41e261470f1846680fab5274b38b35457b7d0a92d0dd0659ec8b5c17, resourceNavigation: 64abf531e9c72549a99ab5f23ee2e0f6d769e45e19b56c73f86144e8f2e4799f,
-  modelFacingSchemas: 9acdd7ed62c0ad8f3f184debf0b4f33868a8af3b677ea4212cf785a74c1ded8b}
+  modelFacingSchemas: a782fa53deb816c51ce3e2a4a3b27c1a04b0f651454953594767d606ec34060f}
 resources:
 - uri: shardingsphere://capabilities
   name: server-capability-catalog
@@ -352,6 +364,9 @@ resourceTemplates:
 tools:
 - name: database_gateway_search_metadata
   annotations: {title: Search Metadata, readOnlyHint: true, destructiveHint: false,
+    idempotentHint: true, openWorldHint: true}
+- name: database_gateway_validate_proxy_connectivity
+  annotations: {title: Validate Proxy Connectivity, readOnlyHint: true, destructiveHint: false,
     idempotentHint: true, openWorldHint: true}
 - name: database_gateway_execute_query
   annotations: {title: Execute Query SQL, readOnlyHint: true, destructiveHint: false,

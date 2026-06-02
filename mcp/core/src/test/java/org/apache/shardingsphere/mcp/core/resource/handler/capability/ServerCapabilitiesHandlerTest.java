@@ -107,6 +107,7 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> metadataRule = (Map<?, ?>) actual.get("metadata_rule");
         assertThat(metadataRule.get("first_resource"), is("shardingsphere://databases"));
         assertThat(metadataRule.get("search_tool"), is("database_gateway_search_metadata"));
+        assertThat(((Map<?, ?>) actual.get("preflight_rule")).get("tool"), is("database_gateway_validate_proxy_connectivity"));
         Map<?, ?> sqlToolSelection = (Map<?, ?>) actual.get("sql_tool_selection");
         assertThat(((Map<?, ?>) sqlToolSelection.get("read_only")).get("tool"), is("database_gateway_execute_query"));
         assertThat(((Map<?, ?>) sqlToolSelection.get("side_effecting")).get("first_mode"), is("preview"));
@@ -127,6 +128,7 @@ class ServerCapabilitiesHandlerTest {
         assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
         assertFalse(actual.containsKey("safe_first_resource"));
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
+        assertTrue(String.valueOf(actual.get("preflight_rule")).contains("database_gateway_validate_proxy_connectivity"));
         assertTrue(((Map<?, ?>) actual.get("sql_tool_selection")).containsKey("side_effecting"));
         assertTrue(actual.containsKey("workflow_session_rule"));
         assertTrue(actual.containsKey("next_action_rule"));
@@ -139,6 +141,7 @@ class ServerCapabilitiesHandlerTest {
         assertThat(actual.get("argument_completion_method"), is("completion/complete"));
         assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
         assertThat(actual.get("metadata_search_tool"), is("database_gateway_search_metadata"));
+        assertThat(actual.get("preflight_validation_tool"), is("database_gateway_validate_proxy_connectivity"));
         assertThat(actual.get("side_effect_sql_tool"), is("database_gateway_execute_update"));
     }
     
@@ -170,6 +173,9 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> inspectMetadata = findByKey((List<?>) capabilities.get("common_flows"), "flow_id", "inspect_metadata");
         assertTrue(((List<?>) inspectMetadata.get("steps")).containsAll(List.of("resources/list", "resources/templates/list", "call_tool database_gateway_search_metadata")));
         assertReferencedFlowEntries(inspectMetadata, supportedTools, supportedResources);
+        Map<?, ?> validateRuntimeDatabase = findByKey((List<?>) capabilities.get("common_flows"), "flow_id", "validate_runtime_database");
+        assertTrue(((List<?>) validateRuntimeDatabase.get("steps")).contains("call_tool database_gateway_validate_proxy_connectivity"));
+        assertReferencedFlowEntries(validateRuntimeDatabase, supportedTools, supportedResources);
         Map<?, ?> sideEffectingSql = findByKey((List<?>) capabilities.get("common_flows"), "flow_id", "side_effecting_sql");
         assertTrue(((List<?>) sideEffectingSql.get("steps")).contains("call_tool database_gateway_execute_update execution_mode=preview"));
         assertTrue(((List<?>) sideEffectingSql.get("steps")).contains("call_tool database_gateway_execute_update execution_mode=execute"));
@@ -245,7 +251,7 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(((List<?>) ((Map<?, ?>) objectTypesSchema.get("items")).get("enum")).containsAll(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
         Map<?, ?> validateProxyConnectivityTool = findTool(capabilities, "database_gateway_validate_proxy_connectivity");
         Map<?, ?> validateProxyConnectivityOutputProperties = (Map<?, ?>) ((Map<?, ?>) validateProxyConnectivityTool.get("outputSchema")).get("properties");
-        assertThat(getInputFieldNames(validateProxyConnectivityTool), is(List.of("databaseType", "jdbcUrl", "username", "password", "driverClassName", "database")));
+        assertThat(getInputFieldNames(validateProxyConnectivityTool), is(List.of("database")));
         assertTrue(validateProxyConnectivityOutputProperties.containsKey("status"));
         assertTrue(validateProxyConnectivityOutputProperties.containsKey("checks"));
         assertTrue(validateProxyConnectivityOutputProperties.containsKey("category"));

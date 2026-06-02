@@ -28,24 +28,9 @@ import java.util.Objects;
 @Getter
 public final class ProxyPreflightValidationRequest {
     
-    private final String databaseType;
-    
-    private final String jdbcUrl;
-    
-    private final String username;
-    
-    private final String password;
-    
-    private final String driverClassName;
-    
     private final String database;
     
-    public ProxyPreflightValidationRequest(final String databaseType, final String jdbcUrl, final String username, final String password, final String driverClassName, final String database) {
-        this.databaseType = Objects.toString(databaseType, "");
-        this.jdbcUrl = Objects.toString(jdbcUrl, "");
-        this.username = Objects.toString(username, "");
-        this.password = Objects.toString(password, "");
-        this.driverClassName = Objects.toString(driverClassName, "");
+    public ProxyPreflightValidationRequest(final String database) {
         this.database = Objects.toString(database, "");
     }
     
@@ -56,13 +41,7 @@ public final class ProxyPreflightValidationRequest {
      * @return request
      */
     public static ProxyPreflightValidationRequest from(final Map<String, Object> arguments) {
-        return new ProxyPreflightValidationRequest(
-                getRawString(arguments, "databaseType"),
-                getRawString(arguments, "jdbcUrl"),
-                getRawString(arguments, "username"),
-                getRawString(arguments, "password"),
-                getRawString(arguments, "driverClassName"),
-                getRawString(arguments, "database"));
+        return new ProxyPreflightValidationRequest(getRawString(arguments, "database"));
     }
     
     private static String getRawString(final Map<String, Object> arguments, final String fieldName) {

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.context;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -47,6 +48,17 @@ class MCPRequestScopeTest {
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()), new MCPDatabaseCapabilityProvider(Map.of()), "http");
         try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
             assertThat(requestScope.findSessionAttribution(), is(Optional.empty()));
+        }
+    }
+    
+    @Test
+    void assertFindRuntimeDatabaseConfiguration() {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration("MySQL", "jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of("logic_db", runtimeDatabaseConfig)),
+                new MCPDatabaseCapabilityProvider(Map.of()), "http");
+        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
+            assertThat(requestScope.findRuntimeDatabaseConfiguration("logic_db"), is(Optional.of(runtimeDatabaseConfig)));
+            assertThat(requestScope.findRuntimeDatabaseConfiguration("missing_db"), is(Optional.empty()));
         }
     }
 }

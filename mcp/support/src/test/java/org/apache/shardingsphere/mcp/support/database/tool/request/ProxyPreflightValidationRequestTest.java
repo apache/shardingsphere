@@ -27,30 +27,16 @@ import static org.hamcrest.Matchers.is;
 class ProxyPreflightValidationRequestTest {
     
     @Test
-    void assertFromPreservesRawArguments() {
+    void assertFromPreservesDatabaseArgument() {
         ProxyPreflightValidationRequest actual = ProxyPreflightValidationRequest.from(Map.of(
-                "databaseType", " MySQL ",
                 "jdbcUrl", " jdbc:mysql://127.0.0.1:3307/logic_db ",
-                "username", " demo ",
-                "password", "  secret  ",
-                "driverClassName", " com.mysql.cj.jdbc.Driver ",
                 "database", " logic_db "));
-        assertThat(actual.getDatabaseType(), is(" MySQL "));
-        assertThat(actual.getJdbcUrl(), is(" jdbc:mysql://127.0.0.1:3307/logic_db "));
-        assertThat(actual.getUsername(), is(" demo "));
-        assertThat(actual.getPassword(), is("  secret  "));
-        assertThat(actual.getDriverClassName(), is(" com.mysql.cj.jdbc.Driver "));
         assertThat(actual.getDatabase(), is(" logic_db "));
     }
     
     @Test
-    void assertFromDefaultsMissingOptionalArguments() {
-        ProxyPreflightValidationRequest actual = ProxyPreflightValidationRequest.from(Map.of(
-                "databaseType", "MySQL",
-                "jdbcUrl", "jdbc:mysql://127.0.0.1:3307/logic_db",
-                "username", "demo",
-                "driverClassName", "com.mysql.cj.jdbc.Driver"));
-        assertThat(actual.getPassword(), is(""));
+    void assertFromDefaultsMissingDatabase() {
+        ProxyPreflightValidationRequest actual = ProxyPreflightValidationRequest.from(Map.of());
         assertThat(actual.getDatabase(), is(""));
     }
 }

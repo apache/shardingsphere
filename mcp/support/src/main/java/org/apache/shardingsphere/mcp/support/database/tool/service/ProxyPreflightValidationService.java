@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -59,28 +60,29 @@ public final class ProxyPreflightValidationService {
      * Validate proxy preflight request.
      *
      * @param request validation request
+     * @param runtimeDatabaseResolver runtime database resolver
      * @param recoveryFactory runtime recovery factory
      * @return validation result
      */
     public ProxyPreflightValidationResult validate(final ProxyPreflightValidationRequest request,
+                                                   final Function<String, Optional<RuntimeDatabaseConfiguration>> runtimeDatabaseResolver,
                                                    final Function<RuntimeDatabaseConnectionException, Map<String, Object>> recoveryFactory) {
         List<ProxyPreflightCheckResult> checks = new LinkedList<>();
         String database = normalize(request.getDatabase());
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig;
-        try {
-            runtimeDatabaseConfig = createRuntimeDatabaseConfiguration(request, database);
-            checks.add(ProxyPreflightCheckResult.passed("configuration", "Validated the required JDBC connection fields."));
-        } catch (final RuntimeDatabaseConnectionException ex) {
-            checks.add(ProxyPreflightCheckResult.failed("configuration", ex.getCategory(), "The preflight request contains incomplete or inconsistent JDBC configuration."));
+        Optional<RuntimeDatabaseConfiguration> runtimeDatabaseConfig = findRuntimeDatabaseConfiguration(database, runtimeDatabaseResolver);
+        if (runtimeDatabaseConfig.isEmpty()) {
+            RuntimeDatabaseConnectionException ex = createMissingRuntimeDatabaseException(database);
+            checks.add(ProxyPreflightCheckResult.failed("configuration", ex.getCategory(), "The requested database is not configured for this MCP runtime."));
             appendSkippedChecks(checks, "jdbc_driver", "configuration validation did not finish");
             appendSkippedChecks(checks, "jdbc_connectivity", "configuration validation did not finish");
             appendSkippedChecks(checks, "metadata_read", "configuration validation did not finish");
             appendSkippedChecks(checks, "database_visibility", "configuration validation did not finish");
             return createFailureResult(database, checks, ex, recoveryFactory);
         }
+        checks.add(ProxyPreflightCheckResult.passed("configuration", "Resolved the configured runtime database."));
         RuntimeDatabaseProfile databaseProfile;
         try {
-            databaseProfile = profileLoader.load(PRE_FLIGHT_BINDING_DATABASE, runtimeDatabaseConfig);
+            databaseProfile = profileLoader.load(database, runtimeDatabaseConfig.get());
             checks.add(ProxyPreflightCheckResult.passed("jdbc_driver", "Loaded the configured JDBC driver."));
             checks.add(ProxyPreflightCheckResult.passed("jdbc_connectivity", "Opened a JDBC connection and validated the configured database type."));
         } catch (final RuntimeDatabaseConnectionException ex) {
@@ -91,19 +93,15 @@ public final class ProxyPreflightValidationService {
         }
         MCPDatabaseMetadata databaseMetadata;
         try {
-            databaseMetadata = metadataLoader.load(PRE_FLIGHT_BINDING_DATABASE, runtimeDatabaseConfig, databaseProfile);
+            databaseMetadata = metadataLoader.load(database, runtimeDatabaseConfig.get(), databaseProfile);
             checks.add(ProxyPreflightCheckResult.passed("metadata_read", "Read metadata through the configured JDBC connection."));
         } catch (final RuntimeDatabaseConnectionException ex) {
             checks.add(ProxyPreflightCheckResult.failed("metadata_read", ex.getCategory(), "Failed to read metadata through the configured JDBC connection."));
             appendSkippedChecks(checks, "database_visibility", "metadata validation failed");
             return createFailureResult(database, checks, ex, recoveryFactory);
         }
-        if (database.isEmpty()) {
-            checks.add(ProxyPreflightCheckResult.skipped("database_visibility", "Skipped database visibility validation because no database was provided."));
-            return ProxyPreflightValidationResult.ready(database, checks);
-        }
         try {
-            validateDatabaseVisibility(database, runtimeDatabaseConfig, databaseMetadata);
+            validateDatabaseVisibility(database, runtimeDatabaseConfig.get(), databaseMetadata);
             checks.add(ProxyPreflightCheckResult.passed("database_visibility", "Validated the requested database name against visible JDBC metadata and connection context."));
         } catch (final RuntimeDatabaseConnectionException ex) {
             checks.add(ProxyPreflightCheckResult.failed("database_visibility", ex.getCategory(), "The requested database name is not visible to the configured JDBC connection."));
@@ -112,17 +110,14 @@ public final class ProxyPreflightValidationService {
         return ProxyPreflightValidationResult.ready(database, checks);
     }
     
-    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final ProxyPreflightValidationRequest request, final String database) {
-        String databaseType = normalize(request.getDatabaseType());
-        String jdbcUrl = normalize(request.getJdbcUrl());
-        String username = request.getUsername();
-        String password = request.getPassword();
-        String driverClassName = normalize(request.getDriverClassName());
-        if (databaseType.isEmpty() || jdbcUrl.isEmpty() || username.trim().isEmpty() || driverClassName.isEmpty()) {
-            throw RuntimeDatabaseConnectionException.invalidConfiguration(resolveExceptionDatabaseName(database),
-                    new IllegalStateException("Proxy preflight validation requires databaseType, jdbcUrl, username, and driverClassName."));
-        }
-        return new RuntimeDatabaseConfiguration(databaseType, jdbcUrl, username, password, driverClassName);
+    private Optional<RuntimeDatabaseConfiguration> findRuntimeDatabaseConfiguration(final String database,
+                                                                                    final Function<String, Optional<RuntimeDatabaseConfiguration>> runtimeDatabaseResolver) {
+        return database.isEmpty() ? Optional.empty() : runtimeDatabaseResolver.apply(database);
+    }
+    
+    private RuntimeDatabaseConnectionException createMissingRuntimeDatabaseException(final String database) {
+        return RuntimeDatabaseConnectionException.invalidConfiguration(resolveExceptionDatabaseName(database),
+                new IllegalStateException("Proxy preflight validation requires one configured runtime database."));
     }
     
     private void appendProfileFailureChecks(final List<ProxyPreflightCheckResult> checks, final RuntimeDatabaseConnectionException ex) {

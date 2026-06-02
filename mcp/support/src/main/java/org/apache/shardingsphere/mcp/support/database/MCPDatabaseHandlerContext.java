@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.mcp.support.database;
 
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
+
+import java.util.Optional;
 
 /**
  * Database-aware MCP handler context.
@@ -62,4 +65,12 @@ public interface MCPDatabaseHandlerContext extends MCPHandlerContext {
      * @return capability facade
      */
     MCPFeatureCapabilityFacade getCapabilityFacade();
+    
+    /**
+     * Find runtime database configuration.
+     *
+     * @param databaseName database name
+     * @return runtime database configuration
+     */
+    Optional<RuntimeDatabaseConfiguration> findRuntimeDatabaseConfiguration(String databaseName);
 }

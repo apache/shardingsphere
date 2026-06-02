@@ -66,8 +66,8 @@ class ToolDefinitionRegistryTest {
                 is(List.of("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query", "database_gateway_execute_update",
                         "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
         assertToolFields(actual.get(0), List.of("database", "schema", "query", "object_types"));
-        assertToolFields(actual.get(1), List.of("databaseType", "jdbcUrl", "username", "password", "driverClassName", "database"));
-        assertRequiredFields(actual.get(1), List.of("databaseType", "jdbcUrl", "username", "driverClassName"));
+        assertToolFields(actual.get(1), List.of("database"));
+        assertRequiredFields(actual.get(1), List.of("database"));
         assertToolFields(actual.get(2), List.of("database", "schema", "sql", "max_rows", "timeout_ms"));
         assertRequiredFields(actual.get(2), List.of("database", "sql"));
         assertToolFields(actual.get(3), List.of("database", "schema", "sql", "execution_mode", "max_rows", "timeout_ms"));

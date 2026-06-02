@@ -117,16 +117,14 @@ public final class CoreToolDescriptorValidator implements MCPToolDescriptorValid
         Object responseModes = responseMode.get("enum");
         ShardingSpherePreconditions.checkState(responseModes instanceof Collection && ((Collection<?>) responseModes).contains("validation"),
                 () -> new IllegalStateException("Tool `database_gateway_validate_proxy_connectivity` response_mode must allow validation."));
-        for (String each : List.of("databaseType", "jdbcUrl", "username", "driverClassName")) {
-            ShardingSpherePreconditions.checkState(findToolInputProperty(descriptor, each).isPresent(),
-                    () -> new IllegalStateException(String.format("Tool `database_gateway_validate_proxy_connectivity` must declare `%s`.", each)));
-            ShardingSpherePreconditions.checkState(isRequiredToolInput(descriptor, each),
-                    () -> new IllegalStateException(String.format("Tool `database_gateway_validate_proxy_connectivity` `%s` must be required.", each)));
+        ShardingSpherePreconditions.checkState(findToolInputProperty(descriptor, "database").isPresent(),
+                () -> new IllegalStateException("Tool `database_gateway_validate_proxy_connectivity` must declare `database`."));
+        ShardingSpherePreconditions.checkState(isRequiredToolInput(descriptor, "database"),
+                () -> new IllegalStateException("Tool `database_gateway_validate_proxy_connectivity` database must be required."));
+        for (String each : List.of("databaseType", "jdbcUrl", "username", "password", "driverClassName")) {
+            ShardingSpherePreconditions.checkState(findToolInputProperty(descriptor, each).isEmpty(),
+                    () -> new IllegalStateException(String.format("Tool `database_gateway_validate_proxy_connectivity` must not expose `%s`.", each)));
         }
-        ShardingSpherePreconditions.checkState(!isRequiredToolInput(descriptor, "password"),
-                () -> new IllegalStateException("Tool `database_gateway_validate_proxy_connectivity` password must remain optional."));
-        ShardingSpherePreconditions.checkState(!isRequiredToolInput(descriptor, "database"),
-                () -> new IllegalStateException("Tool `database_gateway_validate_proxy_connectivity` database must remain optional."));
     }
     
     private void validateProxyConnectivityChecks(final MCPToolDescriptor descriptor) {

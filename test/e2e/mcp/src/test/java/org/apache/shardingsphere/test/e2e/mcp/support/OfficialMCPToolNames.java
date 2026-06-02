@@ -26,6 +26,7 @@ public final class OfficialMCPToolNames {
     
     private static final List<String> ALL = List.of(
             "database_gateway_search_metadata",
+            "database_gateway_validate_proxy_connectivity",
             "database_gateway_execute_query",
             "database_gateway_execute_update",
             "database_gateway_apply_workflow",
