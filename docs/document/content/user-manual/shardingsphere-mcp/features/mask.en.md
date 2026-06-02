@@ -1,9 +1,9 @@
 +++
 title = "Data Masking"
-weight = 2
+weight = 3
 +++
 
-The Data Masking MCP feature helps MCP clients plan masking requirements into DistSQL and validation steps executable through ShardingSphere-Proxy.
+The Data Masking MCP feature plugin helps users plan, review, apply, and validate data masking rule changes for ShardingSphere-Proxy logical databases.
 Mask rules apply directly to logical columns and do not generate physical derived columns used by the Encrypt feature.
 
 ## Prerequisites
@@ -16,8 +16,6 @@ Mask rules apply directly to logical columns and do not generate physical derive
 ## Use through natural language
 
 Users describe the masking goal in the MCP client.
-The model reads table structure, available masking algorithms, and existing rules, then creates a reviewable masking rule plan.
-Users do not need to hand-write tool arguments or JSON-RPC requests.
 
 Examples:
 
@@ -26,91 +24,50 @@ Examples:
 - Adjust the previous plan to use `*` as the replacement character.
 - Confirm and execute the previous masking rule plan, then validate the result.
 
-The model or client breaks these tasks into resource reads, rule planning, preview, execution, and validation.
 Users should review DistSQL and side-effect scope before approving any side-effecting execution.
 
-## Rule planning
+## Describe a masking requirement
 
-Rule planning is the first phase of the masking plugin.
-The model usually reads algorithm and existing-rule resources first, then calls the planning tool to create `plan_id` and a reviewable plan.
-The planning tool does not modify the database directly. Preview, apply, and validation are handled by [Plugin Workflows](../plugin-workflow/) phase tools.
+When using natural language, include the following information when possible:
 
-### Planning input
-
-The planning tool uses these common inputs:
-
-| Argument | Required | Purpose |
+| Information | Description | Example |
 | --- | --- | --- |
-| `database` | Required | Logical database name exposed by ShardingSphere-Proxy. |
-| `table` | Required | Logical table to configure. |
-| `column` | Required | Logical column to configure. |
-| `schema` | Optional | Schema or namespace. Recommended for multi-schema logical databases. |
-| `natural_language_intent` | Recommended | Describes the masking target, such as retained phone-number digits or replacement character. MCP uses it to infer planning intent when rule details are not explicit. |
-| `operation_type` | Optional | Rule operation type. Supported values are `create`, `alter`, and `drop`. If omitted, MCP infers it from natural language and existing rules. |
-| `algorithm_type` | Optional | Masking algorithm type. Omit it if you want MCP to recommend one from available algorithms. |
-| `primary_algorithm_properties` | Required by algorithm | Masking algorithm properties, such as retained characters and replacement character. The required properties come from the algorithm resource. |
+| Logical database, table, and column | Specify the ShardingSphere-Proxy logical object to configure. | "Configure masking for `<logic-database>.orders.phone`." |
+| Schema or namespace | Recommended for multi-schema logical databases. | "The schema is `public`." |
+| Operation type | Create, alter, or drop a masking rule. | "Create a masking rule" or "drop the masking rule for this column." |
+| Masking goal | Describe retained characters, replacement characters, or other masking effects. | "Keep the first 3 and last 4 phone-number characters, and replace the middle part with `*`." |
+| Algorithm preference | Specify an algorithm, or let MCP recommend one from available algorithms. | "Prefer the keep-first-n-last-m algorithm." |
+| Algorithm properties | Provide retained character counts and replacement characters. | "Keep the first 3 and last 4 characters, and use `*` as the replacement character." |
 
-`database`, `schema`, `table`, and `column` are structured tool arguments, not SQL snippets parsed from `natural_language_intent`.
-A client or model should resolve object names from Proxy metadata, resources, or completions before filling these arguments.
-MCP renders reviewable DistSQL and SQL artifacts from those arguments. Explicit delimiter intent is preserved; DistSQL identifiers are quoted only when DistSQL syntax requires it; physical SQL identifiers use the target database quote style only when the argument is explicitly delimited or cannot be rendered as a plain SQL token.
-Identifier content must not contain backticks, NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.
+## Create, alter, and drop rules
 
-Different operations focus on different inputs:
-
-| Operation | Input focus | Planning result |
+| Operation | Natural language example | Plan content |
 | --- | --- | --- |
-| `create` | Provide the target column, masking intent, algorithm type, and algorithm properties. If you want MCP to recommend an algorithm, start with natural-language intent. | Generates DistSQL for adding the rule. |
-| `alter` | Provide the target column and the algorithm or algorithm properties to change. | Generates DistSQL that preserves sibling column rules on the same table. |
-| `drop` | Provide at least `database`, `table`, `column`, and `operation_type=drop`. | Generates `ALTER MASK RULE` when sibling masking columns remain on the same table, or `DROP MASK RULE` when no masking column remains on the target table. |
+| Create | "Plan phone-number masking for `orders.phone` and preview it without execution." | Generates DistSQL for adding the rule. |
+| Alter | "Change the previous masking rule to keep the first 3 and last 4 characters." | Generates DistSQL that preserves sibling column rules on the same table. |
+| Drop | "Drop the masking rule for `orders.phone` and preview the impact first." | Generates DistSQL to drop the target column rule. Sibling masking columns on the same table are preserved. |
 
-### Planning result
+## Review the masking plan
 
-A typical planning result includes:
+After a plan is generated, review:
 
-- `plan_id`, used for preview, apply, and validation.
-- `status`, usually `planned` or `clarifying`.
-- `distsql_artifacts`, containing `CREATE/ALTER/DROP MASK RULE`.
-- `ddl_artifacts`, normally empty.
-- `index_plan`, normally empty.
-
-If the response returns `clarifying`, continue with the same `plan_id`.
-Secret fields are not echoed in plain text. Obtain them through a secret manager, protected environment variable, or controlled operations channel before continuing.
+- Whether DistSQL matches the expected create, alter, or drop operation.
+- Whether the masking algorithm and properties satisfy business compliance requirements.
+- Whether queries through Proxy no longer apply masking to the column after dropping a rule.
+- Whether runtime rules or existing business SQL may be affected.
 
 ## Apply and validate
 
-After the planning tool returns `plan_id`, the model or client uses plugin workflow phase tools for apply and validation.
 Preview first, then review DistSQL and side-effect scope before execution.
 
-| Phase | User expression | Model or client action |
+| Phase | Natural language example | User focus |
 | --- | --- | --- |
-| Preview | "Preview the previous masking rule plan without execution." | Use `database_gateway_apply_workflow` with `execution_mode=preview` to create preview results. |
-| Execute | "Confirm and execute the previous plan." | After user review, use `database_gateway_apply_workflow` with `execution_mode=review-then-execute`. |
-| Manual execution | "Export a manual execution package without automatic execution." | Use `database_gateway_apply_workflow` with `execution_mode=manual-only`. |
-| Validate | "Validate whether the previous masking rule took effect." | Use `database_gateway_validate_workflow` to validate rule state, logical metadata, and SQL executability. |
+| Preview | "Preview the previous masking rule plan without executing it." | Inspect DistSQL and side-effect scope before execution. |
+| Execute | "Confirm and execute the previous plan." | Confirm that the side-effecting change has been reviewed. |
+| Manual execution | "Export a manual execution package without automatic execution." | Let operators review and execute in a controlled environment. |
+| Validate | "Validate whether the previous masking rule has taken effect." | Check rule state, logical metadata, and SQL executability. |
 
-Validation focuses on:
-
-- `rule_validation`
-- `logical_metadata_validation`
-- `sql_executability_validation`
-
-See [Plugin Workflows](../plugin-workflow/) for workflow statuses, execution modes, and sensitive-input handling.
-
-## MCP capability reference
-
-This section is for custom clients, protocol debugging, or understanding the MCP calls behind model behavior.
-Regular users usually only need to describe tasks in natural language.
-
-| MCP capability | Type | Call entry | Phase | Result |
-| --- | --- | --- | --- | --- |
-| `database_gateway_plan_mask_rule` | Tool | `tools/call` | Plan creation, alteration, or deletion of masking rules. | Returns `plan_id`, planning status, DistSQL, and validation steps. |
-| `database_gateway_apply_workflow` | Phase tool | `tools/call` with `plan_id`. | Preview, execute, or export a manual package after planning completes. | Returns preview artifacts, execution result, or manual execution package. |
-| `database_gateway_validate_workflow` | Phase tool | `tools/call` with the same `plan_id`. | Validate results after automatic or manual execution. | Returns rule state, logical metadata, and SQL executability validation results. |
-| `shardingsphere://features/mask/algorithms` | Resource | `resources/read` | Inspect masking algorithms visible through Proxy before planning. | Returns algorithm types and required properties. |
-| `shardingsphere://features/mask/databases/{database}/rules` | Resource template | Fill `{database}` and read through `resources/read`. | Inspect existing masking rules before altering a logical database. | Returns logical database-level masking rules. |
-| `shardingsphere://features/mask/databases/{database}/tables/{table}/rules` | Resource template | Fill `{database}` and `{table}`, then read through `resources/read`. | Inspect one table's rules or keep sibling column rules on the same table. | Returns table-level masking rules. |
-| `plan_mask_rule` | Prompt | `prompts/get` | Guide the model to read table metadata, algorithms, and existing rules before planning. | Returns the model prompt for masking rule planning. |
-| `plan_mask_rule` completion | Completion target | `completion/complete` | Fill planning arguments in a client. | Returns candidates for `database`, `schema`, `table`, `column`, algorithm types, or `plan_id`. |
+For the general review flow of plugin changes, see [Plugin Workflows](../plugin-workflow/).
 
 ## Limitations
 
