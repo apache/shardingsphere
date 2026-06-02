@@ -28,6 +28,21 @@ Additional notes:
 - After `manual-only`, execute the returned SQL or DistSQL manually before calling validation.
 - Secret placeholders in manual packages should be replaced by operators in a controlled environment.
 
+## Connection Failure Categories
+
+When a runtime database or ShardingSphere-Proxy connection fails, MCP responses return a connection failure category to help locate the issue. Categories describe the failure cause without exposing JDBC URLs, passwords, environment variables, or stack traces.
+
+| Category | Meaning |
+| --- | --- |
+| `missing_jdbc_driver` | The configured JDBC driver cannot be found. |
+| `authentication_failed` | Username or password authentication failed. |
+| `authorization_failed` | The current account does not have permission to access the target database or metadata. |
+| `connection_timeout` | The connection timed out. Check the address, port, network, or timeout settings. |
+| `invalid_configuration` | Runtime database configuration is incomplete or inconsistent. |
+| `database_unavailable` | The target database or ShardingSphere-Proxy is currently unavailable. |
+| `connection_failed` | The connection failed, but cannot be classified into a more specific cause. |
+| `database_not_visible` | The specified logical database is not visible to the current connection. |
+
 ## SQL tool selection
 
 | SQL type | Tool | Recommendation |

@@ -55,7 +55,10 @@ docker run --rm -p 18088:18088 \
   ghcr.io/apache/shardingsphere-mcp:${latest.release.version}
 ```
 
-`runtimeDatabases` in the configuration file must point to a ShardingSphere-Proxy logical database prepared by the user.
+Configure `runtimeDatabases` according to the target capability boundary:
+
+- Point it to a ShardingSphere-Proxy logical database when using ShardingSphere rule capabilities or feature plugin workflows.
+- Point it to any reachable JDBC database only for general JDBC metadata, metadata search, and controlled SQL capabilities.
 
 ## Secure deployment
 

@@ -28,6 +28,21 @@ weight = 7
 - 使用 `manual-only` 后，应先人工执行返回的 SQL 或 DistSQL，再调用校验工具。
 - 人工执行包中的密钥占位符应由执行人员在受控环境替换。
 
+## 连接错误分类
+
+当运行时数据库或 ShardingSphere-Proxy 连接失败时，MCP 响应会返回连接错误分类，用于帮助定位问题。分类只描述失败原因，不暴露 JDBC URL、密码、环境变量或堆栈信息。
+
+| 分类 | 含义 |
+| --- | --- |
+| `missing_jdbc_driver` | 未找到配置的 JDBC 驱动。 |
+| `authentication_failed` | 用户名或密码认证失败。 |
+| `authorization_failed` | 当前账号没有访问目标数据库或元数据的权限。 |
+| `connection_timeout` | 连接超时，通常需要检查地址、端口、网络或超时设置。 |
+| `invalid_configuration` | 运行时数据库配置不完整或不一致。 |
+| `database_unavailable` | 目标数据库或 ShardingSphere-Proxy 当前不可用。 |
+| `connection_failed` | 连接失败，但无法归类为更具体的原因。 |
+| `database_not_visible` | 指定逻辑库对当前连接不可见。 |
+
 ## SQL 工具选择
 
 | SQL 类型 | 工具 | 建议 |
