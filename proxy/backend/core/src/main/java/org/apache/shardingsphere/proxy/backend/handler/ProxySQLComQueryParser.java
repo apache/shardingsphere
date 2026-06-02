@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -55,8 +56,10 @@ public final class ProxySQLComQueryParser {
     
     private static DatabaseType getParserDatabaseType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
         String databaseName = connectionSession.getUsedDatabaseName();
-        return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(databaseName)
-                ? defaultDatabaseType
-                : ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getProtocolType();
+        if (Strings.isNullOrEmpty(databaseName)) {
+            return defaultDatabaseType;
+        }
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
+        return null == database ? defaultDatabaseType : database.getProtocolType();
     }
 }

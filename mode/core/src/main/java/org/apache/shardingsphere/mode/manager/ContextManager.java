@@ -121,8 +121,9 @@ public final class ContextManager implements AutoCloseable {
     public ShardingSphereDatabase getDatabase(final String name) {
         ShardingSpherePreconditions.checkNotEmpty(name, NoDatabaseSelectedException::new);
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
-        ShardingSpherePreconditions.checkState(metaData.containsDatabase(name), () -> new UnknownDatabaseException(name));
-        return metaData.getDatabase(name);
+        ShardingSphereDatabase result = metaData.getDatabase(name);
+        ShardingSpherePreconditions.checkState(null != result, () -> new UnknownDatabaseException(name));
+        return result;
     }
     
     /**

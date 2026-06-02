@@ -136,13 +136,11 @@ class ProxyBackendHandlerFactoryTest {
     
     private ContextManager mockContextManager() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        DatabaseType dbProtocolType = mock(DatabaseType.class);
         ResourceMetaData dbResourceMetaData = mock(ResourceMetaData.class);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("db", dbProtocolType, dbResourceMetaData,
+        ShardingSphereDatabase database = new ShardingSphereDatabase("db", databaseType, dbResourceMetaData,
                 new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
-        DatabaseType informationSchemaProtocolType = mock(DatabaseType.class);
         ResourceMetaData informationSchemaResourceMetaData = mock(ResourceMetaData.class);
-        ShardingSphereDatabase informationSchemaDatabase = new ShardingSphereDatabase("information_schema", informationSchemaProtocolType, informationSchemaResourceMetaData,
+        ShardingSphereDatabase informationSchemaDatabase = new ShardingSphereDatabase("information_schema", databaseType, informationSchemaResourceMetaData,
                 new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData().getDatabase("db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getDatabase("information_schema")).thenReturn(informationSchemaDatabase);

@@ -45,7 +45,6 @@ class QueryContextTest {
         when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
@@ -72,7 +71,6 @@ class QueryContextTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.isComplete()).thenReturn(true);
         when(database.getName()).thenReturn("foo_db");
-        when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getAllDatabases()).thenReturn(Collections.singletonList(database));
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
