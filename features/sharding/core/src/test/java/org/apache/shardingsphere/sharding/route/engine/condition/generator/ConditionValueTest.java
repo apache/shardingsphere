@@ -122,6 +122,44 @@ class ConditionValueTest {
     }
     
     @Test
+    void assertGetValueFromTypeCastOverDoubleHalfRoundsHalfEven() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        ConditionValue conditionValue = new ConditionValue(typeCast, Collections.singletonList(2.5D));
+        assertTrue(conditionValue.getValue().isPresent());
+        assertThat(conditionValue.getValue().get(), is(2));
+    }
+    
+    @Test
+    void assertGetValueFromTypeCastOverFloatHalfRoundsHalfEven() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        ConditionValue conditionValue = new ConditionValue(typeCast, Collections.singletonList(-2.5F));
+        assertTrue(conditionValue.getValue().isPresent());
+        assertThat(conditionValue.getValue().get(), is(-2));
+    }
+    
+    @Test
+    void assertGetValueFromTypeCastOverStringToCharNoTypmodPicksFirstChar() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::char", new ParameterMarkerExpressionSegment(0, 0, 0), "char");
+        ConditionValue conditionValue = new ConditionValue(typeCast, Collections.singletonList("abc"));
+        assertTrue(conditionValue.getValue().isPresent());
+        assertThat(conditionValue.getValue().get(), is("a"));
+    }
+    
+    @Test
+    void assertGetValueFromTypeCastOverBooleanToNumericReturnsEmpty() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::numeric", new ParameterMarkerExpressionSegment(0, 0, 0), "numeric");
+        ConditionValue conditionValue = new ConditionValue(typeCast, Collections.singletonList(Boolean.TRUE));
+        assertFalse(conditionValue.getValue().isPresent());
+    }
+    
+    @Test
+    void assertGetValueFromTypeCastOverFractionalStringToInt4ReturnsEmpty() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        ConditionValue conditionValue = new ConditionValue(typeCast, Collections.singletonList("1.5"));
+        assertFalse(conditionValue.getValue().isPresent());
+    }
+    
+    @Test
     void assertGetValueFromTypeCastWithTypmodReturnsEmpty() {
         TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::varchar(1)", new ParameterMarkerExpressionSegment(0, 0, 0), "varchar(1)");
         ConditionValue conditionValue = new ConditionValue(typeCast, Collections.singletonList("ab"));

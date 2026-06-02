@@ -50,6 +50,13 @@ import java.util.Optional;
  * that routing falls through to broadcast and the database-visible failure surfaces at execution time. Examples:
  * {@code bool::numeric}, {@code numeric::bool}, {@code float8::bool}, {@code '1.5'::int4} (PG raises
  * {@code invalid input syntax for type integer}).</p>
+ *
+ * <p>openGauss inherits its {@code pg_cast} catalog from PostgreSQL 9.2 and keeps the same {@code numeric_int4} /
+ * {@code dtoi4} / {@code ftoi4} / {@code bpchar} / {@code namein} cast functions, so the cell-by-cell behavior
+ * verified here against PostgreSQL 16 also describes the openGauss path. The evaluator is invoked only when the
+ * parser produces a {@code TypeCastExpression}, which is emitted exclusively by the PostgreSQL and openGauss
+ * visitors; MySQL / Oracle / SQL Server {@code CAST(...)} syntax becomes a {@code FunctionSegment} and bypasses
+ * this evaluator entirely, so there is no cross-dialect contamination risk.</p>
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLCastEvaluator {
