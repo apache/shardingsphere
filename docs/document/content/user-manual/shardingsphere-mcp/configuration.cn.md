@@ -59,6 +59,11 @@ runtimeDatabases:
 | `password (?)` | 连接运行时数据库的密码。 |
 | `driverClassName (+)` | JDBC 驱动类名，例如 MySQL 驱动使用 `com.mysql.cj.jdbc.Driver`。 |
 
+说明：
+
+- `(+)` 表示必填项。
+- `(?)` 表示可选项。
+
 注意事项：
 
 - 连接 ShardingSphere-Proxy 时，MCP 资源暴露的是 ShardingSphere 逻辑库，不是底层物理存储单元。

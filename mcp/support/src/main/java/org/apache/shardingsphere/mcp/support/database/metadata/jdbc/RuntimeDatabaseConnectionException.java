@@ -44,6 +44,8 @@ public final class RuntimeDatabaseConnectionException extends RuntimeException {
     
     public static final String CATEGORY_CONNECTION_FAILED = "connection_failed";
     
+    public static final String CATEGORY_DATABASE_NOT_VISIBLE = "database_not_visible";
+    
     private static final long serialVersionUID = -757957427736251437L;
     
     private final String databaseName;
@@ -87,6 +89,17 @@ public final class RuntimeDatabaseConnectionException extends RuntimeException {
      */
     public static RuntimeDatabaseConnectionException connectionFailed(final String databaseName, final SQLException cause) {
         return new RuntimeDatabaseConnectionException(databaseName, resolveCategory(cause), cause);
+    }
+    
+    /**
+     * Create database not visible exception.
+     *
+     * @param databaseName database name
+     * @param cause cause
+     * @return runtime database connection exception
+     */
+    public static RuntimeDatabaseConnectionException databaseNotVisible(final String databaseName, final Throwable cause) {
+        return new RuntimeDatabaseConnectionException(databaseName, CATEGORY_DATABASE_NOT_VISIBLE, cause);
     }
     
     private static String resolveCategory(final SQLException cause) {

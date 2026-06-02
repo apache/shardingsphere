@@ -72,4 +72,11 @@ class RuntimeDatabaseConnectionExceptionTest {
         RuntimeDatabaseConnectionException actual = RuntimeDatabaseConnectionException.connectionFailed("logic_db", new SQLException("Broken connection"));
         assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED));
     }
+    
+    @Test
+    void assertDatabaseNotVisible() {
+        RuntimeDatabaseConnectionException actual = RuntimeDatabaseConnectionException.databaseNotVisible("logic_db", new IllegalStateException("not visible"));
+        assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: database_not_visible."));
+        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE));
+    }
 }

@@ -41,8 +41,9 @@ class ServerCapabilitiesHandlerTest {
         Map<String, Object> actual = createCapabilitiesPayload();
         assertBaselineTopLevelKeys(actual);
         assertTrue(((Collection<?>) actual.get("supportedResources")).contains("shardingsphere://capabilities"));
-        assertTrue(((Collection<?>) actual.get("supportedTools")).containsAll(List.of("database_gateway_search_metadata", "database_gateway_execute_query",
-                "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
+        assertTrue(
+                ((Collection<?>) actual.get("supportedTools")).containsAll(List.of("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query",
+                        "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
         assertFalse(((List<?>) actual.get("resources")).isEmpty());
         assertFalse(((List<?>) actual.get("resourceTemplates")).isEmpty());
         assertFalse(((List<?>) actual.get("tools")).isEmpty());
@@ -242,6 +243,13 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(searchMetadataOutputProperties.containsKey("total_match_count"));
         Map<?, ?> objectTypesSchema = findInputSchema(searchMetadataTool, "object_types");
         assertTrue(((List<?>) ((Map<?, ?>) objectTypesSchema.get("items")).get("enum")).containsAll(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
+        Map<?, ?> validateProxyConnectivityTool = findTool(capabilities, "database_gateway_validate_proxy_connectivity");
+        Map<?, ?> validateProxyConnectivityOutputProperties = (Map<?, ?>) ((Map<?, ?>) validateProxyConnectivityTool.get("outputSchema")).get("properties");
+        assertThat(getInputFieldNames(validateProxyConnectivityTool), is(List.of("databaseType", "jdbcUrl", "username", "password", "driverClassName", "database")));
+        assertTrue(validateProxyConnectivityOutputProperties.containsKey("status"));
+        assertTrue(validateProxyConnectivityOutputProperties.containsKey("checks"));
+        assertTrue(validateProxyConnectivityOutputProperties.containsKey("category"));
+        assertTrue(validateProxyConnectivityOutputProperties.containsKey("recovery"));
         Map<?, ?> executeUpdateTool = findTool(capabilities, "database_gateway_execute_update");
         Map<?, ?> executeUpdateOutputProperties = (Map<?, ?>) ((Map<?, ?>) executeUpdateTool.get("outputSchema")).get("properties");
         assertTrue(executeUpdateOutputProperties.containsKey("response_mode"));

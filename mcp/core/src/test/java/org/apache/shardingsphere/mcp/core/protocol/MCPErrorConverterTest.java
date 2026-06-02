@@ -375,6 +375,16 @@ class MCPErrorConverterTest {
     }
     
     @Test
+    void assertConvertRuntimeDatabaseNotVisibleWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(RuntimeDatabaseConnectionException.databaseNotVisible("logic_db", new IllegalStateException("not visible"))).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("database_not_visible"));
+        assertThat(actualRecovery.get("recovery_category"), is("validation"));
+        assertThat(actualRecovery.get("database"), is("logic_db"));
+        assertThat(actualRecovery.get("model_action"), is("Connect to the intended logical database or update the expected database name before retrying."));
+    }
+    
+    @Test
     void assertConvertToolCallLimitExceededWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPToolCallLimitExceededException("session-1", "database_gateway_search_metadata", 1)).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");

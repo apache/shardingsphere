@@ -225,6 +225,9 @@ final class MCPBasicRecoveryPayloadFactory {
         if (RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION.equals(cause.getCategory())) {
             return "Fix the MCP runtime database configuration outside MCP, then retry.";
         }
+        if (RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE.equals(cause.getCategory())) {
+            return "Connect to the intended logical database or update the expected database name before retrying.";
+        }
         return "Check the runtime database availability and configuration, then retry.";
     }
 }

@@ -87,6 +87,7 @@ final class MCPRecoveryPayloadSupport {
         return RuntimeDatabaseConnectionException.CATEGORY_MISSING_JDBC_DRIVER.equals(category) || RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED.equals(category)
                 || RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED.equals(category)
                 || RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT.equals(category) || RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION.equals(category)
-                || RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE.equals(category) || RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED.equals(category);
+                || RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE.equals(category)
+                || RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED.equals(category);
     }
 }

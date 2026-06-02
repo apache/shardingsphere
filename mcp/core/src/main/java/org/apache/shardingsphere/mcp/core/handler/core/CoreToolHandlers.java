@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegi
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExecuteQueryToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExecuteUpdateToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.metadata.SearchMetadataToolHandler;
+import org.apache.shardingsphere.mcp.core.tool.handler.metadata.ValidateProxyConnectivityToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.workflow.WorkflowExecutionToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.workflow.WorkflowValidationToolHandler;
 
@@ -40,6 +41,7 @@ final class CoreToolHandlers {
         WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry = WorkflowRuntimeDefinitionRegistry.load();
         return List.of(
                 new SearchMetadataToolHandler(),
+                new ValidateProxyConnectivityToolHandler(),
                 new ExecuteQueryToolHandler(),
                 new ExecuteUpdateToolHandler(),
                 new WorkflowExecutionToolHandler(workflowRuntimeDefinitionRegistry),
