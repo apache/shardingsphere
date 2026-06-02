@@ -412,6 +412,16 @@ class PostgreSQLCastEvaluatorTest {
     }
     
     @Test
+    void assertBoolToNumericIsConservativeOnOpenGaussWhichWouldAcceptThisCast() {
+        assertFalse(PostgreSQLCastEvaluator.evaluate(Boolean.TRUE, "numeric").isPresent());
+    }
+    
+    @Test
+    void assertNumericToBoolIsConservativeOnOpenGaussWhichWouldAcceptThisCast() {
+        assertFalse(PostgreSQLCastEvaluator.evaluate(new BigDecimal("1"), "bool").isPresent());
+    }
+    
+    @Test
     void assertBooleanTrueToName() {
         assertThat(PostgreSQLCastEvaluator.evaluate(Boolean.TRUE, "name").orElseThrow(AssertionError::new), is("t"));
     }

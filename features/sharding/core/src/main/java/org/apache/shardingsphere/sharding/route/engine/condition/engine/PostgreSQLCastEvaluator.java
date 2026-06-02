@@ -51,12 +51,19 @@ import java.util.Optional;
  * {@code bool::numeric}, {@code numeric::bool}, {@code float8::bool}, {@code '1.5'::int4} (PG raises
  * {@code invalid input syntax for type integer}).</p>
  *
- * <p>openGauss inherits its {@code pg_cast} catalog from PostgreSQL 9.2 and keeps the same {@code numeric_int4} /
- * {@code dtoi4} / {@code ftoi4} / {@code bpchar} / {@code namein} cast functions, so the cell-by-cell behavior
- * verified here against PostgreSQL 16 also describes the openGauss path. The evaluator is invoked only when the
- * parser produces a {@code TypeCastExpression}, which is emitted exclusively by the PostgreSQL and openGauss
- * visitors; MySQL / Oracle / SQL Server {@code CAST(...)} syntax becomes a {@code FunctionSegment} and bypasses
- * this evaluator entirely, so there is no cross-dialect contamination risk.</p>
+ * <p>openGauss forks the {@code pg_cast} catalog from PostgreSQL 9.2 (see
+ * {@code src/include/catalog/pg_cast.h} in {@code opengauss-mirror/openGauss-server}) and keeps the same OID-bound
+ * {@code numeric_int4} / {@code dtoi4} / {@code ftoi4} / {@code bpchar} / {@code namein} cast functions, so the
+ * integer / numeric / float / text / name behavior verified here against PostgreSQL 16 carries through unchanged.
+ * The one substantive divergence is the {@code bool ↔ numeric} pair: openGauss adds explicit cast functions
+ * {@code 6433} ({@code bool → numeric}) and {@code 6434} ({@code numeric → bool}) that PostgreSQL does not have, and
+ * this evaluator stays aligned with PostgreSQL by returning {@link Optional#empty()} for both, which on openGauss is
+ * a conservative narrowing: routing falls through to broadcast where openGauss could otherwise route by the casted
+ * 0 / 1 value. Implementing openGauss-aware optimization for those two cells is deferred and noted explicitly here.</p>
+ *
+ * <p>The evaluator is invoked only when the parser produces a {@code TypeCastExpression}, which is emitted
+ * exclusively by the PostgreSQL and openGauss visitors; MySQL / Oracle / SQL Server {@code CAST(...)} syntax becomes
+ * a {@code FunctionSegment} and bypasses this evaluator entirely, so there is no cross-dialect contamination risk.</p>
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLCastEvaluator {
