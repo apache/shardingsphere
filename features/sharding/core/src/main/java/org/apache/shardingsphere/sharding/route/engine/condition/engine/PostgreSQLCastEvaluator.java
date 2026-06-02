@@ -38,8 +38,14 @@ import java.util.Optional;
  * value to integer where rounding is undefined) return {@link Optional#empty()} so the caller leaves the cast in place
  * and routes broadcast.</p>
  *
- * <p>Numeric-to-integer rounding follows PostgreSQL's documented {@code ROUND_HALF_EVEN} behavior, e.g. {@code 1.5::int4}
- * is {@code 2} and {@code 2.5::int4} is also {@code 2}. Integer overflow is detected via
+ * <p>Cast targets that carry a type modifier such as {@code varchar(1)}, {@code char(2)} or {@code numeric(3,1)} return
+ * {@link Optional#empty()} because applying the modifier correctly requires character-length / precision-scale semantics
+ * the routing path does not model, and routing on the unmodified value would diverge from PostgreSQL's documented
+ * truncation and precision rules.</p>
+ *
+ * <p>Numeric-to-integer rounding follows PostgreSQL's documented behavior for the {@code numeric} type, which rounds
+ * ties away from zero (Java {@link RoundingMode#HALF_UP}). For example {@code 1.5::int4} is {@code 2},
+ * {@code 2.5::int4} is {@code 3} and {@code -2.5::int4} is {@code -3}. Integer overflow is detected via
  * {@link BigDecimal#intValueExact()} / {@link BigDecimal#longValueExact()} / {@link BigDecimal#shortValueExact()} and
  * surfaces as {@link Optional#empty()}.</p>
  */
@@ -87,9 +93,7 @@ public final class PostgreSQLCastEvaluator {
     }
     
     private static String normalize(final String castTargetType) {
-        String result = castTargetType.toUpperCase(Locale.ROOT).trim();
-        int parenIndex = result.indexOf('(');
-        return parenIndex > 0 ? result.substring(0, parenIndex).trim() : result;
+        return castTargetType.toUpperCase(Locale.ROOT).trim();
     }
     
     private static Category categoryOf(final String normalized) {
@@ -133,17 +137,17 @@ public final class PostgreSQLCastEvaluator {
     
     private static Optional<Comparable<?>> castToShort(final Object value) {
         BigDecimal bigDecimal = toBigDecimal(value);
-        return null == bigDecimal ? Optional.empty() : Optional.of(bigDecimal.setScale(0, RoundingMode.HALF_EVEN).shortValueExact());
+        return null == bigDecimal ? Optional.empty() : Optional.of(bigDecimal.setScale(0, RoundingMode.HALF_UP).shortValueExact());
     }
     
     private static Optional<Comparable<?>> castToInteger(final Object value) {
         BigDecimal bigDecimal = toBigDecimal(value);
-        return null == bigDecimal ? Optional.empty() : Optional.of(bigDecimal.setScale(0, RoundingMode.HALF_EVEN).intValueExact());
+        return null == bigDecimal ? Optional.empty() : Optional.of(bigDecimal.setScale(0, RoundingMode.HALF_UP).intValueExact());
     }
     
     private static Optional<Comparable<?>> castToLong(final Object value) {
         BigDecimal bigDecimal = toBigDecimal(value);
-        return null == bigDecimal ? Optional.empty() : Optional.of(bigDecimal.setScale(0, RoundingMode.HALF_EVEN).longValueExact());
+        return null == bigDecimal ? Optional.empty() : Optional.of(bigDecimal.setScale(0, RoundingMode.HALF_UP).longValueExact());
     }
     
     private static Optional<Comparable<?>> castToBigDecimal(final Object value) {

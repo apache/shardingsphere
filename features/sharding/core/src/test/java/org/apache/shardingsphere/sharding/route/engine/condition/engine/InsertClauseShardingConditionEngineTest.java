@@ -301,7 +301,7 @@ class InsertClauseShardingConditionEngineTest {
     }
     
     @Test
-    void assertCreateShardingConditionsWithTypeCastBigDecimalToIntRoundsHalfEven() {
+    void assertCreateShardingConditionsWithTypeCastBigDecimalPositiveOneHalfRoundsAwayFromZero() {
         TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
         InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(new BigDecimal("1.5")), 0);
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
@@ -309,6 +309,39 @@ class InsertClauseShardingConditionEngineTest {
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(new BigDecimal("1.5")));
         ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
         assertThat(actual.getValues(), is(Collections.singletonList(2)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastBigDecimalPositiveTwoHalfRoundsAwayFromZero() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(new BigDecimal("2.5")), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(new BigDecimal("2.5")));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList(3)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastBigDecimalNegativeTwoHalfRoundsAwayFromZero() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(new BigDecimal("-2.5")), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(new BigDecimal("-2.5")));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList(-3)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastTypmodTargetDoesNotRoute() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::varchar(1)", new ParameterMarkerExpressionSegment(0, 0, 0), "varchar(1)");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList("ab"), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList("ab"));
+        assertThat(shardingConditions.size(), is(1));
+        assertTrue(shardingConditions.get(0).getValues().isEmpty());
     }
     
     @Test

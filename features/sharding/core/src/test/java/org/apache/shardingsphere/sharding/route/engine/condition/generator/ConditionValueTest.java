@@ -98,11 +98,34 @@ class ConditionValueTest {
     }
     
     @Test
-    void assertGetValueFromTypeCastOverBigDecimalRoundsHalfEven() {
+    void assertGetValueFromTypeCastOverBigDecimalPositiveOneHalfRoundsAwayFromZero() {
         TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
         ConditionValue conditionValue = new ConditionValue(typeCast, Collections.singletonList(new BigDecimal("1.5")));
         assertTrue(conditionValue.getValue().isPresent());
         assertThat(conditionValue.getValue().get(), is(2));
+    }
+    
+    @Test
+    void assertGetValueFromTypeCastOverBigDecimalPositiveTwoHalfRoundsAwayFromZero() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        ConditionValue conditionValue = new ConditionValue(typeCast, Collections.singletonList(new BigDecimal("2.5")));
+        assertTrue(conditionValue.getValue().isPresent());
+        assertThat(conditionValue.getValue().get(), is(3));
+    }
+    
+    @Test
+    void assertGetValueFromTypeCastOverBigDecimalNegativeTwoHalfRoundsAwayFromZero() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        ConditionValue conditionValue = new ConditionValue(typeCast, Collections.singletonList(new BigDecimal("-2.5")));
+        assertTrue(conditionValue.getValue().isPresent());
+        assertThat(conditionValue.getValue().get(), is(-3));
+    }
+    
+    @Test
+    void assertGetValueFromTypeCastWithTypmodReturnsEmpty() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::varchar(1)", new ParameterMarkerExpressionSegment(0, 0, 0), "varchar(1)");
+        ConditionValue conditionValue = new ConditionValue(typeCast, Collections.singletonList("ab"));
+        assertFalse(conditionValue.getValue().isPresent());
     }
     
     @Test

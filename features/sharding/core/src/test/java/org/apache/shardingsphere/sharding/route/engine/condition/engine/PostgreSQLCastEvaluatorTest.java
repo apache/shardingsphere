@@ -91,18 +91,23 @@ class PostgreSQLCastEvaluatorTest {
     }
     
     @Test
-    void assertBigDecimalHalfRoundsHalfEvenUpForOne() {
+    void assertBigDecimalPositiveOneHalfRoundsAwayFromZero() {
         assertThat(PostgreSQLCastEvaluator.evaluate(new BigDecimal("1.5"), "int4").orElseThrow(AssertionError::new), is(2));
     }
     
     @Test
-    void assertBigDecimalHalfRoundsHalfEvenDownForTwo() {
-        assertThat(PostgreSQLCastEvaluator.evaluate(new BigDecimal("2.5"), "int4").orElseThrow(AssertionError::new), is(2));
+    void assertBigDecimalPositiveTwoHalfRoundsAwayFromZero() {
+        assertThat(PostgreSQLCastEvaluator.evaluate(new BigDecimal("2.5"), "int4").orElseThrow(AssertionError::new), is(3));
     }
     
     @Test
-    void assertBigDecimalNegativeHalfRoundsHalfEven() {
+    void assertBigDecimalNegativeOneHalfRoundsAwayFromZero() {
         assertThat(PostgreSQLCastEvaluator.evaluate(new BigDecimal("-1.5"), "int4").orElseThrow(AssertionError::new), is(-2));
+    }
+    
+    @Test
+    void assertBigDecimalNegativeTwoHalfRoundsAwayFromZero() {
+        assertThat(PostgreSQLCastEvaluator.evaluate(new BigDecimal("-2.5"), "int4").orElseThrow(AssertionError::new), is(-3));
     }
     
     @Test
@@ -145,8 +150,23 @@ class PostgreSQLCastEvaluatorTest {
     }
     
     @Test
-    void assertStringToVarcharWithSize() {
-        assertThat(PostgreSQLCastEvaluator.evaluate("foo", "varchar(10)").orElseThrow(AssertionError::new), is("foo"));
+    void assertStringToVarcharWithTypmodReturnsEmpty() {
+        assertFalse(PostgreSQLCastEvaluator.evaluate("foo", "varchar(10)").isPresent());
+    }
+    
+    @Test
+    void assertOverLengthStringToVarcharWithTypmodReturnsEmpty() {
+        assertFalse(PostgreSQLCastEvaluator.evaluate("ab", "varchar(1)").isPresent());
+    }
+    
+    @Test
+    void assertStringToCharWithTypmodReturnsEmpty() {
+        assertFalse(PostgreSQLCastEvaluator.evaluate("ab", "char(2)").isPresent());
+    }
+    
+    @Test
+    void assertBigDecimalToNumericWithPrecisionScaleReturnsEmpty() {
+        assertFalse(PostgreSQLCastEvaluator.evaluate(new BigDecimal("1.55"), "numeric(3,1)").isPresent());
     }
     
     @Test
