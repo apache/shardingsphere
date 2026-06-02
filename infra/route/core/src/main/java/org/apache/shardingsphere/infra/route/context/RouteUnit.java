@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Route unit.
@@ -53,7 +52,11 @@ public final class RouteUnit {
      * @return logic table names
      */
     public Set<String> getLogicTableNames() {
-        return tableMappers.stream().map(RouteMapper::getLogicName).collect(Collectors.toCollection(() -> new HashSet<>(tableMappers.size(), 1L)));
+        Set<String> result = new HashSet<>(tableMappers.size(), 1F);
+        for (RouteMapper each : tableMappers) {
+            result.add(each.getLogicName());
+        }
+        return result;
     }
     
     /**
@@ -63,7 +66,13 @@ public final class RouteUnit {
      * @return actual table names
      */
     public Set<String> getActualTableNames(final String logicTableName) {
-        return tableMappers.stream().filter(each -> logicTableName.equalsIgnoreCase(each.getLogicName())).map(RouteMapper::getActualName).collect(Collectors.toSet());
+        Set<String> result = new HashSet<>(tableMappers.size(), 1F);
+        for (RouteMapper each : tableMappers) {
+            if (logicTableName.equalsIgnoreCase(each.getLogicName())) {
+                result.add(each.getActualName());
+            }
+        }
+        return result;
     }
     
     /**

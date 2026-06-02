@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Route context.
@@ -60,7 +60,11 @@ public final class RouteContext {
      * @return actual data source names
      */
     public Collection<String> getActualDataSourceNames() {
-        return routeUnits.stream().map(each -> each.getDataSourceMapper().getActualName()).collect(Collectors.toSet());
+        Collection<String> result = new HashSet<>(routeUnits.size(), 1F);
+        for (RouteUnit each : routeUnits) {
+            result.add(each.getDataSourceMapper().getActualName());
+        }
+        return result;
     }
     
     /**
@@ -75,7 +79,14 @@ public final class RouteContext {
      * @return actual table groups
      */
     public List<Set<String>> getActualTableNameGroups(final String actualDataSourceName, final Set<String> logicTableNames) {
-        return logicTableNames.stream().map(each -> getActualTableNames(actualDataSourceName, each)).filter(each -> !each.isEmpty()).collect(Collectors.toList());
+        List<Set<String>> result = new ArrayList<>(logicTableNames.size());
+        for (String each : logicTableNames) {
+            Set<String> actualTableNames = getActualTableNames(actualDataSourceName, each);
+            if (!actualTableNames.isEmpty()) {
+                result.add(actualTableNames);
+            }
+        }
+        return result;
     }
     
     private Set<String> getActualTableNames(final String actualDataSourceName, final String logicTableName) {
