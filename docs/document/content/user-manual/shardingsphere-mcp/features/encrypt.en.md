@@ -15,7 +15,7 @@ Actual encryption capability is provided by ShardingSphere-Proxy and its encrypt
 
 ## Use through natural language
 
-Users describe the encryption goal in the MCP client.
+Users describe the encryption goal in an AI application that integrates ShardingSphere-MCP.
 
 Examples:
 
@@ -102,8 +102,7 @@ For the general review flow of plugin changes, see [Plugin Workflows](../plugin-
 ### ShardingSphere feature boundaries
 
 - Existing data migration or backfill is not handled.
-- Automatic rollback is not provided.
 
-### Planner input limits
+### SQL generation boundaries
 
-- Identifier content must not contain backticks, NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.
+- MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode identifiers. To keep generated SQL or DistSQL reviewable, identifier content must not contain backticks, NUL, carriage returns, or line feeds.
