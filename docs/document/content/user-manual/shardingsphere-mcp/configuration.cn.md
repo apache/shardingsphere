@@ -53,16 +53,16 @@ runtimeDatabases:
 
 | *名称* | *说明* |
 | --- | --- |
-| `databaseType (+)` | 连接端点的数据库协议或方言类型，例如 `MySQL` 或 `PostgreSQL`。它用于正确读取目标数据库元数据，不表示连接目标一定是真实数据库或 ShardingSphere-Proxy。 |
-| `jdbcUrl (+)` | MCP Server 连接运行时数据库的 JDBC URL；使用 ShardingSphere 规则能力时应指向 Proxy 逻辑库。 |
-| `username (+)` | 连接运行时数据库的用户名，通常是 ShardingSphere-Proxy 逻辑库用户名。 |
-| `password (?)` | 连接运行时数据库的密码。 |
-| `driverClassName (+)` | JDBC 驱动类名，例如 MySQL 驱动使用 `com.mysql.cj.jdbc.Driver`。 |
+| `databaseType` (+) | 连接端点的数据库协议或方言类型，例如 `MySQL` 或 `PostgreSQL`。它用于正确读取目标数据库元数据，不表示连接目标一定是真实数据库或 ShardingSphere-Proxy。 |
+| `jdbcUrl` (+) | MCP Server 连接运行时数据库的 JDBC URL；使用 ShardingSphere 规则能力时应指向 Proxy 逻辑库。 |
+| `username` (+) | 连接运行时数据库的用户名，通常是 ShardingSphere-Proxy 逻辑库用户名。 |
+| `password` (?) | 连接运行时数据库的密码。 |
+| `driverClassName` (+) | JDBC 驱动类名，例如 MySQL 驱动使用 `com.mysql.cj.jdbc.Driver`。 |
 
 说明：
 
-- `(+)` 表示必填项。
-- `(?)` 表示可选项。
+- (+) 表示必填项。
+- (?) 表示可选项。
 
 注意事项：
 
