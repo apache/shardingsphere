@@ -142,7 +142,9 @@ public final class ColumnExtractor {
     
     private static void extractReturnedColumnsInCaseWhenExpression(final CaseWhenExpression expression, final Collection<ColumnSegment> result) {
         if (null != expression.getThenExprs()) {
-            expression.getThenExprs().stream().map(ColumnExtractor::extractIncludeColumnSegment).forEach(result::addAll);
+            for (ExpressionSegment each : expression.getThenExprs()) {
+                result.addAll(extractIncludeColumnSegment(each));
+            }
         }
         if (null != expression.getElseExpr()) {
             result.addAll(extractIncludeColumnSegment(expression.getElseExpr()));
@@ -154,10 +156,14 @@ public final class ColumnExtractor {
             result.addAll(extractIncludeColumnSegment(expression.getCaseExpr()));
         }
         if (null != expression.getWhenExprs()) {
-            expression.getWhenExprs().stream().map(ColumnExtractor::extractIncludeColumnSegment).forEach(result::addAll);
+            for (ExpressionSegment each : expression.getWhenExprs()) {
+                result.addAll(extractIncludeColumnSegment(each));
+            }
         }
         if (null != expression.getThenExprs()) {
-            expression.getThenExprs().stream().map(ColumnExtractor::extractIncludeColumnSegment).forEach(result::addAll);
+            for (ExpressionSegment each : expression.getThenExprs()) {
+                result.addAll(extractIncludeColumnSegment(each));
+            }
         }
         if (null != expression.getElseExpr()) {
             result.addAll(extractIncludeColumnSegment(expression.getElseExpr()));
