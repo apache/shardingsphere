@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: MCP - Build
+name: MCP - Release
 
 on:
   release:
@@ -28,7 +28,7 @@ on:
         type: string
 
 concurrency:
-  group: mcp-build-${{ github.event_name }}-${{ github.event_name == 'release' && github.event.release.tag_name || inputs.version }}
+  group: mcp-release-${{ github.event_name }}-${{ github.event_name == 'release' && github.event.release.tag_name || inputs.version }}
   cancel-in-progress: true
 
 permissions:
@@ -47,8 +47,8 @@ jobs:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
-  mcp-build:
-    name: MCP - Build
+  mcp-release:
+    name: MCP - Release
     if: github.repository == 'apache/shardingsphere'
     needs: global-environment
     runs-on: ubuntu-latest
@@ -85,9 +85,9 @@ jobs:
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
           echo "identifier=${{ env.MCP_IMAGE }}:${VERSION}" >> "${GITHUB_OUTPUT}"
           echo "tags=${TAGS}" >> "${GITHUB_OUTPUT}"
-      - name: Run and Install JDK 21 Subchain Tests
+      - name: Run and Install MCP JDK 21 Subchain Tests
         run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
-      - name: Package JDK 21 Subchain Distribution
+      - name: Package MCP Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
       - name: Build Local MCP Docker Image
         run: docker build -f distribution/mcp/Dockerfile -t shardingsphere-mcp-release:local distribution/mcp/target

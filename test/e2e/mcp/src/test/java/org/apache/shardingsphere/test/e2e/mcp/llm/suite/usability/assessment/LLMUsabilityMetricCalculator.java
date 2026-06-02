@@ -408,7 +408,14 @@ public final class LLMUsabilityMetricCalculator {
     
     private boolean isMachineAction(final Map<?, ?> action) {
         String type = Objects.toString(action.get("type"), "");
-        return "resource_read".equals(type) || "tool_call".equals(type) || "completion".equals(type);
+        if (!"resource_read".equals(type) && !"tool_call".equals(type) && !"completion".equals(type)) {
+            return false;
+        }
+        if (!"tool_call".equals(type) || !(action.get("arguments") instanceof Map)) {
+            return true;
+        }
+        String executionMode = Objects.toString(((Map<?, ?>) action.get("arguments")).get("execution_mode"), "");
+        return !"execute".equals(executionMode) && !"review-then-execute".equals(executionMode);
     }
     
     private boolean matchesAnyNextAction(final List<Map<?, ?>> actions, final MCPInteractionTraceRecord current, final MCPInteractionTraceRecord next) {
