@@ -24,6 +24,8 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUs
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
 import java.util.Map;
@@ -69,13 +71,19 @@ class LLMUsabilityMetricCalculatorTest {
         assertTrue(actual.isNextActionFollowed());
     }
     
-    @Test
-    void assertEvaluateScenarioWithToolCallNextActionFollowed() {
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({
+            "regular tool call guidance, database_gateway_execute_update, '', database_gateway_execute_update",
+            "execute side-effect guidance, database_gateway_execute_update, execute, database_gateway_execute_query",
+            "review-then-execute side-effect guidance, database_gateway_apply_workflow, review-then-execute, database_gateway_execute_query"
+    })
+    void assertEvaluateScenarioWithToolCallNextActionGuidance(final String name, final String nextActionToolName, final String executionMode, final String nextToolName) {
+        Map<String, Object> nextAction = executionMode.isEmpty()
+                ? Map.of("type", "tool_call", "tool_name", nextActionToolName)
+                : Map.of("type", "tool_call", "tool_name", nextActionToolName, "arguments", Map.of("execution_mode", executionMode));
         List<MCPInteractionTraceRecord> trace = List.of(
-                createToolCall(1, "database_gateway_execute_update", Map.of("next_actions", List.of(Map.of(
-                        "type", "tool_call",
-                        "tool_name", "database_gateway_execute_update")))),
-                createToolCall(2, "database_gateway_execute_update", Map.of()));
+                createToolCall(1, nextActionToolName, Map.of("next_actions", List.of(nextAction))),
+                createToolCall(2, nextToolName, Map.of()));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
         assertTrue(actual.isNextActionFollowed());
         assertFalse(actual.isApprovalViolation());

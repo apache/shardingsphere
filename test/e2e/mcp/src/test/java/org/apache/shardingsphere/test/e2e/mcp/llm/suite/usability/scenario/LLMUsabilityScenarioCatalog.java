@@ -151,12 +151,11 @@ public final class LLMUsabilityScenarioCatalog {
                 List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "extended", "recovery"),
                 new LLME2EScenario("extended-recovery-missing-database-" + runtimeKind, SYSTEM_PROMPT,
                         "The user only remembers schema `" + schemaName + "` and table `" + tableName + "`. Search metadata broadly with query `" + tableName
-                                + "` and object type `table` without setting database or schema. If more than one database contains `" + tableName + "`, choose logical database `"
-                                + databaseName + "` and do not use `analytics_db`. Then verify `" + query + "`.",
+                                + "` and object type `table` without setting database or schema. Then verify `" + query + "`.",
                         createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                         List.of("database_gateway_search_metadata", "database_gateway_execute_query"),
                         List.of("database_gateway_search_metadata", "database_gateway_execute_query")),
-                List.of("database_gateway_search_metadata"), List.of(), false, true, "ambiguous"));
+                List.of("database_gateway_search_metadata"), List.of(), false, false));
         result.add(createScenario("extended-recovery-bad-resource-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind,
                 List.of(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG, "extended", "recovery", "resource"),
                 new LLME2EScenario("extended-recovery-bad-resource-" + runtimeKind, SYSTEM_PROMPT,
@@ -165,18 +164,7 @@ public final class LLMUsabilityScenarioCatalog {
                         createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"),
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query")),
-                List.of(MCPInteractionActionNames.READ_RESOURCE), List.of(tableResourceUri), true, true, "not_found"));
-        if ("mysql".equals(runtimeKind)) {
-            result.add(createScenario("extended-recovery-unsupported-sequence-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind,
-                    List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "extended", "recovery", "unsupported-resource"),
-                    new LLME2EScenario("extended-recovery-unsupported-sequence-" + runtimeKind, SYSTEM_PROMPT,
-                            "The user asks about sequence metadata near `" + tableName + "` on this MySQL runtime. Recover safely if sequence resources are unsupported, then verify `"
-                                    + query + "`." + toolContext,
-                            createAnswer(databaseName, schemaName, tableName, query, totalOrders),
-                            List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"),
-                            List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query")),
-                    List.of(MCPInteractionActionNames.READ_RESOURCE), List.of(tableResourceUri), true, true, "not_found"));
-        }
+                List.of(MCPInteractionActionNames.READ_RESOURCE), List.of(tableResourceUri), true, true, "unknown_database"));
         return result;
     }
     

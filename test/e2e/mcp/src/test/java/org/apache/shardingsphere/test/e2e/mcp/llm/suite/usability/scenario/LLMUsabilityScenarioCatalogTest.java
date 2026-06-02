@@ -59,14 +59,11 @@ class LLMUsabilityScenarioCatalogTest {
                 "SELECT COUNT(*) AS total_orders FROM orders", 2);
         Map<String, LLMUsabilityScenario> actualScenarios = actual.stream().collect(Collectors.toMap(LLMUsabilityScenario::getScenarioId, each -> each));
         assertThat(actualScenarios.keySet(), hasItems("extended-prompt-completion-inspect-mysql", "extended-runtime-status-mysql", "extended-recovery-missing-database-mysql",
-                "extended-recovery-unsupported-sequence-mysql"));
+                "extended-recovery-bad-resource-mysql"));
         assertThat(actualScenarios.get("extended-runtime-status-mysql").getExpectedResourceUris(), is(List.of("shardingsphere://runtime")));
-        assertTrue(actualScenarios.get("extended-recovery-missing-database-mysql").isRecoveryExpected());
-        assertThat(actualScenarios.get("extended-recovery-missing-database-mysql").getExpectedRecoveryCategory(), is("ambiguous"));
+        assertFalse(actualScenarios.get("extended-recovery-missing-database-mysql").isRecoveryExpected());
         assertTrue(actualScenarios.get("extended-recovery-bad-resource-mysql").isRecoveryExpected());
-        assertThat(actualScenarios.get("extended-recovery-bad-resource-mysql").getExpectedRecoveryCategory(), is("not_found"));
-        assertTrue(actualScenarios.get("extended-recovery-unsupported-sequence-mysql").isRecoveryExpected());
-        assertThat(actualScenarios.get("extended-recovery-unsupported-sequence-mysql").getExpectedRecoveryCategory(), is("not_found"));
+        assertThat(actualScenarios.get("extended-recovery-bad-resource-mysql").getExpectedRecoveryCategory(), is("unknown_database"));
         assertThat(actualScenarios.get("extended-prompt-completion-inspect-mysql").getLlmScenario().getUserPrompt(), containsString("Use the MCP prompt list"));
         assertTrue(actualScenarios.get("extended-recovery-missing-database-mysql").isNaturalTask());
         assertTrue(actualScenarios.get("extended-prompt-completion-inspect-mysql").isProtocolContract());

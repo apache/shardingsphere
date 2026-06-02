@@ -5,7 +5,7 @@ weight = 5
 chapter = true
 +++
 
-This chapter describes ShardingSphere-MCP end-to-end contract validation and LLM smoke validation.
+This chapter describes ShardingSphere-MCP end-to-end contract validation and LLM usability validation.
 
 ## Scope
 
@@ -16,7 +16,7 @@ This chapter describes ShardingSphere-MCP end-to-end contract validation and LLM
 - STDIO runtime.
 - MCP baseline contract.
 - Tool/resource/prompt/completion discovery.
-- Real-model MCP smoke.
+- Real-model MCP usability.
 - Encrypt and Mask workflow usability validation.
 
 ## Local preparation
@@ -48,12 +48,21 @@ Build the local runtime image:
 sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh
 ```
 
-## Run LLM Smoke
+## Run MCP Runtime E2E
 
 ```bash
-./mvnw -pl test/e2e/mcp -Pllm-e2e test -DskipITs -Dspotless.skip=true \
-  -Dtest=LLMSmokeE2ETest \
-  -Dsurefire.failIfNoSpecifiedTests=true
+MCP_E2E_TESTS=HttpTransportContractE2ETest,HttpTransportProtocolContractE2ETest,HttpTransportBaselineContractE2ETest
+MCP_E2E_TESTS="${MCP_E2E_TESTS},ProductionMySQLRuntimeE2ETest"
+MCP_E2E_TESTS="${MCP_E2E_TESTS},HttpProductionProxyEncryptWorkflowE2ETest"
+MCP_E2E_TESTS="${MCP_E2E_TESTS},HttpProductionProxyMaskWorkflowE2ETest,LLMUsabilitySuiteE2ETest"
+./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
+  -Dtest="${MCP_E2E_TESTS}" \
+  -Dsurefire.failIfNoSpecifiedTests=true \
+  -Dmcp.e2e.contract.enabled=true \
+  -Dmcp.e2e.production.mysql.enabled=true \
+  -Dmcp.e2e.production.stdio.enabled=true \
+  -Dmcp.e2e.llm.enabled=true \
+  -Dmcp.e2e.llm.excludedGroups=
 ```
 
 ## Run LLM Usability Suite
@@ -70,7 +79,7 @@ For local debugging only, connect to an already running OpenAI-compatible endpoi
 
 ```bash
 ./mvnw -pl test/e2e/mcp -Pllm-e2e test -DskipITs -Dspotless.skip=true \
-  -Dtest=LLMSmokeE2ETest \
+  -Dtest=LLMUsabilitySuiteE2ETest \
   -Dmcp.llm.runtime-mode=external-debug \
   -Dmcp.llm.base-url=http://127.0.0.1:8080/v1 \
   -Dsurefire.failIfNoSpecifiedTests=true
@@ -88,8 +97,7 @@ test/e2e/mcp/target/llm-e2e/
 
 GitHub Actions entry points:
 
-- `.github/workflows/mcp-llm-e2e.yml`
-- `.github/workflows/mcp-llm-usability-e2e.yml`
+- `.github/workflows/mcp-e2e.yml`
 
-These checks provide additional visibility and should not be configured as required branch protection or ruleset checks by themselves.
+This workflow is the mandatory MCP runtime E2E entry point.
 If a very large PR misses a path-filter match, use `workflow_dispatch` to add manual evidence.
