@@ -28,7 +28,7 @@ on:
     paths:
       - '.github/workflows/mcp-llm-usability-e2e.yml'
       - 'mcp/**'
-      - 'distribution/mcp/**'
+      - 'test/e2e/pom.xml'
       - 'test/e2e/mcp/**'
   schedule:
     - cron: '0 19 * * 1-5'
