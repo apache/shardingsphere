@@ -55,18 +55,26 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
-        if (pendingMessages.isEmpty()) {
-            int type = in.getInt(in.readerIndex());
-            pendingPacketType = FirebirdCommandPacketType.valueOf(type);
-            if (pendingPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
-                handleMultiPacket(context, in, out, ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
-                return;
-            } else if (pendingPacketType == FirebirdCommandPacketType.FREE_STATEMENT) {
-                handleMultiPacket(context, in, out, FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
-                return;
+        try {
+            if (pendingMessages.isEmpty()) {
+                int type = in.getInt(in.readerIndex());
+                pendingPacketType = FirebirdCommandPacketType.valueOf(type);
+                if (pendingPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
+                    handleMultiPacket(context, in, out, ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
+                    return;
+                } else if (pendingPacketType == FirebirdCommandPacketType.FREE_STATEMENT) {
+                    handleMultiPacket(context, in, out, FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
+                    return;
+                }
             }
+            addToBuffer(context, in, out);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            // TODO replace with a proper Firebird error response packet; for now close the channel so the client fails fast instead of hanging.
+            context.close();
+            throw ex;
         }
-        addToBuffer(context, in, out);
     }
     
     private void handleMultiPacket(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int firstPacketLength) {
@@ -167,7 +175,9 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             payload.getByteBuf().resetWriterIndex();
-            // TODO send error packet
+            // TODO replace with a proper Firebird error response packet; for now close the channel so the client fails fast instead of hanging.
+            context.close();
+            throw ex;
         }
     }
     
