@@ -79,10 +79,17 @@ public final class CompilerContextFactory {
                 Arrays.asList(SqlLibrary.STANDARD, DATABASE_TYPE_SQL_LIBRARIES.getOrDefault(databaseType.getType(), SqlLibrary.MYSQL)));
         List<SqlOperatorTable> result = new ArrayList<>(3);
         result.add(new MySQLOperatorTable());
-        if ("MySQL".equalsIgnoreCase(databaseType.getType())) {
+        if (isMySQLTrunkDatabaseType(databaseType)) {
             result.add(new MySQLStringFunctionOperatorTable());
         }
         result.add(operatorTable);
         return result;
+    }
+    
+    private static boolean isMySQLTrunkDatabaseType(final DatabaseType databaseType) {
+        if ("MySQL".equalsIgnoreCase(databaseType.getType())) {
+            return true;
+        }
+        return databaseType.getTrunkDatabaseType().map(trunk -> "MySQL".equalsIgnoreCase(trunk.getType())).orElse(false);
     }
 }

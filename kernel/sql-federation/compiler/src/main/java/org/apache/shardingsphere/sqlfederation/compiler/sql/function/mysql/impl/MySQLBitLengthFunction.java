@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.calcite.avatica.util.ByteString;
 import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlKind;
@@ -33,11 +34,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 /**
- * MySQL {@code BIT_LENGTH} function returning the bit length of the operand: the raw array length times eight for
- * {@code byte[]} values and the UTF-8 byte length times eight for character values.
+ * MySQL {@code BIT_LENGTH} function returning the bit length of the operand, computed as the byte length times eight.
  *
- * <p>Character-set introducers such as {@code _latin1} / {@code _binary} are not honored; a character value is always
- * treated as UTF-8. Honoring introducers would require collation-aware operand inspection and is left as follow-up.</p>
+ * <p>Charset semantics mirror {@link MySQLLengthFunction}: binary inputs ({@code byte[]} or {@link ByteString} from
+ * hex / charset-introducer literals) use raw byte count, while plain character inputs fall back to UTF-8 byte count
+ * which matches MySQL's default {@code utf8mb4} server charset.</p>
  */
 public final class MySQLBitLengthFunction extends SqlUserDefinedFunction {
     
@@ -61,6 +62,9 @@ public final class MySQLBitLengthFunction extends SqlUserDefinedFunction {
         }
         if (value instanceof byte[]) {
             return Math.multiplyExact((long) ((byte[]) value).length, Byte.SIZE);
+        }
+        if (value instanceof ByteString) {
+            return Math.multiplyExact((long) ((ByteString) value).length(), Byte.SIZE);
         }
         return Math.multiplyExact((long) value.toString().getBytes(StandardCharsets.UTF_8).length, Byte.SIZE);
     }

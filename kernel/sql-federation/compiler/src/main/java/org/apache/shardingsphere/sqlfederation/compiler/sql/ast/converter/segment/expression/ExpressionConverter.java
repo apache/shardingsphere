@@ -62,6 +62,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ListExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.LiteralExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.MatchExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.MySQLBinaryLiteralRecognizer;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.NotExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ParameterMarkerExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.QuantifySubqueryExpressionConverter;
@@ -95,7 +96,10 @@ public final class ExpressionConverter {
             return LiteralExpressionConverter.convert((LiteralExpressionSegment) segment, null);
         }
         if (segment instanceof CommonExpressionSegment) {
-            // TODO
+            Optional<SqlNode> recognized = MySQLBinaryLiteralRecognizer.recognize(((CommonExpressionSegment) segment).getText());
+            if (recognized.isPresent()) {
+                return recognized;
+            }
             throw new UnsupportedSQLOperationException("unsupported CommonExpressionSegment");
         }
         if (segment instanceof ListExpression) {

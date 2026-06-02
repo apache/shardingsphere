@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.calcite.avatica.util.ByteString;
 import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlKind;
@@ -30,16 +31,19 @@ import org.apache.calcite.sql.type.SqlTypeFamily;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.validate.SqlUserDefinedFunction;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
- * MySQL {@code LOCATE} function returning the 1-based position of a substring in a string, or 0 when absent, mirroring
- * MySQL semantics for the optional start position.
+ * MySQL {@code LOCATE} function returning the 1-based position of a substring in a string, or {@code 0} when absent,
+ * mirroring MySQL semantics for the optional start position.
  *
- * <p>Comparison is byte-by-byte case-sensitive on the {@code byte[]} overload and {@link String#indexOf(String, int)}
- * (case-sensitive) on the character overload. MySQL's collation-driven case-insensitive matching for non-binary inputs
- * is not modeled; character-set introducers such as {@code _latin1} / {@code _binary} are not honored. Honoring those
- * would require collation-aware operand inspection and is left as follow-up.</p>
+ * <p>When any operand is binary (a {@code byte[]} or a Calcite {@link ByteString} from a hex / charset-introducer
+ * literal), the search runs byte-by-byte and is case-sensitive, matching MySQL's "case-sensitive when at least one
+ * argument is binary" rule. {@code LOCATE(x'64', _utf8mb4'abcdef')} returns {@code 4}. When both operands are
+ * character values without an introducer, the search uses {@link String#indexOf(String, int)} which is case-sensitive;
+ * MySQL's default {@code utf8mb4_0900_ai_ci} collation-driven case-insensitive matching for non-binary inputs is not
+ * modeled here.</p>
  */
 public final class MySQLLocateFunction extends SqlUserDefinedFunction {
     
@@ -74,11 +78,14 @@ public final class MySQLLocateFunction extends SqlUserDefinedFunction {
      * @return 1-based position, 0 when not found, null when any argument is null
      */
     @SuppressWarnings("unused")
-    public static Integer locate(final String substring, final String value) {
+    public static Integer locate(final Object substring, final Object value) {
         if (null == substring || null == value) {
             return null;
         }
-        return value.indexOf(substring) + 1;
+        if (isBinary(substring) || isBinary(value)) {
+            return indexOfBytes(toBytes(value), toBytes(substring), 0) + 1;
+        }
+        return value.toString().indexOf(substring.toString()) + 1;
     }
     
     /**
@@ -90,13 +97,57 @@ public final class MySQLLocateFunction extends SqlUserDefinedFunction {
      * @return 1-based position, 0 when not found or position is non-positive, null when any argument is null
      */
     @SuppressWarnings("unused")
-    public static Integer locateAt(final String substring, final String value, final Integer position) {
+    public static Integer locateAt(final Object substring, final Object value, final Integer position) {
         if (null == substring || null == value || null == position) {
             return null;
         }
-        if (position <= 0 || position > value.length() + 1) {
+        if (isBinary(substring) || isBinary(value)) {
+            byte[] subBytes = toBytes(substring);
+            byte[] valBytes = toBytes(value);
+            if (position <= 0 || position > valBytes.length + 1) {
+                return 0;
+            }
+            return indexOfBytes(valBytes, subBytes, position - 1) + 1;
+        }
+        String sub = substring.toString();
+        String val = value.toString();
+        if (position <= 0 || position > val.length() + 1) {
             return 0;
         }
-        return value.indexOf(substring, position - 1) + 1;
+        return val.indexOf(sub, position - 1) + 1;
+    }
+    
+    private static boolean isBinary(final Object value) {
+        return value instanceof byte[] || value instanceof ByteString;
+    }
+    
+    private static byte[] toBytes(final Object value) {
+        if (value instanceof byte[]) {
+            return (byte[]) value;
+        }
+        if (value instanceof ByteString) {
+            return ((ByteString) value).getBytes();
+        }
+        return value.toString().getBytes(StandardCharsets.UTF_8);
+    }
+    
+    private static int indexOfBytes(final byte[] haystack, final byte[] needle, final int from) {
+        if (0 == needle.length) {
+            return Math.max(0, from);
+        }
+        int limit = haystack.length - needle.length;
+        for (int i = Math.max(0, from); i <= limit; i++) {
+            boolean match = true;
+            for (int j = 0; j < needle.length; j++) {
+                if (haystack[i + j] != needle[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.calcite.avatica.util.ByteString;
 import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlKind;
@@ -33,12 +34,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 /**
- * MySQL {@code LENGTH} function returning the byte length of the operand: the raw array length for {@code byte[]} values
- * and the UTF-8 byte length for character values.
+ * MySQL {@code LENGTH} function returning the byte length of the operand.
  *
- * <p>Character-set introducers such as {@code _latin1} / {@code _binary} are not honored; a character value is always
- * treated as UTF-8. {@code LENGTH(_latin1'Müller')} therefore returns 7 (UTF-8 bytes) rather than the 6 latin1 bytes
- * MySQL would report. Honoring introducers would require collation-aware operand inspection and is left as follow-up.</p>
+ * <p>Binary operands route through their raw byte length: a {@code byte[]} or Calcite {@link ByteString} value of
+ * {@code n} bytes returns {@code n}. Hex / bit literals such as {@code x'48656c6c6f'} are folded by
+ * {@code MySQLBinaryLiteralRecognizer} into ISO-8859-1 character strings whose UTF-8 encoding preserves the original
+ * byte count for ASCII-range bytes, so {@code LENGTH(x'48656c6c6f')} returns {@code 5}. Plain character operands
+ * fall back to UTF-8 byte length, which matches MySQL's default {@code utf8mb4} server charset for unqualified
+ * string literals and {@code utf8mb4} columns; honoring {@code _latin1} / {@code _binary} introducers requires
+ * parser-level support to propagate the charset to the operator path and is out of scope here.</p>
  */
 public final class MySQLLengthFunction extends SqlUserDefinedFunction {
     
@@ -62,6 +66,9 @@ public final class MySQLLengthFunction extends SqlUserDefinedFunction {
         }
         if (value instanceof byte[]) {
             return (long) ((byte[]) value).length;
+        }
+        if (value instanceof ByteString) {
+            return (long) ((ByteString) value).length();
         }
         return (long) value.toString().getBytes(StandardCharsets.UTF_8).length;
     }
