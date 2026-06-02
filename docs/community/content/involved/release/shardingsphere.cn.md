@@ -605,7 +605,7 @@ docker logout
 
 3.8 ShardingSphere MCP 发布
 
-ShardingSphere MCP 通过仓库中的 [`.github/workflows/mcp-release.yml`](https://github.com/apache/shardingsphere/blob/master/.github/workflows/mcp-release.yml) workflow 发布。
+ShardingSphere MCP 通过仓库中的 [`.github/workflows/release-mcp.yml`](https://github.com/apache/shardingsphere/blob/master/.github/workflows/release-mcp.yml) workflow 发布。
 该 workflow 会构建 MCP 发行包、把 `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}` 推送到 GHCR，
 稳定版额外更新 `latest`，然后通过 GitHub OIDC 把 `mcp/server.json` 发布到官方 MCP Registry。
 
@@ -617,7 +617,7 @@ ShardingSphere MCP 通过仓库中的 [`.github/workflows/mcp-release.yml`](http
 
 GitHub release 发布后：
 
-- 等待 `MCP - Release` workflow 成功完成
+- 等待 `Release - MCP` workflow 成功完成
 - 确认 [GitHub Packages](https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-mcp) 中存在 `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}`
 - 通过下面的命令确认官方 MCP Registry 已返回该 server 的 metadata：
 

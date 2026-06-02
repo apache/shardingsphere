@@ -97,7 +97,7 @@ test/e2e/mcp/target/llm-e2e/
 
 GitHub Actions entry points:
 
-- `.github/workflows/mcp-e2e.yml`
+- `.github/workflows/e2e-mcp.yml`
 
 This workflow is the mandatory MCP runtime E2E entry point.
 If a very large PR misses a path-filter match, use `workflow_dispatch` to add manual evidence.
