@@ -53,16 +53,16 @@ runtimeDatabases:
 
 | *Name* | *Description* |
 | --- | --- |
-| `databaseType (+)` | Database protocol or dialect type of the connection endpoint, such as `MySQL` or `PostgreSQL`. It is used to read target database metadata correctly; it does not mean the endpoint is necessarily a physical database or ShardingSphere-Proxy. |
-| `jdbcUrl (+)` | JDBC URL used by the MCP Server to connect to the runtime database. Point it to a Proxy logical database when using ShardingSphere rule capabilities. |
-| `username (+)` | Username for the runtime database, usually the ShardingSphere-Proxy logical database username. |
-| `password (?)` | Password for the runtime database. |
-| `driverClassName (+)` | JDBC driver class name, such as `com.mysql.cj.jdbc.Driver` for the MySQL driver. |
+| `databaseType` (+) | Database protocol or dialect type of the connection endpoint, such as `MySQL` or `PostgreSQL`. It is used to read target database metadata correctly; it does not mean the endpoint is necessarily a physical database or ShardingSphere-Proxy. |
+| `jdbcUrl` (+) | JDBC URL used by the MCP Server to connect to the runtime database. Point it to a Proxy logical database when using ShardingSphere rule capabilities. |
+| `username` (+) | Username for the runtime database, usually the ShardingSphere-Proxy logical database username. |
+| `password` (?) | Password for the runtime database. |
+| `driverClassName` (+) | JDBC driver class name, such as `com.mysql.cj.jdbc.Driver` for the MySQL driver. |
 
 Legend:
 
-- `(+)` means required.
-- `(?)` means optional.
+- (+) means required.
+- (?) means optional.
 
 Notes:
 
