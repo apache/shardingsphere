@@ -42,6 +42,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -91,6 +92,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         verify(registry).removePreparedStatement(1);
+        verify(connectionSession).invalidateFirebirdPreparedStatementCache(1);
     }
     
     @Test
@@ -100,6 +102,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         verify(registry).removePreparedStatement(1);
+        verify(connectionSession).invalidateFirebirdPreparedStatementCache(1);
     }
     
     @Test
@@ -108,6 +111,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
         verify(connectionSession.getConnectionContext()).clearCursorContext();
         verify(connectionManager).unmarkResourceInUse(proxyBackendHandler);
+        verify(connectionSession, never()).invalidateFirebirdPreparedStatementCache(STATEMENT_ID);
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
     }
     

@@ -46,6 +46,7 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
             case FirebirdFreeStatementPacket.DROP:
             case FirebirdFreeStatementPacket.UNPREPARE:
                 connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
+                connectionSession.invalidateFirebirdPreparedStatementCache(packet.getStatementId());
                 break;
             case FirebirdFreeStatementPacket.CLOSE:
                 connectionSession.getConnectionContext().clearCursorContext();

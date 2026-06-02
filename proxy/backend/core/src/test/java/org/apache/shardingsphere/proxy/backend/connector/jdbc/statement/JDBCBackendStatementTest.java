@@ -31,6 +31,9 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExt
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,6 +43,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -98,21 +102,70 @@ class JDBCBackendStatementTest {
     void assertCreateStorageResourceWithPreparedStatementCache() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
+        DatabaseType firebirdDatabaseType = mock(DatabaseType.class);
+        when(firebirdDatabaseType.getType()).thenReturn("Firebird");
+        when(connectionSession.getPreparedStatementCacheContext()).thenReturn(cacheContext);
+        when(connectionSession.getCurrentFirebirdPreparedStatementId()).thenReturn(1);
+        JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        String sql = "SELECT * FROM foo WHERE id = ?";
+        when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
+        StatementOption statementOption = new StatementOption(false);
+        backendStatement.createStorageResource(
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(1))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
+        backendStatement.createStorageResource(
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
+        verify(connection).prepareStatement(sql);
+        verify(preparedStatement, times(2)).clearParameters();
+        verify(preparedStatement).setObject(1, 1);
+        verify(preparedStatement).setObject(1, 2);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("nonFirebirdDatabaseTypes")
+    void assertCreateStorageResourceWithoutPreparedStatementCacheForNonFirebird(final String scenario, final String databaseTypeName) throws SQLException {
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        String sql = "SELECT * FROM foo WHERE id = ?";
+        DatabaseType nonFirebirdDatabaseType = mock(DatabaseType.class);
+        when(nonFirebirdDatabaseType.getType()).thenReturn(databaseTypeName);
+        when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
+        StatementOption statementOption = new StatementOption(false);
+        backendStatement.createStorageResource(
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(1))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, nonFirebirdDatabaseType);
+        backendStatement.createStorageResource(
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, nonFirebirdDatabaseType);
+        verify(connection, times(2)).prepareStatement(sql);
+    }
+    
+    @Test
+    void assertCreateStorageResourceWithDifferentFirebirdPreparedStatementId() throws SQLException {
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
+        DatabaseType firebirdDatabaseType = mock(DatabaseType.class);
+        when(firebirdDatabaseType.getType()).thenReturn("Firebird");
         when(connectionSession.getPreparedStatementCacheContext()).thenReturn(cacheContext);
         JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
         Connection connection = mock(Connection.class);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         String sql = "SELECT * FROM foo WHERE id = ?";
         when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
-        when(DatabaseTypedSPILoader.findService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType)).thenReturn(Optional.empty());
         StatementOption statementOption = new StatementOption(false);
+        when(connectionSession.getCurrentFirebirdPreparedStatementId()).thenReturn(1, 2);
         backendStatement.createStorageResource(
-                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(1))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, databaseType);
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(1))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
         backendStatement.createStorageResource(
-                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, databaseType);
-        verify(connection).prepareStatement(sql);
-        verify(preparedStatement, times(2)).clearParameters();
-        verify(preparedStatement).setObject(1, 1);
-        verify(preparedStatement).setObject(1, 2);
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
+        verify(connection, times(2)).prepareStatement(sql);
+    }
+    
+    private static Stream<Arguments> nonFirebirdDatabaseTypes() {
+        return Stream.of(
+                Arguments.of("createStorageResource_mysqlDoesNotUsePreparedStatementCache", "MySQL"),
+                Arguments.of("createStorageResource_postgresqlDoesNotUsePreparedStatementCache", "PostgreSQL"),
+                Arguments.of("createStorageResource_openGaussDoesNotUsePreparedStatementCache", "openGauss"));
     }
 }

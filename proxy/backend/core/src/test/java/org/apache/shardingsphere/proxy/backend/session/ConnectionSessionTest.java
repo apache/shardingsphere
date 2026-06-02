@@ -169,6 +169,14 @@ class ConnectionSessionTest {
         assertNotNull(connectionSession.getPreparedStatementCacheContext());
     }
     
+    @Test
+    void assertFirebirdPreparedStatementExecutionContext() {
+        connectionSession.beginFirebirdPreparedStatementExecution(1);
+        assertThat(connectionSession.getCurrentFirebirdPreparedStatementId(), is(1));
+        connectionSession.finishFirebirdPreparedStatementExecution();
+        assertNull(connectionSession.getCurrentFirebirdPreparedStatementId());
+    }
+    
     @SuppressWarnings("unchecked")
     private AtomicReference<ConnectionContext> getConnectionContextReference() throws ReflectiveOperationException {
         return (AtomicReference<ConnectionContext>) Plugins.getMemberAccessor().get(ConnectionSession.class.getDeclaredField("connectionContext"), connectionSession);

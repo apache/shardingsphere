@@ -81,6 +81,20 @@ class PreparedStatementCacheContextTest {
     }
     
     @Test
+    void assertInvalidateByStatementId() throws SQLException {
+        PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
+        Connection connection = mock(Connection.class);
+        PreparedStatement first = mock(PreparedStatement.class);
+        PreparedStatement second = mock(PreparedStatement.class);
+        cacheContext.getOrCreate(connection, "SELECT 1", false, 1, () -> first);
+        cacheContext.getOrCreate(connection, "SELECT 1", false, 2, () -> second);
+        cacheContext.invalidate(1);
+        assertFalse(cacheContext.contains(first));
+        assertTrue(cacheContext.contains(second));
+        verify(first).close();
+    }
+    
+    @Test
     void assertCloseAll() throws SQLException {
         PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
         Connection connection = mock(Connection.class);

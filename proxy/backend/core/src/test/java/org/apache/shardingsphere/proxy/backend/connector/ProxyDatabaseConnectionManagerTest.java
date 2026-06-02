@@ -22,7 +22,10 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -43,6 +46,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheContext;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
@@ -67,6 +71,7 @@ import org.mockito.quality.Strictness;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -95,6 +100,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -259,6 +265,18 @@ class ProxyDatabaseConnectionManagerTest {
         verify(connection).close();
         assertTrue(cachedConnections.isEmpty());
         verifyConnectionPostProcessorsEmpty();
+    }
+    
+    @Test
+    void assertCloseConnectionsClosesPreparedStatementCache() throws SQLException {
+        PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        Connection connection = prepareCachedConnections();
+        cacheContext.getOrCreate(connection, "SELECT 1", false, 1, () -> preparedStatement);
+        when(connectionSession.getPreparedStatementCacheContext()).thenReturn(cacheContext);
+        databaseConnectionManager.closeConnections(false);
+        verify(preparedStatement).close();
+        assertThat(cacheContext.size(), is(0));
     }
     
     @SuppressWarnings("unchecked")
@@ -494,6 +512,33 @@ class ProxyDatabaseConnectionManagerTest {
         verifyNoInteractions(inUseHandler, cachedConnection);
         assertThat(getProxyBackendHandlers(), is(Collections.singleton(inUseHandler)));
         assertThat(getInUseProxyBackendHandlers(), is(Collections.singleton(inUseHandler)));
+    }
+    
+    @Test
+    void assertCloseExecutionResourcesKeepsFirebirdPreparedStatementCacheInHeldTransaction() throws SQLException, BackendConnectionException {
+        connectionSession.getTransactionStatus().setInTransaction(true);
+        connectionSession.getConnectionContext().getTransactionContext().beginTransaction(TransactionType.XA.name(), null);
+        PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
+        when(connectionSession.getPreparedStatementCacheContext()).thenReturn(cacheContext);
+        when(connectionSession.getCurrentFirebirdPreparedStatementId()).thenReturn(1);
+        DatabaseType firebirdDatabaseType = mock(DatabaseType.class);
+        when(firebirdDatabaseType.getType()).thenReturn("Firebird");
+        JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
+        Connection cachedConnection = prepareCachedConnections();
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(cachedConnection.prepareStatement("SELECT 1")).thenReturn(preparedStatement);
+        StatementOption statementOption = new StatementOption(false);
+        backendStatement.createStorageResource(
+                new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.singletonList(1))),
+                cachedConnection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
+        databaseConnectionManager.closeExecutionResources();
+        backendStatement.createStorageResource(
+                new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.singletonList(2))),
+                cachedConnection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
+        verify(cachedConnection).prepareStatement("SELECT 1");
+        verify(preparedStatement, times(2)).clearParameters();
+        verify(cachedConnection, never()).close();
+        assertThat(cacheContext.size(), is(1));
     }
     
     @Test

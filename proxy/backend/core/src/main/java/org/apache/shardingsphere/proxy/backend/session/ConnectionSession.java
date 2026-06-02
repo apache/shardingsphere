@@ -71,6 +71,8 @@ public final class ConnectionSession {
     
     private final AtomicReference<ConnectionContext> connectionContext = new AtomicReference<>();
     
+    private final AtomicReference<Integer> currentFirebirdPreparedStatementId = new AtomicReference<>();
+    
     private final RequiredSessionVariableRecorder requiredSessionVariableRecorder = new RequiredSessionVariableRecorder();
     
     private volatile String processId;
@@ -131,6 +133,40 @@ public final class ConnectionSession {
      */
     public Optional<TransactionIsolationLevel> getIsolationLevel() {
         return Optional.ofNullable(isolationLevel);
+    }
+    
+    /**
+     * Begin Firebird prepared statement execution.
+     *
+     * @param statementId Firebird statement ID
+     */
+    public void beginFirebirdPreparedStatementExecution(final int statementId) {
+        currentFirebirdPreparedStatementId.set(statementId);
+    }
+    
+    /**
+     * Get current Firebird prepared statement ID.
+     *
+     * @return Firebird prepared statement ID
+     */
+    public Integer getCurrentFirebirdPreparedStatementId() {
+        return currentFirebirdPreparedStatementId.get();
+    }
+    
+    /**
+     * Finish Firebird prepared statement execution.
+     */
+    public void finishFirebirdPreparedStatementExecution() {
+        currentFirebirdPreparedStatementId.set(null);
+    }
+    
+    /**
+     * Invalidate Firebird prepared statement cache.
+     *
+     * @param statementId Firebird statement ID
+     */
+    public void invalidateFirebirdPreparedStatementCache(final int statementId) {
+        preparedStatementCacheContext.invalidate(statementId);
     }
     
     /**

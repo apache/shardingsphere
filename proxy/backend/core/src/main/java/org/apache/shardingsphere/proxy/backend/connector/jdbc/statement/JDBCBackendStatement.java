@@ -65,7 +65,7 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
                                            final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
         String sql = executionUnit.getSqlUnit().getSql();
         List<Object> params = executionUnit.getSqlUnit().getParameters();
-        PreparedStatement result = getPreparedStatement(connection, sql, option.isReturnGeneratedKeys());
+        PreparedStatement result = getPreparedStatement(connection, sql, option.isReturnGeneratedKeys(), databaseType);
         result.clearParameters();
         Iterator<Object> paramIterator = params.iterator();
         int index = 0;
@@ -84,16 +84,24 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
         return result;
     }
     
-    private PreparedStatement getPreparedStatement(final Connection connection, final String sql, final boolean returnGeneratedKeys) throws SQLException {
-        if (null == connectionSession) {
+    private PreparedStatement getPreparedStatement(final Connection connection, final String sql, final boolean returnGeneratedKeys, final DatabaseType databaseType) throws SQLException {
+        Integer statementId = null == connectionSession ? null : getFirebirdPreparedStatementId(databaseType);
+        if (null == statementId) {
             return createPreparedStatement(connection, sql, returnGeneratedKeys);
         }
         PreparedStatementCacheContext cacheContext = connectionSession.getPreparedStatementCacheContext();
-        return cacheContext.getOrCreate(connection, sql, returnGeneratedKeys, () -> createPreparedStatement(connection, sql, returnGeneratedKeys));
+        return cacheContext.getOrCreate(connection, sql, returnGeneratedKeys, statementId, () -> createPreparedStatement(connection, sql, returnGeneratedKeys));
     }
     
     private PreparedStatement createPreparedStatement(final Connection connection, final String sql, final boolean returnGeneratedKeys) throws SQLException {
         return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
+    }
+    
+    private Integer getFirebirdPreparedStatementId(final DatabaseType databaseType) {
+        if (!"Firebird".equals(databaseType.getType())) {
+            return null;
+        }
+        return connectionSession.getCurrentFirebirdPreparedStatementId();
     }
     
     private void setFetchSize(final Statement statement, final DatabaseType databaseType) throws SQLException {

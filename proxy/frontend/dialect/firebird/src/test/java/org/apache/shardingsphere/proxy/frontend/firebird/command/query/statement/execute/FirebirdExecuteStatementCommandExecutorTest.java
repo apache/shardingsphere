@@ -77,6 +77,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -156,6 +157,8 @@ class FirebirdExecuteStatementCommandExecutorTest {
         assertThat(iterator.next(), isA(FirebirdGenericResponsePacket.class));
         assertFalse(iterator.hasNext());
         assertThat(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID), is(proxyBackendHandler));
+        verify(connectionSession).beginFirebirdPreparedStatementExecution(1);
+        verify(connectionSession).finishFirebirdPreparedStatementExecution();
     }
     
     @Test
@@ -170,6 +173,8 @@ class FirebirdExecuteStatementCommandExecutorTest {
         assertThat(executor.getResponseType(), is(ResponseType.UPDATE));
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
+        verify(connectionSession).beginFirebirdPreparedStatementExecution(2);
+        verify(connectionSession).finishFirebirdPreparedStatementExecution();
     }
     
     @Test
