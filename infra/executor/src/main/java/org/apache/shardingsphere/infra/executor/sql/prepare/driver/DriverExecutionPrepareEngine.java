@@ -110,7 +110,8 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
         Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
-        DatabaseType databaseType = storageUnits.containsKey(dataSourceName) ? storageUnits.get(dataSourceName).getStorageType() : storageUnits.values().iterator().next().getStorageType();
+        StorageUnit storageUnit = storageUnits.get(dataSourceName);
+        DatabaseType databaseType = null == storageUnit ? storageUnits.values().iterator().next().getStorageType() : storageUnit.getStorageType();
         for (ExecutionUnit each : executionUnits) {
             inputs.add((T) sqlExecutionUnitBuilder.build(each, statementManager, connection, connectionOffset, connectionMode, option, databaseType));
         }
