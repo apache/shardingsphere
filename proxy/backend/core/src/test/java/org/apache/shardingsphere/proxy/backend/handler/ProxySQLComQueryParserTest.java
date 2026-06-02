@@ -65,6 +65,17 @@ class ProxySQLComQueryParserTest {
     }
     
     @Test
+    void assertParseWithEmptyDatabaseNameUseDefaultType() {
+        when(connectionSession.getUsedDatabaseName()).thenReturn("");
+        SQLParserEngine parserEngine = mock(SQLParserEngine.class);
+        SQLStatement expected = UpdateStatement.builder().databaseType(databaseType).build();
+        SQLParserRule parserRule = mockParserRule(parserEngine);
+        mockProxyContext(parserRule, false, null);
+        when(parserEngine.parse(anyString(), eq(false))).thenReturn(expected);
+        assertThat(ProxySQLComQueryParser.parse("select 1", databaseType, connectionSession), is(expected));
+    }
+    
+    @Test
     void assertParseWithMissingDatabaseUseDefaultType() {
         when(connectionSession.getUsedDatabaseName()).thenReturn("missing_db");
         SQLParserEngine parserEngine = mock(SQLParserEngine.class);
