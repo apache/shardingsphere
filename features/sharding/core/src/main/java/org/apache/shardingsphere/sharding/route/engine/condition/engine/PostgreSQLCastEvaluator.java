@@ -22,7 +22,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -30,27 +32,31 @@ import java.util.Optional;
  * Evaluator for PostgreSQL and openGauss {@code CAST} / {@code ::} expressions, used by sharding-condition extraction so
  * that a casted sharding-key value routes on the database-visible cast result rather than the raw bound Java value.
  *
- * <p>The evaluator supports the cast targets that the routing path commonly sees on a sharding key: integer family
- * ({@code int2} / {@code int4} / {@code int8} and their named aliases), arbitrary-precision {@code numeric} /
- * {@code decimal}, floating point ({@code float4} / {@code real} / {@code float8} / {@code double precision}), text
- * family ({@code text} / {@code varchar} / {@code char} / {@code bpchar} / {@code name}) and {@code bool} /
- * {@code boolean}. Casts to other target types or conversions that lose information (parse failure, overflow, fractional
- * value to integer where rounding is undefined) return {@link Optional#empty()} so the caller leaves the cast in place
- * and routes broadcast.</p>
+ * <p>Cast semantics dispatch on both the source Java type and the target SQL type, mirroring PostgreSQL's
+ * {@code pg_cast} catalog where each (source, target) pair binds to its own C function with its own rounding /
+ * truncation / overflow rules. Java {@link BigDecimal} routes through the {@code numeric_int*} path with
+ * {@link RoundingMode#HALF_UP} (round away from zero) while Java {@link Float} / {@link Double} route through the
+ * {@code dtoi4} / {@code ftoi4} path with {@link Math#rint(double)} (banker's rounding, IEEE 754 round-half-to-even);
+ * {@code 2.5::numeric::int4} therefore returns {@code 3} while {@code 2.5::float8::int4} returns {@code 2}, matching
+ * PostgreSQL 16.</p>
  *
- * <p>Cast targets that carry a type modifier such as {@code varchar(1)}, {@code char(2)} or {@code numeric(3,1)} return
- * {@link Optional#empty()} because applying the modifier correctly requires character-length / precision-scale semantics
- * the routing path does not model, and routing on the unmodified value would diverge from PostgreSQL's documented
- * truncation and precision rules.</p>
+ * <p>Cast targets with a type modifier such as {@code varchar(1)} / {@code numeric(3,1)} return
+ * {@link Optional#empty()} because applying the modifier requires character-length / precision-scale semantics the
+ * routing path does not model. Naked {@code char} / {@code character} (without typmod, equivalent to
+ * {@code character(1)}) truncates to the first character, {@code name} truncates to 63 characters, and {@code text}
+ * / {@code varchar} / {@code bpchar} return the value unchanged.</p>
  *
- * <p>Numeric-to-integer rounding follows PostgreSQL's documented behavior for the {@code numeric} type, which rounds
- * ties away from zero (Java {@link RoundingMode#HALF_UP}). For example {@code 1.5::int4} is {@code 2},
- * {@code 2.5::int4} is {@code 3} and {@code -2.5::int4} is {@code -3}. Integer overflow is detected via
- * {@link BigDecimal#intValueExact()} / {@link BigDecimal#longValueExact()} / {@link BigDecimal#shortValueExact()} and
- * surfaces as {@link Optional#empty()}.</p>
+ * <p>Casts that PostgreSQL itself rejects (no entry in {@code pg_cast}) also return {@link Optional#empty()} here so
+ * that routing falls through to broadcast and the database-visible failure surfaces at execution time. Examples:
+ * {@code bool::numeric}, {@code numeric::bool}, {@code float8::bool}, {@code '1.5'::int4} (PG raises
+ * {@code invalid input syntax for type integer}).</p>
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLCastEvaluator {
+    
+    private static final int NAME_MAX_BYTES = 63;
+    
+    private static final MathContext FLOAT_TO_NUMERIC_PRECISION = new MathContext(15, RoundingMode.HALF_EVEN);
     
     /**
      * Evaluate a cast expression.
@@ -58,175 +64,309 @@ public final class PostgreSQLCastEvaluator {
      * @param rawValue bound Java value of the inner parameter marker or literal
      * @param castTargetType outermost cast target type name as produced by the parser, e.g. {@code "int4"} or
      *                       {@code "varchar(10)"}
-     * @return the database-visible cast result wrapped in {@link Optional}, or empty when the cast target is unsupported
-     *         or the conversion fails
+     * @return the database-visible cast result wrapped in {@link Optional}, or empty when the cast is unsupported or
+     *         the conversion fails
      */
     public static Optional<Comparable<?>> evaluate(final Object rawValue, final String castTargetType) {
         if (null == rawValue || null == castTargetType) {
             return Optional.empty();
         }
-        String normalized = normalize(castTargetType);
+        if (castTargetType.indexOf('(') >= 0) {
+            return Optional.empty();
+        }
+        Target target = targetOf(castTargetType.toUpperCase(Locale.ROOT).trim());
+        Source source = sourceOf(rawValue);
         try {
-            switch (categoryOf(normalized)) {
-                case INT2:
-                    return castToShort(rawValue);
-                case INT4:
-                    return castToInteger(rawValue);
-                case INT8:
-                    return castToLong(rawValue);
-                case NUMERIC:
-                    return castToBigDecimal(rawValue);
-                case FLOAT4:
-                    return castToFloat(rawValue);
-                case FLOAT8:
-                    return castToDouble(rawValue);
-                case TEXT:
-                    return castToText(rawValue);
-                case BOOL:
-                    return castToBoolean(rawValue);
-                default:
-                    return Optional.empty();
-            }
+            return dispatch(rawValue, source, target);
         } catch (final ArithmeticException | NumberFormatException ignored) {
             return Optional.empty();
         }
     }
     
-    private static String normalize(final String castTargetType) {
-        return castTargetType.toUpperCase(Locale.ROOT).trim();
-    }
-    
-    private static Category categoryOf(final String normalized) {
-        switch (normalized) {
-            case "INT2":
-            case "SMALLINT":
-                return Category.INT2;
-            case "INT":
-            case "INT4":
-            case "INTEGER":
-                return Category.INT4;
-            case "INT8":
-            case "BIGINT":
-                return Category.INT8;
-            case "NUMERIC":
-            case "DECIMAL":
-            case "DEC":
-                return Category.NUMERIC;
-            case "FLOAT4":
-            case "REAL":
-                return Category.FLOAT4;
-            case "FLOAT8":
-            case "DOUBLE":
-            case "DOUBLE PRECISION":
-                return Category.FLOAT8;
-            case "TEXT":
-            case "VARCHAR":
-            case "CHARACTER VARYING":
-            case "CHAR":
-            case "CHARACTER":
-            case "BPCHAR":
-            case "NAME":
-                return Category.TEXT;
-            case "BOOL":
-            case "BOOLEAN":
-                return Category.BOOL;
+    private static Optional<Comparable<?>> dispatch(final Object value, final Source source, final Target target) {
+        switch (target) {
+            case INT2:
+            case INT4:
+            case INT8:
+                return castToInteger(value, source, target);
+            case NUMERIC:
+                return castToNumeric(value, source);
+            case FLOAT4:
+            case FLOAT8:
+                return castToFloat(value, source, target);
+            case TEXT:
+            case CHAR_NO_TYPMOD:
+            case NAME:
+                return castToText(value, source, target);
+            case BOOL:
+                return castToBoolean(value, source);
             default:
-                return Category.OTHER;
+                return Optional.empty();
         }
     }
     
-    private static Optional<Comparable<?>> castToShort(final Object value) {
-        BigDecimal bigDecimal = toBigDecimal(value);
-        return null == bigDecimal ? Optional.empty() : Optional.of(bigDecimal.setScale(0, RoundingMode.HALF_UP).shortValueExact());
+    private static Optional<Comparable<?>> castToInteger(final Object value, final Source source, final Target target) {
+        switch (source) {
+            case BOOL:
+                return wrapIntegralBounded((boolean) value ? 1L : 0L, target);
+            case INTEGRAL:
+                return wrapIntegralBounded(integralLongValue(value), target);
+            case NUMERIC:
+                return wrapIntegralBounded(((BigDecimal) value).setScale(0, RoundingMode.HALF_UP).longValueExact(), target);
+            case FLOAT:
+                return wrapFloatToIntegral(((Number) value).doubleValue(), target);
+            case STRING:
+                return parseStringAsIntegral((String) value, target);
+            default:
+                return Optional.empty();
+        }
     }
     
-    private static Optional<Comparable<?>> castToInteger(final Object value) {
-        BigDecimal bigDecimal = toBigDecimal(value);
-        return null == bigDecimal ? Optional.empty() : Optional.of(bigDecimal.setScale(0, RoundingMode.HALF_UP).intValueExact());
+    private static Optional<Comparable<?>> castToNumeric(final Object value, final Source source) {
+        switch (source) {
+            case BOOL:
+                return Optional.empty();
+            case INTEGRAL:
+                return value instanceof BigInteger
+                        ? Optional.of(new BigDecimal((BigInteger) value))
+                        : Optional.of(BigDecimal.valueOf(((Number) value).longValue()));
+            case NUMERIC:
+                return Optional.of((BigDecimal) value);
+            case FLOAT:
+                double doubleValue = ((Number) value).doubleValue();
+                if (Double.isNaN(doubleValue) || Double.isInfinite(doubleValue)) {
+                    return Optional.empty();
+                }
+                BigDecimal raw = new BigDecimal(Double.toString(doubleValue), FLOAT_TO_NUMERIC_PRECISION);
+                return Optional.of(0 == raw.signum() ? BigDecimal.ZERO : raw.stripTrailingZeros());
+            case STRING:
+                return Optional.of(new BigDecimal(((String) value).trim()));
+            default:
+                return Optional.empty();
+        }
     }
     
-    private static Optional<Comparable<?>> castToLong(final Object value) {
-        BigDecimal bigDecimal = toBigDecimal(value);
-        return null == bigDecimal ? Optional.empty() : Optional.of(bigDecimal.setScale(0, RoundingMode.HALF_UP).longValueExact());
+    private static Optional<Comparable<?>> castToFloat(final Object value, final Source source, final Target target) {
+        switch (source) {
+            case BOOL:
+                return Optional.empty();
+            case INTEGRAL:
+                return wrapDoubleAsFloat(integralToDouble(value), target);
+            case NUMERIC:
+                return wrapDoubleAsFloat(((BigDecimal) value).doubleValue(), target);
+            case FLOAT:
+                return wrapDoubleAsFloat(((Number) value).doubleValue(), target);
+            case STRING:
+                return wrapDoubleAsFloat(Double.parseDouble(((String) value).trim()), target);
+            default:
+                return Optional.empty();
+        }
     }
     
-    private static Optional<Comparable<?>> castToBigDecimal(final Object value) {
-        BigDecimal bigDecimal = toBigDecimal(value);
-        return null == bigDecimal ? Optional.empty() : Optional.of(bigDecimal);
+    private static Optional<Comparable<?>> castToText(final Object value, final Source source, final Target target) {
+        String text;
+        switch (source) {
+            case BOOL:
+                text = Target.NAME == target ? ((boolean) value ? "t" : "f") : ((boolean) value ? "true" : "false");
+                break;
+            case INTEGRAL:
+                text = value.toString();
+                break;
+            case NUMERIC:
+                text = ((BigDecimal) value).toPlainString();
+                break;
+            case FLOAT:
+                text = formatFloatAsText(((Number) value).doubleValue());
+                break;
+            case STRING:
+                text = (String) value;
+                break;
+            default:
+                return Optional.empty();
+        }
+        switch (target) {
+            case TEXT:
+                return Optional.of(text);
+            case CHAR_NO_TYPMOD:
+                return Optional.of(truncateToFirstCodepoint(text));
+            case NAME:
+                return Optional.of(truncateToUtf8Bytes(text, NAME_MAX_BYTES));
+            default:
+                return Optional.empty();
+        }
     }
     
-    private static Optional<Comparable<?>> castToFloat(final Object value) {
-        if (value instanceof Boolean) {
+    private static String truncateToFirstCodepoint(final String text) {
+        if (text.isEmpty()) {
+            return text;
+        }
+        int end = text.offsetByCodePoints(0, 1);
+        return text.substring(0, end);
+    }
+    
+    private static String truncateToUtf8Bytes(final String text, final int maxBytes) {
+        byte[] utf8 = text.getBytes(StandardCharsets.UTF_8);
+        if (utf8.length <= maxBytes) {
+            return text;
+        }
+        int boundary = maxBytes;
+        while (boundary > 0 && (utf8[boundary] & 0xC0) == 0x80) {
+            boundary--;
+        }
+        return new String(utf8, 0, boundary, StandardCharsets.UTF_8);
+    }
+    
+    private static Optional<Comparable<?>> castToBoolean(final Object value, final Source source) {
+        switch (source) {
+            case BOOL:
+                return Optional.of((Boolean) value);
+            case INTEGRAL:
+                return Optional.of(0L != integralLongValue(value));
+            case STRING:
+                return parseStringAsBoolean((String) value);
+            case NUMERIC:
+            case FLOAT:
+            default:
+                return Optional.empty();
+        }
+    }
+    
+    private static long integralLongValue(final Object value) {
+        return value instanceof BigInteger ? ((BigInteger) value).longValueExact() : ((Number) value).longValue();
+    }
+    
+    private static double integralToDouble(final Object value) {
+        return value instanceof BigInteger ? ((BigInteger) value).doubleValue() : (double) ((Number) value).longValue();
+    }
+    
+    private static Optional<Comparable<?>> wrapIntegralBounded(final long longValue, final Target target) {
+        switch (target) {
+            case INT2:
+                return longValue < Short.MIN_VALUE || longValue > Short.MAX_VALUE ? Optional.empty() : Optional.of((short) longValue);
+            case INT4:
+                return longValue < Integer.MIN_VALUE || longValue > Integer.MAX_VALUE ? Optional.empty() : Optional.of((int) longValue);
+            case INT8:
+                return Optional.of(longValue);
+            default:
+                return Optional.empty();
+        }
+    }
+    
+    private static Optional<Comparable<?>> wrapFloatToIntegral(final double value, final Target target) {
+        if (Double.isNaN(value) || Double.isInfinite(value)) {
             return Optional.empty();
         }
-        BigDecimal bigDecimal = toBigDecimal(value);
-        return null == bigDecimal ? Optional.empty() : Optional.of(bigDecimal.floatValue());
-    }
-    
-    private static Optional<Comparable<?>> castToDouble(final Object value) {
-        if (value instanceof Boolean) {
+        double rounded = Math.rint(value);
+        if (rounded < Long.MIN_VALUE || rounded > Long.MAX_VALUE) {
             return Optional.empty();
         }
-        BigDecimal bigDecimal = toBigDecimal(value);
-        return null == bigDecimal ? Optional.empty() : Optional.of(bigDecimal.doubleValue());
+        return wrapIntegralBounded((long) rounded, target);
     }
     
-    private static Optional<Comparable<?>> castToText(final Object value) {
-        if (value instanceof Boolean) {
-            return Optional.of((boolean) value ? "true" : "false");
-        }
-        if (value instanceof BigDecimal) {
-            return Optional.of(((BigDecimal) value).toPlainString());
-        }
-        return Optional.of(value.toString());
+    private static Optional<Comparable<?>> wrapDoubleAsFloat(final double value, final Target target) {
+        return Target.FLOAT4 == target ? Optional.of((float) value) : Optional.of(value);
     }
     
-    private static Optional<Comparable<?>> castToBoolean(final Object value) {
-        if (value instanceof Boolean) {
-            return Optional.of((Boolean) value);
+    private static Optional<Comparable<?>> parseStringAsIntegral(final String text, final Target target) {
+        try {
+            return wrapIntegralBounded(new BigInteger(text.trim()).longValueExact(), target);
+        } catch (final NumberFormatException | ArithmeticException ignored) {
+            return Optional.empty();
         }
-        if (value instanceof Number) {
-            BigDecimal bigDecimal = toBigDecimal(value);
-            return null == bigDecimal ? Optional.empty() : Optional.of(0 != bigDecimal.signum());
+    }
+    
+    private static Optional<Comparable<?>> parseStringAsBoolean(final String text) {
+        String normalized = text.trim().toLowerCase(Locale.ROOT);
+        if ("true".equals(normalized) || "t".equals(normalized) || "yes".equals(normalized) || "y".equals(normalized) || "1".equals(normalized) || "on".equals(normalized)) {
+            return Optional.of(Boolean.TRUE);
         }
-        if (value instanceof String) {
-            String text = ((String) value).trim().toLowerCase(Locale.ROOT);
-            if ("true".equals(text) || "t".equals(text) || "yes".equals(text) || "y".equals(text) || "1".equals(text) || "on".equals(text)) {
-                return Optional.of(Boolean.TRUE);
-            }
-            if ("false".equals(text) || "f".equals(text) || "no".equals(text) || "n".equals(text) || "0".equals(text) || "off".equals(text)) {
-                return Optional.of(Boolean.FALSE);
-            }
+        if ("false".equals(normalized) || "f".equals(normalized) || "no".equals(normalized) || "n".equals(normalized) || "0".equals(normalized) || "off".equals(normalized)) {
+            return Optional.of(Boolean.FALSE);
         }
         return Optional.empty();
     }
     
-    private static BigDecimal toBigDecimal(final Object value) {
-        if (value instanceof BigDecimal) {
-            return (BigDecimal) value;
+    private static String formatFloatAsText(final double value) {
+        if (Double.isNaN(value)) {
+            return "NaN";
         }
-        if (value instanceof BigInteger) {
-            return new BigDecimal((BigInteger) value);
+        if (Double.POSITIVE_INFINITY == value) {
+            return "Infinity";
         }
-        if (value instanceof Integer || value instanceof Long || value instanceof Short || value instanceof Byte) {
-            return BigDecimal.valueOf(((Number) value).longValue());
+        if (Double.NEGATIVE_INFINITY == value) {
+            return "-Infinity";
         }
-        if (value instanceof Float || value instanceof Double) {
-            return new BigDecimal(value.toString());
-        }
-        if (value instanceof Number) {
-            return new BigDecimal(value.toString());
-        }
-        if (value instanceof String) {
-            return new BigDecimal(((String) value).trim());
-        }
-        if (value instanceof Boolean) {
-            return (boolean) value ? BigDecimal.ONE : BigDecimal.ZERO;
-        }
-        return null;
+        return Double.toString(value);
     }
     
-    private enum Category {
-        INT2, INT4, INT8, NUMERIC, FLOAT4, FLOAT8, TEXT, BOOL, OTHER
+    private static Source sourceOf(final Object value) {
+        if (value instanceof Boolean) {
+            return Source.BOOL;
+        }
+        if (value instanceof Integer || value instanceof Long || value instanceof Short || value instanceof Byte || value instanceof BigInteger) {
+            return Source.INTEGRAL;
+        }
+        if (value instanceof BigDecimal) {
+            return Source.NUMERIC;
+        }
+        if (value instanceof Float || value instanceof Double) {
+            return Source.FLOAT;
+        }
+        if (value instanceof Number) {
+            return Source.NUMERIC;
+        }
+        if (value instanceof String) {
+            return Source.STRING;
+        }
+        return Source.OTHER;
+    }
+    
+    private static Target targetOf(final String normalized) {
+        switch (normalized) {
+            case "INT2":
+            case "SMALLINT":
+                return Target.INT2;
+            case "INT":
+            case "INT4":
+            case "INTEGER":
+                return Target.INT4;
+            case "INT8":
+            case "BIGINT":
+                return Target.INT8;
+            case "NUMERIC":
+            case "DECIMAL":
+            case "DEC":
+                return Target.NUMERIC;
+            case "FLOAT4":
+            case "REAL":
+                return Target.FLOAT4;
+            case "FLOAT8":
+            case "DOUBLE":
+            case "DOUBLE PRECISION":
+                return Target.FLOAT8;
+            case "TEXT":
+            case "VARCHAR":
+            case "CHARACTER VARYING":
+            case "BPCHAR":
+                return Target.TEXT;
+            case "CHAR":
+            case "CHARACTER":
+                return Target.CHAR_NO_TYPMOD;
+            case "NAME":
+                return Target.NAME;
+            case "BOOL":
+            case "BOOLEAN":
+                return Target.BOOL;
+            default:
+                return Target.OTHER;
+        }
+    }
+    
+    private enum Source {
+        INTEGRAL, NUMERIC, FLOAT, STRING, BOOL, OTHER
+    }
+    
+    private enum Target {
+        INT2, INT4, INT8, NUMERIC, FLOAT4, FLOAT8, TEXT, CHAR_NO_TYPMOD, NAME, BOOL, OTHER
     }
 }
