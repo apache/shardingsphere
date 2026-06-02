@@ -3,25 +3,22 @@ title = "Client Integration"
 weight = 4
 +++
 
-Client integration connects this controlled database access path to desktop clients, IDE extensions, agent platforms, or custom LLM applications.
-After integration, the model does not connect to the database directly. It calls the resources, tools, prompts, and completion capabilities exposed by ShardingSphere-MCP through an MCP client.
-It is not a replacement for the curl-based smoke test in Quick Start, and it is not a guide for users to hand-write JSON-RPC.
-The client manages connection configuration, session headers, completion, and call orchestration.
-Users only need to describe the metadata lookup, read-only SQL query, or database governance task they want to complete.
+Client integration connects ShardingSphere-MCP to MCP-capable desktop clients, IDE extensions, agent platforms, or custom applications.
+After configuration, users can inspect metadata, run controlled SQL queries, or start database governance tasks through natural language in the client.
 
 Use client integration when:
 
-- A model client, IDE extension, or agent platform that supports MCP needs to connect to ShardingSphere.
-- A model should use ShardingSphere metadata for query assistance, structure understanding, diagnostics, or governance planning.
-- A team needs a controlled database access path instead of handing database connection information directly to a model.
+- An MCP-capable client, IDE extension, or agent platform needs to connect to ShardingSphere.
+- ShardingSphere metadata should be used for query assistance, structure understanding, diagnostics, or governance planning.
+- A team needs a unified controlled database access path.
 - A custom agent platform needs ShardingSphere metadata, safe SQL, and governance plugin capabilities.
 
-See [Capability Catalog](../capabilities/) for the full list of resources, tools, prompts, and completion targets.
+See [Capability Catalog](../capabilities/) for supported tasks and usage boundaries.
 
 ## Choose a transport
 
-- HTTP is suitable when the MCP Server is started independently and clients use a fixed endpoint. The client must initialize the session and keep session response headers.
-- STDIO is suitable when a local MCP client starts ShardingSphere-MCP as a child process. The client owns the process lifecycle, and stdout carries only MCP protocol frames.
+- HTTP is suitable when the MCP Server is started independently and clients use a fixed endpoint.
+- STDIO is suitable when a local client starts ShardingSphere-MCP as a child process.
 
 ## HTTP configuration
 
@@ -38,14 +35,7 @@ Add the following snippet to the MCP client's server configuration. The exact fi
 }
 ```
 
-An HTTP client must complete the session lifecycle before normal MCP calls:
-
-1. Call `initialize`.
-2. Keep the `MCP-Session-Id` and `MCP-Protocol-Version` response headers.
-3. Send `notifications/initialized` with both response headers and expect HTTP status code `202`.
-4. Include both headers on later MCP requests.
-
-After the session is closed, the session id cannot be reused.
+The exact configuration file location and field names may differ by client. Follow the client's own documentation.
 
 ## STDIO configuration
 
@@ -64,19 +54,16 @@ Add the following snippet to the MCP client's server configuration. The exact fi
 ```
 
 STDIO mode is for local MCP clients that launch ShardingSphere-MCP as a child process.
-It is not a human-oriented interactive shell.
 Replace `/path/to/apache-shardingsphere-mcp` with the actual distribution directory.
 
 In STDIO mode:
 
-- stdout is reserved for MCP protocol frames.
 - Diagnostics are written to stderr or `logs/mcp.log`.
 - `command` and `args` in the client configuration should point to the packaged startup script and STDIO config file.
 
 ## Using the integration
 
-After the client is configured with the MCP Server, users describe tasks directly in the model conversation.
-The client handles session initialization, capability discovery, completion, and tool calls; the model chooses which resources to read or which tools to call.
+After the client is configured with the MCP Server, users describe tasks directly in the client conversation.
 
 Examples:
 
@@ -86,4 +73,4 @@ Examples:
 - Plan a data encryption or data masking rule and preview it without execution.
 
 If the client provides a tool approval UI, pay special attention to side-effecting calls such as SQL execution, rule changes, and plugin workflow execution.
-For custom clients or protocol debugging, use the [Capability Catalog](../capabilities/) to confirm resources, tools, prompts, and completion targets.
+For custom clients or protocol debugging, use the [Capability Catalog](../capabilities/) to confirm available capabilities.

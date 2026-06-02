@@ -5,17 +5,15 @@ weight = 7
 chapter = true
 +++
 
-ShardingSphere-MCP is the MCP Server for Apache ShardingSphere. It can run independently and expose ShardingSphere logical database metadata, safe SQL access, and plugin workflows to MCP clients.
-ShardingSphere-MCP provides models and agents with a controlled access path to ShardingSphere logical databases.
-Through an MCP client, a model can actively discover database structure, read governance state, and call SQL tools or create reviewable governance change plans within defined boundaries. Database connections, sessions, and execution boundaries are managed by the MCP Server.
+ShardingSphere-MCP is the MCP Server for Apache ShardingSphere. It can run independently.
+It connects ShardingSphere logical databases to MCP-capable clients, so users can inspect metadata, run controlled SQL queries, and plan reviewable governance changes through natural language.
 
-ShardingSphere-MCP configuration starts from databases: configure the ShardingSphere logical databases that the MCP Server can connect to, then read metadata or call SQL tools through an MCP client.
+ShardingSphere-MCP configuration starts from databases: configure the ShardingSphere logical databases that the MCP Server can connect to, then describe database tasks in the client.
 
 ## Use MCP through natural language
 
-ShardingSphere-MCP is designed for model clients, IDE extensions, and agent platforms that support MCP.
-After client integration, users describe database tasks in the model conversation, and the model can read resources, call tools, request completions, or create plugin workflow plans as needed.
-Regular users do not need to hand-write JSON-RPC requests, remember resource URIs, or directly choose low-level tools.
+ShardingSphere-MCP is designed for MCP-capable clients, IDE extensions, and agent platforms.
+After client integration, users can describe database tasks directly in the client conversation.
 
 Common task examples:
 
@@ -29,10 +27,10 @@ Tasks with side effects should create or preview a plan first, then run only aft
 
 ## Structure
 
-- Quick Start: build the distribution, configure a reachable logical database, start the HTTP MCP Server, and verify metadata reads and read-only SQL queries.
-- Capabilities: understand the resources, tools, prompts, completions, and workflows exposed by the MCP Server.
+- Quick Start: build the distribution, configure a reachable logical database, start the HTTP MCP Server, and verify basic tasks.
+- Capabilities: understand the database tasks, readable information, and usage boundaries provided by the MCP Server.
 - Configuration: configure transport, `runtimeDatabases`, plugin directories, and launch parameters.
-- Client Integration: use HTTP, STDIO, session response headers, and capability discovery calls.
-- Feature Plugins: use official MCP feature plugins and understand the shared planning, apply, and validation phases used by plugin workflows.
+- Client Integration: connect the MCP Server to a client through HTTP or STDIO, and understand how to use it after integration.
+- Feature Plugins: use official MCP feature plugins and understand how to review, apply, and validate plugin changes.
 - Deployment: deploy the binary distribution and OCI image safely.
-- Troubleshooting: diagnose common MCP Server, transport, session, and SQL tool issues.
+- Troubleshooting: diagnose common MCP Server, connection, configuration, metadata, and SQL execution issues.

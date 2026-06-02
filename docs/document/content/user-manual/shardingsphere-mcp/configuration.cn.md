@@ -51,13 +51,13 @@ runtimeDatabases:
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
-| 字段 | 是否必填 | 说明 |
-| --- | --- | --- |
-| `databaseType` | 是 | 连接端点的数据库协议或方言类型，例如 `MySQL` 或 `PostgreSQL`。它用于选择 JDBC 元数据和能力判断逻辑，不表示连接目标一定是真实数据库或 ShardingSphere-Proxy。 |
-| `jdbcUrl` | 是 | MCP Server 连接运行时数据库的 JDBC URL；使用 ShardingSphere 规则能力时应指向 Proxy 逻辑库。 |
-| `username` | 是 | 连接运行时数据库的用户名，通常是 ShardingSphere-Proxy 逻辑库用户名。 |
-| `password` | 否 | 连接运行时数据库的密码；无密码账号可以省略或写空字符串 `""`。 |
-| `driverClassName` | 是 | JDBC 驱动类名，例如 MySQL 驱动使用 `com.mysql.cj.jdbc.Driver`。 |
+| *名称* | *说明* |
+| --- | --- |
+| `databaseType (+)` | 连接端点的数据库协议或方言类型，例如 `MySQL` 或 `PostgreSQL`。它用于正确读取目标数据库元数据，不表示连接目标一定是真实数据库或 ShardingSphere-Proxy。 |
+| `jdbcUrl (+)` | MCP Server 连接运行时数据库的 JDBC URL；使用 ShardingSphere 规则能力时应指向 Proxy 逻辑库。 |
+| `username (+)` | 连接运行时数据库的用户名，通常是 ShardingSphere-Proxy 逻辑库用户名。 |
+| `password (?)` | 连接运行时数据库的密码。 |
+| `driverClassName (+)` | JDBC 驱动类名，例如 MySQL 驱动使用 `com.mysql.cj.jdbc.Driver`。 |
 
 注意事项：
 
