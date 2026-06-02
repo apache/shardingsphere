@@ -18,36 +18,27 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol;
 
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-@ExtendWith(MockitoExtension.class)
-class FirebirdInt1BinaryProtocolValueTest {
+/**
+ * Binary protocol value for boolean for Firebird.
+ */
+public final class FirebirdBooleanBinaryProtocolValue implements FirebirdBinaryProtocolValue {
     
-    @Mock
-    private FirebirdPacketPayload payload;
-    
-    @Test
-    void assertRead() {
-        when(payload.readInt1Unsigned()).thenReturn(1);
-        assertThat(new FirebirdInt1BinaryProtocolValue().read(payload), is(1));
+    @Override
+    public Object read(final FirebirdPacketPayload payload) {
+        boolean result = 1 == payload.readInt1Unsigned();
+        payload.skipReserved(3);
+        return result;
     }
     
-    @Test
-    void assertWrite() {
-        new FirebirdInt1BinaryProtocolValue().write(payload, 1);
-        verify(payload).writeInt2(1);
+    @Override
+    public void write(final FirebirdPacketPayload payload, final Object value) {
+        payload.writeInt1((Boolean) value ? 1 : 0);
+        payload.getByteBuf().writeZero(3);
     }
     
-    @Test
-    void assertGetLength() {
-        assertThat(new FirebirdInt1BinaryProtocolValue().getLength(payload), is(1));
+    @Override
+    public int getLength(final FirebirdPacketPayload payload) {
+        return 4;
     }
 }

@@ -64,9 +64,9 @@ class FirebirdBinaryProtocolValueFactoryTest {
     }
     
     @Test
-    void assertGetInt1BinaryProtocolValue() {
+    void assertGetBooleanBinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.BOOLEAN);
-        assertThat(actual, isA(FirebirdInt1BinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdBooleanBinaryProtocolValue.class));
     }
     
     @Test
