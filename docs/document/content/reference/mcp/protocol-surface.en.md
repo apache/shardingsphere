@@ -42,6 +42,14 @@ ShardingSphere-MCP does not require roots and does not send `sampling/createMess
 - Narrows scope by `database`, `schema`, `query`, and `object_types`.
 - `object_types` supports `database`, `schema`, `table`, `view`, `column`, `index`, and `sequence`.
 
+`database_gateway_validate_proxy_connectivity`
+
+- Validates a configured runtime database before formal onboarding.
+- Required input is `database`.
+- Uses the administrator-configured runtime database connection details; JDBC URL, username, password, and driver class are not tool inputs.
+- Returns `status`, ordered `checks`, overall `category`, and a structured `recovery` object.
+- Common failure categories include `missing_jdbc_driver`, `authentication_failed`, `authorization_failed`, `connection_timeout`, `invalid_configuration`, `database_unavailable`, `connection_failed`, and `database_not_visible`.
+
 `database_gateway_execute_query`
 
 - Executes one classifier-approved `SELECT` or `EXPLAIN ANALYZE`.

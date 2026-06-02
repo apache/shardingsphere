@@ -15,34 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.support;
+package org.apache.shardingsphere.mcp.support.database.tool.request;
 
-import java.util.List;
+import org.junit.jupiter.api.Test;
 
-/**
- * Official MCP tool names packaged by default.
- */
-public final class OfficialMCPToolNames {
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class ProxyPreflightValidationRequestTest {
     
-    private static final List<String> ALL = List.of(
-            "database_gateway_search_metadata",
-            "database_gateway_validate_proxy_connectivity",
-            "database_gateway_execute_query",
-            "database_gateway_execute_update",
-            "database_gateway_apply_workflow",
-            "database_gateway_validate_workflow",
-            "database_gateway_plan_encrypt_rule",
-            "database_gateway_plan_mask_rule");
-    
-    private OfficialMCPToolNames() {
+    @Test
+    void assertFromPreservesDatabaseArgument() {
+        ProxyPreflightValidationRequest actual = ProxyPreflightValidationRequest.from(Map.of(
+                "jdbcUrl", " jdbc:mysql://127.0.0.1:3307/logic_db ",
+                "database", " logic_db "));
+        assertThat(actual.getDatabase(), is(" logic_db "));
     }
     
-    /**
-     * Get official MCP tool names.
-     *
-     * @return official MCP tool names
-     */
-    public static List<String> getAll() {
-        return ALL;
+    @Test
+    void assertFromDefaultsMissingDatabase() {
+        ProxyPreflightValidationRequest actual = ProxyPreflightValidationRequest.from(Map.of());
+        assertThat(actual.getDatabase(), is(""));
     }
 }

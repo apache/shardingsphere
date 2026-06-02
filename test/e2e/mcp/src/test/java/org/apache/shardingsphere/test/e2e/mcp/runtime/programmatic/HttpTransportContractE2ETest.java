@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
     private static final List<String> OFFICIAL_TOOL_NAMES = List.of(
-            "database_gateway_search_metadata", "database_gateway_execute_query", "database_gateway_execute_update", "database_gateway_apply_workflow",
+            "database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query", "database_gateway_execute_update", "database_gateway_apply_workflow",
             "database_gateway_validate_workflow", "database_gateway_plan_encrypt_rule", "database_gateway_plan_mask_rule");
     
     private static final String PLAN_MASK_TOOL_NAME = "database_gateway_plan_mask_rule";

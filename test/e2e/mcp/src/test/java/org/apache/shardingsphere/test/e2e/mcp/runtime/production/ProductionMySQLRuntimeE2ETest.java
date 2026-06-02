@@ -78,6 +78,7 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
             List<Map<String, Object>> actual = interactionClient.listTools();
             assertOfficialToolNames(actual.stream().map(each -> String.valueOf(each.get("name"))).toList());
             assertToolDefinition(actual, "database_gateway_search_metadata", "Search Metadata", "", "object_types", "array");
+            assertToolDefinition(actual, "database_gateway_validate_proxy_connectivity", "Validate Proxy Connectivity", "database", "database", "string");
             assertToolDefinition(actual, "database_gateway_execute_query", "Execute Query SQL", "sql", "timeout_ms", "integer");
             assertToolDefinition(actual, "database_gateway_execute_update", "Execute Update SQL", "sql", "timeout_ms", "integer");
         }

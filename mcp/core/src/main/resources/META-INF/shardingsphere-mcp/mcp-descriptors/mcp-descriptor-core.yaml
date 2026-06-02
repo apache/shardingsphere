@@ -795,6 +795,103 @@ tools:
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://databases
         - "shardingsphere://databases/{database}/schemas"
+  - name: database_gateway_validate_proxy_connectivity
+    title: Validate Proxy Connectivity
+    description: >-
+      Validate one configured ShardingSphere-MCP runtime database before formal onboarding. Use this to preflight the configured database type,
+      JDBC driver, JDBC connectivity, metadata readability, and database visibility without executing SQL tools.
+    inputSchema:
+      type: object
+      properties:
+        database:
+          type: string
+          description: "Configured runtime database name to validate."
+      required:
+        - database
+      additionalProperties: false
+    outputSchema:
+      type: object
+      properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker for proxy preflight validation payloads."
+          enum:
+            - validation
+        status:
+          type: string
+          description: "Overall preflight status: ready when all required checks passed, failed otherwise."
+          enum:
+            - ready
+            - failed
+        database:
+          type: string
+          description: "Validated runtime database name."
+        checks:
+          type: array
+          description: "Ordered per-step validation results for configuration lookup, driver loading, JDBC connectivity, metadata readability, and database visibility."
+          items:
+            type: object
+            description: "One preflight validation check result."
+            properties:
+              name:
+                type: string
+                description: "Stable validation step name."
+              status:
+                type: string
+                description: "Per-check result status."
+                enum:
+                  - passed
+                  - failed
+                  - skipped
+              category:
+                type: string
+                description: "Ready, skipped, or a runtime connection failure category reused from the runtime recovery contract."
+              message:
+                type: string
+                description: "Human-readable summary of the check result."
+        category:
+          type: string
+          description: "Overall result category. ready indicates success; other values reuse runtime database connection failure categories."
+        recovery:
+          type: object
+          description: "Structured runtime recovery payload. Empty when status is ready."
+      examples:
+        - response_mode: validation
+          status: ready
+          database: logic_db
+          checks:
+            - name: configuration
+              status: passed
+              category: ready
+              message: Resolved the configured runtime database.
+            - name: jdbc_driver
+              status: passed
+              category: ready
+              message: Loaded the configured JDBC driver.
+            - name: jdbc_connectivity
+              status: passed
+              category: ready
+              message: Opened a JDBC connection and validated the configured database type.
+            - name: metadata_read
+              status: passed
+              category: ready
+              message: Read metadata through the configured JDBC connection.
+            - name: database_visibility
+              status: passed
+              category: ready
+              message: Validated the requested database name against visible JDBC metadata and connection context.
+          category: ready
+          recovery: {}
+    annotations:
+      title: Validate Proxy Connectivity
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: true
+    meta:
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://runtime
+        - shardingsphere://capabilities
   - name: database_gateway_execute_query
     title: Execute Query SQL
     description: >-

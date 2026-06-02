@@ -59,6 +59,11 @@ runtimeDatabases:
 | `password (?)` | Password for the runtime database. |
 | `driverClassName (+)` | JDBC driver class name, such as `com.mysql.cj.jdbc.Driver` for the MySQL driver. |
 
+Legend:
+
+- `(+)` means required.
+- `(?)` means optional.
+
 Notes:
 
 - When the target is ShardingSphere-Proxy, MCP resources expose ShardingSphere logical databases, not physical storage units.

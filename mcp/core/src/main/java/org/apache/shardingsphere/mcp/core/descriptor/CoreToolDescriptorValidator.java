@@ -40,7 +40,9 @@ public final class CoreToolDescriptorValidator implements MCPToolDescriptorValid
     
     private static final String EXECUTE_UPDATE = "database_gateway_execute_update";
     
-    private static final Set<String> SUPPORTED_TOOLS = Set.of(SEARCH_METADATA, EXECUTE_QUERY, EXECUTE_UPDATE);
+    private static final String VALIDATE_PROXY_CONNECTIVITY = "database_gateway_validate_proxy_connectivity";
+    
+    private static final Set<String> SUPPORTED_TOOLS = Set.of(SEARCH_METADATA, VALIDATE_PROXY_CONNECTIVITY, EXECUTE_QUERY, EXECUTE_UPDATE);
     
     @Override
     public boolean supports(final MCPToolDescriptor toolDescriptor) {
@@ -58,6 +60,12 @@ public final class CoreToolDescriptorValidator implements MCPToolDescriptorValid
         if (EXECUTE_QUERY.equals(toolDescriptor.getName())) {
             MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor, List.of("response_mode", "result_kind", "statement_class", "statement_type", "status", "returned_row_count",
                     "applied_max_rows", "applied_timeout_ms", "truncated", MCPPayloadFieldNames.NEXT_ACTIONS));
+            return;
+        }
+        if (VALIDATE_PROXY_CONNECTIVITY.equals(toolDescriptor.getName())) {
+            MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor, List.of("response_mode", "status", "database", "checks", "category", MCPPayloadFieldNames.RECOVERY));
+            validateProxyConnectivityContract(toolDescriptor);
+            validateProxyConnectivityChecks(toolDescriptor);
             return;
         }
         MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor, List.of("response_mode", "result_kind", "statement_class", "statement_type", "status", "returned_row_count",
@@ -103,8 +111,50 @@ public final class CoreToolDescriptorValidator implements MCPToolDescriptorValid
                 () -> new IllegalStateException("Tool `database_gateway_execute_update` execution_mode must allow execute and preview."));
     }
     
+    private void validateProxyConnectivityContract(final MCPToolDescriptor descriptor) {
+        Map<?, ?> responseMode = findToolOutputProperty(descriptor, "response_mode").orElseThrow(
+                () -> new IllegalStateException("Tool `database_gateway_validate_proxy_connectivity` must declare response_mode."));
+        Object responseModes = responseMode.get("enum");
+        ShardingSpherePreconditions.checkState(responseModes instanceof Collection && ((Collection<?>) responseModes).contains("validation"),
+                () -> new IllegalStateException("Tool `database_gateway_validate_proxy_connectivity` response_mode must allow validation."));
+        ShardingSpherePreconditions.checkState(findToolInputProperty(descriptor, "database").isPresent(),
+                () -> new IllegalStateException("Tool `database_gateway_validate_proxy_connectivity` must declare `database`."));
+        ShardingSpherePreconditions.checkState(isRequiredToolInput(descriptor, "database"),
+                () -> new IllegalStateException("Tool `database_gateway_validate_proxy_connectivity` database must be required."));
+        for (String each : List.of("databaseType", "jdbcUrl", "username", "password", "driverClassName")) {
+            ShardingSpherePreconditions.checkState(findToolInputProperty(descriptor, each).isEmpty(),
+                    () -> new IllegalStateException(String.format("Tool `database_gateway_validate_proxy_connectivity` must not expose `%s`.", each)));
+        }
+    }
+    
+    private void validateProxyConnectivityChecks(final MCPToolDescriptor descriptor) {
+        Map<?, ?> properties = (Map<?, ?>) descriptor.getOutputSchema().get("properties");
+        Object checks = properties.get("checks");
+        ShardingSpherePreconditions.checkState(checks instanceof Map,
+                () -> new IllegalStateException("Tool `database_gateway_validate_proxy_connectivity` outputSchema property `checks` must be an object."));
+        Object checkItemSchema = ((Map<?, ?>) checks).get("items");
+        ShardingSpherePreconditions.checkState(checkItemSchema instanceof Map,
+                () -> new IllegalStateException("Tool `database_gateway_validate_proxy_connectivity` outputSchema property `checks.items` must be an object."));
+        Object checkItemProperties = ((Map<?, ?>) checkItemSchema).get("properties");
+        ShardingSpherePreconditions.checkState(checkItemProperties instanceof Map && !((Map<?, ?>) checkItemProperties).isEmpty(),
+                () -> new IllegalStateException("Tool `database_gateway_validate_proxy_connectivity` outputSchema property `checks.items.properties` must declare properties."));
+        for (String each : List.of("name", "status", "category", "message")) {
+            ShardingSpherePreconditions.checkState(((Map<?, ?>) checkItemProperties).containsKey(each),
+                    () -> new IllegalStateException(String.format("Tool `database_gateway_validate_proxy_connectivity` outputSchema check item must declare `%s`.", each)));
+        }
+    }
+    
     private Optional<Map<?, ?>> findToolInputProperty(final MCPToolDescriptor descriptor, final String fieldName) {
         Object properties = descriptor.getInputSchema().get("properties");
+        if (!(properties instanceof Map)) {
+            return Optional.empty();
+        }
+        Object property = ((Map<?, ?>) properties).get(fieldName);
+        return property instanceof Map ? Optional.of((Map<?, ?>) property) : Optional.empty();
+    }
+    
+    private Optional<Map<?, ?>> findToolOutputProperty(final MCPToolDescriptor descriptor, final String fieldName) {
+        Object properties = descriptor.getOutputSchema().get("properties");
         if (!(properties instanceof Map)) {
             return Optional.empty();
         }

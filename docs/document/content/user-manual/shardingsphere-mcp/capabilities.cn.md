@@ -79,12 +79,28 @@ weight = 2
 | 工具 | 用途 | 自然语言示例 | 副作用 |
 | --- | --- | --- | --- |
 | `database_gateway_search_metadata` | 按名称片段和对象类型搜索运行时数据库元数据，并返回后续资源读取提示。 | “查找名字包含 `order` 的表。” | 无。 |
+| `database_gateway_validate_proxy_connectivity` | 在正式接入前校验已配置的运行时数据库，包括驱动加载、JDBC 连通性、metadata 可读性和数据库可见性。 | “先检查已配置的 `logic_db` 能不能接入，再注册。” | 无。 |
 | `database_gateway_execute_query` | 执行一个已判定为查询类的 `SELECT` 或 `EXPLAIN ANALYZE`。 | “查询 `orders` 表前 10 行。” | 无；拒绝 DML、DDL、DCL、事务控制、savepoint 和其他有副作用 SQL。 |
 | `database_gateway_execute_update` | 预览或执行一个可能修改数据、元数据、规则或事务状态的 SQL。 | “预览这条变更 SQL，先不要执行。” | 有；应先预览并确认。 |
 | `database_gateway_apply_workflow` | 预览、执行或导出功能插件生成的治理变更计划。 | “先预览刚才的加密规则计划。” | 取决于执行方式；预览和人工执行包不修改运行时状态。 |
 | `database_gateway_validate_workflow` | 插件工作流执行后，根据可见元数据和生成产物校验结果。 | “校验刚才的脱敏规则是否生效。” | 无。 |
 
 插件工具在对应插件页面说明。
+
+### Proxy 预检结果
+
+`database_gateway_validate_proxy_connectivity` 返回固定结构的校验结果，顶层字段包括：
+
+- `response_mode`
+- `status`
+- `database`
+- `checks`
+- `category`
+- `recovery`
+
+常见失败分类包括 `missing_jdbc_driver`、`authentication_failed`、`authorization_failed`、`connection_timeout`、`invalid_configuration`、`database_unavailable`、`connection_failed` 和 `database_not_visible`。
+`recovery` 字段沿用运行时数据库连接失败的 secret-safe 恢复风格。
+该工具只接受已配置的 `database` 名称。JDBC URL、用户名、密码和驱动类名等连接细节保留在运行时配置中。
 
 ## 提示
 

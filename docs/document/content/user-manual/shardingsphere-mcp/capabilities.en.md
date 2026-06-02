@@ -79,12 +79,28 @@ Actions with side effects should be previewed or reviewed first.
 | Tool | Purpose | Natural language example | Side effects |
 | --- | --- | --- | --- |
 | `database_gateway_search_metadata` | Search runtime database metadata by name fragment and object type, and return resource hints for follow-up reads. | "Find tables whose names contain `order`." | None. |
+| `database_gateway_validate_proxy_connectivity` | Validate a configured runtime database, including driver loading, JDBC connectivity, metadata readability, and database visibility before formal onboarding. | "Check whether configured database `logic_db` is ready before we register it." | None. |
 | `database_gateway_execute_query` | Execute exactly one classifier-approved `SELECT` or `EXPLAIN ANALYZE` statement. | "Query the first 10 rows from `orders`." | None; rejects DML, DDL, DCL, transaction control, savepoints, and other side-effecting SQL. |
 | `database_gateway_execute_update` | Preview or execute one SQL statement that may mutate data, metadata, rules, or transaction state. | "Preview this change SQL without executing it." | Yes; preview and confirmation are recommended first. |
 | `database_gateway_apply_workflow` | Preview, execute, or export a governance change plan created by a feature plugin. | "Preview the previous encryption rule plan first." | Depends on the execution choice; preview and manual packages do not change runtime state. |
 | `database_gateway_validate_workflow` | After plugin workflow execution, validate the result against visible metadata and generated artifacts. | "Validate whether the previous masking rule has taken effect." | None. |
 
 Plugin tools are documented on the corresponding plugin pages.
+
+### Proxy preflight validation output
+
+`database_gateway_validate_proxy_connectivity` returns a structured validation payload with these top-level fields:
+
+- `response_mode`
+- `status`
+- `database`
+- `checks`
+- `category`
+- `recovery`
+
+Common failure categories include `missing_jdbc_driver`, `authentication_failed`, `authorization_failed`, `connection_timeout`, `invalid_configuration`, `database_unavailable`, `connection_failed`, and `database_not_visible`.
+The `recovery` field follows the same secret-safe runtime recovery style used by runtime database connection failures.
+The tool only accepts the configured `database` name. Connection details such as JDBC URL, username, password, and driver class stay in the runtime configuration.
 
 ## Prompts
 
