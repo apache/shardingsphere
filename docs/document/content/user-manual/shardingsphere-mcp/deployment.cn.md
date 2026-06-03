@@ -31,21 +31,27 @@ OCI image 形态是：
 ghcr.io/apache/shardingsphere-mcp:<version>
 ```
 
-以 HTTP 模式运行：
+使用 OCI 镜像前，应先准备自定义配置文件。
+HTTP 模式在容器中运行时，`bindHost` 应绑定到容器可暴露的网络接口，例如 `0.0.0.0`：
 
-```bash
-docker run --rm -p 18088:18088 ghcr.io/apache/shardingsphere-mcp:${latest.release.version}
+```yaml
+transport:
+  type: STREAMABLE_HTTP
+  http:
+    bindHost: 0.0.0.0
+    port: 18088
+    endpointPath: /mcp
+
+runtimeDatabases:
+  "<logic-database>":
+    databaseType: MySQL
+    jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
+    username: "<proxy-username>"
+    password: "<proxy-password>"
+    driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
-以 STDIO 模式运行：
-
-```bash
-docker run --rm -i \
-  -e SHARDINGSPHERE_MCP_TRANSPORT=stdio \
-  ghcr.io/apache/shardingsphere-mcp:${latest.release.version}
-```
-
-使用自定义配置文件：
+以 HTTP 模式运行，并挂载自定义配置文件和插件目录：
 
 ```bash
 docker run --rm -p 18088:18088 \
@@ -55,10 +61,20 @@ docker run --rm -p 18088:18088 \
   ghcr.io/apache/shardingsphere-mcp:${latest.release.version}
 ```
 
+以 STDIO 模式运行时，配置文件中的 `transport.type` 应为 `STDIO`：
+
+```bash
+docker run --rm -i \
+  -e SHARDINGSPHERE_MCP_CONFIG=/opt/shardingsphere-mcp/conf/custom-mcp-stdio.yaml \
+  -v /path/to/mcp-stdio.yaml:/opt/shardingsphere-mcp/conf/custom-mcp-stdio.yaml:ro \
+  -v /path/to/plugins:/opt/shardingsphere-mcp/plugins:ro \
+  ghcr.io/apache/shardingsphere-mcp:${latest.release.version}
+```
+
 根据目标能力边界配置 `runtimeDatabases`：
 
 - 使用 ShardingSphere 规则能力或规则变更流程时，指向用户已准备好的 ShardingSphere-Proxy 逻辑库。
-- 仅使用通用 JDBC 元数据、元数据搜索和受控 SQL 能力时，可以指向任意可连接的 JDBC 数据库。
+- 仅使用元数据搜索、元数据查看和受控 SQL 能力时，可以使用数据库直连。
 
 ## 安全部署建议
 
@@ -76,6 +92,7 @@ HTTP 绑定建议：
 - 本地调试使用 `127.0.0.1`。
 - 容器或内网部署使用受控网络接口。
 - 面向远程客户端暴露时，避免直接裸露 MCP Server。
+- 需要把会话和外部用户或调用来源关联时，由受信网关注入会话归属请求头；不要允许客户端直接伪造这些请求头。
 
 ## 日志
 

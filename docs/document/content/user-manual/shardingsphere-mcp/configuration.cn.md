@@ -36,6 +36,30 @@ transport:
 | `transport.http.port` | HTTP 监听端口，默认值为 `18088`。 |
 | `transport.http.endpointPath` | HTTP 端点路径，默认值为 `/mcp`。 |
 
+### HTTP 会话归属（可选）
+
+如果 ShardingSphere-MCP 部署在受信网关或反向代理后面，可以让网关注入可信请求头，用于把 MCP 会话和外部用户或调用来源关联起来。
+该配置不提供认证或授权；认证、授权和请求头注入仍应由外层网关完成。
+
+```yaml
+transport:
+  type: STREAMABLE_HTTP
+  http:
+    sessionAttributionSource:
+      subjectHeader: X-ShardingSphere-MCP-Subject
+      sourceHeader: X-ShardingSphere-MCP-Source
+      attributeHeaderPrefix: X-ShardingSphere-MCP-Attribute-
+```
+
+| 配置项 | 说明 |
+| --- | --- |
+| `transport.http.sessionAttributionSource` | HTTP 会话归属来源。未配置时不绑定会话归属。 |
+| `transport.http.sessionAttributionSource.subjectHeader` | 表示外部用户、租户或调用主体的请求头名称。 |
+| `transport.http.sessionAttributionSource.sourceHeader` | 表示调用来源的请求头名称。 |
+| `transport.http.sessionAttributionSource.attributeHeaderPrefix` | 自定义归属属性的请求头前缀。 |
+
+只有确认客户端不能直接伪造这些请求头时，才应启用该配置。
+
 ## 数据库配置
 
 `runtimeDatabases` 定义 MCP Server 可以连接并对外暴露的数据库。
@@ -53,7 +77,7 @@ runtimeDatabases:
 
 | *名称* | *说明* |
 | --- | --- |
-| `databaseType` (+) | 连接端点的数据库协议或方言类型，例如 `MySQL` 或 `PostgreSQL`。它影响元数据识别和 SQL 能力判断，不表示连接目标一定是真实数据库或 ShardingSphere-Proxy。 |
+| `databaseType` (+) | 连接端点的数据库协议或方言类型，例如 `MySQL` 或 `PostgreSQL`。它影响元数据识别和 SQL 能力判断，不表示连接目标一定是数据库直连或 ShardingSphere-Proxy。 |
 | `jdbcUrl` (+) | MCP Server 连接运行时数据库的 JDBC URL；使用 ShardingSphere 规则能力时应指向 Proxy 逻辑库。 |
 | `username` (+) | 连接运行时数据库的用户名，通常是 ShardingSphere-Proxy 逻辑库用户名。 |
 | `password` (?) | 连接运行时数据库的密码。 |
@@ -67,8 +91,8 @@ runtimeDatabases:
 注意事项：
 
 - 连接 ShardingSphere-Proxy 时，用户看到的是 ShardingSphere 逻辑库，不是底层物理存储单元。
-- 连接真实数据库时，用户看到的是该 JDBC 目标的元数据，不代表 ShardingSphere 规则状态。
-- 模式、表、视图、索引和序列等元数据依赖目标数据库的 JDBC 元数据；Proxy 和真实数据库的可见结果可能不同。
+- 数据库直连时，用户看到的是目标数据库自身的元数据，不代表 ShardingSphere 规则状态。
+- 模式、表、视图、索引和序列等元数据依赖连接目标的 JDBC 元数据；Proxy 和数据库直连的可见结果可能不同。
 - 如果目标 JDBC 驱动没有随发行包提供，请把驱动 jar 放入 `plugins/`。
 
 ## 连接目标选择
@@ -82,12 +106,13 @@ runtimeDatabases:
 此时用户看到的是 Proxy 暴露的逻辑库、逻辑表和逻辑列。
 Proxy 可见元数据可能不同于底层物理库的完整结构；涉及物理列、索引或规则变更的计划应先审查再执行。
 
-### 连接真实数据库
+### 数据库直连
 
-如果只需要查看普通数据库元数据、搜索对象或执行受控查询，可以连接真实数据库。
+数据库直连指 ShardingSphere-MCP 不经过 ShardingSphere-Proxy，直接连接用户提供的 MySQL、PostgreSQL 等数据库服务。
+如果只需要查看已有数据库的元数据、搜索对象或执行受控查询，可以使用数据库直连。
 
 此时用户看到的是目标数据库自身元数据，不代表 ShardingSphere 规则状态。
-数据加密、数据脱敏等依赖 ShardingSphere 规则的任务不适用于真实数据库连接。
+数据加密、数据脱敏等依赖 ShardingSphere 规则的任务不适用于数据库直连。
 
 不同连接目标支持的自然语言任务见[能力清单](../capabilities/)。
 

@@ -31,21 +31,27 @@ The OCI image shape is:
 ghcr.io/apache/shardingsphere-mcp:<version>
 ```
 
-Run in HTTP mode:
+Before using the OCI image, prepare a custom configuration file.
+When HTTP mode runs in a container, `bindHost` should bind to a network interface that the container can expose, such as `0.0.0.0`:
 
-```bash
-docker run --rm -p 18088:18088 ghcr.io/apache/shardingsphere-mcp:${latest.release.version}
+```yaml
+transport:
+  type: STREAMABLE_HTTP
+  http:
+    bindHost: 0.0.0.0
+    port: 18088
+    endpointPath: /mcp
+
+runtimeDatabases:
+  "<logic-database>":
+    databaseType: MySQL
+    jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
+    username: "<proxy-username>"
+    password: "<proxy-password>"
+    driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
-Run in STDIO mode:
-
-```bash
-docker run --rm -i \
-  -e SHARDINGSPHERE_MCP_TRANSPORT=stdio \
-  ghcr.io/apache/shardingsphere-mcp:${latest.release.version}
-```
-
-Use a custom configuration file:
+Run in HTTP mode with a custom configuration file and plugin directory:
 
 ```bash
 docker run --rm -p 18088:18088 \
@@ -55,10 +61,20 @@ docker run --rm -p 18088:18088 \
   ghcr.io/apache/shardingsphere-mcp:${latest.release.version}
 ```
 
+When running in STDIO mode, set `transport.type` in the configuration file to `STDIO`:
+
+```bash
+docker run --rm -i \
+  -e SHARDINGSPHERE_MCP_CONFIG=/opt/shardingsphere-mcp/conf/custom-mcp-stdio.yaml \
+  -v /path/to/mcp-stdio.yaml:/opt/shardingsphere-mcp/conf/custom-mcp-stdio.yaml:ro \
+  -v /path/to/plugins:/opt/shardingsphere-mcp/plugins:ro \
+  ghcr.io/apache/shardingsphere-mcp:${latest.release.version}
+```
+
 Configure `runtimeDatabases` according to the target capability boundary:
 
 - Point it to a ShardingSphere-Proxy logical database when using ShardingSphere rule capabilities or the rule change flow.
-- Point it to any reachable JDBC database only for general JDBC metadata, metadata search, and controlled SQL capabilities.
+- Use a direct database connection only for metadata search, metadata inspection, and controlled SQL capabilities.
 
 ## Secure deployment
 
@@ -76,6 +92,7 @@ HTTP binding recommendations:
 - Use `127.0.0.1` for local debugging.
 - Use a controlled network interface for container or intranet deployments.
 - Avoid exposing the MCP Server directly to remote clients.
+- When sessions must be associated with external users or request sources, let a trusted gateway inject session attribution headers. Do not allow clients to forge these headers directly.
 
 ## Logs
 

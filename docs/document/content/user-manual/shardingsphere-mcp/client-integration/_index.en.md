@@ -8,10 +8,9 @@ After configuration, users can inspect metadata, run controlled SQL queries, or 
 
 Use client integration when:
 
-- An AI application, IDE extension, or agent platform needs to connect to ShardingSphere.
-- ShardingSphere metadata should be used for query assistance, structure understanding, diagnostics, or governance planning.
-- A team needs a unified controlled database access path.
-- An AI application needs ShardingSphere metadata, controlled SQL, and rule change capabilities.
+- An AI application, IDE extension, or agent platform needs to connect to ShardingSphere-MCP.
+- Users need to inspect metadata, run controlled SQL, or plan ShardingSphere rule changes through natural language.
+- A team needs a unified controlled database access entry.
 
 See [Capability Catalog](../capabilities/) for supported tasks and usage boundaries.
 

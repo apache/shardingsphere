@@ -10,7 +10,7 @@ Actual encryption capability is provided by ShardingSphere-Proxy and its encrypt
 
 - The current version supports logical databases exposed by ShardingSphere-Proxy only.
 - `runtimeDatabases` should point to Proxy logical databases, not physical storage databases.
-- This feature does not apply to direct physical database connections. A physical database usually does not understand ShardingSphere encryption rule change statements and cannot expose Proxy-visible encryption algorithm plugins or rule state.
+- This feature does not apply to direct database connections. The target database usually does not understand ShardingSphere encryption rule change statements and cannot expose Proxy-visible encryption algorithm plugins or rule state.
 - The target logical table and column should be discoverable through JDBC metadata exposed by Proxy. This metadata should not be treated as a complete physical database catalog.
 
 ## Use through natural language
@@ -20,6 +20,7 @@ Users describe the encryption goal in an AI application that integrates Sharding
 Examples:
 
 - Check whether `<logic-database>.orders.status` already has an encryption rule.
+- List data encryption algorithms available from the current Proxy.
 - Plan reversible encryption for `<logic-database>.orders.status` with equality query support, and preview it without execution.
 - Continue the previous plan with the AES algorithm and provide the key through a protected channel.
 - Confirm and execute the previous encryption rule plan, then validate the result.
@@ -36,7 +37,7 @@ When using natural language, include the following information when possible:
 | Schema or namespace | Recommended for multi-schema logical databases. | "The schema is `public`." |
 | Operation type | Create, alter, or drop an encryption rule. | "Create an encryption rule" or "drop the encryption rule for this column." |
 | Encryption goal | Describe whether reversible encryption, equality query, or LIKE query is required. | "Use reversible encryption and support equality queries." |
-| Algorithm preference | Specify an algorithm, or let MCP recommend one from available algorithms. | "Prefer AES." |
+| Algorithm preference | Specify an algorithm, or let MCP recommend one from algorithms available from Proxy. | "List data encryption algorithms available from the current Proxy." or "Prefer AES." |
 | Algorithm properties | Sensitive values such as keys should be supplied through protected channels. | "The key is supplied through a protected channel." |
 | Index suggestions | Whether physical index suggestions for assisted query columns are allowed. | "Allow index suggestions for the assisted query column." |
 
@@ -86,7 +87,7 @@ For the general review flow of rule changes, see [Rule Change Flow](../plugin-wo
 ### Supported scope
 
 - Supports ShardingSphere-Proxy logical databases only.
-- This feature does not apply to direct physical database connections.
+- This feature does not apply to direct database connections.
 
 ### Capability boundaries
 

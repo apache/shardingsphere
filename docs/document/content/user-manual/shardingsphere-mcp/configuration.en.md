@@ -36,6 +36,30 @@ transport:
 | `transport.http.port` | HTTP bind port. The default value is `18088`. |
 | `transport.http.endpointPath` | HTTP endpoint path. The default value is `/mcp`. |
 
+### HTTP Session Attribution (Optional)
+
+When ShardingSphere-MCP runs behind a trusted gateway or reverse proxy, the gateway can inject trusted headers to associate an MCP session with an external user or request source.
+This configuration does not provide authentication or authorization. Authentication, authorization, and header injection should still be handled by the outer gateway.
+
+```yaml
+transport:
+  type: STREAMABLE_HTTP
+  http:
+    sessionAttributionSource:
+      subjectHeader: X-ShardingSphere-MCP-Subject
+      sourceHeader: X-ShardingSphere-MCP-Source
+      attributeHeaderPrefix: X-ShardingSphere-MCP-Attribute-
+```
+
+| Configuration item | Description |
+| --- | --- |
+| `transport.http.sessionAttributionSource` | HTTP session attribution source. When omitted, session attribution is not bound. |
+| `transport.http.sessionAttributionSource.subjectHeader` | Header name for the external user, tenant, or request subject. |
+| `transport.http.sessionAttributionSource.sourceHeader` | Header name for the request source. |
+| `transport.http.sessionAttributionSource.attributeHeaderPrefix` | Header prefix for custom attribution attributes. |
+
+Enable this only when clients cannot forge these headers directly.
+
 ## Database configuration
 
 `runtimeDatabases` defines the databases that the MCP Server can connect to and expose to users.
@@ -53,7 +77,7 @@ runtimeDatabases:
 
 | *Name* | *Description* |
 | --- | --- |
-| `databaseType` (+) | Database protocol or dialect type of the connection endpoint, such as `MySQL` or `PostgreSQL`. It affects metadata recognition and SQL capability judgment; it does not mean the endpoint is necessarily a physical database or ShardingSphere-Proxy. |
+| `databaseType` (+) | Database protocol or dialect type of the connection endpoint, such as `MySQL` or `PostgreSQL`. It affects metadata recognition and SQL capability judgment; it does not mean the endpoint is necessarily a direct database connection or ShardingSphere-Proxy. |
 | `jdbcUrl` (+) | JDBC URL used by the MCP Server to connect to the runtime database. Point it to a Proxy logical database when using ShardingSphere rule capabilities. |
 | `username` (+) | Username for the runtime database, usually the ShardingSphere-Proxy logical database username. |
 | `password` (?) | Password for the runtime database. |
@@ -67,8 +91,8 @@ Legend:
 Notes:
 
 - When the target is ShardingSphere-Proxy, users see ShardingSphere logical databases, not physical storage units.
-- When the target is a physical database, users see metadata from that JDBC target, not ShardingSphere rule state.
-- Schema, table, view, index, and sequence metadata depends on target JDBC metadata. Proxy-visible metadata and physical database metadata may differ.
+- With a direct database connection, users see metadata from the target database itself, not ShardingSphere rule state.
+- Schema, table, view, index, and sequence metadata depends on JDBC metadata from the connection target. Proxy-visible metadata and direct-connection metadata may differ.
 - If the target JDBC driver is not packaged, copy the driver jar under `plugins/`.
 
 ## Choose a Connection Target
@@ -82,12 +106,13 @@ Connect to a ShardingSphere-Proxy logical database when ShardingSphere rule stat
 Users see the logical databases, tables, and columns exposed by Proxy.
 Proxy-visible metadata may differ from the complete physical database structure. Plans involving physical columns, indexes, or rule changes should be reviewed before execution.
 
-### Connecting to a physical database
+### Direct database connection
 
-Connect directly to a physical database when only ordinary metadata inspection, object search, or controlled queries are needed.
+A direct database connection means that ShardingSphere-MCP connects to a user-provided database service such as MySQL or PostgreSQL without going through ShardingSphere-Proxy.
+Use it when only metadata inspection, object search, or controlled queries against an existing database are needed.
 
 Users see metadata from the target database itself, not ShardingSphere rule state.
-Tasks that depend on ShardingSphere rules, such as data encryption and data masking, do not apply to direct physical database connections.
+Tasks that depend on ShardingSphere rules, such as data encryption and data masking, do not apply to direct database connections.
 
 For natural-language tasks supported by each connection target, see [Capability Catalog](../capabilities/).
 

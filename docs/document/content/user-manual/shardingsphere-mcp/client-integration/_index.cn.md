@@ -8,10 +8,9 @@ weight = 4
 
 适合使用客户端集成的场景：
 
-- 在 AI 应用、IDE 插件或 Agent 平台中接入 ShardingSphere。
-- 基于 ShardingSphere 元数据完成查询辅助、结构理解、问题诊断或治理规划。
-- 为团队提供统一的受控数据库访问通路。
-- 为 AI 应用集成 ShardingSphere 元数据、受控 SQL 和规则变更能力。
+- 在 AI 应用、IDE 插件或 Agent 平台中接入 ShardingSphere-MCP。
+- 通过自然语言查看元数据、执行受控 SQL 或规划 ShardingSphere 规则变更。
+- 为团队提供统一的受控数据库访问入口。
 
 可完成的任务和使用边界见[能力清单](../capabilities/)。
 

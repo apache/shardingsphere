@@ -4,7 +4,7 @@ weight = 9
 +++
 
 This page is for developers who build custom MCP integrations, debug protocol requests, or troubleshoot client adaptation issues.
-Most users do not need this page. Use [Quick Start](../quick-start/), [Client Integration](../client-integration/), and [Capability Catalog](../capabilities/) for normal usage.
+For normal usage, see [Quick Start](../quick-start/), [Client Integration](../client-integration/), and [Capability Catalog](../capabilities/).
 
 ## Generic Client Configuration Examples
 
