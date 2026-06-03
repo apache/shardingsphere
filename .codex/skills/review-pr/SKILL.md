@@ -5,6 +5,7 @@ description: >-
   assess side effects and regression risks, and determine whether it can be safely merged.
   If not mergeable, produce committer-tone change request suggestions.
   Supports targeted comparison across GitHub-visible review rounds when prior PR comments or review threads exist.
+  Before final output, internally self-iterate the review until no new actionable findings are discovered.
 ---
 
 # Review PR
@@ -54,12 +55,14 @@ description: >-
     Do not interpret the trigger signals above as a complete list. If this blast-radius scan is missing, bias to `Not Mergeable`.
 13. If local verification is used to support mergeability and the command is module-scoped, include `-am` by default unless you can prove all dependent modules were built from the same latest PR head.
     Do not treat a scoped run without dependent modules as conclusive evidence for `Mergeable`.
-14. Before outputting `Mergeable`, perform one explicit adversarial pass that assumes the PR is unsafe and actively searches for:
+14. Before any final output, complete the `Self-Iteration Gate` and stop only after the latest internal review pass finds no new actionable issues.
+    Do not expose intermediate review rounds; output one consolidated review with exactly one `Merge Verdict`.
+15. During the self-iteration loop, include at least one explicit adversarial pass that assumes the PR is unsafe and actively searches for:
     - one cross-dialect or adjacent-feature regression path,
     - one config-disabled or feature-flag-off path,
     - one original symptom path that is only partially covered by tests.
     If any of these remain unresolved, set `Merge Verdict: Not Mergeable`.
-15. If a PR changes SQL parser behavior, grammar, visitor logic, supported SQL cases, or parser tests for a dialect,
+16. If a PR changes SQL parser behavior, grammar, visitor logic, supported SQL cases, or parser tests for a dialect,
     you must complete both syntax-validity review and dialect-family impact review before concluding:
     - Every SQL syntax added, changed, accepted, rejected, or suggested in the review must be backed by the target database's official documentation for the exact database family and relevant version.
     - This applies both to the PR's changed SQL syntax and to any SQL syntax examples or recommendations you propose in review comments.
@@ -70,12 +73,12 @@ description: >-
     - If official documentation support is missing, ambiguous, or contradicts the PR behavior, bias to `Merge Verdict: Not Mergeable`.
     - If any related dialect remains unresolved, or the review skips the family scan, bias to `Merge Verdict: Not Mergeable`.
     - Do not recommend unsupported or undocumented SQL syntax in review feedback.
-16. If a method reachable from the Proxy or JDBC DML/DQL high-frequency SQL execution path uses `ConcurrentHashMap#computeIfAbsent`,
+17. If a method reachable from the Proxy or JDBC DML/DQL high-frequency SQL execution path uses `ConcurrentHashMap#computeIfAbsent`,
     require a preceding `get` lookup and call `computeIfAbsent` only when the value is missing, to avoid the JDK 8 implementation bottleneck.
     If this pattern is absent and the path is high-frequency, bias to `Merge Verdict: Not Mergeable`.
-17. Do not use GitHub Actions, CI status, or check-run completion as part of the merge verdict unless explicitly requested by the user.
-18. Use repository-declared formatting/style gates as the formatting authority; do not introduce extra formatting blockers outside those gates by default.
-19. Treat GitHub PR metadata and `/pulls/{number}/files` as the authoritative scope boundary.
+18. Do not use GitHub Actions, CI status, or check-run completion as part of the merge verdict unless explicitly requested by the user.
+19. Use repository-declared formatting/style gates as the formatting authority; do not introduce extra formatting blockers outside those gates by default.
+20. Treat GitHub PR metadata and `/pulls/{number}/files` as the authoritative scope boundary.
     Before reporting unrelated changes or making any scope-based finding, verify that the local diff file list matches GitHub's file list.
     If the lists differ, stop the review, refresh the PR refs, and resolve the diff-boundary mismatch before drawing conclusions.
 
@@ -215,8 +218,30 @@ CI/check-run review is not part of this workflow unless explicitly requested; do
 8. Version baseline control:
    - Base conclusion only on PR latest code version
    - If new commits are added, current conclusion becomes invalid and must be re-reviewed on latest version
-9. Merge decision: output `Merge Verdict`.
-10. Generate feedback: follow the output template below.
+9. Self-iteration gate: repeat internal review passes until the latest pass finds no new actionable findings.
+10. Merge decision: output `Merge Verdict`.
+11. Generate feedback: follow the output template below.
+
+## Self-Iteration Gate
+
+Before producing the final review output, run an internal self-review loop on the latest PR version:
+
+1. Build the current candidate findings from the completed review pass.
+2. Ask explicitly:
+   "If I review this same latest PR again from a fresh critical perspective, can I find any new actionable issue, unresolved risk, missing evidence, or scope problem not already captured?"
+3. Re-run the review against the authoritative PR scope, focusing on:
+   - Missed root-cause gaps.
+   - Missed side effects or regression paths.
+   - Missed test adequacy gaps.
+   - Missed cross-dialect, feature-disabled, fallback, or boundary cases.
+   - Missed unrelated substantive changes.
+   - Missed output-template or evidence gaps.
+4. If the self-review finds any new actionable issue, add it to the candidate findings, deduplicate it against existing findings,
+   update the merge verdict and next steps if needed, and repeat the loop.
+5. Do not treat restatements, optional polish, speculative risks outside the PR scope, or already captured issues as new actionable findings.
+6. Stop only when the latest self-review pass finds no new actionable issues compared with the accumulated candidate findings.
+7. Do not expose intermediate review rounds, draft verdicts, or self-review transcripts to the user.
+8. Produce one consolidated final review with exactly one `Merge Verdict`.
 
 ## Root-Cause Validation Checklist (Must Answer Each)
 
@@ -301,6 +326,7 @@ When GitHub-visible previous-round feedback exists, perform incremental comparis
 - Keep `Merge Verdict: ...` as a bold bullet near the top, and output exactly one verdict line.
 - Keep stable review labels in English, such as `Merge Verdict`, `Reviewed Scope`, `Not Reviewed Scope`, and `Need Expert Review`,
   so they remain searchable and consistent.
+- Do not include internal self-iteration rounds, draft verdicts, or self-review transcripts in the GitHub-facing review body.
 - Use short unordered bullets under each heading; use bold inline labels such as `Symptom:`, `Risk:`, and `Action:` for issue details.
 - Use repo-relative paths with line numbers, for example `infra/.../Foo.java:123`; do not use local absolute file paths in GitHub-facing review text.
 - Prefer bullets over tables. Use tables only for compact status summaries that remain readable in GitHub's narrow review pane.
