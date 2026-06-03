@@ -49,6 +49,7 @@ class MySQLDefaultQueryPropertiesProviderTest {
                 new Property("netTimeoutForStreamingResults", "0"),
                 new Property("tinyInt1isBit", Boolean.FALSE.toString()),
                 new Property("useSSL", Boolean.FALSE.toString()),
+                new Property("yearIsDateType", Boolean.FALSE.toString()),
                 new Property("zeroDateTimeBehavior", "round"));
         assertThat(actual, is(expected));
     }

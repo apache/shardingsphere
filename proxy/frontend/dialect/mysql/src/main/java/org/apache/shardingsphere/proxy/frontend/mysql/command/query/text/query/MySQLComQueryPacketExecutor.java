@@ -146,9 +146,16 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private Object adjustValueForTextColumnType(final QueryResponseCell cell) {
         Object data = cell.getData();
-        return Types.DATE == cell.getJdbcType() && "YEAR".equalsIgnoreCase(cell.getColumnTypeName().orElse(null)) && data instanceof Date
-                ? String.format(Locale.ROOT, "%04d", ((Date) data).toLocalDate().getYear())
-                : data;
+        if (Types.DATE != cell.getJdbcType() || !"YEAR".equalsIgnoreCase(cell.getColumnTypeName().orElse(null))) {
+            return data;
+        }
+        if (data instanceof Number) {
+            return String.format(Locale.ROOT, "%04d", ((Number) data).intValue());
+        }
+        if (data instanceof Date) {
+            return String.format(Locale.ROOT, "%04d", ((Date) data).toLocalDate().getYear());
+        }
+        return data;
     }
     
     @Override

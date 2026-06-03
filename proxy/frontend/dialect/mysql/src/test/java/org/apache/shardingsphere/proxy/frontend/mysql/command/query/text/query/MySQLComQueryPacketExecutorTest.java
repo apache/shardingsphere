@@ -222,6 +222,48 @@ class MySQLComQueryPacketExecutorTest {
     }
     
     @Test
+    void assertYearColumnRowEmitsFourZerosFromShortZero() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        MySQLComQueryPacketExecutor executor = new MySQLComQueryPacketExecutor(packet, connectionSession);
+        Plugins.getMemberAccessor().set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), executor, proxyBackendHandler);
+        when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.DATE, Short.valueOf((short) 0), "YEAR"))));
+        MySQLPacket rowPacket = executor.getQueryRowPacket();
+        ByteBuf buffer = Unpooled.buffer();
+        rowPacket.write(new MySQLPacketPayload(buffer, StandardCharsets.UTF_8));
+        assertThat(buffer.readUnsignedByte(), is((short) 4));
+        byte[] yearBytes = new byte[4];
+        buffer.readBytes(yearBytes);
+        assertThat(new String(yearBytes, StandardCharsets.UTF_8), is("0000"));
+    }
+    
+    @Test
+    void assertYearColumnRowEmitsFourDigitYearFromShortTwoThousand() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        MySQLComQueryPacketExecutor executor = new MySQLComQueryPacketExecutor(packet, connectionSession);
+        Plugins.getMemberAccessor().set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), executor, proxyBackendHandler);
+        when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.DATE, Short.valueOf((short) 2000), "YEAR"))));
+        MySQLPacket rowPacket = executor.getQueryRowPacket();
+        ByteBuf buffer = Unpooled.buffer();
+        rowPacket.write(new MySQLPacketPayload(buffer, StandardCharsets.UTF_8));
+        assertThat(buffer.readUnsignedByte(), is((short) 4));
+        byte[] yearBytes = new byte[4];
+        buffer.readBytes(yearBytes);
+        assertThat(new String(yearBytes, StandardCharsets.UTF_8), is("2000"));
+    }
+    
+    @Test
+    void assertYearColumnRowEmitsFourDigitYearFromShortNineteenTwentyFive() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        MySQLComQueryPacketExecutor executor = new MySQLComQueryPacketExecutor(packet, connectionSession);
+        Plugins.getMemberAccessor().set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), executor, proxyBackendHandler);
+        when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.DATE, Short.valueOf((short) 1925), "YEAR"))));
+        MySQLPacket rowPacket = executor.getQueryRowPacket();
+        ByteBuf buffer = Unpooled.buffer();
+        rowPacket.write(new MySQLPacketPayload(buffer, StandardCharsets.UTF_8));
+        assertThat(buffer.readUnsignedByte(), is((short) 4));
+        byte[] yearBytes = new byte[4];
+        buffer.readBytes(yearBytes);
+        assertThat(new String(yearBytes, StandardCharsets.UTF_8), is("1925"));
+    }
+    
+    @Test
     void assertDateColumnRowEmitsFullDateString() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor executor = new MySQLComQueryPacketExecutor(packet, connectionSession);
         Plugins.getMemberAccessor().set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), executor, proxyBackendHandler);
