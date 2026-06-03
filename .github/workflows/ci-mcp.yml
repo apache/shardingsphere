@@ -15,19 +15,19 @@
 # limitations under the License.
 #
 
-name: JDK 21 Subchain - CI
+name: CI - MCP
 
 on:
   pull_request:
     branches: [ master ]
     paths:
-      - '.github/workflows/jdk21-subchain-ci.yml'
+      - '.github/workflows/ci-mcp.yml'
       - 'pom.xml'
       - 'mcp/**'
   workflow_dispatch:
 
 concurrency:
-  group: jdk21-subchain-ci-${{ github.workflow }}-${{ github.ref }}
+  group: ci-mcp-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -38,7 +38,7 @@ env:
 
 jobs:
   mcp-unit-tests:
-    name: MCP - Unit Tests
+    name: MCP - Unit Tests with JDK 21
     if: github.repository == 'apache/shardingsphere'
     runs-on: ubuntu-latest
     timeout-minutes: 30
