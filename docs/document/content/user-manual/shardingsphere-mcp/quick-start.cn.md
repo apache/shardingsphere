@@ -65,20 +65,14 @@ start "ShardingSphere MCP" cmd /c "bin\start.bat > logs\mcp-http.log 2>&1"
 
 ## 接入 AI 应用
 
-在 AI 应用、IDE 插件或 Agent 平台中配置 HTTP MCP Server 地址：
+选择一个支持 MCP 的 AI 应用、IDE 插件或 Agent 平台，并配置上一步启动的 HTTP MCP Server 地址。
 
-```json
-{
-  "mcpServers": {
-    "shardingsphere": {
-      "url": "http://127.0.0.1:18088/mcp"
-    }
-  }
-}
-```
+典型客户端配置见：
 
-不同 AI 应用的配置文件位置和字段名称可能不同，请以客户端自身文档为准。
-更多 HTTP 和 STDIO 配置方式见[客户端集成](../client-integration/)。
+- [Codex](../client-integration/codex/)
+- [Claude Code](../client-integration/claude-code/)
+
+其他客户端请按其自身文档配置 ShardingSphere-MCP 地址：`http://127.0.0.1:18088/mcp`。
 
 ## 通过自然语言验证
 

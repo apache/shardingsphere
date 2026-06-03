@@ -3,7 +3,7 @@ title = "Troubleshooting"
 weight = 7
 +++
 
-This page organizes troubleshooting by user-visible symptoms for ShardingSphere-MCP, AI application integration, database connectivity, metadata inspection, SQL execution, and rule changes.
+This page organizes troubleshooting by user-visible symptoms for ShardingSphere-MCP, AI application integration, database connectivity, metadata inspection, queries, and rule changes.
 For feature-specific business rule issues, see the corresponding feature plugin documentation.
 
 ## Troubleshooting Index
@@ -27,7 +27,7 @@ Additional notes:
 
 - `username` and `driverClassName` must be declared explicitly and cannot be empty; a no-password account can omit `password` or use `""`.
 - Secret placeholders in manual packages should be replaced by operators in a controlled environment.
-- For protocol request debugging, see the [Developer Appendix](../developer-appendix/).
+- For protocol request debugging, see the [Custom Integration Appendix](../developer-appendix/).
 
 ## Connection Failure Categories
 
@@ -44,13 +44,13 @@ When a runtime database or ShardingSphere-Proxy connection fails, MCP responses 
 | `connection_failed` | The connection failed, but cannot be classified into a more specific cause. |
 | `database_not_visible` | The specified logical database is not visible to the current connection. |
 
-## SQL Execution Recommendations
+## Query and Change Recommendations
 
-| SQL type | Recommendation |
+| Scenario | Recommendation |
 | --- | --- |
-| `SELECT` | Use for read-only queries and limit returned rows. |
-| `EXPLAIN ANALYZE` | Use only when the target logical database capability allows it. |
-| DML, DDL, DCL, transaction control, savepoint | Preview and review side effects before deciding whether to execute. |
+| Query data | Limit returned rows. |
+| Analyze an SQL execution plan | Use only when the target logical database capability allows it. |
+| Change data, structure, rules, or transaction state | Preview and review side effects before deciding whether to execute. |
 
 ## Information for Administrators or Troubleshooters
 

@@ -12,5 +12,4 @@ The packaged distribution includes these official MCP feature plugins:
 - Data Encryption: plan, review, apply, and validate data encryption rules.
 - Data Masking: plan, review, apply, and validate data masking rules.
 
-Additional or third-party feature plugins can be added to the runtime classpath through the `plugins/` directory.
-If a feature plugin is not packaged by default, prepare its required ShardingSphere modules and third-party jars before startup.
+When using additional feature plugins, follow the plugin provider's instructions, prepare the required jars and dependencies, and place them under the distribution `plugins/` directory before startup.

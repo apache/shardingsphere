@@ -35,9 +35,10 @@ Tasks with side effects should create or preview a plan first, then run only aft
 - Configuration: configure transport, `runtimeDatabases`, plugin directories, and launch parameters.
 - Client Integration: connect the MCP Server to an AI application through HTTP or STDIO, with Codex and Claude Code examples.
 - Deployment: deploy the binary distribution and OCI image safely.
-- Troubleshooting: diagnose common MCP Server, connection, configuration, metadata, and SQL execution issues.
+- Troubleshooting: diagnose common MCP Server, connection, configuration, metadata, query, and change issues.
 - Feature Plugins: use official MCP feature plugins and understand how to review, apply, and validate plugin changes.
   - Rule Change Flow: understand confirmation, preview, execution, and validation for rule change tasks.
   - Data Encryption: plan, apply, and validate data encryption rule changes through MCP feature plugins.
   - Data Masking: plan, apply, and validate data masking rule changes through MCP feature plugins.
-- Developer Appendix: reference protocol details and HTTP debugging examples for custom integration or protocol debugging.
+
+For custom integration or protocol debugging, see the [Custom Integration Appendix](developer-appendix/).
