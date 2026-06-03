@@ -515,7 +515,7 @@ class ProxyDatabaseConnectionManagerTest {
     }
     
     @Test
-    void assertCloseExecutionResourcesKeepsFirebirdPreparedStatementCacheInHeldTransaction() throws SQLException, BackendConnectionException {
+    void assertCloseExecutionResourcesKeepsFirebirdPreparedStatementReuseInHeldTransaction() throws SQLException, BackendConnectionException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         connectionSession.getConnectionContext().getTransactionContext().beginTransaction(TransactionType.XA.name(), null);
         PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
@@ -535,8 +535,10 @@ class ProxyDatabaseConnectionManagerTest {
         backendStatement.createStorageResource(
                 new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.singletonList(2))),
                 cachedConnection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
-        verify(cachedConnection).prepareStatement("SELECT 1");
+        verify(cachedConnection, times(1)).prepareStatement("SELECT 1");
         verify(preparedStatement, times(2)).clearParameters();
+        verify(preparedStatement).setObject(1, 1);
+        verify(preparedStatement).setObject(1, 2);
         verify(cachedConnection, never()).close();
         assertThat(cacheContext.size(), is(1));
     }

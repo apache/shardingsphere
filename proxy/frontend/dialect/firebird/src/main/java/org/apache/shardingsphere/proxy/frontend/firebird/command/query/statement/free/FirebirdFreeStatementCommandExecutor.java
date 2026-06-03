@@ -35,11 +35,11 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class FirebirdFreeStatementCommandExecutor implements CommandExecutor {
-    
+
     private final FirebirdFreeStatementPacket packet;
-    
+
     private final ConnectionSession connectionSession;
-    
+
     @Override
     public Collection<DatabasePacket> execute() {
         switch (packet.getOption()) {
@@ -47,16 +47,23 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
             case FirebirdFreeStatementPacket.UNPREPARE:
                 connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
                 connectionSession.invalidateFirebirdPreparedStatementCache(packet.getStatementId());
+                cleanupStatementResources();
                 break;
             case FirebirdFreeStatementPacket.CLOSE:
-                connectionSession.getConnectionContext().clearCursorContext();
-                ProxyBackendHandler proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), packet.getStatementId());
-                connectionSession.getDatabaseConnectionManager().unmarkResourceInUse(proxyBackendHandler);
-                FirebirdFetchStatementCache.getInstance().unregisterStatement(connectionSession.getConnectionId(), packet.getStatementId());
+                cleanupStatementResources();
                 break;
             default:
                 throw new FirebirdProtocolException("Unknown DSQL option type %d", packet.getOption());
         }
         return Collections.singleton(new FirebirdGenericResponsePacket());
+    }
+
+    private void cleanupStatementResources() {
+        connectionSession.getConnectionContext().clearCursorContext();
+        ProxyBackendHandler proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), packet.getStatementId());
+        if (null != proxyBackendHandler) {
+            connectionSession.getDatabaseConnectionManager().unmarkResourceInUse(proxyBackendHandler);
+        }
+        FirebirdFetchStatementCache.getInstance().unregisterStatement(connectionSession.getConnectionId(), packet.getStatementId());
     }
 }
