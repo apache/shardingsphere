@@ -8,18 +8,18 @@ For feature-specific business rule issues, see the corresponding feature plugin 
 
 ## Troubleshooting index
 
-| Symptom | Possible cause | Action | Needs code improvement |
-| --- | --- | --- | --- |
-| Startup failure | JDK, config path, YAML field, or required field is wrong. | Inspect terminal output and `logs/mcp.log`. | Usually no. |
-| HTTP connection failure | Port, endpoint path, transport type, or bind address is wrong. | Check `port`, `endpointPath`, `bindHost`, and client URL. | Usually no. |
-| HTTP 403 response | Request `Origin` does not match the bind-address policy. | Use loopback locally; use a controlled gateway for remote access; inspect server logs for the safe reason category. | Usually no. |
-| Session request failure | Session was not initialized, headers are missing, or a closed session is reused. | Call `initialize` first and keep sending the response headers. | Usually no. |
-| No response in STDIO mode | STDIO is used as a shell, or the client does not send JSON-RPC over MCP stdio. | Let an MCP client launch the process; read stderr or logs for diagnostics. | Usually no. |
-| Logical database or metadata is empty | No logical database is configured, the logical database name is wrong, connection failed, permission is insufficient, or the target scope is empty. | Read `shardingsphere://runtime`, then inspect `empty_state` and `recovery` in resource responses. | Usually no. |
-| JDBC driver error | Driver is not on classpath, or `driverClassName` is wrong. | Put the driver jar under `plugins/`, and keep `driverClassName` non-empty and correct. | Usually no. |
-| SQL tool call failure | Wrong tool, multiple statements, or argument out of range. | Use `execute_query` for queries; use `execute_update` with preview for side effects. | Usually no; messages can improve. |
-| Workflow failure | `plan_id`, session, execution mode, or manual step is wrong. | Reuse `plan_id` in one session; preview first; validate after manual execution. | Usually no. |
-| Secret input cannot be passed safely | A clarification asks for a key or credential. | Resolve it outside the server, then pass it through a protected MCP call. | Server-side secret references require code changes. |
+| Symptom | Possible cause | Action |
+| --- | --- | --- |
+| Startup failure | JDK, config path, YAML field, or required field is wrong. | Inspect terminal output and `logs/mcp.log`. |
+| HTTP connection failure | Port, endpoint path, transport type, or bind address is wrong. | Check `port`, `endpointPath`, `bindHost`, and client URL. |
+| HTTP 403 response | Request `Origin` does not match the bind-address policy. | Use loopback locally; use a controlled gateway for remote access; inspect server logs for the safe reason category. |
+| Session request failure | Session was not initialized, headers are missing, or a closed session is reused. | Call `initialize` first and keep sending the response headers. |
+| No response in STDIO mode | STDIO is used as a shell, or the client does not send JSON-RPC over MCP stdio. | Let an MCP client launch the process; read stderr or logs for diagnostics. |
+| Logical database or metadata is empty | No logical database is configured, the logical database name is wrong, connection failed, permission is insufficient, or the target scope is empty. | Check runtime status, then verify database configuration, logical database name, connection failure category, and account privileges. |
+| JDBC driver error | Driver is not on classpath, or `driverClassName` is wrong. | Put the driver jar under `plugins/`, and keep `driverClassName` non-empty and correct. |
+| SQL tool call failure | Wrong tool, multiple statements, or argument out of range. | Use `execute_query` for queries; use `execute_update` with preview for side effects. |
+| Workflow failure | `plan_id`, session, execution mode, or manual step is wrong. | Reuse `plan_id` in one session; preview first; validate after manual execution. |
+| Secret input cannot be passed safely | A clarification asks for a key or credential. | Resolve the value through the client, a key management system, or an operations control channel, then pass it through a protected call or manual execution step. |
 
 Additional notes:
 
@@ -72,5 +72,5 @@ When reporting an issue, provide:
 - Transport type and endpoint.
 - Whether `initialize` has completed. Do not publish a real `MCP-Session-Id`.
 - Tool or resource request body.
-- JSON-RPC error payload.
+- Error response content, including the failure category and guidance.
 - Relevant errors from `logs/mcp.log`.

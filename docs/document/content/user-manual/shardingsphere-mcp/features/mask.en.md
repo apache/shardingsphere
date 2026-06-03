@@ -15,7 +15,7 @@ Mask rules apply directly to logical columns and do not generate physical derive
 
 ## Use through natural language
 
-Users describe the masking goal in the MCP client.
+Users describe the masking goal in an AI application that integrates ShardingSphere-MCP.
 
 Examples:
 
@@ -87,10 +87,6 @@ For the general review flow of plugin changes, see [Plugin Workflows](../plugin-
 - Logical column and rule validation are based on what Proxy exposes.
 - Direct physical database connections can execute ordinary SQL only and do not represent masking rule state.
 
-### ShardingSphere feature boundaries
+### SQL generation boundaries
 
-- Automatic rollback is not provided.
-
-### Planner input limits
-
-- Identifier content must not contain backticks, NUL, carriage-return, or line-feed characters because they cannot be rendered as reviewable SQL.
+- MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode identifiers. To keep generated SQL or DistSQL reviewable, identifier content must not contain backticks, NUL, carriage returns, or line feeds.
