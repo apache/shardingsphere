@@ -242,7 +242,7 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
         Collection<String> routedDataSources = routeDataSources(shardingTable, databaseShardingStrategy, databaseShardingValues);
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedDataSources) {
-            result.addAll(routeTables(shardingTable, each, tableShardingStrategy, tableShardingValues));
+            routeTables(shardingTable, each, tableShardingStrategy, tableShardingValues, result);
         }
         return result;
     }
@@ -258,17 +258,15 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
         return result;
     }
     
-    private Collection<DataNode> routeTables(final ShardingTable shardingTable, final String routedDataSource,
-                                             final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> tableShardingValues) {
+    private void routeTables(final ShardingTable shardingTable, final String routedDataSource,
+                             final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> tableShardingValues, final Collection<DataNode> result) {
         Collection<String> availableTargetTables = shardingTable.getActualTableNames(routedDataSource);
         Collection<String> routedTables = tableShardingValues.isEmpty()
                 ? availableTargetTables
                 : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, shardingTable.getTableDataNode(), props);
-        Collection<DataNode> result = new LinkedList<>();
         for (String each : routedTables) {
             result.add(new DataNode(routedDataSource, (String) null, each));
         }
-        return result;
     }
     
     private ShardingStrategy createShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfig, final Map<String, ShardingAlgorithm> shardingAlgorithms,
