@@ -45,43 +45,43 @@ import java.util.List;
 public final class InsertStatementConverter implements SQLStatementConverter<InsertStatement, SqlNode> {
     
     @Override
-    public SqlNode convert(final InsertStatement insertStatement) {
-        return convertInsert(insertStatement);
+    public SqlNode convert(final InsertStatement insertStatement, final String databaseType) {
+        return convertInsert(insertStatement, databaseType);
     }
     
-    private SqlInsert convertInsert(final InsertStatement insertStatement) {
-        SqlNode table = insertStatement.getTable().flatMap(TableConverter::convert).orElseThrow(IllegalStateException::new);
-        SqlNode source = convertSource(insertStatement);
+    private SqlInsert convertInsert(final InsertStatement insertStatement, final String databaseType) {
+        SqlNode table = insertStatement.getTable().flatMap(segment -> TableConverter.convert(segment, databaseType)).orElseThrow(IllegalStateException::new);
+        SqlNode source = convertSource(insertStatement, databaseType);
         SqlNodeList columns = convertColumn(insertStatement);
         return new SqlInsert(SqlParserPos.ZERO, SqlNodeList.EMPTY, table, source, columns);
     }
     
-    private SqlNode convertSource(final InsertStatement insertStatement) {
+    private SqlNode convertSource(final InsertStatement insertStatement, final String databaseType) {
         if (insertStatement.getInsertSelect().isPresent()) {
-            return new SelectStatementConverter().convert(insertStatement.getInsertSelect().get().getSelect());
+            return new SelectStatementConverter().convert(insertStatement.getInsertSelect().get().getSelect(), databaseType);
         } else if (insertStatement.getSetAssignment().isPresent()) {
-            return convertSetAssignment(insertStatement.getSetAssignment().get());
+            return convertSetAssignment(insertStatement.getSetAssignment().get(), databaseType);
         } else {
-            return convertValues(insertStatement.getValues());
+            return convertValues(insertStatement.getValues(), databaseType);
         }
     }
     
-    private SqlNode convertSetAssignment(final SetAssignmentSegment setAssignment) {
+    private SqlNode convertSetAssignment(final SetAssignmentSegment setAssignment, final String databaseType) {
         List<SqlNode> operands = new ArrayList<>();
         List<SqlNode> values = new ArrayList<>();
         for (ColumnAssignmentSegment each : setAssignment.getAssignments()) {
-            values.add(convertExpression(each.getValue()));
+            values.add(convertExpression(each.getValue(), databaseType));
         }
         operands.add(new SqlBasicCall(new SqlRowOperator("ROW"), values, SqlParserPos.ZERO));
         return new SqlBasicCall(new SqlValuesOperator(), operands, SqlParserPos.ZERO);
     }
     
-    private SqlNode convertValues(final Collection<InsertValuesSegment> insertValuesSegments) {
+    private SqlNode convertValues(final Collection<InsertValuesSegment> insertValuesSegments, final String databaseType) {
         List<SqlNode> operands = new ArrayList<>();
         for (InsertValuesSegment each : insertValuesSegments) {
             List<SqlNode> values = new ArrayList<>();
             for (ExpressionSegment value : each.getValues()) {
-                values.add(convertExpression(value));
+                values.add(convertExpression(value, databaseType));
             }
             operands.add(new SqlBasicCall(new SqlRowOperator("ROW"), values, SqlParserPos.ZERO));
         }
@@ -107,7 +107,7 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
         return result;
     }
     
-    private SqlNode convertExpression(final ExpressionSegment expressionSegment) {
-        return ExpressionConverter.convert(expressionSegment).orElseThrow(IllegalStateException::new);
+    private SqlNode convertExpression(final ExpressionSegment expressionSegment, final String databaseType) {
+        return ExpressionConverter.convert(expressionSegment, databaseType).orElseThrow(IllegalStateException::new);
     }
 }

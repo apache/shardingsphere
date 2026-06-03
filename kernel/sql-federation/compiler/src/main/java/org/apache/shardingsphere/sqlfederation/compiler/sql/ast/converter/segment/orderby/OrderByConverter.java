@@ -36,9 +36,10 @@ public final class OrderByConverter {
      * Convert order by segment to SQL node.
      *
      * @param segment order by segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static Optional<SqlNodeList> convert(final OrderBySegment segment) {
-        return null == segment ? Optional.empty() : Optional.of(new SqlNodeList(OrderByItemConverterUtils.convert(segment.getOrderByItems()), SqlParserPos.ZERO));
+    public static Optional<SqlNodeList> convert(final OrderBySegment segment, final String databaseType) {
+        return null == segment ? Optional.empty() : Optional.of(new SqlNodeList(OrderByItemConverterUtils.convert(segment.getOrderByItems(), databaseType), SqlParserPos.ZERO));
     }
 }

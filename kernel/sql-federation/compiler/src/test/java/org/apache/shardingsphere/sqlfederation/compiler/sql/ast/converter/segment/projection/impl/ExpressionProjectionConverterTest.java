@@ -48,14 +48,14 @@ class ExpressionProjectionConverterTest {
     
     @Test
     void assertConvertReturnsEmptyForNullSegment() {
-        assertFalse(ExpressionProjectionConverter.convert(null).isPresent());
+        assertFalse(ExpressionProjectionConverter.convert(null, null).isPresent());
     }
     
     @Test
     void assertConvertReturnsEmptyWhenExpressionConversionAbsent() {
         ExpressionSegment expressionSegment = mock(ExpressionSegment.class);
-        when(ExpressionConverter.convert(expressionSegment)).thenReturn(Optional.empty());
-        assertFalse(ExpressionProjectionConverter.convert(new ExpressionProjectionSegment(0, 0, "text", expressionSegment)).isPresent());
+        when(ExpressionConverter.convert(expressionSegment, null)).thenReturn(Optional.empty());
+        assertFalse(ExpressionProjectionConverter.convert(new ExpressionProjectionSegment(0, 0, "text", expressionSegment), null).isPresent());
     }
     
     @Test
@@ -64,8 +64,8 @@ class ExpressionProjectionConverterTest {
         ExpressionProjectionSegment projectionSegment = new ExpressionProjectionSegment(0, 0, "text", expressionSegment);
         projectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
         SqlNode expected = mock(SqlNode.class);
-        when(ExpressionConverter.convert(expressionSegment)).thenReturn(Optional.of(expected));
-        SqlBasicCall actual = (SqlBasicCall) ExpressionProjectionConverter.convert(projectionSegment).orElse(null);
+        when(ExpressionConverter.convert(expressionSegment, null)).thenReturn(Optional.of(expected));
+        SqlBasicCall actual = (SqlBasicCall) ExpressionProjectionConverter.convert(projectionSegment, null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.AS));
         assertThat(actual.getOperandList().get(0), is(expected));
@@ -77,8 +77,8 @@ class ExpressionProjectionConverterTest {
     void assertConvertReturnsConvertedExpressionWhenAliasAbsent() {
         ExpressionSegment expressionSegment = mock(ExpressionSegment.class);
         SqlNode expected = mock(SqlNode.class);
-        when(ExpressionConverter.convert(expressionSegment)).thenReturn(Optional.of(expected));
-        Optional<SqlNode> actual = ExpressionProjectionConverter.convert(new ExpressionProjectionSegment(0, 0, "text", expressionSegment));
+        when(ExpressionConverter.convert(expressionSegment, null)).thenReturn(Optional.of(expected));
+        Optional<SqlNode> actual = ExpressionProjectionConverter.convert(new ExpressionProjectionSegment(0, 0, "text", expressionSegment), null);
         assertTrue(actual.isPresent());
         assertThat(actual.orElse(null), is(expected));
     }

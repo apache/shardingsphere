@@ -60,7 +60,7 @@ class SubqueryTableConverterTest {
     
     @Test
     void assertConvertReturnsEmptyForNullSegment() {
-        assertFalse(SubqueryTableConverter.convert(null).isPresent());
+        assertFalse(SubqueryTableConverter.convert(null, null).isPresent());
     }
     
     @Test
@@ -71,7 +71,7 @@ class SubqueryTableConverterTest {
                 .build();
         SubqueryTableSegment segment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, selectStatement, "sub"));
         segment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
-        SqlBasicCall actual = (SqlBasicCall) SubqueryTableConverter.convert(segment).orElse(null);
+        SqlBasicCall actual = (SqlBasicCall) SubqueryTableConverter.convert(segment, null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.AS));
         assertThat(actual.getOperandList().get(0), isA(SqlBasicCall.class));
@@ -85,9 +85,9 @@ class SubqueryTableConverterTest {
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections).build();
         when(DistinctConverter.convert(projections)).thenReturn(Optional.empty());
-        when(ProjectionsConverter.convert(projections)).thenReturn(Optional.of(new SqlNodeList(Collections.singletonList(mock(SqlNode.class)), SqlParserPos.ZERO)));
+        when(ProjectionsConverter.convert(projections, null)).thenReturn(Optional.of(new SqlNodeList(Collections.singletonList(mock(SqlNode.class)), SqlParserPos.ZERO)));
         SubqueryTableSegment segment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, selectStatement, "sub"));
-        SqlBasicCall actual = (SqlBasicCall) SubqueryTableConverter.convert(segment).orElse(null);
+        SqlBasicCall actual = (SqlBasicCall) SubqueryTableConverter.convert(segment, null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.AS));
         assertThat(actual.getOperandList().get(0), isA(SqlSelect.class));

@@ -57,11 +57,11 @@ class CaseWhenExpressionConverterTest {
         SqlNode whenNode = mock(SqlNode.class);
         SqlNode thenNode = mock(SqlNode.class);
         SqlNode elseNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(caseExpr)).thenReturn(Optional.of(caseNode));
-        when(ExpressionConverter.convert(whenExpr)).thenReturn(Optional.of(whenNode));
-        when(ExpressionConverter.convert(thenExpr)).thenReturn(Optional.of(thenNode));
-        when(ExpressionConverter.convert(elseExpr)).thenReturn(Optional.of(elseNode));
-        SqlCase actual = CaseWhenExpressionConverter.convert(expression);
+        when(ExpressionConverter.convert(caseExpr, null)).thenReturn(Optional.of(caseNode));
+        when(ExpressionConverter.convert(whenExpr, null)).thenReturn(Optional.of(whenNode));
+        when(ExpressionConverter.convert(thenExpr, null)).thenReturn(Optional.of(thenNode));
+        when(ExpressionConverter.convert(elseExpr, null)).thenReturn(Optional.of(elseNode));
+        SqlCase actual = CaseWhenExpressionConverter.convert(expression, null);
         SqlBasicCall whenCall = (SqlBasicCall) actual.getWhenOperands().get(0);
         assertThat(whenCall.getOperator(), is(SqlStdOperatorTable.EQUALS));
         assertThat(whenCall.getOperandList().get(0), is(caseNode));
@@ -77,10 +77,10 @@ class CaseWhenExpressionConverterTest {
         CaseWhenExpression expression = new CaseWhenExpression(0, 0, null, Collections.singleton(whenExpr), Collections.singleton(thenExpr), null);
         SqlNode whenNode = mock(SqlNode.class);
         SqlNode thenNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(whenExpr)).thenReturn(Optional.of(whenNode));
-        when(ExpressionConverter.convert(thenExpr)).thenReturn(Optional.of(thenNode));
-        when(ExpressionConverter.convert(null)).thenReturn(Optional.empty());
-        SqlCase actual = CaseWhenExpressionConverter.convert(expression);
+        when(ExpressionConverter.convert(whenExpr, null)).thenReturn(Optional.of(whenNode));
+        when(ExpressionConverter.convert(thenExpr, null)).thenReturn(Optional.of(thenNode));
+        when(ExpressionConverter.convert(null, null)).thenReturn(Optional.empty());
+        SqlCase actual = CaseWhenExpressionConverter.convert(expression, null);
         assertNull(actual.getValueOperand());
         assertThat(actual.getWhenOperands().get(0), is(whenNode));
         assertThat(actual.getThenOperands().get(0), is(thenNode));
@@ -96,11 +96,11 @@ class CaseWhenExpressionConverterTest {
         CaseWhenExpression expression = new CaseWhenExpression(0, 0, caseExpr, Collections.singleton(whenExpr), Collections.singleton(thenExpr), null);
         SqlNode caseNode = mock(SqlNode.class);
         SqlNode thenNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(caseExpr)).thenReturn(Optional.of(caseNode));
-        when(ExpressionConverter.convert(whenExpr)).thenReturn(Optional.empty());
-        when(ExpressionConverter.convert(thenExpr)).thenReturn(Optional.of(thenNode));
-        when(ExpressionConverter.convert(null)).thenReturn(Optional.empty());
-        SqlCase actual = CaseWhenExpressionConverter.convert(expression);
+        when(ExpressionConverter.convert(caseExpr, null)).thenReturn(Optional.of(caseNode));
+        when(ExpressionConverter.convert(whenExpr, null)).thenReturn(Optional.empty());
+        when(ExpressionConverter.convert(thenExpr, null)).thenReturn(Optional.of(thenNode));
+        when(ExpressionConverter.convert(null, null)).thenReturn(Optional.empty());
+        SqlCase actual = CaseWhenExpressionConverter.convert(expression, null);
         assertTrue(actual.getWhenOperands().isEmpty());
         assertThat(actual.getThenOperands().get(0), is(thenNode));
     }

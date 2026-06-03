@@ -24,6 +24,7 @@ import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -36,8 +37,8 @@ import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLStringFunctionOperatorTable;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -56,6 +57,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 class SQLStatementCompilerIT {
@@ -93,7 +95,7 @@ class SQLStatementCompilerIT {
     private Collection<SqlOperatorTable> getOperatorTables() {
         SqlOperatorTable operatorTable =
                 SqlLibraryOperatorTableFactory.INSTANCE.getOperatorTable(Arrays.asList(SqlLibrary.STANDARD, SqlLibrary.MYSQL));
-        return Arrays.asList(new MySQLOperatorTable(), new MySQLStringFunctionOperatorTable(), operatorTable);
+        return Arrays.asList(new MySQLOperatorTable(), operatorTable);
     }
     
     private ShardingSphereTable createOrderFederationTableMetaData() {
@@ -248,6 +250,20 @@ class SQLStatementCompilerIT {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(testcase.getSql(), false);
         String actual = sqlStatementCompiler.compile(sqlStatement, "MySQL").getPhysicalPlan().explain().replaceAll(System.lineSeparator(), " ");
         assertThat(actual, is(testcase.getAssertion().iterator().next().getExpectedResult()));
+    }
+    
+    @Test
+    void assertCompileBinaryLiteralExpressionInPostgreSQLDialectSkipsMySQLRecognizer() {
+        String sql = "SELECT x'48656c6c6f'";
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
+        assertThrows(UnsupportedSQLOperationException.class, () -> sqlStatementCompiler.compile(sqlStatement, "PostgreSQL"));
+    }
+    
+    @Test
+    void assertCompileBinaryLiteralExpressionInOpenGaussDialectSkipsMySQLRecognizer() {
+        String sql = "SELECT x'48656c6c6f'";
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
+        assertThrows(UnsupportedSQLOperationException.class, () -> sqlStatementCompiler.compile(sqlStatement, "openGauss"));
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {

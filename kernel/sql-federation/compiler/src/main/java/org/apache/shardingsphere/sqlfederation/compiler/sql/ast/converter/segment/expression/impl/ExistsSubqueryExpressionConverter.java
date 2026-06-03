@@ -38,11 +38,12 @@ public final class ExistsSubqueryExpressionConverter {
      * Convert exists subquery expression to SQL node.
      *
      * @param expression exists subquery expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlNode convert(final ExistsSubqueryExpression expression) {
+    public static SqlNode convert(final ExistsSubqueryExpression expression, final String databaseType) {
         SqlBasicCall sqlNode = new SqlBasicCall(
-                SqlStdOperatorTable.EXISTS, Collections.singletonList(new SelectStatementConverter().convert(expression.getSubquery().getSelect())), SqlParserPos.ZERO);
+                SqlStdOperatorTable.EXISTS, Collections.singletonList(new SelectStatementConverter().convert(expression.getSubquery().getSelect(), databaseType)), SqlParserPos.ZERO);
         return expression.isNot() ? new SqlBasicCall(SqlStdOperatorTable.NOT, Collections.singletonList(sqlNode), SqlParserPos.ZERO) : sqlNode;
     }
 }

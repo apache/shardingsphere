@@ -43,10 +43,11 @@ public final class TableConverter {
      * Convert table segment to sql node.
      *
      * @param segment table segment
+     * @param databaseType database type
      * @return sql node
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
-    public static Optional<SqlNode> convert(final TableSegment segment) {
+    public static Optional<SqlNode> convert(final TableSegment segment, final String databaseType) {
         if (null == segment) {
             return Optional.empty();
         }
@@ -54,13 +55,13 @@ public final class TableConverter {
             return SimpleTableConverter.convert((SimpleTableSegment) segment);
         }
         if (segment instanceof JoinTableSegment) {
-            return JoinTableConverter.convert((JoinTableSegment) segment);
+            return JoinTableConverter.convert((JoinTableSegment) segment, databaseType);
         }
         if (segment instanceof SubqueryTableSegment) {
-            return SubqueryTableConverter.convert((SubqueryTableSegment) segment);
+            return SubqueryTableConverter.convert((SubqueryTableSegment) segment, databaseType);
         }
         if (segment instanceof DeleteMultiTableSegment) {
-            return DeleteMultiTableConverter.convert((DeleteMultiTableSegment) segment);
+            return DeleteMultiTableConverter.convert((DeleteMultiTableSegment) segment, databaseType);
         }
         throw new UnsupportedSQLOperationException("Unsupported segment type: " + segment.getClass());
     }

@@ -51,31 +51,32 @@ public final class ProjectionsConverter {
      * Convert projections segment to SQL node list.
      *
      * @param segment projections segment
+     * @param databaseType database type
      * @return SQL node list
      */
-    public static Optional<SqlNodeList> convert(final ProjectionsSegment segment) {
+    public static Optional<SqlNodeList> convert(final ProjectionsSegment segment, final String databaseType) {
         Collection<SqlNode> projectionSQLNodes = new LinkedList<>();
         for (ProjectionSegment each : segment.getProjections()) {
-            getProjectionSQLNode(each).ifPresent(projectionSQLNodes::add);
+            getProjectionSQLNode(each, databaseType).ifPresent(projectionSQLNodes::add);
         }
         return Optional.of(new SqlNodeList(projectionSQLNodes, SqlParserPos.ZERO));
     }
     
-    private static Optional<SqlNode> getProjectionSQLNode(final ProjectionSegment segment) {
+    private static Optional<SqlNode> getProjectionSQLNode(final ProjectionSegment segment, final String databaseType) {
         if (segment instanceof ColumnProjectionSegment) {
             return Optional.of(ColumnProjectionConverter.convert((ColumnProjectionSegment) segment));
         }
         if (segment instanceof ExpressionProjectionSegment) {
-            return ExpressionProjectionConverter.convert((ExpressionProjectionSegment) segment);
+            return ExpressionProjectionConverter.convert((ExpressionProjectionSegment) segment, databaseType);
         }
         if (segment instanceof ShorthandProjectionSegment) {
             return ShorthandProjectionConverter.convert((ShorthandProjectionSegment) segment);
         }
         if (segment instanceof SubqueryProjectionSegment) {
-            return SubqueryProjectionConverter.convert((SubqueryProjectionSegment) segment);
+            return SubqueryProjectionConverter.convert((SubqueryProjectionSegment) segment, databaseType);
         }
         if (segment instanceof AggregationProjectionSegment) {
-            return AggregationProjectionConverter.convert((AggregationProjectionSegment) segment);
+            return AggregationProjectionConverter.convert((AggregationProjectionSegment) segment, databaseType);
         }
         if (segment instanceof ParameterMarkerExpressionSegment) {
             return Optional.of(ParameterMarkerExpressionConverter.convert((ParameterMarkerExpressionSegment) segment));

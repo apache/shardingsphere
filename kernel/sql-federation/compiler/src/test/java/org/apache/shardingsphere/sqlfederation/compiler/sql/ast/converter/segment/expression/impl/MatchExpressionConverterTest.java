@@ -55,10 +55,10 @@ class MatchExpressionConverterTest {
         columnSegment.setOwner(tableOwner);
         LiteralExpressionSegment expr = new LiteralExpressionSegment(0, 0, "expr");
         SqlNode exprNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(expr)).thenReturn(Optional.of(exprNode));
+        when(ExpressionConverter.convert(expr, null)).thenReturn(Optional.of(exprNode));
         MatchAgainstExpression segment = new MatchAgainstExpression(0, 0, expr, "modifier", "");
         segment.getColumns().add(columnSegment);
-        SqlBasicCall actual = MatchExpressionConverter.convert(segment);
+        SqlBasicCall actual = MatchExpressionConverter.convert(segment, null);
         assertThat(actual.getOperator(), is(SQLExtensionOperatorTable.MATCH_AGAINST));
         SqlIdentifier identifier = (SqlIdentifier) actual.getOperandList().get(0);
         assertThat(identifier.names, is(Arrays.asList("schema", "table", "column")));
@@ -71,10 +71,10 @@ class MatchExpressionConverterTest {
     void assertConvertWithoutExpressionLeavesSearchModifierOnly() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("column"));
         LiteralExpressionSegment expr = new LiteralExpressionSegment(0, 0, "expr");
-        when(ExpressionConverter.convert(expr)).thenReturn(Optional.empty());
+        when(ExpressionConverter.convert(expr, null)).thenReturn(Optional.empty());
         MatchAgainstExpression segment = new MatchAgainstExpression(0, 0, expr, "modifier", "");
         segment.getColumns().add(columnSegment);
-        SqlBasicCall actual = MatchExpressionConverter.convert(segment);
+        SqlBasicCall actual = MatchExpressionConverter.convert(segment, null);
         assertThat(actual.getOperandList().size(), is(2));
         assertThat(actual.getOperandList().get(0), isA(SqlIdentifier.class));
         SqlLiteral modifier = (SqlLiteral) actual.getOperandList().get(1);

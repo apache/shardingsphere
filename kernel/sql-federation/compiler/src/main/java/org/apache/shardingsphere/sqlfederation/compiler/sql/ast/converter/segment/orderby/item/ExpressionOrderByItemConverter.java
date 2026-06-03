@@ -41,10 +41,11 @@ public final class ExpressionOrderByItemConverter {
      * Convert expression order by item segment to SQL node.
      *
      * @param segment expression order by item segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final ExpressionOrderByItemSegment segment) {
-        Optional<SqlNode> result = null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr());
+    public static Optional<SqlNode> convert(final ExpressionOrderByItemSegment segment, final String databaseType) {
+        Optional<SqlNode> result = null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr(), databaseType);
         if (!result.isPresent()) {
             return Optional.empty();
         }

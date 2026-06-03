@@ -33,9 +33,10 @@ public final class SubqueryExpressionConverter {
      * Convert subquery expression segment to SQL node.
      *
      * @param expression subquery expression segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlNode convert(final SubqueryExpressionSegment expression) {
-        return new SelectStatementConverter().convert(expression.getSubquery().getSelect());
+    public static SqlNode convert(final SubqueryExpressionSegment expression, final String databaseType) {
+        return new SelectStatementConverter().convert(expression.getSubquery().getSelect(), databaseType);
     }
 }

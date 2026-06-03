@@ -38,24 +38,24 @@ import java.util.Optional;
 public final class ExplainStatementConverter implements SQLStatementConverter<ExplainStatement, SqlNode> {
     
     @Override
-    public SqlNode convert(final ExplainStatement explainStatement) {
-        return new SqlExplain(SqlParserPos.ZERO, convertSQLStatement(explainStatement), SqlExplainLevel.ALL_ATTRIBUTES.symbol(SqlParserPos.ZERO),
+    public SqlNode convert(final ExplainStatement explainStatement, final String databaseType) {
+        return new SqlExplain(SqlParserPos.ZERO, convertSQLStatement(explainStatement, databaseType), SqlExplainLevel.ALL_ATTRIBUTES.symbol(SqlParserPos.ZERO),
                 SqlExplain.Depth.TYPE.symbol(SqlParserPos.ZERO), SqlExplainFormat.TEXT.symbol(SqlParserPos.ZERO), 0);
     }
     
-    private SqlNode convertSQLStatement(final ExplainStatement explainStatement) {
-        return convertSqlNode(explainStatement.getExplainableSQLStatement()).orElseThrow(IllegalStateException::new);
+    private SqlNode convertSQLStatement(final ExplainStatement explainStatement, final String databaseType) {
+        return convertSqlNode(explainStatement.getExplainableSQLStatement(), databaseType).orElseThrow(IllegalStateException::new);
     }
     
-    private Optional<SqlNode> convertSqlNode(final SQLStatement sqlStatement) {
+    private Optional<SqlNode> convertSqlNode(final SQLStatement sqlStatement, final String databaseType) {
         if (sqlStatement instanceof SelectStatement) {
-            return Optional.of(new SelectStatementConverter().convert((SelectStatement) sqlStatement));
+            return Optional.of(new SelectStatementConverter().convert((SelectStatement) sqlStatement, databaseType));
         } else if (sqlStatement instanceof DeleteStatement) {
-            return Optional.of(new DeleteStatementConverter().convert((DeleteStatement) sqlStatement));
+            return Optional.of(new DeleteStatementConverter().convert((DeleteStatement) sqlStatement, databaseType));
         } else if (sqlStatement instanceof UpdateStatement) {
-            return Optional.of(new UpdateStatementConverter().convert((UpdateStatement) sqlStatement));
+            return Optional.of(new UpdateStatementConverter().convert((UpdateStatement) sqlStatement, databaseType));
         } else if (sqlStatement instanceof InsertStatement) {
-            return Optional.of(new InsertStatementConverter().convert((InsertStatement) sqlStatement));
+            return Optional.of(new InsertStatementConverter().convert((InsertStatement) sqlStatement, databaseType));
         }
         return Optional.empty();
     }

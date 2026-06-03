@@ -35,9 +35,10 @@ public final class HavingConverter {
      * Convert having segment to SQL node.
      *
      * @param segment having segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final HavingSegment segment) {
-        return null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr());
+    public static Optional<SqlNode> convert(final HavingSegment segment, final String databaseType) {
+        return null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr(), databaseType);
     }
 }

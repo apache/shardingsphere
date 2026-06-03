@@ -43,7 +43,7 @@ class ListExpressionConverterTest {
     
     @Test
     void assertConvertReturnsEmptyWhenNoItems() {
-        assertFalse(ListExpressionConverter.convert(new ListExpression(0, 0)).isPresent());
+        assertFalse(ListExpressionConverter.convert(new ListExpression(0, 0), null).isPresent());
     }
     
     @Test
@@ -54,9 +54,9 @@ class ListExpressionConverterTest {
         expression.getItems().add(first);
         expression.getItems().add(second);
         SqlNode secondNode = SqlLiteral.createExactNumeric("2", SqlParserPos.ZERO);
-        when(ExpressionConverter.convert(first)).thenReturn(Optional.empty());
-        when(ExpressionConverter.convert(second)).thenReturn(Optional.of(secondNode));
-        SqlNodeList actual = (SqlNodeList) ListExpressionConverter.convert(expression).orElse(null);
+        when(ExpressionConverter.convert(first, null)).thenReturn(Optional.empty());
+        when(ExpressionConverter.convert(second, null)).thenReturn(Optional.of(secondNode));
+        SqlNodeList actual = (SqlNodeList) ListExpressionConverter.convert(expression, null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(secondNode));

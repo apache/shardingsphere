@@ -41,12 +41,13 @@ public final class InExpressionConverter {
      * Convert in expression to SQL node.
      *
      * @param expression in expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlBasicCall convert(final InExpression expression) {
+    public static SqlBasicCall convert(final InExpression expression, final String databaseType) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();
-        ExpressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
-        ExpressionConverter.convert(expression.getRight())
+        ExpressionConverter.convert(expression.getLeft(), databaseType).ifPresent(sqlNodes::add);
+        ExpressionConverter.convert(expression.getRight(), databaseType)
                 .ifPresent(optional -> sqlNodes.add(optional instanceof SqlBasicCall ? new SqlNodeList(((SqlBasicCall) optional).getOperandList(), SqlParserPos.ZERO) : optional));
         return new SqlBasicCall(expression.isNot() ? SqlStdOperatorTable.NOT_IN : SqlStdOperatorTable.IN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO);
     }

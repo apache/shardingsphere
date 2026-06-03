@@ -50,9 +50,9 @@ class RowExpressionConverterTest {
         expression.getItems().add(second);
         SqlNode firstNode = SqlLiteral.createExactNumeric("1", SqlParserPos.ZERO);
         SqlNode secondNode = SqlLiteral.createExactNumeric("2", SqlParserPos.ZERO);
-        when(ExpressionConverter.convert(first)).thenReturn(Optional.of(firstNode));
-        when(ExpressionConverter.convert(second)).thenReturn(Optional.of(secondNode));
-        SqlBasicCall actual = (SqlBasicCall) RowExpressionConverter.convert(expression);
+        when(ExpressionConverter.convert(first, null)).thenReturn(Optional.of(firstNode));
+        when(ExpressionConverter.convert(second, null)).thenReturn(Optional.of(secondNode));
+        SqlBasicCall actual = (SqlBasicCall) RowExpressionConverter.convert(expression, null);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.ROW));
         assertThat(actual.getOperandList(), is(Arrays.asList(firstNode, secondNode)));
     }

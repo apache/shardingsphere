@@ -39,12 +39,13 @@ public final class RowExpressionConverter {
      * Convert row expression to SQL node.
      *
      * @param segment row expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlNode convert(final RowExpression segment) {
+    public static SqlNode convert(final RowExpression segment, final String databaseType) {
         List<SqlNode> sqlNodes = new ArrayList<>(segment.getItems().size());
         for (ExpressionSegment each : segment.getItems()) {
-            ExpressionConverter.convert(each).ifPresent(sqlNodes::add);
+            ExpressionConverter.convert(each, databaseType).ifPresent(sqlNodes::add);
         }
         return SqlStdOperatorTable.ROW.createCall(SqlParserPos.ZERO, sqlNodes);
     }

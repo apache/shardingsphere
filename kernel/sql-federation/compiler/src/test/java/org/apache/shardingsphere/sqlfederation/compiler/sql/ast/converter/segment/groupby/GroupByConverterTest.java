@@ -45,20 +45,20 @@ class GroupByConverterTest {
     
     @Test
     void assertConvertReturnsEmptyForNullSegment() {
-        assertFalse(GroupByConverter.convert(null).isPresent());
+        assertFalse(GroupByConverter.convert(null, null).isPresent());
     }
     
     @Test
     void assertConvertReturnsEmptyForEmptyItems() {
-        assertFalse(GroupByConverter.convert(new GroupBySegment(0, 0, Collections.emptyList())).isPresent());
+        assertFalse(GroupByConverter.convert(new GroupBySegment(0, 0, Collections.emptyList()), null).isPresent());
     }
     
     @Test
     void assertConvertReturnsSqlNodeListWhenItemsPresent() {
         Collection<OrderByItemSegment> groupByItems = new ArrayList<>(Collections.singletonList(mock(OrderByItemSegment.class)));
         SqlNode expectedNode = mock(SqlNode.class);
-        when(OrderByItemConverterUtils.convert(groupByItems)).thenReturn(Collections.singleton(expectedNode));
-        Optional<SqlNodeList> actual = GroupByConverter.convert(new GroupBySegment(0, 0, groupByItems));
+        when(OrderByItemConverterUtils.convert(groupByItems, null)).thenReturn(Collections.singleton(expectedNode));
+        Optional<SqlNodeList> actual = GroupByConverter.convert(new GroupBySegment(0, 0, groupByItems), null);
         assertTrue(actual.isPresent());
         assertThat(actual.get().get(0), is(expectedNode));
         assertThat(actual.get().size(), is(1));

@@ -64,7 +64,7 @@ class BinaryOperationExpressionConverterTest {
         LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 1);
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, "unknown");
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "IS", "");
-        assertThrows(IllegalStateException.class, () -> BinaryOperationExpressionConverter.convert(expression));
+        assertThrows(IllegalStateException.class, () -> BinaryOperationExpressionConverter.convert(expression, null));
     }
     
     @Test
@@ -75,9 +75,9 @@ class BinaryOperationExpressionConverterTest {
         SqlNode leftNode = mock(SqlNode.class);
         SqlNode firstRightNode = mock(SqlNode.class);
         SqlNode secondRightNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        when(ExpressionConverter.convert(right)).thenReturn(Optional.of(new SqlNodeList(Arrays.asList(firstRightNode, secondRightNode), SqlParserPos.ZERO)));
-        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(expression);
+        when(ExpressionConverter.convert(left, null)).thenReturn(Optional.of(leftNode));
+        when(ExpressionConverter.convert(right, null)).thenReturn(Optional.of(new SqlNodeList(Arrays.asList(firstRightNode, secondRightNode), SqlParserPos.ZERO)));
+        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(expression, null);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.PLUS));
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, firstRightNode, secondRightNode)));
     }
@@ -88,9 +88,9 @@ class BinaryOperationExpressionConverterTest {
         QuantifySubqueryExpression right = new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub"), "ALL");
         SqlNode leftNode = mock(SqlNode.class);
         SqlNode rightNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        when(ExpressionConverter.convert(right)).thenReturn(Optional.of(rightNode));
-        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "AND", ""));
+        when(ExpressionConverter.convert(left, null)).thenReturn(Optional.of(leftNode));
+        when(ExpressionConverter.convert(right, null)).thenReturn(Optional.of(rightNode));
+        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "AND", ""), null);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.AND));
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, rightNode)));
     }
@@ -102,8 +102,8 @@ class BinaryOperationExpressionConverterTest {
         LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 1);
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, rightLiteral);
         SqlNode leftNode = leftSupplier.get();
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "IS", ""));
+        when(ExpressionConverter.convert(left, null)).thenReturn(Optional.of(leftNode));
+        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, "IS", ""), null);
         assertThat(actual.getOperator(), is(expectedOperator));
         if (null == expectedBoolean) {
             assertThat(actual.getOperandList(), is(Collections.singletonList(leftNode)));
@@ -120,9 +120,9 @@ class BinaryOperationExpressionConverterTest {
         QuantifySubqueryExpression right = new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub"), quantifyOperator);
         SqlNode leftNode = mock(SqlNode.class);
         SqlNode rightNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        when(ExpressionConverter.convert(right)).thenReturn(Optional.of(rightNode));
-        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, operator, ""));
+        when(ExpressionConverter.convert(left, null)).thenReturn(Optional.of(leftNode));
+        when(ExpressionConverter.convert(right, null)).thenReturn(Optional.of(rightNode));
+        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, operator, ""), null);
         assertThat(actual.getOperator(), is(expectedOperator));
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, rightNode)));
     }

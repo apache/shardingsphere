@@ -63,30 +63,30 @@ class TableConverterTest {
         JoinTableSegment joinTableSegment = new JoinTableSegment();
         joinTableSegment.setLeft(simpleTableSegment);
         joinTableSegment.setRight(simpleTableSegment);
-        when(JoinTableConverter.convert(joinTableSegment)).thenReturn(Optional.of(expectedJoinNode));
+        when(JoinTableConverter.convert(joinTableSegment, null)).thenReturn(Optional.of(expectedJoinNode));
         SqlNode expectedSubqueryNode = mock(SqlNode.class);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub");
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, subquerySegment);
-        when(SubqueryTableConverter.convert(subqueryTableSegment)).thenReturn(Optional.of(expectedSubqueryNode));
+        when(SubqueryTableConverter.convert(subqueryTableSegment, null)).thenReturn(Optional.of(expectedSubqueryNode));
         SqlNode expectedDeleteNode = mock(SqlNode.class);
         DeleteMultiTableSegment deleteMultiTableSegment = new DeleteMultiTableSegment();
         deleteMultiTableSegment.setRelationTable(simpleTableSegment);
-        when(DeleteMultiTableConverter.convert(deleteMultiTableSegment)).thenReturn(Optional.of(expectedDeleteNode));
-        assertThat(TableConverter.convert(simpleTableSegment).orElse(null), is(expectedSimpleNode));
-        assertThat(TableConverter.convert(joinTableSegment).orElse(null), is(expectedJoinNode));
-        assertThat(TableConverter.convert(subqueryTableSegment).orElse(null), is(expectedSubqueryNode));
-        assertThat(TableConverter.convert(deleteMultiTableSegment).orElse(null), is(expectedDeleteNode));
+        when(DeleteMultiTableConverter.convert(deleteMultiTableSegment, null)).thenReturn(Optional.of(expectedDeleteNode));
+        assertThat(TableConverter.convert(simpleTableSegment, null).orElse(null), is(expectedSimpleNode));
+        assertThat(TableConverter.convert(joinTableSegment, null).orElse(null), is(expectedJoinNode));
+        assertThat(TableConverter.convert(subqueryTableSegment, null).orElse(null), is(expectedSubqueryNode));
+        assertThat(TableConverter.convert(deleteMultiTableSegment, null).orElse(null), is(expectedDeleteNode));
     }
     
     @Test
     void assertConvertReturnsEmptyForNullSegment() {
-        assertFalse(TableConverter.convert(null).isPresent());
+        assertFalse(TableConverter.convert(null, null).isPresent());
     }
     
     @Test
     void assertConvertThrowsUnsupportedForUnknownSegment() {
         TableSegment unknownSegment = mock(TableSegment.class);
-        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class, () -> TableConverter.convert(unknownSegment));
+        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class, () -> TableConverter.convert(unknownSegment, null));
         assertThat(actualException.getMessage(), is("Unsupported SQL operation: Unsupported segment type: " + unknownSegment.getClass() + "."));
     }
 }

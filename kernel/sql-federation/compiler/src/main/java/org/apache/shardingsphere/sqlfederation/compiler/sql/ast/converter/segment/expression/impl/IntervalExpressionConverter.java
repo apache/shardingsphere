@@ -42,12 +42,13 @@ public final class IntervalExpressionConverter {
      * Convert unary operation expression to SQL node.
      *
      * @param segment unary operation expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlBasicCall convert(final IntervalExpression segment) {
+    public static SqlBasicCall convert(final IntervalExpression segment, final String databaseType) {
         TimeUnit timeUnit = getTimeUnit(segment.getIntervalUnit());
         List<SqlNode> sqlNodes = new ArrayList<>();
-        ExpressionConverter.convert(segment.getValue()).ifPresent(sqlNodes::add);
+        ExpressionConverter.convert(segment.getValue(), databaseType).ifPresent(sqlNodes::add);
         sqlNodes.add(new SqlIntervalQualifier(timeUnit, timeUnit, SqlParserPos.ZERO));
         return new SqlBasicCall(SQLExtensionOperatorTable.INTERVAL_OPERATOR, sqlNodes, SqlParserPos.ZERO);
     }

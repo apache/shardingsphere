@@ -53,28 +53,28 @@ class ExplainStatementConverterTest {
     @Test
     void assertConvertSelectStatement() {
         ExplainStatement explainStatement = new ExplainStatement(databaseType, createSelectStatement());
-        SqlNode actual = new ExplainStatementConverter().convert(explainStatement);
+        SqlNode actual = new ExplainStatementConverter().convert(explainStatement, null);
         assertThat(((SqlExplain) actual).getExplicandum(), isA(SqlNode.class));
     }
     
     @Test
     void assertConvertDeleteStatement() {
         ExplainStatement explainStatement = new ExplainStatement(databaseType, createDeleteStatement());
-        SqlNode actual = new ExplainStatementConverter().convert(explainStatement);
+        SqlNode actual = new ExplainStatementConverter().convert(explainStatement, null);
         assertThat(((SqlExplain) actual).getExplicandum(), isA(SqlNode.class));
     }
     
     @Test
     void assertConvertUpdateStatement() {
         ExplainStatement explainStatement = new ExplainStatement(databaseType, createUpdateStatement());
-        SqlNode actual = new ExplainStatementConverter().convert(explainStatement);
+        SqlNode actual = new ExplainStatementConverter().convert(explainStatement, null);
         assertThat(((SqlExplain) actual).getExplicandum(), isA(SqlNode.class));
     }
     
     @Test
     void assertConvertInsertStatement() {
         ExplainStatement explainStatement = new ExplainStatement(databaseType, createInsertStatement());
-        SqlNode actual = new ExplainStatementConverter().convert(explainStatement);
+        SqlNode actual = new ExplainStatementConverter().convert(explainStatement, null);
         assertThat(((SqlExplain) actual).getExplicandum(), isA(SqlNode.class));
     }
     
@@ -83,7 +83,7 @@ class ExplainStatementConverterTest {
         DCLStatement mockStatement = Mockito.mock(DCLStatement.class, Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS));
         Mockito.when(mockStatement.getDatabaseType()).thenReturn(databaseType);
         ExplainStatement explainStatement = new ExplainStatement(databaseType, mockStatement);
-        assertThrows(IllegalStateException.class, () -> new ExplainStatementConverter().convert(explainStatement));
+        assertThrows(IllegalStateException.class, () -> new ExplainStatementConverter().convert(explainStatement, null));
     }
     
     private SelectStatement createSelectStatement() {

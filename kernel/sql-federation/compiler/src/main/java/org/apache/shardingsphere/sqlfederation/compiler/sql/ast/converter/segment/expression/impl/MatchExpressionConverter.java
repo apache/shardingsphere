@@ -44,9 +44,10 @@ public final class MatchExpressionConverter {
      * Convert match against expression to SQL node.
      *
      * @param segment match against expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlBasicCall convert(final MatchAgainstExpression segment) {
+    public static SqlBasicCall convert(final MatchAgainstExpression segment, final String databaseType) {
         List<SqlNode> sqlNodes = new LinkedList<>();
         List<String> names = new ArrayList<>();
         for (ColumnSegment each : segment.getColumns()) {
@@ -56,7 +57,7 @@ public final class MatchExpressionConverter {
             names.add(each.getIdentifier().getValue());
         }
         sqlNodes.add(new SqlIdentifier(names, SqlParserPos.ZERO));
-        ExpressionConverter.convert(segment.getExpr()).ifPresent(sqlNodes::add);
+        ExpressionConverter.convert(segment.getExpr(), databaseType).ifPresent(sqlNodes::add);
         SqlNode searchModifier = SqlLiteral.createCharString(segment.getSearchModifier(), SqlParserPos.ZERO);
         sqlNodes.add(searchModifier);
         return new SqlBasicCall(SQLExtensionOperatorTable.MATCH_AGAINST, sqlNodes, SqlParserPos.ZERO);

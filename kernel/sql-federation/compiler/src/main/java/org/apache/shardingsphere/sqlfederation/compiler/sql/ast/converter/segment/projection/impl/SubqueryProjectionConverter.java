@@ -44,13 +44,14 @@ public final class SubqueryProjectionConverter {
      * Convert subquery projection segment to SQL node.
      *
      * @param segment subquery projection segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final SubqueryProjectionSegment segment) {
+    public static Optional<SqlNode> convert(final SubqueryProjectionSegment segment, final String databaseType) {
         if (null == segment) {
             return Optional.empty();
         }
-        SqlNode sqlNode = new SelectStatementConverter().convert(segment.getSubquery().getSelect());
+        SqlNode sqlNode = new SelectStatementConverter().convert(segment.getSubquery().getSelect(), databaseType);
         if (segment.getAliasName().isPresent()) {
             sqlNode = convertWithAlias(sqlNode, segment.getAliasName().get());
         }

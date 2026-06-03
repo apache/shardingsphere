@@ -59,7 +59,7 @@ class JoinTableConverterTest {
         JoinTableSegment segment = new JoinTableSegment();
         segment.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_left"))));
         segment.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_right"))));
-        SqlJoin actual = (SqlJoin) JoinTableConverter.convert(segment).orElse(null);
+        SqlJoin actual = (SqlJoin) JoinTableConverter.convert(segment, null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getJoinType(), is(JoinType.COMMA));
         assertThat(actual.getConditionType(), is(JoinConditionType.NONE));
@@ -75,9 +75,9 @@ class JoinTableConverterTest {
         segment.setJoinType(JoinType.LEFT.name());
         ExpressionSegment condition = mock(ExpressionSegment.class);
         SqlNode expectedCondition = mock(SqlNode.class);
-        when(ExpressionConverter.convert(condition)).thenReturn(Optional.of(expectedCondition));
+        when(ExpressionConverter.convert(condition, null)).thenReturn(Optional.of(expectedCondition));
         segment.setCondition(condition);
-        SqlJoin actual = (SqlJoin) JoinTableConverter.convert(segment).orElse(null);
+        SqlJoin actual = (SqlJoin) JoinTableConverter.convert(segment, null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getJoinType(), is(JoinType.LEFT));
         assertThat(actual.getConditionType(), is(JoinConditionType.ON));
@@ -94,7 +94,7 @@ class JoinTableConverterTest {
         segment.setUsing(new ArrayList<>(Collections.singletonList(usingColumn)));
         SqlIdentifier usingNode = mock(SqlIdentifier.class);
         when(ColumnConverter.convert(usingColumn)).thenReturn(usingNode);
-        SqlJoin actual = (SqlJoin) JoinTableConverter.convert(segment).orElse(null);
+        SqlJoin actual = (SqlJoin) JoinTableConverter.convert(segment, null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getJoinType(), is(JoinType.INNER));
         assertThat(actual.getConditionType(), is(JoinConditionType.USING));

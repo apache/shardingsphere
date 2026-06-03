@@ -26,62 +26,38 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLStringFunctionOperatorTable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class CompilerContextFactoryTest {
     
     @Test
-    void assertMySQLContextRegistersMySQLStringFunctionOperatorTable() {
+    void assertMySQLContextRegistersMySQLOperatorTable() {
         Collection<SqlOperatorTable> actual = CompilerContextFactory.create(Collections.singletonList(createDatabase("MySQL"))).getOperatorTables();
         assertTrue(containsOperatorTable(actual, MySQLOperatorTable.class));
-        assertTrue(containsOperatorTable(actual, MySQLStringFunctionOperatorTable.class));
     }
     
     @Test
-    void assertMariaDBLikeContextRegistersMySQLStringFunctionOperatorTableViaTrunk() {
-        Collection<SqlOperatorTable> actual = CompilerContextFactory.create(Collections.singletonList(createDatabaseWithMySQLTrunk("MariaDB"))).getOperatorTables();
-        assertTrue(containsOperatorTable(actual, MySQLStringFunctionOperatorTable.class));
-    }
-    
-    @Test
-    void assertDorisLikeContextRegistersMySQLStringFunctionOperatorTableViaTrunk() {
-        Collection<SqlOperatorTable> actual = CompilerContextFactory.create(Collections.singletonList(createDatabaseWithMySQLTrunk("Doris"))).getOperatorTables();
-        assertTrue(containsOperatorTable(actual, MySQLStringFunctionOperatorTable.class));
-    }
-    
-    @Test
-    void assertNonMySQLTrunkContextDoesNotRegisterMySQLStringFunctionOperatorTable() {
-        Collection<SqlOperatorTable> actual = CompilerContextFactory.create(Collections.singletonList(createDatabaseWithTrunk("Greenplum", "PostgreSQL"))).getOperatorTables();
-        assertFalse(containsOperatorTable(actual, MySQLStringFunctionOperatorTable.class));
-    }
-    
-    @Test
-    void assertPostgreSQLContextDoesNotRegisterMySQLStringFunctionOperatorTable() {
+    void assertPostgreSQLContextRegistersMySQLOperatorTable() {
         Collection<SqlOperatorTable> actual = CompilerContextFactory.create(Collections.singletonList(createDatabase("PostgreSQL"))).getOperatorTables();
-        assertFalse(containsOperatorTable(actual, MySQLStringFunctionOperatorTable.class));
+        assertTrue(containsOperatorTable(actual, MySQLOperatorTable.class));
     }
     
     @Test
-    void assertOpenGaussContextDoesNotRegisterMySQLStringFunctionOperatorTable() {
+    void assertOpenGaussContextRegistersMySQLOperatorTable() {
         Collection<SqlOperatorTable> actual = CompilerContextFactory.create(Collections.singletonList(createDatabase("openGauss"))).getOperatorTables();
-        assertFalse(containsOperatorTable(actual, MySQLStringFunctionOperatorTable.class));
+        assertTrue(containsOperatorTable(actual, MySQLOperatorTable.class));
     }
     
     @Test
-    void assertOracleContextDoesNotRegisterMySQLStringFunctionOperatorTable() {
+    void assertOracleContextRegistersMySQLOperatorTable() {
         Collection<SqlOperatorTable> actual = CompilerContextFactory.create(Collections.singletonList(createDatabase("Oracle"))).getOperatorTables();
-        assertFalse(containsOperatorTable(actual, MySQLStringFunctionOperatorTable.class));
+        assertTrue(containsOperatorTable(actual, MySQLOperatorTable.class));
     }
     
     @Test
@@ -92,19 +68,6 @@ class CompilerContextFactoryTest {
     
     private ShardingSphereDatabase createDatabase(final String databaseType) {
         DatabaseType type = TypedSPILoader.getService(DatabaseType.class, databaseType);
-        return new ShardingSphereDatabase("foo_db", type, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
-                Collections.singleton(new ShardingSphereSchema("foo_db", type, Collections.emptyList(), Collections.emptyList())), new ConfigurationProperties(new Properties()));
-    }
-    
-    private ShardingSphereDatabase createDatabaseWithMySQLTrunk(final String databaseTypeName) {
-        return createDatabaseWithTrunk(databaseTypeName, "MySQL");
-    }
-    
-    private ShardingSphereDatabase createDatabaseWithTrunk(final String databaseTypeName, final String trunkDatabaseTypeName) {
-        DatabaseType trunk = TypedSPILoader.getService(DatabaseType.class, trunkDatabaseTypeName);
-        DatabaseType type = mock(DatabaseType.class);
-        when(type.getType()).thenReturn(databaseTypeName);
-        when(type.getTrunkDatabaseType()).thenReturn(Optional.of(trunk));
         return new ShardingSphereDatabase("foo_db", type, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
                 Collections.singleton(new ShardingSphereSchema("foo_db", type, Collections.emptyList(), Collections.emptyList())), new ConfigurationProperties(new Properties()));
     }

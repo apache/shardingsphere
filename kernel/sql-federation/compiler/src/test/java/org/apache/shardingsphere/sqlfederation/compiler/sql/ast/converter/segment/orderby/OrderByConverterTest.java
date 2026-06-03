@@ -45,15 +45,15 @@ class OrderByConverterTest {
     
     @Test
     void assertConvertReturnsEmptyForNullSegment() {
-        assertFalse(OrderByConverter.convert(null).isPresent());
+        assertFalse(OrderByConverter.convert(null, null).isPresent());
     }
     
     @Test
     void assertConvertReturnsSqlNodeList() {
         Collection<OrderByItemSegment> orderByItems = new ArrayList<>(Collections.singletonList(mock(OrderByItemSegment.class)));
         SqlNode expectedNode = mock(SqlNode.class);
-        when(OrderByItemConverterUtils.convert(orderByItems)).thenReturn(Collections.singleton(expectedNode));
-        Optional<SqlNodeList> actual = OrderByConverter.convert(new OrderBySegment(0, 0, orderByItems));
+        when(OrderByItemConverterUtils.convert(orderByItems, null)).thenReturn(Collections.singleton(expectedNode));
+        Optional<SqlNodeList> actual = OrderByConverter.convert(new OrderBySegment(0, 0, orderByItems), null);
         assertTrue(actual.isPresent());
         assertThat(actual.get().size(), is(1));
         assertThat(actual.get().get(0), is(expectedNode));

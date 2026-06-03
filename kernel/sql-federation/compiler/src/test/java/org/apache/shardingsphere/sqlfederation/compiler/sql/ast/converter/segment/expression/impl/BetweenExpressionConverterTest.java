@@ -49,10 +49,10 @@ class BetweenExpressionConverterTest {
         SqlNode leftNode = mock(SqlNode.class);
         SqlNode betweenNode = mock(SqlNode.class);
         SqlNode andNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        when(ExpressionConverter.convert(betweenExpr)).thenReturn(Optional.of(betweenNode));
-        when(ExpressionConverter.convert(andExpr)).thenReturn(Optional.of(andNode));
-        SqlBasicCall actual = BetweenExpressionConverter.convert(new BetweenExpression(0, 0, left, betweenExpr, andExpr, false));
+        when(ExpressionConverter.convert(left, null)).thenReturn(Optional.of(leftNode));
+        when(ExpressionConverter.convert(betweenExpr, null)).thenReturn(Optional.of(betweenNode));
+        when(ExpressionConverter.convert(andExpr, null)).thenReturn(Optional.of(andNode));
+        SqlBasicCall actual = BetweenExpressionConverter.convert(new BetweenExpression(0, 0, left, betweenExpr, andExpr, false), null);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.BETWEEN));
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, betweenNode, andNode)));
     }
@@ -65,10 +65,10 @@ class BetweenExpressionConverterTest {
         SqlNode leftNode = mock(SqlNode.class);
         SqlNode betweenNode = mock(SqlNode.class);
         SqlNode andNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        when(ExpressionConverter.convert(betweenExpr)).thenReturn(Optional.of(betweenNode));
-        when(ExpressionConverter.convert(andExpr)).thenReturn(Optional.of(andNode));
-        SqlBasicCall actual = BetweenExpressionConverter.convert(new BetweenExpression(0, 0, left, betweenExpr, andExpr, true));
+        when(ExpressionConverter.convert(left, null)).thenReturn(Optional.of(leftNode));
+        when(ExpressionConverter.convert(betweenExpr, null)).thenReturn(Optional.of(betweenNode));
+        when(ExpressionConverter.convert(andExpr, null)).thenReturn(Optional.of(andNode));
+        SqlBasicCall actual = BetweenExpressionConverter.convert(new BetweenExpression(0, 0, left, betweenExpr, andExpr, true), null);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.NOT_BETWEEN));
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, betweenNode, andNode)));
     }

@@ -51,7 +51,7 @@ public final class SQLStatementCompiler {
      */
     public SQLFederationExecutionPlan compile(final SQLStatement sqlStatement, final String databaseType) {
         RelMetadataQueryBase.THREAD_PROVIDERS.set(JaninoRelMetadataProvider.DEFAULT);
-        SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
+        SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement, databaseType);
         RelNode logicalPlan = converter.convertQuery(sqlNode, true, true).rel;
         RelDataType resultColumnType = converter.getValidatedNodeType(sqlNode);
         RelNode rewrittenPlan = rewrite(logicalPlan, databaseType);

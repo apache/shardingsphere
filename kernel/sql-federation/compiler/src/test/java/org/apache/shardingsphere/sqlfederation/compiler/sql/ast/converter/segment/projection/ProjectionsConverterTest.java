@@ -64,7 +64,7 @@ class ProjectionsConverterTest {
         projectionsSegment.getProjections().add(columnProjectionSegment);
         SqlNode expectedExpressionNode = mock(SqlNode.class);
         ExpressionProjectionSegment expressionProjectionSegment = mock(ExpressionProjectionSegment.class);
-        when(ExpressionProjectionConverter.convert(expressionProjectionSegment)).thenReturn(Optional.of(expectedExpressionNode));
+        when(ExpressionProjectionConverter.convert(expressionProjectionSegment, null)).thenReturn(Optional.of(expectedExpressionNode));
         projectionsSegment.getProjections().add(expressionProjectionSegment);
         SqlNode expectedShorthandNode = mock(SqlNode.class);
         ShorthandProjectionSegment shorthandProjectionSegment = mock(ShorthandProjectionSegment.class);
@@ -72,17 +72,17 @@ class ProjectionsConverterTest {
         projectionsSegment.getProjections().add(shorthandProjectionSegment);
         SqlNode expectedSubqueryNode = mock(SqlNode.class);
         SubqueryProjectionSegment subqueryProjectionSegment = mock(SubqueryProjectionSegment.class);
-        when(SubqueryProjectionConverter.convert(subqueryProjectionSegment)).thenReturn(Optional.of(expectedSubqueryNode));
+        when(SubqueryProjectionConverter.convert(subqueryProjectionSegment, null)).thenReturn(Optional.of(expectedSubqueryNode));
         projectionsSegment.getProjections().add(subqueryProjectionSegment);
         SqlNode expectedAggregationNode = mock(SqlNode.class);
         AggregationProjectionSegment aggregationProjectionSegment = mock(AggregationProjectionSegment.class);
-        when(AggregationProjectionConverter.convert(aggregationProjectionSegment)).thenReturn(Optional.of(expectedAggregationNode));
+        when(AggregationProjectionConverter.convert(aggregationProjectionSegment, null)).thenReturn(Optional.of(expectedAggregationNode));
         projectionsSegment.getProjections().add(aggregationProjectionSegment);
         SqlDynamicParam expectedParameterNode = mock(SqlDynamicParam.class);
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 0, 0);
         when(ParameterMarkerExpressionConverter.convert(parameterMarkerExpressionSegment)).thenReturn(expectedParameterNode);
         projectionsSegment.getProjections().add(parameterMarkerExpressionSegment);
-        SqlNodeList actual = ProjectionsConverter.convert(projectionsSegment).orElse(null);
+        SqlNodeList actual = ProjectionsConverter.convert(projectionsSegment, null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.size(), is(6));
         assertThat(actual.get(0), is(expectedColumnNode));
@@ -98,7 +98,7 @@ class ProjectionsConverterTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         ProjectionSegment unsupportedProjection = mock(ProjectionSegment.class);
         projectionsSegment.getProjections().add(unsupportedProjection);
-        SqlNodeList actual = ProjectionsConverter.convert(projectionsSegment).orElse(null);
+        SqlNodeList actual = ProjectionsConverter.convert(projectionsSegment, null).orElse(null);
         assertNotNull(actual);
         assertFalse(actual.iterator().hasNext());
     }

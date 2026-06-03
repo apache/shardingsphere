@@ -45,18 +45,20 @@ public final class SubqueryTableConverter {
      * Convert subquery table segment to SQL node.
      *
      * @param segment subquery table segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final SubqueryTableSegment segment) {
+    public static Optional<SqlNode> convert(final SubqueryTableSegment segment, final String databaseType) {
         if (null == segment) {
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         if (null == segment.getSubquery().getSelect().getProjections()) {
-            List<SqlNode> tables = segment.getSubquery().getSelect().getFrom().flatMap(TableConverter::convert).map(Collections::singletonList).orElseGet(Collections::emptyList);
+            List<SqlNode> tables =
+                    segment.getSubquery().getSelect().getFrom().flatMap(each -> TableConverter.convert(each, databaseType)).map(Collections::singletonList).orElseGet(Collections::emptyList);
             sqlNodes.add(new SqlBasicCall(SqlStdOperatorTable.EXPLICIT_TABLE, tables, SqlParserPos.ZERO));
         } else {
-            sqlNodes.add(new SelectStatementConverter().convert(segment.getSubquery().getSelect()));
+            sqlNodes.add(new SelectStatementConverter().convert(segment.getSubquery().getSelect(), databaseType));
         }
         segment.getAliasName().ifPresent(optional -> sqlNodes.add(new SqlIdentifier(optional, SqlParserPos.ZERO)));
         return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new ArrayList<>(sqlNodes), SqlParserPos.ZERO));

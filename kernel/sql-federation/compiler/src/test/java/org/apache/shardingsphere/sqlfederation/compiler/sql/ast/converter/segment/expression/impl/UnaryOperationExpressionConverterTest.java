@@ -43,9 +43,9 @@ class UnaryOperationExpressionConverterTest {
     void assertConvertSupportedOperator() {
         LiteralExpressionSegment expression = new LiteralExpressionSegment(0, 0, 1);
         SqlNode expressionNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(expression)).thenReturn(Optional.of(expressionNode));
+        when(ExpressionConverter.convert(expression, null)).thenReturn(Optional.of(expressionNode));
         UnaryOperationExpression unaryOperationExpression = new UnaryOperationExpression(0, 0, expression, "~", "~1");
-        SqlBasicCall actual = UnaryOperationExpressionConverter.convert(unaryOperationExpression);
+        SqlBasicCall actual = UnaryOperationExpressionConverter.convert(unaryOperationExpression, null);
         assertThat(actual.getOperator(), is(SQLExtensionOperatorTable.TILDE));
         assertThat(actual.getOperandList().get(0), is(expressionNode));
     }

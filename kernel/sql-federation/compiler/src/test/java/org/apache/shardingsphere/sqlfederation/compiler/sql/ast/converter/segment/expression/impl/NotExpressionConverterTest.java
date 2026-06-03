@@ -43,8 +43,8 @@ class NotExpressionConverterTest {
     void assertConvertNotSignTrue() {
         LiteralExpressionSegment expression = new LiteralExpressionSegment(0, 0, 1);
         SqlNode expressionNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(expression)).thenReturn(Optional.of(expressionNode));
-        SqlBasicCall actual = NotExpressionConverter.convert(new NotExpression(0, 0, expression, true));
+        when(ExpressionConverter.convert(expression, null)).thenReturn(Optional.of(expressionNode));
+        SqlBasicCall actual = NotExpressionConverter.convert(new NotExpression(0, 0, expression, true), null);
         assertThat(actual.getOperator(), is(SQLExtensionOperatorTable.NOT_SIGN));
         assertThat(actual.getOperandList().get(0), is(expressionNode));
     }
@@ -53,8 +53,8 @@ class NotExpressionConverterTest {
     void assertConvertNotSignFalse() {
         LiteralExpressionSegment expression = new LiteralExpressionSegment(0, 0, 1);
         SqlNode expressionNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(expression)).thenReturn(Optional.of(expressionNode));
-        SqlBasicCall actual = NotExpressionConverter.convert(new NotExpression(0, 0, expression, false));
+        when(ExpressionConverter.convert(expression, null)).thenReturn(Optional.of(expressionNode));
+        SqlBasicCall actual = NotExpressionConverter.convert(new NotExpression(0, 0, expression, false), null);
         assertThat(actual.getOperator(), is(SQLExtensionOperatorTable.NOT));
     }
 }

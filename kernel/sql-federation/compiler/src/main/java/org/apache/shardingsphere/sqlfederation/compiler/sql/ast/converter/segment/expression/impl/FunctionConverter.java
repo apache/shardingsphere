@@ -52,31 +52,32 @@ public final class FunctionConverter {
      * Convert function segment to SQL node.
      *
      * @param segment function segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlNode convert(final FunctionSegment segment) {
+    public static SqlNode convert(final FunctionSegment segment, final String databaseType) {
         SqlIdentifier functionName = new SqlIdentifier(getQualifiedFunctionNames(segment), SqlParserPos.ZERO);
         // TODO optimize SQL parse logic for select current_user
         if ("CURRENT_USER".equalsIgnoreCase(functionName.getSimple())) {
             return functionName;
         }
         if ("TRIM".equalsIgnoreCase(functionName.getSimple())) {
-            return TrimFunctionConverter.convert(segment);
+            return TrimFunctionConverter.convert(segment, databaseType);
         }
         if ("OVER".equalsIgnoreCase(functionName.getSimple())) {
-            return WindowFunctionConverter.convert(segment);
+            return WindowFunctionConverter.convert(segment, databaseType);
         }
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));
         if (!functions.isEmpty() && segment.getWindow().isPresent()) {
-            SqlBasicCall functionCall = new SqlBasicCall(functions.iterator().next(), getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO);
-            SqlWindow sqlWindow = WindowConverter.convertWindowItem(segment.getWindow().get());
+            SqlBasicCall functionCall = new SqlBasicCall(functions.iterator().next(), getFunctionParameters(segment.getParameters(), databaseType), SqlParserPos.ZERO);
+            SqlWindow sqlWindow = WindowConverter.convertWindowItem(segment.getWindow().get(), databaseType);
             return new SqlBasicCall(SqlStdOperatorTable.OVER, new SqlNode[]{functionCall, sqlWindow}, SqlParserPos.ZERO);
         }
         SqlOperator operator = functions.isEmpty()
                 ? new SqlUnresolvedFunction(functionName, null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION)
                 : functions.iterator().next();
-        return new SqlBasicCall(operator, getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO);
+        return new SqlBasicCall(operator, getFunctionParameters(segment.getParameters(), databaseType), SqlParserPos.ZERO);
     }
     
     private static List<String> getQualifiedFunctionNames(final FunctionSegment segment) {
@@ -85,10 +86,11 @@ public final class FunctionConverter {
         return result;
     }
     
-    private static List<SqlNode> getFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {
+    private static List<SqlNode> getFunctionParameters(final Collection<ExpressionSegment> sqlSegments, final String databaseType) {
         List<SqlNode> result = new LinkedList<>();
         for (ExpressionSegment each : sqlSegments) {
-            ExpressionConverter.convert(each).ifPresent(optional -> result.addAll(optional instanceof SqlNodeList ? ((SqlNodeList) optional).getList() : Collections.singleton(optional)));
+            ExpressionConverter.convert(each, databaseType)
+                    .ifPresent(optional -> result.addAll(optional instanceof SqlNodeList ? ((SqlNodeList) optional).getList() : Collections.singleton(optional)));
         }
         return result;
     }

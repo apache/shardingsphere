@@ -48,40 +48,40 @@ import java.util.Optional;
 public final class SelectStatementConverter implements SQLStatementConverter<SelectStatement, SqlNode> {
     
     @Override
-    public SqlNode convert(final SelectStatement selectStatement) {
-        SqlSelect sqlSelect = convertSelect(selectStatement);
-        SqlNode sqlWith = convertWith(sqlSelect, selectStatement);
-        SqlNode sqlCombine = convertCombine(null != sqlWith ? sqlWith : sqlSelect, selectStatement);
-        SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
+    public SqlNode convert(final SelectStatement selectStatement, final String databaseType) {
+        SqlSelect sqlSelect = convertSelect(selectStatement, databaseType);
+        SqlNode sqlWith = convertWith(sqlSelect, selectStatement, databaseType);
+        SqlNode sqlCombine = convertCombine(null != sqlWith ? sqlWith : sqlSelect, selectStatement, databaseType);
+        SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(segment -> OrderByConverter.convert(segment, databaseType)).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = selectStatement.getLimit();
         if (limit.isPresent()) {
-            SqlNode offset = limit.get().getOffset().flatMap(PaginationValueSQLConverter::convert).orElse(null);
-            SqlNode rowCount = limit.get().getRowCount().flatMap(PaginationValueSQLConverter::convert).orElse(null);
+            SqlNode offset = limit.get().getOffset().flatMap(segment -> PaginationValueSQLConverter.convert(segment, databaseType)).orElse(null);
+            SqlNode rowCount = limit.get().getRowCount().flatMap(segment -> PaginationValueSQLConverter.convert(segment, databaseType)).orElse(null);
             return new SqlOrderBy(SqlParserPos.ZERO, sqlCombine, orderBy, offset, rowCount);
         }
         return orderBy.isEmpty() ? sqlCombine : new SqlOrderBy(SqlParserPos.ZERO, sqlCombine, orderBy, null, null);
     }
     
-    private SqlNode convertWith(final SqlNode sqlSelect, final SelectStatement selectStatement) {
-        return selectStatement.getWith().flatMap(segment -> WithConverter.convert(segment, sqlSelect)).orElse(null);
+    private SqlNode convertWith(final SqlNode sqlSelect, final SelectStatement selectStatement, final String databaseType) {
+        return selectStatement.getWith().flatMap(segment -> WithConverter.convert(segment, sqlSelect, databaseType)).orElse(null);
     }
     
-    private SqlSelect convertSelect(final SelectStatement selectStatement) {
+    private SqlSelect convertSelect(final SelectStatement selectStatement, final String databaseType) {
         SqlNodeList distinct = DistinctConverter.convert(selectStatement.getProjections()).orElse(null);
-        SqlNodeList projection = ProjectionsConverter.convert(selectStatement.getProjections()).orElseThrow(IllegalStateException::new);
-        SqlNode from = selectStatement.getFrom().flatMap(TableConverter::convert).orElse(null);
-        SqlNode where = selectStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
-        SqlNodeList groupBy = selectStatement.getGroupBy().flatMap(GroupByConverter::convert).orElse(null);
-        SqlNode having = selectStatement.getHaving().flatMap(HavingConverter::convert).orElse(null);
-        SqlNodeList window = selectStatement.getWindow().flatMap(WindowConverter::convert).orElse(SqlNodeList.EMPTY);
+        SqlNodeList projection = ProjectionsConverter.convert(selectStatement.getProjections(), databaseType).orElseThrow(IllegalStateException::new);
+        SqlNode from = selectStatement.getFrom().flatMap(segment -> TableConverter.convert(segment, databaseType)).orElse(null);
+        SqlNode where = selectStatement.getWhere().flatMap(segment -> WhereConverter.convert(segment, databaseType)).orElse(null);
+        SqlNodeList groupBy = selectStatement.getGroupBy().flatMap(segment -> GroupByConverter.convert(segment, databaseType)).orElse(null);
+        SqlNode having = selectStatement.getHaving().flatMap(segment -> HavingConverter.convert(segment, databaseType)).orElse(null);
+        SqlNodeList window = selectStatement.getWindow().flatMap(segment -> WindowConverter.convert(segment, databaseType)).orElse(SqlNodeList.EMPTY);
         return new SqlSelect(SqlParserPos.ZERO, distinct, projection, from, where, groupBy, having, window, null, null, null, null, SqlNodeList.EMPTY);
     }
     
-    private SqlNode convertCombine(final SqlNode sqlNode, final SelectStatement selectStatement) {
+    private SqlNode convertCombine(final SqlNode sqlNode, final SelectStatement selectStatement, final String databaseType) {
         if (selectStatement.getCombine().isPresent()) {
             CombineSegment combineSegment = selectStatement.getCombine().get();
             return new SqlBasicCall(CombineOperatorConverter.convert(combineSegment.getCombineType()),
-                    Arrays.asList(convert(combineSegment.getLeft().getSelect()), convert(combineSegment.getRight().getSelect())), SqlParserPos.ZERO);
+                    Arrays.asList(convert(combineSegment.getLeft().getSelect(), databaseType), convert(combineSegment.getRight().getSelect(), databaseType)), SqlParserPos.ZERO);
         }
         return sqlNode;
     }

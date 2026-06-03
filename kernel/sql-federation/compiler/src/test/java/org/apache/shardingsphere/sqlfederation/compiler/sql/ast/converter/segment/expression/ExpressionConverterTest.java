@@ -117,35 +117,35 @@ class ExpressionConverterTest {
         when(LiteralExpressionConverter.convert(literalSegment, null)).thenReturn(Optional.of(expectedLiteralNode));
         SqlNode expectedListNode = mock(SqlNode.class);
         ListExpression listSegment = new ListExpression(0, 0);
-        when(ListExpressionConverter.convert(listSegment)).thenReturn(Optional.of(expectedListNode));
+        when(ListExpressionConverter.convert(listSegment, null)).thenReturn(Optional.of(expectedListNode));
         SqlBasicCall expectedBinaryNode = mock(SqlBasicCall.class);
         BinaryOperationExpression binarySegment = new BinaryOperationExpression(0, 0, literalSegment, literalSegment, "+", "text");
-        when(BinaryOperationExpressionConverter.convert(binarySegment)).thenReturn(expectedBinaryNode);
+        when(BinaryOperationExpressionConverter.convert(binarySegment, null)).thenReturn(expectedBinaryNode);
         SqlIdentifier expectedColumnNode = mock(SqlIdentifier.class);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         when(ColumnConverter.convert(columnSegment)).thenReturn(expectedColumnNode);
         SqlNode expectedExistsSubqueryNode = mock(SqlNode.class);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub");
         ExistsSubqueryExpression existsSubqueryExpression = new ExistsSubqueryExpression(0, 0, subquerySegment);
-        when(ExistsSubqueryExpressionConverter.convert(existsSubqueryExpression)).thenReturn(expectedExistsSubqueryNode);
+        when(ExistsSubqueryExpressionConverter.convert(existsSubqueryExpression, null)).thenReturn(expectedExistsSubqueryNode);
         SqlNode expectedSubqueryNode = mock(SqlNode.class);
         SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(subquerySegment);
-        when(SubqueryExpressionConverter.convert(subqueryExpressionSegment)).thenReturn(expectedSubqueryNode);
+        when(SubqueryExpressionConverter.convert(subqueryExpressionSegment, null)).thenReturn(expectedSubqueryNode);
         SqlBasicCall expectedInNode = mock(SqlBasicCall.class);
         InExpression inExpression = new InExpression(0, 0, literalSegment, literalSegment, false);
-        when(InExpressionConverter.convert(inExpression)).thenReturn(expectedInNode);
+        when(InExpressionConverter.convert(inExpression, null)).thenReturn(expectedInNode);
         SqlBasicCall expectedBetweenNode = mock(SqlBasicCall.class);
         BetweenExpression betweenExpression = new BetweenExpression(0, 0, literalSegment, literalSegment, literalSegment, false);
-        when(BetweenExpressionConverter.convert(betweenExpression)).thenReturn(expectedBetweenNode);
+        when(BetweenExpressionConverter.convert(betweenExpression, null)).thenReturn(expectedBetweenNode);
         SqlDynamicParam expectedParameterNode = mock(SqlDynamicParam.class);
         ParameterMarkerExpressionSegment parameterSegment = new ParameterMarkerExpressionSegment(0, 0, 0);
         when(ParameterMarkerExpressionConverter.convert(parameterSegment)).thenReturn(expectedParameterNode);
         SqlNode expectedFunctionNode = mock(SqlNode.class);
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "func", "func_text");
-        when(FunctionConverter.convert(functionSegment)).thenReturn(expectedFunctionNode);
+        when(FunctionConverter.convert(functionSegment, null)).thenReturn(expectedFunctionNode);
         SqlNode expectedAggregationNode = mock(SqlNode.class);
         AggregationProjectionSegment aggregationSegment = new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "count(expr)");
-        when(AggregationProjectionConverter.convert(aggregationSegment)).thenReturn(Optional.of(expectedAggregationNode));
+        when(AggregationProjectionConverter.convert(aggregationSegment, null)).thenReturn(Optional.of(expectedAggregationNode));
         DataTypeSegment dataTypeSegment = new DataTypeSegment();
         dataTypeSegment.setStartIndex(0);
         dataTypeSegment.setStopIndex(0);
@@ -154,38 +154,38 @@ class ExpressionConverterTest {
         when(DataTypeExpressionConverter.convert(dataTypeSegment)).thenReturn(expectedDataTypeNode);
         SqlCase expectedCaseWhenNode = mock(SqlCase.class);
         CaseWhenExpression caseWhenExpression = new CaseWhenExpression(0, 0, literalSegment, Collections.singleton(literalSegment), Collections.singleton(literalSegment), literalSegment);
-        when(CaseWhenExpressionConverter.convert(caseWhenExpression)).thenReturn(expectedCaseWhenNode);
+        when(CaseWhenExpressionConverter.convert(caseWhenExpression, null)).thenReturn(expectedCaseWhenNode);
         SqlBasicCall expectedNotNode = mock(SqlBasicCall.class);
         NotExpression notExpression = new NotExpression(0, 0, literalSegment, true);
-        when(NotExpressionConverter.convert(notExpression)).thenReturn(expectedNotNode);
+        when(NotExpressionConverter.convert(notExpression, null)).thenReturn(expectedNotNode);
         SqlNode expectedTypeCastNode = mock(SqlNode.class);
         TypeCastExpression typeCastExpression = new TypeCastExpression(0, 0, "text", literalSegment, "int");
-        when(TypeCastExpressionConverter.convert(typeCastExpression)).thenReturn(Optional.of(expectedTypeCastNode));
+        when(TypeCastExpressionConverter.convert(typeCastExpression, null)).thenReturn(Optional.of(expectedTypeCastNode));
         SqlIdentifier expectedExtractNode = mock(SqlIdentifier.class);
         ExtractArgExpression extractArgExpression = new ExtractArgExpression(0, 0, "extract");
         when(ExtractArgExpressionConverter.convert(extractArgExpression)).thenReturn(expectedExtractNode);
         SqlBasicCall expectedMatchNode = mock(SqlBasicCall.class);
         MatchAgainstExpression matchAgainstExpression = new MatchAgainstExpression(0, 0, literalSegment, "search", "text");
-        when(MatchExpressionConverter.convert(matchAgainstExpression)).thenReturn(expectedMatchNode);
+        when(MatchExpressionConverter.convert(matchAgainstExpression, null)).thenReturn(expectedMatchNode);
         SqlBasicCall expectedCollateNode = mock(SqlBasicCall.class);
         CollateExpression collateExpression = new CollateExpression(0, 0, literalSegment, literalSegment);
-        when(CollateExpressionConverter.convert(collateExpression)).thenReturn(expectedCollateNode);
+        when(CollateExpressionConverter.convert(collateExpression, null)).thenReturn(expectedCollateNode);
         SqlNode expectedRowNode = mock(SqlNode.class);
         RowExpression rowExpression = new RowExpression(0, 0, "row");
-        when(RowExpressionConverter.convert(rowExpression)).thenReturn(expectedRowNode);
+        when(RowExpressionConverter.convert(rowExpression, null)).thenReturn(expectedRowNode);
         SqlIdentifier expectedVariableNode = mock(SqlIdentifier.class);
         VariableSegment variableSegment = new VariableSegment(0, 0, "@@session");
         when(VariableSegmentConverter.convert(variableSegment)).thenReturn(expectedVariableNode);
         SqlBasicCall expectedUnaryNode = mock(SqlBasicCall.class);
         UnaryOperationExpression unaryOperationExpression = new UnaryOperationExpression(0, 0, literalSegment, "+", "text");
-        when(UnaryOperationExpressionConverter.convert(unaryOperationExpression)).thenReturn(expectedUnaryNode);
+        when(UnaryOperationExpressionConverter.convert(unaryOperationExpression, null)).thenReturn(expectedUnaryNode);
         SqlBasicCall expectedIntervalNode = mock(SqlBasicCall.class);
         IntervalExpression intervalExpression = new IntervalExpression(0, 0, literalSegment, IntervalUnit.DAY, "interval");
-        when(IntervalExpressionConverter.convert(intervalExpression)).thenReturn(expectedIntervalNode);
+        when(IntervalExpressionConverter.convert(intervalExpression, null)).thenReturn(expectedIntervalNode);
         SqlNode expectedQuantifyNode = mock(SqlNode.class);
         QuantifySubqueryExpression quantifySubqueryExpression = new QuantifySubqueryExpression(
                 0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub"), "ALL");
-        when(QuantifySubqueryExpressionConverter.convert(quantifySubqueryExpression)).thenReturn(expectedQuantifyNode);
+        when(QuantifySubqueryExpressionConverter.convert(quantifySubqueryExpression, null)).thenReturn(expectedQuantifyNode);
         Map<ExpressionSegment, SqlNode> expectations = new LinkedHashMap<>(23, 1F);
         expectations.put(literalSegment, expectedLiteralNode);
         expectations.put(listSegment, expectedListNode);
@@ -211,7 +211,7 @@ class ExpressionConverterTest {
         expectations.put(intervalExpression, expectedIntervalNode);
         expectations.put(quantifySubqueryExpression, expectedQuantifyNode);
         for (Entry<ExpressionSegment, SqlNode> entry : expectations.entrySet()) {
-            Optional<SqlNode> actualOptional = ExpressionConverter.convert(entry.getKey());
+            Optional<SqlNode> actualOptional = ExpressionConverter.convert(entry.getKey(), null);
             assertTrue(actualOptional.isPresent());
             assertThat(actualOptional.orElse(null), is(entry.getValue()));
         }
@@ -220,19 +220,65 @@ class ExpressionConverterTest {
     @Test
     void assertConvertThrowsUnsupportedForCommonExpression() {
         CommonExpressionSegment expressionSegment = new CommonExpressionSegment(0, 0, "text");
-        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class, () -> ExpressionConverter.convert(expressionSegment));
+        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class, () -> ExpressionConverter.convert(expressionSegment, null));
+        assertThat(actualException.getMessage(), is("Unsupported SQL operation: unsupported CommonExpressionSegment."));
+    }
+    
+    @Test
+    void assertConvertHexLiteralCommonExpressionInMySQLDialectActivatesRecognizer() {
+        CommonExpressionSegment expressionSegment = new CommonExpressionSegment(0, 0, "x'48656c6c6f'");
+        Optional<SqlNode> actual = ExpressionConverter.convert(expressionSegment, "MySQL");
+        assertTrue(actual.isPresent());
+    }
+    
+    @Test
+    void assertConvertBitStringCommonExpressionInMySQLDialectActivatesRecognizer() {
+        CommonExpressionSegment expressionSegment = new CommonExpressionSegment(0, 0, "b'01001000'");
+        Optional<SqlNode> actual = ExpressionConverter.convert(expressionSegment, "MySQL");
+        assertTrue(actual.isPresent());
+    }
+    
+    @Test
+    void assertConvertHexLiteralCommonExpressionInPostgreSQLDialectSkipsRecognizer() {
+        CommonExpressionSegment expressionSegment = new CommonExpressionSegment(0, 0, "X'1F'");
+        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class,
+                () -> ExpressionConverter.convert(expressionSegment, "PostgreSQL"));
+        assertThat(actualException.getMessage(), is("Unsupported SQL operation: unsupported CommonExpressionSegment."));
+    }
+    
+    @Test
+    void assertConvertBitStringCommonExpressionInPostgreSQLDialectSkipsRecognizer() {
+        CommonExpressionSegment expressionSegment = new CommonExpressionSegment(0, 0, "B'01001'");
+        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class,
+                () -> ExpressionConverter.convert(expressionSegment, "PostgreSQL"));
+        assertThat(actualException.getMessage(), is("Unsupported SQL operation: unsupported CommonExpressionSegment."));
+    }
+    
+    @Test
+    void assertConvertHexLiteralCommonExpressionInOpenGaussDialectSkipsRecognizer() {
+        CommonExpressionSegment expressionSegment = new CommonExpressionSegment(0, 0, "x'48656c6c6f'");
+        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class,
+                () -> ExpressionConverter.convert(expressionSegment, "openGauss"));
+        assertThat(actualException.getMessage(), is("Unsupported SQL operation: unsupported CommonExpressionSegment."));
+    }
+    
+    @Test
+    void assertConvertHexLiteralCommonExpressionInOracleDialectSkipsRecognizer() {
+        CommonExpressionSegment expressionSegment = new CommonExpressionSegment(0, 0, "x'48656c6c6f'");
+        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class,
+                () -> ExpressionConverter.convert(expressionSegment, "Oracle"));
         assertThat(actualException.getMessage(), is("Unsupported SQL operation: unsupported CommonExpressionSegment."));
     }
     
     @Test
     void assertConvertReturnsEmptyForNullSegment() {
-        assertFalse(ExpressionConverter.convert(null).isPresent());
+        assertFalse(ExpressionConverter.convert(null, null).isPresent());
     }
     
     @Test
     void assertConvertThrowsUnsupportedForUnknownExpression() {
         ExpressionSegment expressionSegment = mock(ExpressionSegment.class);
-        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class, () -> ExpressionConverter.convert(expressionSegment));
+        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class, () -> ExpressionConverter.convert(expressionSegment, null));
         assertThat(actualException.getMessage(), is("Unsupported SQL operation: unsupported TableSegment type: " + expressionSegment.getClass() + "."));
     }
 }

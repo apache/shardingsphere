@@ -39,22 +39,22 @@ import java.util.stream.Collectors;
 public final class MergeStatementConverter implements SQLStatementConverter<MergeStatement, SqlNode> {
     
     @Override
-    public SqlNode convert(final MergeStatement mergeStatement) {
-        SqlNode targetTable = TableConverter.convert(mergeStatement.getTarget()).orElseThrow(IllegalStateException::new);
-        SqlNode condition = ExpressionConverter.convert(mergeStatement.getExpression().getExpr()).orElseThrow(IllegalStateException::new);
-        SqlNode sourceTable = TableConverter.convert(mergeStatement.getSource()).orElseThrow(IllegalStateException::new);
-        SqlUpdate sqlUpdate = mergeStatement.getUpdate().map(this::convertUpdate).orElse(null);
+    public SqlNode convert(final MergeStatement mergeStatement, final String databaseType) {
+        SqlNode targetTable = TableConverter.convert(mergeStatement.getTarget(), databaseType).orElseThrow(IllegalStateException::new);
+        SqlNode condition = ExpressionConverter.convert(mergeStatement.getExpression().getExpr(), databaseType).orElseThrow(IllegalStateException::new);
+        SqlNode sourceTable = TableConverter.convert(mergeStatement.getSource(), databaseType).orElseThrow(IllegalStateException::new);
+        SqlUpdate sqlUpdate = mergeStatement.getUpdate().map(each -> convertUpdate(each, databaseType)).orElse(null);
         return new SqlMerge(SqlParserPos.ZERO, targetTable, condition, sourceTable, sqlUpdate, null, null, null);
     }
     
-    private SqlUpdate convertUpdate(final UpdateStatement updateStatement) {
-        SqlNode table = TableConverter.convert(updateStatement.getTable()).orElse(SqlNodeList.EMPTY);
-        SqlNode condition = updateStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
+    private SqlUpdate convertUpdate(final UpdateStatement updateStatement, final String databaseType) {
+        SqlNode table = TableConverter.convert(updateStatement.getTable(), databaseType).orElse(SqlNodeList.EMPTY);
+        SqlNode condition = updateStatement.getWhere().flatMap(segment -> WhereConverter.convert(segment, databaseType)).orElse(null);
         SqlNodeList columns = new SqlNodeList(SqlParserPos.ZERO);
         SqlNodeList expressions = new SqlNodeList(SqlParserPos.ZERO);
         for (ColumnAssignmentSegment each : updateStatement.getAssignment().orElseThrow(IllegalStateException::new).getAssignments()) {
             columns.addAll(each.getColumns().stream().map(ColumnConverter::convert).collect(Collectors.toList()));
-            expressions.add(ExpressionConverter.convert(each.getValue()).orElseThrow(IllegalStateException::new));
+            expressions.add(ExpressionConverter.convert(each.getValue(), databaseType).orElseThrow(IllegalStateException::new));
         }
         return new SqlUpdate(SqlParserPos.ZERO, table, columns, expressions, condition, null, null);
     }

@@ -33,9 +33,10 @@ public final class QuantifySubqueryExpressionConverter {
      * Convert quantify subquery expression to SQL node.
      *
      * @param expression quantify subquery expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlNode convert(final QuantifySubqueryExpression expression) {
-        return new SelectStatementConverter().convert(expression.getSubquery().getSelect());
+    public static SqlNode convert(final QuantifySubqueryExpression expression, final String databaseType) {
+        return new SelectStatementConverter().convert(expression.getSubquery().getSelect(), databaseType);
     }
 }

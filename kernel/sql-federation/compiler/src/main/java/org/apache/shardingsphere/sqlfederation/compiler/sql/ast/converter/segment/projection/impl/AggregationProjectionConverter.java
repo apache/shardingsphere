@@ -72,15 +72,16 @@ public final class AggregationProjectionConverter {
      * Convert aggregation projection segment to SQL node.
      *
      * @param segment aggregation projection segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final AggregationProjectionSegment segment) {
+    public static Optional<SqlNode> convert(final AggregationProjectionSegment segment, final String databaseType) {
         if (null == segment) {
             return Optional.empty();
         }
         SqlLiteral functionQuantifier = segment instanceof AggregationDistinctProjectionSegment ? SqlLiteral.createSymbol(SqlSelectKeyword.DISTINCT, SqlParserPos.ZERO) : null;
         SqlAggFunction operator = convertOperator(segment.getType().name());
-        List<SqlNode> params = convertParameters(segment.getParameters(), segment.getExpression(), segment.getSeparator().orElse(null));
+        List<SqlNode> params = convertParameters(segment.getParameters(), segment.getExpression(), segment.getSeparator().orElse(null), databaseType);
         SqlBasicCall sqlBasicCall = new SqlBasicCall(operator, params, SqlParserPos.ZERO, functionQuantifier);
         if (segment.getAliasName().isPresent()) {
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(sqlBasicCall,
@@ -94,13 +95,13 @@ public final class AggregationProjectionConverter {
         return REGISTRY.get(operator);
     }
     
-    private static List<SqlNode> convertParameters(final Collection<ExpressionSegment> params, final String expression, final String separator) {
+    private static List<SqlNode> convertParameters(final Collection<ExpressionSegment> params, final String expression, final String separator, final String databaseType) {
         if (expression.contains("*")) {
             return Collections.singletonList(SqlIdentifier.star(SqlParserPos.ZERO));
         }
         List<SqlNode> result = new LinkedList<>();
         for (ExpressionSegment each : params) {
-            ExpressionConverter.convert(each).ifPresent(result::add);
+            ExpressionConverter.convert(each, databaseType).ifPresent(result::add);
         }
         if (null != separator) {
             result.add(SqlLiteral.createCharString(separator, SqlParserPos.ZERO));

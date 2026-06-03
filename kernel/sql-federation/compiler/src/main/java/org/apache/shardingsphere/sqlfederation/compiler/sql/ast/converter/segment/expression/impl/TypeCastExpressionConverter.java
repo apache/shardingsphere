@@ -43,10 +43,11 @@ public final class TypeCastExpressionConverter {
      * Convert type cast expression to SQL node.
      *
      * @param segment type cast expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final TypeCastExpression segment) {
-        Optional<SqlNode> expression = ExpressionConverter.convert(segment.getExpression());
+    public static Optional<SqlNode> convert(final TypeCastExpression segment, final String databaseType) {
+        Optional<SqlNode> expression = ExpressionConverter.convert(segment.getExpression(), databaseType);
         if (!expression.isPresent()) {
             return Optional.empty();
         }

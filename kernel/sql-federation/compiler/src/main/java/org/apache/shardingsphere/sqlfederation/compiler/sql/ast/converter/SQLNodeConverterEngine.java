@@ -49,41 +49,42 @@ public final class SQLNodeConverterEngine {
      * Convert SQL statement to SQL node.
      *
      * @param sqlStatement SQL sqlStatement to be converted
+     * @param databaseType database type
      * @return sqlNode converted SQL node
      * @throws SQLFederationSQLNodeConvertException SQL federation SQL node convert exception
      */
-    public static SqlNode convert(final SQLStatement sqlStatement) {
+    public static SqlNode convert(final SQLStatement sqlStatement, final String databaseType) {
         Optional<SqlNode> result = Optional.empty();
         if (sqlStatement instanceof DMLStatement) {
-            result = convert((DMLStatement) sqlStatement);
+            result = convert((DMLStatement) sqlStatement, databaseType);
         } else if (sqlStatement instanceof DALStatement) {
-            result = convert((DALStatement) sqlStatement);
+            result = convert((DALStatement) sqlStatement, databaseType);
         }
         return result.orElseThrow(() -> new SQLFederationSQLNodeConvertException(sqlStatement));
     }
     
-    private static Optional<SqlNode> convert(final DMLStatement sqlStatement) {
+    private static Optional<SqlNode> convert(final DMLStatement sqlStatement, final String databaseType) {
         if (sqlStatement instanceof SelectStatement) {
-            return Optional.of(new SelectStatementConverter().convert((SelectStatement) sqlStatement));
+            return Optional.of(new SelectStatementConverter().convert((SelectStatement) sqlStatement, databaseType));
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return Optional.of(new DeleteStatementConverter().convert((DeleteStatement) sqlStatement));
+            return Optional.of(new DeleteStatementConverter().convert((DeleteStatement) sqlStatement, databaseType));
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return Optional.of(new UpdateStatementConverter().convert((UpdateStatement) sqlStatement));
+            return Optional.of(new UpdateStatementConverter().convert((UpdateStatement) sqlStatement, databaseType));
         }
         if (sqlStatement instanceof InsertStatement) {
-            return Optional.of(new InsertStatementConverter().convert((InsertStatement) sqlStatement));
+            return Optional.of(new InsertStatementConverter().convert((InsertStatement) sqlStatement, databaseType));
         }
         if (sqlStatement instanceof MergeStatement) {
-            return Optional.of(new MergeStatementConverter().convert((MergeStatement) sqlStatement));
+            return Optional.of(new MergeStatementConverter().convert((MergeStatement) sqlStatement, databaseType));
         }
         return Optional.empty();
     }
     
-    private static Optional<SqlNode> convert(final DALStatement sqlStatement) {
+    private static Optional<SqlNode> convert(final DALStatement sqlStatement, final String databaseType) {
         if (sqlStatement instanceof ExplainStatement) {
-            return Optional.of(new ExplainStatementConverter().convert((ExplainStatement) sqlStatement));
+            return Optional.of(new ExplainStatementConverter().convert((ExplainStatement) sqlStatement, databaseType));
         }
         return Optional.empty();
     }

@@ -53,7 +53,7 @@ class ShardingSphereViewExpanderTest {
         SQLParserRule sqlParserRule = mock(SQLParserRule.class);
         when(sqlParserRule.getSQLParserEngine(databaseType)).thenReturn(sqlParserEngine);
         SqlNode sqlNode = mock(SqlNode.class);
-        when(SQLNodeConverterEngine.convert(sqlStatement)).thenReturn(sqlNode);
+        when(SQLNodeConverterEngine.convert(sqlStatement, databaseType.getType())).thenReturn(sqlNode);
         SqlToRelConverter sqlToRelConverter = mock(SqlToRelConverter.class);
         RelRoot expectedRelRoot = mock(RelRoot.class);
         when(sqlToRelConverter.convertQuery(sqlNode, true, true)).thenReturn(expectedRelRoot);

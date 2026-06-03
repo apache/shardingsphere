@@ -40,12 +40,13 @@ public final class CollateExpressionConverter {
      * Convert collate expression to SQL node.
      *
      * @param segment collate expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlBasicCall convert(final CollateExpression segment) {
+    public static SqlBasicCall convert(final CollateExpression segment, final String databaseType) {
         List<SqlNode> sqlNodes = new LinkedList<>();
-        sqlNodes.add(segment.getExpr().flatMap(ExpressionConverter::convert).orElse(SqlNodeList.EMPTY));
-        sqlNodes.add(ExpressionConverter.convert(segment.getCollateName()).orElse(SqlNodeList.EMPTY));
+        sqlNodes.add(segment.getExpr().flatMap(each -> ExpressionConverter.convert(each, databaseType)).orElse(SqlNodeList.EMPTY));
+        sqlNodes.add(ExpressionConverter.convert(segment.getCollateName(), databaseType).orElse(SqlNodeList.EMPTY));
         return new SqlBasicCall(SQLExtensionOperatorTable.COLLATE, sqlNodes, SqlParserPos.ZERO);
     }
 }

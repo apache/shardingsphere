@@ -51,9 +51,9 @@ class InExpressionConverterTest {
         SqlNode leftNode = mock(SqlNode.class);
         SqlNode rightOperand = mock(SqlNode.class);
         SqlBasicCall rightBasicCall = new SqlBasicCall(SqlStdOperatorTable.PLUS, Collections.singletonList(rightOperand), SqlParserPos.ZERO);
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        when(ExpressionConverter.convert(right)).thenReturn(Optional.of(rightBasicCall));
-        SqlBasicCall actual = InExpressionConverter.convert(new InExpression(0, 0, left, right, true));
+        when(ExpressionConverter.convert(left, null)).thenReturn(Optional.of(leftNode));
+        when(ExpressionConverter.convert(right, null)).thenReturn(Optional.of(rightBasicCall));
+        SqlBasicCall actual = InExpressionConverter.convert(new InExpression(0, 0, left, right, true), null);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.NOT_IN));
         SqlNode secondOperand = actual.getOperandList().get(1);
         assertThat(secondOperand, isA(SqlNodeList.class));
@@ -67,9 +67,9 @@ class InExpressionConverterTest {
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, 2);
         SqlNode leftNode = mock(SqlNode.class);
         SqlNode rightNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
-        when(ExpressionConverter.convert(right)).thenReturn(Optional.of(rightNode));
-        SqlBasicCall actual = InExpressionConverter.convert(new InExpression(0, 0, left, right, false));
+        when(ExpressionConverter.convert(left, null)).thenReturn(Optional.of(leftNode));
+        when(ExpressionConverter.convert(right, null)).thenReturn(Optional.of(rightNode));
+        SqlBasicCall actual = InExpressionConverter.convert(new InExpression(0, 0, left, right, false), null);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.IN));
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, rightNode)));
     }

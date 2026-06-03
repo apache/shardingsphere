@@ -32,7 +32,8 @@ public interface SQLStatementConverter<S extends SQLStatement, T extends SqlNode
      * Convert.
      *
      * @param sqlStatement SQL statement be to converted
+     * @param databaseType database type
      * @return converted SQL node
      */
-    T convert(S sqlStatement);
+    T convert(S sqlStatement, String databaseType);
 }

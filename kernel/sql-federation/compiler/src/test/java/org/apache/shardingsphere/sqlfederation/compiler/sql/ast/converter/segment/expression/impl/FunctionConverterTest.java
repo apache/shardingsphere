@@ -57,7 +57,7 @@ class FunctionConverterTest {
     @Test
     void assertConvertReturnsCurrentUserIdentifier() {
         FunctionSegment segment = new FunctionSegment(0, 0, "CURRENT_USER", "CURRENT_USER");
-        SqlIdentifier actual = (SqlIdentifier) FunctionConverter.convert(segment);
+        SqlIdentifier actual = (SqlIdentifier) FunctionConverter.convert(segment, null);
         assertThat(actual.getSimple(), is("CURRENT_USER"));
     }
     
@@ -65,16 +65,16 @@ class FunctionConverterTest {
     void assertConvertDelegatesToTrimFunctionConverter() {
         FunctionSegment segment = new FunctionSegment(0, 0, "TRIM", "TRIM");
         SqlBasicCall expected = mock(SqlBasicCall.class);
-        when(TrimFunctionConverter.convert(segment)).thenReturn(expected);
-        assertThat(FunctionConverter.convert(segment), is(expected));
+        when(TrimFunctionConverter.convert(segment, null)).thenReturn(expected);
+        assertThat(FunctionConverter.convert(segment, null), is(expected));
     }
     
     @Test
     void assertConvertDelegatesToWindowFunctionConverter() {
         FunctionSegment segment = new FunctionSegment(0, 0, "OVER", "OVER");
         SqlBasicCall expected = mock(SqlBasicCall.class);
-        when(WindowFunctionConverter.convert(segment)).thenReturn(expected);
-        assertThat(FunctionConverter.convert(segment), is(expected));
+        when(WindowFunctionConverter.convert(segment, null)).thenReturn(expected);
+        assertThat(FunctionConverter.convert(segment, null), is(expected));
     }
     
     @Test
@@ -86,9 +86,9 @@ class FunctionConverterTest {
         segment.setWindow(windowItemSegment);
         SqlNode paramNode = mock(SqlNode.class);
         SqlWindow windowNode = mock(SqlWindow.class);
-        when(ExpressionConverter.convert(param)).thenReturn(Optional.of(paramNode));
-        when(WindowConverter.convertWindowItem(windowItemSegment)).thenReturn(windowNode);
-        SqlBasicCall actual = (SqlBasicCall) FunctionConverter.convert(segment);
+        when(ExpressionConverter.convert(param, null)).thenReturn(Optional.of(paramNode));
+        when(WindowConverter.convertWindowItem(windowItemSegment, null)).thenReturn(windowNode);
+        SqlBasicCall actual = (SqlBasicCall) FunctionConverter.convert(segment, null);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.OVER));
         SqlBasicCall functionCall = (SqlBasicCall) actual.getOperandList().get(0);
         assertThat(functionCall.getOperator().getName(), is("COUNT"));
@@ -106,9 +106,9 @@ class FunctionConverterTest {
         SqlNode nodeInList = mock(SqlNode.class);
         SqlNode listSecondNode = mock(SqlNode.class);
         SqlNode secondNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(firstParam)).thenReturn(Optional.of(new SqlNodeList(Arrays.asList(nodeInList, listSecondNode), SqlParserPos.ZERO)));
-        when(ExpressionConverter.convert(secondParam)).thenReturn(Optional.of(secondNode));
-        SqlBasicCall actual = (SqlBasicCall) FunctionConverter.convert(segment);
+        when(ExpressionConverter.convert(firstParam, null)).thenReturn(Optional.of(new SqlNodeList(Arrays.asList(nodeInList, listSecondNode), SqlParserPos.ZERO)));
+        when(ExpressionConverter.convert(secondParam, null)).thenReturn(Optional.of(secondNode));
+        SqlBasicCall actual = (SqlBasicCall) FunctionConverter.convert(segment, null);
         assertThat(actual.getOperator().getName(), is("SUM"));
         assertThat(actual.getOperandList(), is(Arrays.asList(nodeInList, listSecondNode, secondNode)));
     }
@@ -122,8 +122,8 @@ class FunctionConverterTest {
         segment.getParameters().add(param);
         SqlNode paramNode = mock(SqlNode.class);
         when(OwnerConverter.convert(owner)).thenReturn(new ArrayList<>());
-        when(ExpressionConverter.convert(param)).thenReturn(Optional.of(paramNode));
-        SqlBasicCall actual = (SqlBasicCall) FunctionConverter.convert(segment);
+        when(ExpressionConverter.convert(param, null)).thenReturn(Optional.of(paramNode));
+        SqlBasicCall actual = (SqlBasicCall) FunctionConverter.convert(segment, null);
         assertThat(actual.getOperator(), isA(SqlUnresolvedFunction.class));
         SqlIdentifier functionName = actual.getOperator().getNameAsId();
         assertThat(functionName.names, is(Collections.singletonList("custom_func")));

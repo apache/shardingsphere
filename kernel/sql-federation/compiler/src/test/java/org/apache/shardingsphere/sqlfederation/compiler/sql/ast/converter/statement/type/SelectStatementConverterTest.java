@@ -65,7 +65,7 @@ class SelectStatementConverterTest {
         CombineSegment combineSegment = new CombineSegment(0, 0, new SubquerySegment(0, 0, left, "left"), CombineType.UNION, new SubquerySegment(0, 0, right, "right"));
         LimitSegment limit = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1L), new ParameterMarkerLimitValueSegment(0, 0, 0));
         SelectStatement selectStatement = createBaseSelect(true, true, combineSegment, limit, null, null);
-        SqlOrderBy actual = (SqlOrderBy) new SelectStatementConverter().convert(selectStatement);
+        SqlOrderBy actual = (SqlOrderBy) new SelectStatementConverter().convert(selectStatement, null);
         assertThat(actual.offset, isA(SqlNode.class));
         assertThat(actual.fetch, isA(SqlNode.class));
         assertThat(actual.query, isA(SqlBasicCall.class));
@@ -74,7 +74,7 @@ class SelectStatementConverterTest {
     @Test
     void assertConvertWithoutLimitButWithOrderByAndWindow() {
         SelectStatement selectStatement = createBaseSelect(false, false, null, null, createOrderBySegment(), createWindowSegment());
-        SqlOrderBy actual = (SqlOrderBy) new SelectStatementConverter().convert(selectStatement);
+        SqlOrderBy actual = (SqlOrderBy) new SelectStatementConverter().convert(selectStatement, null);
         assertNull(actual.offset);
         assertThat(((SqlSelect) actual.query).getWindowList(), isA(SqlNode.class));
     }

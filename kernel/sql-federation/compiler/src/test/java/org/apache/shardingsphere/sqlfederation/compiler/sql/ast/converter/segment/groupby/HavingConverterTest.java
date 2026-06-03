@@ -41,15 +41,15 @@ class HavingConverterTest {
     
     @Test
     void assertConvertReturnsEmptyForNullSegment() {
-        assertFalse(HavingConverter.convert(null).isPresent());
+        assertFalse(HavingConverter.convert(null, null).isPresent());
     }
     
     @Test
     void assertConvertDelegatesToExpressionConverter() {
         ExpressionSegment expr = mock(ExpressionSegment.class);
         SqlNode expectedSqlNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(expr)).thenReturn(Optional.of(expectedSqlNode));
-        Optional<SqlNode> actual = HavingConverter.convert(new HavingSegment(0, 0, expr));
+        when(ExpressionConverter.convert(expr, null)).thenReturn(Optional.of(expectedSqlNode));
+        Optional<SqlNode> actual = HavingConverter.convert(new HavingSegment(0, 0, expr), null);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(expectedSqlNode));
     }

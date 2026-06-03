@@ -48,8 +48,8 @@ class WindowFunctionConverterTest {
         LiteralExpressionSegment parameter = new LiteralExpressionSegment(0, 0, "value");
         segment.getParameters().add(parameter);
         SqlNode paramNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(parameter)).thenReturn(Optional.of(paramNode));
-        SqlBasicCall actual = WindowFunctionConverter.convert(segment);
+        when(ExpressionConverter.convert(parameter, null)).thenReturn(Optional.of(paramNode));
+        SqlBasicCall actual = WindowFunctionConverter.convert(segment, null);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.OVER));
         assertThat(actual.getOperandList().get(0), is(paramNode));
         assertThat(actual.getOperandList().get(1), isA(SqlWindow.class));
@@ -60,7 +60,7 @@ class WindowFunctionConverterTest {
         FunctionSegment segment = new FunctionSegment(0, 0, "OVER", "OVER");
         LiteralExpressionSegment parameter = new LiteralExpressionSegment(0, 0, "value");
         segment.getParameters().add(parameter);
-        when(ExpressionConverter.convert(parameter)).thenReturn(Optional.empty());
-        assertTrue(WindowFunctionConverter.convert(segment).getOperandList().isEmpty());
+        when(ExpressionConverter.convert(parameter, null)).thenReturn(Optional.empty());
+        assertTrue(WindowFunctionConverter.convert(segment, null).getOperandList().isEmpty());
     }
 }

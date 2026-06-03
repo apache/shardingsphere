@@ -75,7 +75,7 @@ class DeleteStatementConverterTest {
     @Test
     void assertConvertSingleTableWithoutOrderByAndLimit() {
         DeleteStatement deleteStatement = DeleteStatement.builder().databaseType(databaseType).table(createSimpleTableSegment("t_order")).build();
-        SqlDelete actual = (SqlDelete) new DeleteStatementConverter().convert(deleteStatement);
+        SqlDelete actual = (SqlDelete) new DeleteStatementConverter().convert(deleteStatement, null);
         assertThat(((SqlIdentifier) actual.getTargetTable()).getSimple(), is("t_order"));
         assertNull(actual.getCondition());
         assertNull(actual.getAlias());
@@ -89,7 +89,7 @@ class DeleteStatementConverterTest {
                 .where(new WhereSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0)))
                 .orderBy(createOrderBySegment())
                 .build();
-        SqlOrderBy actual = (SqlOrderBy) new DeleteStatementConverter().convert(deleteStatement);
+        SqlOrderBy actual = (SqlOrderBy) new DeleteStatementConverter().convert(deleteStatement, null);
         assertThat(actual.query, isA(SqlDelete.class));
         SqlDelete sqlDelete = (SqlDelete) actual.query;
         assertThat(((SqlIdentifier) sqlDelete.getTargetTable()).getSimple(), is("t_order"));
@@ -103,7 +103,7 @@ class DeleteStatementConverterTest {
     void assertConvertSingleTableWithLimit() {
         LimitSegment limit = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1L), new ParameterMarkerLimitValueSegment(0, 0, 0));
         DeleteStatement deleteStatement = DeleteStatement.builder().databaseType(databaseType).table(createSimpleTableSegment("t_order")).limit(limit).build();
-        SqlOrderBy actual = (SqlOrderBy) new DeleteStatementConverter().convert(deleteStatement);
+        SqlOrderBy actual = (SqlOrderBy) new DeleteStatementConverter().convert(deleteStatement, null);
         assertThat(actual.offset, isA(SqlLiteral.class));
         assertNotNull(actual.offset);
         assertThat(actual.offset.toString(), is("1"));
@@ -129,7 +129,7 @@ class DeleteStatementConverterTest {
                 .where(new WhereSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0)))
                 .with(createWithSegment())
                 .build();
-        SqlWith actual = (SqlWith) new DeleteStatementConverter().convert(deleteStatement);
+        SqlWith actual = (SqlWith) new DeleteStatementConverter().convert(deleteStatement, null);
         SqlDelete sqlDelete = (SqlDelete) actual.body;
         assertThat(((SqlIdentifier) sqlDelete.getTargetTable()).getSimple(), is("left_table"));
         assertNotNull(sqlDelete.getAlias());
@@ -146,7 +146,7 @@ class DeleteStatementConverterTest {
         multiTableSegment.setRelationTable(relationTable);
         multiTableSegment.setActualDeleteTables(Collections.singletonList(createSimpleTableSegment("target_table")));
         DeleteStatement deleteStatement = DeleteStatement.builder().databaseType(databaseType).table(multiTableSegment).build();
-        SqlDelete actual = (SqlDelete) new DeleteStatementConverter().convert(deleteStatement);
+        SqlDelete actual = (SqlDelete) new DeleteStatementConverter().convert(deleteStatement, null);
         assertThat(((SqlIdentifier) actual.getTargetTable()).getSimple(), is("target_table"));
         assertNotNull(actual.getAlias());
         assertThat(actual.getAlias().toString(), is("target_table"));
@@ -160,7 +160,7 @@ class DeleteStatementConverterTest {
                 .where(new WhereSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0)))
                 .with(createWithSegment())
                 .build();
-        SqlWith actual = (SqlWith) new DeleteStatementConverter().convert(deleteStatement);
+        SqlWith actual = (SqlWith) new DeleteStatementConverter().convert(deleteStatement, null);
         SqlDelete sqlDelete = (SqlDelete) actual.body;
         assertThat(((SqlIdentifier) sqlDelete.getTargetTable()).getSimple(), is("t_order"));
         assertNull(sqlDelete.getAlias());
@@ -176,14 +176,14 @@ class DeleteStatementConverterTest {
         multiTableSegment.setActualDeleteTables(tables);
         multiTableSegment.setRelationTable(createSimpleTableSegmentWithAlias("target_table", "t"));
         DeleteStatement deleteStatement = DeleteStatement.builder().databaseType(databaseType).table(multiTableSegment).build();
-        SqlDelete actual = (SqlDelete) new DeleteStatementConverter().convert(deleteStatement);
+        SqlDelete actual = (SqlDelete) new DeleteStatementConverter().convert(deleteStatement, null);
         assertNull(actual.getAlias());
     }
     
     @Test
     void assertConvertSingleTableWithoutTargetTable() {
         DeleteStatement deleteStatement = DeleteStatement.builder().databaseType(databaseType).table(createSimpleTableSegment("DUAL")).build();
-        assertThrows(IllegalStateException.class, () -> new DeleteStatementConverter().convert(deleteStatement));
+        assertThrows(IllegalStateException.class, () -> new DeleteStatementConverter().convert(deleteStatement, null));
     }
     
     private SimpleTableSegment createSimpleTableSegment(final String tableName) {

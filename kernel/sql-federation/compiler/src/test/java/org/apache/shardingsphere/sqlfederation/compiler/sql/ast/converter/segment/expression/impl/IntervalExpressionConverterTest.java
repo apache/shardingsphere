@@ -52,7 +52,7 @@ class IntervalExpressionConverterTest {
     void assertConvertThrowsForUnsupportedIntervalUnit() {
         LiteralExpressionSegment value = new LiteralExpressionSegment(0, 0, 1);
         IntervalExpression intervalExpression = new IntervalExpression(0, 0, value, IntervalUnit.YEAR_MONTH, "INTERVAL 1");
-        assertThrows(UnsupportedOperationException.class, () -> IntervalExpressionConverter.convert(intervalExpression));
+        assertThrows(UnsupportedOperationException.class, () -> IntervalExpressionConverter.convert(intervalExpression, null));
     }
     
     @ParameterizedTest(name = "convert interval unit {0}")
@@ -60,9 +60,9 @@ class IntervalExpressionConverterTest {
     void assertConvertIntervalUnits(final IntervalUnit intervalUnit, final TimeUnit expectedTimeUnit) {
         LiteralExpressionSegment value = new LiteralExpressionSegment(0, 0, 1);
         SqlNode literalNode = SqlLiteral.createExactNumeric("1", SqlParserPos.ZERO);
-        when(ExpressionConverter.convert(value)).thenReturn(Optional.of(literalNode));
+        when(ExpressionConverter.convert(value, null)).thenReturn(Optional.of(literalNode));
         IntervalExpression intervalExpression = new IntervalExpression(0, 0, value, intervalUnit, "INTERVAL 1");
-        SqlBasicCall actual = IntervalExpressionConverter.convert(intervalExpression);
+        SqlBasicCall actual = IntervalExpressionConverter.convert(intervalExpression, null);
         assertThat(actual.getOperator(), is(SQLExtensionOperatorTable.INTERVAL_OPERATOR));
         assertThat(actual.getOperandList().get(0), is(literalNode));
         SqlIntervalQualifier qualifier = (SqlIntervalQualifier) actual.getOperandList().get(1);

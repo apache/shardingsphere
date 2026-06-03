@@ -37,7 +37,7 @@ class DeleteMultiTableConverterTest {
     
     @Test
     void assertConvertReturnsEmptyForNullSegment() {
-        assertFalse(DeleteMultiTableConverter.convert(null).isPresent());
+        assertFalse(DeleteMultiTableConverter.convert(null, null).isPresent());
     }
     
     @Test
@@ -46,7 +46,7 @@ class DeleteMultiTableConverterTest {
         segment.setRelationTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_relation"))));
         segment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         segment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_item"))));
-        SqlNodeList actual = (SqlNodeList) DeleteMultiTableConverter.convert(segment).orElse(null);
+        SqlNodeList actual = (SqlNodeList) DeleteMultiTableConverter.convert(segment, null).orElse(null);
         assertNotNull(actual);
         SqlIdentifier relationIdentifier = (SqlIdentifier) actual.get(0);
         assertThat(relationIdentifier.names, is(Collections.singletonList("t_relation")));

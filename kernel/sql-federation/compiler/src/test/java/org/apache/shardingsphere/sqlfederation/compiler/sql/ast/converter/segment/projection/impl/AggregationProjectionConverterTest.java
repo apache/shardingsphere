@@ -55,14 +55,14 @@ class AggregationProjectionConverterTest {
     
     @Test
     void assertConvertReturnsEmptyForNullSegment() {
-        assertFalse(AggregationProjectionConverter.convert(null).isPresent());
+        assertFalse(AggregationProjectionConverter.convert(null, null).isPresent());
     }
     
     @Test
     void assertConvertBuildsDistinctAggregationWithAliasAndStarParameter() {
         AggregationDistinctProjectionSegment segment = new AggregationDistinctProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)", "COUNT(*)");
         segment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
-        Optional<SqlNode> actual = AggregationProjectionConverter.convert(segment);
+        Optional<SqlNode> actual = AggregationProjectionConverter.convert(segment, null);
         assertTrue(actual.isPresent());
         SqlBasicCall asCall = (SqlBasicCall) actual.orElse(null);
         assertThat(asCall.getOperator(), is(SqlStdOperatorTable.AS));
@@ -85,9 +85,9 @@ class AggregationProjectionConverterTest {
         segment.getParameters().addAll(Arrays.asList(firstParam, secondParam));
         SqlNode firstNode = mock(SqlNode.class);
         SqlNode secondNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(firstParam)).thenReturn(Optional.of(firstNode));
-        when(ExpressionConverter.convert(secondParam)).thenReturn(Optional.of(secondNode));
-        Optional<SqlNode> actual = AggregationProjectionConverter.convert(segment);
+        when(ExpressionConverter.convert(firstParam, null)).thenReturn(Optional.of(firstNode));
+        when(ExpressionConverter.convert(secondParam, null)).thenReturn(Optional.of(secondNode));
+        Optional<SqlNode> actual = AggregationProjectionConverter.convert(segment, null);
         SqlBasicCall sqlBasicCall = (SqlBasicCall) actual.orElse(null);
         assertNotNull(sqlBasicCall);
         assertThat(sqlBasicCall.getOperator(), is(SqlStdOperatorTable.SUM));
@@ -104,8 +104,8 @@ class AggregationProjectionConverterTest {
         ExpressionSegment param = mock(ExpressionSegment.class);
         segment.getParameters().add(param);
         SqlNode expectedNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(param)).thenReturn(Optional.of(expectedNode));
-        Optional<SqlNode> actual = AggregationProjectionConverter.convert(segment);
+        when(ExpressionConverter.convert(param, null)).thenReturn(Optional.of(expectedNode));
+        Optional<SqlNode> actual = AggregationProjectionConverter.convert(segment, null);
         SqlBasicCall sqlBasicCall = (SqlBasicCall) actual.orElse(null);
         assertNotNull(sqlBasicCall);
         assertThat(sqlBasicCall.getOperator(), is(SqlStdOperatorTable.MAX));
@@ -117,7 +117,7 @@ class AggregationProjectionConverterTest {
     @Test
     void assertConvertThrowsExceptionForUnsupportedOperator() {
         IllegalStateException ex = assertThrows(IllegalStateException.class,
-                () -> AggregationProjectionConverter.convert(new AggregationProjectionSegment(0, 0, AggregationType.PRODUCT, "PRODUCT(expr)")));
+                () -> AggregationProjectionConverter.convert(new AggregationProjectionSegment(0, 0, AggregationType.PRODUCT, "PRODUCT(expr)"), null));
         assertThat(ex.getMessage(), is("Unsupported SQL operator: `PRODUCT`"));
     }
 }

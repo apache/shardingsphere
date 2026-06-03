@@ -45,12 +45,13 @@ public final class JoinTableConverter {
      * Convert join table segment to SQL node.
      *
      * @param segment join table segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final JoinTableSegment segment) {
-        SqlNode left = TableConverter.convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
-        SqlNode right = TableConverter.convert(segment.getRight()).orElseThrow(IllegalStateException::new);
-        Optional<SqlNode> condition = convertJoinCondition(segment);
+    public static Optional<SqlNode> convert(final JoinTableSegment segment, final String databaseType) {
+        SqlNode left = TableConverter.convert(segment.getLeft(), databaseType).orElseThrow(IllegalStateException::new);
+        SqlNode right = TableConverter.convert(segment.getRight(), databaseType).orElseThrow(IllegalStateException::new);
+        Optional<SqlNode> condition = convertJoinCondition(segment, databaseType);
         SqlLiteral conditionType = convertConditionType(segment);
         SqlLiteral joinType = convertJoinType(segment);
         return Optional.of(new SqlJoin(SqlParserPos.ZERO, left, SqlLiteral.createBoolean(segment.isNatural(), SqlParserPos.ZERO), joinType, right, conditionType, condition.orElse(null)));
@@ -70,9 +71,9 @@ public final class JoinTableConverter {
         return null == segment.getCondition() ? JoinConditionType.NONE.symbol(SqlParserPos.ZERO) : JoinConditionType.ON.symbol(SqlParserPos.ZERO);
     }
     
-    private static Optional<SqlNode> convertJoinCondition(final JoinTableSegment segment) {
+    private static Optional<SqlNode> convertJoinCondition(final JoinTableSegment segment, final String databaseType) {
         if (null != segment.getCondition()) {
-            return ExpressionConverter.convert(segment.getCondition());
+            return ExpressionConverter.convert(segment.getCondition(), databaseType);
         }
         if (segment.getUsing().isEmpty()) {
             return Optional.empty();

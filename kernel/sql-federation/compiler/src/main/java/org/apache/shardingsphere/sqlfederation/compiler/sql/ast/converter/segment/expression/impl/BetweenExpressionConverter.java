@@ -40,13 +40,14 @@ public final class BetweenExpressionConverter {
      * Convert between expression to SQL node.
      *
      * @param expression between expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlBasicCall convert(final BetweenExpression expression) {
+    public static SqlBasicCall convert(final BetweenExpression expression, final String databaseType) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();
-        ExpressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
-        ExpressionConverter.convert(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
-        ExpressionConverter.convert(expression.getAndExpr()).ifPresent(sqlNodes::add);
+        ExpressionConverter.convert(expression.getLeft(), databaseType).ifPresent(sqlNodes::add);
+        ExpressionConverter.convert(expression.getBetweenExpr(), databaseType).ifPresent(sqlNodes::add);
+        ExpressionConverter.convert(expression.getAndExpr(), databaseType).ifPresent(sqlNodes::add);
         return new SqlBasicCall(expression.isNot() ? SqlStdOperatorTable.NOT_BETWEEN : SqlStdOperatorTable.BETWEEN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO);
     }
 }

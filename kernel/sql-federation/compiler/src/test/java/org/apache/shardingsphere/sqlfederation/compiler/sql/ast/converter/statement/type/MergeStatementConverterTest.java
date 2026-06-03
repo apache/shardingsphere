@@ -52,7 +52,7 @@ class MergeStatementConverterTest {
     @Test
     void assertConvertWithUpdate() {
         MergeStatement mergeStatement = createMergeStatement(createSimpleTableSegment("target_table"), createSimpleTableSegment("source_table"), createUpdateStatement());
-        SqlMerge actual = (SqlMerge) new MergeStatementConverter().convert(mergeStatement);
+        SqlMerge actual = (SqlMerge) new MergeStatementConverter().convert(mergeStatement, null);
         assertThat(actual.getCondition(), isA(SqlNode.class));
         assertThat(actual.getUpdateCall(), isA(SqlUpdate.class));
     }
@@ -60,7 +60,7 @@ class MergeStatementConverterTest {
     @Test
     void assertConvertWithoutUpdate() {
         MergeStatement mergeStatement = createMergeStatement(createSimpleTableSegment("target_table"), createSimpleTableSegment("source_table"));
-        SqlMerge actual = (SqlMerge) new MergeStatementConverter().convert(mergeStatement);
+        SqlMerge actual = (SqlMerge) new MergeStatementConverter().convert(mergeStatement, null);
         assertNull(actual.getUpdateCall());
     }
     
@@ -68,7 +68,7 @@ class MergeStatementConverterTest {
     void assertConvertUpdateWithEmptyTable() {
         UpdateStatement updateStatement = createUpdateStatement(createSimpleTableSegment("DUAL"), false);
         MergeStatement mergeStatement = createMergeStatement(createSimpleTableSegment("target_table"), createSimpleTableSegment("source_table"), updateStatement);
-        SqlMerge actual = (SqlMerge) new MergeStatementConverter().convert(mergeStatement);
+        SqlMerge actual = (SqlMerge) new MergeStatementConverter().convert(mergeStatement, null);
         assertNotNull(actual.getUpdateCall());
         assertThat(actual.getUpdateCall().getTargetTable(), is(SqlNodeList.EMPTY));
     }

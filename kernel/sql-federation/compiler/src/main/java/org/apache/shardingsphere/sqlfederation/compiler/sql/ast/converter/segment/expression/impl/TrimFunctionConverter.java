@@ -47,16 +47,17 @@ public final class TrimFunctionConverter {
      * Convert function segment to SQL node.
      *
      * @param segment function segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlBasicCall convert(final FunctionSegment segment) {
+    public static SqlBasicCall convert(final FunctionSegment segment, final String databaseType) {
         SqlIdentifier functionName = new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO);
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));
-        return new SqlBasicCall(functions.iterator().next(), getTrimFunctionParameters(segment.getParameters()), SqlParserPos.ZERO);
+        return new SqlBasicCall(functions.iterator().next(), getTrimFunctionParameters(segment.getParameters(), databaseType), SqlParserPos.ZERO);
     }
     
-    private static List<SqlNode> getTrimFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {
+    private static List<SqlNode> getTrimFunctionParameters(final Collection<ExpressionSegment> sqlSegments, final String databaseType) {
         List<SqlNode> result = new LinkedList<>();
         if (1 == sqlSegments.size()) {
             result.add(Flag.BOTH.symbol(SqlParserPos.ZERO));
@@ -66,7 +67,7 @@ public final class TrimFunctionConverter {
             result.add(Flag.BOTH.symbol(SqlParserPos.ZERO));
         }
         for (ExpressionSegment each : sqlSegments) {
-            ExpressionConverter.convert(each).ifPresent(result::add);
+            ExpressionConverter.convert(each, databaseType).ifPresent(result::add);
         }
         return result;
     }

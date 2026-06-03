@@ -57,7 +57,7 @@ class UpdateStatementConverterTest {
     void assertConvertWithLimitAndAlias() {
         LimitSegment limit = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1L), new ParameterMarkerLimitValueSegment(0, 0, 0));
         UpdateStatement updateStatement = createUpdateStatement(true, null, limit);
-        SqlOrderBy actual = (SqlOrderBy) new UpdateStatementConverter().convert(updateStatement);
+        SqlOrderBy actual = (SqlOrderBy) new UpdateStatementConverter().convert(updateStatement, null);
         assertThat(actual.offset, isA(SqlNode.class));
         assertThat(actual.fetch, isA(SqlDynamicParam.class));
         SqlUpdate sqlUpdate = (SqlUpdate) actual.query;
@@ -67,7 +67,7 @@ class UpdateStatementConverterTest {
     @Test
     void assertConvertWithoutLimitButWithOrderBy() {
         UpdateStatement updateStatement = createUpdateStatement(false, createOrderBySegment(), null);
-        SqlOrderBy actual = (SqlOrderBy) new UpdateStatementConverter().convert(updateStatement);
+        SqlOrderBy actual = (SqlOrderBy) new UpdateStatementConverter().convert(updateStatement, null);
         assertNull(actual.offset);
         SqlUpdate sqlUpdate = (SqlUpdate) actual.query;
         assertNull(sqlUpdate.getAlias());
@@ -77,7 +77,7 @@ class UpdateStatementConverterTest {
     void assertConvertWithLimitWithoutOffsetAndRowCount() {
         LimitSegment limit = new LimitSegment(0, 0, null, null);
         UpdateStatement updateStatement = createUpdateStatement(true, null, limit);
-        SqlOrderBy actual = (SqlOrderBy) new UpdateStatementConverter().convert(updateStatement);
+        SqlOrderBy actual = (SqlOrderBy) new UpdateStatementConverter().convert(updateStatement, null);
         assertNull(actual.offset);
         assertNull(actual.fetch);
     }

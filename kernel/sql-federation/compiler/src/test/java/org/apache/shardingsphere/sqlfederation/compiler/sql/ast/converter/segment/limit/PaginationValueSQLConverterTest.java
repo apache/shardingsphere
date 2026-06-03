@@ -35,7 +35,7 @@ class PaginationValueSQLConverterTest {
     
     @Test
     void assertConvertReturnsLiteralSqlNodeForNumberLiteral() {
-        Optional<SqlNode> actual = PaginationValueSQLConverter.convert(new NumberLiteralLimitValueSegment(0, 0, 5L));
+        Optional<SqlNode> actual = PaginationValueSQLConverter.convert(new NumberLiteralLimitValueSegment(0, 0, 5L), null);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(SqlLiteral.class));
         assertThat(((SqlLiteral) actual.get()).toValue(), is("5"));
@@ -43,7 +43,7 @@ class PaginationValueSQLConverterTest {
     
     @Test
     void assertConvertReturnsDynamicParamForParameterMarker() {
-        Optional<SqlNode> actual = PaginationValueSQLConverter.convert(new ParameterMarkerLimitValueSegment(0, 0, 2));
+        Optional<SqlNode> actual = PaginationValueSQLConverter.convert(new ParameterMarkerLimitValueSegment(0, 0, 2), null);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(SqlDynamicParam.class));
         assertThat(((SqlDynamicParam) actual.get()).getIndex(), is(2));

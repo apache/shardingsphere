@@ -50,9 +50,9 @@ class CollateExpressionConverterTest {
         CollateExpression collateExpression = new CollateExpression(0, 0, collateName, expr);
         SqlNode exprNode = mock(SqlNode.class);
         SqlNode collateNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(expr)).thenReturn(Optional.of(exprNode));
-        when(ExpressionConverter.convert(collateName)).thenReturn(Optional.of(collateNode));
-        SqlBasicCall actual = CollateExpressionConverter.convert(collateExpression);
+        when(ExpressionConverter.convert(expr, null)).thenReturn(Optional.of(exprNode));
+        when(ExpressionConverter.convert(collateName, null)).thenReturn(Optional.of(collateNode));
+        SqlBasicCall actual = CollateExpressionConverter.convert(collateExpression, null);
         assertThat(actual.getOperator(), is(SQLExtensionOperatorTable.COLLATE));
         assertThat(actual.getOperandList().get(0), is(exprNode));
         assertThat(actual.getOperandList().get(1), is(collateNode));
@@ -62,8 +62,8 @@ class CollateExpressionConverterTest {
     void assertConvertCollateExpressionWithEmptyParts() {
         LiteralExpressionSegment collateName = new LiteralExpressionSegment(0, 0, "collation");
         CollateExpression collateExpression = new CollateExpression(0, 0, collateName, null);
-        when(ExpressionConverter.convert(collateName)).thenReturn(Optional.empty());
-        SqlBasicCall actual = CollateExpressionConverter.convert(collateExpression);
+        when(ExpressionConverter.convert(collateName, null)).thenReturn(Optional.empty());
+        SqlBasicCall actual = CollateExpressionConverter.convert(collateExpression, null);
         assertThat(actual.getOperandList().get(0), isA(SqlNodeList.class));
         assertTrue(((SqlNodeList) actual.getOperandList().get(0)).isEmpty());
         assertThat(actual.getOperandList().get(1), isA(SqlNodeList.class));

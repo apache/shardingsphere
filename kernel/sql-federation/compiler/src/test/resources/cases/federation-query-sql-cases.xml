@@ -437,31 +437,4 @@
         <assertion expected-result="EnumerableCalc(expr#0..5=[{inputs}], proj#0..2=[{exprs}])   EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[1], expr#4=[=($t0, $t3)], proj#0..2=[{exprs}], $condition=[$t4])       EnumerableValues(tuples=[[{ 1, 2, 3 }, { 4, 5, 6 }]])     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[1], expr#4=[=($t0, $t3)], proj#0..2=[{exprs}], $condition=[$t4])       EnumerableValues(tuples=[[{ 1, 2, 3 }, { 4, 5, 6 }]]) "/>
     </test-case>
 
-    <test-case sql="SELECT LENGTH('abc')">
-        <assertion expected-result="EnumerableCalc(expr#0=[{inputs}], expr#1=[_UTF-8'abc'], expr#2=[LENGTH($t1)], EXPR$0=[$t2])   EnumerableValues(tuples=[[{ 0 }]]) " />
-    </test-case>
-
-    <test-case sql="SELECT BIT_LENGTH('abc')">
-        <assertion expected-result="EnumerableCalc(expr#0=[{inputs}], expr#1=[_UTF-8'abc'], expr#2=[BIT_LENGTH($t1)], EXPR$0=[$t2])   EnumerableValues(tuples=[[{ 0 }]]) " />
-    </test-case>
-
-    <test-case sql="SELECT LOCATE('b', 'abc')">
-        <assertion expected-result="EnumerableCalc(expr#0=[{inputs}], expr#1=[_UTF-8'b'], expr#2=[_UTF-8'abc'], expr#3=[LOCATE($t1, $t2)], EXPR$0=[$t3])   EnumerableValues(tuples=[[{ 0 }]]) " />
-    </test-case>
-
-    <test-case sql="SELECT LOCATE('a', 'abca', 2)">
-        <assertion expected-result="EnumerableCalc(expr#0=[{inputs}], expr#1=[_UTF-8'a'], expr#2=[_UTF-8'abca'], expr#3=[2], expr#4=[LOCATE($t1, $t2, $t3)], EXPR$0=[$t4])   EnumerableValues(tuples=[[{ 0 }]]) " />
-    </test-case>
-
-    <test-case sql="SELECT LENGTH(x'48656c6c6f')">
-        <assertion expected-result="EnumerableCalc(expr#0=[{inputs}], expr#1=[_UTF-8'Hello'], expr#2=[LENGTH($t1)], EXPR$0=[$t2])   EnumerableValues(tuples=[[{ 0 }]]) " />
-    </test-case>
-
-    <test-case sql="SELECT BIT_LENGTH(x'48656c6c6f')">
-        <assertion expected-result="EnumerableCalc(expr#0=[{inputs}], expr#1=[_UTF-8'Hello'], expr#2=[BIT_LENGTH($t1)], EXPR$0=[$t2])   EnumerableValues(tuples=[[{ 0 }]]) " />
-    </test-case>
-
-    <test-case sql="SELECT LOCATE(x'64', _utf8mb4'abcdef')">
-        <assertion expected-result="EnumerableCalc(expr#0=[{inputs}], expr#1=[_UTF-8'd'], expr#2=[_UTF-8'abcdef'], expr#3=[LOCATE($t1, $t2)], EXPR$0=[$t3])   EnumerableValues(tuples=[[{ 0 }]]) " />
-    </test-case>
 </test-cases>

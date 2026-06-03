@@ -47,9 +47,9 @@ class ExistsSubqueryExpressionConverterTest {
         SqlNode expected = mock(SqlNode.class);
         try (
                 MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
-                        (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(expected))) {
+                        (mock, context) -> when(mock.convert(any(SelectStatement.class), any())).thenReturn(expected))) {
             ExistsSubqueryExpression expression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "text"));
-            SqlBasicCall actual = (SqlBasicCall) ExistsSubqueryExpressionConverter.convert(expression);
+            SqlBasicCall actual = (SqlBasicCall) ExistsSubqueryExpressionConverter.convert(expression, null);
             assertThat(actual.getOperator(), is(SqlStdOperatorTable.EXISTS));
             assertThat(actual.getOperandList(), is(Collections.singletonList(expected)));
         }
@@ -60,10 +60,10 @@ class ExistsSubqueryExpressionConverterTest {
         SqlNode expected = mock(SqlNode.class);
         try (
                 MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
-                        (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(expected))) {
+                        (mock, context) -> when(mock.convert(any(SelectStatement.class), any())).thenReturn(expected))) {
             ExistsSubqueryExpression expression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "text"));
             expression.setNot(true);
-            SqlBasicCall actual = (SqlBasicCall) ExistsSubqueryExpressionConverter.convert(expression);
+            SqlBasicCall actual = (SqlBasicCall) ExistsSubqueryExpressionConverter.convert(expression, null);
             assertThat(actual.getOperator(), is(SqlStdOperatorTable.NOT));
             SqlBasicCall existsCall = (SqlBasicCall) actual.getOperandList().get(0);
             assertThat(existsCall.getOperator(), is(SqlStdOperatorTable.EXISTS));

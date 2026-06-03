@@ -40,12 +40,13 @@ public final class ListExpressionConverter {
      * Convert list expression to SQL node.
      *
      * @param segment list expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final ListExpression segment) {
+    public static Optional<SqlNode> convert(final ListExpression segment, final String databaseType) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         for (ExpressionSegment each : segment.getItems()) {
-            ExpressionConverter.convert(each).ifPresent(sqlNodes::add);
+            ExpressionConverter.convert(each, databaseType).ifPresent(sqlNodes::add);
         }
         return sqlNodes.isEmpty() ? Optional.empty() : Optional.of(new SqlNodeList(sqlNodes, SqlParserPos.ZERO));
     }

@@ -60,11 +60,12 @@ public final class UnaryOperationExpressionConverter {
      * Convert unary operation expression to SQL node.
      *
      * @param segment unary operation expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlBasicCall convert(final UnaryOperationExpression segment) {
+    public static SqlBasicCall convert(final UnaryOperationExpression segment, final String databaseType) {
         SqlOperator operator = convertOperator(segment);
-        List<SqlNode> sqlNodes = convertSqlNodes(segment);
+        List<SqlNode> sqlNodes = convertSqlNodes(segment, databaseType);
         return new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO);
     }
     
@@ -74,8 +75,8 @@ public final class UnaryOperationExpressionConverter {
         return REGISTRY.get(operator);
     }
     
-    private static List<SqlNode> convertSqlNodes(final UnaryOperationExpression segment) {
-        SqlNode expression = ExpressionConverter.convert(segment.getExpression()).orElseThrow(IllegalStateException::new);
+    private static List<SqlNode> convertSqlNodes(final UnaryOperationExpression segment, final String databaseType) {
+        SqlNode expression = ExpressionConverter.convert(segment.getExpression(), databaseType).orElseThrow(IllegalStateException::new);
         List<SqlNode> result = new LinkedList<>();
         result.add(expression);
         return result;

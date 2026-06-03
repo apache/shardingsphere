@@ -46,8 +46,8 @@ class TrimFunctionConverterTest {
         LiteralExpressionSegment parameter = new LiteralExpressionSegment(0, 0, "param");
         segment.getParameters().add(parameter);
         SqlNode paramNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(parameter)).thenReturn(Optional.of(paramNode));
-        SqlBasicCall actual = TrimFunctionConverter.convert(segment);
+        when(ExpressionConverter.convert(parameter, null)).thenReturn(Optional.of(paramNode));
+        SqlBasicCall actual = TrimFunctionConverter.convert(segment, null);
         SqlLiteral trimFlag = (SqlLiteral) actual.getOperandList().get(0);
         assertThat(trimFlag.getValueAs(Flag.class), is(Flag.BOTH));
         SqlLiteral padding = (SqlLiteral) actual.getOperandList().get(1);
@@ -64,9 +64,9 @@ class TrimFunctionConverterTest {
         segment.getParameters().add(second);
         SqlNode firstNode = mock(SqlNode.class);
         SqlNode secondNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(first)).thenReturn(Optional.of(firstNode));
-        when(ExpressionConverter.convert(second)).thenReturn(Optional.of(secondNode));
-        SqlBasicCall actual = TrimFunctionConverter.convert(segment);
+        when(ExpressionConverter.convert(first, null)).thenReturn(Optional.of(firstNode));
+        when(ExpressionConverter.convert(second, null)).thenReturn(Optional.of(secondNode));
+        SqlBasicCall actual = TrimFunctionConverter.convert(segment, null);
         SqlLiteral trimFlag = (SqlLiteral) actual.getOperandList().get(0);
         assertThat(trimFlag.getValueAs(Flag.class), is(Flag.BOTH));
         assertThat(actual.getOperandList().get(1), is(firstNode));

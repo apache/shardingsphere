@@ -35,9 +35,10 @@ public final class WhereConverter {
      * Convert where segment to SQL node.
      *
      * @param segment where segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final WhereSegment segment) {
-        return null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr());
+    public static Optional<SqlNode> convert(final WhereSegment segment, final String databaseType) {
+        return null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr(), databaseType);
     }
 }

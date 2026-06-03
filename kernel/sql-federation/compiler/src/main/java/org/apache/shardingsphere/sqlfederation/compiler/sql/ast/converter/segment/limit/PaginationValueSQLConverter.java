@@ -41,14 +41,15 @@ public final class PaginationValueSQLConverter {
      * Convert pagination value segment to SQL node.
      *
      * @param segment pagination value segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final PaginationValueSegment segment) {
+    public static Optional<SqlNode> convert(final PaginationValueSegment segment, final String databaseType) {
         if (segment instanceof NumberLiteralPaginationValueSegment) {
             return Optional.of(getLiteralSQLNode((NumberLiteralPaginationValueSegment) segment));
         }
         if (segment instanceof ExpressionPaginationValueSegment) {
-            return ExpressionConverter.convert(((ExpressionPaginationValueSegment) segment).getExpression());
+            return ExpressionConverter.convert(((ExpressionPaginationValueSegment) segment).getExpression(), databaseType);
         }
         return Optional.of(getParameterMarkerSQLNode((ParameterMarkerLimitValueSegment) segment));
     }

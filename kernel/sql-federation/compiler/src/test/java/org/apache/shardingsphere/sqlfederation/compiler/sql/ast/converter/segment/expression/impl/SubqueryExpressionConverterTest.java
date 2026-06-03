@@ -38,6 +38,6 @@ class SubqueryExpressionConverterTest {
         projections.getProjections().add(new ParameterMarkerExpressionSegment(0, 0, 0));
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections).build();
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, selectStatement, "sub");
-        assertNotNull(SubqueryExpressionConverter.convert(new SubqueryExpressionSegment(subquerySegment)));
+        assertNotNull(SubqueryExpressionConverter.convert(new SubqueryExpressionSegment(subquerySegment), null));
     }
 }

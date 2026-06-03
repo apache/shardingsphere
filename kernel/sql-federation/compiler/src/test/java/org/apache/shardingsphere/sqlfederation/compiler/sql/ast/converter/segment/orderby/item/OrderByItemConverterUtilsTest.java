@@ -57,7 +57,7 @@ class OrderByItemConverterUtilsTest {
         when(ColumnOrderByItemConverter.convert(columnItem)).thenReturn(expectedColumnNode);
         ExpressionOrderByItemSegment expressionItem = new ExpressionOrderByItemSegment(0, 0, "expr", OrderDirection.ASC, null, mock(ExpressionSegment.class));
         SqlNode expectedExpressionNode = mock(SqlNode.class);
-        when(ExpressionOrderByItemConverter.convert(expressionItem)).thenReturn(Optional.of(expectedExpressionNode));
+        when(ExpressionOrderByItemConverter.convert(expressionItem, null)).thenReturn(Optional.of(expectedExpressionNode));
         IndexOrderByItemSegment indexItem = new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, null);
         SqlNode expectedIndexNode = mock(SqlNode.class);
         when(IndexOrderByItemConverter.convert(indexItem)).thenReturn(Optional.of(expectedIndexNode));
@@ -68,7 +68,7 @@ class OrderByItemConverterUtilsTest {
         orderByItems.add(expressionItem);
         orderByItems.add(indexItem);
         orderByItems.add(unsupportedItem);
-        Collection<SqlNode> actual = OrderByItemConverterUtils.convert(orderByItems);
+        Collection<SqlNode> actual = OrderByItemConverterUtils.convert(orderByItems, null);
         assertThat(actual.size(), is(3));
         Iterator<SqlNode> iterator = actual.iterator();
         assertThat(iterator.next(), is(expectedColumnNode));
@@ -85,7 +85,7 @@ class OrderByItemConverterUtilsTest {
                 return "text";
             }
         };
-        UnsupportedSQLOperationException ex = assertThrows(UnsupportedSQLOperationException.class, () -> OrderByItemConverterUtils.convert(Collections.singleton(textOrderByItemSegment)));
+        UnsupportedSQLOperationException ex = assertThrows(UnsupportedSQLOperationException.class, () -> OrderByItemConverterUtils.convert(Collections.singleton(textOrderByItemSegment), null));
         assertThat(ex.getMessage(), is("Unsupported SQL operation: unsupported TextOrderByItemSegment."));
     }
 }

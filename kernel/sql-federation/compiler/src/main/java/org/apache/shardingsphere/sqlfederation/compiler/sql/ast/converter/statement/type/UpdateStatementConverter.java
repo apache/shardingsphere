@@ -45,27 +45,27 @@ import java.util.stream.Collectors;
 public final class UpdateStatementConverter implements SQLStatementConverter<UpdateStatement, SqlNode> {
     
     @Override
-    public SqlNode convert(final UpdateStatement updateStatement) {
-        SqlUpdate sqlUpdate = convertUpdate(updateStatement);
-        SqlNodeList orderBy = updateStatement.getOrderBy().flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
+    public SqlNode convert(final UpdateStatement updateStatement, final String databaseType) {
+        SqlUpdate sqlUpdate = convertUpdate(updateStatement, databaseType);
+        SqlNodeList orderBy = updateStatement.getOrderBy().flatMap(segment -> OrderByConverter.convert(segment, databaseType)).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = updateStatement.getLimit();
         if (limit.isPresent()) {
-            SqlNode offset = limit.get().getOffset().flatMap(PaginationValueSQLConverter::convert).orElse(null);
-            SqlNode rowCount = limit.get().getRowCount().flatMap(PaginationValueSQLConverter::convert).orElse(null);
+            SqlNode offset = limit.get().getOffset().flatMap(segment -> PaginationValueSQLConverter.convert(segment, databaseType)).orElse(null);
+            SqlNode rowCount = limit.get().getRowCount().flatMap(segment -> PaginationValueSQLConverter.convert(segment, databaseType)).orElse(null);
             return new SqlOrderBy(SqlParserPos.ZERO, sqlUpdate, orderBy, offset, rowCount);
         }
         return orderBy.isEmpty() ? sqlUpdate : new SqlOrderBy(SqlParserPos.ZERO, sqlUpdate, orderBy, null, null);
     }
     
-    private SqlUpdate convertUpdate(final UpdateStatement updateStatement) {
-        SqlNode table = TableConverter.convert(updateStatement.getTable()).orElseThrow(IllegalStateException::new);
+    private SqlUpdate convertUpdate(final UpdateStatement updateStatement, final String databaseType) {
+        SqlNode table = TableConverter.convert(updateStatement.getTable(), databaseType).orElseThrow(IllegalStateException::new);
         SqlIdentifier alias = convertTableAlias(updateStatement);
-        SqlNode condition = updateStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
+        SqlNode condition = updateStatement.getWhere().flatMap(segment -> WhereConverter.convert(segment, databaseType)).orElse(null);
         SqlNodeList columns = new SqlNodeList(SqlParserPos.ZERO);
         SqlNodeList expressions = new SqlNodeList(SqlParserPos.ZERO);
         for (ColumnAssignmentSegment each : updateStatement.getAssignment().orElseThrow(IllegalStateException::new).getAssignments()) {
             columns.addAll(each.getColumns().stream().map(ColumnConverter::convert).collect(Collectors.toList()));
-            expressions.add(ExpressionConverter.convert(each.getValue()).orElseThrow(IllegalStateException::new));
+            expressions.add(ExpressionConverter.convert(each.getValue(), databaseType).orElseThrow(IllegalStateException::new));
         }
         return new SqlUpdate(SqlParserPos.ZERO, getTargetTableName(table), columns, expressions, condition, null, alias);
     }

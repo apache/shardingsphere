@@ -36,11 +36,12 @@ public final class GroupByConverter {
      * Convert group by segment to SQL node list.
      *
      * @param segment group by segment
+     * @param databaseType database type
      * @return SQL node list
      */
-    public static Optional<SqlNodeList> convert(final GroupBySegment segment) {
+    public static Optional<SqlNodeList> convert(final GroupBySegment segment, final String databaseType) {
         return null == segment || segment.getGroupByItems().isEmpty()
                 ? Optional.empty()
-                : Optional.of(new SqlNodeList(OrderByItemConverterUtils.convert(segment.getGroupByItems()), SqlParserPos.ZERO));
+                : Optional.of(new SqlNodeList(OrderByItemConverterUtils.convert(segment.getGroupByItems(), databaseType), SqlParserPos.ZERO));
     }
 }

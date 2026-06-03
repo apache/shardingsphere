@@ -46,18 +46,19 @@ public final class WithConverter {
      *
      * @param withSegment with segment
      * @param sqlNode SQL node
+     * @param databaseType database type
      * @return SQL node list
      */
-    public static Optional<SqlNode> convert(final WithSegment withSegment, final SqlNode sqlNode) {
-        return Optional.of(new SqlWith(SqlParserPos.ZERO, convertWithItem(withSegment.getCommonTableExpressions()), sqlNode));
+    public static Optional<SqlNode> convert(final WithSegment withSegment, final SqlNode sqlNode, final String databaseType) {
+        return Optional.of(new SqlWith(SqlParserPos.ZERO, convertWithItem(withSegment.getCommonTableExpressions(), databaseType), sqlNode));
     }
     
-    private static SqlNodeList convertWithItem(final Collection<CommonTableExpressionSegment> commonTableExpressionSegments) {
+    private static SqlNodeList convertWithItem(final Collection<CommonTableExpressionSegment> commonTableExpressionSegments, final String databaseType) {
         SqlNodeList result = new SqlNodeList(SqlParserPos.ZERO);
         for (CommonTableExpressionSegment each : commonTableExpressionSegments) {
             SqlIdentifier name = new SqlIdentifier(each.getAliasName().orElse(""), SqlParserPos.ZERO);
             SqlNodeList columns = each.getColumns().isEmpty() ? null : convertColumns(each.getColumns());
-            result.add(new SqlWithItem(SqlParserPos.ZERO, name, columns, new SelectStatementConverter().convert(each.getSubquery().getSelect())));
+            result.add(new SqlWithItem(SqlParserPos.ZERO, name, columns, new SelectStatementConverter().convert(each.getSubquery().getSelect(), databaseType)));
         }
         return result;
     }

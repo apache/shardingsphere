@@ -20,7 +20,9 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segme
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
@@ -82,13 +84,16 @@ import java.util.Optional;
 public final class ExpressionConverter {
     
     /**
-     * Convert expression segment to SQL node.
+     * Convert expression segment to SQL node, gating the MySQL-only {@link MySQLBinaryLiteralRecognizer} on the supplied
+     * dialect so PostgreSQL / openGauss / Oracle compile paths never reinterpret their own {@code B'...'} or {@code X'...'}
+     * bit-string constants as MySQL hex / bit literals.
      *
      * @param segment expression segment
+     * @param databaseType active database type for this compilation, used to gate dialect-specific recognizers
      * @return SQL node
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
-    public static Optional<SqlNode> convert(final ExpressionSegment segment) {
+    public static Optional<SqlNode> convert(final ExpressionSegment segment, final String databaseType) {
         if (null == segment) {
             return Optional.empty();
         }
@@ -96,81 +101,96 @@ public final class ExpressionConverter {
             return LiteralExpressionConverter.convert((LiteralExpressionSegment) segment, null);
         }
         if (segment instanceof CommonExpressionSegment) {
-            Optional<SqlNode> recognized = MySQLBinaryLiteralRecognizer.recognize(((CommonExpressionSegment) segment).getText());
+            Optional<SqlNode> recognized = recognizeMySQLBinaryLiteral((CommonExpressionSegment) segment, databaseType);
             if (recognized.isPresent()) {
                 return recognized;
             }
             throw new UnsupportedSQLOperationException("unsupported CommonExpressionSegment");
         }
         if (segment instanceof ListExpression) {
-            return ListExpressionConverter.convert((ListExpression) segment);
+            return ListExpressionConverter.convert((ListExpression) segment, databaseType);
         }
         if (segment instanceof BinaryOperationExpression) {
-            return Optional.of(BinaryOperationExpressionConverter.convert((BinaryOperationExpression) segment));
+            return Optional.of(BinaryOperationExpressionConverter.convert((BinaryOperationExpression) segment, databaseType));
         }
         if (segment instanceof ColumnSegment) {
             return Optional.of(ColumnConverter.convert((ColumnSegment) segment));
         }
         if (segment instanceof ExistsSubqueryExpression) {
-            return Optional.of(ExistsSubqueryExpressionConverter.convert((ExistsSubqueryExpression) segment));
+            return Optional.of(ExistsSubqueryExpressionConverter.convert((ExistsSubqueryExpression) segment, databaseType));
         }
         if (segment instanceof SubqueryExpressionSegment) {
-            return Optional.of(SubqueryExpressionConverter.convert((SubqueryExpressionSegment) segment));
+            return Optional.of(SubqueryExpressionConverter.convert((SubqueryExpressionSegment) segment, databaseType));
         }
         if (segment instanceof InExpression) {
-            return Optional.of(InExpressionConverter.convert((InExpression) segment));
+            return Optional.of(InExpressionConverter.convert((InExpression) segment, databaseType));
         }
         if (segment instanceof BetweenExpression) {
-            return Optional.of(BetweenExpressionConverter.convert((BetweenExpression) segment));
+            return Optional.of(BetweenExpressionConverter.convert((BetweenExpression) segment, databaseType));
         }
         if (segment instanceof ParameterMarkerExpressionSegment) {
             return Optional.of(ParameterMarkerExpressionConverter.convert((ParameterMarkerExpressionSegment) segment));
         }
         if (segment instanceof FunctionSegment) {
-            return Optional.of(FunctionConverter.convert((FunctionSegment) segment));
+            return Optional.of(FunctionConverter.convert((FunctionSegment) segment, databaseType));
         }
         if (segment instanceof AggregationProjectionSegment) {
-            return AggregationProjectionConverter.convert((AggregationProjectionSegment) segment);
+            return AggregationProjectionConverter.convert((AggregationProjectionSegment) segment, databaseType);
         }
         if (segment instanceof DataTypeSegment) {
             return Optional.of(DataTypeExpressionConverter.convert((DataTypeSegment) segment));
         }
         if (segment instanceof CaseWhenExpression) {
-            return Optional.of(CaseWhenExpressionConverter.convert((CaseWhenExpression) segment));
+            return Optional.of(CaseWhenExpressionConverter.convert((CaseWhenExpression) segment, databaseType));
         }
         if (segment instanceof NotExpression) {
-            return Optional.of(NotExpressionConverter.convert((NotExpression) segment));
+            return Optional.of(NotExpressionConverter.convert((NotExpression) segment, databaseType));
         }
         if (segment instanceof TypeCastExpression) {
-            return TypeCastExpressionConverter.convert((TypeCastExpression) segment);
+            return TypeCastExpressionConverter.convert((TypeCastExpression) segment, databaseType);
         }
         if (segment instanceof ExtractArgExpression) {
             return Optional.of(ExtractArgExpressionConverter.convert((ExtractArgExpression) segment));
         }
         if (segment instanceof MatchAgainstExpression) {
-            return Optional.of(MatchExpressionConverter.convert((MatchAgainstExpression) segment));
+            return Optional.of(MatchExpressionConverter.convert((MatchAgainstExpression) segment, databaseType));
         }
         if (segment instanceof CollateExpression) {
-            return Optional.of(CollateExpressionConverter.convert((CollateExpression) segment));
+            return Optional.of(CollateExpressionConverter.convert((CollateExpression) segment, databaseType));
         }
         if (segment instanceof RowExpression) {
-            return Optional.of(RowExpressionConverter.convert((RowExpression) segment));
+            return Optional.of(RowExpressionConverter.convert((RowExpression) segment, databaseType));
         }
         if (segment instanceof VariableSegment) {
             return Optional.of(VariableSegmentConverter.convert((VariableSegment) segment));
         }
         if (segment instanceof UnaryOperationExpression) {
-            return Optional.of(UnaryOperationExpressionConverter.convert((UnaryOperationExpression) segment));
+            return Optional.of(UnaryOperationExpressionConverter.convert((UnaryOperationExpression) segment, databaseType));
         }
         if (segment instanceof IntervalExpression) {
-            return Optional.of(IntervalExpressionConverter.convert((IntervalExpression) segment));
+            return Optional.of(IntervalExpressionConverter.convert((IntervalExpression) segment, databaseType));
         }
         if (segment instanceof IntervalUnitExpression) {
             return IntervalUnitExpressionConverter.convert((IntervalUnitExpression) segment);
         }
         if (segment instanceof QuantifySubqueryExpression) {
-            return Optional.of(QuantifySubqueryExpressionConverter.convert((QuantifySubqueryExpression) segment));
+            return Optional.of(QuantifySubqueryExpressionConverter.convert((QuantifySubqueryExpression) segment, databaseType));
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
+    }
+    
+    private static Optional<SqlNode> recognizeMySQLBinaryLiteral(final CommonExpressionSegment segment, final String databaseType) {
+        return isMySQLTrunkDatabaseType(databaseType) ? MySQLBinaryLiteralRecognizer.recognize(segment.getText()) : Optional.empty();
+    }
+    
+    private static boolean isMySQLTrunkDatabaseType(final String databaseType) {
+        if (null == databaseType) {
+            return false;
+        }
+        if ("MySQL".equalsIgnoreCase(databaseType)) {
+            return true;
+        }
+        Optional<DatabaseType> resolved = TypedSPILoader.findService(DatabaseType.class, databaseType);
+        return resolved.flatMap(DatabaseType::getTrunkDatabaseType).map(trunk -> "MySQL".equalsIgnoreCase(trunk.getType())).orElse(false);
     }
 }

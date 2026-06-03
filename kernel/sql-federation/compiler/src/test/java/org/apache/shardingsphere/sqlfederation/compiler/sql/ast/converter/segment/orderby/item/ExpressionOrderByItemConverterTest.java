@@ -46,22 +46,22 @@ class ExpressionOrderByItemConverterTest {
     
     @Test
     void assertConvertReturnsEmptyForNullSegment() {
-        assertFalse(ExpressionOrderByItemConverter.convert(null).isPresent());
+        assertFalse(ExpressionOrderByItemConverter.convert(null, null).isPresent());
     }
     
     @Test
     void assertConvertReturnsEmptyWhenExpressionConverterReturnsEmpty() {
         ExpressionSegment expressionSegment = mock(ExpressionSegment.class);
-        when(ExpressionConverter.convert(expressionSegment)).thenReturn(Optional.empty());
-        assertFalse(ExpressionOrderByItemConverter.convert(new ExpressionOrderByItemSegment(0, 0, "expr", OrderDirection.ASC, null, expressionSegment)).isPresent());
+        when(ExpressionConverter.convert(expressionSegment, null)).thenReturn(Optional.empty());
+        assertFalse(ExpressionOrderByItemConverter.convert(new ExpressionOrderByItemSegment(0, 0, "expr", OrderDirection.ASC, null, expressionSegment), null).isPresent());
     }
     
     @Test
     void assertConvertReturnsExpressionNodeWithoutNulls() {
         ExpressionSegment expressionSegment = mock(ExpressionSegment.class);
         SqlNode expectedNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(expressionSegment)).thenReturn(Optional.of(expectedNode));
-        Optional<SqlNode> actual = ExpressionOrderByItemConverter.convert(new ExpressionOrderByItemSegment(0, 0, "expr", OrderDirection.ASC, null, expressionSegment));
+        when(ExpressionConverter.convert(expressionSegment, null)).thenReturn(Optional.of(expectedNode));
+        Optional<SqlNode> actual = ExpressionOrderByItemConverter.convert(new ExpressionOrderByItemSegment(0, 0, "expr", OrderDirection.ASC, null, expressionSegment), null);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(expectedNode));
     }
@@ -70,8 +70,8 @@ class ExpressionOrderByItemConverterTest {
     void assertConvertWrapsNullsFirst() {
         ExpressionSegment expressionSegment = mock(ExpressionSegment.class);
         SqlNode expectedNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(expressionSegment)).thenReturn(Optional.of(expectedNode));
-        Optional<SqlNode> actual = ExpressionOrderByItemConverter.convert(new ExpressionOrderByItemSegment(0, 0, "expr", OrderDirection.ASC, NullsOrderType.FIRST, expressionSegment));
+        when(ExpressionConverter.convert(expressionSegment, null)).thenReturn(Optional.of(expectedNode));
+        Optional<SqlNode> actual = ExpressionOrderByItemConverter.convert(new ExpressionOrderByItemSegment(0, 0, "expr", OrderDirection.ASC, NullsOrderType.FIRST, expressionSegment), null);
         assertTrue(actual.isPresent());
         SqlBasicCall nullsFirstCall = (SqlBasicCall) actual.get();
         assertThat(nullsFirstCall, isA(SqlBasicCall.class));
@@ -83,8 +83,8 @@ class ExpressionOrderByItemConverterTest {
     void assertConvertWrapsNullsLast() {
         ExpressionSegment expressionSegment = mock(ExpressionSegment.class);
         SqlNode expectedNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(expressionSegment)).thenReturn(Optional.of(expectedNode));
-        Optional<SqlNode> actual = ExpressionOrderByItemConverter.convert(new ExpressionOrderByItemSegment(0, 0, "expr", OrderDirection.ASC, NullsOrderType.LAST, expressionSegment));
+        when(ExpressionConverter.convert(expressionSegment, null)).thenReturn(Optional.of(expectedNode));
+        Optional<SqlNode> actual = ExpressionOrderByItemConverter.convert(new ExpressionOrderByItemSegment(0, 0, "expr", OrderDirection.ASC, NullsOrderType.LAST, expressionSegment), null);
         assertTrue(actual.isPresent());
         SqlBasicCall nullsLastCall = (SqlBasicCall) actual.get();
         assertThat(nullsLastCall, isA(SqlBasicCall.class));

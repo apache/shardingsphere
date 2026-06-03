@@ -45,34 +45,35 @@ public final class CaseWhenExpressionConverter {
      * Convert case when expression to SQL node.
      *
      * @param segment case when expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlCase convert(final CaseWhenExpression segment) {
-        Collection<SqlNode> whenExprs = convertWhenExprs(segment.getCaseExpr(), segment.getWhenExprs());
+    public static SqlCase convert(final CaseWhenExpression segment, final String databaseType) {
+        Collection<SqlNode> whenExprs = convertWhenExprs(segment.getCaseExpr(), segment.getWhenExprs(), databaseType);
         Collection<SqlNode> thenExprs = new LinkedList<>();
-        segment.getThenExprs().forEach(each -> ExpressionConverter.convert(each).ifPresent(thenExprs::add));
-        Optional<SqlNode> elseExpr = ExpressionConverter.convert(segment.getElseExpr());
+        segment.getThenExprs().forEach(each -> ExpressionConverter.convert(each, databaseType).ifPresent(thenExprs::add));
+        Optional<SqlNode> elseExpr = ExpressionConverter.convert(segment.getElseExpr(), databaseType);
         return new SqlCase(SqlParserPos.ZERO, null, new SqlNodeList(whenExprs, SqlParserPos.ZERO), new SqlNodeList(thenExprs, SqlParserPos.ZERO),
                 elseExpr.orElseGet(() -> SqlLiteral.createCharString("NULL", SqlParserPos.ZERO)));
     }
     
-    private static Collection<SqlNode> convertWhenExprs(final ExpressionSegment caseExpr, final Collection<ExpressionSegment> whenExprs) {
+    private static Collection<SqlNode> convertWhenExprs(final ExpressionSegment caseExpr, final Collection<ExpressionSegment> whenExprs, final String databaseType) {
         Collection<SqlNode> result = new LinkedList<>();
         for (ExpressionSegment each : whenExprs) {
             if (null == caseExpr) {
-                ExpressionConverter.convert(each).ifPresent(result::add);
+                ExpressionConverter.convert(each, databaseType).ifPresent(result::add);
             } else {
-                convertCaseExpr(caseExpr, each).ifPresent(result::add);
+                convertCaseExpr(caseExpr, each, databaseType).ifPresent(result::add);
             }
         }
         return result;
     }
     
-    private static Optional<SqlNode> convertCaseExpr(final ExpressionSegment caseExpr, final ExpressionSegment whenExpr) {
-        Optional<SqlNode> leftExpr = ExpressionConverter.convert(caseExpr);
-        Optional<SqlNode> rightExpr = ExpressionConverter.convert(whenExpr);
+    private static Optional<SqlNode> convertCaseExpr(final ExpressionSegment caseExpr, final ExpressionSegment whenExpr, final String databaseType) {
+        Optional<SqlNode> leftExpr = ExpressionConverter.convert(caseExpr, databaseType);
+        Optional<SqlNode> rightExpr = ExpressionConverter.convert(whenExpr, databaseType);
         if (leftExpr.isPresent() && rightExpr.isPresent()) {
-            return ExpressionConverter.convert(whenExpr).map(optional -> new SqlBasicCall(SqlStdOperatorTable.EQUALS, Arrays.asList(leftExpr.get(), rightExpr.get()), SqlParserPos.ZERO));
+            return ExpressionConverter.convert(whenExpr, databaseType).map(optional -> new SqlBasicCall(SqlStdOperatorTable.EQUALS, Arrays.asList(leftExpr.get(), rightExpr.get()), SqlParserPos.ZERO));
         }
         return Optional.empty();
     }

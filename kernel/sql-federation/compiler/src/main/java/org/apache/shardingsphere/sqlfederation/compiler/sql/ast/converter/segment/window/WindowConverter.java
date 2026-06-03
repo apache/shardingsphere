@@ -44,12 +44,13 @@ public final class WindowConverter {
      * Convert window segment to SQL node list.
      *
      * @param segment window segment
+     * @param databaseType database type
      * @return SQL node list
      */
-    public static Optional<SqlNodeList> convert(final WindowSegment segment) {
+    public static Optional<SqlNodeList> convert(final WindowSegment segment, final String databaseType) {
         Collection<SqlWindow> sqlWindows = new LinkedList<>();
         for (WindowItemSegment each : segment.getItemSegments()) {
-            SqlWindow sqlWindow = convertWindowItem(each);
+            SqlWindow sqlWindow = convertWindowItem(each, databaseType);
             sqlWindows.add(sqlWindow);
         }
         SqlNodeList result = new SqlNodeList(sqlWindows, SqlParserPos.ZERO);
@@ -60,15 +61,16 @@ public final class WindowConverter {
      * Convert window item segment to sql window.
      *
      * @param windowItemSegment window item segment
+     * @param databaseType database type
      * @return sql window
      */
-    public static SqlWindow convertWindowItem(final WindowItemSegment windowItemSegment) {
+    public static SqlWindow convertWindowItem(final WindowItemSegment windowItemSegment, final String databaseType) {
         SqlIdentifier sqlIdentifier = null == windowItemSegment.getWindowName() ? null : new SqlIdentifier(windowItemSegment.getWindowName().getValue(), SqlParserPos.ZERO);
         Collection<SqlNode> partitionNodes = new LinkedList<>();
-        windowItemSegment.getPartitionListSegments().forEach(expressionSegment -> ExpressionConverter.convert(expressionSegment).ifPresent(partitionNodes::add));
+        windowItemSegment.getPartitionListSegments().forEach(expressionSegment -> ExpressionConverter.convert(expressionSegment, databaseType).ifPresent(partitionNodes::add));
         SqlNodeList partitionList = new SqlNodeList(partitionNodes, SqlParserPos.ZERO);
         SqlNodeList orderList = new SqlNodeList(SqlParserPos.ZERO);
-        OrderByConverter.convert(windowItemSegment.getOrderBySegment()).ifPresent(orderList::addAll);
+        OrderByConverter.convert(windowItemSegment.getOrderBySegment(), databaseType).ifPresent(orderList::addAll);
         return new SqlWindow(SqlParserPos.ZERO, sqlIdentifier, null, partitionList, orderList, SqlLiteral.createBoolean(false, SqlParserPos.ZERO), null, null, null);
     }
 }

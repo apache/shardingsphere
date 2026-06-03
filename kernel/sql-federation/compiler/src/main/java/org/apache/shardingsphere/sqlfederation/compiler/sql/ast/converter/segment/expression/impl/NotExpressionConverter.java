@@ -39,10 +39,11 @@ public final class NotExpressionConverter {
      * Convert not expression to SQL node.
      *
      * @param segment not expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlBasicCall convert(final NotExpression segment) {
-        SqlNode expression = ExpressionConverter.convert(segment.getExpression()).orElseThrow(IllegalStateException::new);
+    public static SqlBasicCall convert(final NotExpression segment, final String databaseType) {
+        SqlNode expression = ExpressionConverter.convert(segment.getExpression(), databaseType).orElseThrow(IllegalStateException::new);
         List<SqlNode> sqlNodes = new LinkedList<>();
         sqlNodes.add(expression);
         return new SqlBasicCall(segment.getNotSign() ? SQLExtensionOperatorTable.NOT_SIGN : SQLExtensionOperatorTable.NOT, sqlNodes, SqlParserPos.ZERO);

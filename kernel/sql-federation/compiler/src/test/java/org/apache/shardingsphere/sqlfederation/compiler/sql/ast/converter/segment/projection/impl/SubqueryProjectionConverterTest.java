@@ -50,7 +50,7 @@ class SubqueryProjectionConverterTest {
     
     @Test
     void assertConvertReturnsEmptyForNullSegment() {
-        assertFalse(SubqueryProjectionConverter.convert(null).isPresent());
+        assertFalse(SubqueryProjectionConverter.convert(null, null).isPresent());
     }
     
     @Test
@@ -61,8 +61,8 @@ class SubqueryProjectionConverterTest {
         SqlNode convertedNode = mock(SqlNode.class);
         try (
                 MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
-                        (mock, context) -> when(mock.convert(selectStatement)).thenReturn(convertedNode))) {
-            Optional<SqlNode> actual = SubqueryProjectionConverter.convert(projectionSegment);
+                        (mock, context) -> when(mock.convert(selectStatement, null)).thenReturn(convertedNode))) {
+            Optional<SqlNode> actual = SubqueryProjectionConverter.convert(projectionSegment, null);
             assertTrue(actual.isPresent());
             SqlBasicCall asCall = (SqlBasicCall) actual.orElse(null);
             assertThat(asCall.getOperator(), is(SqlStdOperatorTable.AS));
@@ -79,8 +79,8 @@ class SubqueryProjectionConverterTest {
         SqlNode convertedNode = mock(SqlNode.class);
         try (
                 MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
-                        (mock, context) -> when(mock.convert(selectStatement)).thenReturn(convertedNode))) {
-            Optional<SqlNode> actual = SubqueryProjectionConverter.convert(projectionSegment);
+                        (mock, context) -> when(mock.convert(selectStatement, null)).thenReturn(convertedNode))) {
+            Optional<SqlNode> actual = SubqueryProjectionConverter.convert(projectionSegment, null);
             assertTrue(actual.isPresent());
             SqlBasicCall existsCall = (SqlBasicCall) actual.orElse(null);
             assertThat(existsCall.getOperator(), is(SqlStdOperatorTable.EXISTS));

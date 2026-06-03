@@ -112,11 +112,12 @@ public final class BinaryOperationExpressionConverter {
      * Convert binary operation expression to SQL node.
      *
      * @param segment binary operation expression
+     * @param databaseType database type
      * @return SQL node
      */
-    public static SqlBasicCall convert(final BinaryOperationExpression segment) {
+    public static SqlBasicCall convert(final BinaryOperationExpression segment, final String databaseType) {
         SqlOperator operator = convertOperator(segment);
-        List<SqlNode> sqlNodes = convertSqlNodes(segment, operator);
+        List<SqlNode> sqlNodes = convertSqlNodes(segment, operator, databaseType);
         return new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO);
     }
     
@@ -172,8 +173,8 @@ public final class BinaryOperationExpressionConverter {
         return Optional.empty();
     }
     
-    private static List<SqlNode> convertSqlNodes(final BinaryOperationExpression segment, final SqlOperator operator) {
-        SqlNode left = ExpressionConverter.convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
+    private static List<SqlNode> convertSqlNodes(final BinaryOperationExpression segment, final SqlOperator operator, final String databaseType) {
+        SqlNode left = ExpressionConverter.convert(segment.getLeft(), databaseType).orElseThrow(IllegalStateException::new);
         List<SqlNode> result = new LinkedList<>();
         result.add(left);
         if (SqlStdOperatorTable.IS_FALSE.equals(operator) || SqlStdOperatorTable.IS_NOT_FALSE.equals(operator) || SqlStdOperatorTable.IS_TRUE.equals(operator)
@@ -184,7 +185,7 @@ public final class BinaryOperationExpressionConverter {
                 result.add(value == null || value == 0L ? SqlLiteral.createBoolean(false, left.getParserPosition()) : SqlLiteral.createBoolean(true, left.getParserPosition()));
             }
         } else if (!SqlStdOperatorTable.IS_NULL.equals(operator) && !SqlStdOperatorTable.IS_NOT_NULL.equals(operator)) {
-            SqlNode right = ExpressionConverter.convert(segment.getRight()).orElseThrow(IllegalStateException::new);
+            SqlNode right = ExpressionConverter.convert(segment.getRight(), databaseType).orElseThrow(IllegalStateException::new);
             result.addAll(right instanceof SqlNodeList ? ((SqlNodeList) right).getList() : Collections.singletonList(right));
         }
         return result;

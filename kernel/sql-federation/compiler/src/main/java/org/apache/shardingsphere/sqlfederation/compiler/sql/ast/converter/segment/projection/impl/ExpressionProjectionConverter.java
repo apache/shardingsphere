@@ -41,13 +41,14 @@ public final class ExpressionProjectionConverter {
      * Convert expression projection segment to SQL node.
      *
      * @param segment expression projection segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final ExpressionProjectionSegment segment) {
+    public static Optional<SqlNode> convert(final ExpressionProjectionSegment segment, final String databaseType) {
         if (null == segment) {
             return Optional.empty();
         }
-        Optional<SqlNode> result = ExpressionConverter.convert(segment.getExpr());
+        Optional<SqlNode> result = ExpressionConverter.convert(segment.getExpr(), databaseType);
         if (result.isPresent() && segment.getAliasName().isPresent()) {
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(result.get(),
                     SqlIdentifier.star(Collections.singletonList(segment.getAliasName().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))), SqlParserPos.ZERO));

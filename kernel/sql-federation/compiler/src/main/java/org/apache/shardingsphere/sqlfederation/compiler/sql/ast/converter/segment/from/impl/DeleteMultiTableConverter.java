@@ -41,14 +41,15 @@ public final class DeleteMultiTableConverter {
      * Convert delete multi table segment to SQL node.
      *
      * @param segment delete multi table segment
+     * @param databaseType database type
      * @return SQL node
      */
-    public static Optional<SqlNode> convert(final DeleteMultiTableSegment segment) {
+    public static Optional<SqlNode> convert(final DeleteMultiTableSegment segment, final String databaseType) {
         if (null == segment) {
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
-        TableConverter.convert(segment.getRelationTable()).ifPresent(sqlNodes::add);
+        TableConverter.convert(segment.getRelationTable(), databaseType).ifPresent(sqlNodes::add);
         sqlNodes.add(new SqlIdentifier(segment.getActualDeleteTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), SqlParserPos.ZERO));
         return Optional.of(new SqlNodeList(sqlNodes, SqlParserPos.ZERO));
     }

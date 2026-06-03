@@ -49,38 +49,38 @@ import java.util.Optional;
 public final class DeleteStatementConverter implements SQLStatementConverter<DeleteStatement, SqlNode> {
     
     @Override
-    public SqlNode convert(final DeleteStatement deleteStatement) {
-        SqlNode sqlDelete = convertDelete(deleteStatement);
-        SqlNodeList orderBy = deleteStatement.getOrderBy().flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
+    public SqlNode convert(final DeleteStatement deleteStatement, final String databaseType) {
+        SqlNode sqlDelete = convertDelete(deleteStatement, databaseType);
+        SqlNodeList orderBy = deleteStatement.getOrderBy().flatMap(segment -> OrderByConverter.convert(segment, databaseType)).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = deleteStatement.getLimit();
         if (limit.isPresent()) {
-            SqlNode offset = limit.get().getOffset().flatMap(PaginationValueSQLConverter::convert).orElse(null);
-            SqlNode rowCount = limit.get().getRowCount().flatMap(PaginationValueSQLConverter::convert).orElse(null);
+            SqlNode offset = limit.get().getOffset().flatMap(segment -> PaginationValueSQLConverter.convert(segment, databaseType)).orElse(null);
+            SqlNode rowCount = limit.get().getRowCount().flatMap(segment -> PaginationValueSQLConverter.convert(segment, databaseType)).orElse(null);
             return new SqlOrderBy(SqlParserPos.ZERO, sqlDelete, orderBy, offset, rowCount);
         }
         return orderBy.isEmpty() ? sqlDelete : new SqlOrderBy(SqlParserPos.ZERO, sqlDelete, orderBy, null, null);
     }
     
-    private SqlNode convertDelete(final DeleteStatement deleteStatement) {
-        return deleteStatement.getTable() instanceof DeleteMultiTableSegment ? convertDeleteMultipleTable(deleteStatement) : convertDeleteSingleTable(deleteStatement);
+    private SqlNode convertDelete(final DeleteStatement deleteStatement, final String databaseType) {
+        return deleteStatement.getTable() instanceof DeleteMultiTableSegment ? convertDeleteMultipleTable(deleteStatement, databaseType) : convertDeleteSingleTable(deleteStatement, databaseType);
     }
     
-    private SqlNode convertDeleteMultipleTable(final DeleteStatement deleteStatement) {
+    private SqlNode convertDeleteMultipleTable(final DeleteStatement deleteStatement, final String databaseType) {
         DeleteMultiTableSegment multiTableSegment = (DeleteMultiTableSegment) deleteStatement.getTable();
-        SqlNodeList targetTables = convertTargetTables(multiTableSegment);
+        SqlNodeList targetTables = convertTargetTables(multiTableSegment, databaseType);
         SqlNodeList targetTableAliases = convertTargetTableAliases(multiTableSegment);
-        SqlNode condition = deleteStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
+        SqlNode condition = deleteStatement.getWhere().flatMap(segment -> WhereConverter.convert(segment, databaseType)).orElse(null);
         SqlDelete sqlDelete = new SqlDelete(SqlParserPos.ZERO, targetTables.get(0), condition, null, targetTableAliases.isEmpty() ? null : (SqlIdentifier) targetTableAliases.get(0));
-        return deleteStatement.getWith().flatMap(optional -> WithConverter.convert(optional, sqlDelete)).orElse(sqlDelete);
+        return deleteStatement.getWith().flatMap(optional -> WithConverter.convert(optional, sqlDelete, databaseType)).orElse(sqlDelete);
     }
     
-    private SqlNodeList convertTargetTables(final DeleteMultiTableSegment multiTableSegment) {
+    private SqlNodeList convertTargetTables(final DeleteMultiTableSegment multiTableSegment, final String databaseType) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         Map<String, SimpleTableSegment> aliasSimpleTables = buildAliasSQLNodes(multiTableSegment.getRelationTable());
         for (SimpleTableSegment each : multiTableSegment.getActualDeleteTables()) {
             String tableName = each.getTableName().getIdentifier().getValue();
             SimpleTableSegment tableSegment = !each.getOwner().isPresent() && aliasSimpleTables.containsKey(tableName) ? aliasSimpleTables.get(tableName) : each;
-            TableConverter.convert(tableSegment).ifPresent(sqlNodes::add);
+            TableConverter.convert(tableSegment, databaseType).ifPresent(sqlNodes::add);
         }
         return new SqlNodeList(sqlNodes, SqlParserPos.ZERO);
     }
@@ -103,12 +103,12 @@ public final class DeleteStatementConverter implements SQLStatementConverter<Del
         return new SqlNodeList(sqlNodes, SqlParserPos.ZERO);
     }
     
-    private SqlNode convertDeleteSingleTable(final DeleteStatement deleteStatement) {
-        SqlNode deleteTable = TableConverter.convert(deleteStatement.getTable()).orElseThrow(IllegalStateException::new);
-        SqlNode condition = deleteStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
+    private SqlNode convertDeleteSingleTable(final DeleteStatement deleteStatement, final String databaseType) {
+        SqlNode deleteTable = TableConverter.convert(deleteStatement.getTable(), databaseType).orElseThrow(IllegalStateException::new);
+        SqlNode condition = deleteStatement.getWhere().flatMap(segment -> WhereConverter.convert(segment, databaseType)).orElse(null);
         SqlIdentifier alias = deleteStatement.getTable().getAliasName().map(optional -> new SqlIdentifier(optional, SqlParserPos.ZERO)).orElse(null);
         SqlDelete sqlDelete = new SqlDelete(SqlParserPos.ZERO, getTargetTableName(deleteTable), condition, null, alias);
-        return deleteStatement.getWith().flatMap(optional -> WithConverter.convert(optional, sqlDelete)).orElse(sqlDelete);
+        return deleteStatement.getWith().flatMap(optional -> WithConverter.convert(optional, sqlDelete, databaseType)).orElse(sqlDelete);
     }
     
     private SqlNode getTargetTableName(final SqlNode deleteTable) {

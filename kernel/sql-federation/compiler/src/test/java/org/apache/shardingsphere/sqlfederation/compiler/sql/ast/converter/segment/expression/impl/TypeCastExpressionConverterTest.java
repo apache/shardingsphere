@@ -46,17 +46,17 @@ class TypeCastExpressionConverterTest {
     void assertConvertReturnsEmptyWhenExpressionMissing() {
         LiteralExpressionSegment expression = new LiteralExpressionSegment(0, 0, 1);
         TypeCastExpression typeCastExpression = new TypeCastExpression(0, 0, "", expression, "char");
-        when(ExpressionConverter.convert(expression)).thenReturn(Optional.empty());
-        assertFalse(TypeCastExpressionConverter.convert(typeCastExpression).isPresent());
+        when(ExpressionConverter.convert(expression, null)).thenReturn(Optional.empty());
+        assertFalse(TypeCastExpressionConverter.convert(typeCastExpression, null).isPresent());
     }
     
     @Test
     void assertConvertTypeCastExpression() {
         LiteralExpressionSegment expression = new LiteralExpressionSegment(0, 0, 1);
         SqlNode expressionNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(expression)).thenReturn(Optional.of(expressionNode));
+        when(ExpressionConverter.convert(expression, null)).thenReturn(Optional.of(expressionNode));
         TypeCastExpression typeCastExpression = new TypeCastExpression(0, 0, "", expression, "char");
-        SqlBasicCall actual = (SqlBasicCall) TypeCastExpressionConverter.convert(typeCastExpression).orElse(null);
+        SqlBasicCall actual = (SqlBasicCall) TypeCastExpressionConverter.convert(typeCastExpression, null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getOperandList().get(0), is(expressionNode));
         assertThat(actual.getOperandList().get(1), isA(SqlDataTypeSpec.class));

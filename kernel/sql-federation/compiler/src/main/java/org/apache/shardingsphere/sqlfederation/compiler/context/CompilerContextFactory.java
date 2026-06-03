@@ -35,7 +35,6 @@ import org.apache.shardingsphere.parser.rule.builder.SQLParserRuleBuilder;
 import org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.SQLFederationConnectionConfigBuilderFactory;
 import org.apache.shardingsphere.sqlfederation.compiler.context.schema.CalciteSchemaBuilder;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLStringFunctionOperatorTable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,19 +76,9 @@ public final class CompilerContextFactory {
     private static Collection<SqlOperatorTable> getOperatorTables(final DatabaseType databaseType) {
         SqlOperatorTable operatorTable = SqlLibraryOperatorTableFactory.INSTANCE.getOperatorTable(
                 Arrays.asList(SqlLibrary.STANDARD, DATABASE_TYPE_SQL_LIBRARIES.getOrDefault(databaseType.getType(), SqlLibrary.MYSQL)));
-        List<SqlOperatorTable> result = new ArrayList<>(3);
+        List<SqlOperatorTable> result = new ArrayList<>(2);
         result.add(new MySQLOperatorTable());
-        if (isMySQLTrunkDatabaseType(databaseType)) {
-            result.add(new MySQLStringFunctionOperatorTable());
-        }
         result.add(operatorTable);
         return result;
-    }
-    
-    private static boolean isMySQLTrunkDatabaseType(final DatabaseType databaseType) {
-        if ("MySQL".equalsIgnoreCase(databaseType.getType())) {
-            return true;
-        }
-        return databaseType.getTrunkDatabaseType().map(trunk -> "MySQL".equalsIgnoreCase(trunk.getType())).orElse(false);
     }
 }

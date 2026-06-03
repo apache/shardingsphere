@@ -40,16 +40,17 @@ public final class OrderByItemConverterUtils {
      * Convert order by items to SQL node.
      *
      * @param orderByItems order by items
+     * @param databaseType database type
      * @return SQL nodes converted by order by item
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
-    public static Collection<SqlNode> convert(final Collection<OrderByItemSegment> orderByItems) {
+    public static Collection<SqlNode> convert(final Collection<OrderByItemSegment> orderByItems, final String databaseType) {
         Collection<SqlNode> result = new LinkedList<>();
         for (OrderByItemSegment each : orderByItems) {
             if (each instanceof ColumnOrderByItemSegment) {
                 result.add(ColumnOrderByItemConverter.convert((ColumnOrderByItemSegment) each));
             } else if (each instanceof ExpressionOrderByItemSegment) {
-                ExpressionOrderByItemConverter.convert((ExpressionOrderByItemSegment) each).ifPresent(result::add);
+                ExpressionOrderByItemConverter.convert((ExpressionOrderByItemSegment) each, databaseType).ifPresent(result::add);
             } else if (each instanceof IndexOrderByItemSegment) {
                 IndexOrderByItemConverter.convert((IndexOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof TextOrderByItemSegment) {
