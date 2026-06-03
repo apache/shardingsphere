@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
     private static boolean isEnabled() {
-        return MCPE2ECondition.isContractEnabled();
+        return MCPE2ECondition.isDockerEnabled();
     }
     
     @Test

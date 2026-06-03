@@ -57,6 +57,19 @@ final class LLMMCPModelFacingToolResponseFormatter {
         copyIfPresent(response, result, "total_match_count");
         copyIfPresent(response, result, "search_context");
         copyIfPresent(response, result, "ambiguity_state");
+        List<Map<String, Object>> resources = LLMMCPJsonValues.castToList(response.get("resources"));
+        if (!resources.isEmpty()) {
+            List<Map<String, Object>> compactResources = new LinkedList<>();
+            for (Map<String, Object> each : resources) {
+                Map<String, Object> compactResource = new LinkedHashMap<>(8, 1F);
+                copyIfPresent(each, compactResource, "uri");
+                copyIfPresent(each, compactResource, "name");
+                copyIfPresent(each, compactResource, "title");
+                copyIfPresent(each, compactResource, "mimeType");
+                compactResources.add(compactResource.isEmpty() ? each : compactResource);
+            }
+            result.put("resources", compactResources);
+        }
         copyPromptList(response, result);
         copyPromptMessages(response, result);
         copyCompactItems(response, result);

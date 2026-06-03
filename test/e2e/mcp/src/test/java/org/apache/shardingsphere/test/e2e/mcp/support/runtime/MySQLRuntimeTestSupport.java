@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -45,7 +46,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLRuntimeTestSupport {
     
-    private static final Duration JDBC_READY_TIMEOUT = Duration.ofSeconds(30);
+    private static final Duration DEFAULT_JDBC_READY_TIMEOUT = Duration.ofSeconds(90);
     
     private static final String MYSQL_READY_LOG_PATTERN = ".*ready for connections.*port: 3306.*\\n";
     
@@ -315,9 +316,25 @@ public final class MySQLRuntimeTestSupport {
     
     private static Connection getConnection(final GenericContainer<?> container, final String databaseName) throws SQLException {
         String jdbcUrl = createJdbcUrl(container.getHost(), container.getMappedPort(3306), databaseName);
+        String configuredJdbcReadyTimeoutSeconds = EnvironmentPropertiesLoader.loadProperties().getProperty("mcp.e2e.mysql.ready-timeout-seconds", "").trim();
+        long jdbcReadyTimeoutMillis;
         try {
-            return new ReadinessProbe(JDBC_READY_TIMEOUT.toMillis(), JDBC_READY_INITIAL_INTERVAL_MILLIS, JDBC_READY_MAX_INTERVAL_MILLIS)
-                    .waitUntilReady(() -> getConnectionIfReady(jdbcUrl), MySQLRuntimeTestSupport::createJdbcReadyException);
+            if (configuredJdbcReadyTimeoutSeconds.isEmpty()) {
+                jdbcReadyTimeoutMillis = DEFAULT_JDBC_READY_TIMEOUT.toMillis();
+            } else {
+                int parsedJdbcReadyTimeoutSeconds = Integer.parseInt(configuredJdbcReadyTimeoutSeconds);
+                if (0 >= parsedJdbcReadyTimeoutSeconds) {
+                    throw new IllegalArgumentException("MCP E2E MySQL JDBC readiness timeout must be positive.");
+                }
+                jdbcReadyTimeoutMillis = Duration.ofSeconds(parsedJdbcReadyTimeoutSeconds).toMillis();
+            }
+        } catch (final NumberFormatException ex) {
+            throw new IllegalArgumentException("MCP E2E MySQL JDBC readiness timeout must be an integer.", ex);
+        }
+        try {
+            return new ReadinessProbe(jdbcReadyTimeoutMillis, JDBC_READY_INITIAL_INTERVAL_MILLIS, JDBC_READY_MAX_INTERVAL_MILLIS)
+                    .waitUntilReady(() -> getConnectionIfReady(jdbcUrl),
+                            (cause, attemptCount, elapsedMillis) -> createJdbcReadyException(cause, attemptCount, elapsedMillis, jdbcReadyTimeoutMillis));
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new SQLException("Interrupted while waiting for MySQL JDBC readiness.", ex);
@@ -332,9 +349,9 @@ public final class MySQLRuntimeTestSupport {
         }
     }
     
-    private static SQLException createJdbcReadyException(final Exception cause, final int attemptCount, final long elapsedMillis) {
+    private static SQLException createJdbcReadyException(final Exception cause, final int attemptCount, final long elapsedMillis, final long jdbcReadyTimeoutMillis) {
         String result = String.format("MySQL JDBC connection did not become ready after %d attempt(s), elapsedMillis=%d, timeoutMillis=%d.",
-                attemptCount, elapsedMillis, JDBC_READY_TIMEOUT.toMillis());
+                attemptCount, elapsedMillis, jdbcReadyTimeoutMillis);
         return null == cause || null == cause.getMessage() || cause.getMessage().isBlank()
                 ? new SQLException(result)
                 : new SQLException(result + " Last readiness failure: " + cause.getMessage(), cause);

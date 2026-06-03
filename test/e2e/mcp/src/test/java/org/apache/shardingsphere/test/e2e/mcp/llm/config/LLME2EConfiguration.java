@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.config;
 
+import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +29,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.UUID;
 
 /**
@@ -80,20 +83,21 @@ public final class LLME2EConfiguration {
      * @return LLM E2E configuration
      */
     public static LLME2EConfiguration load() {
-        RuntimeMode runtimeMode = RuntimeMode.from(readString("mcp.llm.runtime-mode", "MCP_LLM_RUNTIME_MODE", RuntimeMode.DOCKER.getValue()));
+        Properties props = EnvironmentPropertiesLoader.loadProperties();
+        RuntimeMode runtimeMode = RuntimeMode.from(readString(props, "mcp.llm.runtime-mode", RuntimeMode.DOCKER.getValue()));
         return new LLME2EConfiguration(
-                normalizeBaseUrl(readString("mcp.llm.base-url", "MCP_LLM_BASE_URL", DEFAULT_BASE_URL)),
-                readString("mcp.llm.provider", "MCP_LLM_PROVIDER", "openai-compatible"),
-                readString("mcp.llm.model", "MCP_LLM_MODEL", DEFAULT_MODEL_NAME),
-                readString("mcp.llm.api-key", "MCP_LLM_API_KEY", DEFAULT_API_KEY),
-                readInteger("mcp.llm.ready-timeout-seconds", "MCP_LLM_READY_TIMEOUT_SECONDS", 600),
-                readInteger("mcp.llm.request-timeout-seconds", "MCP_LLM_REQUEST_TIMEOUT_SECONDS", 240),
-                readInteger("mcp.llm.max-turns", "MCP_LLM_MAX_TURNS", 10),
-                Paths.get(readString("mcp.llm.artifact-root", "MCP_LLM_ARTIFACT_ROOT", "target/llm-e2e")),
-                readString("mcp.llm.run-id", "MCP_LLM_RUN_ID", createDefaultRunId()),
+                normalizeBaseUrl(readString(props, "mcp.llm.base-url", DEFAULT_BASE_URL)),
+                readString(props, "mcp.llm.provider", "openai-compatible"),
+                readString(props, "mcp.llm.model", DEFAULT_MODEL_NAME),
+                readString(props, "mcp.llm.api-key", DEFAULT_API_KEY),
+                readInteger(props, "mcp.llm.ready-timeout-seconds", 600),
+                readInteger(props, "mcp.llm.request-timeout-seconds", 240),
+                readInteger(props, "mcp.llm.max-turns", 10),
+                Paths.get(readString(props, "mcp.llm.artifact-root", "target/llm-e2e")),
+                readString(props, "mcp.llm.run-id", createDefaultRunId()),
                 runtimeMode,
-                readString("mcp.llm.server-image", "MCP_LLM_SERVER_IMAGE", DEFAULT_SERVER_IMAGE),
-                readString("mcp.llm.base-server-image-digest", "MCP_LLM_BASE_SERVER_IMAGE_DIGEST", getDefaultBaseServerImageDigest(runtimeMode)));
+                readString(props, "mcp.llm.server-image", DEFAULT_SERVER_IMAGE),
+                readString(props, "mcp.llm.base-server-image-digest", getDefaultBaseServerImageDigest(runtimeMode)));
     }
     
     /**
@@ -162,17 +166,13 @@ public final class LLME2EConfiguration {
         return baseUrl + "/models";
     }
     
-    private static String readString(final String propertyName, final String environmentName, final String defaultValue) {
-        String result = System.getProperty(propertyName);
-        if (null != result && !result.trim().isEmpty()) {
-            return result.trim();
-        }
-        result = System.getenv(environmentName);
+    private static String readString(final Properties props, final String propertyName, final String defaultValue) {
+        String result = props.getProperty(propertyName);
         return null == result || result.trim().isEmpty() ? defaultValue : result.trim();
     }
     
-    private static int readInteger(final String propertyName, final String environmentName, final int defaultValue) {
-        String result = readString(propertyName, environmentName, String.valueOf(defaultValue));
+    private static int readInteger(final Properties props, final String propertyName, final int defaultValue) {
+        String result = readString(props, propertyName, String.valueOf(defaultValue));
         try {
             return Integer.parseInt(result);
         } catch (final NumberFormatException ignored) {

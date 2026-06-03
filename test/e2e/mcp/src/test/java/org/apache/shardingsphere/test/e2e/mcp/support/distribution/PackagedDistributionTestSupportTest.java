@@ -124,7 +124,7 @@ class PackagedDistributionTestSupportTest {
             IllegalStateException actual = assertThrows(IllegalStateException.class,
                     () -> PackagedDistributionTestSupport.prepare(tempDir.resolve("missing-distribution"), RuntimeTransport.HTTP));
             assertThat(actual.getMessage(), is("Packaged MCP distribution was not found. Run `./mvnw -pl distribution/mcp -am -DskipTests package` first"
-                    + " or set `-Dmcp.distribution.home=/path/to/apache-shardingsphere-mcp-*`. Checked `"
+                    + " or set `mcp.distribution.home` in env/e2e-env.properties or pass `-Dmcp.distribution.home=/path/to/apache-shardingsphere-mcp-*`. Checked `"
                     + repositoryRoot.resolve("distribution/mcp/target").toAbsolutePath().normalize() + "`."));
         } finally {
             restoreDistributionHome(actualOriginalHome);
