@@ -4,7 +4,7 @@ weight = 9
 +++
 
 本页面面向需要自研 MCP 集成、调试协议请求或定位客户端适配问题的开发者。
-普通用户通常不需要阅读本页，可直接参考[快速开始](../quick-start/)、[客户端集成](../client-integration/)和[能力清单](../capabilities/)。
+常规使用可直接参考[快速开始](../quick-start/)、[客户端集成](../client-integration/)和[能力清单](../capabilities/)。
 
 ## 通用客户端配置示例
 

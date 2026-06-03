@@ -10,7 +10,7 @@ Mask rules apply directly to logical columns and do not generate physical derive
 
 - The current version supports logical databases exposed by ShardingSphere-Proxy only.
 - `runtimeDatabases` should point to Proxy logical databases, not physical storage databases.
-- This feature does not apply to direct physical database connections. A physical database usually does not understand ShardingSphere masking rule change statements and cannot expose Proxy-visible masking algorithm plugins or rule state.
+- This feature does not apply to direct database connections. The target database usually does not understand ShardingSphere masking rule change statements and cannot expose Proxy-visible masking algorithm plugins or rule state.
 - The target logical table and column should be discoverable through JDBC metadata exposed by Proxy. This metadata should not be treated as a complete physical database catalog.
 
 ## Use through natural language
@@ -20,6 +20,7 @@ Users describe the masking goal in an AI application that integrates ShardingSph
 Examples:
 
 - Check whether `<logic-database>.orders.phone` already has a masking rule.
+- List data masking algorithms available from the current Proxy.
 - Plan phone-number masking for `<logic-database>.orders.phone`, keep the first 3 and last 4 characters, and preview it without execution.
 - Adjust the previous plan to use `*` as the replacement character.
 - Confirm and execute the previous masking rule plan, then validate the result.
@@ -36,7 +37,7 @@ When using natural language, include the following information when possible:
 | Schema or namespace | Recommended for multi-schema logical databases. | "The schema is `public`." |
 | Operation type | Create, alter, or drop a masking rule. | "Create a masking rule" or "drop the masking rule for this column." |
 | Masking goal | Describe retained characters, replacement characters, or other masking effects. | "Keep the first 3 and last 4 phone-number characters, and replace the middle part with `*`." |
-| Algorithm preference | Specify an algorithm, or let MCP recommend one from available algorithms. | "Prefer the keep-first-n-last-m algorithm." |
+| Algorithm preference | Specify an algorithm, or let MCP recommend one from algorithms available from Proxy. | "List data masking algorithms available from the current Proxy." or "Prefer the keep-first-n-last-m algorithm." |
 | Algorithm properties | Provide retained character counts and replacement characters. | "Keep the first 3 and last 4 characters, and use `*` as the replacement character." |
 
 ## Create, alter, and drop rules
@@ -74,7 +75,7 @@ For the general review flow of rule changes, see [Rule Change Flow](../plugin-wo
 ### Supported scope
 
 - Supports ShardingSphere-Proxy logical databases only.
-- This feature does not apply to direct physical database connections.
+- This feature does not apply to direct database connections.
 
 ### Capability boundaries
 
@@ -85,7 +86,7 @@ For the general review flow of rule changes, see [Rule Change Flow](../plugin-wo
 ### Metadata boundaries
 
 - Logical column and rule validation are based on what Proxy exposes.
-- Direct physical database connections can execute ordinary SQL only and do not represent masking rule state.
+- Direct database connections can execute ordinary SQL only and do not represent masking rule state.
 
 ### Identifier handling boundaries
 

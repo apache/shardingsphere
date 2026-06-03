@@ -12,12 +12,15 @@ For feature-specific business rule issues, see the corresponding feature plugin 
 | --- | --- | --- |
 | MCP Server startup failure | JDK, config path, YAML field, or required field is wrong. | Inspect the startup terminal and `logs/mcp.log`; confirm the configuration file path and required fields. |
 | The AI application cannot connect to ShardingSphere-MCP | Port, endpoint path, transport type, bind address, or client configuration is wrong. | Check `port`, `endpointPath`, `bindHost`, and the MCP Server address configured in the AI application. |
-| Remote HTTP access fails | HTTP bind address, security policy, or gateway configuration is wrong. | Use loopback locally; place remote access behind a controlled gateway or reverse proxy; inspect server logs for details. |
+| Remote HTTP access fails | HTTP bind address, security policy, Origin header, or gateway configuration is wrong. | Use loopback locally; place remote access behind a controlled gateway or reverse proxy; inspect server logs for details. |
+| HTTP request is rejected | The request carries an Origin header that does not satisfy the HTTP transport security policy, or trusted attribution headers are inconsistent within the same MCP session. | Check `bindHost`, client access mode, gateway header forwarding, and session attribution configuration. |
 | No response in STDIO mode | STDIO is used as an interactive command-line entry, or the AI application does not launch the process correctly. | Let the AI application launch ShardingSphere-MCP; inspect stderr or `logs/mcp.log` for diagnostics. |
 | Logical databases are not visible | No logical database is configured, the logical database name is wrong, connection failed, permission is insufficient, or the target scope is empty. | Verify `runtimeDatabases`, logical database names, connection failure category, and account privileges. |
-| Tables, columns, or indexes cannot be found | The connection target is different, schema is wrong, account privileges are insufficient, or Proxy-visible logical metadata differs from the physical database. | Confirm whether the target is ShardingSphere-Proxy or a regular database, then check schema, account privileges, and Proxy-visible metadata. |
+| Tables, columns, or indexes cannot be found | The connection target is different, schema is wrong, account privileges are insufficient, or Proxy-visible logical metadata differs from the underlying physical database. | Confirm whether the target is ShardingSphere-Proxy or a direct database connection, then check schema, account privileges, and Proxy-visible metadata. |
 | JDBC driver error | Driver is not on the classpath, or `driverClassName` is wrong. | Put the driver jar under `plugins/`, and keep `driverClassName` non-empty and correct. |
-| Read-only query fails | SQL syntax, target table name, schema, privilege, or row limit is wrong. | Ask the AI application to inspect table structure first, then run a read-only query with a row limit. |
+| Read-only query fails | SQL syntax, target table name, schema, privilege, row limit, or timeout limit is wrong. | Ask the AI application to inspect table structure first, then run a read-only query with a row limit. |
+| Query result is truncated | The query result exceeds the returned row limit. | Narrow the predicate, reduce the projection, or request fewer rows. |
+| Current session cannot continue calling tools | The MCP session has reached the tool-call protection limit. | Close the current session and create a new MCP session. |
 | Side-effecting SQL cannot be executed | The SQL has side effects, or it was not previewed and confirmed first. | Preview the change SQL first, review the impact, then confirm execution. |
 | Encryption or masking plan cannot be generated | The target is not Proxy, the target column is not visible, the algorithm is unavailable, or required parameters are missing. | Ensure that `runtimeDatabases` points to a Proxy logical database, then provide logical database, table, column, algorithm, and parameters. |
 | Validation fails after a rule change | The rule was not applied successfully, permission is insufficient, metadata is not refreshed, or a manual package was not executed. | Inspect the rule change plan, execution result, and logs; validate again after manual execution is completed. |
@@ -26,6 +29,7 @@ For feature-specific business rule issues, see the corresponding feature plugin 
 Additional notes:
 
 - `username` and `driverClassName` must be declared explicitly and cannot be empty; a no-password account can omit `password` or use `""`.
+- Queries return at most 100 rows by default. A single query can request at most 5000 rows, and the maximum requested query timeout is 300000 milliseconds.
 - Secret placeholders in manual packages should be replaced by operators in a controlled environment.
 - For protocol request debugging, see the [Custom Integration Appendix](../developer-appendix/).
 
@@ -44,11 +48,18 @@ When a runtime database or ShardingSphere-Proxy connection fails, MCP responses 
 | `connection_failed` | The connection failed, but cannot be classified into a more specific cause. |
 | `database_not_visible` | The specified logical database is not visible to the current connection. |
 
+## Runtime Protection Categories
+
+| Category | Meaning |
+| --- | --- |
+| `tool_call_limit_exceeded` | The current MCP session has reached the tool-call protection limit. |
+
 ## Query and Change Recommendations
 
 | Scenario | Recommendation |
 | --- | --- |
 | Query data | Limit returned rows. |
+| Truncated query result | Narrow the predicate, reduce the projection, or request fewer rows. |
 | Analyze an SQL execution plan | Use only when the target logical database capability allows it. |
 | Change data, structure, rules, or transaction state | Preview and review side effects before deciding whether to execute. |
 
