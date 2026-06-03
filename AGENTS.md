@@ -105,6 +105,13 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - **Think before coding**: inspect existing code, contracts, tests, and relevant standards before editing; do not guess, hide uncertainty, or invent unsupported facts.
 - **Simple first**: solve the verified goal with the smallest clear implementation that preserves existing behavior.
 - **Precise modification**: change only the files and code paths required by the task; avoid drive-by refactors and unrelated cleanup.
+- **Scope declaration gate**: before planning or editing, determine and declare the requested change boundary.
+  If the boundary is clear from the user request, state the inferred scope explicitly before making changes.
+  If the boundary is missing or ambiguous, pause and ask the developer to confirm it before making changes.
+  The boundary may be a module name, package name, class name, file path, public API, issue/PR scope, or specific behavior/test scenario.
+  Do not determine the scope after editing, and do not infer a broader scope from nearby code, unrelated failures, or cleanup opportunities.
+  The declared or confirmed boundary is the maximum allowed scope for production, test, documentation, and configuration changes.
+  If implementation evidence shows the declared or confirmed scope is insufficient, pause again and explain the required expansion before editing outside it.
 - **Goal-driven execution**: convert the request into verifiable outcomes before implementation, then validate those outcomes with scoped checks.
 
 ## Coding Skill Guidance
@@ -126,6 +133,9 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 
 ## Compliance Guardrails & Checklists
 - **Pre-task checklist (do before planning/coding):** re-read AGENTS.md and `CODE_OF_CONDUCT.md`; restate user goal, constraints, forbidden tools/APIs, coverage expectations, sandbox/network/approval limits; prefer `rg`/`./mvnw`/`apply_patch`; avoid destructive commands (`git reset --hard`, `git checkout --`, bulk deletes) and generated paths like `target/`.
+- **Change boundary checklist:** determine and declare the change boundary before planning or editing.
+  If the boundary is clear from the request, state the inferred module, package, class, file path, public API, issue/PR scope, or behavior/test scenario.
+  If the boundary is missing or ambiguous, ask the developer to confirm it before making changes.
 - **Risk gate:** if any action fits the Dangerous Operation Checklist, pause and use the confirmation template before proceeding.
 - **Planning rules:** use Sequential Thinking with 3-10 actionable steps (no single-step plans) via the plan tool for non-trivial tasks; convert all hard requirements (SPI usage, mocking rules, coverage/test naming, forbidden APIs) into a checklist inside the plan and do not code until each item is addressed or explicitly waived.
 - **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use and mark retained values `final`; inline single-use locals by default unless reuse/readability justifies retention; delete dead code and avoid placeholders/TODOs.
@@ -143,6 +153,10 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
   whether existing public behavior and contracts are preserved, and whether `code-review-and-quality` or equivalent review still has in-scope required findings.
 - Use `doubt-driven-development` when available, or equivalent adversarial self-review, to keep raising and resolving valuable in-scope questions until the stop condition is met.
   Stop when no actionable findings remain, the same findings repeat, 3 doubt cycles complete, or the user explicitly overrides.
+- Before finishing any implementation task, compare the final diff against the declared or confirmed change boundary.
+  If any edit is outside that boundary, revert only the out-of-scope edits made in the current task, then rework the solution within the allowed scope.
+  Do not keep out-of-scope changes for convenience, and do not use destructive git commands or revert unrelated user changes.
+  If the task cannot be completed after removing the out-of-scope edits, stop and ask the developer to confirm the required scope expansion.
 - If any answer reveals an in-scope, behavior-preserving, low-risk required fix, make the fix and rerun relevant checks.
 - Repeat the review-fix-verify loop until no in-scope required findings remain.
 - Do not continue iterating for optional polish, broad cleanup, risky refactors, or unrelated code. Record those as follow-up suggestions instead of expanding the task.
