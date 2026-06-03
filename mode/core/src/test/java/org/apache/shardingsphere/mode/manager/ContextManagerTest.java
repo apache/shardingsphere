@@ -114,8 +114,8 @@ class ContextManagerTest {
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
         database = mockDatabase();
-        when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase("bar_db")).thenReturn(null);
         when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
         when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(new ProxyInstanceMetaData("foo_id", 3307), Collections.emptyList()));
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(new ModeConfiguration("FIXTURE", mock()));
@@ -182,7 +182,6 @@ class ContextManagerTest {
         ShardingSphereDatabase database =
                 new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, mock(RuleMetaData.class), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         assertThat(contextManager.getStorageUnits("foo_db").size(), is(1));
     }
     

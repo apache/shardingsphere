@@ -133,7 +133,8 @@ public final class QueryContext {
     
     private ShardingSphereDatabase getDatabase(final String databaseName) {
         ShardingSpherePreconditions.checkNotNull(databaseName, NoDatabaseSelectedException::new);
-        ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
-        return metaData.getDatabase(databaseName);
+        ShardingSphereDatabase result = metaData.getDatabase(databaseName);
+        ShardingSpherePreconditions.checkState(null != result, () -> new UnknownDatabaseException(databaseName));
+        return result;
     }
 }

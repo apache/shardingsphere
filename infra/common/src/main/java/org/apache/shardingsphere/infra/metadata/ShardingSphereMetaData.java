@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.metadata;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
@@ -136,7 +135,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @return contains database from meta data or not
      */
     public boolean containsDatabase(final String databaseName) {
-        return containsDatabase(new IdentifierValue(databaseName, QuoteCharacter.NONE));
+        return databaseIndex.contains(databaseName);
     }
     
     /**
@@ -156,7 +155,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @return meta data database
      */
     public ShardingSphereDatabase getDatabase(final String databaseName) {
-        return getDatabase(new IdentifierValue(databaseName, QuoteCharacter.NONE));
+        return databaseIndex.get(databaseName);
     }
     
     /**
