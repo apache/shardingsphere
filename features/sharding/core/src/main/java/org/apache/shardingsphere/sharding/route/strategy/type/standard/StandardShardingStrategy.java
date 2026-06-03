@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 
 /**
  * Standard sharding strategy.
@@ -59,15 +58,14 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues,
                                          final DataNodeInfo dataNodeInfo, final ConfigurationProperties props) {
         ShardingConditionValue shardingConditionValue = shardingConditionValues.iterator().next();
-        Collection<String> shardingResult = shardingConditionValue instanceof ListShardingConditionValue
+        return shardingConditionValue instanceof ListShardingConditionValue
                 ? doSharding(availableTargetNames, (ListShardingConditionValue) shardingConditionValue, dataNodeInfo)
                 : doSharding(availableTargetNames, (RangeShardingConditionValue) shardingConditionValue, dataNodeInfo);
-        return new CaseInsensitiveSet<>(shardingResult);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingConditionValue<?> shardingValue, final DataNodeInfo dataNodeInfo) {
-        Collection<String> result = new LinkedList<>();
+        Collection<String> result = new CaseInsensitiveSet<>(shardingValue.getValues().size(), 1F);
         for (Object each : shardingValue.getValues()) {
             String target = shardingAlgorithm.doSharding(availableTargetNames,
                     new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), dataNodeInfo, each));
@@ -81,7 +79,8 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingConditionValue<?> shardingValue, final DataNodeInfo dataNodeInfo) {
-        return shardingAlgorithm.doSharding(availableTargetNames,
+        Collection<String> result = shardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), dataNodeInfo, shardingValue.getValueRange()));
+        return new CaseInsensitiveSet<>(result);
     }
 }
