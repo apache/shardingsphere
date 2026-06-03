@@ -15,6 +15,11 @@ Use client integration when:
 
 See [Capability Catalog](../capabilities/) for supported tasks and usage boundaries.
 
+## Typical Clients
+
+- [Codex](./codex/): use ShardingSphere-MCP in Codex CLI or IDE extension.
+- [Claude Code](./claude-code/): use ShardingSphere-MCP in Claude Code project or user configuration.
+
 ## Choose a Transport
 
 - HTTP is suitable when the MCP Server is started independently and AI applications use a fixed endpoint.
@@ -36,6 +41,7 @@ Add the following snippet to the AI application's MCP Server configuration. The 
 ```
 
 Configuration file locations and field names may differ between AI applications. Follow the documentation of the application you use.
+For Codex and Claude Code examples, see the corresponding pages in this section.
 
 ## STDIO Configuration
 

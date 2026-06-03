@@ -15,6 +15,11 @@ weight = 4
 
 可完成的任务和使用边界见[能力清单](../capabilities/)。
 
+## 典型客户端
+
+- [Codex](./codex/)：适合在 Codex CLI 或 IDE 扩展中使用 ShardingSphere-MCP。
+- [Claude Code](./claude-code/)：适合在 Claude Code 项目或用户配置中使用 ShardingSphere-MCP。
+
 ## 选择传输方式
 
 - HTTP 适合 MCP Server 独立启动，AI 应用通过固定端点访问的场景。
@@ -36,6 +41,7 @@ weight = 4
 ```
 
 不同 AI 应用的配置文件位置和字段名称可能不同，请以应用自身文档为准。
+Codex 和 Claude Code 的配置示例见本章对应子页面。
 
 ## STDIO 配置
 

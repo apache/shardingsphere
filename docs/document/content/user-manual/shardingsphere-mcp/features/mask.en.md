@@ -87,6 +87,6 @@ For the general review flow of rule changes, see [Rule Change Flow](../plugin-wo
 - Logical column and rule validation are based on what Proxy exposes.
 - Direct physical database connections can execute ordinary SQL only and do not represent masking rule state.
 
-### SQL generation boundaries
+### Identifier handling boundaries
 
-- MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode identifiers. To keep generated SQL or rule change statements reviewable, identifier content must not contain backticks, NUL, carriage returns, or line feeds.
+- MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode object names. To keep generated SQL or rule change statements reviewable, object name content must not contain backticks, NUL, carriage returns, or line feeds.

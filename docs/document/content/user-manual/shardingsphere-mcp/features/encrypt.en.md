@@ -103,6 +103,6 @@ For the general review flow of rule changes, see [Rule Change Flow](../plugin-wo
 
 - Existing data migration or backfill is not handled.
 
-### SQL generation boundaries
+### Identifier handling boundaries
 
-- MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode identifiers. To keep generated SQL or rule change statements reviewable, identifier content must not contain backticks, NUL, carriage returns, or line feeds.
+- MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode object names. To keep generated SQL or rule change statements reviewable, object name content must not contain backticks, NUL, carriage returns, or line feeds.

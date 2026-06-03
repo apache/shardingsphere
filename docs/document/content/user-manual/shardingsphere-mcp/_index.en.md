@@ -11,7 +11,7 @@ MCP is an open protocol for connecting AI applications to external data sources 
 AI application developers can integrate ShardingSphere-MCP as a controlled database access capability.
 After integration, users can inspect database structure, run controlled queries, and plan reviewable ShardingSphere rule changes through natural language.
 
-ShardingSphere-MCP configuration starts from databases: configure the ShardingSphere logical databases or regular databases that it can connect to, then complete integration in the AI application.
+Before use, prepare a reachable database and configure its connection information in `runtimeDatabases`. If data encryption, data masking, or other rule change capabilities are required, the connection target should be a ShardingSphere-Proxy logical database.
 
 ## Database Access for AI Applications
 
@@ -33,7 +33,7 @@ Tasks with side effects should create or preview a plan first, then run only aft
 - Quick Start: build the distribution, configure a reachable logical database, start the MCP Server, and verify natural-language tasks in an AI application.
 - Capability Catalog: understand the database tasks and usage boundaries that users can access through natural language.
 - Configuration: configure transport, `runtimeDatabases`, plugin directories, and launch parameters.
-- Client Integration: connect the MCP Server to an AI application through HTTP or STDIO, and understand how to use it after integration.
+- Client Integration: connect the MCP Server to an AI application through HTTP or STDIO, with Codex and Claude Code examples.
 - Deployment: deploy the binary distribution and OCI image safely.
 - Troubleshooting: diagnose common MCP Server, connection, configuration, metadata, and SQL execution issues.
 - Feature Plugins: use official MCP feature plugins and understand how to review, apply, and validate plugin changes.

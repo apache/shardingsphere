@@ -12,11 +12,11 @@ weight = 9
 | --- | --- | --- |
 | `tools/list` | 当前 MCP Server 暴露的工具。 | 自研客户端构建可调用动作清单。 |
 | `resources/list` | 当前 MCP Server 暴露的静态资源。 | 自研客户端读取固定上下文。 |
-| `resources/templates/list` | 当前 MCP Server 暴露的资源模板。 | 自研客户端按数据库、schema、表等参数读取上下文。 |
+| `resources/templates/list` | 当前 MCP Server 暴露的资源模板。 | 自研客户端按数据库、模式、表等参数读取上下文。 |
 | `prompts/list` | 当前 MCP Server 暴露的提示。 | 自研客户端读取任务引导模板。 |
-| `completion/complete` | 指定参数的补全候选值。 | 自研客户端为数据库、schema、表、列等名称提供补全。 |
+| `completion/complete` | 指定参数的补全候选值。 | 自研客户端为数据库、模式、表、列等名称提供补全。 |
 | `shardingsphere://capabilities` | 运行时数据库、连接目标、功能插件和副作用边界。 | 判断当前 MCP Server 可用于哪些数据库任务。 |
-| `shardingsphere://databases/{database}/capabilities` | 指定运行时数据库的 SQL、事务、schema 和元数据对象能力。 | 判断某个数据库的可用操作和限制。 |
+| `shardingsphere://databases/{database}/capabilities` | 指定运行时数据库的 SQL、事务、模式和元数据对象能力。 | 判断某个数据库的可用操作和限制。 |
 
 ## 资源
 
@@ -26,18 +26,18 @@ weight = 9
 | `shardingsphere://runtime` | 查看当前传输方式、运行状态和已配置运行时数据库摘要。 |
 | `shardingsphere://databases` | 列出当前 MCP Server 可以访问的运行时数据库；连接 Proxy 时对应 ShardingSphere 逻辑库。 |
 | `shardingsphere://databases/{database}` | 读取一个运行时数据库的详情和元数据摘要。 |
-| `shardingsphere://databases/{database}/capabilities` | 读取一个运行时数据库的 SQL、事务、schema 和元数据对象能力。 |
-| `shardingsphere://databases/{database}/schemas` | 列出一个运行时数据库中的 schema 或 namespace。 |
-| `shardingsphere://databases/{database}/schemas/{schema}` | 读取一个 schema 或 namespace 的详情。 |
-| `shardingsphere://databases/{database}/schemas/{schema}/sequences` | 列出一个 schema 中的 sequence。 |
-| `shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}` | 读取一个 sequence 的详情。 |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables` | 列出一个 schema 中的表。 |
+| `shardingsphere://databases/{database}/capabilities` | 读取一个运行时数据库的 SQL、事务、模式和元数据对象能力。 |
+| `shardingsphere://databases/{database}/schemas` | 列出一个运行时数据库中的模式或命名空间。 |
+| `shardingsphere://databases/{database}/schemas/{schema}` | 读取一个模式或命名空间的详情。 |
+| `shardingsphere://databases/{database}/schemas/{schema}/sequences` | 列出一个模式中的序列。 |
+| `shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}` | 读取一个序列的详情。 |
+| `shardingsphere://databases/{database}/schemas/{schema}/tables` | 列出一个模式中的表。 |
 | `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}` | 读取一个表的详情。 |
 | `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns` | 列出一个表的列。 |
 | `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}` | 读取一个表列的详情。 |
 | `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes` | 列出一个表的索引。 |
 | `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}` | 读取一个表索引的详情。 |
-| `shardingsphere://databases/{database}/schemas/{schema}/views` | 列出一个 schema 中的视图。 |
+| `shardingsphere://databases/{database}/schemas/{schema}/views` | 列出一个模式中的视图。 |
 | `shardingsphere://databases/{database}/schemas/{schema}/views/{view}` | 读取一个视图的详情。 |
 | `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns` | 列出一个视图的列。 |
 | `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}` | 读取一个视图列的详情。 |

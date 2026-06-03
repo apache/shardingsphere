@@ -52,7 +52,7 @@ If the target database driver is not provided with the distribution, put the cor
 Unix-like systems:
 
 ```bash
-bin/start.sh > logs/mcp-http.log 2>&1 & MCP_PID=$!
+bin/start.sh > logs/mcp-http.log 2>&1 &
 ```
 
 Windows:
@@ -62,7 +62,6 @@ start "ShardingSphere MCP" cmd /c "bin\start.bat > logs\mcp-http.log 2>&1"
 ```
 
 The default configuration file is `conf/mcp-http.yaml`, and the default endpoint is `http://127.0.0.1:18088/mcp`.
-The Unix-like example starts the MCP Server in the background and saves the process ID in `MCP_PID` for shutdown.
 
 ## Connect an AI Application
 
@@ -91,15 +90,3 @@ After configuration, enter the following tasks in the AI application to verify t
 
 If the application returns the logical database, table structure, or query results, the MCP Server can access the target ShardingSphere-Proxy logical database through the AI application.
 If the AI application cannot connect or cannot see the logical database, see [Troubleshooting](../troubleshooting/).
-
-## Stop the Service
-
-Unix-like systems:
-
-```bash
-kill "${MCP_PID}"
-```
-
-Windows:
-
-Press `Ctrl+C` in the `ShardingSphere MCP` startup window, or close the window directly.
