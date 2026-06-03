@@ -39,7 +39,7 @@ transport:
 ## 数据库配置
 
 `runtimeDatabases` 定义 MCP Server 可以连接并对外暴露的数据库。
-每个条目的 key 是 MCP 调用中使用的数据库名称，通常对应 ShardingSphere-Proxy 暴露的逻辑库。
+每个条目的 key 是用户在自然语言任务中引用的数据库名称，通常对应 ShardingSphere-Proxy 暴露的逻辑库。
 
 ```yaml
 runtimeDatabases:
@@ -66,8 +66,8 @@ runtimeDatabases:
 
 注意事项：
 
-- 连接 ShardingSphere-Proxy 时，MCP 资源暴露的是 ShardingSphere 逻辑库，不是底层物理存储单元。
-- 连接真实数据库时，MCP 资源反映该 JDBC 目标的元数据，不代表 ShardingSphere 规则状态。
+- 连接 ShardingSphere-Proxy 时，用户看到的是 ShardingSphere 逻辑库，不是底层物理存储单元。
+- 连接真实数据库时，用户看到的是该 JDBC 目标的元数据，不代表 ShardingSphere 规则状态。
 - Schema、table、view、index 和 sequence 等元数据依赖目标数据库的 JDBC 元数据；Proxy 和真实数据库的可见结果可能不同。
 - 如果目标 JDBC 驱动没有随发行包提供，请把驱动 jar 放入 `plugins/`。
 
@@ -82,14 +82,14 @@ runtimeDatabases:
 - 读取 ShardingSphere 逻辑库、逻辑表和逻辑列元数据。
 - 查询 Proxy 可见的加密、脱敏算法插件。
 - 查询、规划、应用和校验加密或脱敏规则。
-- 通过 Proxy 执行逻辑 SQL 和工作流生成的 DistSQL。
+- 通过 Proxy 执行逻辑 SQL 和规则变更生成的待执行语句。
 
 该模式受 Proxy 能力限制：
 
 - JDBC 元数据、`information_schema`、索引、sequence 和列类型信息以 Proxy 暴露结果为准，不等同于完整底层物理库元数据。
 - 物理列、物理索引和多存储节点一致性不作为 MCP 自动确认的稳定契约。
-- 可用 DistSQL、规则类型和算法插件取决于 Proxy 版本、已安装插件和当前账号权限。
-- 物理 DDL 产物应先审查；只有 Proxy 能安全路由并执行时才适合自动应用。
+- 可用规则变更语句、规则类型和算法插件取决于 Proxy 版本、已安装插件和当前账号权限。
+- 物理变更语句应先审查；只有 Proxy 能安全路由并执行时才适合自动应用。
 
 ### 连接真实数据库
 
@@ -103,7 +103,7 @@ runtimeDatabases:
 
 - 不能发现 Proxy 中可见的加密或脱敏算法插件。
 - 不能查询、规划、应用或校验 ShardingSphere 加密、脱敏规则。
-- 不能使用依赖 DistSQL 的工作流能力；真实数据库通常不识别 ShardingSphere DistSQL。
+- 不能使用依赖 ShardingSphere 规则变更语句的能力；真实数据库通常不识别 ShardingSphere 规则变更语句。
 
 ## 插件目录
 

@@ -10,7 +10,7 @@ Actual encryption capability is provided by ShardingSphere-Proxy and its encrypt
 
 - The current version supports logical databases exposed by ShardingSphere-Proxy only.
 - `runtimeDatabases` should point to Proxy logical databases, not physical storage databases.
-- This feature does not apply to direct physical database connections. A physical database usually does not understand ShardingSphere encryption DistSQL and cannot expose Proxy-visible encryption algorithm plugins or rule state.
+- This feature does not apply to direct physical database connections. A physical database usually does not understand ShardingSphere encryption rule change statements and cannot expose Proxy-visible encryption algorithm plugins or rule state.
 - The target logical table and column should be discoverable through JDBC metadata exposed by Proxy. This metadata should not be treated as a complete physical database catalog.
 
 ## Use through natural language
@@ -24,7 +24,7 @@ Examples:
 - Continue the previous plan with the AES algorithm and provide the key through a protected channel.
 - Confirm and execute the previous encryption rule plan, then validate the result.
 
-Users should review DistSQL, DDL, index suggestions, and side-effect scope before approving any side-effecting execution.
+Users should review statements, physical columns, index suggestions, and side-effect scope before approving any side-effecting execution.
 
 ## Describe an encryption requirement
 
@@ -42,17 +42,17 @@ When using natural language, include the following information when possible:
 
 ## Create, alter, and drop rules
 
-| Operation | Natural language example | Plan content |
+| Operation | Natural language example | Content to review |
 | --- | --- | --- |
-| Create | "Plan reversible encryption for `orders.status`, support equality queries, and preview first." | Generates new rule DistSQL, and physical derived-column DDL or index suggestions when needed. |
-| Alter | "Change the previous encryption plan to use AES, then preview it again." | Generates alter-rule DistSQL that keeps sibling column rules on the same table and updates DDL or index suggestions when needed. |
-| Drop | "Drop the encryption rule for `orders.status` and preview the impact first." | Generates DistSQL to drop the target column rule. Sibling encrypted columns on the same table are preserved. |
+| Create | "Plan reversible encryption for `orders.status`, support equality queries, and preview first." | The new encryption rule, possible physical derived columns, and index suggestions. |
+| Alter | "Change the previous encryption plan to use AES, then preview it again." | The altered encryption rule, whether sibling encrypted columns are preserved, and physical change suggestions. |
+| Drop | "Drop the encryption rule for `orders.status` and preview the impact first." | Whether the target column rule is dropped, whether sibling encrypted columns are preserved, and which physical objects need manual cleanup. |
 
 ## Review the encryption plan
 
 After a plan is generated, review:
 
-- Whether DistSQL matches the expected create, alter, or drop operation.
+- Whether the statements match the expected create, alter, or drop operation.
 - Whether physical derived columns are required.
 - Whether index suggestions are generated and suitable for the current physical table structure.
 - Whether keys, credentials, or other sensitive parameters are passed only through placeholders or protected channels.
@@ -64,22 +64,22 @@ Encryption rules may need physical derived columns to store ciphertext or suppor
 MCP creates derived-column suggestions from the logical column, user intent, and existing rules.
 
 - `*_cipher` stores ciphertext and is the default derived column for encryption rules.
-- If equality query is required, `*_assisted_query` is generated. Its index plan is generated when index DDL is allowed.
+- If equality query is required, `*_assisted_query` is generated. Its index plan is returned when index suggestions are allowed.
 - If LIKE query is required, `*_like_query` is generated for LIKE query scenarios.
 - If a default column name conflicts, the system appends a numeric suffix and returns the final name in the plan.
 
 ## Preview, apply, and validate
 
-Preview first, then review DistSQL, DDL, index plans, and side-effect scope before execution.
+Preview first, then review statements, physical columns, index suggestions, and side-effect scope before execution.
 
 | Phase | Natural language example | User focus |
 | --- | --- | --- |
-| Preview | "Preview the previous encryption rule plan without executing it." | Inspect DistSQL, DDL, and index suggestions before execution. |
+| Preview | "Preview the previous encryption rule plan without executing it." | Inspect statements, physical columns, and index suggestions before execution. |
 | Execute | "Confirm and execute the previous plan." | Confirm that the side-effecting change has been reviewed. |
 | Manual execution | "Export a manual execution package without automatic execution." | Let operators review and execute in a controlled environment. |
 | Validate | "Validate whether the previous encryption rule has taken effect." | Check rule state, logical metadata, physical column suggestions, and SQL executability. |
 
-For the general review flow of plugin changes, see [Plugin Workflows](../plugin-workflow/).
+For the general review flow of rule changes, see [Rule Change Flow](../plugin-workflow/).
 
 ## Limitations
 
@@ -97,7 +97,7 @@ For the general review flow of plugin changes, see [Plugin Workflows](../plugin-
 ### Proxy-visible metadata boundaries
 
 - MCP generates derived-column, index, and column-type suggestions from logical metadata exposed by Proxy. It does not inspect every physical database directly.
-- Review generated DDL against the real physical table structure before applying it.
+- Review generated physical change statements against the real physical table structure before applying them.
 
 ### ShardingSphere feature boundaries
 
@@ -105,4 +105,4 @@ For the general review flow of plugin changes, see [Plugin Workflows](../plugin-
 
 ### SQL generation boundaries
 
-- MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode identifiers. To keep generated SQL or DistSQL reviewable, identifier content must not contain backticks, NUL, carriage returns, or line feeds.
+- MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode identifiers. To keep generated SQL or rule change statements reviewable, identifier content must not contain backticks, NUL, carriage returns, or line feeds.

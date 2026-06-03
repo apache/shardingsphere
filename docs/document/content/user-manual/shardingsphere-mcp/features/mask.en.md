@@ -10,7 +10,7 @@ Mask rules apply directly to logical columns and do not generate physical derive
 
 - The current version supports logical databases exposed by ShardingSphere-Proxy only.
 - `runtimeDatabases` should point to Proxy logical databases, not physical storage databases.
-- This feature does not apply to direct physical database connections. A physical database usually does not understand ShardingSphere masking DistSQL and cannot expose Proxy-visible masking algorithm plugins or rule state.
+- This feature does not apply to direct physical database connections. A physical database usually does not understand ShardingSphere masking rule change statements and cannot expose Proxy-visible masking algorithm plugins or rule state.
 - The target logical table and column should be discoverable through JDBC metadata exposed by Proxy. This metadata should not be treated as a complete physical database catalog.
 
 ## Use through natural language
@@ -24,7 +24,7 @@ Examples:
 - Adjust the previous plan to use `*` as the replacement character.
 - Confirm and execute the previous masking rule plan, then validate the result.
 
-Users should review DistSQL and side-effect scope before approving any side-effecting execution.
+Users should review statements and side-effect scope before approving any side-effecting execution.
 
 ## Describe a masking requirement
 
@@ -41,33 +41,33 @@ When using natural language, include the following information when possible:
 
 ## Create, alter, and drop rules
 
-| Operation | Natural language example | Plan content |
+| Operation | Natural language example | Content to review |
 | --- | --- | --- |
-| Create | "Plan phone-number masking for `orders.phone` and preview it without execution." | Generates DistSQL for adding the rule. |
-| Alter | "Change the previous masking rule to keep the first 3 and last 4 characters." | Generates DistSQL that preserves sibling column rules on the same table. |
-| Drop | "Drop the masking rule for `orders.phone` and preview the impact first." | Generates DistSQL to drop the target column rule. Sibling masking columns on the same table are preserved. |
+| Create | "Plan phone-number masking for `orders.phone` and preview it without execution." | The new masking rule, masking algorithm, and properties. |
+| Alter | "Change the previous masking rule to keep the first 3 and last 4 characters." | The altered masking rule and whether sibling masking columns are preserved. |
+| Drop | "Drop the masking rule for `orders.phone` and preview the impact first." | Whether the target column rule is dropped and whether sibling masking columns are preserved. |
 
 ## Review the masking plan
 
 After a plan is generated, review:
 
-- Whether DistSQL matches the expected create, alter, or drop operation.
+- Whether the statements match the expected create, alter, or drop operation.
 - Whether the masking algorithm and properties satisfy business compliance requirements.
 - Whether queries through Proxy no longer apply masking to the column after dropping a rule.
 - Whether runtime rules or existing business SQL may be affected.
 
 ## Apply and validate
 
-Preview first, then review DistSQL and side-effect scope before execution.
+Preview first, then review statements and side-effect scope before execution.
 
 | Phase | Natural language example | User focus |
 | --- | --- | --- |
-| Preview | "Preview the previous masking rule plan without executing it." | Inspect DistSQL and side-effect scope before execution. |
+| Preview | "Preview the previous masking rule plan without executing it." | Inspect statements and side-effect scope before execution. |
 | Execute | "Confirm and execute the previous plan." | Confirm that the side-effecting change has been reviewed. |
 | Manual execution | "Export a manual execution package without automatic execution." | Let operators review and execute in a controlled environment. |
 | Validate | "Validate whether the previous masking rule has taken effect." | Check rule state, logical metadata, and SQL executability. |
 
-For the general review flow of plugin changes, see [Plugin Workflows](../plugin-workflow/).
+For the general review flow of rule changes, see [Rule Change Flow](../plugin-workflow/).
 
 ## Limitations
 
@@ -89,4 +89,4 @@ For the general review flow of plugin changes, see [Plugin Workflows](../plugin-
 
 ### SQL generation boundaries
 
-- MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode identifiers. To keep generated SQL or DistSQL reviewable, identifier content must not contain backticks, NUL, carriage returns, or line feeds.
+- MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode identifiers. To keep generated SQL or rule change statements reviewable, identifier content must not contain backticks, NUL, carriage returns, or line feeds.

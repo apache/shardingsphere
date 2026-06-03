@@ -3,132 +3,83 @@ title = "Capability Catalog"
 weight = 2
 +++
 
-This page explains the information that ShardingSphere-MCP can read, the actions it can perform, and the usage boundaries for different connection targets from the perspective of AI application developers and integrators.
-AI applications that integrate MCP discover the capabilities currently available from the MCP Server. Users usually only need to describe the database task they want to complete in the AI application.
+This page describes the database tasks that users can complete through natural language, and the usage boundaries when connecting to ShardingSphere-Proxy or a regular database.
+For protocol-level integration details, see the [Developer Appendix](../developer-appendix/).
 
-## Capability discovery
-
-Capability discovery is the process by which an MCP client or an AI application that integrates MCP reads the capabilities available from ShardingSphere-MCP.
-When using an existing client, users usually only describe database tasks. AI application developers need to read tools, resources, resource templates, and prompts after the application establishes an MCP connection, then make those capabilities available to the model or application orchestration logic.
-
-| Entry | Type | Returned content | Usage scenario |
-| --- | --- | --- | --- |
-| `tools/list`, `resources/list`, `resources/templates/list`, `prompts/list` | MCP protocol capabilities | Tools, resources, resource templates, and prompts exposed by the current MCP Server. | Build the callable capability catalog for an AI application and select available context or actions by task. |
-| `shardingsphere://capabilities` | ShardingSphere service capability | Runtime databases, connection targets, feature plugins, and side-effect boundaries. | Determine whether the current MCP Server can be used for metadata inspection, SQL execution, or governance changes. |
-| `shardingsphere://databases/{database}/capabilities` | Database capability | SQL, transaction, schema, and metadata-object capabilities of the specified runtime database. | Determine available operations and limits for a specific database. |
-
-Capability discovery represents what the current MCP Server actually makes available. Whether a capability is actually useful still depends on whether `runtimeDatabases` connects to ShardingSphere-Proxy or to a regular database.
-Clients select available capabilities according to the connection target.
+## Connection Targets
 
 ### Connecting to ShardingSphere-Proxy
 
-Use this mode to inspect ShardingSphere logical database structure, read governance rule state, execute controlled SQL, or create reviewable governance change plans through feature plugins.
-In this mode, logical metadata, logical SQL, DistSQL, rule state, algorithm plugins, and plugin workflows can be used through MCP capabilities.
+Use this mode to inspect ShardingSphere logical database structure, read rule state, run controlled SQL, or create reviewable rule change plans.
 
-Usage limits:
+Available tasks include:
 
-- Physical metadata follows what Proxy exposes and should not be treated as the complete catalog of every underlying physical database.
-- Capabilities that depend on ShardingSphere rules, algorithms, or DistSQL apply only to Proxy connections.
-- Planning capabilities create reviewable plans. Business impact still needs to be reviewed before execution.
+- Inspecting logical databases, schemas, tables, views, columns, indexes, and sequences.
+- Searching metadata objects such as tables, views, columns, and indexes.
+- Running read-only SQL queries.
+- Previewing SQL that may change data, metadata, or rules.
+- Planning, reviewing, applying, and validating data encryption or data masking rule changes.
 
-### Connecting directly to a database
+Usage boundaries:
 
-Use this mode when the MCP Server should act as a controlled access path to a regular database for reading JDBC metadata, searching objects, assisting query generation, or executing restricted SQL.
-In this mode, general database metadata and SQL tools are available.
+- Users see logical metadata exposed by Proxy. It is not equivalent to the complete catalog of every physical database.
+- Tasks that depend on ShardingSphere rules, algorithms, or rule change statements apply only to Proxy connections.
+- Side-effecting tasks should be previewed or planned first, then reviewed before execution.
 
-Usage limits:
+### Connecting Directly to a Database
 
-- ShardingSphere rules, algorithm plugins, and plugin workflows that depend on DistSQL do not apply.
-- Returned metadata is database-native metadata and does not include ShardingSphere logical rule views.
-- Clients must not assume that resources and tools behave exactly the same for direct database connections and Proxy connections.
+Use this mode when ShardingSphere-MCP acts as a controlled access entry for a regular database, including metadata inspection, object search, and restricted SQL execution.
 
-## Resources
+Available tasks include:
 
-Resources provide context such as runtime status, database lists, table structure, column information, or workflow plans.
-Clients read the corresponding resources as needed for the task.
+- Inspecting databases, schemas, tables, views, columns, indexes, and sequences.
+- Searching metadata objects.
+- Running read-only SQL queries.
+- Previewing or executing ordinary DML, DDL, and DCL after explicit authorization.
 
-| Resource URI or template | Purpose | Natural language example |
-| --- | --- | --- |
-| `shardingsphere://capabilities` | Reads available tasks and side-effect notes for the MCP Server. | "Which database tasks does this MCP Server support?" |
-| `shardingsphere://runtime` | Reads the current transport, runtime status, and configured runtime database summary. | "Which logical databases are configured on the MCP Server?" |
-| `shardingsphere://databases` | Lists runtime databases reachable by the current MCP Server. When connected to Proxy, they correspond to ShardingSphere logical databases. | "List the logical databases that can be accessed." |
-| `shardingsphere://databases/{database}` | Reads one runtime database and its metadata summary. | "Show the metadata summary for `<logic-database>`." |
-| `shardingsphere://databases/{database}/capabilities` | Reads SQL, transaction, schema, and metadata-object capabilities for one runtime database. | "Which SQL and metadata capabilities does `<logic-database>` support?" |
-| `shardingsphere://databases/{database}/schemas` | Lists schemas or namespaces inside one runtime database. | "Show schemas in `<logic-database>`." |
-| `shardingsphere://databases/{database}/schemas/{schema}` | Reads one schema or namespace. | "Show details for `<schema-name>`." |
-| `shardingsphere://databases/{database}/schemas/{schema}/sequences` | Lists sequences in one schema. | "List sequences in `<schema-name>`." |
-| `shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}` | Reads one sequence. | "Show details for `<sequence-name>`." |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables` | Lists tables in one schema. | "List tables in `<schema-name>`." |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}` | Reads one table. | "Inspect the structure of `<table-name>`." |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns` | Lists columns for one table. | "Show columns for `<table-name>`." |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}` | Reads one table column. | "Show the type and constraints of `<column-name>`." |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes` | Lists indexes for one table. | "Show indexes for `<table-name>`." |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}` | Reads one table index. | "Show which columns `<index-name>` contains." |
-| `shardingsphere://databases/{database}/schemas/{schema}/views` | Lists views in one schema. | "List views in `<schema-name>`." |
-| `shardingsphere://databases/{database}/schemas/{schema}/views/{view}` | Reads one view. | "Show a summary of `<view-name>`." |
-| `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns` | Lists columns for one view. | "Show columns for `<view-name>`." |
-| `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}` | Reads one view column. | "Show details for view column `<column-name>`." |
-| `shardingsphere://workflows/{plan_id}` | Reads the current governance change plan, clarification questions, artifacts, and next actions. | "Show the previous rule change plan and next action." |
+Usage boundaries:
 
-Plugin resources, tools, prompts, and completion targets are documented on the corresponding plugin pages.
+- ShardingSphere rule state is not available.
+- Feature plugins that depend on ShardingSphere rules, such as data encryption and data masking, do not apply.
+- Returned metadata comes from the target database itself and does not represent a ShardingSphere logical rule view.
 
-## Tools
+## Metadata Inspection
 
-Tools execute actions, such as searching metadata, executing SQL, or handling plugin workflow phases.
-Actions with side effects should be previewed or reviewed first.
-
-| Tool | Purpose | Natural language example | Side effects |
+| Task | Natural language example | Connection target | User focus |
 | --- | --- | --- | --- |
-| `database_gateway_search_metadata` | Search runtime database metadata by name fragment and object type, and return resource hints for follow-up reads. | "Find tables whose names contain `order`." | None. |
-| `database_gateway_validate_proxy_connectivity` | Validate whether the runtime database configuration is usable, for diagnosing connection issues during integration. | "Check why `logic_db` cannot be accessed." | None. |
-| `database_gateway_execute_query` | Execute exactly one classifier-approved `SELECT` or `EXPLAIN ANALYZE` statement. | "Query the first 10 rows from `orders`." | None; rejects DML, DDL, DCL, transaction control, savepoints, and other side-effecting SQL. |
-| `database_gateway_execute_update` | Preview or execute one SQL statement that may mutate data, metadata, rules, or transaction state. | "Preview this change SQL without executing it." | Yes; preview and confirmation are recommended first. |
-| `database_gateway_apply_workflow` | Preview, execute, or export a governance change plan created by a feature plugin. | "Preview the previous encryption rule plan first." | Depends on the execution choice; preview and manual packages do not change runtime state. |
-| `database_gateway_validate_workflow` | After plugin workflow execution, validate the result against visible metadata and generated artifacts. | "Validate whether the previous masking rule has taken effect." | None. |
+| List accessible databases | "List the logical databases that can be accessed." | Proxy or regular database | Confirm that database names match the configuration. |
+| Inspect schemas or namespaces | "Show schemas in `<logic-database>`." | Proxy or regular database | For multi-schema databases, confirm the target schema first. |
+| Inspect tables or views | "List tables and views in `<schema-name>`." | Proxy or regular database | Proxy connections show logical objects. |
+| Inspect columns | "Show columns and column types for `<table-name>`." | Proxy or regular database | Column types follow metadata visible from the connection target. |
+| Inspect indexes | "Show indexes for `<table-name>`." | Proxy or regular database | With Proxy connections, index information may differ from the full physical database structure. |
+| Inspect sequences | "List sequences in `<schema-name>`." | Proxy or regular database | Available only when the connection target exposes sequence metadata. |
 
-Plugin tools are documented on the corresponding plugin pages.
+## Metadata Search
 
-## Prompts
+| Task | Natural language example | Connection target | User focus |
+| --- | --- | --- | --- |
+| Search objects by name | "Find tables whose names contain `order`." | Proxy or regular database | Useful when the full object name is unknown. |
+| Search by object type | "Find tables and views whose names contain `user`." | Proxy or regular database | Narrow the search to tables, views, columns, or other object types. |
+| Continue from search results | "Open the `orders` table found earlier and show columns and indexes." | Proxy or regular database | Search results can provide context for follow-up natural-language tasks. |
 
-Prompts provide task guidance, such as which information to read first, how to handle SQL execution boundaries, or how to recover from failure.
-Users usually do not use prompts directly.
+## SQL Execution
 
-| Prompt | Purpose |
-| --- | --- |
-| `inspect_metadata` | Guides metadata inspection tasks to read database metadata before choosing a search tool or detail resource. |
-| `safe_sql_execution` | Guides SQL execution tasks to distinguish read-only queries from side-effecting SQL. |
-| `recover_workflow` | Guides recovery or re-planning after plugin workflow failure. |
+| Task | Natural language example | Connection target | User focus |
+| --- | --- | --- | --- |
+| Run a read-only query | "Query the first 10 rows from `orders`." | Proxy or regular database | Use for sample data inspection or SQL result validation. |
+| Limit returned rows | "Query the first 100 rows from `orders` and do not return more." | Proxy or regular database | Avoid returning too much data. |
+| Preview side-effecting SQL | "Preview this change SQL without executing it." | Proxy or regular database | Review impact before execution. |
+| Execute side-effecting SQL after confirmation | "Confirm and execute the SQL that was just previewed." | Proxy or regular database | Requires confirmation that side effects were reviewed. |
 
-Plugin prompts are documented on the corresponding plugin pages.
+## ShardingSphere Rule Changes
 
-## Completion targets
+| Task | Natural language example | Connection target | User focus |
+| --- | --- | --- | --- |
+| Check existing rules | "Check whether `orders.phone` already has a masking rule." | Proxy only | Rule state comes from ShardingSphere-Proxy. |
+| Plan a data encryption rule | "Plan reversible encryption for `orders.status` and preview it without execution." | Proxy only | Review the rule change, physical columns, and index suggestions. |
+| Plan a data masking rule | "Plan phone-number masking for `orders.phone`, keep the first 3 and last 4 characters, and preview it without execution." | Proxy only | Review the masking algorithm, properties, and impact scope. |
+| Adjust a rule plan | "Change the previous plan to use AES." | Proxy only | Preview again after changing the plan. |
+| Apply a rule change | "Confirm and execute the previous rule change plan." | Proxy only | Side-effecting; review must be completed before execution. |
+| Validate a rule change | "Validate whether the previous masking rule has taken effect." | Proxy only | Check rule state, metadata, and SQL executability. |
 
-Completion targets help clients complete database, schema, table, and column names.
-For example, when a user provides only part of an object name, the client can provide candidates.
-
-### Resource completion targets
-
-| Target | Completed arguments |
-| --- | --- |
-| `shardingsphere://databases/{database}` | `database` |
-| `shardingsphere://databases/{database}/schemas` | `database` |
-| `shardingsphere://databases/{database}/schemas/{schema}` | `database`, `schema` |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables` | `database`, `schema` |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}` | `database`, `schema`, `table` |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns` | `database`, `schema`, `table` |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}` | `database`, `schema`, `table`, `column` |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes` | `database`, `schema`, `table` |
-| `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}` | `database`, `schema`, `table`, `index` |
-| `shardingsphere://databases/{database}/schemas/{schema}/sequences` | `database`, `schema` |
-| `shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}` | `database`, `schema`, `sequence` |
-| `shardingsphere://workflows/{plan_id}` | `plan_id` |
-
-### Prompt completion targets
-
-| Target | Completed arguments |
-| --- | --- |
-| `inspect_metadata` | `database`, `schema` |
-| `safe_sql_execution` | `database`, `schema` |
-| `recover_workflow` | `plan_id` |
-
-Plugin prompt completion targets are documented on the corresponding plugin pages.
+For detailed usage, see [Data Encryption](../features/encrypt/) and [Data Masking](../features/mask/).

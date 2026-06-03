@@ -57,7 +57,7 @@ docker run --rm -p 18088:18088 \
 
 Configure `runtimeDatabases` according to the target capability boundary:
 
-- Point it to a ShardingSphere-Proxy logical database when using ShardingSphere rule capabilities or feature plugin workflows.
+- Point it to a ShardingSphere-Proxy logical database when using ShardingSphere rule capabilities or the rule change flow.
 - Point it to any reachable JDBC database only for general JDBC metadata, metadata search, and controlled SQL capabilities.
 
 ## Secure deployment
@@ -80,4 +80,4 @@ HTTP binding recommendations:
 ## Logs
 
 - HTTP mode: inspect the startup terminal and `logs/mcp.log`.
-- STDIO mode: stdout is reserved for MCP protocol frames; inspect stderr or `logs/mcp.log` for diagnostics.
+- STDIO mode: do not use stdout as a log inspection entry; inspect stderr or `logs/mcp.log` for diagnostics.
