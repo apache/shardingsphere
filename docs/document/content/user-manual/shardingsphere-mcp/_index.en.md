@@ -8,13 +8,10 @@ chapter = true
 ShardingSphere-MCP is the MCP Server for Apache ShardingSphere. It can run independently.
 MCP is an open protocol for connecting AI applications to external data sources and tools. For protocol details, see the [official MCP documentation](https://modelcontextprotocol.io/docs/learn/architecture).
 
-AI application developers can integrate ShardingSphere-MCP as a database access capability.
-After users describe database tasks in natural language, the AI application calls ShardingSphere-MCP through an MCP Client when it needs database context or database operations. ShardingSphere-MCP then accesses ShardingSphere logical databases or regular databases.
+AI application developers can integrate ShardingSphere-MCP as a controlled database access capability.
+After integration, users can inspect database structure, run controlled queries, and plan reviewable ShardingSphere rule changes through natural language.
 
-In this way, AI applications can inspect ShardingSphere logical database metadata, run controlled SQL queries, and generate reviewable governance change plans.
-Governance change plans describe the target objects, impact scope, and statements to be executed for rule changes such as data encryption and data masking, so users can review them before execution.
-
-ShardingSphere-MCP configuration starts from databases: configure the ShardingSphere logical databases or regular databases that the MCP Server can connect to, then complete MCP integration in the AI application.
+ShardingSphere-MCP configuration starts from databases: configure the ShardingSphere logical databases or regular databases that it can connect to, then complete integration in the AI application.
 
 ## Database Access for AI Applications
 
@@ -33,13 +30,14 @@ Tasks with side effects should create or preview a plan first, then run only aft
 
 ## Structure
 
-- Quick Start: build the distribution, configure a reachable logical database, start the HTTP MCP Server, and verify basic tasks.
-- Capability Catalog: understand the database tasks, readable information, and usage boundaries provided by the MCP Server.
+- Quick Start: build the distribution, configure a reachable logical database, start the MCP Server, and verify natural-language tasks in an AI application.
+- Capability Catalog: understand the database tasks and usage boundaries that users can access through natural language.
 - Configuration: configure transport, `runtimeDatabases`, plugin directories, and launch parameters.
-- Client Integration: connect the MCP Server to an AI application or MCP client through HTTP or STDIO, and understand how to use it after integration.
+- Client Integration: connect the MCP Server to an AI application through HTTP or STDIO, and understand how to use it after integration.
 - Deployment: deploy the binary distribution and OCI image safely.
 - Troubleshooting: diagnose common MCP Server, connection, configuration, metadata, and SQL execution issues.
 - Feature Plugins: use official MCP feature plugins and understand how to review, apply, and validate plugin changes.
-  - Plugin Workflows: understand confirmation, preview, execution, and validation for plugin change tasks.
+  - Rule Change Flow: understand confirmation, preview, execution, and validation for rule change tasks.
   - Data Encryption: plan, apply, and validate data encryption rule changes through MCP feature plugins.
   - Data Masking: plan, apply, and validate data masking rule changes through MCP feature plugins.
+- Developer Appendix: reference protocol details and HTTP debugging examples for custom integration or protocol debugging.

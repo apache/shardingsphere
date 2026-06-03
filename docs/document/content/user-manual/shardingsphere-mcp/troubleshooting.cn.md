@@ -3,30 +3,31 @@ title = "常见问题"
 weight = 7
 +++
 
-本页按现象整理 MCP Server、传输方式、会话、SQL 工具和工作流机制的排查方法。
+本页按用户侧现象整理 ShardingSphere-MCP、AI 应用集成、数据库连接、元数据查看、SQL 执行和规则变更的排查方法。
 功能插件的业务规则问题请查看对应功能插件文档。
 
 ## 排查索引
 
 | 现象 | 可能原因 | 处理方式 |
 | --- | --- | --- |
-| 启动失败 | JDK、配置路径、YAML 字段或必填字段不正确。 | 查看终端错误和 `logs/mcp.log`。 |
-| HTTP 无法连接 | 端口、端点路径、传输方式或绑定地址不正确。 | 检查 `port`、`endpointPath`、`bindHost` 和客户端 URL。 |
-| HTTP 返回 403 | 请求 `Origin` 与绑定地址安全策略不匹配。 | 本机调试用回环地址；远程访问走受控网关；详细原因看服务端日志。 |
-| 会话请求失败 | 未初始化、缺少会话头，或复用已关闭会话。 | 先调用 `initialize`，后续请求持续携带响应头。 |
-| STDIO 没有响应 | 被当成人工交互 Shell，或客户端未按 MCP stdio 协议发送 JSON-RPC。 | 由 MCP 客户端拉起进程；诊断信息看 stderr 或日志。 |
-| 逻辑库或元数据为空 | 未配置逻辑库、逻辑库名称不正确、连接失败、权限不足，或目标范围确实为空。 | 先查看运行时状态，确认数据库配置、逻辑库名称、连接错误分类和账号权限。 |
+| MCP Server 启动失败 | JDK、配置路径、YAML 字段或必填字段不正确。 | 查看启动终端和 `logs/mcp.log`，确认配置文件路径和必填字段。 |
+| AI 应用无法连接 ShardingSphere-MCP | 端口、端点路径、传输方式、绑定地址或客户端配置不正确。 | 检查 `port`、`endpointPath`、`bindHost` 和 AI 应用中的 MCP Server 地址。 |
+| 远程访问 HTTP 服务失败 | HTTP 绑定地址、安全策略或网关配置不正确。 | 本机调试用回环地址；远程访问放在受控网关或反向代理后面；详细原因看服务端日志。 |
+| STDIO 模式没有响应 | 用户直接把 STDIO 当成命令行交互入口，或 AI 应用没有正确拉起进程。 | 由 AI 应用拉起 ShardingSphere-MCP；诊断信息看 stderr 或 `logs/mcp.log`。 |
+| 看不到逻辑库 | 未配置逻辑库、逻辑库名称不正确、连接失败、权限不足，或目标范围确实为空。 | 确认 `runtimeDatabases`、逻辑库名称、连接错误分类和账号权限。 |
+| 查不到表、列或索引 | 连接目标不同、schema 不正确、账号权限不足，或 Proxy 暴露的逻辑元数据与底层物理库不同。 | 先确认连接的是 ShardingSphere-Proxy 还是普通数据库，再检查 schema、账号权限和 Proxy 可见元数据。 |
 | JDBC 驱动错误 | 驱动不在类路径，或 `driverClassName` 不正确。 | 把驱动 jar 放入 `plugins/`，并确认 `driverClassName` 非空且类名正确。 |
-| SQL 工具调用失败 | 工具选错、多语句被拒绝或参数超限。 | 查询用 `execute_query`；有副作用 SQL 用 `execute_update` 并先预览。 |
-| 工作流失败 | `plan_id`、会话、执行模式或人工执行步骤不正确。 | 同一会话内复用 `plan_id`；先预览；人工执行后再校验。 |
-| 敏感输入无法传递 | 补问要求密钥或凭证。 | 通过客户端、密钥管理系统或运维控制通道取得真实值，再在受保护调用或人工执行环节传入。 |
+| 只读查询失败 | SQL 语法、目标表名、schema、权限或返回行数限制不正确。 | 先让 AI 应用查看表结构，再执行只读查询，并限制返回行数。 |
+| 有副作用 SQL 无法执行 | SQL 类型有副作用，或未先预览和确认。 | 先要求预览变更 SQL，审查影响范围后再确认执行。 |
+| 加密或脱敏计划无法生成 | 连接目标不是 Proxy、目标列不可见、算法不可用，或缺少必要参数。 | 确认 `runtimeDatabases` 指向 Proxy 逻辑库，并补充逻辑库、表、列、算法和参数。 |
+| 规则变更执行后校验不通过 | 规则未成功执行、权限不足、元数据未刷新，或人工执行包未完成执行。 | 查看规则变更计划、执行结果和日志；人工执行后再发起校验。 |
+| 敏感输入无法传递 | 规则变更需要密钥或凭证。 | 通过客户端、密钥管理系统或运维控制通道取得真实值，再在受保护调用或人工执行环节传入。 |
 
 补充说明：
 
 - `username` 和 `driverClassName` 必须显式写出且不能为空；无密码账号可以省略 `password` 或写 `""`。
-- `MCP-Session-Id` 和 `MCP-Protocol-Version` 来自 `initialize` 响应头，关闭会话后不能复用。
-- 使用 `manual-only` 后，应先人工执行返回的 SQL 或 DistSQL，再调用校验工具。
 - 人工执行包中的密钥占位符应由执行人员在受控环境替换。
+- 开发者需要排查协议请求时，可参考[开发者附录](../developer-appendix/)。
 
 ## 连接错误分类
 
@@ -43,34 +44,22 @@ weight = 7
 | `connection_failed` | 连接失败，但无法归类为更具体的原因。 |
 | `database_not_visible` | 指定逻辑库对当前连接不可见。 |
 
-## SQL 工具选择
+## SQL 执行建议
 
-| SQL 类型 | 工具 | 建议 |
-| --- | --- | --- |
-| `SELECT` | `database_gateway_execute_query` | 用于只读查询。 |
-| `EXPLAIN ANALYZE` | `database_gateway_execute_query` | 仅在目标逻辑库能力允许时使用。 |
-| DML、DDL、DCL、事务控制、savepoint | `database_gateway_execute_update` | 先用 `execution_mode=preview` 查看副作用，再决定是否执行。 |
+| SQL 类型 | 建议 |
+| --- | --- |
+| `SELECT` | 用于只读查询，建议限制返回行数。 |
+| `EXPLAIN ANALYZE` | 仅在目标逻辑库能力允许时使用。 |
+| DML、DDL、DCL、事务控制、savepoint | 先预览并审查副作用，再决定是否执行。 |
 
-`database_gateway_execute_update` 的预览参数：
-
-```json
-{"execution_mode":"preview"}
-```
-
-确认后执行：
-
-```json
-{"execution_mode":"execute"}
-```
-
-## 诊断信息
+## 提供给管理员或排障人员的信息
 
 报告问题时建议提供：
 
 - 启动命令。
 - MCP 配置文件，注意移除密码、密钥和令牌。
 - 传输方式和端点。
-- 是否已完成 `initialize`，不要公开真实 `MCP-Session-Id`。
-- 工具或资源请求体。
+- AI 应用中的 MCP Server 配置摘要。
+- 用户输入的自然语言任务。
 - 错误响应内容，包含错误分类和提示信息。
 - `logs/mcp.log` 中相关错误。

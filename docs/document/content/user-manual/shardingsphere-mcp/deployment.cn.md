@@ -57,7 +57,7 @@ docker run --rm -p 18088:18088 \
 
 根据目标能力边界配置 `runtimeDatabases`：
 
-- 使用 ShardingSphere 规则能力或功能插件工作流时，指向用户已准备好的 ShardingSphere-Proxy 逻辑库。
+- 使用 ShardingSphere 规则能力或规则变更流程时，指向用户已准备好的 ShardingSphere-Proxy 逻辑库。
 - 仅使用通用 JDBC 元数据、元数据搜索和受控 SQL 能力时，可以指向任意可连接的 JDBC 数据库。
 
 ## 安全部署建议
@@ -80,4 +80,4 @@ HTTP 绑定建议：
 ## 日志
 
 - HTTP 模式：查看启动终端和 `logs/mcp.log`。
-- STDIO 模式：stdout 专用于 MCP 协议帧，诊断信息查看 stderr 或 `logs/mcp.log`。
+- STDIO 模式：不要把标准输出作为日志查看入口，诊断信息查看 stderr 或 `logs/mcp.log`。
