@@ -68,7 +68,7 @@ runtimeDatabases:
 
 - 连接 ShardingSphere-Proxy 时，用户看到的是 ShardingSphere 逻辑库，不是底层物理存储单元。
 - 连接真实数据库时，用户看到的是该 JDBC 目标的元数据，不代表 ShardingSphere 规则状态。
-- Schema、table、view、index 和 sequence 等元数据依赖目标数据库的 JDBC 元数据；Proxy 和真实数据库的可见结果可能不同。
+- 模式、表、视图、索引和序列等元数据依赖目标数据库的 JDBC 元数据；Proxy 和真实数据库的可见结果可能不同。
 - 如果目标 JDBC 驱动没有随发行包提供，请把驱动 jar 放入 `plugins/`。
 
 ## 连接目标与能力边界
@@ -86,7 +86,7 @@ runtimeDatabases:
 
 该模式受 Proxy 能力限制：
 
-- JDBC 元数据、`information_schema`、索引、sequence 和列类型信息以 Proxy 暴露结果为准，不等同于完整底层物理库元数据。
+- JDBC 元数据、`information_schema`、索引、序列和列类型信息以 Proxy 暴露结果为准，不等同于完整底层物理库元数据。
 - 物理列、物理索引和多存储节点一致性不作为 MCP 自动确认的稳定契约。
 - 可用规则变更语句、规则类型和算法插件取决于 Proxy 版本、已安装插件和当前账号权限。
 - 物理变更语句应先审查；只有 Proxy 能安全路由并执行时才适合自动应用。
@@ -95,7 +95,7 @@ runtimeDatabases:
 
 该模式只适合把 MCP 作为通用 JDBC 元数据和 SQL 入口使用，适合以下能力：
 
-- 浏览 database、schema、table、view、column、index 和 sequence 等 JDBC 元数据。
+- 浏览数据库、模式、表、视图、列、索引和序列等 JDBC 元数据。
 - 搜索元数据。
 - 执行通用只读查询，或在明确授权后执行普通 DML、DDL、DCL。
 
