@@ -53,26 +53,26 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class FirebirdFreeStatementCommandExecutorTest {
-
+    
     private static final int CONNECTION_ID = 1;
-
+    
     private static final int STATEMENT_ID = 1;
-
+    
     @Mock
     private FirebirdFreeStatementPacket packet;
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
-
+    
     @Mock
     private ServerPreparedStatementRegistry registry;
-
+    
     @Mock
     private ProxyDatabaseConnectionManager connectionManager;
-
+    
     @Mock
     private ProxyBackendHandler proxyBackendHandler;
-
+    
     @BeforeEach
     void setUp() {
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
@@ -82,13 +82,13 @@ class FirebirdFreeStatementCommandExecutorTest {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(connectionManager);
     }
-
+    
     @AfterEach
     void tearDown() {
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("preparedStatementFreeOptions")
     void assertExecuteWithPreparedStatementFreeOption(final String scenario, final int option) {
@@ -102,7 +102,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         verify(connectionManager).unmarkResourceInUse(proxyBackendHandler);
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
     }
-
+    
     @Test
     void assertExecuteWithClose() {
         when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.CLOSE);
@@ -112,7 +112,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         verify(connectionSession, never()).invalidateFirebirdPreparedStatementCache(STATEMENT_ID);
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("preparedStatementFreeOptions")
     void assertExecuteWithPreparedStatementFreeOptionWithoutFetchHandler(final String scenario, final int option) {
@@ -124,13 +124,13 @@ class FirebirdFreeStatementCommandExecutorTest {
         verify(connectionSession.getConnectionContext()).clearCursorContext();
         verify(connectionManager, never()).unmarkResourceInUse(proxyBackendHandler);
     }
-
+    
     @Test
     void assertExecuteWithUnknownOption() {
         when(packet.getOption()).thenReturn(999);
         assertThrows(FirebirdProtocolException.class, new FirebirdFreeStatementCommandExecutor(packet, connectionSession)::execute);
     }
-
+    
     private static Stream<Arguments> preparedStatementFreeOptions() {
         return Stream.of(
                 Arguments.of("execute_dropCleansPreparedStatementAndFetchResources", FirebirdFreeStatementPacket.DROP),

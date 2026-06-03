@@ -56,9 +56,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(DatabaseTypedSPILoader.class)
 class JDBCBackendStatementTest {
-
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-
+    
     @Test
     void assertCreateStorageResourceWithStatementSetsFetchSizeOnlyInMemoryStrictly() throws SQLException {
         JDBCBackendStatement backendStatement = new JDBCBackendStatement();
@@ -74,7 +74,7 @@ class JDBCBackendStatementTest {
         assertThat(backendStatement.createStorageResource(connection, ConnectionMode.CONNECTION_STRICTLY, statementOption, databaseType), is(statement));
         verifyNoMoreInteractions(fetchSizeSetter);
     }
-
+    
     @Test
     void assertCreateStorageResourceWithPreparedStatement() throws SQLException {
         JDBCBackendStatement backendStatement = new JDBCBackendStatement();
@@ -97,7 +97,7 @@ class JDBCBackendStatementTest {
                 new ExecutionUnit("ds", new SQLUnit(sql, Collections.emptyList())), connection, 0, ConnectionMode.CONNECTION_STRICTLY, new StatementOption(false), databaseType);
         assertThat(actualWithoutGeneratedKeys, is(preparedStatement));
     }
-
+    
     @Test
     void assertCreateStorageResourceReusesPreparedStatementForSameFirebirdStatementId() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -121,7 +121,7 @@ class JDBCBackendStatementTest {
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(1, 2);
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("nonFirebirdDatabaseTypes")
     void assertCreateStorageResourceWithoutPreparedStatementCacheForNonFirebird(final String scenario, final String databaseTypeName) throws SQLException {
@@ -140,7 +140,7 @@ class JDBCBackendStatementTest {
                 new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, nonFirebirdDatabaseType);
         verify(connection, times(2)).prepareStatement(sql);
     }
-
+    
     @Test
     void assertCreateStorageResourceWithDifferentFirebirdPreparedStatementId() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -161,7 +161,7 @@ class JDBCBackendStatementTest {
                 new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
         verify(connection, times(2)).prepareStatement(sql);
     }
-
+    
     @Test
     void assertCreateNewPreparedStatementAfterCacheInvalidation() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -185,7 +185,7 @@ class JDBCBackendStatementTest {
         verify(connection, times(2)).prepareStatement(sql);
         verify(firstPreparedStatement).close();
     }
-
+    
     private static Stream<Arguments> nonFirebirdDatabaseTypes() {
         return Stream.of(
                 Arguments.of("createStorageResource_mysqlDoesNotUsePreparedStatementCache", "MySQL"),

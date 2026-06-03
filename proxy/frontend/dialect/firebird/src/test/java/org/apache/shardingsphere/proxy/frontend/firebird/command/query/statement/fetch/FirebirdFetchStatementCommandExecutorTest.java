@@ -49,25 +49,25 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdFetchStatementCommandExecutorTest {
-
+    
     private static final int CONNECTION_ID = 1;
-
+    
     private static final int STATEMENT_ID = 1;
-
+    
     @Mock
     private FirebirdFetchStatementPacket packet;
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
-
+    
     @Mock
     private ProxyDatabaseConnectionManager databaseConnectionManager;
-
+    
     @Mock
     private ProxyBackendHandler proxyBackendHandler;
-
+    
     private FirebirdFetchStatementCommandExecutor executor;
-
+    
     @BeforeEach
     void setup() {
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
@@ -75,18 +75,18 @@ class FirebirdFetchStatementCommandExecutorTest {
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         when(packet.getStatementId()).thenReturn(STATEMENT_ID);
     }
-
+    
     @AfterEach
     void tearDown() {
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
     }
-
+    
     @Test
     void assertExecuteWhenNoBackendHandler() throws SQLException {
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         assertNoMoreRowsResponse(executor.execute());
     }
-
+    
     @Test
     void assertExecuteWhenNoBackendHandlerAfterPreparedStatementFree() throws SQLException {
         FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
@@ -94,7 +94,7 @@ class FirebirdFetchStatementCommandExecutorTest {
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         assertNoMoreRowsResponse(executor.execute());
     }
-
+    
     @Test
     void assertExecuteWithRowsAndFetchEnd() throws SQLException {
         FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
@@ -119,7 +119,7 @@ class FirebirdFetchStatementCommandExecutorTest {
         assertThat(actualEndPacket.getCount(), is(0));
         assertNull(actualEndPacket.getRow());
     }
-
+    
     @Test
     void assertExecuteStopsWhenRowsExhausted() throws SQLException {
         FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
@@ -141,7 +141,7 @@ class FirebirdFetchStatementCommandExecutorTest {
         assertNull(actualNoMorePacket.getRow());
         verify(databaseConnectionManager).unmarkResourceInUse(proxyBackendHandler);
     }
-
+    
     private void assertNoMoreRowsResponse(final Collection<DatabasePacket> actualPackets) {
         Iterator<DatabasePacket> packetIterator = actualPackets.iterator();
         FirebirdFetchResponsePacket actualPacket = (FirebirdFetchResponsePacket) packetIterator.next();

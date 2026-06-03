@@ -32,29 +32,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class FirebirdFetchStatementCacheTest {
-
+    
     private final FirebirdFetchStatementCache cache = FirebirdFetchStatementCache.getInstance();
-
+    
     private Map<Integer, Map<Integer, ProxyBackendHandler>> statementRegistry;
-
+    
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         statementRegistry = (Map<Integer, Map<Integer, ProxyBackendHandler>>) Plugins.getMemberAccessor().get(FirebirdFetchStatementCache.class.getDeclaredField("statementRegistry"), cache);
         statementRegistry.clear();
     }
-
+    
     @Test
     void assertGetInstance() {
         assertThat(FirebirdFetchStatementCache.getInstance(), is(cache));
     }
-
+    
     @Test
     void assertRegisterConnection() {
         cache.registerConnection(1);
         assertTrue(statementRegistry.containsKey(1));
     }
-
+    
     @Test
     void assertRegisterStatement() {
         ProxyBackendHandler handler = mock(ProxyBackendHandler.class);
@@ -62,7 +62,7 @@ class FirebirdFetchStatementCacheTest {
         cache.registerStatement(1, 10, handler);
         assertThat(statementRegistry.get(1).get(10), is(handler));
     }
-
+    
     @Test
     void assertGetFetchBackendHandler() {
         ProxyBackendHandler handler = mock(ProxyBackendHandler.class);
@@ -71,12 +71,12 @@ class FirebirdFetchStatementCacheTest {
         assertThat(cache.getFetchBackendHandler(1, 10), is(handler));
         assertNull(cache.getFetchBackendHandler(1, 11));
     }
-
+    
     @Test
     void assertGetFetchBackendHandlerWithoutConnection() {
         assertNull(cache.getFetchBackendHandler(1, 10));
     }
-
+    
     @Test
     void assertUnregisterStatement() {
         cache.registerConnection(1);
@@ -84,13 +84,13 @@ class FirebirdFetchStatementCacheTest {
         cache.unregisterStatement(1, 10);
         assertNull(cache.getFetchBackendHandler(1, 10));
     }
-
+    
     @Test
     void assertUnregisterStatementWithoutConnection() {
         cache.unregisterStatement(1, 10);
         assertFalse(statementRegistry.containsKey(1));
     }
-
+    
     @Test
     void assertUnregisterConnection() {
         cache.registerConnection(1);

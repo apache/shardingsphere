@@ -35,11 +35,11 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class FirebirdFreeStatementCommandExecutor implements CommandExecutor {
-
+    
     private final FirebirdFreeStatementPacket packet;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public Collection<DatabasePacket> execute() {
         switch (packet.getOption()) {
@@ -57,7 +57,7 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
         }
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
-
+    
     private void cleanupStatementResources() {
         connectionSession.getConnectionContext().clearCursorContext();
         ProxyBackendHandler proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), packet.getStatementId());
