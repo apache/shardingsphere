@@ -64,6 +64,14 @@ import java.util.Optional;
  * <p>The evaluator is invoked only when the parser produces a {@code TypeCastExpression}, which is emitted
  * exclusively by the PostgreSQL and openGauss visitors; MySQL / Oracle / SQL Server {@code CAST(...)} syntax becomes
  * a {@code FunctionSegment} and bypasses this evaluator entirely, so there is no cross-dialect contamination risk.</p>
+ *
+ * <p>End-to-end coverage for fractional float-source casts is restricted to explicit type chains such as
+ * {@code 2.5::float8::int4} where both routing and backend evaluate the same source type. A parameter-marker
+ * {@code ?::int4} bound with a fractional {@link Double} / {@link Float} value can diverge at execution when the SQL
+ * rewriter inlines the parameter as a numeric literal: PostgreSQL then parses the literal as {@code numeric} and
+ * routes through {@code numeric_int4} ({@link RoundingMode#HALF_UP}) instead of {@code ftoi4}
+ * ({@link Math#rint(double)}). The unit suite documents the wire-protocol-faithful routing semantics here; aligning
+ * routing with the rewriter-inlined backend path is left for follow-up rewriter work.</p>
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLCastEvaluator {
