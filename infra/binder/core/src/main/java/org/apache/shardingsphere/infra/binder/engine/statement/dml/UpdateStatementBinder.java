@@ -46,14 +46,25 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
         WithSegment boundWith = sqlStatement.getWith().map(optional -> WithSegmentBinder.bind(optional, binderContext, outerTableBinderContexts)).orElse(null);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        TableSegment boundFrom = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
-        TableSegment boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, outerTableBinderContexts);
+        TableSegment boundFrom;
+        TableSegment boundTable;
+        if (isSQLServerUpdateFromAlias(sqlStatement)) {
+            boundFrom = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+            boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, outerTableBinderContexts);
+        } else {
+            boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, outerTableBinderContexts);
+            boundFrom = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+        }
         SetAssignmentSegment boundSetAssignment = sqlStatement.getAssignment()
                 .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         OrderBySegment boundOrderBy = sqlStatement.getOrderBy()
                 .map(optional -> OrderBySegmentBinder.bind(optional, binderContext, tableBinderContexts, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         return copy(sqlStatement, boundWith, boundTable, boundFrom, boundSetAssignment, boundWhere, boundOrderBy);
+    }
+    
+    private boolean isSQLServerUpdateFromAlias(final UpdateStatement sqlStatement) {
+        return sqlStatement.getFrom().isPresent() && "SQLServer".equalsIgnoreCase(sqlStatement.getDatabaseType().getType());
     }
     
     private UpdateStatement copy(final UpdateStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final TableSegment boundFrom,

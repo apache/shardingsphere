@@ -158,6 +158,9 @@ public final class SimpleTableSegmentBinder {
         if (!updateStatement.getFrom().isPresent()) {
             return false;
         }
+        if (!isSupportUpdateTargetTableAlias(binderContext)) {
+            return false;
+        }
         if (!(updateStatement.getTable() instanceof SimpleTableSegment)) {
             return false;
         }
@@ -168,6 +171,10 @@ public final class SimpleTableSegmentBinder {
             return false;
         }
         return tableBinderContexts.containsKey(CaseInsensitiveString.of(tableNameValue));
+    }
+    
+    private static boolean isSupportUpdateTargetTableAlias(final SQLStatementBinderContext binderContext) {
+        return "SQLServer".equalsIgnoreCase(binderContext.getSqlStatement().getDatabaseType().getType());
     }
     
     private static SimpleTableSegment bindUpdateTargetTableAlias(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext,

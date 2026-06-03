@@ -313,12 +313,35 @@ public final class TableExtractor {
      * @param updateStatement update statement.
      */
     public void extractTablesFromUpdate(final UpdateStatement updateStatement) {
-        extractTablesFromTableSegment(updateStatement.getTable());
+        if (!isUpdateTargetTableAlias(updateStatement)) {
+            extractTablesFromTableSegment(updateStatement.getTable());
+        }
         updateStatement.getFrom().ifPresent(this::extractTablesFromTableSegment);
         updateStatement.getSetAssignment().getAssignments().forEach(each -> extractTablesFromExpression(each.getColumns().get(0)));
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
         }
+    }
+    
+    private boolean isUpdateTargetTableAlias(final UpdateStatement updateStatement) {
+        if (!updateStatement.getFrom().isPresent() || !"SQLServer".equalsIgnoreCase(updateStatement.getDatabaseType().getType())) {
+            return false;
+        }
+        if (!(updateStatement.getTable() instanceof SimpleTableSegment)) {
+            return false;
+        }
+        String targetName = ((SimpleTableSegment) updateStatement.getTable()).getTableName().getIdentifier().getValue();
+        return isAliasInFromClause(targetName, updateStatement.getFrom().get());
+    }
+    
+    private boolean isAliasInFromClause(final String targetName, final TableSegment fromSegment) {
+        if (fromSegment instanceof SimpleTableSegment) {
+            return targetName.equalsIgnoreCase(((SimpleTableSegment) fromSegment).getAliasName().orElse(null));
+        }
+        if (fromSegment instanceof JoinTableSegment) {
+            return isAliasInFromClause(targetName, ((JoinTableSegment) fromSegment).getLeft()) || isAliasInFromClause(targetName, ((JoinTableSegment) fromSegment).getRight());
+        }
+        return false;
     }
     
     /**

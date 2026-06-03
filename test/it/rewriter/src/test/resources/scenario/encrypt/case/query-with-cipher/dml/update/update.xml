@@ -95,8 +95,13 @@
         <output sql="UPDATE `t_account_bak` SET `account_id` = ?, `cipher_certificate_number` = ?, `assisted_query_certificate_number` = ?, `like_query_certificate_number` = ?, `cipher_password` = ?, `assisted_query_password` = ?, `like_query_password` = ?, `cipher_amount` = ?, `status` = ? WHERE `account_id` = ? AND `assisted_query_certificate_number` = ? AND `assisted_query_password` = ? AND `cipher_amount` = ? AND `status` = ?" parameters="1, encrypt_cert, assisted_query_cert, like_query_cert, encrypt_pwd, assisted_query_pwd, like_query_pwd, encrypt_amt, OK, 2, assisted_query_cert1, assisted_query_pwd1, encrypt_amt1, OK1" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="update_scrap_reason_name_from_join_for_literals" db-types="SQLServer">
+    <rewrite-assertion id="om_jupdate_scrap_reason_name_froin_for_literals" db-types="SQLServer">
         <input sql="UPDATE sr SET sr.Name += ' - tool malfunction', sr.Remark = 'tool malfunction' FROM dbo.ScrapReason AS sr JOIN dbo.WorkOrder AS wo ON sr.ScrapReasonID = wo.ScrapReasonID AND wo.ScrappedQty &gt; 300" />
         <output sql="UPDATE sr SET sr.Name += ' - tool malfunction', [remark_cipher] = 'encrypt_tool malfunction' FROM dbo.ScrapReason AS sr JOIN dbo.WorkOrder AS wo ON sr.ScrapReasonID = wo.ScrapReasonID AND wo.ScrappedQty &gt; 300" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_scrap_reason_name_from_join_for_literals" db-types="PostgreSQL,openGauss">
+        <input sql="UPDATE ScrapReason AS sr SET Name = Name || ' - tool malfunction', Remark = 'tool malfunction' FROM WorkOrder AS wo WHERE sr.ScrapReasonID = wo.ScrapReasonID AND wo.ScrappedQty &gt; 300" />
+        <output sql="UPDATE ScrapReason AS sr SET Name = Name || ' - tool malfunction', &quot;remark_cipher&quot; = 'encrypt_tool malfunction' FROM WorkOrder AS wo WHERE sr.ScrapReasonID = wo.ScrapReasonID AND wo.ScrappedQty &gt; 300" />
     </rewrite-assertion>
 </rewrite-assertions>
