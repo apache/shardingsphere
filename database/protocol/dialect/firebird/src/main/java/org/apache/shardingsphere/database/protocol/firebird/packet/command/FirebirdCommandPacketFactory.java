@@ -105,7 +105,7 @@ public final class FirebirdCommandPacketFactory {
             case FREE_STATEMENT:
                 return new FirebirdFreeStatementPacket(payload);
             case BATCH_CREATE:
-                return new FirebirdBatchCreateCommandPacket(payload, connectionId);
+                return new FirebirdBatchCreateCommandPacket(payload);
             case BATCH_MSG:
                 return new FirebirdBatchSendMessageCommandPacket();
             case BATCH_EXEC:

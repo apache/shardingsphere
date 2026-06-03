@@ -66,6 +66,9 @@ class FirebirdCommandPacketFactoryTest {
     @MethodSource("newInstanceArguments")
     void assertNewInstance(final String name, final FirebirdCommandPacketType commandPacketType, final Class<? extends FirebirdCommandPacket> expectedPacketType) {
         lenient().when(payload.readString()).thenReturn("");
+        if (FirebirdCommandPacketType.BATCH_CREATE == commandPacketType) {
+            lenient().when(payload.readBuffer().isReadable()).thenReturn(true);
+        }
         assertThat(FirebirdCommandPacketFactory.newInstance(commandPacketType, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13, 1), isA(expectedPacketType));
     }
     

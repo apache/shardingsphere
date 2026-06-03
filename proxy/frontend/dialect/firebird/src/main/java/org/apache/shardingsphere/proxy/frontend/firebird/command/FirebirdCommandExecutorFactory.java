@@ -45,9 +45,9 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdUnsupportedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCancelCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCreateCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchExecuteCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchReleaseCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdCreateBatchCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdSendBatchMessageCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdCancelBlobCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdCreateBlobCommandExecutor;
@@ -124,7 +124,7 @@ public final class FirebirdCommandExecutorFactory {
             case FREE_STATEMENT:
                 return new FirebirdFreeStatementCommandExecutor((FirebirdFreeStatementPacket) commandPacket, connectionSession);
             case BATCH_CREATE:
-                return new FirebirdCreateBatchCommandExecutor((FirebirdBatchCreateCommandPacket) commandPacket, connectionSession);
+                return new FirebirdBatchCreateCommandExecutor((FirebirdBatchCreateCommandPacket) commandPacket, connectionSession);
             case BATCH_MSG:
                 return new FirebirdSendBatchMessageCommandExecutor();
             case BATCH_EXEC:
