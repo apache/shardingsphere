@@ -4,7 +4,6 @@ weight = 2
 +++
 
 This page describes the database tasks that users can complete through natural language, and the usage boundaries when connecting to ShardingSphere-Proxy or a regular database.
-For protocol-level integration details, see the [Developer Appendix](../developer-appendix/).
 
 ## Connection Targets
 
@@ -62,14 +61,14 @@ Usage boundaries:
 | Search by object type | "Find tables and views whose names contain `user`." | Proxy or regular database | Narrow the search to tables, views, columns, or other object types. |
 | Continue from search results | "Open the `orders` table found earlier and show columns and indexes." | Proxy or regular database | Search results can provide context for follow-up natural-language tasks. |
 
-## SQL Execution
+## Queries and Change Preview
 
 | Task | Natural language example | Connection target | User focus |
 | --- | --- | --- | --- |
-| Run a read-only query | "Query the first 10 rows from `orders`." | Proxy or regular database | Use for sample data inspection or SQL result validation. |
+| Run a query | "Query the first 10 rows from `orders`." | Proxy or regular database | Use for sample data inspection or query result validation. |
 | Limit returned rows | "Query the first 100 rows from `orders` and do not return more." | Proxy or regular database | Avoid returning too much data. |
-| Preview side-effecting SQL | "Preview this change SQL without executing it." | Proxy or regular database | Review impact before execution. |
-| Execute side-effecting SQL after confirmation | "Confirm and execute the SQL that was just previewed." | Proxy or regular database | Requires confirmation that side effects were reviewed. |
+| Preview an operation that may change data or rules | "Preview this change without executing it." | Proxy or regular database | Review impact before execution. |
+| Confirm a previewed change | "Confirm and execute the change that was just previewed." | Proxy or regular database | Requires confirmation that side effects were reviewed. |
 
 ## ShardingSphere Rule Changes
 

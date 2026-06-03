@@ -53,7 +53,7 @@ runtimeDatabases:
 
 | *名称* | *说明* |
 | --- | --- |
-| `databaseType` (+) | 连接端点的数据库协议或方言类型，例如 `MySQL` 或 `PostgreSQL`。它用于正确读取目标数据库元数据，不表示连接目标一定是真实数据库或 ShardingSphere-Proxy。 |
+| `databaseType` (+) | 连接端点的数据库协议或方言类型，例如 `MySQL` 或 `PostgreSQL`。它影响元数据识别和 SQL 能力判断，不表示连接目标一定是真实数据库或 ShardingSphere-Proxy。 |
 | `jdbcUrl` (+) | MCP Server 连接运行时数据库的 JDBC URL；使用 ShardingSphere 规则能力时应指向 Proxy 逻辑库。 |
 | `username` (+) | 连接运行时数据库的用户名，通常是 ShardingSphere-Proxy 逻辑库用户名。 |
 | `password` (?) | 连接运行时数据库的密码。 |
@@ -71,39 +71,25 @@ runtimeDatabases:
 - 模式、表、视图、索引和序列等元数据依赖目标数据库的 JDBC 元数据；Proxy 和真实数据库的可见结果可能不同。
 - 如果目标 JDBC 驱动没有随发行包提供，请把驱动 jar 放入 `plugins/`。
 
-## 连接目标与能力边界
+## 连接目标选择
 
-`runtimeDatabases` 当前可以配置任意可用的 JDBC URL。不同连接目标的语义不同，能力边界也不同。
+`runtimeDatabases` 可以配置任意可连接的 JDBC URL。用户能看到的数据库对象和可执行的治理任务取决于连接目标。
 
 ### 连接 ShardingSphere-Proxy 逻辑库
 
-这是使用 ShardingSphere 规则能力时的推荐连接方式。该模式面向 Proxy 暴露的逻辑库和逻辑 SQL 视图，适合使用以下能力：
+如果需要使用 ShardingSphere 规则状态、数据加密、数据脱敏或规则变更能力，应连接 ShardingSphere-Proxy 逻辑库。
 
-- 读取 ShardingSphere 逻辑库、逻辑表和逻辑列元数据。
-- 查询 Proxy 可见的加密、脱敏算法插件。
-- 查询、规划、应用和校验加密或脱敏规则。
-- 通过 Proxy 执行逻辑 SQL 和规则变更生成的待执行语句。
-
-该模式受 Proxy 能力限制：
-
-- JDBC 元数据、`information_schema`、索引、序列和列类型信息以 Proxy 暴露结果为准，不等同于完整底层物理库元数据。
-- 物理列、物理索引和多存储节点一致性不作为 MCP 自动确认的稳定契约。
-- 可用规则变更语句、规则类型和算法插件取决于 Proxy 版本、已安装插件和当前账号权限。
-- 物理变更语句应先审查；只有 Proxy 能安全路由并执行时才适合自动应用。
+此时用户看到的是 Proxy 暴露的逻辑库、逻辑表和逻辑列。
+Proxy 可见元数据可能不同于底层物理库的完整结构；涉及物理列、索引或规则变更的计划应先审查再执行。
 
 ### 连接真实数据库
 
-该模式只适合把 MCP 作为通用 JDBC 元数据和 SQL 入口使用，适合以下能力：
+如果只需要查看普通数据库元数据、搜索对象或执行受控查询，可以连接真实数据库。
 
-- 浏览数据库、模式、表、视图、列、索引和序列等 JDBC 元数据。
-- 搜索元数据。
-- 执行通用只读查询，或在明确授权后执行普通 DML、DDL、DCL。
+此时用户看到的是目标数据库自身元数据，不代表 ShardingSphere 规则状态。
+数据加密、数据脱敏等依赖 ShardingSphere 规则的任务不适用于真实数据库连接。
 
-该模式不提供 ShardingSphere 规则能力：
-
-- 不能发现 Proxy 中可见的加密或脱敏算法插件。
-- 不能查询、规划、应用或校验 ShardingSphere 加密、脱敏规则。
-- 不能使用依赖 ShardingSphere 规则变更语句的能力；真实数据库通常不识别 ShardingSphere 规则变更语句。
+不同连接目标支持的自然语言任务见[能力清单](../capabilities/)。
 
 ## 插件目录
 

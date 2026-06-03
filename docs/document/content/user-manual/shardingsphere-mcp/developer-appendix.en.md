@@ -1,10 +1,41 @@
 +++
-title = "Developer Appendix"
+title = "Custom Integration Appendix"
 weight = 9
 +++
 
 This page is for developers who build custom MCP integrations, debug protocol requests, or troubleshoot client adaptation issues.
 Most users do not need this page. Use [Quick Start](../quick-start/), [Client Integration](../client-integration/), and [Capability Catalog](../capabilities/) for normal usage.
+
+## Generic Client Configuration Examples
+
+If the AI application you use does not have a dedicated page, choose HTTP or STDIO configuration according to that client's own documentation.
+
+HTTP example:
+
+```json
+{
+  "mcpServers": {
+    "shardingsphere-http": {
+      "url": "http://127.0.0.1:18088/mcp"
+    }
+  }
+}
+```
+
+STDIO example:
+
+```json
+{
+  "mcpServers": {
+    "shardingsphere": {
+      "command": "/path/to/apache-shardingsphere-mcp/bin/start.sh",
+      "args": ["/path/to/apache-shardingsphere-mcp/conf/mcp-stdio.yaml"]
+    }
+  }
+}
+```
+
+Replace `/path/to/apache-shardingsphere-mcp` with the actual distribution directory.
 
 ## Protocol Capability Discovery
 

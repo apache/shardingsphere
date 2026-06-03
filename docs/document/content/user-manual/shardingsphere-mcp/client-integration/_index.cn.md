@@ -20,51 +20,12 @@ weight = 4
 - [Codex](./codex/)：适合在 Codex CLI 或 IDE 扩展中使用 ShardingSphere-MCP。
 - [Claude Code](./claude-code/)：适合在 Claude Code 项目或用户配置中使用 ShardingSphere-MCP。
 
-## 选择传输方式
+## 选择接入方式
 
-- HTTP 适合 MCP Server 独立启动，AI 应用通过固定端点访问的场景。
-- STDIO 适合本地 AI 应用拉起 ShardingSphere-MCP 子进程的场景。
-
-## HTTP 配置
-
-将下面片段写入 AI 应用的 MCP Server 配置；具体文件位置由应用决定。
-`url` 指向已经启动的 HTTP MCP Server。
-
-```json
-{
-  "mcpServers": {
-    "shardingsphere-http": {
-      "url": "http://127.0.0.1:18088/mcp"
-    }
-  }
-}
-```
-
-不同 AI 应用的配置文件位置和字段名称可能不同，请以应用自身文档为准。
-Codex 和 Claude Code 的配置示例见本章对应子页面。
-
-## STDIO 配置
-
-将下面片段写入 AI 应用的 MCP Server 配置；具体文件位置由应用决定。
-`command` 指向发行包内的启动脚本，`args` 指向 STDIO 配置文件。
-
-```json
-{
-  "mcpServers": {
-    "shardingsphere": {
-      "command": "/path/to/apache-shardingsphere-mcp/bin/start.sh",
-      "args": ["/path/to/apache-shardingsphere-mcp/conf/mcp-stdio.yaml"]
-    }
-  }
-}
-```
-
-将 `/path/to/apache-shardingsphere-mcp` 替换为实际发行包目录。
-
-STDIO 模式下：
-
-- 诊断日志写到 stderr 或 `logs/mcp.log`。
-- 配置中的 `command` 和 `args` 应指向发行包内的启动脚本和 STDIO 配置文件。
+- 如果 ShardingSphere-MCP 已经独立启动，或者需要多个应用访问同一个服务，选择 HTTP 接入方式。
+- 如果只在本地开发环境使用，并希望 AI 应用在需要时启动 ShardingSphere-MCP，选择 STDIO 接入方式。
+- 如果使用 Codex 或 Claude Code，优先参考本章对应子页面。
+- 如果使用其他客户端，请按客户端自身文档配置 ShardingSphere-MCP 的地址或启动脚本。
 
 ## 集成后的使用方式
 
@@ -78,4 +39,4 @@ AI 应用完成 MCP Server 配置后，用户在对话中直接描述任务。
 - 规划一个数据加密或数据脱敏规则，先预览不要执行。
 
 涉及 SQL 执行、规则变更或规则变更计划执行时，应先审查预览内容，再确认执行。
-自研集成或协议调试场景见[开发者附录](../developer-appendix/)。
+自研集成或协议调试场景见[自研集成附录](../developer-appendix/)。

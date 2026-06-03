@@ -76,17 +76,17 @@ For the general review flow of rule changes, see [Rule Change Flow](../plugin-wo
 - Supports ShardingSphere-Proxy logical databases only.
 - This feature does not apply to direct physical database connections.
 
-### MCP plugin boundaries
+### Capability boundaries
 
-- The MCP Server does not implement masking algorithms and does not replace the user's judgment on whether a masking strategy satisfies business compliance requirements.
+- ShardingSphere-MCP does not provide masking algorithms and does not replace the user's judgment on whether a masking strategy satisfies business compliance requirements.
 - Planning results are reviewable change plans. Execution still requires user confirmation.
 - Dropping a masking rule removes the rule only. Later queries through Proxy no longer apply that masking rule to the column.
 
-### Proxy-visible metadata boundaries
+### Metadata boundaries
 
 - Logical column and rule validation are based on what Proxy exposes.
 - Direct physical database connections can execute ordinary SQL only and do not represent masking rule state.
 
 ### Identifier handling boundaries
 
-- MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode object names. To keep generated SQL or rule change statements reviewable, object name content must not contain backticks, NUL, carriage returns, or line feeds.
+- ShardingSphere-MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode object names. To keep generated SQL or rule change statements reviewable, object name content must not contain backticks, NUL, carriage returns, or line feeds.

@@ -58,15 +58,15 @@ After a plan is generated, review:
 - Whether keys, credentials, or other sensitive parameters are passed only through placeholders or protected channels.
 - Whether query capability, runtime rules, or existing business SQL may be affected.
 
-## Derived columns and index plans
+## Review Derived Columns and Index Suggestions
 
 Encryption rules may need physical derived columns to store ciphertext or support queries.
-MCP creates derived-column suggestions from the logical column, user intent, and existing rules.
+When a plan contains derived columns or index suggestions, users should confirm whether the real physical table can accept new columns or indexes, and whether the generated names match operational conventions.
 
 - `*_cipher` stores ciphertext and is the default derived column for encryption rules.
-- If equality query is required, `*_assisted_query` is generated. Its index plan is returned when index suggestions are allowed.
+- If equality query is required, the plan may contain `*_assisted_query` and corresponding index suggestions.
 - If LIKE query is required, `*_like_query` is generated for LIKE query scenarios.
-- If a default column name conflicts, the system appends a numeric suffix and returns the final name in the plan.
+- If the plan provides adjusted physical column names, confirm that they do not conflict with existing physical objects.
 
 ## Preview, apply, and validate
 
@@ -88,21 +88,21 @@ For the general review flow of rule changes, see [Rule Change Flow](../plugin-wo
 - Supports ShardingSphere-Proxy logical databases only.
 - This feature does not apply to direct physical database connections.
 
-### MCP plugin boundaries
+### Capability boundaries
 
-- The MCP Server does not implement encryption algorithms and does not replace the user's judgment on whether an encryption strategy satisfies business security requirements.
+- ShardingSphere-MCP does not provide encryption algorithms and does not replace the user's judgment on whether an encryption strategy satisfies business security requirements.
 - Planning results are reviewable change plans. Execution still requires user confirmation.
 - Dropping an encryption rule removes the rule only. It does not restore historical plaintext data, and physical derived columns or indexes still require manual cleanup when they are no longer needed.
 
-### Proxy-visible metadata boundaries
+### Metadata boundaries
 
-- MCP generates derived-column, index, and column-type suggestions from logical metadata exposed by Proxy. It does not inspect every physical database directly.
+- ShardingSphere-MCP generates derived-column, index, and column-type suggestions from logical metadata exposed by Proxy. It does not inspect every physical database directly.
 - Review generated physical change statements against the real physical table structure before applying them.
 
-### ShardingSphere feature boundaries
+### ShardingSphere capability boundaries
 
 - Existing data migration or backfill is not handled.
 
 ### Identifier handling boundaries
 
-- MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode object names. To keep generated SQL or rule change statements reviewable, object name content must not contain backticks, NUL, carriage returns, or line feeds.
+- ShardingSphere-MCP handles quoted, case-sensitive, keyword, whitespace, and Unicode object names. To keep generated SQL or rule change statements reviewable, object name content must not contain backticks, NUL, carriage returns, or line feeds.

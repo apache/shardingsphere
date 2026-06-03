@@ -65,20 +65,14 @@ The default configuration file is `conf/mcp-http.yaml`, and the default endpoint
 
 ## Connect an AI Application
 
-Configure the HTTP MCP Server address in the AI application, IDE extension, or agent platform:
+Choose an MCP-capable AI application, IDE extension, or agent platform, and configure the HTTP MCP Server address started in the previous step.
 
-```json
-{
-  "mcpServers": {
-    "shardingsphere": {
-      "url": "http://127.0.0.1:18088/mcp"
-    }
-  }
-}
-```
+Typical client configuration examples:
 
-Configuration file locations and field names may differ between AI applications. Follow the documentation of the client you use.
-For more HTTP and STDIO options, see [Client Integration](../client-integration/).
+- [Codex](../client-integration/codex/)
+- [Claude Code](../client-integration/claude-code/)
+
+For other clients, follow their own documentation and use the ShardingSphere-MCP address: `http://127.0.0.1:18088/mcp`.
 
 ## Verify through Natural Language
 

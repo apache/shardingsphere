@@ -24,13 +24,13 @@ It is not a standalone business feature. Users usually enter this flow from a co
 | Apply the change | Confirm automatic execution, or export a manual package for operators. | Side-effecting changes must be confirmed. |
 | Validate the result | Inspect rule state, metadata, and SQL executability after execution. | Confirm that the change has taken effect. |
 
-## Execution Choices
+## Change Execution Choices
 
-| Choice | Changes runtime state | Use case |
+| User wording | What users receive | Focus |
 | --- | --- | --- |
-| Preview only | No | Inspect change content and side-effect scope first. |
-| Execute after review | Yes | Execute the change through the MCP Server after user confirmation. |
-| Manual package | No | Return statements for operators to review and execute manually. |
+| "Preview first, do not execute." | Change content and impact scope only. | Use this to confirm statements, physical columns, index suggestions, and side effects first. |
+| "Confirm and execute the previous plan." | The previewed and confirmed change is executed. | Use this only after the user has completed review. |
+| "Export a manual execution package." | Statements that operators can review and execute manually. | Use this when approval, a change window, or a controlled execution environment is required. |
 
 ## Sensitive Inputs
 
@@ -40,7 +40,7 @@ These values should not be written into ordinary documents, chat records, or log
 Recommended handling:
 
 - Keep placeholders in the plan.
-- Let the client or operator obtain real values through a secret manager, protected environment variable, or controlled operations channel.
+- Let the AI application or operator obtain real values through a secret manager, protected environment variable, or controlled operations channel.
 - Replace placeholders and execute in a controlled environment.
 
 ShardingSphere-MCP does not read secret managers directly.

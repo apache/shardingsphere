@@ -1,10 +1,41 @@
 +++
-title = "开发者附录"
+title = "自研集成附录"
 weight = 9
 +++
 
-本页面向需要自研 MCP 集成、调试协议请求或定位客户端适配问题的开发者。
+本页面面向需要自研 MCP 集成、调试协议请求或定位客户端适配问题的开发者。
 普通用户通常不需要阅读本页，可直接参考[快速开始](../quick-start/)、[客户端集成](../client-integration/)和[能力清单](../capabilities/)。
+
+## 通用客户端配置示例
+
+如果使用的 AI 应用没有专门页面，可按客户端自身文档选择 HTTP 或 STDIO 配置方式。
+
+HTTP 示例：
+
+```json
+{
+  "mcpServers": {
+    "shardingsphere-http": {
+      "url": "http://127.0.0.1:18088/mcp"
+    }
+  }
+}
+```
+
+STDIO 示例：
+
+```json
+{
+  "mcpServers": {
+    "shardingsphere": {
+      "command": "/path/to/apache-shardingsphere-mcp/bin/start.sh",
+      "args": ["/path/to/apache-shardingsphere-mcp/conf/mcp-stdio.yaml"]
+    }
+  }
+}
+```
+
+将 `/path/to/apache-shardingsphere-mcp` 替换为实际发行包目录。
 
 ## 协议能力发现
 
