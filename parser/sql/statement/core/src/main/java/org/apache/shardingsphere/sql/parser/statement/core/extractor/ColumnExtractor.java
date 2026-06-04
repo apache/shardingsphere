@@ -75,49 +75,66 @@ public final class ColumnExtractor {
      */
     public static Collection<ColumnSegment> extract(final ExpressionSegment expression) {
         Collection<ColumnSegment> result = new LinkedHashSet<>();
+        extract(expression, result);
+        return result;
+    }
+    
+    private static void extract(final ExpressionSegment expression, final Collection<ColumnSegment> result) {
         if (expression instanceof ColumnSegment) {
             result.add((ColumnSegment) expression);
+            return;
         }
         if (expression instanceof BinaryOperationExpression) {
             extractColumnsInBinaryOperationExpression((BinaryOperationExpression) expression, result);
+            return;
         }
         if (expression instanceof InExpression) {
             extractColumnsInInExpression((InExpression) expression, result);
+            return;
         }
         if (expression instanceof BetweenExpression) {
             extractColumnsInBetweenExpression((BetweenExpression) expression, result);
+            return;
         }
         if (expression instanceof AggregationProjectionSegment) {
             extractColumnsInAggregationProjectionSegment((AggregationProjectionSegment) expression, result);
+            return;
         }
         if (expression instanceof FunctionSegment) {
             extractColumnsInFunctionSegment((FunctionSegment) expression, result);
+            return;
         }
         if (expression instanceof XmlElementFunctionSegment) {
             extractColumnsInXmlElementFunctionSegment((XmlElementFunctionSegment) expression, result);
+            return;
         }
         if (expression instanceof XmlSerializeFunctionSegment) {
-            result.addAll(extract(((XmlSerializeFunctionSegment) expression).getParameter()));
+            extract(((XmlSerializeFunctionSegment) expression).getParameter(), result);
+            return;
         }
         if (expression instanceof CaseWhenExpression) {
             extractColumnsInCaseWhenExpression((CaseWhenExpression) expression, result);
+            return;
         }
         if (expression instanceof NotExpression) {
-            result.addAll(extract(((NotExpression) expression).getExpression()));
+            extract(((NotExpression) expression).getExpression(), result);
+            return;
         }
         if (expression instanceof UnaryOperationExpression) {
-            result.addAll(extract(((UnaryOperationExpression) expression).getExpression()));
+            extract(((UnaryOperationExpression) expression).getExpression(), result);
+            return;
         }
         if (expression instanceof CollateExpression) {
-            ((CollateExpression) expression).getExpr().ifPresent(optional -> result.addAll(extract(optional)));
+            ((CollateExpression) expression).getExpr().ifPresent(optional -> extract(optional, result));
+            return;
         }
         if (expression instanceof RowExpression) {
             extractColumnsInRowExpression((RowExpression) expression, result);
+            return;
         }
         if (expression instanceof ListExpression) {
             extractColumnsInListExpression((ListExpression) expression, result);
         }
-        return result;
     }
     
     /**
@@ -127,7 +144,7 @@ public final class ColumnExtractor {
      * @return column segments
      */
     public static Collection<ColumnSegment> extractReturnedColumns(final ExpressionSegment expression) {
-        Collection<ColumnSegment> result = new LinkedList<>();
+        Collection<ColumnSegment> result = new LinkedHashSet<>();
         if (expression instanceof ExpressionProjectionSegment) {
             result.addAll(extractReturnedColumns(((ExpressionProjectionSegment) expression).getExpr()));
         }
@@ -153,20 +170,20 @@ public final class ColumnExtractor {
     
     private static void extractColumnsInCaseWhenExpression(final CaseWhenExpression expression, final Collection<ColumnSegment> result) {
         if (null != expression.getCaseExpr()) {
-            result.addAll(extractIncludeColumnSegment(expression.getCaseExpr()));
+            extract(expression.getCaseExpr(), result);
         }
         if (null != expression.getWhenExprs()) {
             for (ExpressionSegment each : expression.getWhenExprs()) {
-                result.addAll(extractIncludeColumnSegment(each));
+                extract(each, result);
             }
         }
         if (null != expression.getThenExprs()) {
             for (ExpressionSegment each : expression.getThenExprs()) {
-                result.addAll(extractIncludeColumnSegment(each));
+                extract(each, result);
             }
         }
         if (null != expression.getElseExpr()) {
-            result.addAll(extractIncludeColumnSegment(expression.getElseExpr()));
+            extract(expression.getElseExpr(), result);
         }
     }
     
@@ -174,8 +191,9 @@ public final class ColumnExtractor {
         Collection<ColumnSegment> result = new LinkedList<>();
         if (expression instanceof ColumnSegment) {
             result.add((ColumnSegment) expression);
+        } else {
+            extract(expression, result);
         }
-        result.addAll(extract(expression));
         return result;
     }
     
@@ -189,7 +207,7 @@ public final class ColumnExtractor {
         if (expression.getLeft() instanceof FunctionSegment) {
             extractColumnsInFunctionSegment((FunctionSegment) expression.getLeft(), result);
         }
-        result.addAll(extract(expression.getRight()));
+        extract(expression.getRight(), result);
     }
     
     private static void extractColumnsInBinaryOperationExpression(final BinaryOperationExpression expression, final Collection<ColumnSegment> result) {
@@ -205,8 +223,8 @@ public final class ColumnExtractor {
         if (expression.getRight() instanceof OuterJoinExpression) {
             result.add(((OuterJoinExpression) expression.getRight()).getColumnName());
         }
-        result.addAll(extract(expression.getLeft()));
-        result.addAll(extract(expression.getRight()));
+        extract(expression.getLeft(), result);
+        extract(expression.getRight(), result);
     }
     
     private static void extractColumnsInBetweenExpression(final BetweenExpression expression, final Collection<ColumnSegment> result) {
@@ -219,9 +237,9 @@ public final class ColumnExtractor {
         if (expression.getAndExpr() instanceof ColumnSegment) {
             result.add((ColumnSegment) expression.getAndExpr());
         }
-        result.addAll(extract(expression.getLeft()));
-        result.addAll(extract(expression.getBetweenExpr()));
-        result.addAll(extract(expression.getAndExpr()));
+        extract(expression.getLeft(), result);
+        extract(expression.getBetweenExpr(), result);
+        extract(expression.getAndExpr(), result);
     }
     
     private static void extractColumnsInRowExpression(final RowExpression expression, final Collection<ColumnSegment> result) {
@@ -229,7 +247,7 @@ public final class ColumnExtractor {
             if (each instanceof ColumnSegment) {
                 result.add((ColumnSegment) each);
             } else {
-                result.addAll(extract(each));
+                extract(each, result);
             }
         }
     }
@@ -239,7 +257,7 @@ public final class ColumnExtractor {
             if (each instanceof ColumnSegment) {
                 result.add((ColumnSegment) each);
             } else {
-                result.addAll(extract(each));
+                extract(each, result);
             }
         }
     }
@@ -249,7 +267,7 @@ public final class ColumnExtractor {
             if (each instanceof ColumnSegment) {
                 result.add((ColumnSegment) each);
             } else {
-                result.addAll(extract(each));
+                extract(each, result);
             }
         }
         expression.getWindow().ifPresent(optional -> extractColumnsInWindowItemSegment(optional, result));
@@ -260,7 +278,7 @@ public final class ColumnExtractor {
             if (each instanceof ColumnSegment) {
                 result.add((ColumnSegment) each);
             } else {
-                result.addAll(extract(each));
+                extract(each, result);
             }
         }
         expression.getWindow().ifPresent(optional -> extractColumnsInWindowItemSegment(optional, result));
@@ -269,14 +287,14 @@ public final class ColumnExtractor {
     private static void extractColumnsInWindowItemSegment(final WindowItemSegment windowItemSegment, final Collection<ColumnSegment> result) {
         if (null != windowItemSegment.getPartitionListSegments()) {
             for (ExpressionSegment each : windowItemSegment.getPartitionListSegments()) {
-                result.addAll(extract(each));
+                extract(each, result);
             }
         }
         if (null != windowItemSegment.getOrderBySegment()) {
             extractColumnsInOrderBySegment(windowItemSegment.getOrderBySegment(), result);
         }
         if (null != windowItemSegment.getFrameClause()) {
-            result.addAll(extract(windowItemSegment.getFrameClause()));
+            extract(windowItemSegment.getFrameClause(), result);
         }
     }
     
@@ -286,17 +304,17 @@ public final class ColumnExtractor {
                 result.add(((ColumnOrderByItemSegment) each).getColumn());
             }
             if (each instanceof ExpressionOrderByItemSegment) {
-                result.addAll(extract(((ExpressionOrderByItemSegment) each).getExpr()));
+                extract(((ExpressionOrderByItemSegment) each).getExpr(), result);
             }
         }
     }
     
     private static void extractColumnsInXmlElementFunctionSegment(final XmlElementFunctionSegment expression, final Collection<ColumnSegment> result) {
         for (ExpressionSegment each : expression.getParameters()) {
-            result.addAll(extract(each));
+            extract(each, result);
         }
         for (ExpressionSegment each : expression.getXmlAttributes()) {
-            result.addAll(extract(each));
+            extract(each, result);
         }
     }
     
