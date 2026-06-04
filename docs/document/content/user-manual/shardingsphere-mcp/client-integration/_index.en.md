@@ -3,39 +3,39 @@ title = "Client Integration"
 weight = 4
 +++
 
-Client integration connects ShardingSphere-MCP to MCP-capable AI applications, IDE extensions, or agent platforms.
-After configuration, users can inspect metadata, run controlled SQL queries, or start database governance tasks through natural language in the application.
+Client integration connects ShardingSphere-MCP to MCP-capable AI clients, product entry points, and platform APIs. After configuration, users can inspect metadata, run controlled SQL queries, or start database governance tasks through natural language in the application.
 
-Use client integration when:
+See the [Capability Catalog](../capabilities/) for supported tasks and usage boundaries.
 
-- An AI application, IDE extension, or agent platform needs to connect to ShardingSphere-MCP.
-- Users need to inspect metadata, run controlled SQL, or plan ShardingSphere rule changes through natural language.
-- A team needs a unified controlled database access entry.
+## Client integrations
 
-See [Capability Catalog](../capabilities/) for supported tasks and usage boundaries.
+- [Codex](./codex/) connects an already running HTTP MCP Server to Codex CLI or the Codex IDE extension.
+- [Claude Code](./claude-code/) connects an already running HTTP MCP Server to Claude Code CLI, or lets Claude Code start a local STDIO MCP Server.
 
-## Typical Clients
+## Platform and API integrations
 
-- [Codex](./codex/): use ShardingSphere-MCP in Codex CLI or IDE extension.
-- [Claude Code](./claude-code/): use ShardingSphere-MCP in Claude Code project or user configuration.
+- [OpenAI Responses API](./openai-responses-api/) connects a remote MCP Server through the OpenAI API in backend applications.
+- [ChatGPT Developer Mode](./chatgpt-developer-mode/) connects a remote MCP Server directly in the ChatGPT web product.
+- [Anthropic MCP Connector](./anthropic-mcp-connector/) connects a remote MCP Server directly in the Anthropic Messages API.
 
-## Choose an Integration Method
+Platform and API integrations require a remotely reachable MCP Server. Local examples such as `http://127.0.0.1:18088/mcp` are only suitable for local client integration pages and cannot be reused directly for OpenAI or Anthropic platform entry points.
 
-- If ShardingSphere-MCP is already started independently, or multiple applications need to access the same service, choose HTTP integration.
-- If it is used only in a local development environment and the AI application should start ShardingSphere-MCP when needed, choose STDIO integration.
-- If you use Codex or Claude Code, start with the corresponding page in this section.
-- If you use another client, follow that client's documentation and configure the ShardingSphere-MCP address or startup script.
+## Choose an entry point
 
-## Using the Integration
+- Use a client integration when ShardingSphere-MCP is primarily used in local development or coding assistants.
+- Use a platform or API integration when a backend service needs to call models through an API and let those models call MCP tools.
+- When multiple clients should share the same ShardingSphere-MCP service, prefer an independently started HTTP MCP Server.
+- When the MCP process should start only on demand in local development, choose a client that supports STDIO.
+- When the target entry point runs inside OpenAI or Anthropic infrastructure, confirm that the remote MCP address is reachable from that platform before continuing.
 
-After the AI application is configured with the MCP Server, users describe tasks directly in the conversation.
+## Typical usage after integration
 
-Examples:
+After configuration, users describe tasks directly in the conversation. Examples:
 
 - Show the tables in `<logic-database>`.
 - Inspect columns and indexes for `<table-name>`.
 - Run a read-only query and limit the result to 100 rows.
+- Call `database_gateway_validate_proxy_connectivity` for a configured runtime database.
 - Plan a data encryption or data masking rule and preview it without execution.
 
-When SQL execution, rule changes, or rule change plan execution is involved, review the preview content before confirming execution.
-For custom integration or protocol debugging, see the [Custom Integration Appendix](../developer-appendix/).
+When SQL execution, rule changes, or rule change plan execution is involved, review the preview content before confirming execution. For custom integration or protocol debugging, see the [Custom Integration Appendix](../developer-appendix/).
