@@ -44,24 +44,6 @@ public final class LLMRuntimeSupport {
     
     private static final String REQUIRED_PROVIDER = "openai-compatible";
     
-    private static final String REQUIRED_MODEL = "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M";
-    
-    private static final String SERVER_RUNTIME = "llama.cpp";
-    
-    private static final String MODEL_FILE_NAME = "Qwen3-1.7B-Q4_K_M.gguf";
-    
-    private static final String MODEL_PATH = "/models/" + MODEL_FILE_NAME;
-    
-    private static final String MODEL_QUANTIZATION = "Q4_K_M";
-    
-    private static final String MODEL_REVISION = "daeb8e2d528a760970442092f6bf1e55c3b659eb";
-    
-    private static final String MODEL_SHA256 = "d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5";
-    
-    private static final long MODEL_SIZE_BYTES = 1282439264L;
-    
-    private static final String SCORE_API_KEY = "mcp-llm-score";
-    
     private static final int SERVER_PORT = 8080;
     
     private static ModelRuntime sharedContainerRuntime;
@@ -78,14 +60,13 @@ public final class LLMRuntimeSupport {
         if (RuntimeMode.EXTERNAL_DEBUG == config.getRuntimeMode()) {
             return prepareExternalDebugRuntime(config);
         }
-        validateRequiredModel(config);
         if (null != sharedContainerRuntime && sharedContainerRuntime.isReusable(config)) {
             return sharedContainerRuntime;
         }
         stopSharedRuntime();
         requireDockerAvailable();
         String serverImageId = requireScoreImageAvailable(config.getServerImage());
-        GenericContainer<?> container = createContainer(config.getServerImage());
+        GenericContainer<?> container = createContainer(config);
         container.start();
         LLME2EConfiguration actualConfig = createDockerRuntimeConfiguration(config, container);
         new LLMChatModelClient(actualConfig, HttpClient.newHttpClient()).waitUntilReady();
@@ -104,12 +85,6 @@ public final class LLMRuntimeSupport {
     private static void validateSupportedProvider(final LLME2EConfiguration config) {
         if (!REQUIRED_PROVIDER.equals(config.getModelProvider())) {
             throw new IllegalStateException("MCP LLM E2E requires provider openai-compatible.");
-        }
-    }
-    
-    private static void validateRequiredModel(final LLME2EConfiguration config) {
-        if (!REQUIRED_MODEL.equals(config.getModelName())) {
-            throw new IllegalStateException("MCP LLM Docker score mode requires model ggml-org/Qwen3-1.7B-GGUF:Q4_K_M.");
         }
     }
     
@@ -145,19 +120,19 @@ public final class LLMRuntimeSupport {
         }
     }
     
-    private static GenericContainer<?> createContainer(final String serverImage) {
-        return new GenericContainer<>(DockerImageName.parse(serverImage))
+    private static GenericContainer<?> createContainer(final LLME2EConfiguration config) {
+        return new GenericContainer<>(DockerImageName.parse(config.getServerImage()))
                 .withImagePullPolicy(imageName -> false)
                 .withExposedPorts(SERVER_PORT)
-                .withCommand("--host", "0.0.0.0", "--port", String.valueOf(SERVER_PORT), "-m", MODEL_PATH, "--alias", REQUIRED_MODEL,
+                .withCommand("--host", "0.0.0.0", "--port", String.valueOf(SERVER_PORT), "-m", config.getModelMetadata().getContainerPath(), "--alias", config.getModelName(),
                         "--jinja", "--reasoning", "off", "--reasoning-budget", "0", "--chat-template-kwargs", "{\"enable_thinking\":false}",
-                        "--api-key", SCORE_API_KEY, "--no-ui", "-n", "512", "--parallel", "1", "-c", "2048", "-b", "256", "-ub", "128", "--cache-ram", "0", "--no-cache-prompt")
+                        "--api-key", config.getApiKey(), "--no-ui", "-n", "512", "--parallel", "1", "-c", "2048", "-b", "256", "-ub", "128", "--cache-ram", "0", "--no-cache-prompt")
                 .waitingFor(Wait.forListeningPort())
                 .withStartupTimeout(Duration.ofMinutes(5));
     }
     
     private static LLME2EConfiguration createDockerRuntimeConfiguration(final LLME2EConfiguration config, final GenericContainer<?> container) {
-        return config.withModelEndpoint(String.format("http://%s:%d/v1", container.getHost(), container.getMappedPort(SERVER_PORT)), SCORE_API_KEY);
+        return config.withModelEndpoint(String.format("http://%s:%d/v1", container.getHost(), container.getMappedPort(SERVER_PORT)), config.getApiKey());
     }
     
     private static void registerShutdownHook(final ModelRuntime runtime) {
@@ -200,21 +175,22 @@ public final class LLMRuntimeSupport {
         }
         
         private static Map<String, Object> createScoreClosingEvidence(final LLME2EConfiguration config, final String serverImageId) {
-            Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+            Map<String, Object> result = new LinkedHashMap<>(18, 1F);
             result.put("runtimeMode", config.getRuntimeMode().getValue());
             result.put("dockerOwned", true);
             result.put("provider", config.getModelProvider());
-            result.put("serverRuntime", SERVER_RUNTIME);
+            result.put("serverRuntime", config.getServerRuntime());
             result.put("serverImage", config.getServerImage());
             result.put("serverImageId", serverImageId);
+            result.put("baseServerImage", config.getBaseServerImage());
             result.put("baseServerImageDigest", config.getBaseServerImageDigest());
-            result.put("modelReference", REQUIRED_MODEL);
-            result.put("servedModelId", REQUIRED_MODEL);
-            result.put("modelQuantization", MODEL_QUANTIZATION);
-            result.put("modelSizeBytes", MODEL_SIZE_BYTES);
-            result.put("modelRevision", MODEL_REVISION);
-            result.put("modelFileName", MODEL_FILE_NAME);
-            result.put("modelSha256", MODEL_SHA256);
+            result.put("modelReference", config.getModelName());
+            result.put("servedModelId", config.getModelName());
+            result.put("modelQuantization", config.getModelMetadata().getQuantization());
+            result.put("modelSizeBytes", config.getModelMetadata().getSizeBytes());
+            result.put("modelRevision", config.getModelMetadata().getRevision());
+            result.put("modelFileName", config.getModelMetadata().getFileName());
+            result.put("modelSha256", config.getModelSha256());
             result.put("modelPackaging", "prepackaged");
             result.put("baseUrlOwnedByTest", true);
             result.put("scoreClosing", true);
@@ -233,8 +209,12 @@ public final class LLMRuntimeSupport {
             return null != container && container.isRunning()
                     && configuration.getRuntimeMode() == config.getRuntimeMode()
                     && configuration.getModelName().equals(config.getModelName())
+                    && configuration.getApiKey().equals(config.getApiKey())
+                    && configuration.getServerRuntime().equals(config.getServerRuntime())
                     && configuration.getServerImage().equals(config.getServerImage())
-                    && configuration.getBaseServerImageDigest().equals(config.getBaseServerImageDigest());
+                    && configuration.getBaseServerImage().equals(config.getBaseServerImage())
+                    && configuration.getBaseServerImageDigest().equals(config.getBaseServerImageDigest())
+                    && configuration.getModelMetadata().equals(config.getModelMetadata());
         }
         
         private void stop() {

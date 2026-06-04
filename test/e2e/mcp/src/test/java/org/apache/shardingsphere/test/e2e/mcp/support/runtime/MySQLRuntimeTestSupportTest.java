@@ -19,8 +19,11 @@ package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MySQLRuntimeTestSupportTest {
     
@@ -33,5 +36,18 @@ class MySQLRuntimeTestSupportTest {
     @Test
     void assertCreateDockerRequiredMessageWithoutReadinessDiagnostic() {
         assertThat(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required.", ""), is("Docker is required."));
+    }
+    
+    @Test
+    void assertGetMySQLImage() {
+        Properties props = new Properties();
+        props.setProperty("mcp.e2e.mysql.image", "mysql:8.4.0");
+        assertThat(MySQLRuntimeTestSupport.getMySQLImage(props), is("mysql:8.4.0"));
+    }
+    
+    @Test
+    void assertGetMySQLImageWithMissingProperty() {
+        IllegalStateException actualException = assertThrows(IllegalStateException.class, () -> MySQLRuntimeTestSupport.getMySQLImage(new Properties()));
+        assertThat(actualException.getMessage(), is("MCP E2E MySQL image property `mcp.e2e.mysql.image` is required."));
     }
 }

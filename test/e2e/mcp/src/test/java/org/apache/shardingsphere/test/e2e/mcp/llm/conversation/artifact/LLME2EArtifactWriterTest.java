@@ -55,6 +55,7 @@ class LLME2EArtifactWriterTest {
         assertTrue((boolean) castToMap(runContext.get("runtime")).get("dockerOwned"));
         assertThat(castToMap(runContext.get("runtime")).get("serverRuntime"), is("llama.cpp"));
         assertThat(castToMap(runContext.get("runtime")).get("serverImage"), is("apache/shardingsphere-mcp-llm-runtime:local"));
+        assertThat(castToMap(runContext.get("runtime")).get("baseServerImage"), is("ghcr.io/ggml-org/llama.cpp:server"));
         assertThat(castToMap(runContext.get("runtime")).get("modelPackaging"), is("prepackaged"));
         assertThat(Files.readString(tempDir.resolve("raw-model-output.txt")), is("{\"token\":\"<redacted>\"}"));
         assertThat(Files.readString(tempDir.resolve("mcp-runtime.log")), is("Authorization: Bearer <redacted>" + System.lineSeparator() + "MCP_LLM_API_KEY=<redacted>"));
@@ -77,15 +78,16 @@ class LLME2EArtifactWriterTest {
                 Map.entry("provider", "openai-compatible"),
                 Map.entry("serverRuntime", "llama.cpp"),
                 Map.entry("serverImage", "apache/shardingsphere-mcp-llm-runtime:local"),
-                Map.entry("serverImageId", "sha256:image"),
-                Map.entry("baseServerImageDigest", "sha256:base"),
+                Map.entry("serverImageId", "test-server-image-id"),
+                Map.entry("baseServerImage", "ghcr.io/ggml-org/llama.cpp:server"),
+                Map.entry("baseServerImageDigest", "test-base-server-image-digest"),
                 Map.entry("modelReference", MODEL_NAME),
                 Map.entry("servedModelId", MODEL_NAME),
                 Map.entry("modelQuantization", "Q4_K_M"),
                 Map.entry("modelSizeBytes", 1282439264L),
                 Map.entry("modelRevision", "daeb8e2d528a760970442092f6bf1e55c3b659eb"),
                 Map.entry("modelFileName", "Qwen3-1.7B-Q4_K_M.gguf"),
-                Map.entry("modelSha256", "d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5"),
+                Map.entry("modelSha256", "configured-model-sha256"),
                 Map.entry("modelPackaging", "prepackaged"),
                 Map.entry("baseUrlOwnedByTest", true),
                 Map.entry("scoreClosing", true));

@@ -16,21 +16,30 @@
 # limitations under the License.
 #
 
-ARG BASE_IMAGE=ghcr.io/ggml-org/llama.cpp@sha256:988d2695631987e28a29d98970aaf0e979e23b843a26824abb790ac4245d1d57
+ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
+ARG SERVER_RUNTIME
+ARG MODEL_REPOSITORY
+ARG MODEL_QUANTIZATION
+ARG MODEL_REFERENCE
+ARG MODEL_REVISION
+ARG MODEL_FILE_NAME
+ARG MODEL_SHA256
 
 LABEL org.opencontainers.image.title="Apache ShardingSphere MCP LLM E2E Runtime"
-LABEL org.opencontainers.image.description="Prepackaged llama.cpp server plus Qwen3 1.7B Q4_K_M GGUF for MCP LLM E2E score evidence"
+LABEL org.opencontainers.image.description="Prepackaged model server for MCP LLM E2E score evidence"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
-LABEL org.apache.shardingsphere.mcp.llm.server-runtime="llama.cpp"
-LABEL org.apache.shardingsphere.mcp.llm.model-reference="ggml-org/Qwen3-1.7B-GGUF:Q4_K_M"
-LABEL org.apache.shardingsphere.mcp.llm.model-revision="daeb8e2d528a760970442092f6bf1e55c3b659eb"
-LABEL org.apache.shardingsphere.mcp.llm.model-sha256="d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5"
+LABEL org.apache.shardingsphere.mcp.llm.server-runtime="${SERVER_RUNTIME}"
+LABEL org.apache.shardingsphere.mcp.llm.model-repository="${MODEL_REPOSITORY}"
+LABEL org.apache.shardingsphere.mcp.llm.model-quantization="${MODEL_QUANTIZATION}"
+LABEL org.apache.shardingsphere.mcp.llm.model-reference="${MODEL_REFERENCE}"
+LABEL org.apache.shardingsphere.mcp.llm.model-revision="${MODEL_REVISION}"
+LABEL org.apache.shardingsphere.mcp.llm.model-sha256="${MODEL_SHA256}"
 
 ENV LD_LIBRARY_PATH=/app
 
-ADD --checksum=sha256:d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5 \
-    https://huggingface.co/ggml-org/Qwen3-1.7B-GGUF/resolve/daeb8e2d528a760970442092f6bf1e55c3b659eb/Qwen3-1.7B-Q4_K_M.gguf \
-    /models/Qwen3-1.7B-Q4_K_M.gguf
+ADD --checksum=sha256:${MODEL_SHA256} \
+    https://huggingface.co/${MODEL_REPOSITORY}/resolve/${MODEL_REVISION}/${MODEL_FILE_NAME} \
+    /models/${MODEL_FILE_NAME}
 
 EXPOSE 8080

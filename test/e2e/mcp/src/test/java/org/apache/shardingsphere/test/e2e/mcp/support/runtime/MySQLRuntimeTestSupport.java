@@ -39,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * E2E-local MySQL-backed runtime test support.
@@ -76,7 +77,7 @@ public final class MySQLRuntimeTestSupport {
      * @return MySQL runtime container
      */
     public static GenericContainer<?> createContainer() {
-        return new GenericContainer<>(DockerImageName.parse("mysql:8.0.36"))
+        return new GenericContainer<>(DockerImageName.parse(getMySQLImage()))
                 .withEnv("MYSQL_ROOT_PASSWORD", ROOT_PASSWORD)
                 .withEnv("MYSQL_DATABASE", DATABASE_NAME)
                 .withEnv("MYSQL_USER", USERNAME)
@@ -84,6 +85,18 @@ public final class MySQLRuntimeTestSupport {
                 .withExposedPorts(3306)
                 .waitingFor(Wait.forLogMessage(MYSQL_READY_LOG_PATTERN, 1))
                 .withStartupTimeout(Duration.ofMinutes(2));
+    }
+    
+    private static String getMySQLImage() {
+        return getMySQLImage(EnvironmentPropertiesLoader.loadProperties());
+    }
+    
+    static String getMySQLImage(final Properties props) {
+        String result = props.getProperty("mcp.e2e.mysql.image", "").trim();
+        if (result.isEmpty()) {
+            throw new IllegalStateException("MCP E2E MySQL image property `mcp.e2e.mysql.image` is required.");
+        }
+        return result;
     }
     
     /**
