@@ -83,4 +83,5 @@ After configuration, enter the following tasks in the AI application to verify t
 - "Query the first 10 rows from `<table-name>`."
 
 If the application returns the logical database, table structure, or query results, the MCP Server can access the target ShardingSphere-Proxy logical database through the AI application.
+For deployment choices, health checks, and basic observability entrypoints, see [Deployment](../deployment/).
 If the AI application cannot connect or cannot see the logical database, see [Troubleshooting](../troubleshooting/).

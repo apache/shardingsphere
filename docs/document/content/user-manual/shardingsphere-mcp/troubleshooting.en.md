@@ -6,6 +6,7 @@ weight = 7
 This page organizes troubleshooting by user-visible symptoms for ShardingSphere-MCP, AI application integration, database connectivity, metadata inspection, queries, and rule changes.
 For feature-specific rule planning, execution, and validation issues, see the corresponding feature plugin documentation.
 When troubleshooting, distinguish external environment issues from MCP protection behavior. Database service availability, account privileges, gateway forwarding, and AI application configuration must be fixed in their own systems. MCP provides failure categories and runtime protection details to help locate the issue.
+If you have not completed the basic post-deployment checks yet, start with the health-check and observability entrypoints in [Deployment](../deployment/) before using this symptom-oriented page.
 
 ## Issue List
 
