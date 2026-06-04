@@ -330,7 +330,9 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
                 ? ((InsertStatementContext) queryContext.getSqlStatementContext()).getGeneratedKeyContext()
                 : Optional.empty();
         Collection<Comparable<?>> autoIncrementGeneratedValues = generatedKeyContext.filter(GeneratedKeyContext::isSupportAutoIncrement)
+                .filter(GeneratedKeyContext::isGenerated)
                 .map(GeneratedKeyContext::getGeneratedValues).orElseGet(Collections::emptyList);
+        
         UpdateResponseHeader result = new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement(), updateResults, autoIncrementGeneratedValues);
         if (isNeedAccumulate()) {
             result.mergeUpdateCount();

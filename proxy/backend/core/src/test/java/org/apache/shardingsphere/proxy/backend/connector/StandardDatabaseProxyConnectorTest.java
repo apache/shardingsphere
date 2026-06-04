@@ -890,6 +890,58 @@ class StandardDatabaseProxyConnectorTest {
         assertTrue(cachedResultSets.isEmpty());
     }
     
+    @Test
+    void assertExecuteWithExplicitAutoIncrementValueShouldNotReturnGeneratedKey() throws SQLException {
+        InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
+        when(sqlStatementContext.getSqlStatement()).thenReturn(insertStatement);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_order"));
+        
+        GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("order_id", false);
+        generatedKeyContext.setSupportAutoIncrement(true);
+        generatedKeyContext.getGeneratedValues().add(-3L);
+        when(sqlStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+        
+        DataNodeRuleAttribute dataNodeRuleAttribute = mock(DataNodeRuleAttribute.class);
+        when(dataNodeRuleAttribute.isNeedAccumulate(any())).thenReturn(true);
+        
+        ShardingSphereDatabase database = mockDatabase();
+        when(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)).thenReturn(Collections.singleton(dataNodeRuleAttribute));
+        
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, database));
+        setField(engine, "proxySQLExecutor", mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS));
+        
+        ExecutionContext executionContext = mock(ExecutionContext.class, RETURNS_DEEP_STUBS);
+        when(executionContext.getExecutionUnits()).thenReturn(Collections.singletonList(mock(ExecutionUnit.class)));
+        when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(executionContext.getRouteContext().getRouteUnits()).thenReturn(Collections.emptyList());
+        
+        AdvancedProxySQLExecutor advancedProxySQLExecutor = mock(AdvancedProxySQLExecutor.class);
+        when(advancedProxySQLExecutor.execute(any(ExecutionContext.class), any(ContextManager.class), any(ShardingSphereDatabase.class), any(DatabaseProxyConnector.class)))
+                .thenReturn(Collections.singletonList(new UpdateResult(1, 0L)));
+        
+        try (
+                MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
+                        (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext));
+                MockedConstruction<DatabaseTypeRegistry> mockedDatabaseTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
+                        (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(mock(DialectDatabaseMetaData.class)));
+                MockedConstruction<PushDownMetaDataRefreshEngine> mockedPushDownMetaDataRefreshEngine = mockConstruction(PushDownMetaDataRefreshEngine.class,
+                        (mock, context) -> when(mock.isNeedRefresh()).thenReturn(true));
+                MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
+            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class))
+                    .thenReturn(Collections.singleton(advancedProxySQLExecutor));
+            
+            UpdateResponseHeader actual = (UpdateResponseHeader) engine.execute();
+            assertThat(actual.getUpdateCount(), is(1L));
+            assertThat(actual.getLastInsertId(), is(0L));
+            assertThat(mockedKernelProcessor.constructed().size(), is(1));
+            assertThat(mockedDatabaseTypeRegistry.constructed().size(), is(1));
+            assertThat(mockedPushDownMetaDataRefreshEngine.constructed().size(), is(1));
+        }
+    }
+    
     private SQLStatementContext createSQLStatementContext(final SQLStatement sqlStatement) {
         SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(sqlStatement);
