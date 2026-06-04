@@ -44,7 +44,6 @@ permissions:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
-  MCP_LLM_SERVER_IMAGE: apache/shardingsphere-mcp-llm-runtime:local
   MCP_DISTRIBUTION_IMAGE: apache/shardingsphere-mcp-e2e:local
 
 jobs:
@@ -69,13 +68,44 @@ jobs:
         run: |
           docker version
           docker system df
+      - name: Load MCP E2E Properties
+        id: mcp-e2e-properties
+        shell: bash
+        run: |
+          set -euo pipefail
+          property_file="test/e2e/mcp/src/test/resources/env/e2e-env.properties"
+          load_property() {
+            local value
+            value="$(awk -F= -v key="$1" '$1 == key {sub(/^[^=]*=/, ""); print; found = 1; exit} END {if (!found) exit 1}' "${property_file}")"
+            if [[ -z "${value}" ]]; then
+              echo "MCP E2E property is required: $1" >&2
+              exit 1
+            fi
+            printf '%s' "${value}"
+          }
+          load_optional_property() {
+            awk -F= -v key="$1" '$1 == key {sub(/^[^=]*=/, ""); print; found = 1; exit} END {if (!found) exit 1}' "${property_file}" || true
+          }
+          base_server_image="$(load_property 'mcp.llm.base-server-image')"
+          base_server_image_digest="$(load_optional_property 'mcp.llm.base-server-image-digest')"
+          if [[ "${base_server_image}" != *@sha256:* && -n "${base_server_image_digest}" ]]; then
+            base_server_image="${base_server_image}@${base_server_image_digest}"
+          fi
+          {
+            echo "server_image=$(load_property 'mcp.llm.server-image')"
+            echo "base_server_image=${base_server_image}"
+            echo "model_sha256=$(load_property 'mcp.llm.model-sha256')"
+          } >> "${GITHUB_OUTPUT}"
       - name: Build MCP LLM Runtime Image
         uses: docker/build-push-action@v6
         with:
           context: test/e2e/mcp/src/test/resources/docker/llm-runtime
           file: test/e2e/mcp/src/test/resources/docker/llm-runtime/Dockerfile
-          tags: ${{ env.MCP_LLM_SERVER_IMAGE }}
+          tags: ${{ steps.mcp-e2e-properties.outputs.server_image }}
           load: true
+          build-args: |
+            BASE_IMAGE=${{ steps.mcp-e2e-properties.outputs.base_server_image }}
+            MODEL_SHA256=${{ steps.mcp-e2e-properties.outputs.model_sha256 }}
           cache-from: type=gha,scope=mcp-llm-runtime
           cache-to: type=gha,mode=max,scope=mcp-llm-runtime,ignore-error=true
       - name: Build MCP E2E Test Dependencies

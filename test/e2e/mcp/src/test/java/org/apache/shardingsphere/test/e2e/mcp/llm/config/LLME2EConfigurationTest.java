@@ -26,6 +26,7 @@ import java.nio.file.Path;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LLME2EConfigurationTest {
@@ -38,9 +39,11 @@ class LLME2EConfigurationTest {
     
     private String originalServerImage;
     
+    private String originalBaseServerImage;
+    
     private String originalBaseServerImageDigest;
     
-    private String originalArchitecture;
+    private String originalModelSha256;
     
     @BeforeEach
     void setUp() {
@@ -48,12 +51,15 @@ class LLME2EConfigurationTest {
         originalModel = System.getProperty("mcp.llm.model");
         originalApiKey = System.getProperty("mcp.llm.api-key");
         originalServerImage = System.getProperty("mcp.llm.server-image");
+        originalBaseServerImage = System.getProperty("mcp.llm.base-server-image");
         originalBaseServerImageDigest = System.getProperty("mcp.llm.base-server-image-digest");
-        originalArchitecture = System.getProperty("os.arch");
+        originalModelSha256 = System.getProperty("mcp.llm.model-sha256");
         System.clearProperty("mcp.llm.model");
         System.clearProperty("mcp.llm.api-key");
         System.clearProperty("mcp.llm.server-image");
+        System.clearProperty("mcp.llm.base-server-image");
         System.clearProperty("mcp.llm.base-server-image-digest");
+        System.clearProperty("mcp.llm.model-sha256");
     }
     
     @AfterEach
@@ -62,27 +68,28 @@ class LLME2EConfigurationTest {
         restoreProperty("mcp.llm.model", originalModel);
         restoreProperty("mcp.llm.api-key", originalApiKey);
         restoreProperty("mcp.llm.server-image", originalServerImage);
+        restoreProperty("mcp.llm.base-server-image", originalBaseServerImage);
         restoreProperty("mcp.llm.base-server-image-digest", originalBaseServerImageDigest);
-        restoreProperty("os.arch", originalArchitecture);
+        restoreProperty("mcp.llm.model-sha256", originalModelSha256);
     }
     
     @Test
     void assertLoadWithDockerRuntimeMode() {
         System.setProperty("mcp.llm.runtime-mode", "docker");
-        System.setProperty("os.arch", "arm64");
         LLME2EConfiguration actual = LLME2EConfiguration.load();
         assertThat(actual.getRuntimeMode(), is(RuntimeMode.DOCKER));
         assertThat(actual.getBaseUrl(), is("http://127.0.0.1:8080/v1"));
         assertThat(actual.getModelName(), is("ggml-org/Qwen3-1.7B-GGUF:Q4_K_M"));
         assertThat(actual.getApiKey(), is("mcp-llm-score"));
         assertThat(actual.getServerImage(), is("apache/shardingsphere-mcp-llm-runtime:local"));
-        assertThat(actual.getBaseServerImageDigest(), is("sha256:a478a81b2606aa5bb4c5864c01894fe1d8851adad8b6710f14b9519944d013ca"));
+        assertThat(actual.getBaseServerImage(), is("ghcr.io/ggml-org/llama.cpp:server"));
+        assertThat(actual.getBaseServerImageDigest(), is(""));
+        assertFalse(actual.getModelSha256().isBlank());
     }
     
     @Test
     void assertLoadWithExternalDebugRuntimeMode() {
         System.setProperty("mcp.llm.runtime-mode", "external-debug");
-        System.setProperty("os.arch", "riscv64");
         LLME2EConfiguration actual = LLME2EConfiguration.load();
         assertThat(actual.getRuntimeMode(), is(RuntimeMode.EXTERNAL_DEBUG));
         assertThat(actual.getBaseServerImageDigest(), is(""));
@@ -99,18 +106,14 @@ class LLME2EConfigurationTest {
     void assertLoadWithConfiguredServerImage() {
         System.setProperty("mcp.llm.runtime-mode", "docker");
         System.setProperty("mcp.llm.server-image", "foo/mcp-llm-runtime:bar");
+        System.setProperty("mcp.llm.base-server-image", "foo/llama.cpp:bar");
         System.setProperty("mcp.llm.base-server-image-digest", "sha256:foo");
+        System.setProperty("mcp.llm.model-sha256", "bar");
         LLME2EConfiguration actual = LLME2EConfiguration.load();
         assertThat(actual.getServerImage(), is("foo/mcp-llm-runtime:bar"));
+        assertThat(actual.getBaseServerImage(), is("foo/llama.cpp:bar"));
         assertThat(actual.getBaseServerImageDigest(), is("sha256:foo"));
-    }
-    
-    @Test
-    void assertLoadWithUnsupportedArchitecture() {
-        System.setProperty("mcp.llm.runtime-mode", "docker");
-        System.setProperty("os.arch", "riscv64");
-        IllegalStateException actualException = assertThrows(IllegalStateException.class, LLME2EConfiguration::load);
-        assertThat(actualException.getMessage(), is("Unsupported local architecture for MCP LLM Docker score mode: riscv64"));
+        assertThat(actual.getModelSha256(), is("bar"));
     }
     
     @Test
@@ -127,6 +130,7 @@ class LLME2EConfigurationTest {
         assertThat(actual.getBaseUrl(), is("http://127.0.0.1:8081/v1"));
         assertThat(actual.getApiKey(), is("foo-key"));
         assertThat(actual.getServerImage(), is("apache/shardingsphere-mcp-llm-runtime:local"));
+        assertThat(actual.getModelSha256(), is("bar"));
     }
     
     @Test
@@ -135,12 +139,13 @@ class LLME2EConfigurationTest {
         assertThat(actual.getReadyTimeoutSeconds(), is(1));
         assertThat(actual.getRequestTimeoutSeconds(), is(2));
         assertThat(actual.getRuntimeMode(), is(RuntimeMode.EXTERNAL_DEBUG));
+        assertThat(actual.getBaseServerImage(), is("ghcr.io/ggml-org/llama.cpp:server"));
     }
     
     private LLME2EConfiguration createConfiguration(final RuntimeMode runtimeMode) {
         return new LLME2EConfiguration("http://127.0.0.1:8080/v1", "openai-compatible", "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M", "mcp-llm-score", 600, 240, 10,
-                Path.of("target/llm-e2e"), "run-id", runtimeMode, "apache/shardingsphere-mcp-llm-runtime:local",
-                "sha256:a478a81b2606aa5bb4c5864c01894fe1d8851adad8b6710f14b9519944d013ca");
+                Path.of("target/llm-e2e"), "run-id", runtimeMode, "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server", "",
+                "bar");
     }
     
     private void restoreProperty(final String name, final String value) {

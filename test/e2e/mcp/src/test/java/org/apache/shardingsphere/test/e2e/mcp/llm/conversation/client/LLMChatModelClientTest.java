@@ -159,7 +159,7 @@ class LLMChatModelClientTest {
     
     private LLME2EConfiguration createConfiguration(final String baseUrl, final int readyTimeoutSeconds) {
         return new LLME2EConfiguration(baseUrl, "openai-compatible", REQUIRED_MODEL, "mcp-llm-score", readyTimeoutSeconds, 30, 10,
-                Path.of("target/llm-e2e"), "run-id", RuntimeMode.DOCKER, "apache/shardingsphere-mcp-llm-runtime:local", "sha256:foo");
+                Path.of("target/llm-e2e"), "run-id", RuntimeMode.DOCKER, "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server", "sha256:foo", "bar");
     }
     
     private HttpServer startModelServer(final String modelName, final List<String> requestBodies) throws IOException {

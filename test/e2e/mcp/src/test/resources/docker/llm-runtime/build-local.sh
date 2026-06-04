@@ -44,29 +44,50 @@ case "${MODE}" in
     ;;
 esac
 
-IMAGE_TAG="${MCP_LLM_SERVER_IMAGE:-apache/shardingsphere-mcp-llm-runtime:local}"
-ARCHITECTURE="${MCP_LLM_ARCHITECTURE:-$(uname -m)}"
 SCRIPT_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd -P)"
 DOCKERFILE_PATH="${SCRIPT_DIR}/Dockerfile"
+ENV_FILE="${SCRIPT_DIR}/../../env/e2e-env.properties"
 
-case "${ARCHITECTURE}" in
-  amd64|x86_64)
-    BASE_DIGEST="sha256:988d2695631987e28a29d98970aaf0e979e23b843a26824abb790ac4245d1d57"
-    ;;
-  arm64|aarch64)
-    BASE_DIGEST="sha256:a478a81b2606aa5bb4c5864c01894fe1d8851adad8b6710f14b9519944d013ca"
+if [ ! -f "${ENV_FILE}" ]; then
+  echo "MCP E2E environment properties file is required: ${ENV_FILE}" >&2
+  exit 1
+fi
+
+read_property() {
+  awk -F= -v key="$1" '$1 == key {sub(/^[^=]*=/, ""); print; found = 1; exit} END {if (!found) exit 1}' "${ENV_FILE}"
+}
+
+read_required_property() {
+  PROPERTY_VALUE="$(read_property "$1" || true)"
+  if [ -z "${PROPERTY_VALUE}" ]; then
+    echo "MCP E2E property is required: $1" >&2
+    exit 1
+  fi
+  echo "${PROPERTY_VALUE}"
+}
+
+read_optional_property() {
+  read_property "$1" || true
+}
+
+IMAGE_TAG="${MCP_LLM_SERVER_IMAGE:-$(read_required_property "mcp.llm.server-image")}"
+BASE_IMAGE="${MCP_LLM_BASE_SERVER_IMAGE:-$(read_required_property "mcp.llm.base-server-image")}"
+BASE_DIGEST="${MCP_LLM_BASE_SERVER_IMAGE_DIGEST:-$(read_optional_property "mcp.llm.base-server-image-digest")}"
+MODEL_SHA256="${MCP_LLM_MODEL_SHA256:-$(read_required_property "mcp.llm.model-sha256")}"
+
+case "${BASE_IMAGE}" in
+  *@sha256:*)
     ;;
   *)
-    echo "Unsupported local architecture for MCP LLM Docker score mode: ${ARCHITECTURE}" >&2
-    exit 1
+    if [ -n "${BASE_DIGEST}" ]; then
+      BASE_IMAGE="${BASE_IMAGE}@${BASE_DIGEST}"
+    fi
     ;;
 esac
 
-BASE_IMAGE="ghcr.io/ggml-org/llama.cpp@${BASE_DIGEST}"
-
 if [ "--dry-run" = "${MODE}" ] || [ "--print" = "${MODE}" ]; then
-  echo "architecture=${ARCHITECTURE}"
   echo "base_image=${BASE_IMAGE}"
+  echo "model_sha256=${MODEL_SHA256}"
   echo "image_tag=${IMAGE_TAG}"
   echo "dockerfile=${DOCKERFILE_PATH}"
   echo "context=${SCRIPT_DIR}"
@@ -80,6 +101,7 @@ fi
 
 docker build \
   --build-arg "BASE_IMAGE=${BASE_IMAGE}" \
+  --build-arg "MODEL_SHA256=${MODEL_SHA256}" \
   -t "${IMAGE_TAG}" \
   -f "${DOCKERFILE_PATH}" \
   "${SCRIPT_DIR}"

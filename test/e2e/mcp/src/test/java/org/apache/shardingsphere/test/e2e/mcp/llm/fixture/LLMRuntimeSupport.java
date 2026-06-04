@@ -56,8 +56,6 @@ public final class LLMRuntimeSupport {
     
     private static final String MODEL_REVISION = "daeb8e2d528a760970442092f6bf1e55c3b659eb";
     
-    private static final String MODEL_SHA256 = "d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5";
-    
     private static final long MODEL_SIZE_BYTES = 1282439264L;
     
     private static final String SCORE_API_KEY = "mcp-llm-score";
@@ -207,6 +205,7 @@ public final class LLMRuntimeSupport {
             result.put("serverRuntime", SERVER_RUNTIME);
             result.put("serverImage", config.getServerImage());
             result.put("serverImageId", serverImageId);
+            result.put("baseServerImage", config.getBaseServerImage());
             result.put("baseServerImageDigest", config.getBaseServerImageDigest());
             result.put("modelReference", REQUIRED_MODEL);
             result.put("servedModelId", REQUIRED_MODEL);
@@ -214,7 +213,7 @@ public final class LLMRuntimeSupport {
             result.put("modelSizeBytes", MODEL_SIZE_BYTES);
             result.put("modelRevision", MODEL_REVISION);
             result.put("modelFileName", MODEL_FILE_NAME);
-            result.put("modelSha256", MODEL_SHA256);
+            result.put("modelSha256", config.getModelSha256());
             result.put("modelPackaging", "prepackaged");
             result.put("baseUrlOwnedByTest", true);
             result.put("scoreClosing", true);
@@ -234,7 +233,9 @@ public final class LLMRuntimeSupport {
                     && configuration.getRuntimeMode() == config.getRuntimeMode()
                     && configuration.getModelName().equals(config.getModelName())
                     && configuration.getServerImage().equals(config.getServerImage())
-                    && configuration.getBaseServerImageDigest().equals(config.getBaseServerImageDigest());
+                    && configuration.getBaseServerImage().equals(config.getBaseServerImage())
+                    && configuration.getBaseServerImageDigest().equals(config.getBaseServerImageDigest())
+                    && configuration.getModelSha256().equals(config.getModelSha256());
         }
         
         private void stop() {

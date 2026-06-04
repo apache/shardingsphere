@@ -38,7 +38,7 @@ public final class LLME2EArtifactWriter {
     private static final Pattern ENV_SECRET_ASSIGNMENT_PATTERN = Pattern.compile("(?i)((?:MCP_LLM_API_KEY|HF_TOKEN|HUGGING_FACE_HUB_TOKEN|LLAMA_API_KEY)\\s*=\\s*)\\S+");
     
     private static final List<String> REQUIRED_SCORE_EVIDENCE_KEYS = List.of(
-            "runtimeMode", "dockerOwned", "provider", "serverRuntime", "serverImage", "serverImageId", "baseServerImageDigest", "modelReference", "servedModelId",
+            "runtimeMode", "dockerOwned", "provider", "serverRuntime", "serverImage", "serverImageId", "baseServerImage", "modelReference", "servedModelId",
             "modelQuantization", "modelSizeBytes", "modelRevision", "modelFileName", "modelSha256", "modelPackaging", "baseUrlOwnedByTest", "scoreClosing");
     
     /**
