@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -133,20 +134,84 @@ public final class InsertClauseShardingConditionEngine {
             if (!shardingColumn.isPresent()) {
                 continue;
             }
-            if (each instanceof SimpleExpressionSegment) {
-                List<Integer> parameterMarkerIndexes = each instanceof ParameterMarkerExpressionSegment
-                        ? Collections.singletonList(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex())
-                        : Collections.emptyList();
-                Object shardingValue = getShardingValue((SimpleExpressionSegment) each, params);
-                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(shardingValue),
-                        parameterMarkerIndexes));
-            } else if (each instanceof CommonExpressionSegment) {
-                generateShardingCondition((CommonExpressionSegment) each, result, shardingColumn.get(), tableName);
-            } else if (ExpressionConditionUtils.isNowExpression(each)) {
-                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(timestampServiceRule.getTimestamp())));
-            }
+            appendCastRoutedValueIfPresent(each, params, shardingColumn.get(), tableName, result)
+                    .orElseGet(() -> appendRoutedValueWithoutCast(each, params, shardingColumn.get(), tableName, result));
         }
         return result;
+    }
+    
+    /**
+     * Route a {@code TypeCastExpression} sharding-key value by the database-visible cast result instead of the raw bound
+     * Java value, so that PostgreSQL/openGauss runtime semantics for {@code expression::type} (string-to-integer,
+     * lossy-numeric-to-integer, boolean conversions, etc.) are preserved by routing.
+     *
+     * <p>Returns {@link Optional#empty()} when the segment is not a cast or when {@link PostgreSQLCastEvaluator} cannot
+     * resolve the cast (unsupported target, parse failure, overflow, or a non-marker / non-literal inner expression such
+     * as a {@code SubqueryExpressionSegment}). In that case the caller falls back to the no-cast path.</p>
+     *
+     * @param expressionSegment expression segment to route
+     * @param params bound parameter values for parameter markers
+     * @param shardingColumn sharding column name to attach the routed value to
+     * @param tableName sharding table name to attach the routed value to
+     * @param condition sharding condition to append the routed value to
+     * @return {@link Optional#of(Object)} with a non-null placeholder when a cast-derived sharding condition was
+     *         appended, otherwise {@link Optional#empty()}
+     */
+    private Optional<Object> appendCastRoutedValueIfPresent(final ExpressionSegment expressionSegment, final List<Object> params,
+                                                            final String shardingColumn, final String tableName, final ShardingCondition condition) {
+        if (!(expressionSegment instanceof TypeCastExpression)) {
+            return Optional.empty();
+        }
+        List<String> castTargetTypesOuterToInner = new ArrayList<>();
+        ExpressionSegment innermost = expressionSegment;
+        while (innermost instanceof TypeCastExpression) {
+            castTargetTypesOuterToInner.add(((TypeCastExpression) innermost).getDataType());
+            innermost = ((TypeCastExpression) innermost).getExpression();
+        }
+        if (!(innermost instanceof ParameterMarkerExpressionSegment) && !(innermost instanceof LiteralExpressionSegment)) {
+            return Optional.empty();
+        }
+        Object value;
+        List<Integer> parameterMarkerIndexes;
+        if (innermost instanceof ParameterMarkerExpressionSegment) {
+            int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) innermost).getParameterMarkerIndex();
+            if (parameterMarkerIndex < 0 || parameterMarkerIndex >= params.size()) {
+                return Optional.empty();
+            }
+            value = params.get(parameterMarkerIndex);
+            parameterMarkerIndexes = Collections.singletonList(parameterMarkerIndex);
+        } else {
+            value = ((LiteralExpressionSegment) innermost).getLiterals();
+            parameterMarkerIndexes = Collections.emptyList();
+        }
+        for (int index = castTargetTypesOuterToInner.size() - 1; index >= 0; index--) {
+            Optional<Comparable<?>> casted = PostgreSQLCastEvaluator.evaluate(value, castTargetTypesOuterToInner.get(index));
+            if (!casted.isPresent()) {
+                return Optional.empty();
+            }
+            value = casted.get();
+        }
+        if (!(value instanceof Comparable)) {
+            return Optional.empty();
+        }
+        condition.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList((Comparable<?>) value), parameterMarkerIndexes));
+        return Optional.of(Boolean.TRUE);
+    }
+    
+    private Object appendRoutedValueWithoutCast(final ExpressionSegment expressionSegment, final List<Object> params,
+                                                final String shardingColumn, final String tableName, final ShardingCondition condition) {
+        if (expressionSegment instanceof SimpleExpressionSegment) {
+            List<Integer> parameterMarkerIndexes = expressionSegment instanceof ParameterMarkerExpressionSegment
+                    ? Collections.singletonList(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex())
+                    : Collections.emptyList();
+            Object shardingValue = getShardingValue((SimpleExpressionSegment) expressionSegment, params);
+            condition.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList(shardingValue), parameterMarkerIndexes));
+        } else if (expressionSegment instanceof CommonExpressionSegment) {
+            generateShardingCondition((CommonExpressionSegment) expressionSegment, condition, shardingColumn, tableName);
+        } else if (ExpressionConditionUtils.isNowExpression(expressionSegment)) {
+            condition.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList(timestampServiceRule.getTimestamp())));
+        }
+        return Boolean.TRUE;
     }
     
     private void generateShardingCondition(final CommonExpressionSegment expressionSegment, final ShardingCondition condition, final String shardingColumn, final String tableName) {

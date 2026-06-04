@@ -28,10 +28,13 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShar
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
@@ -41,6 +44,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +53,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -112,5 +118,124 @@ class WhereClauseShardingConditionEngineTest {
         List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
         assertThat(actual.get(0).getStartIndex(), is(0));
         assertThat(actual.get(0).getValues().get(0), isA(ListShardingConditionValue.class));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsForSelectCompareWithCastedParameter() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        TypeCastExpression cast = new TypeCastExpression(0, 0, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, cast, "=", "foo_sharding_col = ?::int4");
+        when(whereSegment.getExpr()).thenReturn(predicate);
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.singletonList("42"));
+        ListShardingConditionValue<?> value = (ListShardingConditionValue<?>) actual.get(0).getValues().get(0);
+        assertThat(value.getValues(), is(Collections.singletonList(42)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsForSelectInWithCastedParameter() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        ListExpression right = new ListExpression(0, 0);
+        right.getItems().add(new TypeCastExpression(0, 0, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4"));
+        InExpression inExpression = new InExpression(0, 0, left, right, false);
+        when(whereSegment.getExpr()).thenReturn(inExpression);
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.singletonList("42"));
+        ListShardingConditionValue<?> value = (ListShardingConditionValue<?>) actual.get(0).getValues().get(0);
+        assertThat(value.getValues(), is(Collections.singletonList(42)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsForSelectBetweenWithCastedParameters() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        ExpressionSegment betweenCast = new TypeCastExpression(0, 0, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        ExpressionSegment andCast = new TypeCastExpression(0, 0, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 1), "int4");
+        BetweenExpression betweenExpression = new BetweenExpression(0, 0, left, betweenCast, andCast, false);
+        when(whereSegment.getExpr()).thenReturn(betweenExpression);
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Arrays.asList("1", "100"));
+        RangeShardingConditionValue<?> value = (RangeShardingConditionValue<?>) actual.get(0).getValues().get(0);
+        assertThat(value.getValueRange().lowerEndpoint(), is(1));
+        assertThat(value.getValueRange().upperEndpoint(), is(100));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsForSelectCompareWithUnsupportedTypmodCastDoesNotRoute() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        TypeCastExpression cast = new TypeCastExpression(0, 0, "?::numeric(3,1)", new ParameterMarkerExpressionSegment(0, 0, 0), "numeric(3,1)");
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, cast, "=", "foo_sharding_col = ?::numeric(3,1)");
+        when(whereSegment.getExpr()).thenReturn(predicate);
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.singletonList(new BigDecimal("1.55")));
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsForSelectCompareWithDoubleHalfRoundsHalfEven() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        TypeCastExpression cast = new TypeCastExpression(0, 0, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, cast, "=", "foo_sharding_col = ?::int4");
+        when(whereSegment.getExpr()).thenReturn(predicate);
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.singletonList(2.5D));
+        ListShardingConditionValue<?> value = (ListShardingConditionValue<?>) actual.get(0).getValues().get(0);
+        assertThat(value.getValues(), is(Collections.singletonList(2)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsForSelectCompareWithFloatHalfRoundsHalfEven() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        TypeCastExpression cast = new TypeCastExpression(0, 0, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, cast, "=", "foo_sharding_col = ?::int4");
+        when(whereSegment.getExpr()).thenReturn(predicate);
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.singletonList(-2.5F));
+        ListShardingConditionValue<?> value = (ListShardingConditionValue<?>) actual.get(0).getValues().get(0);
+        assertThat(value.getValues(), is(Collections.singletonList(-2)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsForSelectCompareWithCharNoTypmodTruncatesFirstChar() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        TypeCastExpression cast = new TypeCastExpression(0, 0, "?::char", new ParameterMarkerExpressionSegment(0, 0, 0), "char");
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, cast, "=", "foo_sharding_col = ?::char");
+        when(whereSegment.getExpr()).thenReturn(predicate);
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.singletonList("abcdef"));
+        ListShardingConditionValue<?> value = (ListShardingConditionValue<?>) actual.get(0).getValues().get(0);
+        assertThat(value.getValues(), is(Collections.singletonList("a")));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsForSelectCompareWithBoolToNumericDoesNotRoute() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        TypeCastExpression cast = new TypeCastExpression(0, 0, "?::numeric", new ParameterMarkerExpressionSegment(0, 0, 0), "numeric");
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, cast, "=", "foo_sharding_col = ?::numeric");
+        when(whereSegment.getExpr()).thenReturn(predicate);
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.singletonList(Boolean.TRUE));
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsForSelectCompareWithDoubleToBoolDoesNotRoute() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        TypeCastExpression cast = new TypeCastExpression(0, 0, "?::bool", new ParameterMarkerExpressionSegment(0, 0, 0), "bool");
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, cast, "=", "foo_sharding_col = ?::bool");
+        when(whereSegment.getExpr()).thenReturn(predicate);
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.singletonList(2.5D));
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsForSelectCompareWithFractionalStringToIntDoesNotRoute() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        TypeCastExpression cast = new TypeCastExpression(0, 0, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, cast, "=", "foo_sharding_col = ?::int4");
+        when(whereSegment.getExpr()).thenReturn(predicate);
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.singletonList("1.5"));
+        assertTrue(actual.isEmpty());
     }
 }

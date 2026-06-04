@@ -27,11 +27,15 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -47,6 +51,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -185,6 +190,269 @@ class InsertClauseShardingConditionEngineTest {
         assertThat(shardingConditions.size(), is(1));
         assertThat(shardingConditions.get(0).getValues().size(), is(1));
         assertThat(shardingConditions.get(0).getValues().get(0).getParameterMarkerIndexes(), is(Collections.singletonList(0)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastParameterMarker() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(7), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(7));
+        assertThat(shardingConditions.size(), is(1));
+        assertThat(shardingConditions.get(0).getValues().size(), is(1));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getColumnName(), is("foo_col_1"));
+        assertThat(actual.getTableName(), is("foo_tbl"));
+        assertThat(actual.getValues(), is(Collections.singletonList(7)));
+        assertThat(actual.getParameterMarkerIndexes(), is(Collections.singletonList(0)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastLiteral() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "1::int4", new LiteralExpressionSegment(0, 10, 1), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.emptyList(), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
+        assertThat(shardingConditions.size(), is(1));
+        assertThat(shardingConditions.get(0).getValues().size(), is(1));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList(1)));
+        assertTrue(actual.getParameterMarkerIndexes().isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithNestedCompatibleTypeCastParameterMarker() {
+        TypeCastExpression inner = new TypeCastExpression(0, 5, "?::int8", new ParameterMarkerExpressionSegment(0, 0, 0), "int8");
+        TypeCastExpression outer = new TypeCastExpression(0, 12, "?::int8::int4", inner, "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(outer), Collections.singletonList(42), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(42));
+        assertThat(shardingConditions.size(), is(1));
+        assertThat(shardingConditions.get(0).getValues().size(), is(1));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList(42)));
+        assertThat(actual.getParameterMarkerIndexes(), is(Collections.singletonList(0)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithNestedIntToTextCastRoutesByCastedString() {
+        TypeCastExpression inner = new TypeCastExpression(0, 5, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        TypeCastExpression outer = new TypeCastExpression(0, 12, "?::int4::text", inner, "text");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(outer), Collections.singletonList(42), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(42));
+        assertThat(shardingConditions.size(), is(1));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList("42")));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastStringParameterToIntRoutesByCastedInteger() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList("1"), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList("1"));
+        assertThat(shardingConditions.size(), is(1));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList(1)));
+        assertThat(actual.getParameterMarkerIndexes(), is(Collections.singletonList(0)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastStringParameterToTextRoutes() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::text", new ParameterMarkerExpressionSegment(0, 0, 0), "text");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList("foo"), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList("foo"));
+        assertThat(shardingConditions.size(), is(1));
+        assertThat(shardingConditions.get(0).getValues().size(), is(1));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList("foo")));
+        assertThat(actual.getParameterMarkerIndexes(), is(Collections.singletonList(0)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastNullParameterDoesNotRoute() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(null), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(null));
+        assertThat(shardingConditions.size(), is(1));
+        assertTrue(shardingConditions.get(0).getValues().isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastLiteralStringToIntRoutesByCastedInteger() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "'1'::int4", new LiteralExpressionSegment(0, 10, "1"), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.emptyList(), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
+        assertThat(shardingConditions.size(), is(1));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList(1)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastBigDecimalPositiveOneHalfRoundsAwayFromZero() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(new BigDecimal("1.5")), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(new BigDecimal("1.5")));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList(2)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastBigDecimalPositiveTwoHalfRoundsAwayFromZero() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(new BigDecimal("2.5")), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(new BigDecimal("2.5")));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList(3)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastBigDecimalNegativeTwoHalfRoundsAwayFromZero() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(new BigDecimal("-2.5")), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(new BigDecimal("-2.5")));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList(-3)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastDoublePositiveTwoHalfRoundsHalfEven() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(2.5D), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(2.5D));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList(2)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastDoubleNegativeTwoHalfRoundsHalfEven() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(-2.5D), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(-2.5D));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList(-2)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastFloatPositiveTwoHalfRoundsHalfEven() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(2.5F), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(2.5F));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList(2)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastCharNoTypmodTruncatesToFirstChar() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::char", new ParameterMarkerExpressionSegment(0, 0, 0), "char");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList("ab"), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList("ab"));
+        ListShardingConditionValue<?> actual = (ListShardingConditionValue<?>) shardingConditions.get(0).getValues().get(0);
+        assertThat(actual.getValues(), is(Collections.singletonList("a")));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastBooleanToNumericDoesNotRoute() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::numeric", new ParameterMarkerExpressionSegment(0, 0, 0), "numeric");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(Boolean.TRUE), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(Boolean.TRUE));
+        assertThat(shardingConditions.size(), is(1));
+        assertTrue(shardingConditions.get(0).getValues().isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastDoubleToBoolDoesNotRoute() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::bool", new ParameterMarkerExpressionSegment(0, 0, 0), "bool");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(2.5D), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(2.5D));
+        assertThat(shardingConditions.size(), is(1));
+        assertTrue(shardingConditions.get(0).getValues().isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastStringWithDecimalToIntDoesNotRoute() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList("1.5"), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList("1.5"));
+        assertThat(shardingConditions.size(), is(1));
+        assertTrue(shardingConditions.get(0).getValues().isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastTypmodTargetDoesNotRoute() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::varchar(1)", new ParameterMarkerExpressionSegment(0, 0, 0), "varchar(1)");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList("ab"), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList("ab"));
+        assertThat(shardingConditions.size(), is(1));
+        assertTrue(shardingConditions.get(0).getValues().isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastOverflowDoesNotRoute() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList(new BigDecimal("2147483648")), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(new BigDecimal("2147483648")));
+        assertThat(shardingConditions.size(), is(1));
+        assertTrue(shardingConditions.get(0).getValues().isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastUnparseableStringDoesNotRoute() {
+        TypeCastExpression typeCast = new TypeCastExpression(0, 10, "?::int4", new ParameterMarkerExpressionSegment(0, 0, 0), "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.singletonList("abc"), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList("abc"));
+        assertThat(shardingConditions.size(), is(1));
+        assertTrue(shardingConditions.get(0).getValues().isEmpty());
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithTypeCastSubqueryDoesNotCrashAndExtractsNoCondition() {
+        SubqueryExpressionSegment subquery = new SubqueryExpressionSegment(new SubquerySegment(0, 9, "(SELECT 1)"));
+        TypeCastExpression typeCast = new TypeCastExpression(0, 15, "(SELECT 1)::int4", subquery, "int4");
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(typeCast), Collections.emptyList(), 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
+        assertThat(shardingConditions.size(), is(1));
+        assertTrue(shardingConditions.get(0).getValues().isEmpty());
     }
     
     @Test
