@@ -43,7 +43,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     private static final String RECOVERY_SECRET = "recovery-secret-value";
     
     private static boolean isEnabled() {
-        return MCPE2ECondition.isContractEnabled();
+        return MCPE2ECondition.isDockerEnabled();
     }
     
     @Test

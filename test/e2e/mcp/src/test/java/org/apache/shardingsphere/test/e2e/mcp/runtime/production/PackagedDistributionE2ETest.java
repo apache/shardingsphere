@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 
+import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.DockerImageHttpRuntime;
@@ -91,7 +92,7 @@ class PackagedDistributionE2ETest {
     }
     
     private static boolean isEnabled() {
-        return MCPE2ECondition.isDistributionEnabled();
+        return MCPE2ECondition.isDockerEnabled();
     }
     
     @Test
@@ -138,10 +139,9 @@ class PackagedDistributionE2ETest {
     
     @Test
     void assertLaunchContainerOverHttp() throws IOException, InterruptedException, SQLException {
-        assumeContainerImageConfigured();
         Path configFile = createDockerConfigurationFile(RuntimeTransport.HTTP);
         try (
-                DockerImageHttpRuntime runtime = new DockerImageHttpRuntime(System.getProperty(IMAGE_PROPERTY), configFile);
+                DockerImageHttpRuntime runtime = new DockerImageHttpRuntime(getConfiguredContainerImage(), configFile);
                 MCPInteractionClient interactionClient = runtime.openInteractionClient()) {
             assertContainerRuntime(RuntimeTransport.HTTP, interactionClient);
         }
@@ -149,9 +149,8 @@ class PackagedDistributionE2ETest {
     
     @Test
     void assertLaunchContainerOverStdio() throws IOException, InterruptedException, SQLException {
-        assumeContainerImageConfigured();
         Path configFile = createDockerConfigurationFile(RuntimeTransport.STDIO);
-        try (MCPInteractionClient interactionClient = new DockerImageStdioInteractionClient(System.getProperty(IMAGE_PROPERTY), configFile)) {
+        try (MCPInteractionClient interactionClient = new DockerImageStdioInteractionClient(getConfiguredContainerImage(), configFile)) {
             interactionClient.open();
             assertContainerRuntime(RuntimeTransport.STDIO, interactionClient);
         }
@@ -180,8 +179,10 @@ class PackagedDistributionE2ETest {
         MySQLRuntimeTestSupport.initializeDatabase(mysqlContainer);
     }
     
-    private void assumeContainerImageConfigured() {
-        Assumptions.assumeFalse(System.getProperty(IMAGE_PROPERTY, "").isBlank(), "Set -D" + IMAGE_PROPERTY + " to run MCP container distribution E2E.");
+    private String getConfiguredContainerImage() {
+        String result = EnvironmentPropertiesLoader.loadProperties().getProperty(IMAGE_PROPERTY, "").trim();
+        Assumptions.assumeFalse(result.isBlank(), "Set " + IMAGE_PROPERTY + " in env/e2e-env.properties or pass -D" + IMAGE_PROPERTY + " to run MCP container distribution E2E.");
+        return result;
     }
     
     private void assertOfficialRuntime(final Path distributionHome, final RuntimeTransport transport,

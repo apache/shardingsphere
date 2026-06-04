@@ -27,52 +27,33 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MCPE2ETestConfigurationTest {
     
     @Test
-    void assertDefaultLaneValues() {
+    void assertDefaultRunType() {
         MCPE2ETestConfiguration config = new MCPE2ETestConfiguration(new Properties());
-        assertFalse(config.isContractEnabled());
-        assertFalse(config.isProductionMySQLEnabled());
-        assertFalse(config.isProductionStdioEnabled());
-        assertFalse(config.isDistributionEnabled());
-        assertFalse(config.isLLMEnabled());
+        assertFalse(config.isDockerRunType());
     }
     
     @Test
-    void assertExplicitLaneOverrides() {
+    void assertDockerRunType() {
         Properties props = new Properties();
-        props.setProperty("mcp.e2e.contract.enabled", "true");
-        props.setProperty("mcp.e2e.production.mysql.enabled", "true");
-        props.setProperty("mcp.e2e.production.stdio.enabled", "true");
-        props.setProperty("mcp.e2e.distribution.enabled", "true");
-        props.setProperty("mcp.e2e.llm.enabled", "true");
+        props.setProperty("e2e.run.type", "DOCKER");
         MCPE2ETestConfiguration config = new MCPE2ETestConfiguration(props);
-        assertTrue(config.isContractEnabled());
-        assertTrue(config.isProductionMySQLEnabled());
-        assertTrue(config.isProductionStdioEnabled());
-        assertTrue(config.isDistributionEnabled());
-        assertTrue(config.isLLMEnabled());
+        assertTrue(config.isDockerRunType());
     }
     
     @Test
-    void assertInvalidBooleanFallsBackToDefault() {
+    void assertCommaSeparatedRunTypes() {
         Properties props = new Properties();
-        props.setProperty("mcp.e2e.contract.enabled", "invalid");
-        props.setProperty("mcp.e2e.production.mysql.enabled", "invalid");
+        props.setProperty("e2e.run.type", "NATIVE, docker");
         MCPE2ETestConfiguration config = new MCPE2ETestConfiguration(props);
-        assertFalse(config.isContractEnabled());
-        assertFalse(config.isProductionMySQLEnabled());
+        assertTrue(config.isDockerRunType());
     }
     
     @Test
-    void assertCompositeMySQLStdioCondition() {
-        Properties mysqlOnlyProps = new Properties();
-        mysqlOnlyProps.setProperty("mcp.e2e.production.mysql.enabled", "true");
-        MCPE2ETestConfiguration mysqlOnlyConfig = new MCPE2ETestConfiguration(mysqlOnlyProps);
-        Properties bothProps = new Properties();
-        bothProps.setProperty("mcp.e2e.production.mysql.enabled", "true");
-        bothProps.setProperty("mcp.e2e.production.stdio.enabled", "true");
-        MCPE2ETestConfiguration bothConfig = new MCPE2ETestConfiguration(bothProps);
-        assertFalse(MCPE2ECondition.isProductionMySQLStdioEnabled(mysqlOnlyConfig));
-        assertTrue(MCPE2ECondition.isProductionMySQLStdioEnabled(bothConfig));
+    void assertNativeRunType() {
+        Properties props = new Properties();
+        props.setProperty("e2e.run.type", "NATIVE");
+        MCPE2ETestConfiguration config = new MCPE2ETestConfiguration(props);
+        assertFalse(config.isDockerRunType());
     }
     
 }

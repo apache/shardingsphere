@@ -40,7 +40,7 @@ class HttpTransportBaselineContractE2ETest extends AbstractHttpProgrammaticRunti
     private static final String BASELINE_RESOURCE_PATH = "baseline-contract/model-contract/";
     
     private static boolean isEnabled() {
-        return MCPE2ECondition.isContractEnabled();
+        return MCPE2ECondition.isDockerEnabled();
     }
     
     @Test

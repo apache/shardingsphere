@@ -39,7 +39,7 @@ class HttpTransportSecurityE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     private boolean remoteBinding;
     
     private static boolean isEnabled() {
-        return MCPE2ECondition.isContractEnabled();
+        return MCPE2ECondition.isDockerEnabled();
     }
     
     @Override

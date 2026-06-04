@@ -27,7 +27,7 @@ import java.util.Properties;
 @RequiredArgsConstructor
 final class MCPE2ETestConfiguration {
     
-    private static final MCPE2ETestConfiguration INSTANCE = new MCPE2ETestConfiguration(EnvironmentPropertiesLoader.loadProperties("env/e2e-env.properties"));
+    private static final MCPE2ETestConfiguration INSTANCE = new MCPE2ETestConfiguration(EnvironmentPropertiesLoader.loadProperties());
     
     private final Properties props;
     
@@ -35,38 +35,7 @@ final class MCPE2ETestConfiguration {
         return INSTANCE;
     }
     
-    boolean isContractEnabled() {
-        return getBoolean("mcp.e2e.contract.enabled", false);
-    }
-    
-    boolean isProductionMySQLEnabled() {
-        return getBoolean("mcp.e2e.production.mysql.enabled", false);
-    }
-    
-    boolean isProductionStdioEnabled() {
-        return getBoolean("mcp.e2e.production.stdio.enabled", false);
-    }
-    
-    boolean isDistributionEnabled() {
-        return getBoolean("mcp.e2e.distribution.enabled", false);
-    }
-    
-    boolean isLLMEnabled() {
-        return getBoolean("mcp.e2e.llm.enabled", false);
-    }
-    
-    private boolean getBoolean(final String key, final boolean defaultValue) {
-        String value = props.getProperty(key);
-        if (null == value) {
-            return defaultValue;
-        }
-        String trimmedValue = value.trim().toLowerCase(Locale.ENGLISH);
-        if ("true".equals(trimmedValue)) {
-            return true;
-        }
-        if ("false".equals(trimmedValue)) {
-            return false;
-        }
-        return defaultValue;
+    boolean isDockerRunType() {
+        return EnvironmentPropertiesLoader.getListValue(props, "e2e.run.type").stream().map(each -> each.toUpperCase(Locale.ENGLISH)).anyMatch("DOCKER"::equals);
     }
 }

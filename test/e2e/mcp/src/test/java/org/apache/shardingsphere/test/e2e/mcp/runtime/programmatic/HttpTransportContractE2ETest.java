@@ -50,7 +50,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     private static final String PLAN_MASK_TOOL_NAME = "database_gateway_plan_mask_rule";
     
     private static boolean isEnabled() {
-        return MCPE2ECondition.isContractEnabled();
+        return MCPE2ECondition.isDockerEnabled();
     }
     
     @Test

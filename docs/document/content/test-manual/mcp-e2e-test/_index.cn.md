@@ -27,6 +27,13 @@ chapter = true
 ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
 ```
 
+打包 MCP distribution 并构建本地 distribution image：
+
+```bash
+./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
+docker build -f distribution/mcp/Dockerfile -t apache/shardingsphere-mcp-e2e:local distribution/mcp/target
+```
+
 ## LLM Runtime
 
 MCP LLM lane 默认使用本地 Docker image 承载 OpenAI-compatible endpoint。
@@ -50,27 +57,24 @@ sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh
 
 ## 运行 MCP Runtime E2E
 
+MCP E2E 运行配置集中在 `test/e2e/mcp/src/test/resources/env/e2e-env.properties`。
+本地运行时可以直接修改该文件，也可以使用同名 `-D` 系统参数覆盖。
+
 ```bash
-MCP_E2E_TESTS=HttpTransportContractE2ETest,HttpTransportProtocolContractE2ETest,HttpTransportBaselineContractE2ETest
-MCP_E2E_TESTS="${MCP_E2E_TESTS},ProductionMySQLRuntimeE2ETest"
-MCP_E2E_TESTS="${MCP_E2E_TESTS},HttpProductionProxyEncryptWorkflowE2ETest"
-MCP_E2E_TESTS="${MCP_E2E_TESTS},HttpProductionProxyMaskWorkflowE2ETest,LLMUsabilitySuiteE2ETest"
 ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-  -Dtest="${MCP_E2E_TESTS}" \
+  -Dtest='*E2ETest' \
   -Dsurefire.failIfNoSpecifiedTests=true \
-  -Dmcp.e2e.contract.enabled=true \
-  -Dmcp.e2e.production.mysql.enabled=true \
-  -Dmcp.e2e.production.stdio.enabled=true \
-  -Dmcp.e2e.llm.enabled=true \
-  -Dmcp.e2e.llm.excludedGroups=
+  -De2e.run.type=DOCKER \
+  -Dmcp.e2e.container.image=apache/shardingsphere-mcp-e2e:local
 ```
 
 ## 运行 LLM Usability Suite
 
 ```bash
-./mvnw -pl test/e2e/mcp -Pllm-e2e test -DskipITs -Dspotless.skip=true \
+./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
   -Dtest=LLMUsabilitySuiteE2ETest \
-  -Dsurefire.failIfNoSpecifiedTests=true
+  -Dsurefire.failIfNoSpecifiedTests=true \
+  -De2e.run.type=DOCKER
 ```
 
 ## External Debug
@@ -78,8 +82,9 @@ MCP_E2E_TESTS="${MCP_E2E_TESTS},HttpProductionProxyMaskWorkflowE2ETest,LLMUsabil
 仅本地调试时，可以连接已经运行的 OpenAI-compatible endpoint：
 
 ```bash
-./mvnw -pl test/e2e/mcp -Pllm-e2e test -DskipITs -Dspotless.skip=true \
+./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
   -Dtest=LLMUsabilitySuiteE2ETest \
+  -De2e.run.type=DOCKER \
   -Dmcp.llm.runtime-mode=external-debug \
   -Dmcp.llm.base-url=http://127.0.0.1:8080/v1 \
   -Dsurefire.failIfNoSpecifiedTests=true

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 
 import java.io.IOException;
@@ -136,11 +137,12 @@ public final class PackagedDistributionTestSupport {
     private static IllegalStateException createMissingDistributionHomeException() {
         Path expectedTargetDirectory = findRepositoryRoot().resolve("distribution/mcp/target");
         return new IllegalStateException("Packaged MCP distribution was not found. Run `" + DISTRIBUTION_PACKAGE_COMMAND
-                + "` first or set `-Dmcp.distribution.home=/path/to/apache-shardingsphere-mcp-*`. Checked `" + expectedTargetDirectory + "`.");
+                + "` first or set `mcp.distribution.home` in env/e2e-env.properties or pass "
+                + "`-Dmcp.distribution.home=/path/to/apache-shardingsphere-mcp-*`. Checked `" + expectedTargetDirectory + "`.");
     }
     
     private static Optional<Path> resolveConfiguredDistributionHome() {
-        String configuredHome = System.getProperty("mcp.distribution.home", "").trim();
+        String configuredHome = EnvironmentPropertiesLoader.loadProperties().getProperty("mcp.distribution.home", "").trim();
         if (configuredHome.isEmpty()) {
             return Optional.empty();
         }

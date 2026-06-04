@@ -23,43 +23,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPE2ECondition {
     
-    public static boolean isContractEnabled() {
-        return isContractEnabled(MCPE2ETestConfiguration.getInstance());
+    public static boolean isDockerEnabled() {
+        return isDockerEnabled(MCPE2ETestConfiguration.getInstance());
     }
     
-    static boolean isContractEnabled(final MCPE2ETestConfiguration config) {
-        return config.isContractEnabled();
-    }
-    
-    public static boolean isProductionMySQLEnabled() {
-        return isProductionMySQLEnabled(MCPE2ETestConfiguration.getInstance());
-    }
-    
-    static boolean isProductionMySQLEnabled(final MCPE2ETestConfiguration config) {
-        return config.isProductionMySQLEnabled();
-    }
-    
-    public static boolean isProductionMySQLStdioEnabled() {
-        return isProductionMySQLStdioEnabled(MCPE2ETestConfiguration.getInstance());
-    }
-    
-    static boolean isProductionMySQLStdioEnabled(final MCPE2ETestConfiguration config) {
-        return config.isProductionMySQLEnabled() && config.isProductionStdioEnabled();
-    }
-    
-    public static boolean isDistributionEnabled() {
-        return isDistributionEnabled(MCPE2ETestConfiguration.getInstance());
-    }
-    
-    static boolean isDistributionEnabled(final MCPE2ETestConfiguration config) {
-        return config.isDistributionEnabled();
-    }
-    
-    public static boolean isLLMEnabled() {
-        return isLLMEnabled(MCPE2ETestConfiguration.getInstance());
-    }
-    
-    static boolean isLLMEnabled(final MCPE2ETestConfiguration config) {
-        return config.isLLMEnabled();
+    static boolean isDockerEnabled(final MCPE2ETestConfiguration config) {
+        return config.isDockerRunType();
     }
 }

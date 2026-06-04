@@ -24,6 +24,8 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPIntera
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,11 +55,11 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     private static final String TABLE_RULES_RESOURCE_URI = "shardingsphere://features/encrypt/databases/%s/tables/%s/rules";
     
     private static boolean isEnabled() {
-        return MCPE2ECondition.isProductionMySQLEnabled();
+        return MCPE2ECondition.isDockerEnabled();
     }
     
     @Test
-    void assertCompleteEncryptAlgorithmThroughProxy() throws Exception {
+    void assertCompleteEncryptAlgorithmThroughProxy() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.complete(Map.of("type", "ref/prompt", "name", PLAN_PROMPT_NAME), "algorithm_type", "AE", Map.of());
             assertThat(getStringList(getMap(actual.get("completion")).get("values")), hasItem("AES"));
@@ -65,7 +67,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanApplyAndValidateEncryptWorkflowThroughProxy() throws Exception {
+    void assertPlanApplyAndValidateEncryptWorkflowThroughProxy() throws IOException, InterruptedException, SQLException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> clarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("table", "orders", "column", "status", "natural_language_intent", "encrypt status with reversible encryption, no equality, no like"));
@@ -116,7 +118,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanRecommendsAssistedQueryEncryptWorkflowThroughProxy() throws Exception {
+    void assertPlanRecommendsAssistedQueryEncryptWorkflowThroughProxy() throws IOException, InterruptedException, SQLException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualClarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -168,7 +170,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanReportsLikeQueryCapabilityConflictThroughProxy() throws Exception {
+    void assertPlanReportsLikeQueryCapabilityConflictThroughProxy() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -184,7 +186,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanAutoRenamesDerivedColumnWhenCipherColumnConflictsThroughProxy() throws Exception {
+    void assertPlanAutoRenamesDerivedColumnWhenCipherColumnConflictsThroughProxy() throws IOException, InterruptedException, SQLException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             interactionClient.call("database_gateway_execute_update",
                     Map.of("database", getLogicalDatabaseName(), "schema", "public",
@@ -210,7 +212,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanRejectsUnsupportedSecondEncryptColumnThroughProxy() throws Exception {
+    void assertPlanRejectsUnsupportedSecondEncryptColumnThroughProxy() throws IOException, InterruptedException, SQLException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualFirstPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -239,7 +241,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertApplySupportsManualOnlyExecutionModeThroughProxy() throws Exception {
+    void assertApplySupportsManualOnlyExecutionModeThroughProxy() throws IOException, InterruptedException, SQLException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlannedResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -263,7 +265,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertApplySupportsApprovedStepsThroughProxy() throws Exception {
+    void assertApplySupportsApprovedStepsThroughProxy() throws IOException, InterruptedException, SQLException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlannedResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -292,7 +294,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanRejectsUnsupportedEncryptAlterExpansionThroughProxy() throws Exception {
+    void assertPlanRejectsUnsupportedEncryptAlterExpansionThroughProxy() throws IOException, InterruptedException, SQLException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             createEncryptRuleWithoutEquality(interactionClient);
             Map<String, Object> actualAlterPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
@@ -310,7 +312,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanApplyAndValidateEncryptDropWorkflowThroughProxy() throws Exception {
+    void assertPlanApplyAndValidateEncryptDropWorkflowThroughProxy() throws IOException, InterruptedException, SQLException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             createEncryptRuleWithoutEquality(interactionClient);
             Map<String, Object> actualDropPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
@@ -335,7 +337,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanApplyValidateAndReadEncryptResourcesWithCustomAlgorithmThroughProxy() throws Exception {
+    void assertPlanApplyValidateAndReadEncryptResourcesWithCustomAlgorithmThroughProxy() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -357,11 +359,11 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
         }
     }
     
-    private void createEncryptRuleWithoutEquality(final MCPInteractionClient interactionClient) throws Exception {
+    private void createEncryptRuleWithoutEquality(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
         createEncryptRuleWithoutEquality(interactionClient, "status", "base-secret");
     }
     
-    private void createEncryptRuleWithoutEquality(final MCPInteractionClient interactionClient, final String columnName, final String secret) throws Exception {
+    private void createEncryptRuleWithoutEquality(final MCPInteractionClient interactionClient, final String columnName, final String secret) throws IOException, InterruptedException {
         Map<String, Object> actualCreatePlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                 Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", columnName,
                         "natural_language_intent", String.format("encrypt %s with reversible encryption, no equality, no like", columnName), "algorithm_type", "AES",

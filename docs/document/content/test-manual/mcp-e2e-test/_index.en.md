@@ -27,6 +27,13 @@ Install MCP E2E dependency modules into the local repository first:
 ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
 ```
 
+Package the MCP distribution and build the local distribution image:
+
+```bash
+./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
+docker build -f distribution/mcp/Dockerfile -t apache/shardingsphere-mcp-e2e:local distribution/mcp/target
+```
+
 ## LLM Runtime
 
 The MCP LLM lane uses a local Docker image to host an OpenAI-compatible endpoint.
@@ -50,27 +57,24 @@ sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh
 
 ## Run MCP Runtime E2E
 
+MCP E2E runtime configuration is centralized in `test/e2e/mcp/src/test/resources/env/e2e-env.properties`.
+For local runs, edit that file or override the same keys with `-D` system properties.
+
 ```bash
-MCP_E2E_TESTS=HttpTransportContractE2ETest,HttpTransportProtocolContractE2ETest,HttpTransportBaselineContractE2ETest
-MCP_E2E_TESTS="${MCP_E2E_TESTS},ProductionMySQLRuntimeE2ETest"
-MCP_E2E_TESTS="${MCP_E2E_TESTS},HttpProductionProxyEncryptWorkflowE2ETest"
-MCP_E2E_TESTS="${MCP_E2E_TESTS},HttpProductionProxyMaskWorkflowE2ETest,LLMUsabilitySuiteE2ETest"
 ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-  -Dtest="${MCP_E2E_TESTS}" \
+  -Dtest='*E2ETest' \
   -Dsurefire.failIfNoSpecifiedTests=true \
-  -Dmcp.e2e.contract.enabled=true \
-  -Dmcp.e2e.production.mysql.enabled=true \
-  -Dmcp.e2e.production.stdio.enabled=true \
-  -Dmcp.e2e.llm.enabled=true \
-  -Dmcp.e2e.llm.excludedGroups=
+  -De2e.run.type=DOCKER \
+  -Dmcp.e2e.container.image=apache/shardingsphere-mcp-e2e:local
 ```
 
 ## Run LLM Usability Suite
 
 ```bash
-./mvnw -pl test/e2e/mcp -Pllm-e2e test -DskipITs -Dspotless.skip=true \
+./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
   -Dtest=LLMUsabilitySuiteE2ETest \
-  -Dsurefire.failIfNoSpecifiedTests=true
+  -Dsurefire.failIfNoSpecifiedTests=true \
+  -De2e.run.type=DOCKER
 ```
 
 ## External Debug
@@ -78,8 +82,9 @@ MCP_E2E_TESTS="${MCP_E2E_TESTS},HttpProductionProxyMaskWorkflowE2ETest,LLMUsabil
 For local debugging only, connect to an already running OpenAI-compatible endpoint:
 
 ```bash
-./mvnw -pl test/e2e/mcp -Pllm-e2e test -DskipITs -Dspotless.skip=true \
+./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
   -Dtest=LLMUsabilitySuiteE2ETest \
+  -De2e.run.type=DOCKER \
   -Dmcp.llm.runtime-mode=external-debug \
   -Dmcp.llm.base-url=http://127.0.0.1:8080/v1 \
   -Dsurefire.failIfNoSpecifiedTests=true

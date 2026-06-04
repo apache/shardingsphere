@@ -123,7 +123,7 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     }
     
     protected static boolean isEnabled() {
-        return MCPE2ECondition.isProductionMySQLEnabled() || MCPE2ECondition.isProductionMySQLStdioEnabled();
+        return MCPE2ECondition.isDockerEnabled();
     }
     
     protected static Stream<Arguments> transports() {
@@ -155,14 +155,7 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     }
     
     protected static Stream<RuntimeTransport> runtimeTransports() {
-        Stream.Builder<RuntimeTransport> result = Stream.builder();
-        if (MCPE2ECondition.isProductionMySQLEnabled()) {
-            result.add(RuntimeTransport.HTTP);
-        }
-        if (MCPE2ECondition.isProductionMySQLStdioEnabled()) {
-            result.add(RuntimeTransport.STDIO);
-        }
-        return result.build();
+        return Stream.of(RuntimeTransport.HTTP, RuntimeTransport.STDIO);
     }
     
     protected static String getTransportName(final RuntimeTransport transport) {

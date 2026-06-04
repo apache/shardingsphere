@@ -37,8 +37,6 @@ permissions:
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
   MCP_IMAGE: ghcr.io/apache/shardingsphere-mcp
-  MCP_PUBLISHER_LINUX_AMD64_SHA256: ab128162b0616090b47cf245afe0a23f3ef08936fdce19074f5ba0a4469281ac
-  MCP_PUBLISHER_LINUX_ARM64_SHA256: 04f5199b3deef8e6fc4d6ed98c56a74f799def53edca3fe6d4862ecd4397c172
   MCP_PUBLISHER_VERSION: v1.7.9
   MCP_SERVER_NAME: io.github.apache/shardingsphere-mcp
 
@@ -104,7 +102,7 @@ jobs:
           ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
             -Dtest=PackagedDistributionE2ETest \
             -Dsurefire.failIfNoSpecifiedTests=true \
-            -Dmcp.e2e.distribution.enabled=true \
+            -De2e.run.type=DOCKER \
             -Dmcp.e2e.container.image=shardingsphere-mcp-release:local \
             -Dmcp.distribution.home="${DISTRIBUTION_HOME}" \
             -B -ntp
@@ -162,7 +160,7 @@ jobs:
           ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
             -Dtest=PackagedDistributionE2ETest#assertLaunchContainerOverHttp+assertLaunchContainerOverStdio \
             -Dsurefire.failIfNoSpecifiedTests=true \
-            -Dmcp.e2e.distribution.enabled=true \
+            -De2e.run.type=DOCKER \
             -Dmcp.e2e.container.image="${{ env.MCP_IMAGE }}@${{ steps.push-image.outputs.digest }}" \
             -B -ntp
       - name: Install MCP Publisher
@@ -172,20 +170,23 @@ jobs:
           case "$(uname -m)" in
             x86_64 | amd64)
               MCP_PUBLISHER_ARCHIVE="mcp-publisher_linux_amd64.tar.gz"
-              MCP_PUBLISHER_SHA256="${MCP_PUBLISHER_LINUX_AMD64_SHA256}"
               ;;
             aarch64 | arm64)
               MCP_PUBLISHER_ARCHIVE="mcp-publisher_linux_arm64.tar.gz"
-              MCP_PUBLISHER_SHA256="${MCP_PUBLISHER_LINUX_ARM64_SHA256}"
               ;;
             *)
               echo "Unsupported MCP Publisher architecture: $(uname -m)" 1>&2
               exit 1
               ;;
           esac
+          MCP_PUBLISHER_CHECKSUMS="registry_${MCP_PUBLISHER_VERSION#v}_checksums.txt"
           curl -fsSL --retry 3 --output "${MCP_PUBLISHER_ARCHIVE}" \
             "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/${MCP_PUBLISHER_ARCHIVE}"
-          printf '%s  %s\n' "${MCP_PUBLISHER_SHA256}" "${MCP_PUBLISHER_ARCHIVE}" | sha256sum -c -
+          curl -fsSL --retry 3 --output "${MCP_PUBLISHER_CHECKSUMS}" \
+            "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/${MCP_PUBLISHER_CHECKSUMS}"
+          awk -v archive="${MCP_PUBLISHER_ARCHIVE}" '$2 == archive {print; found = 1} END {exit found ? 0 : 1}' \
+            "${MCP_PUBLISHER_CHECKSUMS}" > "${MCP_PUBLISHER_ARCHIVE}.sha256"
+          sha256sum -c "${MCP_PUBLISHER_ARCHIVE}.sha256"
           tar xzf "${MCP_PUBLISHER_ARCHIVE}" mcp-publisher
       - name: Authenticate to MCP Registry
         working-directory: mcp

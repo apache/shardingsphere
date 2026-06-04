@@ -89,7 +89,7 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     private static boolean isEnabled() {
-        return MCPE2ECondition.isLLMEnabled();
+        return MCPE2ECondition.isDockerEnabled();
     }
     
     static Stream<Arguments> getTestCases() {
