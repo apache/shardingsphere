@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
@@ -871,11 +872,11 @@ class StandardDatabaseProxyConnectorTest {
         return result;
     }
     
-    private QueryResultMetaData createQueryResultMetaData() throws SQLException {
-        QueryResultMetaData result = mock(QueryResultMetaData.class);
-        when(result.getColumnLabel(1)).thenReturn("order_id");
-        when(result.getColumnName(1)).thenReturn("order_id");
-        return result;
+    private ShardingSphereResultSetMetaData createResultSetMetaData() throws SQLException {
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("order_id");
+        when(resultSetMetaData.getColumnName(1)).thenReturn("order_id");
+        return new ShardingSphereResultSetMetaData(resultSetMetaData, mock(ShardingSphereDatabase.class), null);
     }
     
     private ResponseHeader executeWithImplicitCommitCondition(final SQLStatement sqlStatement, final String transactionType, final boolean inTransaction,
@@ -1077,8 +1078,6 @@ class StandardDatabaseProxyConnectorTest {
         StorageUnit storageUnit = mock(StorageUnit.class);
         DatabaseType storageDatabaseType = mock(DatabaseType.class);
         JDBCBackendDataSource backendDataSource = mock(JDBCBackendDataSource.class);
-        ConnectionSession connectionSession = createFirebirdConnectionSession(contextManager);
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(new SQLStatement(firebirdDatabaseType));
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         when(metaData.getAllDatabases()).thenReturn(Collections.singleton(database));
@@ -1102,6 +1101,8 @@ class StandardDatabaseProxyConnectorTest {
         } else {
             when(backendDataSource.getConnections(eq("foo_db"), eq("ds"), eq(1), any())).thenReturn(Collections.singletonList(connections[0]), Collections.singletonList(connections[1]));
         }
+        ConnectionSession connectionSession = createFirebirdConnectionSession(contextManager);
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(new SQLStatement(firebirdDatabaseType));
         return new FirebirdPreparedStatementExecutionTestContext(connectionSession, metaData, sqlStatementContext,
                 new QueryContext(sqlStatementContext, sql, Collections.singletonList(1), new HintValueContext(), connectionSession.getConnectionContext(), metaData), sql);
     }
@@ -1112,7 +1113,7 @@ class StandardDatabaseProxyConnectorTest {
                 Collections.singletonList(new ExecutionUnit("ds", new SQLUnit(testContext.sql, Collections.singletonList(parameter)))), mock());
     }
     
-    private DatabaseProxyConnector createFirebirdPreparedStatementConnector(final FirebirdPreparedStatementExecutionTestContext testContext) {
+    private DatabaseProxyConnector createFirebirdPreparedStatementConnector(final FirebirdPreparedStatementExecutionTestContext testContext) throws SQLException {
         DatabaseProxyConnector result = new StandardDatabaseProxyConnector(
                 JDBCDriverType.PREPARED_STATEMENT, testContext.queryContext, testContext.connectionSession.getDatabaseConnectionManager());
         ProxySQLExecutor proxySQLExecutor = getField(result, "proxySQLExecutor");
