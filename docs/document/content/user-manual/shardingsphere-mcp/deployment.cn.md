@@ -126,8 +126,13 @@ server {
   location /mcp {
     proxy_pass http://127.0.0.1:18088/mcp;
     proxy_http_version 1.1;
+    proxy_pass_request_headers off;
 
     proxy_set_header Host $host;
+    proxy_set_header Content-Type $http_content_type;
+    proxy_set_header Accept $http_accept;
+    proxy_set_header MCP-Session-Id $http_mcp_session_id;
+    proxy_set_header MCP-Protocol-Version $http_mcp_protocol_version;
     proxy_set_header X-Forwarded-Proto https;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
   }
@@ -150,8 +155,13 @@ Nginx 示例：
 location /mcp {
   proxy_pass http://127.0.0.1:18088/mcp;
   proxy_http_version 1.1;
+  proxy_pass_request_headers off;
 
   proxy_set_header Host $host;
+  proxy_set_header Content-Type $http_content_type;
+  proxy_set_header Accept $http_accept;
+  proxy_set_header MCP-Session-Id $http_mcp_session_id;
+  proxy_set_header MCP-Protocol-Version $http_mcp_protocol_version;
   proxy_set_header X-Forwarded-Proto https;
   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
@@ -163,7 +173,7 @@ location /mcp {
 
 接线时建议遵循以下原则：
 
-- 由受信网关覆写归属请求头，不透传客户端原始同名请求头。
+- 对转发到后端的请求头使用白名单，或在注入可信值前剥离或拒绝所有匹配归属请求头名称和前缀的客户端原始请求头。
 - `subjectHeader` 表示外部主体，例如试用账号、正式客户标识或内部调用身份。
 - `sourceHeader` 表示请求来源，例如 `gateway-nginx`、`internal-alb` 或其他受信入口名称。
 - `attributeHeaderPrefix` 可用于注入少量非敏感上下文，例如环境、区域或接入渠道；不要通过这些请求头传递密码、密钥或令牌。

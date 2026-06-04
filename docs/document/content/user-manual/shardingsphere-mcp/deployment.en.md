@@ -126,8 +126,13 @@ server {
   location /mcp {
     proxy_pass http://127.0.0.1:18088/mcp;
     proxy_http_version 1.1;
+    proxy_pass_request_headers off;
 
     proxy_set_header Host $host;
+    proxy_set_header Content-Type $http_content_type;
+    proxy_set_header Accept $http_accept;
+    proxy_set_header MCP-Session-Id $http_mcp_session_id;
+    proxy_set_header MCP-Protocol-Version $http_mcp_protocol_version;
     proxy_set_header X-Forwarded-Proto https;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
   }
@@ -150,8 +155,13 @@ Nginx example:
 location /mcp {
   proxy_pass http://127.0.0.1:18088/mcp;
   proxy_http_version 1.1;
+  proxy_pass_request_headers off;
 
   proxy_set_header Host $host;
+  proxy_set_header Content-Type $http_content_type;
+  proxy_set_header Accept $http_accept;
+  proxy_set_header MCP-Session-Id $http_mcp_session_id;
+  proxy_set_header MCP-Protocol-Version $http_mcp_protocol_version;
   proxy_set_header X-Forwarded-Proto https;
   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
@@ -163,7 +173,7 @@ location /mcp {
 
 Follow these rules when wiring attribution:
 
-- Let the trusted gateway overwrite the attribution headers instead of forwarding client-supplied values with the same names.
+- Use an allow-list for proxied request headers, or strip/reject every client-supplied header that matches the configured attribution header names and prefix before injecting trusted values.
 - `subjectHeader` represents the external subject, such as a trial user, a commercial customer identifier, or an internal caller identity.
 - `sourceHeader` identifies the request source, such as `gateway-nginx`, `internal-alb`, or another trusted ingress name.
 - `attributeHeaderPrefix` can carry a small amount of non-sensitive context such as environment, region, or integration channel; do not pass passwords, keys, or tokens through these headers.
