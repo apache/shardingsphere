@@ -13,10 +13,15 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 
 ## Prerequisites
 
-- Start the HTTP MCP Server by following [Quick Start](../../quick-start/) and provide a remote address that ChatGPT can reach.
-- The remote MCP Server supports `SSE` or `streaming HTTP`.
+- Start the HTTP MCP Server by following [Quick Start](../../quick-start/).
+- Expose only a secured remote endpoint that ChatGPT can reach. The built-in ShardingSphere-MCP HTTP Server does not provide authentication or authorization.
+- For remote platform access, place ShardingSphere-MCP behind a trusted gateway or reverse proxy that provides TLS termination, authentication,
+  authorization policy, network access control, and audit logs.
+  See [Deployment](../../deployment/) and [Configuration](../../configuration/) for the security boundary.
+- The secured remote endpoint supports `SSE` or `streaming HTTP`.
 - Use a ChatGPT web account that is eligible for Developer Mode. The current beta is available on the web to Pro, Plus, Business, Enterprise, and Education accounts.
-- If the remote MCP Server requires authentication, decide whether the app uses `OAuth`, `No Authentication`, or `Mixed Authentication`.
+- Decide whether the secured remote endpoint uses `OAuth`, `No Authentication`, or `Mixed Authentication`.
+  Use `No Authentication` only for controlled private testing or when an outer network boundary already restricts access.
 
 ## Integration Steps
 
@@ -24,9 +29,9 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 
 1. In ChatGPT Web, go to `Settings -> Apps -> Advanced settings -> Developer mode` and enable Developer Mode.
 2. Open the app settings page and use `Create app` to create a new app for ShardingSphere-MCP.
-3. In the app configuration, enter the remote ShardingSphere-MCP address and select the authentication mode that matches the server:
+3. In the app configuration, enter the secured remote ShardingSphere-MCP address and select the authentication mode that matches the endpoint:
    - `OAuth`
-   - `No Authentication`
+   - `No Authentication` for controlled private testing or an already restricted endpoint only
    - `Mixed Authentication`
 4. Save the app and refresh the tool list on the app details page so ChatGPT can pull the latest tools and descriptions from ShardingSphere-MCP.
 
@@ -47,7 +52,7 @@ Invocation succeeds when:
 
 If the integration fails, check these items first:
 
-- Confirm that the remote MCP address is reachable from ChatGPT and is not a local `127.0.0.1` address.
+- Confirm that the remote MCP address is reachable from ChatGPT and is not a local `127.0.0.1` address or a directly exposed unauthenticated built-in HTTP Server.
 - Confirm that the tool list was refreshed after saving the app and that ChatGPT successfully imported the ShardingSphere-MCP tools.
 - Confirm that the selected authentication mode matches the actual MCP Server configuration.
 

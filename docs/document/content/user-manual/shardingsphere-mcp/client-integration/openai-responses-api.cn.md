@@ -14,9 +14,13 @@ weight = 3
 ## 前置条件
 
 - 已按[快速开始](../../quick-start/)启动 HTTP MCP Server。
-- ShardingSphere-MCP 的远程地址可被 OpenAI API 访问。官方远程 MCP 工具要求服务运行在可访问的远程 HTTP 地址上，并支持 `Streamable HTTP` 或 `HTTP/SSE`。
+- 只暴露可被 OpenAI API 访问且已受保护的远程 endpoint。ShardingSphere-MCP 内置 HTTP Server 不提供认证或授权。
+- 远程平台接入时，应将 ShardingSphere-MCP 放在受信网关或反向代理后面，由外层组件提供 TLS 终止、身份认证、
+  授权策略、网络访问控制和审计日志。
+  安全边界见[部署说明](../../deployment/)和[配置说明](../../configuration/)。
+- 该受保护的远程 endpoint 需要支持 `Streamable HTTP` 或 `HTTP/SSE`。
 - 已准备 OpenAI API Key，并选择支持 remote MCP 的模型。
-- 如果目标 MCP Server 使用 OAuth 保护，还需要准备可传给 MCP tool 的访问令牌。
+- 如果受保护的远程 endpoint 或网关使用 OAuth 或 Bearer 认证，还需要准备可传给 MCP tool 的访问令牌。
 
 ## 接入步骤
 
@@ -49,10 +53,11 @@ response = client.responses.create(
 配置时建议关注这些字段：
 
 - `server_label`：当前 MCP Server 的标识名称，后续工具调用和审批事件会引用这个名称。
-- `server_url`：ShardingSphere-MCP 的远程 HTTP 地址。
+- `server_url`：位于 ShardingSphere-MCP 前方、已受保护的远程 HTTP 地址。
 - `allowed_tools`：可选。用于只导入 ShardingSphere-MCP 暴露工具中的一个子集，适合先从只读工具和预检工具开始。
 - `require_approval`：可选。默认会触发审批请求。只有在你已经审查过工具范围并接受自动调用时，才应关闭审批。
-- `authorization`：可选。如果远程 MCP Server 需要 OAuth 访问令牌，可在这里传入认证信息。
+- `authorization`：可选。仅当受保护的远程 endpoint 或网关需要 OAuth 或 Bearer 访问令牌时，在这里传入认证信息。
+  该字段不会为 ShardingSphere-MCP 内置 HTTP Server 启用认证能力。
 
 ### 验证接入成功
 
@@ -71,7 +76,7 @@ response = client.responses.create(
 
 如果接入失败，优先检查：
 
-- `server_url` 是否为 OpenAI 平台可访问的远程地址，而不是本地 `127.0.0.1` 地址。
+- `server_url` 是否为 OpenAI 平台可访问且已受保护的远程地址，而不是本地 `127.0.0.1` 地址或直接暴露的未认证内置 HTTP Server。
 - 工具导入阶段是否返回了 `mcp_list_tools`；如果没有，先排查远程地址和服务可用性。
 - 是否收到了 `mcp_approval_request`，以及后续是否正确补发了 `mcp_approval_response`。
 
@@ -79,7 +84,7 @@ response = client.responses.create(
 
 - OpenAI Responses API 的 remote MCP 只适用于远程 HTTP MCP Server，不适用于本地 `STDIO` 进程。
 - 远程 MCP Server 默认会触发审批流程。对于可能产生写操作或副作用的工具，应保留审批或显式限制 `allowed_tools`。
-- 只把 ShardingSphere-MCP 部署到你信任的环境中，并优先使用受你控制的远程地址。
+- 只通过你信任的环境暴露 ShardingSphere-MCP，并优先使用受你控制的远程地址。
 - 本页只说明 OpenAI API 集成方式。若希望在 ChatGPT 产品界面中直接接入，请参考 [ChatGPT Developer Mode](../chatgpt-developer-mode/)。
 - 具体可用任务和使用边界见[能力清单](../../capabilities/)。
 

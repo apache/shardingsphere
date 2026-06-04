@@ -13,11 +13,15 @@ weight = 5
 
 ## 前置条件
 
-- 已按[快速开始](../../quick-start/)启动 HTTP MCP Server，并准备一个可从 Anthropic Messages API 访问的远程 HTTPS 地址。
-- 该远程 MCP Server 支持 `Streamable HTTP` 或 `SSE`。
+- 已按[快速开始](../../quick-start/)启动 HTTP MCP Server。
+- 只暴露可被 Anthropic Messages API 访问且已受保护的远程 HTTPS endpoint。ShardingSphere-MCP 内置 HTTP Server 不提供认证或授权。
+- 远程平台接入时，应将 ShardingSphere-MCP 放在受信网关或反向代理后面，由外层组件提供 TLS 终止、身份认证、
+  授权策略、网络访问控制和审计日志。
+  安全边界见[部署说明](../../deployment/)和[配置说明](../../configuration/)。
+- 该受保护的远程 endpoint 需要支持 `Streamable HTTP` 或 `SSE`。
 - 已准备 Anthropic API Key。
 - 当前 MCP Connector 版本要求携带 `anthropic-beta: mcp-client-2025-11-20` 请求头。
-- 如果远程 MCP Server 需要 OAuth 认证，需要提前准备可传入 `authorization_token` 的访问令牌。
+- 如果受保护的远程 endpoint 或网关使用 OAuth 或 Bearer 认证，需要提前准备可传入 `authorization_token` 的访问令牌。
 
 ## 接入步骤
 
@@ -56,7 +60,7 @@ curl https://api.anthropic.com/v1/messages \
   }'
 ```
 
-如果远程 MCP Server 需要 OAuth，可以在 `mcp_servers` 条目中增加：
+如果受保护的远程 endpoint 或网关使用 OAuth 或 Bearer 认证，可以在 `mcp_servers` 条目中增加：
 
 ```json
 "authorization_token": "YOUR_TOKEN"
@@ -100,7 +104,7 @@ curl https://api.anthropic.com/v1/messages \
 
 - 是否携带了 `anthropic-beta: mcp-client-2025-11-20` 请求头。
 - `mcp_servers` 中的 `name` 和 `mcp_toolset` 中的 `mcp_server_name` 是否严格一致。
-- 远程地址是否为 Anthropic 平台可访问的 HTTPS MCP 端点，而不是本地 `127.0.0.1` 地址。
+- 远程地址是否为 Anthropic 平台可访问且已受保护的 HTTPS MCP endpoint，而不是本地 `127.0.0.1` 地址或直接暴露的未认证内置 HTTP Server。
 
 ## 注意事项
 

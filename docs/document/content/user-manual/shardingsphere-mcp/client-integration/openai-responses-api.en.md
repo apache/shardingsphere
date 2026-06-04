@@ -14,9 +14,13 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 ## Prerequisites
 
 - Start the HTTP MCP Server by following [Quick Start](../../quick-start/).
-- The ShardingSphere-MCP endpoint must be reachable by the OpenAI API. The remote MCP tool expects a remotely reachable HTTP endpoint that supports `Streamable HTTP` or `HTTP/SSE`.
+- Expose only a secured remote endpoint that OpenAI API can reach. The built-in ShardingSphere-MCP HTTP Server does not provide authentication or authorization.
+- For remote platform access, place ShardingSphere-MCP behind a trusted gateway or reverse proxy that provides TLS termination, authentication,
+  authorization policy, network access control, and audit logs.
+  See [Deployment](../../deployment/) and [Configuration](../../configuration/) for the security boundary.
+- The secured remote endpoint must support `Streamable HTTP` or `HTTP/SSE`.
 - Prepare an OpenAI API key and choose a model that supports remote MCP.
-- If the MCP Server requires OAuth, prepare an access token that can be passed to the MCP tool.
+- If the secured remote endpoint or gateway requires OAuth or Bearer authentication, prepare an access token that can be passed to the MCP tool.
 
 ## Integration Steps
 
@@ -49,10 +53,11 @@ response = client.responses.create(
 Pay attention to these fields:
 
 - `server_label`: the label used to identify this MCP server in tool calls and approval events.
-- `server_url`: the remote HTTP address of ShardingSphere-MCP.
+- `server_url`: the secured remote HTTP address that fronts ShardingSphere-MCP.
 - `allowed_tools`: optional. Import only a subset of ShardingSphere-MCP tools, which is useful when starting with read-only and validation tools.
 - `require_approval`: optional. Approval is required by default. Disable it only after you have reviewed the tool surface and accept automatic tool calls.
-- `authorization`: optional. Pass authentication data here if the remote MCP server requires an OAuth access token.
+- `authorization`: optional. Pass authentication data here only when the secured remote endpoint or gateway requires an OAuth or Bearer access token.
+  This does not enable authentication inside the built-in ShardingSphere-MCP HTTP Server.
 
 ### Verify the integration
 
@@ -71,7 +76,7 @@ Invocation succeeds when:
 
 If the integration fails, check these items first:
 
-- Confirm that `server_url` is a remotely reachable endpoint from OpenAI, not a local `127.0.0.1` address.
+- Confirm that `server_url` is a secured endpoint reachable from OpenAI, not a local `127.0.0.1` address or a directly exposed unauthenticated built-in HTTP Server.
 - Confirm that the tool import step returns `mcp_list_tools`; if not, start with the remote endpoint and server availability.
 - Confirm whether an `mcp_approval_request` was returned and whether the matching `mcp_approval_response` was sent.
 
@@ -79,7 +84,7 @@ If the integration fails, check these items first:
 
 - The OpenAI Responses API remote MCP tool works with remote HTTP MCP Servers. It does not connect to local `STDIO` processes.
 - Remote MCP calls require approval by default. Keep approvals in place for tools that can write data or cause side effects, or explicitly constrain the surface with `allowed_tools`.
-- Only expose ShardingSphere-MCP from an environment you trust, and prefer a server URL you control.
+- Only expose ShardingSphere-MCP through an environment you trust, and prefer a server URL you control.
 - This page covers the OpenAI API integration path only. If you want to connect ShardingSphere-MCP directly in the ChatGPT product UI, use [ChatGPT Developer Mode](../chatgpt-developer-mode/).
 - See the [Capability Catalog](../../capabilities/) for the supported task surface and usage boundaries.
 

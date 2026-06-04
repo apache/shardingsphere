@@ -13,10 +13,15 @@ weight = 4
 
 ## 前置条件
 
-- 已按[快速开始](../../quick-start/)启动 HTTP MCP Server，并准备一个可从 ChatGPT 访问的远程地址。
-- 该远程 MCP Server 支持 `SSE` 或 `streaming HTTP`。
+- 已按[快速开始](../../quick-start/)启动 HTTP MCP Server。
+- 只暴露可被 ChatGPT 访问且已受保护的远程 endpoint。ShardingSphere-MCP 内置 HTTP Server 不提供认证或授权。
+- 远程平台接入时，应将 ShardingSphere-MCP 放在受信网关或反向代理后面，由外层组件提供 TLS 终止、身份认证、
+  授权策略、网络访问控制和审计日志。
+  安全边界见[部署说明](../../deployment/)和[配置说明](../../configuration/)。
+- 该受保护的远程 endpoint 需要支持 `SSE` 或 `streaming HTTP`。
 - 已准备可用的 ChatGPT Web 账号。当前 Developer Mode 在 Web 端 Beta 提供给 Pro、Plus、Business、Enterprise 和 Education 账号。
-- 如果远程 MCP Server 需要认证，需要提前确定使用 `OAuth`、`No Authentication` 或 `Mixed Authentication` 中的哪一种模式。
+- 提前确定受保护的远程 endpoint 使用 `OAuth`、`No Authentication` 或 `Mixed Authentication` 中的哪一种模式。
+  `No Authentication` 仅适用于受控私有测试，或外层网络边界已经限制访问的 endpoint。
 
 ## 接入步骤
 
@@ -24,9 +29,9 @@ weight = 4
 
 1. 在 ChatGPT Web 中进入 `Settings -> Apps -> Advanced settings -> Developer mode`，启用 Developer Mode。
 2. 打开 App 设置页，使用 `Create app` 为 ShardingSphere-MCP 创建一个新的 app。
-3. 在 app 配置中填写 ShardingSphere-MCP 的远程地址，并选择与服务匹配的认证方式：
+3. 在 app 配置中填写 ShardingSphere-MCP 的受保护远程地址，并选择与 endpoint 匹配的认证方式：
    - `OAuth`
-   - `No Authentication`
+   - `No Authentication`，仅适用于受控私有测试或已经由外层边界限制访问的 endpoint
    - `Mixed Authentication`
 4. 保存 app 配置，并在 app 详情页刷新工具列表，使 ChatGPT 从 ShardingSphere-MCP 拉取最新工具和描述。
 
@@ -47,7 +52,7 @@ weight = 4
 
 如果接入失败，优先检查：
 
-- 远程 MCP 地址是否为 ChatGPT 可访问的远程地址，而不是本地 `127.0.0.1` 地址。
+- 远程 MCP 地址是否为 ChatGPT 可访问且已受保护的远程地址，而不是本地 `127.0.0.1` 地址或直接暴露的未认证内置 HTTP Server。
 - app 保存后是否已刷新工具列表，并成功拉取到 ShardingSphere-MCP 暴露的工具。
 - 认证模式是否与 MCP Server 的实际配置一致。
 

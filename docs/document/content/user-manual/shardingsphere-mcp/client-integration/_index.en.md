@@ -18,7 +18,11 @@ See the [Capability Catalog](../capabilities/) for supported tasks and usage bou
 - [ChatGPT Developer Mode](./chatgpt-developer-mode/) connects a remote MCP Server directly in the ChatGPT web product.
 - [Anthropic MCP Connector](./anthropic-mcp-connector/) connects a remote MCP Server directly in the Anthropic Messages API.
 
-Platform and API integrations require a remotely reachable MCP Server. Local examples such as `http://127.0.0.1:18088/mcp` are only suitable for local client integration pages and cannot be reused directly for OpenAI or Anthropic platform entry points.
+Platform and API integrations require a secured, remotely reachable MCP endpoint.
+Do not expose the built-in ShardingSphere-MCP HTTP Server directly to remote platforms because it does not provide authentication or authorization.
+For remote platform access, place it behind a trusted gateway or reverse proxy that provides TLS termination, authentication, authorization policy, network access control, and audit logs.
+See [Deployment](../deployment/) and [Configuration](../configuration/) for the security boundary.
+Local examples such as `http://127.0.0.1:18088/mcp` are only suitable for local client integration pages and cannot be reused directly for OpenAI or Anthropic platform entry points.
 
 ## Choose an entry point
 
@@ -26,7 +30,7 @@ Platform and API integrations require a remotely reachable MCP Server. Local exa
 - Use a platform or API integration when a backend service needs to call models through an API and let those models call MCP tools.
 - When multiple clients should share the same ShardingSphere-MCP service, prefer an independently started HTTP MCP Server.
 - When the MCP process should start only on demand in local development, choose a client that supports STDIO.
-- When the target entry point runs inside OpenAI or Anthropic infrastructure, confirm that the remote MCP address is reachable from that platform before continuing.
+- When the target entry point runs inside OpenAI or Anthropic infrastructure, confirm that the secured remote MCP address is reachable from that platform before continuing.
 
 ## Typical usage after integration
 

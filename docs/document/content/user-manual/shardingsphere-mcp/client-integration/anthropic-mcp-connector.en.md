@@ -13,11 +13,15 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 
 ## Prerequisites
 
-- Start the HTTP MCP Server by following [Quick Start](../../quick-start/) and provide a remote HTTPS address that the Anthropic Messages API can reach.
-- The remote MCP Server supports `Streamable HTTP` or `SSE`.
+- Start the HTTP MCP Server by following [Quick Start](../../quick-start/).
+- Expose only a secured remote HTTPS endpoint that the Anthropic Messages API can reach. The built-in ShardingSphere-MCP HTTP Server does not provide authentication or authorization.
+- For remote platform access, place ShardingSphere-MCP behind a trusted gateway or reverse proxy that provides TLS termination, authentication,
+  authorization policy, network access control, and audit logs.
+  See [Deployment](../../deployment/) and [Configuration](../../configuration/) for the security boundary.
+- The secured remote endpoint supports `Streamable HTTP` or `SSE`.
 - Prepare an Anthropic API key.
 - The current MCP Connector version requires the request header `anthropic-beta: mcp-client-2025-11-20`.
-- If the remote MCP Server requires OAuth, prepare an access token that can be passed as `authorization_token`.
+- If the secured remote endpoint or gateway requires OAuth or Bearer authentication, prepare an access token that can be passed as `authorization_token`.
 
 ## Integration Steps
 
@@ -56,7 +60,7 @@ curl https://api.anthropic.com/v1/messages \
   }'
 ```
 
-If the remote MCP Server requires OAuth, add this field to the `mcp_servers` entry:
+If the secured remote endpoint or gateway requires OAuth or Bearer authentication, add this field to the `mcp_servers` entry:
 
 ```json
 "authorization_token": "YOUR_TOKEN"
@@ -100,7 +104,7 @@ If the integration fails, check these items first:
 
 - Confirm that the request includes the `anthropic-beta: mcp-client-2025-11-20` header.
 - Confirm that the `name` in `mcp_servers` exactly matches `mcp_server_name` in the `mcp_toolset`.
-- Confirm that the remote address is an HTTPS MCP endpoint reachable from Anthropic, not a local `127.0.0.1` address.
+- Confirm that the remote address is a secured HTTPS MCP endpoint reachable from Anthropic, not a local `127.0.0.1` address or a directly exposed unauthenticated built-in HTTP Server.
 
 ## Notes
 

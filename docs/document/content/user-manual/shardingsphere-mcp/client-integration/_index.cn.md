@@ -18,7 +18,11 @@ weight = 4
 - [ChatGPT Developer Mode](./chatgpt-developer-mode/)：适合在 ChatGPT Web 产品中直接接入远程 MCP Server。
 - [Anthropic MCP Connector](./anthropic-mcp-connector/)：适合在 Anthropic Messages API 中直接接入远程 MCP Server。
 
-平台与 API 接入要求使用远程可访问的 MCP Server。`http://127.0.0.1:18088/mcp` 这类本地地址示例只适用于本地客户端集成文档，不能直接复用于 OpenAI 或 Anthropic 平台入口。
+平台与 API 接入要求使用已受保护且远程可访问的 MCP endpoint。
+不要把 ShardingSphere-MCP 内置 HTTP Server 直接暴露给远程平台，因为它不提供认证或授权。
+远程平台接入时，应将其放在受信网关或反向代理后面，由外层组件提供 TLS 终止、身份认证、授权策略、网络访问控制和审计日志。
+安全边界见[部署说明](../deployment/)和[配置说明](../configuration/)。
+`http://127.0.0.1:18088/mcp` 这类本地地址示例只适用于本地客户端集成文档，不能直接复用于 OpenAI 或 Anthropic 平台入口。
 
 ## 选择接入入口
 
@@ -26,7 +30,7 @@ weight = 4
 - 如果需要在后端服务中通过 API 调模型并调用 MCP，优先选择平台与 API 接入。
 - 如果需要多个客户端共享同一个 ShardingSphere-MCP 服务，优先准备独立启动的 HTTP MCP Server。
 - 如果只在本地开发环境使用，并希望客户端在需要时拉起 MCP 进程，可选择支持 STDIO 的客户端。
-- 如果目标入口位于 OpenAI 或 Anthropic 平台侧，优先确认远程地址是否可从平台访问，再继续后续接入步骤。
+- 如果目标入口位于 OpenAI 或 Anthropic 平台侧，优先确认已受保护的远程 MCP 地址是否可从平台访问，再继续后续接入步骤。
 
 ## 集成后的使用方式
 
