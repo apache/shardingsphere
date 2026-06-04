@@ -81,6 +81,22 @@ description: >-
 20. Treat GitHub PR metadata and `/pulls/{number}/files` as the authoritative scope boundary.
     Before reporting unrelated changes or making any scope-based finding, verify that the local diff file list matches GitHub's file list.
     If the lists differ, stop the review, refresh the PR refs, and resolve the diff-boundary mismatch before drawing conclusions.
+21. If a target-dialect or target-feature fix touches shared modules, run a shared-layer ownership gate before considering `Mergeable`.
+    Classify every shared change as one of: required generic hook, target-specific semantic leakage, or unrelated/substantive scope expansion.
+    If shared code contains target dialect names, target protocol state, target-specific method names, hard-coded target database type strings, or target lifecycle concepts,
+    bias to `Merge Verdict: Not Mergeable` unless the PR proves this is an intentional generic contract for all affected dialects/features.
+22. For new or changed constructors, public/shared methods, return values, fields, cache keys, and session/executor state, run an implicit-state review.
+    Look for ordinary values used as hidden business states, mode switches, lifecycle markers, or feature flags, including but not limited to:
+    `null`, magic numbers, empty strings, overloaded booleans, special enum values, empty collections, no-op objects, type-name string checks,
+    partially initialized objects, begin/finish temporal side effects, and context/global side channels.
+    If such implicit state controls behavior across shared modules or public APIs, require an explicit model such as a non-null key/token,
+    a dedicated state object, a clear enum with one meaning per value, or an explicit absence-return contract where repository rules allow it.
+    If the implicit state leaks target-specific semantics into shared code, bias to `Merge Verdict: Not Mergeable`.
+23. If a PR claims to fix, close, or resolve one or more issues, run a linked-issue completeness gate before considering `Mergeable`.
+    Read the linked issue body and relevant issue comments, decompose the issue into required symptoms, expected behaviors, affected topologies, inputs, and edge cases,
+    and map each required issue behavior to concrete PR code changes and validation evidence.
+    If the issue cannot be read, the issue scope is ambiguous, any required issue behavior is only partially fixed, or the PR over-claims the fix scope,
+    bias to `Merge Verdict: Not Mergeable` and list the minimum missing implementation or evidence.
 
 ## Review Boundary
 
@@ -160,6 +176,12 @@ Before deep review, answer:
 6. Is there at least one counterexample or negative scenario validated, not only the reported happy path?
 7. If SQL parser is changed, has the review checked related trunk / branch dialects and confirmed whether the same issue also exists there?
 8. If SQL parser is changed, do official docs and ShardingSphere docs both support the new behavior, or is a doc update required?
+9. If the PR claims to fix one dialect/feature, do shared modules contain target-specific names, strings, state, or lifecycle methods?
+10. Are all shared-module changes generic hooks, or did the target-specific semantic owner move into shared code?
+11. Did the PR add or change constructors/public APIs in a way that allows partial initialization or hidden modes?
+12. Does the PR use ordinary values such as `null`, magic ids, empty strings, booleans, empty collections, no-op objects, or special enum values to represent feature-disabled,
+    cache-inactive, no-current-context, fallback, or other business state?
+13. If the PR links or claims to fix an issue, has the review decomposed the issue into required behaviors and verified that the PR fully covers each one?
 
 Triage policy:
 
@@ -186,10 +208,19 @@ When information gaps block mergeability, request at least:
 CI/check-run review is not part of this workflow unless explicitly requested; do not query or report it by default.
 
 1. Define target and boundary: restate PR goal, impacted modules, target topology (JDBC or Proxy, Standalone or Cluster).
-2. Root-cause modeling: reconstruct "trigger condition -> failure path -> result" from issue and code path.
+2. Root-cause and linked-issue modeling: reconstruct "trigger condition -> failure path -> result" from issue and code path.
+   If the PR links an issue, decompose the issue body and relevant issue comments into required symptoms, expected behaviors, affected runtime topology, inputs,
+   boundary cases, and maintainer-requested constraints before assessing the patch.
 3. Fix mapping: verify each change covers the root-cause chain, not just symptoms.
+   For linked issues, map every required issue behavior to a concrete PR change and at least one validation point; do not infer complete issue closure from one happy path.
 4. Risk scan:
    - Design: abstraction level, responsibility boundaries, temporary compatibility branches
+   - Shared-layer ownership: if the PR is scoped to one dialect/feature but touches shared modules, separate required generic hooks from target-specific logic.
+     Check whether shared code now imports, names, stores, or branches on the target dialect/feature, and whether the shared abstraction would still make sense without that target.
+   - Constructor/API invariants: inspect every new/changed constructor and public/shared method. Check whether objects can now be constructed in partial, nullable, or hidden-mode states.
+   - Implicit state encoding: inspect whether ordinary values are used as hidden mode switches. Search the PR diff for `null`, magic ids, empty strings,
+     overloaded booleans, `UNKNOWN`/`NONE`/`DEFAULT`, empty collections, no-op implementations, type-name string checks, and begin/finish side effects.
+     Ask what state the value really represents and whether that state should instead be a named object, enum, key, token, or target-module-owned lifecycle API.
    - Performance: new loops/remote calls/object allocations on hot paths
    - Performance: in Proxy/JDBC DML/DQL high-frequency SQL paths, flag direct `ConcurrentHashMap#computeIfAbsent` use without a preceding `get` miss check
    - Compatibility: behavior/config/API-SPI/SQL dialect versions
@@ -234,6 +265,8 @@ Before producing the final review output, run an internal self-review loop on th
    - Missed side effects or regression paths.
    - Missed test adequacy gaps.
    - Missed cross-dialect, feature-disabled, fallback, or boundary cases.
+   - Missed shared-layer ownership problems: target-specific concepts placed in shared modules, unclear owners for shared state, or generic hooks mixed with dialect semantics.
+   - Missed implicit-state problems: nullable constructors, partial object states, magic values, overloaded booleans, no-op objects, type-name switches, or other hidden mode encodings.
    - Missed unrelated substantive changes.
    - Missed output-template or evidence gaps.
 4. If the self-review finds any new actionable issue, add it to the candidate findings, deduplicate it against existing findings,
@@ -258,6 +291,44 @@ Before producing the final review output, run an internal self-review loop on th
 - Does the config-disabled or feature-flag-off path still behave correctly?
 
 If the root-cause chain cannot be fully proven fixed, set `Merge Verdict: Not Mergeable`.
+
+## Linked Issue Completeness Gate
+
+Apply this gate whenever a PR title, body, commit message, label, or author comment claims to fix, close, resolve, or address one or more issues.
+
+Must answer:
+
+- Which issue(s) does the PR claim to fix or close?
+- What are the issue's stated symptoms, expected behavior, affected topology, database type/version, configuration, and reproduction path?
+- Are there implicit requirements in issue comments, maintainer replies, linked discussions, reproduction snippets, or follow-up clarifications?
+- Does the PR fix every required part of the issue, or only the primary happy path?
+- Does each issue requirement map to a concrete code change and at least one validation point?
+- Are any issue requirements left as future work, partial support, unsupported topology, or untested behavior?
+- Does the PR title/body over-claim the fix compared with the actual implementation scope?
+- If the PR narrows the issue scope, is that limitation explicit, technically justified, and accepted by maintainers or the issue context?
+
+If the linked issue cannot be read, the issue scope is ambiguous, or any required issue behavior is only partially fixed or unvalidated,
+set `Merge Verdict: Not Mergeable` and list the minimum missing implementation or evidence.
+
+## Shared Scope & Implicit State Gate
+
+Apply this gate whenever a PR touches shared modules, session state, executor/connector paths, cache contexts, SPI contracts, or public constructors/methods.
+
+Must answer:
+
+- What is the target scope stated by the issue/PR?
+- Which changed files are shared by other dialects/features?
+- For each shared change, is it a generic mechanism or target-specific semantic leakage?
+- Does any shared class now contain target dialect names, string checks, protocol ids, target lifecycle methods, or target-specific comments/Javadocs?
+- Did any constructor become nullable, delegate to `this(null)`, or allow partial initialization?
+- Did any public/shared method start returning or accepting values that encode absence, active/inactive state, fallback, or feature enablement implicitly?
+- Did any field/cache key/token use ordinary values as sentinels, such as `null`, magic numbers, empty strings, special enum values, overloaded booleans,
+  empty collections, no-op objects, or type-name strings?
+- Is there a begin/finish temporal side effect or context/global side channel whose state is not explicit in the API contract?
+- Could the same behavior be expressed with a non-null generic key, explicit state object, clear enum, target-module-owned lifecycle API, or documented absence-return contract?
+- Do tests validate generic shared behavior separately from target dialect activation?
+
+If target-specific semantics leak into shared code, or if implicit state is used as a mode switch in new/changed shared APIs, set `Merge Verdict: Not Mergeable`.
 
 ## Risk Checklist (Must Cover)
 
