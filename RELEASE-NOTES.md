@@ -25,6 +25,7 @@
 1. Pipeline: Fix MySQL zero-value temporal binlog decoding with fractional precision in migration - [#38629](https://github.com/apache/shardingsphere/pull/38629)
 1. Pipeline: Fix escape MySQL JSON binlog control characters - [#38800](https://github.com/apache/shardingsphere/pull/38800)
 1. Sharding: Support ORDER BY MySQL VARBINARY column by wrapping byte[] values in a Comparable adapter - [#38699](https://github.com/apache/shardingsphere/pull/38699)
+1. Proxy: Fix incorrect generated key handling for explicit auto-increment values - [#38810](https://github.com/apache/shardingsphere/pull/38810)
 
 ### Enhancements
 
