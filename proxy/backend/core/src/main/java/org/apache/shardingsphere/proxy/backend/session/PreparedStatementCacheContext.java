@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * Prepared statement cache context.
@@ -54,29 +55,14 @@ public final class PreparedStatementCacheContext {
      * @param connection connection
      * @param sql SQL
      * @param returnGeneratedKeys return generated keys flag
+     * @param preparedStatementCacheKey prepared statement cache key
      * @param supplier prepared statement supplier
      * @return prepared statement
      * @throws SQLException SQL exception
      */
     public synchronized PreparedStatement getOrCreate(final Connection connection, final String sql, final boolean returnGeneratedKeys,
-                                                      final PreparedStatementSupplier supplier) throws SQLException {
-        return getOrCreate(connection, sql, returnGeneratedKeys, null, supplier);
-    }
-    
-    /**
-     * Get or create prepared statement.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param returnGeneratedKeys return generated keys flag
-     * @param statementId statement ID
-     * @param supplier prepared statement supplier
-     * @return prepared statement
-     * @throws SQLException SQL exception
-     */
-    public synchronized PreparedStatement getOrCreate(final Connection connection, final String sql, final boolean returnGeneratedKeys,
-                                                      final Integer statementId, final PreparedStatementSupplier supplier) throws SQLException {
-        CacheKey cacheKey = new CacheKey(connection, sql, returnGeneratedKeys, statementId);
+                                                      final PreparedStatementCacheKey preparedStatementCacheKey, final PreparedStatementSupplier supplier) throws SQLException {
+        CacheKey cacheKey = new CacheKey(connection, sql, returnGeneratedKeys, preparedStatementCacheKey);
         PreparedStatement cachedPreparedStatement = cachedPreparedStatements.get(cacheKey);
         if (null != cachedPreparedStatement && !isClosed(cachedPreparedStatement)) {
             return cachedPreparedStatement;
@@ -119,15 +105,15 @@ public final class PreparedStatementCacheContext {
     }
     
     /**
-     * Invalidate cached statements by statement ID.
+     * Invalidate cached statements by prepared statement cache key.
      *
-     * @param statementId statement ID
+     * @param preparedStatementCacheKey prepared statement cache key
      */
-    public synchronized void invalidate(final int statementId) {
+    public synchronized void invalidate(final PreparedStatementCacheKey preparedStatementCacheKey) {
         Iterator<Entry<CacheKey, PreparedStatement>> iterator = cachedPreparedStatements.entrySet().iterator();
         while (iterator.hasNext()) {
             Entry<CacheKey, PreparedStatement> entry = iterator.next();
-            if (Integer.valueOf(statementId).equals(entry.getKey().statementId)) {
+            if (preparedStatementCacheKey.equals(entry.getKey().preparedStatementCacheKey)) {
                 iterator.remove();
                 closeQuietly(entry.getValue());
             }
@@ -200,15 +186,15 @@ public final class PreparedStatementCacheContext {
         
         private final boolean returnGeneratedKeys;
         
-        private final Integer statementId;
+        private final PreparedStatementCacheKey preparedStatementCacheKey;
         
         private final int connectionIdentityHash;
         
-        private CacheKey(final Connection connection, final String sql, final boolean returnGeneratedKeys, final Integer statementId) {
+        private CacheKey(final Connection connection, final String sql, final boolean returnGeneratedKeys, final PreparedStatementCacheKey preparedStatementCacheKey) {
             this.connection = connection;
             this.sql = sql;
             this.returnGeneratedKeys = returnGeneratedKeys;
-            this.statementId = statementId;
+            this.preparedStatementCacheKey = Objects.requireNonNull(preparedStatementCacheKey, "preparedStatementCacheKey cannot be null.");
             connectionIdentityHash = System.identityHashCode(connection);
         }
         
@@ -219,7 +205,7 @@ public final class PreparedStatementCacheContext {
             }
             CacheKey other = (CacheKey) obj;
             return connection == other.connection && returnGeneratedKeys == other.returnGeneratedKeys && sql.equals(other.sql)
-                    && (null == statementId ? null == other.statementId : statementId.equals(other.statementId));
+                    && preparedStatementCacheKey.equals(other.preparedStatementCacheKey);
         }
         
         @Override
@@ -227,7 +213,7 @@ public final class PreparedStatementCacheContext {
             int result = connectionIdentityHash;
             result = 31 * result + sql.hashCode();
             result = 31 * result + Boolean.hashCode(returnGeneratedKeys);
-            result = 31 * result + (null == statementId ? 0 : statementId.hashCode());
+            result = 31 * result + preparedStatementCacheKey.hashCode();
             return result;
         }
     }

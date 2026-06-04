@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheContext;
 
 import java.sql.Connection;
@@ -35,6 +36,7 @@ import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Objects;
 
 /**
  * JDBC backend statement.
@@ -43,12 +45,8 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     
     private final ConnectionSession connectionSession;
     
-    public JDBCBackendStatement() {
-        this(null);
-    }
-    
     public JDBCBackendStatement(final ConnectionSession connectionSession) {
-        this.connectionSession = connectionSession;
+        this.connectionSession = Objects.requireNonNull(connectionSession, "connectionSession cannot be null.");
     }
     
     @Override
@@ -65,7 +63,7 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
                                            final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
         String sql = executionUnit.getSqlUnit().getSql();
         List<Object> params = executionUnit.getSqlUnit().getParameters();
-        PreparedStatement result = getPreparedStatement(connection, sql, option.isReturnGeneratedKeys(), databaseType);
+        PreparedStatement result = getPreparedStatement(connection, sql, option.isReturnGeneratedKeys());
         result.clearParameters();
         Iterator<Object> paramIterator = params.iterator();
         int index = 0;
@@ -84,24 +82,17 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
         return result;
     }
     
-    private PreparedStatement getPreparedStatement(final Connection connection, final String sql, final boolean returnGeneratedKeys, final DatabaseType databaseType) throws SQLException {
-        Integer statementId = null == connectionSession ? null : getFirebirdPreparedStatementId(databaseType);
-        if (null == statementId) {
+    private PreparedStatement getPreparedStatement(final Connection connection, final String sql, final boolean returnGeneratedKeys) throws SQLException {
+        Optional<PreparedStatementCacheKey> preparedStatementCacheKey = connectionSession.getCurrentPreparedStatementCacheKey();
+        if (!preparedStatementCacheKey.isPresent()) {
             return createPreparedStatement(connection, sql, returnGeneratedKeys);
         }
         PreparedStatementCacheContext cacheContext = connectionSession.getPreparedStatementCacheContext();
-        return cacheContext.getOrCreate(connection, sql, returnGeneratedKeys, statementId, () -> createPreparedStatement(connection, sql, returnGeneratedKeys));
+        return cacheContext.getOrCreate(connection, sql, returnGeneratedKeys, preparedStatementCacheKey.get(), () -> createPreparedStatement(connection, sql, returnGeneratedKeys));
     }
     
     private PreparedStatement createPreparedStatement(final Connection connection, final String sql, final boolean returnGeneratedKeys) throws SQLException {
         return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
-    }
-    
-    private Integer getFirebirdPreparedStatementId(final DatabaseType databaseType) {
-        if (!"Firebird".equals(databaseType.getType())) {
-            return null;
-        }
-        return connectionSession.getCurrentFirebirdPreparedStatementId();
     }
     
     private void setFetchSize(final Statement statement, final DatabaseType databaseType) throws SQLException {

@@ -36,7 +36,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.Matchers.is;
@@ -170,11 +174,18 @@ class ConnectionSessionTest {
     }
     
     @Test
-    void assertFirebirdPreparedStatementExecutionContext() {
-        connectionSession.beginFirebirdPreparedStatementExecution(1);
-        assertThat(connectionSession.getCurrentFirebirdPreparedStatementId(), is(1));
-        connectionSession.finishFirebirdPreparedStatementExecution();
-        assertNull(connectionSession.getCurrentFirebirdPreparedStatementId());
+    void assertPreparedStatementCacheLifecycle() throws SQLException {
+        PreparedStatementCacheKey preparedStatementCacheKey = new PreparedStatementCacheKey("statement-1");
+        connectionSession.beginPreparedStatementCache(preparedStatementCacheKey);
+        assertThat(connectionSession.getCurrentPreparedStatementCacheKey(), is(Optional.of(preparedStatementCacheKey)));
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        connectionSession.getPreparedStatementCacheContext().getOrCreate(connection, "SELECT 1", false, preparedStatementCacheKey, () -> preparedStatement);
+        connectionSession.invalidatePreparedStatementCache(preparedStatementCacheKey);
+        assertFalse(connectionSession.getPreparedStatementCacheContext().contains(preparedStatement));
+        connectionSession.finishPreparedStatementCache();
+        assertThat(connectionSession.getCurrentPreparedStatementCacheKey(), is(Optional.empty()));
+        verify(preparedStatement).close();
     }
     
     @SuppressWarnings("unchecked")

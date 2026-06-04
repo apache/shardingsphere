@@ -46,6 +46,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheContext;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
@@ -131,9 +132,10 @@ class ProxyDatabaseConnectionManagerTest {
         when(connectionSession.getConnectionContext().getTransactionContext()).thenReturn(new TransactionConnectionContext());
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
         when(connectionSession.getUsedDatabaseName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(connectionSession.getCurrentPreparedStatementCacheKey()).thenReturn(Optional.empty());
         databaseConnectionManager = new ProxyDatabaseConnectionManager(connectionSession);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
-        JDBCBackendStatement backendStatement = new JDBCBackendStatement();
+        JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(new RequiredSessionVariableRecorder());
     }
@@ -272,7 +274,7 @@ class ProxyDatabaseConnectionManagerTest {
         PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         Connection connection = prepareCachedConnections();
-        cacheContext.getOrCreate(connection, "SELECT 1", false, 1, () -> preparedStatement);
+        cacheContext.getOrCreate(connection, "SELECT 1", false, new PreparedStatementCacheKey("statement-1"), () -> preparedStatement);
         when(connectionSession.getPreparedStatementCacheContext()).thenReturn(cacheContext);
         databaseConnectionManager.closeConnections(false);
         verify(preparedStatement).close();
@@ -520,9 +522,8 @@ class ProxyDatabaseConnectionManagerTest {
         connectionSession.getConnectionContext().getTransactionContext().beginTransaction(TransactionType.XA.name(), null);
         PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
         when(connectionSession.getPreparedStatementCacheContext()).thenReturn(cacheContext);
-        when(connectionSession.getCurrentFirebirdPreparedStatementId()).thenReturn(1);
+        when(connectionSession.getCurrentPreparedStatementCacheKey()).thenReturn(Optional.of(new PreparedStatementCacheKey("statement-1")));
         DatabaseType firebirdDatabaseType = mock(DatabaseType.class);
-        when(firebirdDatabaseType.getType()).thenReturn("Firebird");
         JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
         Connection cachedConnection = prepareCachedConnections();
         PreparedStatement preparedStatement = mock(PreparedStatement.class);

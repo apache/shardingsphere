@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheContext;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -61,7 +62,8 @@ class JDBCBackendStatementTest {
     
     @Test
     void assertCreateStorageResourceWithStatementSetsFetchSizeOnlyInMemoryStrictly() throws SQLException {
-        JDBCBackendStatement backendStatement = new JDBCBackendStatement();
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
         when(connection.createStatement()).thenReturn(statement);
@@ -77,7 +79,9 @@ class JDBCBackendStatementTest {
     
     @Test
     void assertCreateStorageResourceWithPreparedStatement() throws SQLException {
-        JDBCBackendStatement backendStatement = new JDBCBackendStatement();
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getCurrentPreparedStatementCacheKey()).thenReturn(Optional.empty());
+        JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
         Connection connection = mock(Connection.class);
         PreparedStatement preparedStatementWithGeneratedKeys = mock(PreparedStatement.class);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
@@ -99,13 +103,11 @@ class JDBCBackendStatementTest {
     }
     
     @Test
-    void assertCreateStorageResourceReusesPreparedStatementForSameFirebirdStatementId() throws SQLException {
+    void assertCreateStorageResourceReusesPreparedStatementForSamePreparedStatementCacheKey() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
-        DatabaseType firebirdDatabaseType = mock(DatabaseType.class);
-        when(firebirdDatabaseType.getType()).thenReturn("Firebird");
         when(connectionSession.getPreparedStatementCacheContext()).thenReturn(cacheContext);
-        when(connectionSession.getCurrentFirebirdPreparedStatementId()).thenReturn(1);
+        when(connectionSession.getCurrentPreparedStatementCacheKey()).thenReturn(Optional.of(new PreparedStatementCacheKey("statement-1")));
         JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
         Connection connection = mock(Connection.class);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
@@ -113,9 +115,9 @@ class JDBCBackendStatementTest {
         when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
         StatementOption statementOption = new StatementOption(false);
         backendStatement.createStorageResource(
-                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(1))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(1))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, databaseType);
         backendStatement.createStorageResource(
-                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, databaseType);
         verify(connection).prepareStatement(sql);
         verify(preparedStatement, times(2)).clearParameters();
         verify(preparedStatement).setObject(1, 1);
@@ -124,14 +126,14 @@ class JDBCBackendStatementTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("nonFirebirdDatabaseTypes")
-    void assertCreateStorageResourceWithoutPreparedStatementCacheForNonFirebird(final String scenario, final String databaseTypeName) throws SQLException {
+    void assertCreateStorageResourceWithoutPreparedStatementCacheWithoutActiveKey(final String scenario, final String databaseTypeName) throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getCurrentPreparedStatementCacheKey()).thenReturn(Optional.empty());
         JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
         Connection connection = mock(Connection.class);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         String sql = "SELECT * FROM foo WHERE id = ?";
         DatabaseType nonFirebirdDatabaseType = mock(DatabaseType.class);
-        when(nonFirebirdDatabaseType.getType()).thenReturn(databaseTypeName);
         when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
         StatementOption statementOption = new StatementOption(false);
         backendStatement.createStorageResource(
@@ -142,11 +144,9 @@ class JDBCBackendStatementTest {
     }
     
     @Test
-    void assertCreateStorageResourceWithDifferentFirebirdPreparedStatementId() throws SQLException {
+    void assertCreateStorageResourceWithDifferentPreparedStatementCacheKey() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
-        DatabaseType firebirdDatabaseType = mock(DatabaseType.class);
-        when(firebirdDatabaseType.getType()).thenReturn("Firebird");
         when(connectionSession.getPreparedStatementCacheContext()).thenReturn(cacheContext);
         JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
         Connection connection = mock(Connection.class);
@@ -154,11 +154,12 @@ class JDBCBackendStatementTest {
         String sql = "SELECT * FROM foo WHERE id = ?";
         when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
         StatementOption statementOption = new StatementOption(false);
-        when(connectionSession.getCurrentFirebirdPreparedStatementId()).thenReturn(1, 2);
+        when(connectionSession.getCurrentPreparedStatementCacheKey()).thenReturn(
+                Optional.of(new PreparedStatementCacheKey("statement-1")), Optional.of(new PreparedStatementCacheKey("statement-2")));
         backendStatement.createStorageResource(
-                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(1))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(1))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, databaseType);
         backendStatement.createStorageResource(
-                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, databaseType);
         verify(connection, times(2)).prepareStatement(sql);
     }
     
@@ -166,10 +167,9 @@ class JDBCBackendStatementTest {
     void assertCreateNewPreparedStatementAfterCacheInvalidation() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
-        DatabaseType firebirdDatabaseType = mock(DatabaseType.class);
-        when(firebirdDatabaseType.getType()).thenReturn("Firebird");
+        PreparedStatementCacheKey preparedStatementCacheKey = new PreparedStatementCacheKey("statement-1");
         when(connectionSession.getPreparedStatementCacheContext()).thenReturn(cacheContext);
-        when(connectionSession.getCurrentFirebirdPreparedStatementId()).thenReturn(1);
+        when(connectionSession.getCurrentPreparedStatementCacheKey()).thenReturn(Optional.of(preparedStatementCacheKey));
         JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
         Connection connection = mock(Connection.class);
         PreparedStatement firstPreparedStatement = mock(PreparedStatement.class);
@@ -178,10 +178,10 @@ class JDBCBackendStatementTest {
         when(connection.prepareStatement(sql)).thenReturn(firstPreparedStatement, secondPreparedStatement);
         StatementOption statementOption = new StatementOption(false);
         backendStatement.createStorageResource(
-                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(1))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
-        cacheContext.invalidate(1);
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(1))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, databaseType);
+        cacheContext.invalidate(preparedStatementCacheKey);
         backendStatement.createStorageResource(
-                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, databaseType);
         verify(connection, times(2)).prepareStatement(sql);
         verify(firstPreparedStatement).close();
     }

@@ -44,6 +44,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 
 import java.sql.SQLException;
@@ -70,7 +71,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        connectionSession.beginFirebirdPreparedStatementExecution(packet.getStatementId());
+        connectionSession.beginPreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(packet.getStatementId()));
         try {
             FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
             ResponseHeader responseHeader = executePreparedStatement(preparedStatement, packet.getParameterValues());
@@ -88,7 +89,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
             result.add(new FirebirdGenericResponsePacket());
             return result;
         } finally {
-            connectionSession.finishFirebirdPreparedStatementExecution();
+            connectionSession.finishPreparedStatementCache();
         }
     }
     

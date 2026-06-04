@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 
 /**
@@ -28,6 +29,18 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdStatementResourceCleaner {
+    
+    private static final String PREPARED_STATEMENT_CACHE_KEY_PREFIX = "firebird:";
+    
+    /**
+     * Create prepared statement cache key.
+     *
+     * @param statementId statement ID
+     * @return prepared statement cache key
+     */
+    public static PreparedStatementCacheKey createPreparedStatementCacheKey(final int statementId) {
+        return new PreparedStatementCacheKey(PREPARED_STATEMENT_CACHE_KEY_PREFIX + statementId);
+    }
     
     /**
      * Clean Firebird statement resources.
@@ -38,7 +51,7 @@ public final class FirebirdStatementResourceCleaner {
      */
     public static void clean(final ConnectionSession connectionSession, final int statementId, final boolean invalidatePreparedStatementCache) {
         if (invalidatePreparedStatementCache) {
-            connectionSession.invalidateFirebirdPreparedStatementCache(statementId);
+            connectionSession.invalidatePreparedStatementCache(createPreparedStatementCacheKey(statementId));
         }
         connectionSession.getConnectionContext().clearCursorContext();
         ProxyBackendHandler proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), statementId);

@@ -71,7 +71,7 @@ public final class ConnectionSession {
     
     private final AtomicReference<ConnectionContext> connectionContext = new AtomicReference<>();
     
-    private final AtomicReference<Integer> currentFirebirdPreparedStatementId = new AtomicReference<>();
+    private final AtomicReference<Optional<PreparedStatementCacheKey>> currentPreparedStatementCacheKey = new AtomicReference<>(Optional.empty());
     
     private final RequiredSessionVariableRecorder requiredSessionVariableRecorder = new RequiredSessionVariableRecorder();
     
@@ -136,37 +136,37 @@ public final class ConnectionSession {
     }
     
     /**
-     * Begin Firebird prepared statement execution.
+     * Begin prepared statement cache.
      *
-     * @param statementId Firebird statement ID
+     * @param cacheKey prepared statement cache key
      */
-    public void beginFirebirdPreparedStatementExecution(final int statementId) {
-        currentFirebirdPreparedStatementId.set(statementId);
+    public void beginPreparedStatementCache(final PreparedStatementCacheKey cacheKey) {
+        currentPreparedStatementCacheKey.set(Optional.of(cacheKey));
     }
     
     /**
-     * Get current Firebird prepared statement ID.
+     * Get current prepared statement cache key.
      *
-     * @return Firebird prepared statement ID
+     * @return current prepared statement cache key
      */
-    public Integer getCurrentFirebirdPreparedStatementId() {
-        return currentFirebirdPreparedStatementId.get();
+    public Optional<PreparedStatementCacheKey> getCurrentPreparedStatementCacheKey() {
+        return currentPreparedStatementCacheKey.get();
     }
     
     /**
-     * Finish Firebird prepared statement execution.
+     * Finish prepared statement cache.
      */
-    public void finishFirebirdPreparedStatementExecution() {
-        currentFirebirdPreparedStatementId.set(null);
+    public void finishPreparedStatementCache() {
+        currentPreparedStatementCacheKey.set(Optional.empty());
     }
     
     /**
-     * Invalidate Firebird prepared statement cache.
+     * Invalidate prepared statement cache.
      *
-     * @param statementId Firebird statement ID
+     * @param cacheKey prepared statement cache key
      */
-    public void invalidateFirebirdPreparedStatementCache(final int statementId) {
-        preparedStatementCacheContext.invalidate(statementId);
+    public void invalidatePreparedStatementCache(final PreparedStatementCacheKey cacheKey) {
+        preparedStatementCacheContext.invalidate(cacheKey);
     }
     
     /**

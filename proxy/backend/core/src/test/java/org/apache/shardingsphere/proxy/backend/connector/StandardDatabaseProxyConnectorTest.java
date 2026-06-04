@@ -89,6 +89,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
@@ -535,15 +536,15 @@ class StandardDatabaseProxyConnectorTest {
                 MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS)) {
             DatabaseProxyConnector engine = createFirebirdPreparedStatementConnector(testContext);
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
-            testContext.connectionSession.beginFirebirdPreparedStatementExecution(1);
+            testContext.connectionSession.beginPreparedStatementCache(createPreparedStatementCacheKey(1));
             assertThat(engine.execute(), isA(UpdateResponseHeader.class));
             assertThat(testContext.connectionSession.getPreparedStatementCacheContext().size(), is(1));
-            testContext.connectionSession.finishFirebirdPreparedStatementExecution();
+            testContext.connectionSession.finishPreparedStatementCache();
             testContext.connectionSession.getDatabaseConnectionManager().closeExecutionResources();
             assertThat(testContext.connectionSession.getPreparedStatementCacheContext().size(), is(1));
-            testContext.connectionSession.beginFirebirdPreparedStatementExecution(1);
+            testContext.connectionSession.beginPreparedStatementCache(createPreparedStatementCacheKey(1));
             assertThat(engine.execute(), isA(UpdateResponseHeader.class));
-            testContext.connectionSession.finishFirebirdPreparedStatementExecution();
+            testContext.connectionSession.finishPreparedStatementCache();
             assertTrue(mockedDatabaseTypeRegistry.constructed().size() >= 3);
             assertThat(mockedKernelProcessor.constructed().size(), is(2));
         }
@@ -577,14 +578,14 @@ class StandardDatabaseProxyConnectorTest {
                 MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS)) {
             DatabaseProxyConnector engine = createFirebirdPreparedStatementConnector(testContext);
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
-            testContext.connectionSession.beginFirebirdPreparedStatementExecution(1);
+            testContext.connectionSession.beginPreparedStatementCache(createPreparedStatementCacheKey(1));
             assertThat(engine.execute(), isA(UpdateResponseHeader.class));
-            testContext.connectionSession.finishFirebirdPreparedStatementExecution();
-            testContext.connectionSession.invalidateFirebirdPreparedStatementCache(1);
+            testContext.connectionSession.finishPreparedStatementCache();
+            testContext.connectionSession.invalidatePreparedStatementCache(createPreparedStatementCacheKey(1));
             assertThat(testContext.connectionSession.getPreparedStatementCacheContext().size(), is(0));
-            testContext.connectionSession.beginFirebirdPreparedStatementExecution(1);
+            testContext.connectionSession.beginPreparedStatementCache(createPreparedStatementCacheKey(1));
             assertThat(engine.execute(), isA(UpdateResponseHeader.class));
-            testContext.connectionSession.finishFirebirdPreparedStatementExecution();
+            testContext.connectionSession.finishPreparedStatementCache();
             assertTrue(mockedDatabaseTypeRegistry.constructed().size() >= 3);
             assertThat(mockedKernelProcessor.constructed().size(), is(2));
         }
@@ -621,14 +622,14 @@ class StandardDatabaseProxyConnectorTest {
                 MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS)) {
             DatabaseProxyConnector engine = createFirebirdPreparedStatementConnector(testContext);
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
-            testContext.connectionSession.beginFirebirdPreparedStatementExecution(1);
+            testContext.connectionSession.beginPreparedStatementCache(createPreparedStatementCacheKey(1));
             assertThat(engine.execute(), isA(UpdateResponseHeader.class));
-            testContext.connectionSession.finishFirebirdPreparedStatementExecution();
+            testContext.connectionSession.finishPreparedStatementCache();
             assertThat(testContext.connectionSession.getDatabaseConnectionManager().closeConnections(false), is(Collections.emptyList()));
             assertThat(testContext.connectionSession.getPreparedStatementCacheContext().size(), is(0));
-            testContext.connectionSession.beginFirebirdPreparedStatementExecution(1);
+            testContext.connectionSession.beginPreparedStatementCache(createPreparedStatementCacheKey(1));
             assertThat(engine.execute(), isA(UpdateResponseHeader.class));
-            testContext.connectionSession.finishFirebirdPreparedStatementExecution();
+            testContext.connectionSession.finishPreparedStatementCache();
             assertTrue(mockedDatabaseTypeRegistry.constructed().size() >= 3);
             assertThat(mockedKernelProcessor.constructed().size(), is(2));
         }
@@ -1111,6 +1112,10 @@ class StandardDatabaseProxyConnectorTest {
         return new ExecutionContext(new QueryContext(testContext.sqlStatementContext, testContext.sql, Collections.singletonList(parameter),
                 new HintValueContext(), testContext.connectionSession.getConnectionContext(), testContext.metaData),
                 Collections.singletonList(new ExecutionUnit("ds", new SQLUnit(testContext.sql, Collections.singletonList(parameter)))), mock());
+    }
+    
+    private PreparedStatementCacheKey createPreparedStatementCacheKey(final int statementId) {
+        return new PreparedStatementCacheKey("firebird:" + statementId);
     }
     
     private DatabaseProxyConnector createFirebirdPreparedStatementConnector(final FirebirdPreparedStatementExecutionTestContext testContext) throws SQLException {

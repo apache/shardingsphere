@@ -25,6 +25,7 @@ import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnection
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,7 +98,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         verify(registry).removePreparedStatement(STATEMENT_ID);
-        verify(connectionSession).invalidateFirebirdPreparedStatementCache(STATEMENT_ID);
+        verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(STATEMENT_ID));
         verify(connectionSession.getConnectionContext()).clearCursorContext();
         verify(connectionManager).unmarkResourceInUse(proxyBackendHandler);
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
@@ -109,7 +110,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
         verify(connectionSession.getConnectionContext()).clearCursorContext();
         verify(connectionManager).unmarkResourceInUse(proxyBackendHandler);
-        verify(connectionSession, never()).invalidateFirebirdPreparedStatementCache(STATEMENT_ID);
+        verify(connectionSession, never()).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(STATEMENT_ID));
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
     }
     
@@ -120,7 +121,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         when(packet.getOption()).thenReturn(option);
         new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
         verify(registry).removePreparedStatement(STATEMENT_ID);
-        verify(connectionSession).invalidateFirebirdPreparedStatementCache(STATEMENT_ID);
+        verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(STATEMENT_ID));
         verify(connectionSession.getConnectionContext()).clearCursorContext();
         verify(connectionManager, never()).unmarkResourceInUse(proxyBackendHandler);
     }
