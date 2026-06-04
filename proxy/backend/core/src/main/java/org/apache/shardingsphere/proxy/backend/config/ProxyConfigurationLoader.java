@@ -98,7 +98,11 @@ public final class ProxyConfigurationLoader {
         if (compatibleFile.exists()) {
             return compatibleFile;
         }
-        return getResourceFile(String.join("/", path, GLOBAL_CONFIG_FILE));
+        File classpathGlobal = getResourceFile(String.join("/", path, GLOBAL_CONFIG_FILE));
+        if (classpathGlobal.exists()) {
+            return classpathGlobal;
+        }
+        return getResourceFile(String.join("/", path, COMPATIBLE_GLOBAL_CONFIG_FILE));
     }
     
     @SneakyThrows(URISyntaxException.class)
