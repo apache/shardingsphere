@@ -206,22 +206,12 @@ public final class LLME2EConfiguration {
         }
     }
     
-    private static long readRequiredLong(final Properties props, final String propertyName) {
-        String result = readRequiredString(props, propertyName);
-        try {
-            return Long.parseLong(result);
-        } catch (final NumberFormatException ex) {
-            throw new IllegalStateException(String.format("MCP LLM E2E property `%s` must be a long value.", propertyName), ex);
-        }
-    }
-    
     private static ModelMetadata readModelMetadata(final Properties props) {
         return new ModelMetadata(
                 readRequiredString(props, "mcp.llm.model-repository"),
                 readRequiredString(props, "mcp.llm.model-file-name"),
                 readRequiredString(props, "mcp.llm.model-quantization"),
                 readRequiredString(props, "mcp.llm.model-revision"),
-                readRequiredLong(props, "mcp.llm.model-size-bytes"),
                 readRequiredString(props, "mcp.llm.model-sha256"));
     }
     
@@ -248,8 +238,6 @@ public final class LLME2EConfiguration {
         private final String quantization;
         
         private final String revision;
-        
-        private final long sizeBytes;
         
         private final String sha256;
         

@@ -42,7 +42,7 @@ class LLMRuntimeSupportTest {
     private static final String REQUIRED_MODEL = "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M";
     
     private static final LLME2EConfiguration.ModelMetadata MODEL_METADATA = new LLME2EConfiguration.ModelMetadata(
-            "ggml-org/Qwen3-1.7B-GGUF", "Qwen3-1.7B-Q4_K_M.gguf", "Q4_K_M", "daeb8e2d528a760970442092f6bf1e55c3b659eb", 1282439264L, "configured-model-sha256");
+            "ggml-org/Qwen3-1.7B-GGUF", "Qwen3-1.7B-Q4_K_M.gguf", "Q4_K_M", "daeb8e2d528a760970442092f6bf1e55c3b659eb", "configured-model-sha256");
     
     private static final String DOCKER_REQUIRED_MESSAGE = "Docker is required to start the prepackaged llama.cpp server for MCP LLM E2E.";
     
