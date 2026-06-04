@@ -94,6 +94,98 @@ HTTP binding recommendations:
 - Avoid exposing the MCP Server directly to remote clients.
 - When sessions must be associated with external users or request sources, let a trusted gateway inject session attribution headers. Do not allow clients to forge these headers directly.
 
+### Trusted gateway and TLS termination example
+
+The following example uses Nginx to illustrate the minimum layout in which the outer entry handles HTTPS while ShardingSphere-MCP continues to serve plain HTTP on a controlled network interface. Other reverse proxies, ingress controllers, ALBs, or API gateways can follow the same boundary.
+
+ShardingSphere-MCP configuration example:
+
+```yaml
+transport:
+  type: STREAMABLE_HTTP
+  http:
+    bindHost: 127.0.0.1
+    port: 18088
+    endpointPath: /mcp
+    sessionAttributionSource:
+      subjectHeader: X-ShardingSphere-MCP-Subject
+      sourceHeader: X-ShardingSphere-MCP-Source
+      attributeHeaderPrefix: X-ShardingSphere-MCP-Attribute-
+```
+
+Nginx example:
+
+```nginx
+server {
+  listen 443 ssl http2;
+  server_name mcp.example.com;
+
+  ssl_certificate     /etc/nginx/certs/mcp.crt;
+  ssl_certificate_key /etc/nginx/certs/mcp.key;
+
+  location /mcp {
+    proxy_pass http://127.0.0.1:18088/mcp;
+    proxy_http_version 1.1;
+    proxy_pass_request_headers off;
+
+    proxy_set_header Host $host;
+    proxy_set_header Content-Type $http_content_type;
+    proxy_set_header Accept $http_accept;
+    proxy_set_header MCP-Session-Id $http_mcp_session_id;
+    proxy_set_header MCP-Protocol-Version $http_mcp_protocol_version;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}
+```
+
+The important points of this layout are:
+
+- TLS terminates at the trusted gateway, so the MCP process does not manage public certificates directly.
+- ShardingSphere-MCP continues to bind to loopback or a controlled intranet interface instead of being exposed directly to the public network.
+- Authentication, authorization, rate limiting, and network access control remain the responsibility of the outer gateway, not the built-in HTTP Server.
+
+### Session attribution wiring example
+
+When the outer gateway already identifies the caller, let it overwrite the session attribution headers before forwarding the request. The MCP Runtime then binds the resulting attribution to the session context. Keep the header names and prefix aligned with `transport.http.sessionAttributionSource` in the [Configuration](../configuration/) document.
+
+Nginx example:
+
+```nginx
+location /mcp {
+  proxy_pass http://127.0.0.1:18088/mcp;
+  proxy_http_version 1.1;
+  proxy_pass_request_headers off;
+
+  proxy_set_header Host $host;
+  proxy_set_header Content-Type $http_content_type;
+  proxy_set_header Accept $http_accept;
+  proxy_set_header MCP-Session-Id $http_mcp_session_id;
+  proxy_set_header MCP-Protocol-Version $http_mcp_protocol_version;
+  proxy_set_header X-Forwarded-Proto https;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+  proxy_set_header X-ShardingSphere-MCP-Subject $remote_user;
+  proxy_set_header X-ShardingSphere-MCP-Source gateway-nginx;
+  proxy_set_header X-ShardingSphere-MCP-Attribute-Environment production;
+}
+```
+
+Follow these rules when wiring attribution:
+
+- Use an allow-list for proxied request headers, or strip/reject every client-supplied header that matches the configured attribution header names and prefix before injecting trusted values.
+- `subjectHeader` represents the external subject, such as a trial user, a commercial customer identifier, or an internal caller identity.
+- `sourceHeader` identifies the request source, such as `gateway-nginx`, `internal-alb`, or another trusted ingress name.
+- `attributeHeaderPrefix` can carry a small amount of non-sensitive context such as environment, region, or integration channel; do not pass passwords, keys, or tokens through these headers.
+- If the deployment does not need to bind request attribution into the session context, omit `sessionAttributionSource`.
+
+After wiring the gateway, continue with the health checks below to confirm that:
+
+- The gateway endpoint is reachable.
+- The MCP protocol is ready.
+- Runtime databases are ready.
+- Later requests in the same session do not fail because the attribution headers change.
+
 ## Health Checks
 
 After deployment, verify that ShardingSphere-MCP is truly usable instead of stopping at “the HTTP port is reachable”:
