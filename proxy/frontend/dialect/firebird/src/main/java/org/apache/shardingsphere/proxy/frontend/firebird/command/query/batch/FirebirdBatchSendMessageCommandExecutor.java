@@ -19,44 +19,40 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
-import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdBatchCompletionStateResponse;
+import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * Batch send message command executor for Firebird.
+ */
 @RequiredArgsConstructor
-public final class FirebirdBatchExecuteCommandExecutor implements CommandExecutor {
+public final class FirebirdBatchSendMessageCommandExecutor implements CommandExecutor {
     
-    private final FirebirdBatchExecuteCommandPacket packet;
+    private final FirebirdBatchSendMessageCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
+        int connectionId = connectionSession.getConnectionId();
+        FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, packet.getStatementHandle());
         if (null == batchStatement) {
-            throw new FirebirdProtocolException("Batch statement not found for connectionId: %d, statement handle: %d", connectionSession.getConnectionId(), packet.getStatementHandle());
+            throw new FirebirdProtocolException("Batch statement not found for connectionId: %d, statement handle: %d", connectionId, packet.getStatementHandle());
         }
-        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(batchStatement.getStatementHandle());
-        int[] updateCounts = new FirebirdBatchedStatementsExecutor(connectionSession, preparedStatement, batchStatement.getParameterValues()).executeBatch();
-        batchStatement.reset();
-        long updatedRecordsCount = 0L;
-        for (int each : updateCounts) {
-            if (each > 0) {
-                updatedRecordsCount += each;
-            }
+        if (batchStatement.getAccumulatedSize() + packet.getDataLength() > batchStatement.getBufferSize()) {
+            throw new FirebirdProtocolException("Batch is too big: accumulated %d + %d bytes exceeds buffer size limit %d bytes",
+                    batchStatement.getAccumulatedSize(), packet.getDataLength(), batchStatement.getBufferSize());
         }
-        return Collections.singleton(new FirebirdBatchCompletionStateResponse()
-                .setHandle(packet.getStatementHandle())
-                .setRecordsCount(updatedRecordsCount)
-                .setUpdateCounts(updateCounts));
+        batchStatement.addSize(packet.getDataLength());
+        return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }

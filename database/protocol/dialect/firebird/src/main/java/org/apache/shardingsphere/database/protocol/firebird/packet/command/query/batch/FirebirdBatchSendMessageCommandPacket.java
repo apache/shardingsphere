@@ -19,8 +19,6 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
-import lombok.Setter;
-
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -28,39 +26,40 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Firebird batch message command packet.
+ * Firebird batch send message command packet.
  */
 @Getter
 public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommandPacket {
     
     private static final int FIXED_BATCH_MSG_HEADER_LENGTH = 12;
     
-    private static final Map<Integer, BatchMessageHeaderContext> BATCH_MSG_HEADER_CONTEXT_CACHE = new ConcurrentHashMap<>();
+    private final int statementHandle;
     
-    public FirebirdBatchSendMessageCommandPacket() {
-    }
+    private final long messageCount;
     
-    @Override
-    protected void write(final FirebirdPacketPayload payload) {
-    }
+    private final ByteBuf data;
     
-    static void registerBatchColumnTypes(final int connectionId, final List<FirebirdBinaryColumnType> columnTypes) {
-        BATCH_MSG_HEADER_CONTEXT_CACHE.put(connectionId, new BatchMessageHeaderContext(new ArrayList<>(columnTypes), 0, 0));
-    }
+    private final int dataLength;
     
-    static void clearBatchMetadataCache(final int connectionId) {
-        BATCH_MSG_HEADER_CONTEXT_CACHE.remove(connectionId);
+    private final Charset charset;
+    
+    public FirebirdBatchSendMessageCommandPacket(final FirebirdPacketPayload payload) {
+        payload.skipReserved(4);
+        statementHandle = payload.readInt4();
+        messageCount = payload.readInt4Unsigned();
+        charset = payload.getCharset();
+        data = payload.getByteBuf().readSlice(payload.getByteBuf().readableBytes());
+        dataLength = data.readableBytes();
     }
     
     /**
-     * Get length of packet.
+     * Get length of batch message packet by parsing every message.
      *
      * @param payload Firebird packet payload
      * @param connectionId connection ID
@@ -68,60 +67,52 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
      * @throws FirebirdProtocolException firebird protocol exception
      */
     public static int getLength(final FirebirdPacketPayload payload, final int connectionId) {
-        ByteBuf byteBuf = payload.getByteBuf();
-        if (byteBuf.readableBytes() < FIXED_BATCH_MSG_HEADER_LENGTH) {
-            return -1;
-        }
-        BatchMessageHeaderContext batchMessageHeaderContext = BATCH_MSG_HEADER_CONTEXT_CACHE.get(connectionId);
-        if (null == batchMessageHeaderContext) {
-            throw new FirebirdProtocolException("Batch message header context not found for connectionId: " + connectionId);
-        }
-        if (0 == batchMessageHeaderContext.getStatementHandle() && 0 == batchMessageHeaderContext.getBatchMessageCount()) {
-            payload.skipReserved(4);
-            batchMessageHeaderContext.setStatementHandle(payload.readInt4());
-            batchMessageHeaderContext.setBatchMessageCount(payload.readInt4Unsigned());
-        }
-        FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, batchMessageHeaderContext.getStatementHandle());
-        if (null == batchStatement) {
-            throw new FirebirdProtocolException("Batch statement not found for connectionId: " + connectionId + ", statement handle: " + batchMessageHeaderContext.getStatementHandle());
-        }
-        return parseBatchMessageLength(payload, batchMessageHeaderContext.getColumnTypes(), batchMessageHeaderContext.getBatchMessageCount(), batchStatement);
+        return getLength(payload, connectionId, payload.getByteBuf().readerIndex(), payload.getByteBuf().readableBytes());
     }
     
-    private static int parseBatchMessageLength(final FirebirdPacketPayload payload, final List<FirebirdBinaryColumnType> columnTypes, final long batchMessageCount,
-                                               final FirebirdBatchStatement batchStatement) {
-        ByteBuf data = payload.getByteBuf();
-        FirebirdPacketPayload dataPayload = new FirebirdPacketPayload(data, payload.getCharset());
-        int initialReaderIndex = dataPayload.getByteBuf().readerIndex();
-        int lastCompleteMessageReaderIndex = initialReaderIndex;
-        for (int i = 0; i < batchMessageCount; i++) {
-            int startReaderIndex = dataPayload.getByteBuf().readerIndex();
+    private static int getLength(final FirebirdPacketPayload payload, final int connectionId, final int startReaderIndex, final int availableBytes) {
+        if (availableBytes < FIXED_BATCH_MSG_HEADER_LENGTH) {
+            return -1;
+        }
+        payload.skipReserved(4);
+        int statementHandle = payload.readInt4();
+        FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, statementHandle);
+        if (null == batchStatement) {
+            throw new FirebirdProtocolException("Batch statement not found for connectionId: " + connectionId + ", statement handle: " + statementHandle);
+        }
+        if (batchStatement.getAccumulatedSize() + availableBytes > batchStatement.getBufferSize()) {
+            throw new FirebirdProtocolException("Batch is too big: accumulated %d + incoming %d bytes exceeds buffer size limit %d bytes",
+                    batchStatement.getAccumulatedSize(), availableBytes, batchStatement.getBufferSize());
+        }
+        return parseBatchMessages(payload, startReaderIndex, payload.readInt4Unsigned(), batchStatement);
+    }
+    
+    private static int parseBatchMessages(final FirebirdPacketPayload payload, final int startReaderIndex, final long messageCount, final FirebirdBatchStatement batchStatement) {
+        List<FirebirdBinaryColumnType> columnTypes = batchStatement.getColumnTypes();
+        if (batchStatement.getFramedCount() > 0) {
+            payload.getByteBuf().readerIndex(startReaderIndex + batchStatement.getFramedOffset());
+        }
+        for (long each = batchStatement.getFramedCount(); each < messageCount; each++) {
+            int messageStartIndex = payload.getByteBuf().readerIndex();
             try {
-                if (batchStatement.getParameterValues().size() == batchMessageCount) {
-                    return lastCompleteMessageReaderIndex;
-                }
-                List<Object> parameterValues = parseSingleMessage(dataPayload, columnTypes);
-                if (columnTypes.size() != parameterValues.size()) {
-                    int result = (initialReaderIndex == lastCompleteMessageReaderIndex) ? -1 : lastCompleteMessageReaderIndex;
-                    return (result != -1) ? -result : result;
-                }
-                int messageLength = dataPayload.getByteBuf().readerIndex() - startReaderIndex;
-                dataPayload.getByteBuf().skipBytes(getPaddingLength(messageLength));
-                batchStatement.addParameterValues(parameterValues);
-                lastCompleteMessageReaderIndex = dataPayload.getByteBuf().readerIndex();
+                batchStatement.addParameterValues(parseSingleMessage(payload, columnTypes));
+                payload.skipPadding(payload.getByteBuf().readerIndex() - messageStartIndex);
+                // CHECKSTYLE:OFF
             } catch (final IndexOutOfBoundsException ex) {
-                int result = (initialReaderIndex == lastCompleteMessageReaderIndex) ? -1 : lastCompleteMessageReaderIndex;
-                return (result != -1) ? -result : result;
+                // CHECKSTYLE:ON
+                batchStatement.setFramingProgress(messageStartIndex - startReaderIndex, each);
+                return -1;
             }
         }
-        return lastCompleteMessageReaderIndex;
+        batchStatement.clearFramingProgress();
+        return payload.getByteBuf().readerIndex() - startReaderIndex;
     }
     
     private static List<Object> parseSingleMessage(final FirebirdPacketPayload payload, final List<FirebirdBinaryColumnType> columnTypes) {
         List<Integer> nullBits = readNullBits(payload, columnTypes.size());
         List<Object> result = new ArrayList<>(columnTypes.size());
         for (int i = 0; i < columnTypes.size(); i++) {
-            Integer nullBit = nullBits.get(i / 8);
+            int nullBit = nullBits.get(i / 8);
             if (((nullBit >> i % 8) & 1) != 0) {
                 result.add(null);
                 continue;
@@ -131,10 +122,6 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
             result.add(FirebirdBinaryColumnType.BLOB == columnType ? payload.readInt8() : binaryProtocolValue.read(payload));
         }
         return result;
-    }
-    
-    private static int getPaddingLength(final int messageLength) {
-        return (4 - messageLength % 4) % 4;
     }
     
     private static List<Integer> readNullBits(final FirebirdPacketPayload payload, final int columnCount) {
@@ -150,43 +137,7 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
         return result;
     }
     
-    /**
-     * Reset batch message header context after execute_batch so the next batch_msg re-reads its header.
-     *
-     * @param connectionId connection ID
-     */
-    public static void resetBatchMessageHeader(final int connectionId) {
-        BatchMessageHeaderContext ctx = BATCH_MSG_HEADER_CONTEXT_CACHE.get(connectionId);
-        if (ctx != null) {
-            ctx.setStatementHandle(0);
-            ctx.setBatchMessageCount(0);
-        }
-    }
-    
-    /**
-     * Unregister connection metadata cache.
-     *
-     * @param connectionId connection ID
-     */
-    public static void unregisterConnection(final int connectionId) {
-        clearBatchMetadataCache(connectionId);
-    }
-    
-    @Getter
-    public static final class BatchMessageHeaderContext {
-        
-        private final List<FirebirdBinaryColumnType> columnTypes;
-        
-        @Setter
-        private int statementHandle;
-        
-        @Setter
-        private long batchMessageCount;
-        
-        private BatchMessageHeaderContext(final List<FirebirdBinaryColumnType> columnTypes, final int statementHandle, final long batchMessageCount) {
-            this.columnTypes = columnTypes;
-            this.statementHandle = statementHandle;
-            this.batchMessageCount = batchMessageCount;
-        }
+    @Override
+    protected void write(final FirebirdPacketPayload payload) {
     }
 }

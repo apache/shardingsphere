@@ -22,7 +22,6 @@ import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -85,7 +84,6 @@ class FirebirdBatchCreateCommandExecutorTest {
     @AfterEach
     void tearDown() {
         FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
-        FirebirdBatchSendMessageCommandPacket.unregisterConnection(CONNECTION_ID);
     }
     
     @Test
@@ -176,6 +174,28 @@ class FirebirdBatchCreateCommandExecutorTest {
     @Test
     void assertParseBatchParametersWhenClumpletTruncated() {
         assertThrows(FirebirdProtocolException.class, () -> FirebirdBatchCreateCommandExecutor.BatchParameters.parse(Unpooled.wrappedBuffer(new byte[]{BATCH_VERSION_1, TAG_BUFFER_BYTES_SIZE})));
+    }
+    
+    @Test
+    void assertParseBatchParametersWhenValueTruncated() {
+        assertThrows(FirebirdProtocolException.class,
+                () -> FirebirdBatchCreateCommandExecutor.BatchParameters.parse(Unpooled.buffer().writeByte(BATCH_VERSION_1).writeByte(TAG_BUFFER_BYTES_SIZE).writeIntLE(4)));
+    }
+    
+    @Test
+    void assertParseBatchParametersWhenIntegerLengthInvalid() {
+        assertThrows(FirebirdProtocolException.class,
+                () -> FirebirdBatchCreateCommandExecutor.BatchParameters.parse(Unpooled.buffer().writeByte(BATCH_VERSION_1).writeByte(TAG_BUFFER_BYTES_SIZE).writeIntLE(1).writeByte(1)));
+    }
+    
+    @Test
+    void assertParseBatchParametersWithUnknownTag() {
+        FirebirdBatchCreateCommandExecutor.BatchParameters actual =
+                FirebirdBatchCreateCommandExecutor.BatchParameters.parse(Unpooled.buffer().writeByte(BATCH_VERSION_1).writeByte(99).writeIntLE(1).writeByte(1));
+        assertThat(actual.getVersion(), is(BATCH_VERSION_1));
+        assertThat(actual.getBufferSize(), is(DEFAULT_BUFFER_SIZE));
+        assertFalse(actual.isRecordCounts());
+        assertThat(actual.getBlobPolicy(), is(BLOB_STREAM));
     }
     
     private ByteBuf createBatchBlr() {

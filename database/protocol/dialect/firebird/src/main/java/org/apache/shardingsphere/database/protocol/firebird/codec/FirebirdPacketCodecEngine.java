@@ -19,7 +19,6 @@ package org.apache.shardingsphere.database.protocol.firebird.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
@@ -127,19 +126,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 return;
             }
             pendingPacketType = null;
-            // TODO replace temporary implementation for prepending BATCH_MSG chunk.
-            if (commandType == FirebirdCommandPacketType.BATCH_MSG) {
-                CompositeByteBuf result = context.alloc().compositeBuffer(2);
-                try {
-                    result.addComponent(true, Unpooled.buffer(MESSAGE_TYPE_LENGTH).writeInt(FirebirdCommandPacketType.BATCH_MSG.getValue()));
-                    result.addComponent(true, buffer.readRetainedSlice(packetLength));
-                    out.add(result.readRetainedSlice(packetLength));
-                } finally {
-                    result.release();
-                }
-            } else {
-                out.add(buffer.readRetainedSlice(packetLength));
-            }
+            out.add(buffer.readRetainedSlice(packetLength));
         }
     }
     

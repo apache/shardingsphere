@@ -48,7 +48,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -229,8 +228,9 @@ class FirebirdPacketCodecEngineTest {
             List<Object> out = new LinkedList<>();
             codecEngine.decode(context, in, out);
             assertThat(out.size(), is(1));
-            FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE);
-            assertThat(batchStatement.getParameterValues(), is(Arrays.asList(Collections.singletonList(100), Collections.singletonList(200))));
+            FirebirdBatchSendMessageCommandPacket actualPacket = createBatchSendMessagePacket((ByteBuf) out.iterator().next());
+            assertThat(actualPacket.getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
+            assertThat(actualPacket.getMessageCount(), is(2L));
             assertNull(getPendingPacketType());
             assertTrue(getPendingMessages().isEmpty());
         } finally {
@@ -240,13 +240,13 @@ class FirebirdPacketCodecEngineTest {
     
     @Test
     void assertDecodeBatchMessageWithoutRegisteredBatchStatementThrows() {
-        registerBatchMetadata();
+        FirebirdBatchRegistry.getInstance().registerConnection(BATCH_CONNECTION_ID);
         try {
             ByteBuf in = buildBatchMessage(999, 100);
             List<Object> out = new LinkedList<>();
             assertThrows(FirebirdProtocolException.class, () -> codecEngine.decode(context, in, out));
         } finally {
-            FirebirdBatchSendMessageCommandPacket.unregisterConnection(BATCH_CONNECTION_ID);
+            FirebirdBatchRegistry.getInstance().unregisterConnection(BATCH_CONNECTION_ID);
         }
     }
     
@@ -271,13 +271,12 @@ class FirebirdPacketCodecEngineTest {
     void assertDecodeBatchMessageAfterResetReadsFreshHeader() {
         setUpBatchContext();
         try {
-            codecEngine.decode(context, buildBatchMessage(BATCH_STATEMENT_HANDLE, 100), new LinkedList<>());
-            FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE);
-            assertThat(batchStatement.getParameterValues(), is(Collections.singletonList(Collections.singletonList(100))));
-            FirebirdBatchSendMessageCommandPacket.resetBatchMessageHeader(BATCH_CONNECTION_ID);
-            batchStatement.reset();
-            codecEngine.decode(context, buildBatchMessage(BATCH_STATEMENT_HANDLE, 300), new LinkedList<>());
-            assertThat(batchStatement.getParameterValues(), is(Collections.singletonList(Collections.singletonList(300))));
+            List<Object> firstOut = new LinkedList<>();
+            codecEngine.decode(context, buildBatchMessage(BATCH_STATEMENT_HANDLE, 100), firstOut);
+            assertThat(createBatchSendMessagePacket((ByteBuf) firstOut.iterator().next()).getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
+            List<Object> secondOut = new LinkedList<>();
+            codecEngine.decode(context, buildBatchMessage(BATCH_STATEMENT_HANDLE, 300), secondOut);
+            assertThat(createBatchSendMessagePacket((ByteBuf) secondOut.iterator().next()).getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
         } finally {
             tearDownBatchContext();
         }
@@ -285,17 +284,16 @@ class FirebirdPacketCodecEngineTest {
     
     private void setUpBatchContext() {
         FirebirdBatchRegistry.getInstance().registerConnection(BATCH_CONNECTION_ID);
-        FirebirdBatchRegistry.getInstance().registerBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE, new FirebirdBatchStatement(BATCH_STATEMENT_HANDLE));
-        registerBatchMetadata();
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE,
+                new FirebirdBatchStatement(BATCH_STATEMENT_HANDLE, Collections.singletonList(FirebirdBinaryColumnType.LONG), 256L * 1024 * 1024));
     }
     
     private void tearDownBatchContext() {
-        FirebirdBatchSendMessageCommandPacket.unregisterConnection(BATCH_CONNECTION_ID);
         FirebirdBatchRegistry.getInstance().unregisterConnection(BATCH_CONNECTION_ID);
     }
     
-    private void registerBatchMetadata() {
-        FirebirdBatchSendMessageCommandPacket.registerBatchMetadata(BATCH_CONNECTION_ID, Collections.singletonList(FirebirdBinaryColumnType.LONG), 256L * 1024 * 1024);
+    private FirebirdBatchSendMessageCommandPacket createBatchSendMessagePacket(final ByteBuf byteBuf) {
+        return new FirebirdBatchSendMessageCommandPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
     }
     
     private ByteBuf buildBatchMessage(final int statementHandle, final int... values) {

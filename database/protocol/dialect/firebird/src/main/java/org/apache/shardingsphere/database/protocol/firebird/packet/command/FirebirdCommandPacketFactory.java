@@ -107,7 +107,7 @@ public final class FirebirdCommandPacketFactory {
             case BATCH_CREATE:
                 return new FirebirdBatchCreateCommandPacket(payload);
             case BATCH_MSG:
-                return new FirebirdBatchSendMessageCommandPacket();
+                return new FirebirdBatchSendMessageCommandPacket(payload);
             case BATCH_EXEC:
                 return new FirebirdBatchExecuteCommandPacket(payload);
             case BATCH_RLS:

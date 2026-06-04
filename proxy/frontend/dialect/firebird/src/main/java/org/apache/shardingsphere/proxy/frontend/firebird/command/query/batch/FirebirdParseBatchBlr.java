@@ -31,21 +31,21 @@ import java.util.List;
  */
 @Getter
 public final class FirebirdParseBatchBlr {
-
+    
     private static final int HEADER_LENGTH = 4;
-
+    
     private final List<FirebirdBlrFieldDescriptor> fields;
-
+    
     private final int messageLength;
-
+    
     private final int netLength;
-
+    
     private FirebirdParseBatchBlr(final List<FirebirdBlrFieldDescriptor> fields, final int messageLength, final int netLength) {
         this.fields = fields;
         this.messageLength = messageLength;
         this.netLength = netLength;
     }
-
+    
     /**
      * Parse a BLR message buffer into its message format.
      *
@@ -72,7 +72,7 @@ public final class FirebirdParseBatchBlr {
         buffer.skipBytes(1);
         return parseFormat(buffer);
     }
-
+    
     private static FirebirdParseBatchBlr parseFormat(final ByteBuf buffer) {
         int count = buffer.readUnsignedByte();
         count += buffer.readUnsignedByte() << 8;
@@ -94,7 +94,7 @@ public final class FirebirdParseBatchBlr {
         }
         return new FirebirdParseBatchBlr(fields, offset, netLength);
     }
-
+    
     private static int appendNullIndicator(final ByteBuf buffer, final int offset) {
         int nullType = buffer.readUnsignedByte();
         buffer.skipBytes(1);
@@ -103,11 +103,11 @@ public final class FirebirdParseBatchBlr {
         }
         return alignTo(offset, Short.BYTES) + Short.BYTES;
     }
-
+    
     private static boolean isVarying(final FirebirdBinaryColumnType type) {
         return FirebirdBinaryColumnType.VARYING == type || FirebirdBinaryColumnType.LEGACY_VARYING == type;
     }
-
+    
     private static FirebirdBlrFieldDescriptor readDescriptor(final ByteBuf buffer, final int blrType) {
         FirebirdBinaryColumnType type = FirebirdBinaryColumnType.valueOfBLRType(blrType);
         if (BlrConstants.blr_text == blrType || BlrConstants.blr_varying == blrType) {
@@ -133,7 +133,7 @@ public final class FirebirdParseBatchBlr {
         }
         return new FirebirdBlrFieldDescriptor(type, fixedLengthOf(blrType), 0, 0);
     }
-
+    
     private static int fixedLengthOf(final int blrType) {
         if (BlrConstants.blr_short == blrType) {
             return Short.BYTES;
@@ -153,7 +153,7 @@ public final class FirebirdParseBatchBlr {
         }
         throw new IllegalArgumentException("Unsupported BLR type: " + blrType);
     }
-
+    
     private static int alignmentOf(final int blrType) {
         if (BlrConstants.blr_text == blrType || BlrConstants.blr_text2 == blrType || BlrConstants.blr_bool == blrType) {
             return 1;
@@ -166,24 +166,24 @@ public final class FirebirdParseBatchBlr {
         }
         return Integer.BYTES;
     }
-
+    
     private static int alignTo(final int value, final int alignment) {
         return value + alignment - 1 & ~(alignment - 1);
     }
-
+    
     /**
      * Single field descriptor parsed from BLR.
      */
     @RequiredArgsConstructor
     @Getter
     public static final class FirebirdBlrFieldDescriptor {
-
+        
         private final FirebirdBinaryColumnType type;
-
+        
         private final int length;
-
+        
         private final int scale;
-
+        
         private final int offset;
     }
 }

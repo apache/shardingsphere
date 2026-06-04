@@ -19,8 +19,8 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
+import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdBlrRowMetadata;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 /**
@@ -31,19 +31,20 @@ public final class FirebirdBatchCreateCommandPacket extends FirebirdCommandPacke
     
     private final int statementHandle;
     
-    private final FirebirdBlrRowMetadata batchBlr;
+    private final ByteBuf batchBlr;
     
     private final long batchMessageLength;
     
     private final ByteBuf batchParametersBuffer;
     
-    public FirebirdBatchCreateCommandPacket(final FirebirdPacketPayload payload, final int connectionId) {
+    public FirebirdBatchCreateCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         statementHandle = payload.readInt4();
-        batchBlr = FirebirdBlrRowMetadata.parseBLR(payload.readBuffer());
+        batchBlr = payload.readBuffer();
+        if (!batchBlr.isReadable()) {
+            throw new FirebirdProtocolException("Missing required format info in createBatch()");
+        }
         batchMessageLength = payload.readInt4Unsigned();
-        FirebirdBatchSendMessageCommandPacket.clearBatchMetadataCache(connectionId);
-        FirebirdBatchSendMessageCommandPacket.registerBatchColumnTypes(connectionId, batchBlr.getColumnTypes());
         batchParametersBuffer = payload.readBuffer();
     }
     

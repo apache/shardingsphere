@@ -133,7 +133,6 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, 8),
                 Arguments.of("free_statement", FirebirdCommandPacketType.FREE_STATEMENT, 12),
                 Arguments.of("batch_create", FirebirdCommandPacketType.BATCH_CREATE, 12),
-                Arguments.of("batch_msg", FirebirdCommandPacketType.BATCH_MSG, -1),
                 Arguments.of("batch_exec", FirebirdCommandPacketType.BATCH_EXEC, 12),
                 Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, 8),
                 Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, 8),

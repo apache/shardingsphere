@@ -44,7 +44,7 @@ public final class FirebirdBatchCancelCommandExecutor implements CommandExecutor
     public Collection<DatabasePacket> execute() throws SQLException {
         FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
         if (null != batchStatement) {
-            batchStatement.clearParameterValues();
+            batchStatement.reset();
         }
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }

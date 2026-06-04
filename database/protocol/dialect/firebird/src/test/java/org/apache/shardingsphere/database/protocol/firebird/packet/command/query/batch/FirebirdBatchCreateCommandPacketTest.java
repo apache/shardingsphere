@@ -18,18 +18,14 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdBlrRowMetadata;
+import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-
-import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,24 +36,26 @@ class FirebirdBatchCreateCommandPacketTest {
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         ByteBuf blrBuffer = mock(ByteBuf.class);
         ByteBuf batchParametersBuffer = mock(ByteBuf.class);
-        FirebirdBlrRowMetadata batchBlr = mock(FirebirdBlrRowMetadata.class);
         when(payload.readInt4()).thenReturn(7);
         when(payload.readBuffer()).thenReturn(blrBuffer, batchParametersBuffer);
         when(payload.readInt4Unsigned()).thenReturn(12L);
-        when(batchBlr.getColumnTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.VARYING));
-        try (
-                MockedStatic<FirebirdBlrRowMetadata> mockedRowMetadata = mockStatic(FirebirdBlrRowMetadata.class);
-                MockedStatic<FirebirdBatchSendMessageCommandPacket> mockedBatchPacket = mockStatic(FirebirdBatchSendMessageCommandPacket.class)) {
-            mockedRowMetadata.when(() -> FirebirdBlrRowMetadata.parseBLR(blrBuffer)).thenReturn(batchBlr);
-            FirebirdBatchCreateCommandPacket actualPacket = new FirebirdBatchCreateCommandPacket(payload, 42);
-            assertThat(actualPacket.getStatementHandle(), is(7));
-            assertThat(actualPacket.getBatchBlr(), is(batchBlr));
-            assertThat(actualPacket.getBatchMessageLength(), is(12L));
-            assertThat(actualPacket.getBatchParametersBuffer(), is(batchParametersBuffer));
-            mockedBatchPacket.verify(() -> FirebirdBatchSendMessageCommandPacket.clearBatchMetadataCache(42));
-            mockedBatchPacket.verify(() -> FirebirdBatchSendMessageCommandPacket.registerBatchColumnTypes(42, Collections.singletonList(FirebirdBinaryColumnType.VARYING)));
-            verify(payload).skipReserved(4);
-        }
+        when(blrBuffer.isReadable()).thenReturn(true);
+        FirebirdBatchCreateCommandPacket actualPacket = new FirebirdBatchCreateCommandPacket(payload);
+        assertThat(actualPacket.getStatementHandle(), is(7));
+        assertThat(actualPacket.getBatchBlr(), is(blrBuffer));
+        assertThat(actualPacket.getBatchMessageLength(), is(12L));
+        assertThat(actualPacket.getBatchParametersBuffer(), is(batchParametersBuffer));
+        verify(payload).skipReserved(4);
+    }
+    
+    @Test
+    void assertConstructorWhenBatchBlrMissing() {
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        ByteBuf blrBuffer = mock(ByteBuf.class);
+        when(payload.readBuffer()).thenReturn(blrBuffer);
+        when(blrBuffer.isReadable()).thenReturn(false);
+        assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchCreateCommandPacket(payload));
+        verify(payload).skipReserved(4);
     }
     
     @Test

@@ -38,10 +38,12 @@ class FirebirdBatchStatementTest {
     }
     
     @Test
-    void assertClearParameterValues() {
+    void assertReset() {
         FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(100);
         batchStatement.addParameterValues(Collections.singletonList("foo"));
-        batchStatement.clearParameterValues();
+        batchStatement.addSize(10L);
+        batchStatement.reset();
         assertTrue(batchStatement.getParameterValues().isEmpty());
+        assertThat(batchStatement.getAccumulatedSize(), is(0L));
     }
 }

@@ -20,12 +20,10 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -42,9 +40,8 @@ import java.util.List;
  * Create Batch command executor for Firebird.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor {
-
+    
     private static final long DEFAULT_BUFFER_SIZE = 16L * 1024 * 1024;
     
     private static final long MAX_BUFFER_SIZE = 256L * 1024 * 1024;
@@ -62,11 +59,11 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
     private static final int WIDE_CLUMPLET_LENGTH_SIZE = 4;
     
     private static final int INTEGER_VALUE_LENGTH = 4;
-
+    
     private final FirebirdBatchCreateCommandPacket packet;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         int connectionId = connectionSession.getConnectionId();
@@ -80,7 +77,6 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         ByteBuf batchBlr = packet.getBatchBlr();
         int blrLength = batchBlr.readableBytes();
         FirebirdParseBatchBlr messageFormat = FirebirdParseBatchBlr.parse(batchBlr, blrLength);
-        log.info("Firebird BATCH_CREATE message length: expected(from BLR)={}, actual(msglen)={}", messageFormat.getMessageLength(), packet.getBatchMessageLength());
         if (packet.getBatchMessageLength() != messageFormat.getMessageLength()) {
             throw new FirebirdProtocolException("Invalid message length: computed %d from BLR but client sent %d", messageFormat.getMessageLength(), packet.getBatchMessageLength());
         }
@@ -89,14 +85,13 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         registerBatch(connectionId, statementId, messageFormat, batchParameters);
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
     }
-
+    
     private void registerBatch(final int connectionId, final int statementId, final FirebirdParseBatchBlr messageFormat, final BatchParameters batchParameters) {
         List<FirebirdBinaryColumnType> columnTypes = new ArrayList<>(messageFormat.getFields().size());
         for (FirebirdParseBatchBlr.FirebirdBlrFieldDescriptor each : messageFormat.getFields()) {
             columnTypes.add(each.getType());
         }
-        FirebirdBatchSendMessageCommandPacket.registerBatchMetadata(connectionId, columnTypes, batchParameters.getBufferSize());
-        FirebirdBatchRegistry.getInstance().registerBatchStatement(connectionId, statementId, new FirebirdBatchStatement(statementId));
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(connectionId, statementId, new FirebirdBatchStatement(statementId, columnTypes, batchParameters.getBufferSize()));
     }
     
     @Getter

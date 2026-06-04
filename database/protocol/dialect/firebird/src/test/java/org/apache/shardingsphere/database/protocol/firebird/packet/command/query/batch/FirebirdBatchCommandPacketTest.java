@@ -19,12 +19,10 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -56,16 +54,8 @@ class FirebirdBatchCommandPacketTest {
     }
     
     @Test
-    void assertBatchSendMessageGetLengthWithoutHeaderContext() {
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer().writeZero(12), StandardCharsets.UTF_8);
-        assertThrows(FirebirdProtocolException.class, () -> FirebirdBatchSendMessageCommandPacket.getLength(payload, 66));
-    }
-    
-    @Test
     void assertBatchSendMessageGetLengthWithoutBatchStatement() {
-        FirebirdBatchSendMessageCommandPacket.registerBatchColumnTypes(77, Collections.singletonList(FirebirdBinaryColumnType.VARYING));
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer().writeZero(4).writeInt(1).writeInt(1), StandardCharsets.UTF_8);
-        assertThrows(FirebirdProtocolException.class, () -> FirebirdBatchSendMessageCommandPacket.getLength(payload, 77));
-        FirebirdBatchSendMessageCommandPacket.unregisterConnection(77);
+        assertThrows(FirebirdProtocolException.class, () -> FirebirdBatchSendMessageCommandPacket.getLength(payload, 66));
     }
 }
