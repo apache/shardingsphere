@@ -88,7 +88,7 @@ class FirebirdFetchStatementCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWhenNoBackendHandlerAfterPreparedStatementFree() throws SQLException {
+    void assertExecuteWhenNoBackendHandlerAfterSameHandleReprepare() throws SQLException {
         FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
