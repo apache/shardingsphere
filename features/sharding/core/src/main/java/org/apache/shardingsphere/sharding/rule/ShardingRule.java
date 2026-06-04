@@ -307,10 +307,7 @@ public final class ShardingRule implements DatabaseRule {
      * @return sharding table
      */
     public Optional<ShardingTable> findShardingTable(final String logicTableName) {
-        if (Strings.isNullOrEmpty(logicTableName) || !shardingTables.containsKey(logicTableName)) {
-            return Optional.empty();
-        }
-        return Optional.of(shardingTables.get(logicTableName));
+        return Strings.isNullOrEmpty(logicTableName) ? Optional.empty() : Optional.ofNullable(shardingTables.get(logicTableName));
     }
     
     /**

@@ -83,8 +83,11 @@ public final class RouteUnit {
      * @return table mapper
      */
     public Optional<RouteMapper> findTableMapper(final String logicDataSourceName, final String actualTableName) {
+        if (!logicDataSourceName.equalsIgnoreCase(dataSourceMapper.getLogicName())) {
+            return Optional.empty();
+        }
         for (RouteMapper each : tableMappers) {
-            if (logicDataSourceName.equalsIgnoreCase(dataSourceMapper.getLogicName()) && actualTableName.equalsIgnoreCase(each.getActualName())) {
+            if (actualTableName.equalsIgnoreCase(each.getActualName())) {
                 return Optional.of(each);
             }
         }
