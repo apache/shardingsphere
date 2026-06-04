@@ -599,9 +599,27 @@ class ShardingSphereResultSetTest {
     
     @Test
     void assertGetObjectWithIntegerFromStringInNonMySQLProtocol() throws SQLException {
-        when(protocolType.getType()).thenReturn("PostgreSQL");
         when(mergeResultSet.getValue(1, Integer.class)).thenReturn("123");
-        assertThrows(SQLException.class, () -> shardingSphereResultSet.getObject(1, Integer.class));
+        DatabaseType actualProtocolType = mock(DatabaseType.class);
+        when(actualProtocolType.getType()).thenReturn("PostgreSQL");
+        when(actualProtocolType.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        when(metaDataContexts.getMetaData().getDatabase("logic_db").getProtocolType()).thenReturn(actualProtocolType);
+        ShardingSphereResultSet actualResultSet = new ShardingSphereResultSet(getResultSets(), mergeResultSet, statement, createSQLStatementContext());
+        assertThrows(SQLException.class, () -> actualResultSet.getObject(1, Integer.class));
+    }
+    
+    @Test
+    void assertGetObjectWithIntegerFromStringInTrunkMySQLProtocol() throws SQLException {
+        when(mergeResultSet.getValue(1, Integer.class)).thenReturn("123");
+        DatabaseType trunkDatabaseType = mock(DatabaseType.class);
+        when(trunkDatabaseType.getType()).thenReturn("MySQL");
+        when(trunkDatabaseType.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        DatabaseType actualProtocolType = mock(DatabaseType.class);
+        when(actualProtocolType.getType()).thenReturn("MariaDB");
+        when(actualProtocolType.getTrunkDatabaseType()).thenReturn(Optional.of(trunkDatabaseType));
+        when(metaDataContexts.getMetaData().getDatabase("logic_db").getProtocolType()).thenReturn(actualProtocolType);
+        ShardingSphereResultSet actualResultSet = new ShardingSphereResultSet(getResultSets(), mergeResultSet, statement, createSQLStatementContext());
+        assertThrows(SQLException.class, () -> actualResultSet.getObject(1, Integer.class));
     }
     
     @Test

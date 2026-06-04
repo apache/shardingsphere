@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -66,7 +67,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     private final MergedResult mergeResultSet;
     
-    private final DatabaseType protocolType;
+    private final DialectResultSetValueConverter dialectResultSetValueConverter;
     
     @Getter
     private final Map<String, Integer> columnLabelAndIndexMap;
@@ -74,7 +75,8 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final SQLStatementContext sqlStatementContext) throws SQLException {
         super(resultSets, statement, sqlStatementContext);
         this.mergeResultSet = mergeResultSet;
-        protocolType = getProtocolType(statement);
+        DatabaseType protocolType = getProtocolType(statement);
+        dialectResultSetValueConverter = getDialectResultSetValueConverter(protocolType);
         columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData());
     }
     
@@ -82,7 +84,8 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
                                    final SQLStatementContext sqlStatementContext, final Map<String, Integer> columnLabelAndIndexMap) {
         super(resultSets, statement, sqlStatementContext);
         this.mergeResultSet = mergeResultSet;
-        protocolType = getProtocolType(statement);
+        DatabaseType protocolType = getProtocolType(statement);
+        dialectResultSetValueConverter = getDialectResultSetValueConverter(protocolType);
         this.columnLabelAndIndexMap = columnLabelAndIndexMap;
     }
     
@@ -390,9 +393,9 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
             return (T) getClob(columnIndex);
         }
         if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type) || OffsetDateTime.class.equals(type)) {
-            return (T) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type, protocolType);
+            return (T) convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
         }
-        return (T) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, type), type, protocolType);
+        return (T) convertValue(mergeResultSet.getValue(columnIndex, type), type);
     }
     
     @Override
@@ -415,5 +418,13 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
             return shardingSphereStatement.getConnection().getContextManager().getMetaDataContexts().getMetaData().getDatabase(shardingSphereStatement.getUsedDatabaseName()).getProtocolType();
         }
         return null;
+    }
+    
+    private DialectResultSetValueConverter getDialectResultSetValueConverter(final DatabaseType protocolType) {
+        return null == protocolType ? null : TypedSPILoader.findService(DialectResultSetValueConverter.class, protocolType.getType()).orElse(null);
+    }
+    
+    private Object convertValue(final Object value, final Class<?> type) throws SQLFeatureNotSupportedException {
+        return null == dialectResultSetValueConverter ? ResultSetUtils.convertValue(value, type) : dialectResultSetValueConverter.convertValue(value, type);
     }
 }
