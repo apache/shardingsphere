@@ -34,7 +34,7 @@ Tasks with side effects should create or preview a plan first, then run only aft
 - Capability Catalog: understand the database tasks and usage boundaries that users can access through natural language.
 - Configuration: configure transport, `runtimeDatabases`, plugin directories, and launch parameters.
 - Client Integration: connect the MCP Server to an AI application through HTTP or STDIO, with Codex and Claude Code examples.
-- Deployment: deploy the binary distribution and OCI image safely.
+- Deployment: deploy the binary distribution and OCI image safely, then verify health and basic runtime diagnostics.
 - Troubleshooting: diagnose common MCP Server, connection, configuration, metadata, query, and change issues.
 - Feature Plugins: use official MCP feature plugins and understand how to review, apply, and validate plugin changes.
   - Rule Change Flow: understand confirmation, preview, execution, and validation for rule change tasks.

@@ -94,7 +94,47 @@ HTTP binding recommendations:
 - Avoid exposing the MCP Server directly to remote clients.
 - When sessions must be associated with external users or request sources, let a trusted gateway inject session attribution headers. Do not allow clients to forge these headers directly.
 
-## Logs
+## Health Checks
+
+After deployment, verify that ShardingSphere-MCP is truly usable instead of stopping at “the HTTP port is reachable”:
+
+1. Service process and endpoint are reachable
+
+   - In HTTP mode, confirm that the process has started, the port is listening, and `http://<bind-host>:<port><endpointPath>` matches the client configuration.
+   - In STDIO mode, confirm that the AI application launches the MCP process correctly and does not treat stdin/stdout as an interactive shell.
+
+2. MCP protocol is ready
+
+   - Confirm from the AI application that the MCP Server is recognized, or follow the protocol debugging examples in the [Custom Integration Appendix](../developer-appendix/) to complete `initialize` and read capabilities.
+   - If HTTP responses are reachable but capabilities, resources, or tools cannot be listed, the endpoint is reachable but the MCP protocol is not yet wired correctly.
+
+3. Runtime databases are ready
+
+   - Read `shardingsphere://runtime` and confirm that the transport, runtime database summary, and readiness details are visible.
+   - Call `database_gateway_validate_proxy_connectivity`, or run a minimal task such as “Show tables in `<logic-database>`” from the AI application to confirm that the configured runtime database is usable.
+   - A running MCP Server process alone does not mean that the target runtime database is ready. Connectivity failures, insufficient privileges, or invisible logical databases can still block tasks.
+
+## Basic Observability Entrypoints
+
+### Logs
 
 - HTTP mode: inspect the startup terminal and `logs/mcp.log`.
 - STDIO mode: do not use stdout as a log inspection entry; inspect stderr or `logs/mcp.log` for diagnostics.
+
+### Runtime status and protection details
+
+- `shardingsphere://runtime` exposes the current transport, runtime database summary, readiness details, and basic diagnostics.
+- Runtime protection details show boundaries such as row limits, query timeout limits, and session-level tool-call protection.
+- When a runtime database connection fails, use the returned failure category and recovery guidance to locate the issue. See [Troubleshooting](../troubleshooting/) for the full category list.
+
+### Minimum troubleshooting evidence
+
+When reporting an issue to an operator or troubleshooter, collect at least:
+
+- The startup command or container run command.
+- An MCP configuration summary, with passwords, keys, and tokens removed.
+- The transport type, endpoint address, and target logical database names configured under `runtimeDatabases`.
+- The MCP Server configuration summary from the AI application.
+- The failed task, returned failure category, and the relevant excerpt from `logs/mcp.log`.
+
+For symptom-oriented diagnosis, failure categories, and runtime protection guidance, see [Troubleshooting](../troubleshooting/). For direct MCP protocol debugging, see the [Custom Integration Appendix](../developer-appendix/).
