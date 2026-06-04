@@ -19,16 +19,22 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdBatchCommandPacketTest {
+    
+    private static final int CONNECTION_ID = 66;
+    
+    private static final int STATEMENT_ID = 7;
     
     @Test
     void assertBatchExecuteCommandPacket() {
@@ -56,6 +62,41 @@ class FirebirdBatchCommandPacketTest {
     @Test
     void assertBatchSendMessageGetLengthWithoutBatchStatement() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer().writeZero(4).writeInt(1).writeInt(1), StandardCharsets.UTF_8);
-        assertThrows(FirebirdProtocolException.class, () -> FirebirdBatchSendMessageCommandPacket.getLength(payload, 66));
+        assertThrows(FirebirdProtocolException.class, () -> FirebirdBatchSendMessageCommandPacket.getLength(payload, CONNECTION_ID));
+    }
+    
+    @Test
+    void assertBatchSendMessageGetLengthChecksDataSizeOnly() {
+        FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID,
+                new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(FirebirdBinaryColumnType.LONG), 8L));
+        try {
+            assertThat(FirebirdBatchSendMessageCommandPacket.getLength(createBatchMessagePayload(), CONNECTION_ID), is(20));
+        } finally {
+            FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
+        }
+    }
+    
+    @Test
+    void assertBatchSendMessageGetLengthWhenDataTooBig() {
+        FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(FirebirdBinaryColumnType.LONG), 8L);
+        batchStatement.addSize(1L);
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batchStatement);
+        try {
+            assertThrows(FirebirdProtocolException.class, () -> FirebirdBatchSendMessageCommandPacket.getLength(createBatchMessagePayload(), CONNECTION_ID));
+        } finally {
+            FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
+        }
+    }
+    
+    private FirebirdPacketPayload createBatchMessagePayload() {
+        return new FirebirdPacketPayload(Unpooled.buffer()
+                .writeZero(4)
+                .writeInt(STATEMENT_ID)
+                .writeInt(1)
+                .writeByte(0)
+                .writeZero(3)
+                .writeInt(1), StandardCharsets.UTF_8);
     }
 }

@@ -77,6 +77,9 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         ByteBuf batchBlr = packet.getBatchBlr();
         int blrLength = batchBlr.readableBytes();
         FirebirdParseBatchBlr messageFormat = FirebirdParseBatchBlr.parse(batchBlr, blrLength);
+        if (messageFormat.getFields().isEmpty()) {
+            throw new FirebirdProtocolException("Batch message format must contain at least one field");
+        }
         if (packet.getBatchMessageLength() != messageFormat.getMessageLength()) {
             throw new FirebirdProtocolException("Invalid message length: computed %d from BLR but client sent %d", messageFormat.getMessageLength(), packet.getBatchMessageLength());
         }

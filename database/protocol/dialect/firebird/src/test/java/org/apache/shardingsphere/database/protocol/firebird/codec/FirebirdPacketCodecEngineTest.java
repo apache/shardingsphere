@@ -239,6 +239,33 @@ class FirebirdPacketCodecEngineTest {
     }
     
     @Test
+    void assertDecodeBatchMessageSplitInsideRow() {
+        setUpBatchContext();
+        try {
+            final ByteBuf batchMessage = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100, 200);
+            final ByteBuf firstFrame = batchMessage.readRetainedSlice(24);
+            final ByteBuf secondFrame = batchMessage.readRetainedSlice(batchMessage.readableBytes());
+            List<Object> firstOut = new LinkedList<>();
+            codecEngine.decode(context, firstFrame, firstOut);
+            assertTrue(firstOut.isEmpty());
+            assertThat(getPendingPacketType(), is(FirebirdCommandPacketType.BATCH_MSG));
+            FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE);
+            assertThat(batchStatement.getParameterValues().size(), is(1));
+            assertThat(batchStatement.getParameterValues().get(0).get(0), is(100));
+            List<Object> secondOut = new LinkedList<>();
+            codecEngine.decode(context, secondFrame, secondOut);
+            assertThat(secondOut.size(), is(1));
+            assertThat(createBatchSendMessagePacket((ByteBuf) secondOut.iterator().next()).getMessageCount(), is(2L));
+            assertThat(batchStatement.getParameterValues().size(), is(2));
+            assertThat(batchStatement.getParameterValues().get(1).get(0), is(200));
+            assertNull(getPendingPacketType());
+            assertTrue(getPendingMessages().isEmpty());
+        } finally {
+            tearDownBatchContext();
+        }
+    }
+    
+    @Test
     void assertDecodeBatchMessageWithoutRegisteredBatchStatementThrows() {
         FirebirdBatchRegistry.getInstance().registerConnection(BATCH_CONNECTION_ID);
         try {

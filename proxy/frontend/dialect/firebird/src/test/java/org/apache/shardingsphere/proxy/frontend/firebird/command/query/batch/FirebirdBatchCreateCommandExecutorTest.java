@@ -128,6 +128,16 @@ class FirebirdBatchCreateCommandExecutorTest {
     }
     
     @Test
+    void assertExecuteWhenBatchBlrHasNoFields() {
+        FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
+        when(packet.getBatchBlr()).thenReturn(createEmptyBatchBlr());
+        assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+    }
+    
+    @Test
     void assertParseBatchParametersWithEmptyBuffer() {
         FirebirdBatchCreateCommandExecutor.BatchParameters actual = FirebirdBatchCreateCommandExecutor.BatchParameters.parse(Unpooled.EMPTY_BUFFER);
         assertThat(actual.getVersion(), is(BATCH_VERSION_1));
@@ -202,6 +212,11 @@ class FirebirdBatchCreateCommandExecutorTest {
         return Unpooled.wrappedBuffer(new byte[]{
                 (byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0,
                 2, 0, (byte) BlrConstants.blr_long, 0, (byte) BlrConstants.blr_short, 0, (byte) BlrConstants.blr_end, (byte) BlrConstants.blr_eoc});
+    }
+    
+    private ByteBuf createEmptyBatchBlr() {
+        return Unpooled.wrappedBuffer(new byte[]{
+                (byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0, 0, 0, (byte) BlrConstants.blr_end, (byte) BlrConstants.blr_eoc});
     }
     
     private ByteBuf createBatchParametersBuffer(final int tag, final int value) {

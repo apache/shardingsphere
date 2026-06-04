@@ -80,9 +80,10 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
         if (null == batchStatement) {
             throw new FirebirdProtocolException("Batch statement not found for connectionId: " + connectionId + ", statement handle: " + statementHandle);
         }
-        if (batchStatement.getAccumulatedSize() + availableBytes > batchStatement.getBufferSize()) {
-            throw new FirebirdProtocolException("Batch is too big: accumulated %d + incoming %d bytes exceeds buffer size limit %d bytes",
-                    batchStatement.getAccumulatedSize(), availableBytes, batchStatement.getBufferSize());
+        int availableDataBytes = availableBytes - FIXED_BATCH_MSG_HEADER_LENGTH;
+        if (batchStatement.getAccumulatedSize() + availableDataBytes > batchStatement.getBufferSize()) {
+            throw new FirebirdProtocolException("Batch is too big: accumulated %d + incoming %d data bytes exceeds buffer size limit %d bytes",
+                    batchStatement.getAccumulatedSize(), availableDataBytes, batchStatement.getBufferSize());
         }
         return parseBatchMessages(payload, startReaderIndex, payload.readInt4Unsigned(), batchStatement);
     }
@@ -100,6 +101,7 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
                 // CHECKSTYLE:OFF
             } catch (final IndexOutOfBoundsException ex) {
                 // CHECKSTYLE:ON
+                payload.getByteBuf().readerIndex(messageStartIndex);
                 batchStatement.setFramingProgress(messageStartIndex - startReaderIndex, each);
                 return -1;
             }

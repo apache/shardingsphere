@@ -139,10 +139,6 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             int expectedLength = FirebirdCommandPacketFactory.getExpectedLength(commandType, payload,
                     context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get());
             if (expectedLength < 0) {
-                if (FirebirdCommandPacketType.BATCH_MSG == commandType && -1 != expectedLength) {
-                    readerIndex = -expectedLength;
-                    buffer.readerIndex(readerIndex);
-                }
                 return -1;
             }
             return 0 == expectedLength ? readableBytes : (readableBytes >= expectedLength ? expectedLength : -1);
