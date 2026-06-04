@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -52,7 +51,7 @@ public final class SQLRewriteContext {
     
     private final ParameterBuilder parameterBuilder;
     
-    private final List<SQLToken> sqlTokens = new LinkedList<>();
+    private final List<SQLToken> sqlTokens = new ArrayList<>();
     
     @Getter(AccessLevel.NONE)
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();

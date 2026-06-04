@@ -76,6 +76,15 @@ public final class PipelineCaseHelper {
     }
     
     /**
+     * Generate json literal null.
+     *
+     * @return json literal null
+     */
+    public static String generateJsonLiteralNull() {
+        return "null";
+    }
+    
+    /**
      * Generate float value.
      *
      * @return float.

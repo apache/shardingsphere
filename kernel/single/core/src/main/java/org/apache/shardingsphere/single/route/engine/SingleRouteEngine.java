@@ -23,11 +23,11 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.single.exception.SingleTableNotFoundException;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -61,26 +61,27 @@ public final class SingleRouteEngine {
      *
      * @param routeContext route context
      * @param singleRule single rule
+     * @param database database
      * @return route context
      */
-    public RouteContext route(final RouteContext routeContext, final SingleRule singleRule) {
+    public RouteContext route(final RouteContext routeContext, final SingleRule singleRule, final ShardingSphereDatabase database) {
         if (routeContext.getRouteUnits().isEmpty() || sqlStatement instanceof SelectStatement) {
-            routeStatement(routeContext, singleRule);
+            routeStatement(routeContext, singleRule, database);
         } else {
             RouteContext newRouteContext = new RouteContext();
-            routeStatement(newRouteContext, singleRule);
+            routeStatement(newRouteContext, singleRule, database);
             combineRouteContext(routeContext, newRouteContext);
         }
         return routeContext;
     }
     
-    private void routeStatement(final RouteContext routeContext, final SingleRule rule) {
+    private void routeStatement(final RouteContext routeContext, final SingleRule rule, final ShardingSphereDatabase database) {
         if (sqlStatement instanceof DDLStatement) {
-            routeDDLStatement(routeContext, rule);
+            routeDDLStatement(routeContext, rule, database);
         } else {
-            boolean allTablesInSameComputeNode = rule.isAllTablesInSameComputeNode(getDataNodes(routeContext), singleTables);
+            boolean allTablesInSameComputeNode = rule.isAllTablesInSameComputeNode(getDataNodes(routeContext), singleTables, database);
             ShardingSpherePreconditions.checkState(allTablesInSameComputeNode, () -> new UnsupportedSQLOperationException("all tables must be in the same compute node"));
-            fillRouteContext(rule, routeContext, singleTables);
+            fillRouteContext(rule, routeContext, singleTables, database);
         }
     }
     
@@ -92,10 +93,10 @@ public final class SingleRouteEngine {
         return result;
     }
     
-    private void routeDDLStatement(final RouteContext routeContext, final SingleRule rule) {
+    private void routeDDLStatement(final RouteContext routeContext, final SingleRule rule, final ShardingSphereDatabase database) {
         if (sqlStatement instanceof CreateTableStatement) {
             QualifiedTable table = singleTables.iterator().next();
-            Optional<DataNode> dataNode = rule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(table.getSchemaName(), table.getTableName());
+            Optional<DataNode> dataNode = rule.findTableDataNode(database, table);
             boolean containsIfNotExists = ((CreateTableStatement) sqlStatement).isIfNotExists();
             if (dataNode.isPresent()) {
                 routeDDLStatementWithExistTable(routeContext, containsIfNotExists, dataNode.get(), table);
@@ -104,7 +105,7 @@ public final class SingleRouteEngine {
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
             }
         } else {
-            fillRouteContext(rule, routeContext, singleTables);
+            fillRouteContext(rule, routeContext, singleTables, database);
         }
     }
     
@@ -118,11 +119,10 @@ public final class SingleRouteEngine {
         }
     }
     
-    private void fillRouteContext(final SingleRule singleRule, final RouteContext routeContext, final Collection<QualifiedTable> logicTables) {
+    private void fillRouteContext(final SingleRule singleRule, final RouteContext routeContext, final Collection<QualifiedTable> logicTables, final ShardingSphereDatabase database) {
         for (QualifiedTable each : logicTables) {
             String tableName = each.getTableName();
-            DataNode dataNode = singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(each.getSchemaName(), tableName)
-                    .orElseThrow(() -> new SingleTableNotFoundException(tableName));
+            DataNode dataNode = singleRule.findTableDataNode(database, each).orElseThrow(() -> new SingleTableNotFoundException(tableName));
             String dataSource = dataNode.getDataSourceName();
             routeContext.putRouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(tableName, tableName)));
         }

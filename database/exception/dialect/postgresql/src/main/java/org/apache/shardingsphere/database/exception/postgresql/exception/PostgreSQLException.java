@@ -25,7 +25,7 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 
 /**
- * Replacement for {@link org.postgresql.util.PSQLException}.
+ * PostgreSQL exception.
  */
 @Getter
 public final class PostgreSQLException extends SQLException {

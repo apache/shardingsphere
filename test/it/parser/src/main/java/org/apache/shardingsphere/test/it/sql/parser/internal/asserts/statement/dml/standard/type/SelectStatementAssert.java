@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HierarchicalQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.groupby.GroupByClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.having.HavingClauseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.hierarchical.HierarchicalQueryClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.limit.LimitClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.lock.LockClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.model.ModelClauseAssert;
@@ -67,6 +69,7 @@ public final class SelectStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         assertProjection(assertContext, actual, expected);
         assertWhereClause(assertContext, actual, expected);
+        assertHierarchicalQueryClause(assertContext, actual, expected);
         assertGroupByClause(assertContext, actual, expected);
         assertHavingClause(assertContext, actual, expected);
         assertWindowClause(assertContext, actual, expected);
@@ -122,6 +125,16 @@ public final class SelectStatementAssert {
         } else {
             assertTrue(actual.getWhere().isPresent(), assertContext.getText("Actual where segment should exist."));
             WhereClauseAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());
+        }
+    }
+    
+    private static void assertHierarchicalQueryClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        Optional<HierarchicalQuerySegment> hierarchicalQuerySegment = actual.getHierarchicalQuery();
+        if (null == expected.getHierarchicalQueryClause()) {
+            assertFalse(hierarchicalQuerySegment.isPresent(), assertContext.getText("Actual hierarchical query segment should not exist."));
+        } else {
+            assertTrue(hierarchicalQuerySegment.isPresent(), assertContext.getText("Actual hierarchical query segment should exist."));
+            HierarchicalQueryClauseAssert.assertIs(assertContext, hierarchicalQuerySegment.get(), expected.getHierarchicalQueryClause());
         }
     }
     

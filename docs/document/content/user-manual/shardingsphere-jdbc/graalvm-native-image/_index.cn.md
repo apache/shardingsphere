@@ -50,7 +50,7 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.3</version>
+                <version>0.11.5</version>
                 <extensions>true</extensions>
             </plugin>
         </plugins>
@@ -79,7 +79,7 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.3</version>
+                <version>0.11.5</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -116,7 +116,7 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.11.3'
+   id 'org.graalvm.buildtools.native' version '0.11.5'
 }
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-infra-reachability-metadata:${shardingsphere.version}'
@@ -127,12 +127,12 @@ dependencies {
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.11.3'
+   id 'org.graalvm.buildtools.native' version '0.11.5'
 }
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
    implementation 'org.apache.shardingsphere:shardingsphere-infra-reachability-metadata:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.3', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.5', classifier: 'repository', ext: 'zip')
 }
 graalvmNative {
    binaries {
@@ -264,9 +264,12 @@ rules:
    tables:
       t_order:
          actualDataNodes: <LITERAL>ds_0.t_order_0, ds_0.t_order_1, ds_1.t_order_0, ds_1.t_order_1
-         keyGenerateStrategy:
-            column: order_id
-            keyGeneratorName: snowflake
+   keyGenerateStrategies:
+      t_order_order_id:
+         keyGenerateType: column
+         keyGeneratorName: snowflake
+         logicTable: t_order
+         keyGenerateColumn: order_id
 ```
 
 3. 使用者依然需要在 `src/main/resources/META-INF/native-image` 文件夹或 `src/test/resources/META-INF/native-image` 文件夹配置独立
@@ -293,7 +296,7 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.3</version>
+                <version>0.11.5</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -377,7 +380,7 @@ without it being registered as reachable. Add it to the resource metadata to sol
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.3</version>
+                <version>0.11.5</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>

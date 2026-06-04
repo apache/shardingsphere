@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.generic;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
@@ -32,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -94,6 +96,18 @@ class FirebirdFetchResponsePacketTest {
             verify(byteBuf).writeZero(4);
             verify(protocolValue).write(payload, 123);
         }
+    }
+    
+    @Test
+    void assertWriteWithBooleanCellData() {
+        ByteBuf byteBuf = Unpooled.buffer();
+        FirebirdPacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        FirebirdFetchResponsePacket.getFetchRowPacket(new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.BOOLEAN, true)))).write(payload);
+        byteBuf.skipBytes(16);
+        assertThat(byteBuf.readByte(), is((byte) 1));
+        assertThat(byteBuf.readByte(), is((byte) 0));
+        assertThat(byteBuf.readByte(), is((byte) 0));
+        assertThat(byteBuf.readByte(), is((byte) 0));
     }
     
     @Test

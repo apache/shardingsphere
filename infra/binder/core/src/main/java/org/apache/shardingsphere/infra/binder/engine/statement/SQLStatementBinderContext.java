@@ -56,4 +56,6 @@ public final class SQLStatementBinderContext {
     private final Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalTableBinderContexts = LinkedHashMultimap.create();
     
     private final Collection<String> pivotColumnNames = new CaseInsensitiveSet<>();
+    
+    private final Collection<String> modelColumnNames = new CaseInsensitiveSet<>();
 }

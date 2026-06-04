@@ -123,8 +123,8 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
         Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>(storageUnitNames.size(), 1F);
         for (String each : storageUnitNames) {
             DataSource dataSource = aggregatedDataSourceMap.get(each);
-            Map<String, Collection<String>> schemaTableNames =
-                    SingleTableDataNodeLoader.loadSchemaTableNames(database.getName(), DatabaseTypeEngine.getStorageType(dataSource), dataSource, each, Collections.emptyList());
+            Map<String, Collection<String>> schemaTableNames = SingleTableDataNodeLoader.loadSchemaTableNames(database.getName(), DatabaseTypeEngine.getStorageType(dataSource),
+                    dataSource, each, Collections.emptySet(), Collections.emptySet());
             if (!schemaTableNames.isEmpty()) {
                 result.put(each, schemaTableNames);
             }

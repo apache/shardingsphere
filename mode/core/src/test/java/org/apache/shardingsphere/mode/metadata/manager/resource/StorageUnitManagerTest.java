@@ -74,7 +74,7 @@ class StorageUnitManagerTest {
         when(reloadMetaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(reloadDatabase);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, true, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
+                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
             createManager(metaDataContexts, resourceSwitchManager).register(DATABASE_NAME, Collections.emptyMap());
         }
         verify(metaDataContexts).update(any(MetaDataContexts.class));
@@ -106,7 +106,7 @@ class StorageUnitManagerTest {
         when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, true, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
+                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
             createManager(metaDataContexts, resourceSwitchManager).alter(DATABASE_NAME, Collections.emptyMap());
         }
         verify(metaDataContexts).update(any(MetaDataContexts.class));
@@ -137,7 +137,7 @@ class StorageUnitManagerTest {
         when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, false, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
+                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
             createManager(metaDataContexts, resourceSwitchManager).unregister(DATABASE_NAME, "ds_0");
         }
         verify(metaDataContexts).update(any(MetaDataContexts.class));

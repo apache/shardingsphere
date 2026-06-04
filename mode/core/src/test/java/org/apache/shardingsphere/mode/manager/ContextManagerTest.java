@@ -53,6 +53,7 @@ import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResourc
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -113,8 +114,8 @@ class ContextManagerTest {
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
         database = mockDatabase();
-        when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase("bar_db")).thenReturn(null);
         when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
         when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(new ProxyInstanceMetaData("foo_id", 3307), Collections.emptyList()));
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(new ModeConfiguration("FIXTURE", mock()));
@@ -149,7 +150,8 @@ class ContextManagerTest {
     @Test
     void assertGetDatabaseType() {
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap());
-        ShardingSphereDatabase emptyDatabase = new ShardingSphereDatabase("bar_db", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyList());
+        ShardingSphereDatabase emptyDatabase =
+                new ShardingSphereDatabase("bar_db", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(emptyDatabase));
         assertThat(contextManager.getDatabaseType(), is(DatabaseTypeEngine.getDefaultStorageType()));
     }
@@ -177,9 +179,9 @@ class ContextManagerTest {
     @Test
     void assertGetStorageUnits() {
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, mock(RuleMetaData.class), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, mock(RuleMetaData.class), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         assertThat(contextManager.getStorageUnits("foo_db").size(), is(1));
     }
     
@@ -197,7 +199,7 @@ class ContextManagerTest {
                 MockedStatic<GlobalRulesBuilder> globalRulesBuilder = mockStatic(GlobalRulesBuilder.class);
                 MockedStatic<ShardingSphereStatisticsFactory> statisticsFactory = mockStatic(ShardingSphereStatisticsFactory.class);
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createChangedDatabase("foo_db", false, switchingResource, Collections.emptyList(), metaDataContexts)).thenReturn(database))) {
+                        (mock, context) -> when(mock.createChangedDatabaseByRebuild("foo_db", switchingResource, Collections.emptyList(), metaDataContexts)).thenReturn(database))) {
             genericSchemaManager.when(() -> GenericSchemaManager.getToBeDroppedSchemaNames(any(ShardingSphereDatabase.class), any(ShardingSphereDatabase.class)))
                     .thenReturn(Collections.singleton("foo_schema"));
             globalRulesBuilder.when(() -> GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.emptyList());
@@ -217,7 +219,7 @@ class ContextManagerTest {
         setMetaDataContextManager(metaDataContextManager);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createChangedDatabase("foo_db", false, switchingResource, Collections.emptyList(), metaDataContexts)).thenThrow(SQLException.class))) {
+                        (mock, context) -> when(mock.createChangedDatabaseByRebuild("foo_db", switchingResource, Collections.emptyList(), metaDataContexts)).thenThrow(SQLException.class))) {
             contextManager.reloadDatabase(database);
             verify(metaDataContexts, never()).update(any());
         }
@@ -282,6 +284,21 @@ class ContextManagerTest {
     }
     
     @Test
+    void assertReloadTableWithQuotedIdentifier() {
+        PersistServiceFacade persistServiceFacade = mockPersistServiceFacade();
+        setPersistServiceFacade(persistServiceFacade);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(table.getName()).thenReturn("FOO_TBL");
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList());
+        try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
+            schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anySet(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class)))
+                    .thenReturn(Collections.singletonMap("foo_schema", schema));
+            contextManager.reloadTable(database, "foo_schema", new IdentifierValue("\"FOO_TBL\""));
+        }
+        verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.singleton(table));
+    }
+    
+    @Test
     void assertReloadTableWithDataSourceName() {
         PersistServiceFacade persistServiceFacade = mockPersistServiceFacade();
         setPersistServiceFacade(persistServiceFacade);
@@ -310,7 +327,8 @@ class ContextManagerTest {
     @Test
     void assertGetPreSelectedDatabaseNameWithJDBC() {
         when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(new JDBCInstanceMetaData("foo_id", "foo_db"), Collections.emptyList()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
         assertThat(contextManager.getPreSelectedDatabaseName(), is("foo_db"));
     }

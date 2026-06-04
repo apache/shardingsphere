@@ -43,6 +43,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlElementFunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlSerializeFunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -110,6 +112,9 @@ public final class ProjectionsSegmentBinder {
                     projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), ((ExpressionProjectionSegment) projectionSegment).getText(), boundExpressionSegment);
             ((ExpressionProjectionSegment) projectionSegment).getAliasSegment().ifPresent(result::setAlias);
             return result;
+        }
+        if (projectionSegment instanceof XmlElementFunctionSegment || projectionSegment instanceof XmlSerializeFunctionSegment) {
+            return (ProjectionSegment) ExpressionSegmentBinder.bind((ExpressionSegment) projectionSegment, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (projectionSegment instanceof AggregationDistinctProjectionSegment) {
             return bindAggregationDistinctProjection((AggregationDistinctProjectionSegment) projectionSegment, binderContext, tableBinderContexts, outerTableBinderContexts);

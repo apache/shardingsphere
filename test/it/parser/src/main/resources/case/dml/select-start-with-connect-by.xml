@@ -49,6 +49,32 @@
                                 </binary-operation-expression>
                             </expr>
                         </where>
+                        <hierarchical-query start-index="69" stop-index="127">
+                            <start-with>
+                                <binary-operation-expression start-index="80" stop-index="92">
+                                    <left>
+                                        <column name="user_id" start-index="80" stop-index="88">
+                                            <owner name="o" start-index="80" stop-index="80" />
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1" start-index="92" stop-index="92" />
+                                    </right>
+                                </binary-operation-expression>
+                            </start-with>
+                            <connect-by>
+                                <binary-operation-expression start-index="105" stop-index="127">
+                                    <left>
+                                        <column name="user_id" start-index="111" stop-index="117" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <column name="user_id" start-index="121" stop-index="127" />
+                                    </right>
+                                </binary-operation-expression>
+                            </connect-by>
+                        </hierarchical-query>
                         <order-by>
                             <column-item name="level" start-index="138" stop-index="142" />
                         </order-by>
@@ -85,6 +111,33 @@
                         <from>
                             <simple-table name="dual" start-index="104" stop-index="107" />
                         </from>
+                        <hierarchical-query start-index="109" stop-index="166">
+                            <connect-by>
+                                <binary-operation-expression start-index="120" stop-index="166">
+                                    <left>
+                                        <function function-name="REGEXP_SUBSTR" text="REGEXP_SUBSTR(?, '[^|]+', 1, LEVEL)" literal-text="REGEXP_SUBSTR(2, '[^|]+', 1, LEVEL)" start-index="120" stop-index="154">
+                                            <parameter>
+                                                <literal-expression value="2" start-index="134" stop-index="134" />
+                                                <parameter-marker-expression parameter-index="0" start-index="134" stop-index="134" />
+                                            </parameter>
+                                            <parameter>
+                                                <literal-expression value="[^|]+" start-index="137" stop-index="143" />
+                                            </parameter>
+                                            <parameter>
+                                                <literal-expression value="1" start-index="146" stop-index="146" />
+                                            </parameter>
+                                            <parameter>
+                                                <column name="LEVEL" start-index="149" stop-index="153" />
+                                            </parameter>
+                                        </function>
+                                    </left>
+                                    <operator>IS</operator>
+                                    <right>
+                                        <literal-expression value="NOT NULL" start-index="159" stop-index="166" />
+                                    </right>
+                                </binary-operation-expression>
+                            </connect-by>
+                        </hierarchical-query>
                     </select>
                 </subquery>
             </subquery-table>

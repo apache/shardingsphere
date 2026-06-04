@@ -689,6 +689,7 @@ columnProperty
     : objectTypeColProperties
     | xmlTypeColProperties
     | lobStorageClause
+    | nestedTableColProperties
     ;
 
 xmlTypeColProperties

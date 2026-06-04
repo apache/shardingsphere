@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -44,6 +46,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -172,7 +175,9 @@ class MySQLShowDatabasesExecutorTest {
     
     private Collection<ShardingSphereDatabase> createDatabases() {
         return IntStream.range(0, 10)
-                .mapToObj(each -> new ShardingSphereDatabase(String.format(DATABASE_PATTERN, each), databaseType, mock(), mock(), Collections.emptyList())).collect(Collectors.toList());
+                .mapToObj(
+                        each -> new ShardingSphereDatabase(String.format(DATABASE_PATTERN, each), databaseType, mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties())))
+                .collect(Collectors.toList());
     }
     
     private ConnectionSession mockConnectionSession() {

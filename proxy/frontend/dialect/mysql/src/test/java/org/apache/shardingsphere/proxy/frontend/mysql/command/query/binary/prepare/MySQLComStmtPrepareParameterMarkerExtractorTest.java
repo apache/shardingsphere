@@ -310,7 +310,8 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
     private ShardingSphereMetaData createMetaData() {
         return new ShardingSphereMetaData(Collections.singleton(
-                new ShardingSphereDatabase("foo_db", databaseType, mock(), mock(), Collections.singleton(schema))), mock(), mock(), new ConfigurationProperties(new Properties()));
+                new ShardingSphereDatabase("foo_db", databaseType, mock(), mock(), Collections.singleton(schema), new ConfigurationProperties(new Properties()))), mock(), mock(),
+                new ConfigurationProperties(new Properties()));
     }
     
     private JoinTableSegment createJoinTableSegment() {

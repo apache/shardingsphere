@@ -42,9 +42,6 @@ rules:
           standard:
             shardingColumn: order_id
             shardingAlgorithmName: table_inline
-        keyGenerateStrategy:
-          column: order_id
-          keyGeneratorName: snowflake
       t_order_item:
         actualDataNodes: ds_${0..1}.t_order_item_${0..1}
         tableStrategy:
@@ -67,6 +64,12 @@ rules:
       auditorNames:
         - sharding_key_required_auditor
       allowHintDisable: true
+    keyGenerateStrategies:
+      t_order:
+        keyGenerateType: column
+        keyGeneratorName: snowflake
+        logicTable: t_order
+        keyGenerateColumn: order_id
 
     shardingAlgorithms:
       core_standard_fixture:

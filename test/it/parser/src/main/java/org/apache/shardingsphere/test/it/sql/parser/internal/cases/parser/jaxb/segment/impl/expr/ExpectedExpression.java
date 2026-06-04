@@ -30,6 +30,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.json.ExpectedJsonNullClauseSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.aggregation.ExpectedAggregationProjection;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.expression.ExpectedExpressionProjection;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.xml.ExpectedXmlElementFunctionSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.xml.ExpectedXmlSerializeFunctionSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.xmlquery.ExpectedXmlQueryAndExistsFunctionSegment;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -133,6 +135,12 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "xmlquery-projection")
     private ExpectedXmlQueryAndExistsFunctionSegment expectedXmlQueryAndExistsFunctionSegment;
+    
+    @XmlElement(name = "xml-element-function")
+    private ExpectedXmlElementFunctionSegment xmlElementFunctionSegment;
+    
+    @XmlElement(name = "xml-serialize-function")
+    private ExpectedXmlSerializeFunctionSegment xmlSerializeFunctionSegment;
     
     @XmlElement(name = "key-value")
     private ExpectedKeyValueSegment keyValueSegment;

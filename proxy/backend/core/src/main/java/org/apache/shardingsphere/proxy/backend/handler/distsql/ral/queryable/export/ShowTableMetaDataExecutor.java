@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,11 +57,11 @@ public final class ShowTableMetaDataExecutor implements DistSQLQueryExecutor<Sho
                 .filter(schema::containsTable).map(each -> buildTableRows(database.getName(), schema, each)).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
-    private Collection<LocalDataQueryResultRow> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final String tableName) {
+    private Collection<LocalDataQueryResultRow> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final IdentifierValue tableName) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         ShardingSphereTable table = schema.getTable(tableName);
-        result.addAll(table.getAllColumns().stream().map(each -> buildColumnRow(databaseName, tableName, each)).collect(Collectors.toList()));
-        result.addAll(table.getAllIndexes().stream().map(each -> buildIndexRow(databaseName, tableName, each)).collect(Collectors.toList()));
+        result.addAll(table.getAllColumns().stream().map(each -> buildColumnRow(databaseName, table.getName(), each)).collect(Collectors.toList()));
+        result.addAll(table.getAllIndexes().stream().map(each -> buildIndexRow(databaseName, table.getName(), each)).collect(Collectors.toList()));
         return result;
     }
     

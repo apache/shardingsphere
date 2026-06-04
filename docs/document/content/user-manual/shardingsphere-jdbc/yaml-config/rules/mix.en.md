@@ -20,13 +20,17 @@ rules:
         standard:
           shardingColumn: # Sharding column name
           shardingAlgorithmName: # Sharding algorithm name
-      keyGenerateStrategy:
-        column: # Auto-increment column name. By default, the auto-increment primary key generator is not used.
-        keyGeneratorName: # Distributed sequence algorithm name
   defaultDatabaseStrategy:
     standard:
       shardingColumn: # Sharding column name
       shardingAlgorithmName: # Sharding algorithm name
+  keyGenerateStrategies:
+    <key_generate_strategy_name> (+): # Sharding key generate strategy name
+      keyGenerateType: # Sharding key generate strategy type
+      keyGeneratorName: # Distributed sequence algorithm name
+      logicTable: # Logic table name, required when keyGenerateType is column
+      keyGenerateColumn: # Auto-increment column name, required when keyGenerateType is column
+      keyGenerateSequence: # Sequence name, required when keyGenerateType is sequence
   shardingAlgorithms:
     <sharding_algorithm_name>: # Sharding algorithm name
       type: INLINE
@@ -74,13 +78,16 @@ rules:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: t_order_inline
-      keyGenerateStrategy:
-        column: order_id
-        keyGeneratorName: snowflake
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
       shardingAlgorithmName: database_inline
+  keyGenerateStrategies:
+    t_order_order_id:
+      keyGenerateType: column
+      keyGeneratorName: snowflake
+      logicTable: t_order
+      keyGenerateColumn: order_id
   shardingAlgorithms:
     database_inline:
       type: INLINE

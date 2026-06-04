@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -101,7 +102,7 @@ class CreateEncryptRuleExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
-        metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertIfNotExistsRuleConfiguration));
+        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertIfNotExistsRuleConfiguration)));
     }
     
     private CreateEncryptRuleStatement createAESEncryptRuleSQLStatement() {

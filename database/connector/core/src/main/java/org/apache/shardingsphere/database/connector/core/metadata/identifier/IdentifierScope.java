@@ -28,6 +28,8 @@ public enum IdentifierScope {
     
     TABLE,
     
+    LOGICAL_TABLE,
+    
     VIEW,
     
     COLUMN,

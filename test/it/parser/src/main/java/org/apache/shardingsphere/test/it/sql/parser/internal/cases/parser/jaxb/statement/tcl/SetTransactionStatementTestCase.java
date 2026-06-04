@@ -17,10 +17,25 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Set transaction statement test case.
  */
+@Getter
+@Setter
 public final class SetTransactionStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "scope")
+    private String scope;
+    
+    @XmlAttribute(name = "isolation-level")
+    private String isolationLevel;
+    
+    @XmlAttribute(name = "access-mode")
+    private String accessMode;
 }

@@ -18,10 +18,15 @@
 package org.apache.shardingsphere.single.route.engine;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.StandardIdentifierCaseRule;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -57,6 +62,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -79,7 +85,7 @@ class SingleRouteEngineTest {
         singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singleton(new DataNode("ds_0", "foo_db", "t_order")));
         singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order_item", Collections.singleton(new DataNode("ds_0", "foo_db", "t_order_item")));
         RouteContext routeContext = new RouteContext();
-        engine.route(routeContext, singleRule);
+        engine.route(routeContext, singleRule, mockDatabase());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
@@ -100,7 +106,7 @@ class SingleRouteEngineTest {
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", databaseType, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         assertThat(routeContext.getOriginalDataNodes().size(), is(0));
-        engine.route(routeContext, singleRule);
+        engine.route(routeContext, singleRule, mockDatabase());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
@@ -117,7 +123,7 @@ class SingleRouteEngineTest {
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), "foo_db", databaseType, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         assertThat(routeContext.getRouteUnits().size(), is(0));
-        engine.route(routeContext, singleRule);
+        engine.route(routeContext, singleRule, mockDatabase());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
@@ -134,7 +140,7 @@ class SingleRouteEngineTest {
         RouteContext routeContext = new RouteContext();
         routeContext.putRouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order")));
         routeContext.putRouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order")));
-        engine.route(routeContext, mockSingleRuleWithTableDataNode(new DataNode("ds_1", "foo_db", "t_order"), true));
+        engine.route(routeContext, mockSingleRuleWithTableDataNode(new DataNode("ds_1", "foo_db", "t_order"), true), mockDatabase());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeUnits.size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
@@ -146,7 +152,7 @@ class SingleRouteEngineTest {
         SingleRouteEngine engine = new SingleRouteEngine(Collections.singleton(new QualifiedTable("foo_db", "t_order")), mock(SelectStatement.class), mock(HintValueContext.class));
         RouteContext routeContext = new RouteContext();
         routeContext.putRouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order")));
-        engine.route(routeContext, mockSingleRuleWithTableDataNode(new DataNode("ds_1", "foo_db", "t_order"), true));
+        engine.route(routeContext, mockSingleRuleWithTableDataNode(new DataNode("ds_1", "foo_db", "t_order"), true), mockDatabase());
         assertThat(routeContext.getRouteUnits().size(), is(2));
     }
     
@@ -155,7 +161,7 @@ class SingleRouteEngineTest {
         SingleRouteEngine engine = new SingleRouteEngine(Collections.singleton(new QualifiedTable("foo_db", "t_order")), mock(SQLStatement.class), mock(HintValueContext.class));
         RouteContext routeContext = new RouteContext();
         routeContext.getOriginalDataNodes().add(Collections.singleton(new DataNode("ds_0", "foo_db", "t_order")));
-        assertThrows(UnsupportedSQLOperationException.class, () -> engine.route(routeContext, mockSingleRuleWithTableDataNode(new DataNode("ds_0", "foo_db", "t_order"), false)));
+        assertThrows(UnsupportedSQLOperationException.class, () -> engine.route(routeContext, mockSingleRuleWithTableDataNode(new DataNode("ds_0", "foo_db", "t_order"), false), mockDatabase()));
     }
     
     @Test
@@ -163,7 +169,7 @@ class SingleRouteEngineTest {
         SingleRouteEngine engine = new SingleRouteEngine(Collections.singleton(new QualifiedTable("foo_db", "t_order")), mock(DDLStatement.class), mock(HintValueContext.class));
         RouteContext routeContext = new RouteContext();
         assertThat(routeContext.getRouteUnits().size(), is(0));
-        engine.route(routeContext, mockSingleRuleWithTableDataNode(new DataNode("ds_0", "foo_db", "t_order")));
+        engine.route(routeContext, mockSingleRuleWithTableDataNode(new DataNode("ds_0", "foo_db", "t_order")), mockDatabase());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeUnits.size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
@@ -174,7 +180,7 @@ class SingleRouteEngineTest {
         SingleRouteEngine engine = new SingleRouteEngine(Collections.singleton(new QualifiedTable("foo_db", "t_order")), mock(SQLStatement.class), mock(HintValueContext.class));
         RouteContext routeContext = new RouteContext();
         assertThat(routeContext.getRouteUnits().size(), is(0));
-        assertThrows(SingleTableNotFoundException.class, () -> engine.route(routeContext, mockSingleRuleWithoutTableDataNode()));
+        assertThrows(SingleTableNotFoundException.class, () -> engine.route(routeContext, mockSingleRuleWithoutTableDataNode(), mockDatabase()));
     }
     
     private Map<String, DataSource> createDataSourceMap() throws SQLException {
@@ -196,9 +202,9 @@ class SingleRouteEngineTest {
         when(hintValueContext.isSkipMetadataValidate()).thenReturn(skipMetadataValidate);
         SingleRouteEngine engine = new SingleRouteEngine(Collections.singleton(new QualifiedTable("foo_db", "t_order")), createTableStatement, hintValueContext);
         if (expectedToThrowException) {
-            assertThrows(TableExistsException.class, () -> engine.route(new RouteContext(), mockSingleRuleWithTableDataNode(new DataNode("ds_0", "foo_db", "t_order"))));
+            assertThrows(TableExistsException.class, () -> engine.route(new RouteContext(), mockSingleRuleWithTableDataNode(new DataNode("ds_0", "foo_db", "t_order")), mockDatabase()));
         } else {
-            assertDoesNotThrow(() -> engine.route(new RouteContext(), mockSingleRuleWithTableDataNode(new DataNode("ds_0", "foo_db", "t_order"))));
+            assertDoesNotThrow(() -> engine.route(new RouteContext(), mockSingleRuleWithTableDataNode(new DataNode("ds_0", "foo_db", "t_order")), mockDatabase()));
         }
     }
     
@@ -212,23 +218,30 @@ class SingleRouteEngineTest {
     private SingleRule mockSingleRuleWithTableDataNode(final DataNode tableDataNode) {
         SingleRule result = mock(SingleRule.class);
         MutableDataNodeRuleAttribute ruleAttribute = mock(MutableDataNodeRuleAttribute.class);
-        when(ruleAttribute.findTableDataNode("foo_db", "t_order")).thenReturn(Optional.of(tableDataNode));
+        when(result.findTableDataNode(any(), any())).thenReturn(Optional.of(tableDataNode));
         when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
     }
     
     private SingleRule mockSingleRuleWithTableDataNode(final DataNode tableDataNode, final boolean allTablesInSameComputeNode) {
         SingleRule result = mockSingleRuleWithTableDataNode(tableDataNode);
-        when(result.isAllTablesInSameComputeNode(any(), any())).thenReturn(allTablesInSameComputeNode);
+        when(result.isAllTablesInSameComputeNode(any(), any(), any())).thenReturn(allTablesInSameComputeNode);
         return result;
     }
     
     private SingleRule mockSingleRuleWithoutTableDataNode() {
         SingleRule result = mock(SingleRule.class);
         MutableDataNodeRuleAttribute ruleAttribute = mock(MutableDataNodeRuleAttribute.class);
-        when(ruleAttribute.findTableDataNode("foo_db", "t_order")).thenReturn(Optional.empty());
+        when(result.findTableDataNode(any(), any())).thenReturn(Optional.empty());
         when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
-        when(result.isAllTablesInSameComputeNode(any(), any())).thenReturn(true);
+        when(result.isAllTablesInSameComputeNode(any(), any(), any())).thenReturn(true);
+        return result;
+    }
+    
+    private ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        IdentifierCaseRule identifierCaseRule = new StandardIdentifierCaseRule(LookupMode.NORMALIZED, LookupMode.NORMALIZED, each -> each.toLowerCase(Locale.ENGLISH), each -> true);
+        when(result.getIdentifierCaseRule(IdentifierScope.SCHEMA)).thenReturn(identifierCaseRule);
         return result;
     }
 }

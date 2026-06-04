@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.single.datanode;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.type.SchemaMetaDataLoader;
@@ -32,6 +33,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -65,13 +67,17 @@ public final class SingleTableDataNodeLoader {
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(builtRules);
         Collection<String> splitTables = SingleTableLoadUtils.splitTableLines(configuredTables);
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
-            return load(databaseName, dataSourceMap, excludedTables);
+            Map<String, DatabaseType> storageTypes = dataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> DatabaseTypeEngine.getStorageType(each.getValue())));
+            return load(databaseName, dataSourceMap, Collections.emptySet(), excludedTables, storageTypes);
         }
-        Collection<String> configuredDataSources = configuredTables.stream().map(DataNode::new).map(DataNode::getDataSourceName).collect(Collectors.toSet());
-        Map<String, DataSource> configuredDataSourceMap = dataSourceMap.entrySet().stream().filter(entry -> configuredDataSources.contains(entry.getKey()))
+        Collection<DataNode> configuredDataNodes = getConfiguredDataNodes(splitTables);
+        Collection<String> configuredDataSources = getConfiguredDataSources(configuredDataNodes);
+        Collection<String> includedTables = getIncludedTables(dataSourceMap, configuredDataNodes, featureRequiredSingleTables);
+        Map<String, DataSource> validDataSources = dataSourceMap.entrySet().stream().filter(entry -> configuredDataSources.contains(entry.getKey()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-        Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, configuredDataSourceMap, excludedTables);
-        Map<String, Map<String, Collection<String>>> configuredTableMap = getConfiguredTableMap(databaseName, protocolType, splitTables);
+        Map<String, DatabaseType> validStorageTypes = validDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> DatabaseTypeEngine.getStorageType(each.getValue())));
+        Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, validDataSources, includedTables, excludedTables, validStorageTypes);
+        Map<String, Map<String, Collection<String>>> configuredTableMap = getConfiguredTableMap(databaseName, protocolType, splitTables, validStorageTypes);
         return loadSpecifiedDataNodes(actualDataNodes, featureRequiredSingleTables, configuredTableMap);
     }
     
@@ -80,13 +86,17 @@ public final class SingleTableDataNodeLoader {
      *
      * @param databaseName database name
      * @param dataSourceMap data source map
+     * @param includedTables included tables
      * @param excludedTables excluded tables
+     * @param validStorageTypes valid storage types
      * @return single table data node map
      */
-    public static Map<String, Collection<DataNode>> load(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTables) {
+    public static Map<String, Collection<DataNode>> load(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> includedTables,
+                                                         final Collection<String> excludedTables, final Map<String, DatabaseType> validStorageTypes) {
         Map<String, Collection<DataNode>> result = new LinkedHashMap<>(dataSourceMap.size(), 1F);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Map<String, Collection<DataNode>> dataNodeMap = load(databaseName, DatabaseTypeEngine.getStorageType(entry.getValue()), entry.getKey(), entry.getValue(), excludedTables);
+            Map<String, Collection<DataNode>> dataNodeMap =
+                    load(databaseName, validStorageTypes.get(entry.getKey()), entry.getKey(), entry.getValue(), includedTables, excludedTables);
             for (Entry<String, Collection<DataNode>> each : dataNodeMap.entrySet()) {
                 Collection<DataNode> addedDataNodes = each.getValue();
                 Collection<DataNode> existDataNodes = result.getOrDefault(each.getKey(), new LinkedHashSet<>(addedDataNodes.size(), 1F));
@@ -98,8 +108,8 @@ public final class SingleTableDataNodeLoader {
     }
     
     private static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType storageType, final String dataSourceName,
-                                                          final DataSource dataSource, final Collection<String> excludedTables) {
-        Map<String, Collection<String>> schemaTableNames = loadSchemaTableNames(databaseName, storageType, dataSource, dataSourceName, excludedTables);
+                                                          final DataSource dataSource, final Collection<String> includedTables, final Collection<String> excludedTables) {
+        Map<String, Collection<String>> schemaTableNames = loadSchemaTableNames(databaseName, storageType, dataSource, dataSourceName, includedTables, excludedTables);
         Map<String, Collection<DataNode>> result = new LinkedHashMap<>(schemaTableNames.size(), 1F);
         for (Entry<String, Collection<String>> entry : schemaTableNames.entrySet()) {
             for (String each : entry.getValue()) {
@@ -109,6 +119,44 @@ public final class SingleTableDataNodeLoader {
             }
         }
         return result;
+    }
+    
+    private static Collection<DataNode> getConfiguredDataNodes(final Collection<String> splitTables) {
+        return splitTables.stream().map(DataNode::new).collect(Collectors.toList());
+    }
+    
+    private static Collection<String> getConfiguredDataSources(final Collection<DataNode> configuredDataNodes) {
+        Collection<String> result = new HashSet<>(configuredDataNodes.size(), 1F);
+        for (DataNode each : configuredDataNodes) {
+            result.add(each.getDataSourceName());
+        }
+        return result;
+    }
+    
+    private static Collection<String> getIncludedTables(final Map<String, DataSource> dataSourceMap, final Collection<DataNode> configuredDataNodes,
+                                                        final Collection<String> featureRequiredSingleTables) {
+        if (!isSafeToFilterBeforeLoad(configuredDataNodes) || !isSingleDataSource(dataSourceMap) && !featureRequiredSingleTables.isEmpty()) {
+            return Collections.emptySet();
+        }
+        Collection<String> result = new CaseInsensitiveSet<>(configuredDataNodes.size() + featureRequiredSingleTables.size(), 1F);
+        for (DataNode each : configuredDataNodes) {
+            result.add(each.getTableName());
+        }
+        result.addAll(featureRequiredSingleTables);
+        return result;
+    }
+    
+    private static boolean isSafeToFilterBeforeLoad(final Collection<DataNode> configuredDataNodes) {
+        for (DataNode each : configuredDataNodes) {
+            if (null != each.getSchemaName() && !SingleTableConstants.ASTERISK.equals(each.getSchemaName())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private static boolean isSingleDataSource(final Map<String, DataSource> dataSourceMap) {
+        return 1 == dataSourceMap.size();
     }
     
     private static Map<String, Collection<DataNode>> loadSpecifiedDataNodes(final Map<String, Collection<DataNode>> actualDataNodes, final Collection<String> featureRequiredSingleTables,
@@ -150,18 +198,21 @@ public final class SingleTableDataNodeLoader {
         return result;
     }
     
-    private static Map<String, Map<String, Collection<String>>> getConfiguredTableMap(final String databaseName, final DatabaseType protocolType, final Collection<String> configuredTables) {
+    private static Map<String, Map<String, Collection<String>>> getConfiguredTableMap(final String databaseName, final DatabaseType protocolType, final Collection<String> configuredTables,
+                                                                                      final Map<String, DatabaseType> validStorageTypes) {
         if (configuredTables.isEmpty()) {
             return Collections.emptyMap();
         }
-        Collection<DataNode> dataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, protocolType, configuredTables);
-        Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>(dataNodes.size(), 1F);
-        for (DataNode each : dataNodes) {
-            Map<String, Collection<String>> schemaTables = result.getOrDefault(each.getDataSourceName(), new LinkedHashMap<>());
-            Collection<String> tables = schemaTables.getOrDefault(each.getSchemaName(), new LinkedList<>());
-            tables.add(each.getTableName());
-            schemaTables.putIfAbsent(each.getSchemaName(), tables);
-            result.putIfAbsent(each.getDataSourceName(), schemaTables);
+        Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>(configuredTables.size(), 1F);
+        for (String each : configuredTables) {
+            DataNode parsedDataNode = new DataNode(each);
+            DatabaseType databaseType = validStorageTypes.getOrDefault(parsedDataNode.getDataSourceName(), protocolType);
+            DataNode dataNode = new DataNode(databaseName, databaseType, each);
+            Map<String, Collection<String>> schemaTables = result.getOrDefault(dataNode.getDataSourceName(), new LinkedHashMap<>());
+            Collection<String> tables = schemaTables.getOrDefault(dataNode.getSchemaName(), new LinkedList<>());
+            tables.add(dataNode.getTableName());
+            schemaTables.putIfAbsent(dataNode.getSchemaName(), tables);
+            result.putIfAbsent(dataNode.getDataSourceName(), schemaTables);
         }
         return result;
     }
@@ -173,14 +224,15 @@ public final class SingleTableDataNodeLoader {
      * @param storageType storage type
      * @param dataSource data source
      * @param dataSourceName data source name
+     * @param includedTables included tables
      * @param excludedTables excluded tables
      * @return schema table names
      * @throws SingleTablesLoadingException Single tables loading exception
      */
-    public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType storageType,
-                                                                       final DataSource dataSource, final String dataSourceName, final Collection<String> excludedTables) {
+    public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType storageType, final DataSource dataSource, final String dataSourceName,
+                                                                       final Collection<String> includedTables, final Collection<String> excludedTables) {
         try {
-            return new SchemaMetaDataLoader(storageType).loadSchemaTableNames(databaseName, dataSource, excludedTables);
+            return new SchemaMetaDataLoader(storageType).loadSchemaTableNames(databaseName, dataSource, includedTables, excludedTables);
         } catch (final SQLException ex) {
             throw new SingleTablesLoadingException(databaseName, dataSourceName, ex);
         }

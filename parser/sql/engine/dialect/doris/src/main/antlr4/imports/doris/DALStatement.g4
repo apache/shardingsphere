@@ -487,6 +487,29 @@ dropSqlBlockRule
     : DROP SQL_BLOCK_RULE ruleNames
     ;
 
+// DORIS ADDED BEGIN
+showResources
+    : SHOW RESOURCES (showResourcesWhereClause | showLike)? orderByClause? limitClause?
+    ;
+
+showResourcesWhereClause
+    : WHERE showResourcesWhereCondition
+    ;
+
+showResourcesWhereCondition
+    : showResourcesNameWhereCondition showResourcesResourceTypeWhereCondition?
+    | showResourcesResourceTypeWhereCondition
+    ;
+
+showResourcesNameWhereCondition
+    : NAME (EQ_ | LIKE) string_
+    ;
+
+showResourcesResourceTypeWhereCondition
+    : RESOURCETYPE EQ_ string_
+    ;
+// DORIS ADDED END
+
 showSqlBlockRule
     : SHOW SQL_BLOCK_RULE (FOR ruleName)?
     ;
@@ -948,4 +971,7 @@ show
     | showFile
     | showEncryptKeys
     | showTrash
+    // DORIS ADDED BEGIN
+    | showResources
+    // DORIS ADDED END
     ;

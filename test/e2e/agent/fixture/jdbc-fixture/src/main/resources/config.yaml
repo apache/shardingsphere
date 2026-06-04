@@ -40,9 +40,13 @@ rules:
           standard:
             shardingColumn: user_id
             shardingAlgorithmName: database_inline
-        keyGenerateStrategy:
-          column: id
-          keyGeneratorName: snowflake
+    keyGenerateStrategies:
+      t_order_id:
+        keyGenerateType: column
+        keyGeneratorName: snowflake
+        logicTable: t_order
+        keyGenerateColumn: id
+
     shardingAlgorithms:
       database_inline:
         type: INLINE

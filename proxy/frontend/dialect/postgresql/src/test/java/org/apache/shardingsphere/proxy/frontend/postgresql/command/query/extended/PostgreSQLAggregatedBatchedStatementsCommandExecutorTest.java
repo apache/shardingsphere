@@ -177,9 +177,11 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        when(database.getDefaultSchemaName()).thenReturn("public");
+        when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(database.containsSchema("public")).thenReturn(true);
         when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
         when(database.getSchema("public")).thenReturn(schema);
         when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
         when(schema.containsTable("t_order")).thenReturn(true);

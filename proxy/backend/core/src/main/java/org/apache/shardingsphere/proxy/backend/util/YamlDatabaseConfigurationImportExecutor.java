@@ -134,7 +134,9 @@ public final class YamlDatabaseConfigurationImportExecutor {
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
         DatabaseRuleConfigurationCheckEngine.check(ruleConfig, database);
         ruleConfigs.add(ruleConfig);
-        database.getRuleMetaData().getRules().add(buildRule(ruleConfig, database));
+        Collection<ShardingSphereRule> rules = database.getRuleMetaData().getRules();
+        rules.removeIf(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass()));
+        rules.add(buildRule(ruleConfig, database));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

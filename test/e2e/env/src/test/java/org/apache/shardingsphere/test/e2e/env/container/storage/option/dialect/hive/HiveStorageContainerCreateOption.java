@@ -48,9 +48,8 @@ public final class HiveStorageContainerCreateOption implements StorageContainerC
     
     @Override
     public Map<String, String> getEnvironments() {
-        Map<String, String> result = new HashMap<>(3, 1F);
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put("SERVICE_NAME", "hiveserver2");
-        result.put("SERVICE_OPTS", "-Dhive.support.concurrency=true -Dhive.exec.dynamic.partition.mode=nonstrict -Dhive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager");
         result.put("LANG", "C.UTF-8");
         return result;
     }

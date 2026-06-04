@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
@@ -74,6 +75,8 @@ public final class JoinTableSegmentBinder {
         result.setJoinType(segment.getJoinType());
         result.setLeft(TableSegmentBinder.bind(segment.getLeft(), binderContext, tableBinderContexts, outerTableBinderContexts));
         result.setRight(TableSegmentBinder.bind(segment.getRight(), binderContext, tableBinderContexts, outerTableBinderContexts));
+        result.setLeftQueryPartitionListSegments(bindQueryPartitionListSegments(segment.getLeftQueryPartitionListSegments(), binderContext, tableBinderContexts, outerTableBinderContexts));
+        result.setRightQueryPartitionListSegments(bindQueryPartitionListSegments(segment.getRightQueryPartitionListSegments(), binderContext, tableBinderContexts, outerTableBinderContexts));
         result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN_ON, binderContext, tableBinderContexts, outerTableBinderContexts));
         result.setUsing(bindUsingColumns(segment.getUsing(), tableBinderContexts));
         result.getUsing().forEach(each -> binderContext.getUsingColumnNames().add(each.getIdentifier().getValue()));
@@ -89,6 +92,16 @@ public final class JoinTableSegmentBinder {
         result.getDerivedJoinTableProjectionSegments()
                 .addAll(getDerivedJoinTableProjectionSegments(result, binderContext.getSqlStatement().getDatabaseType(), usingColumnsByNaturalJoin, tableBinderContexts));
         binderContext.getJoinTableProjectionSegments().addAll(result.getDerivedJoinTableProjectionSegments());
+        return result;
+    }
+    
+    private static Collection<ExpressionSegment> bindQueryPartitionListSegments(final Collection<ExpressionSegment> segments, final SQLStatementBinderContext binderContext,
+                                                                                final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                                final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        for (ExpressionSegment each : segments) {
+            result.add(ExpressionSegmentBinder.bind(each, SegmentType.JOIN_ON, binderContext, tableBinderContexts, outerTableBinderContexts));
+        }
         return result;
     }
     

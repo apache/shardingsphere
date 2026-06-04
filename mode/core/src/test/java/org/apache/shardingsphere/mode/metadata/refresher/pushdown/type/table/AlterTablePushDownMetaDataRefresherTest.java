@@ -87,7 +87,7 @@ class AlterTablePushDownMetaDataRefresherTest {
         ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA_NAME, databaseType,
                 Collections.singleton(new ShardingSphereTable(currentTableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
         return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.singletonMap(LOGIC_DATA_SOURCE_NAME, dataSource)),
-                new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
+                new RuleMetaData(Collections.emptyList()), Collections.singleton(schema), new ConfigurationProperties(new Properties()));
     }
     
     private JdbcDataSource createDataSource(final String databaseName) {

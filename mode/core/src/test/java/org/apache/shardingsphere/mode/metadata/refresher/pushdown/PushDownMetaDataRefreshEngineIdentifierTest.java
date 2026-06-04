@@ -65,6 +65,6 @@ class PushDownMetaDataRefreshEngineIdentifierTest {
                 Collections.singletonList(new ShardingSphereTable("Foo_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())),
                 Collections.emptyList());
         return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()),
-                new RuleMetaData(Collections.emptyList()), Collections.singletonList(schema));
+                new RuleMetaData(Collections.emptyList()), Collections.singletonList(schema), new ConfigurationProperties(new Properties()));
     }
 }

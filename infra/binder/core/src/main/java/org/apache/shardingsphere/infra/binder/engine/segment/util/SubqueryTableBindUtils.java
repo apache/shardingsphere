@@ -23,9 +23,12 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
@@ -38,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -45,6 +49,8 @@ import java.util.LinkedList;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SubqueryTableBindUtils {
+    
+    private static final Collection<String> RETURNED_COLUMN_DERIVED_FUNCTION_NAMES = Collections.singleton("IFNULL");
     
     /**
      * Create subquery projections.
@@ -91,12 +97,38 @@ public final class SubqueryTableBindUtils {
     private static ColumnProjectionSegment createColumnProjection(final ExpressionSegment expressionSegment, final IdentifierValue subqueryTableName, final DatabaseType databaseType) {
         ColumnSegment newColumnSegment = new ColumnSegment(0, 0,
                 new IdentifierValue(getColumnNameFromExpression(expressionSegment, databaseType), new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter()));
+        if (isReturnedColumnDerivedExpression(expressionSegment)) {
+            setColumnBoundInfo(newColumnSegment, expressionSegment);
+        }
         if (!Strings.isNullOrEmpty(subqueryTableName.getValue())) {
             newColumnSegment.setOwner(new OwnerSegment(0, 0, subqueryTableName));
         }
         ColumnProjectionSegment result = new ColumnProjectionSegment(newColumnSegment);
         result.setVisible(true);
         return result;
+    }
+    
+    private static boolean isReturnedColumnDerivedExpression(final ExpressionSegment expressionSegment) {
+        if (expressionSegment instanceof ExpressionProjectionSegment) {
+            return isReturnedColumnDerivedExpression(((ExpressionProjectionSegment) expressionSegment).getExpr());
+        }
+        if (expressionSegment instanceof FunctionSegment) {
+            return RETURNED_COLUMN_DERIVED_FUNCTION_NAMES.contains(((FunctionSegment) expressionSegment).getFunctionName().toUpperCase());
+        }
+        return expressionSegment instanceof CaseWhenExpression;
+    }
+    
+    private static void setColumnBoundInfo(final ColumnSegment columnSegment, final ExpressionSegment expressionSegment) {
+        Collection<ColumnSegment> columnSegments = ColumnExtractor.extractReturnedColumns(expressionSegment);
+        if (columnSegments.isEmpty()) {
+            columnSegments = ColumnExtractor.extract(expressionSegment);
+        }
+        if (columnSegments.isEmpty()) {
+            return;
+        }
+        ColumnSegmentBoundInfo columnBoundInfo = columnSegments.iterator().next().getColumnBoundInfo();
+        TableSegmentBoundInfo tableBoundInfo = new TableSegmentBoundInfo(columnBoundInfo.getOriginalDatabase(), columnBoundInfo.getOriginalSchema());
+        columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(tableBoundInfo, columnBoundInfo.getOriginalTable(), columnBoundInfo.getOriginalColumn(), TableSourceType.TEMPORARY_TABLE));
     }
     
     private static TableSourceType getTableSourceTypeFromInputColumn(final ColumnSegmentBoundInfo inputColumnBoundInfo) {

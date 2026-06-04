@@ -87,6 +87,7 @@ class AlterIndexPushDownMetaDataRefresherTest {
     }
     
     private ShardingSphereDatabase createDatabase(final java.util.Collection<ShardingSphereSchema> schemas) {
-        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas);
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas,
+                new ConfigurationProperties(new Properties()));
     }
 }

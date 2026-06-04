@@ -38,15 +38,12 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Adapter for {@code PreparedStatement}.
  */
 public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
-    
-    private final List<PreparedStatementInvocationReplayer> setParameterMethodInvocations = new LinkedList<>();
     
     @Getter
     private final List<Object> parameters = new ArrayList<>();
@@ -275,30 +272,14 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     }
     
     protected final void replaySetParameter(final PreparedStatement preparedStatement, final List<Object> params) throws SQLException {
-        setParameterMethodInvocations.clear();
-        addParameters(params);
-        for (PreparedStatementInvocationReplayer each : setParameterMethodInvocations) {
-            each.replayOn(preparedStatement);
-        }
-    }
-    
-    private void addParameters(final List<Object> params) {
-        int i = 0;
+        int index = 0;
         for (Object each : params) {
-            int index = ++i;
-            setParameterMethodInvocations.add(preparedStatement -> preparedStatement.setObject(index, each));
+            preparedStatement.setObject(++index, each);
         }
     }
     
     @Override
     public final void clearParameters() {
         parameters.clear();
-        setParameterMethodInvocations.clear();
-    }
-    
-    @FunctionalInterface
-    private interface PreparedStatementInvocationReplayer {
-        
-        void replayOn(PreparedStatement preparedStatement) throws SQLException;
     }
 }

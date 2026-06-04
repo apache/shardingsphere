@@ -38,7 +38,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Properties;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "SameParameterValue", "resource"})
@@ -79,7 +78,7 @@ class MySQLTest {
     
     @AfterEach
     void afterEach() {
-        proxyTestingServer.close(Collections.singletonList("sharding_db"));
+        proxyTestingServer.close();
     }
     
     /**

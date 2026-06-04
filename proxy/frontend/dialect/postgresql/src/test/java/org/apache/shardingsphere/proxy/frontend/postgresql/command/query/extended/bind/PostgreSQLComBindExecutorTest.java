@@ -184,7 +184,6 @@ class PostgreSQLComBindExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(true);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getProtocolType()).thenReturn(databaseType);
@@ -192,6 +191,8 @@ class PostgreSQLComBindExecutorTest {
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(database.getDefaultSchemaName()).thenReturn("public");
+        when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(database.getSchema("public")).thenReturn(schema);
         when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.context;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -27,13 +26,13 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
  * Backend executor context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
 public final class BackendExecutorContext {
     
     private static final BackendExecutorContext INSTANCE = new BackendExecutorContext();
     
-    private final ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithSize(
-            ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
+    private volatile ExecutorEngine executorEngine;
+    
+    private LifecycleState lifecycleState = LifecycleState.UNINITIALIZED;
     
     /**
      * Get executor context instance.
@@ -42,5 +41,63 @@ public final class BackendExecutorContext {
      */
     public static BackendExecutorContext getInstance() {
         return INSTANCE;
+    }
+    
+    /**
+     * Initialize backend executor context.
+     *
+     * <p>The proxy bootstrap lifecycle uses this method to create a fresh backend executor.
+     * It may explicitly restore the context from the closed state for repeated proxy lifecycles in the same JVM.</p>
+     */
+    public synchronized void init() {
+        closeExecutorEngine();
+        executorEngine = ExecutorEngine.createExecutorEngineWithSize(
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
+        lifecycleState = LifecycleState.RUNNING;
+    }
+    
+    /**
+     * Get executor engine.
+     *
+     * @return executor engine
+     * @throws IllegalStateException backend executor is unavailable in current lifecycle state
+     */
+    public synchronized ExecutorEngine getExecutorEngine() {
+        if (null == executorEngine) {
+            if (LifecycleState.CLOSED == lifecycleState) {
+                throw new IllegalStateException(String.format("Backend executor engine is unavailable in `%s` lifecycle state.", lifecycleState));
+            }
+            init();
+        }
+        if (LifecycleState.RUNNING != lifecycleState) {
+            throw new IllegalStateException(String.format("Backend executor engine is unavailable in `%s` lifecycle state.", lifecycleState));
+        }
+        return executorEngine;
+    }
+    
+    /**
+     * Shutdown backend executor context.
+     *
+     * <p>After shutdown, request-side executor lookup is rejected until the next explicit lifecycle initialization.</p>
+     */
+    public synchronized void shutdown() {
+        closeExecutorEngine();
+        lifecycleState = LifecycleState.CLOSED;
+    }
+    
+    private void closeExecutorEngine() {
+        if (null != executorEngine) {
+            executorEngine.close();
+            executorEngine = null;
+        }
+    }
+    
+    private enum LifecycleState {
+        
+        UNINITIALIZED,
+        
+        RUNNING,
+        
+        CLOSED
     }
 }

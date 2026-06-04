@@ -80,7 +80,7 @@ class MySQLDataTypeOptionTest {
     
     @Test
     void assertIsBinaryDataType() {
-        assertTrue(dataTypeOption.isBinaryDataType(Types.BINARY));
-        assertFalse(dataTypeOption.isBinaryDataType(Types.INTEGER));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.BINARY, null));
+        assertFalse(dataTypeOption.isBinaryDataType(Types.INTEGER, null));
     }
 }

@@ -1,0 +1,73 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
+
+import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
+import org.apache.shardingsphere.mcp.support.workflow.model.IndexPlan;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Index planning service.
+ */
+public final class IndexPlanningService {
+    
+    /**
+     * Plan index artifacts.
+     *
+     * @param databaseType database type
+     * @param tableName table name
+     * @param derivedColumnPlan derived column plan
+     * @param existingIndexes existing indexes
+     * @return index plans
+     */
+    public List<IndexPlan> planIndexes(final String databaseType, final String tableName, final DerivedColumnPlan derivedColumnPlan, final Set<String> existingIndexes) {
+        WorkflowSQLUtils.checkSupportedIdentifier("table", tableName);
+        List<IndexPlan> result = new LinkedList<>();
+        if (derivedColumnPlan.isAssistedQueryColumnRequired() && !derivedColumnPlan.getAssistedQueryColumnName().isEmpty()) {
+            result.add(createIndexPlan(databaseType, tableName, derivedColumnPlan.getAssistedQueryColumnName(), "Recommended for assisted query performance.", existingIndexes));
+        }
+        if (derivedColumnPlan.isLikeQueryColumnRequired() && !derivedColumnPlan.getLikeQueryColumnName().isEmpty()) {
+            result.add(createIndexPlan(databaseType, tableName, derivedColumnPlan.getLikeQueryColumnName(), "Recommended for like-query performance.", existingIndexes));
+        }
+        return result;
+    }
+    
+    private IndexPlan createIndexPlan(final String databaseType, final String tableName, final String columnName, final String reason, final Set<String> existingIndexes) {
+        WorkflowSQLUtils.checkSupportedIdentifier("column", columnName);
+        String baseIndexName = "idx_" + WorkflowSQLUtils.normalizeIdentifier(tableName) + "_" + WorkflowSQLUtils.normalizeIdentifier(columnName);
+        String actualIndexName = baseIndexName;
+        int suffix = 1;
+        while (containsIdentifier(databaseType, existingIndexes, actualIndexName)) {
+            actualIndexName = baseIndexName + "_" + suffix;
+            suffix++;
+        }
+        existingIndexes.add(actualIndexName);
+        WorkflowSQLUtils.checkSupportedIdentifier("index", actualIndexName);
+        return new IndexPlan(actualIndexName, columnName, reason,
+                String.format("CREATE INDEX %s ON %s (%s)", WorkflowSQLUtils.formatSQLIdentifier(databaseType, actualIndexName),
+                        WorkflowSQLUtils.formatSQLIdentifier(databaseType, tableName), WorkflowSQLUtils.formatSQLIdentifier(databaseType, columnName)));
+    }
+    
+    private boolean containsIdentifier(final String databaseType, final Set<String> identifiers, final String targetIdentifier) {
+        return identifiers.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, targetIdentifier, each));
+    }
+}

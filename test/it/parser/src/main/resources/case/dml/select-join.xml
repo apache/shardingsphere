@@ -260,6 +260,47 @@
         </order-by>
     </select>
 
+    <select sql-case-id="select_partitioned_outer_join_oracle">
+        <from start-index="36" stop-index="133">
+            <join-table join-type="LEFT" start-index="36" stop-index="133">
+                <left>
+                    <simple-table name="t_product" alias="p" start-index="36" stop-index="46" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="64" stop-index="77" />
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="107" stop-index="133">
+                        <left>
+                            <column name="product_id" start-index="107" stop-index="118">
+                                <owner name="p" start-index="107" stop-index="107" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="product_id" start-index="122" stop-index="133">
+                                <owner name="i" start-index="122" stop-index="122" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+                <right-query-partition-by>
+                    <column name="user_id" start-index="93" stop-index="101">
+                        <owner name="i" start-index="93" stop-index="93" />
+                    </column>
+                </right-query-partition-by>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="29">
+            <column-projection name="product_id" start-index="7" stop-index="18">
+                <owner name="p" start-index="7" stop-index="7" />
+            </column-projection>
+            <column-projection name="item_id" start-index="21" stop-index="29">
+                <owner name="i" start-index="21" stop-index="21" />
+            </column-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_left_outer_join_related_with_alias_sql92">
         <from>
             <join-table join-type="LEFT">

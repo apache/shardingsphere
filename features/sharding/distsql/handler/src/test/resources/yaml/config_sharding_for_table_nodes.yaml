@@ -20,9 +20,6 @@ rules:
     autoTables:
       t_order:
         actualDataSources: ds_1,ds_2
-        keyGenerateStrategy:
-          column: order_id
-          keyGeneratorName: t_order_snowflake
         logicTable: t_order
         shardingStrategy:
           standard:
@@ -30,14 +27,22 @@ rules:
             shardingColumn: order_id
       t_order_item:
         actualDataSources: ds_2,ds_3
-        keyGenerateStrategy:
-          column: order_id
-          keyGeneratorName: t_order_item_snowflake
         logicTable: t_order_item
         shardingStrategy:
           standard:
             shardingAlgorithmName: t_order_item_hash_mod
             shardingColumn: order_id
+    keyGenerateStrategies:
+      t_order_order_id:
+        keyGenerateType: column
+        keyGeneratorName: t_order_snowflake
+        logicTable: t_order
+        keyGenerateColumn: order_id
+      t_order_item_order_id:
+        keyGenerateType: column
+        keyGeneratorName: t_order_item_snowflake
+        logicTable: t_order_item
+        keyGenerateColumn: order_id
     keyGenerators:
       t_order_snowflake:
         type: snowflake

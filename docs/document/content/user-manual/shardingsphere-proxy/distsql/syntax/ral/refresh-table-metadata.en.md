@@ -16,13 +16,19 @@ RefreshTableMetadata ::=
   'REFRESH' 'TABLE' 'METADATA' (tableName | tableName 'FROM' 'STORAGE' 'UNIT' storageUnitName ('SCHEMA' schemaName)?)?
 
 tableName ::=
-  identifier
+  distSQLIdentifier
 
 storageUnitName ::=
-  identifier
+  distSQLIdentifier
 
 schemaName ::=
-  identifier
+  distSQLIdentifier
+
+distSQLIdentifier ::=
+  identifier | quotedIdentifier
+
+quotedIdentifier ::=
+  '`' identifier '`' | '"' identifier '"'
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -38,31 +44,33 @@ schemaName ::=
 
 - If there are no tables in the schema, the schema will be deleted.
 
+- `tableName`, `storageUnitName`, and `schemaName` can be unquoted identifiers, backtick-quoted identifiers, or double-quoted identifiers.
+
 
 ### Example
 
 - Refresh specified table's metadata in specified schema of a specified storage unit
 
 ```sql
-REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_1 SCHEMA db_schema;
+REFRESH TABLE METADATA `t_order` FROM STORAGE UNIT "ds_1" SCHEMA `db_schema`;
 ```
 
 - Refresh all tables' metadata in specified schema of a specified storage unit
 
 ```sql
-REFRESH TABLE METADATA FROM STORAGE UNIT ds_1 SCHEMA db_schema;
+REFRESH TABLE METADATA FROM STORAGE UNIT `ds_1` SCHEMA "db_schema";
 ```
 
 - Refresh metadata for specified table in specified storage unit
 
 ```sql
-REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_1;
+REFRESH TABLE METADATA "t_order" FROM STORAGE UNIT ds_1;
 ```
 
 - Refresh metadata for specified table
 
 ```sql
-REFRESH TABLE METADATA t_order;
+REFRESH TABLE METADATA `t_order`;
 ```
 - Refresh all table metadata
 

@@ -20,7 +20,7 @@ grammar BaseRule;
 import Symbol, Keyword, Literals;
 
 literal
-    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
+    : distSQLString | (MINUS_)? INT_ | TRUE | FALSE
     ;
 
 algorithmDefinition
@@ -28,7 +28,7 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : STRING_
+    : distSQLString
     ;
 
 propertiesDefinition
@@ -40,29 +40,37 @@ properties
     ;
 
 property
-    : key=STRING_ EQ_ value=literal
+    : key=distSQLString EQ_ value=literal
     ;
 
 databaseName
-    : IDENTIFIER_
+    : distSQLIdentifier
     ;
 
 schemaName
-    : IDENTIFIER_
+    : distSQLIdentifier
     ;
 
 tableName
-    : IDENTIFIER_
+    : distSQLIdentifier
     ;
 
 resourceName
-    : IDENTIFIER_
+    : distSQLIdentifier
     ;
 
 storageUnitName
-    : IDENTIFIER_
+    : distSQLIdentifier
     ;
 
 metadata
-    : STRING_
+    : distSQLString
+    ;
+
+distSQLIdentifier
+    : IDENTIFIER_ | DOUBLE_QUOTED_TEXT
+    ;
+
+distSQLString
+    : SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT
     ;

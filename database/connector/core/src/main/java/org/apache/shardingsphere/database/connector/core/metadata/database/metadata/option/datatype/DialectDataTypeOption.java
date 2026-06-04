@@ -59,10 +59,18 @@ public interface DialectDataTypeOption {
     
     /**
      * Whether data type is binary type.
-     * <p>it doesn't include BLOB etc.</p>
      *
      * @param sqlType value of java.sql.Types
+     * @param dataTypeName data type name, null means JDBC type only
      * @return is binary type or not
      */
-    boolean isBinaryDataType(int sqlType);
+    boolean isBinaryDataType(int sqlType, String dataTypeName);
+    
+    /**
+     * Judge whether type is text type or not.
+     *
+     * @param type type
+     * @return whether is text type or not
+     */
+    boolean isTextType(String type);
 }

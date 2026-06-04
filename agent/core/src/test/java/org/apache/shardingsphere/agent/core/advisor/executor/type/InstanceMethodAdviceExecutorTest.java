@@ -142,7 +142,7 @@ class InstanceMethodAdviceExecutorTest {
         assertThat(queue, is(Arrays.asList("first before foo", "second before bar", "origin call")));
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     void assertIntercept() {
         Builder<?> builder = mock(Builder.class);

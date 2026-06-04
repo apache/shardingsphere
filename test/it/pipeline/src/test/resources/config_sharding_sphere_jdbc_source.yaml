@@ -44,22 +44,23 @@ rules:
   tables:
     t_order:
       actualDataNodes: ds_0.t_order
-      keyGenerateStrategy:
-        column: order_id
-        keyGeneratorName: snowflake
-#      tableStrategy:
-#        standard:
-#          shardingAlgorithmName: t_order_tbl_inline
-#          shardingColumn: order_id
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: t_order_item_inline
-      keyGenerateStrategy:
-        column: order_id
-        keyGeneratorName: snowflake
+  keyGenerateStrategies:
+    t_order_order_id:
+      keyGenerateType: column
+      keyGeneratorName: snowflake
+      logicTable: t_order
+      keyGenerateColumn: order_id
+    t_order_item_order_id:
+      keyGenerateType: column
+      keyGeneratorName: snowflake
+      logicTable: t_order_item
+      keyGenerateColumn: order_id
 
   shardingAlgorithms:
     default_db_inline:

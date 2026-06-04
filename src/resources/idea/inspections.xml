@@ -145,7 +145,6 @@
   <inspection_tool class="DoubleLiteralMayBeFloatLiteral" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="DuplicateExpressions" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="DuplicatedBeanNamesInspection" enabled="false" level="WARNING" enabled_by_default="false" />
-  <inspection_tool class="DynamicRegexReplaceableByCompiledPattern" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="EmptyClass" enabled="true" level="WARNING" enabled_by_default="true">
     <option name="ignorableAnnotations">
       <value />
@@ -215,7 +214,6 @@
   <inspection_tool class="GroovyUnsynchronizedMethodOverridesSynchronizedMethod" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="GroovyUnusedAssignment" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="GroovyUnusedIncOrDec" enabled="false" level="WARNING" enabled_by_default="false" />
-  <inspection_tool class="HardcodedLineSeparators" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="HasPlatformType" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="HashCodeUsesNonFinalVariable" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="HtmlExtraClosingTag" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -242,9 +240,6 @@
   <inspection_tool class="InjectionValueTypeInspection" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="InnerClassReferencedViaSubclass" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="InstanceofCatchParameter" enabled="true" level="WARNING" enabled_by_default="true" />
-  <inspection_tool class="InstanceofChain" enabled="true" level="WARNING" enabled_by_default="true">
-    <option name="ignoreInstanceofOnLibraryClasses" value="false" />
-  </inspection_tool>
   <inspection_tool class="InstanceofThis" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="IntLiteralMayBeLongLiteral" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="IntroduceWhenSubject" enabled="false" level="WEAK WARNING" enabled_by_default="false" />

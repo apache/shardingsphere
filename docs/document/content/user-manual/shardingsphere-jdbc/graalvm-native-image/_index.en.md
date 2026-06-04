@@ -51,7 +51,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.3</version>
+                <version>0.11.5</version>
                 <extensions>true</extensions>
             </plugin>
         </plugins>
@@ -80,7 +80,7 @@ A more convenient configuration for testing third-party dependencies might look 
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.3</version>
+                <version>0.11.5</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -118,7 +118,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.11.3'
+   id 'org.graalvm.buildtools.native' version '0.11.5'
 }
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-infra-reachability-metadata:${shardingsphere.version}'
@@ -129,12 +129,12 @@ A more convenient configuration for testing third-party dependencies might look 
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.11.3'
+   id 'org.graalvm.buildtools.native' version '0.11.5'
 }
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
    implementation 'org.apache.shardingsphere:shardingsphere-infra-reachability-metadata:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.3', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.5', classifier: 'repository', ext: 'zip')
 }
 graalvmNative {
    binaries {
@@ -269,9 +269,12 @@ The same applies to `actualDataNodes` for the `Sharding` feature.
    tables:
       t_order:
          actualDataNodes: <LITERAL>ds_0.t_order_0, ds_0.t_order_1, ds_1.t_order_0, ds_1.t_order_1
-         keyGenerateStrategy:
-            column: order_id
-            keyGeneratorName: snowflake
+   keyGenerateStrategies:
+      t_order_order_id:
+         keyGenerateType: column
+         keyGeneratorName: snowflake
+         logicTable: t_order
+         keyGenerateColumn: order_id
 ```
 
 3. Users still need to configure GraalVM Reachability Metadata for independent files in the `src/main/resources/META-INF/native-image` 
@@ -299,7 +302,7 @@ For Maven, possible configurations are,
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.3</version>
+                <version>0.11.5</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -386,7 +389,7 @@ For Maven, possible configurations are,
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.3</version>
+                <version>0.11.5</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>

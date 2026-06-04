@@ -69,8 +69,9 @@ public final class GenericSchemaBuilder {
      * @throws SQLException SQL exception
      */
     public static Map<String, ShardingSphereSchema> build(final Collection<String> tableNames, final DatabaseType protocolType, final GenericSchemaBuilderMaterial material) throws SQLException {
-        Map<String, SchemaMetaData> result = loadSchemas(tableNames, material);
-        if (!isSameProtocolAndStorageTypes(protocolType, material.getStorageUnits())) {
+        boolean isSameProtocolAndStorageTypes = isSameProtocolAndStorageTypes(protocolType, material.getStorageUnits());
+        Map<String, SchemaMetaData> result = loadSchemas(tableNames, material, isSameProtocolAndStorageTypes);
+        if (!isSameProtocolAndStorageTypes) {
             result = translate(result, protocolType, material);
         }
         return revise(result, material, protocolType);
@@ -84,8 +85,9 @@ public final class GenericSchemaBuilder {
         return result;
     }
     
-    private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
-        Collection<MetaDataLoaderMaterial> materials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, material);
+    private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material,
+                                                           final boolean isSameProtocolAndStorageTypes) throws SQLException {
+        Collection<MetaDataLoaderMaterial> materials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, material, isSameProtocolAndStorageTypes);
         return materials.isEmpty() ? Collections.emptyMap() : MetaDataLoader.load(materials);
     }
     

@@ -28,18 +28,12 @@ rules:
         standard:
           shardingColumn: account_id
           shardingAlgorithmName: t_account_inline
-      keyGenerateStrategy:
-        column: account_id
-        keyGeneratorName: rewrite_keygen_fixture
     t_account_bak:
       actualDataNodes: db.t_account_bak_${0..1}
       tableStrategy: 
         standard:
           shardingColumn: account_id
           shardingAlgorithmName: t_account_bak_inline
-      keyGenerateStrategy:
-        column: account_id
-        keyGeneratorName: rewrite_keygen_fixture
     t_account_detail:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
@@ -54,6 +48,17 @@ rules:
           shardingAlgorithmName: t_account_detail_new_inline
   bindingTables:
     - t_account, t_account_detail
+  keyGenerateStrategies:
+    t_account_account_id:
+      keyGenerateType: column
+      keyGeneratorName: rewrite_keygen_fixture
+      logicTable: t_account
+      keyGenerateColumn: account_id
+    t_account_bak_account_id:
+      keyGenerateType: column
+      keyGeneratorName: rewrite_keygen_fixture
+      logicTable: t_account_bak
+      keyGenerateColumn: account_id
   
   shardingAlgorithms:
     t_account_inline:

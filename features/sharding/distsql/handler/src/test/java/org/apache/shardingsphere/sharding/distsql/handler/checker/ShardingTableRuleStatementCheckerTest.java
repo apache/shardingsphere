@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
@@ -36,7 +37,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.AuditStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.KeyGenerateStrategySegment;
@@ -64,6 +64,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -89,7 +90,7 @@ class ShardingTableRuleStatementCheckerTest {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createCompleteAutoTableRule());
         rules.add(createCompleteTableRule());
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
@@ -99,7 +100,7 @@ class ShardingTableRuleStatementCheckerTest {
         autoTableRuleSegment.setShardingColumn("order_id");
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "2"))));
         rules.add(autoTableRuleSegment);
-        ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig));
     }
     
     @Test
@@ -115,7 +116,7 @@ class ShardingTableRuleStatementCheckerTest {
         autoTable2.setShardingColumn("order_id");
         autoTable2.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "2"))));
         rules.add(autoTable2);
-        ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig));
     }
     
     @Test
@@ -158,7 +159,7 @@ class ShardingTableRuleStatementCheckerTest {
         autoTableRuleSegment.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", "existing_snowflake"));
         autoTableRuleSegment.setShardingColumn("product_id");
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("FOO.DISTSQL.FIXTURE", PropertiesBuilder.build(new Property("", ""))));
-        ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(autoTableRuleSegment), false, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(autoTableRuleSegment), false, shardingRuleConfig));
     }
     
     @Test
@@ -285,7 +286,7 @@ class ShardingTableRuleStatementCheckerTest {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "4"))));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(autoTableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
@@ -293,7 +294,7 @@ class ShardingTableRuleStatementCheckerTest {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createCompleteAutoTableRule());
         rules.add(createCompleteTableRule());
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, true, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, rules, true, shardingRuleConfig));
     }
     
     @Test
@@ -307,7 +308,7 @@ class ShardingTableRuleStatementCheckerTest {
     void assertCheckTableRuleWithNoneStrategyTypeSuccess() {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createCompleteTableRuleWithNoneTypeStrategy());
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     private static ShardingRuleConfiguration createShardingRuleConfiguration() {
@@ -317,8 +318,8 @@ class ShardingTableRuleStatementCheckerTest {
         result.getTables().add(tableRuleConfig);
         ShardingAutoTableRuleConfiguration autoTableRuleConfig = new ShardingAutoTableRuleConfiguration("t_order_item", "ds_0");
         autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_algorithm"));
-        autoTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "t_order_item_snowflake"));
         result.getAutoTables().add(autoTableRuleConfig);
+        result.getKeyGenerateStrategies().put("t_order_item_order_item_id", new ColumnKeyGenerateStrategiesRuleConfiguration("t_order_item_snowflake", "t_order_item", "order_item_id"));
         result.getShardingAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("hash_mod", PropertiesBuilder.build(new Property("sharding-count", "4"))));
         result.getKeyGenerators().put("t_order_item_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));
         result.getKeyGenerators().put("existing_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));

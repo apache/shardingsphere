@@ -51,7 +51,7 @@ class AgentBuilderFactoryTest {
     @BeforeAll
     static void setup() {
         ByteBuddyAgent.install();
-        AdvisorConfiguration advisorConfig = createAdvisorConfiguration(TARGET_CLASS_NAME);
+        AdvisorConfiguration advisorConfig = createAdvisorConfiguration();
         Map<String, AdvisorConfiguration> advisorConfigs = Collections.singletonMap(advisorConfig.getTargetClassName(), advisorConfig);
         AgentBuilder agentBuilder = AgentBuilderFactory.create(Collections.emptyMap(), Collections.emptyList(), advisorConfigs, true);
         agent = agentBuilder.installOnByteBuddyAgent();
@@ -62,8 +62,8 @@ class AgentBuilderFactoryTest {
                 .getLoaded();
     }
     
-    private static AdvisorConfiguration createAdvisorConfiguration(final String targetClassName) {
-        AdvisorConfiguration result = new AdvisorConfiguration(targetClassName);
+    private static AdvisorConfiguration createAdvisorConfiguration() {
+        AdvisorConfiguration result = new AdvisorConfiguration(TARGET_CLASS_NAME);
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), FooAdvice.class.getName(), "FIXTURE"));
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), BarAdvice.class.getName(), "FIXTURE"));
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("call"), FooAdvice.class.getName(), "FIXTURE"));

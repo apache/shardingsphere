@@ -80,7 +80,7 @@ jobs:
           - adapter: proxy
             database: MySQL
             scenario: passthrough
-            additional-options: '-Dmysql-connector-java.version=8.3.0'
+            additional-options: '-Dmysql-connector-java.version=8.4.0'
           - adapter: jdbc
             database: Hive
             scenario: encrypt

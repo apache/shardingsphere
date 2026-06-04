@@ -30,11 +30,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,8 +48,8 @@ class GroupByValueTest {
     
     @BeforeEach
     void setUp() throws SQLException {
-        when(queryResult.getValue(1, Object.class)).thenReturn("1");
-        when(queryResult.getValue(3, Object.class)).thenReturn("3");
+        lenient().when(queryResult.getValue(1, Object.class)).thenReturn("1");
+        lenient().when(queryResult.getValue(3, Object.class)).thenReturn("3");
     }
     
     @Test
@@ -81,6 +84,31 @@ class GroupByValueTest {
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         assertThat(groupByValue1, not(groupByValue2));
         assertThat(groupByValue1.hashCode(), not(groupByValue2.hashCode()));
+    }
+    
+    @Test
+    void assertGroupByValueEqualsForVarBinary() throws SQLException {
+        QueryResult left = mock(QueryResult.class);
+        when(left.getValue(1, Object.class)).thenReturn(new byte[]{1, 2, 3});
+        QueryResult right = mock(QueryResult.class);
+        when(right.getValue(1, Object.class)).thenReturn(new byte[]{1, 2, 3});
+        OrderByItem item = createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST));
+        GroupByValue groupByValue1 = new GroupByValue(left, Collections.singletonList(item));
+        GroupByValue groupByValue2 = new GroupByValue(right, Collections.singletonList(item));
+        assertThat(groupByValue1, is(groupByValue2));
+        assertThat(groupByValue1.hashCode(), is(groupByValue2.hashCode()));
+    }
+    
+    @Test
+    void assertGroupByValueNotEqualsForVarBinaryWithDifferentContent() throws SQLException {
+        QueryResult left = mock(QueryResult.class);
+        when(left.getValue(1, Object.class)).thenReturn(new byte[]{1, 2, 3});
+        QueryResult right = mock(QueryResult.class);
+        when(right.getValue(1, Object.class)).thenReturn(new byte[]{1, 2, 4});
+        OrderByItem item = createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST));
+        GroupByValue groupByValue1 = new GroupByValue(left, Collections.singletonList(item));
+        GroupByValue groupByValue2 = new GroupByValue(right, Collections.singletonList(item));
+        assertThat(groupByValue1, not(groupByValue2));
     }
     
     private OrderByItem createOrderByItem(final IndexOrderByItemSegment indexOrderByItemSegment) {

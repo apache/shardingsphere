@@ -521,12 +521,7 @@
     
     <select sql-case-id="clickhouse_select_param_projection" parameters="1">
         <projections start-index="7" stop-index="22">
-            <expression-projection alias="param_alias" text="?" start-index="7" stop-index="22">
-                <expr>
-                    <parameter-marker-expression parameter-index="0" start-index="7" stop-index="7" />
-                    <literal-expression value="1" start-index="7" stop-index="7" />
-                </expr>
-            </expression-projection>
+            <parameter-marker-expression parameter-index="0" start-index="7" stop-index="22" />
         </projections>
     </select>
     
@@ -1116,12 +1111,7 @@
                     <common-expression text="X'1A'" start-index="25" stop-index="29" />
                 </expr>
             </expression-projection>
-            <expression-projection text="?" start-index="32" stop-index="32">
-                <expr>
-                    <parameter-marker-expression parameter-index="0" start-index="32" stop-index="32" />
-                    <literal-expression value="1" start-index="32" stop-index="32" />
-                </expr>
-            </expression-projection>
+            <parameter-marker-expression parameter-index="0" start-index="32" stop-index="32" />
         </projections>
         <from>
             <simple-table name="t_order" start-index="39" stop-index="45" />

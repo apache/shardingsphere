@@ -58,6 +58,14 @@
             <property key="maxPoolSize" value="30" />
         </data-source>
     </alter-storage-unit>
+
+    <alter-storage-unit sql-case-id="alter-storage-unit-simple-single-with-double-quoted-string-values">
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
+    </alter-storage-unit>
+
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-single-with-double-quoted-string-values">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456" />
+    </alter-storage-unit>
     
     <alter-sharding-auto-table-rule sql-case-id="alter-sharding-auto-table-rule">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">

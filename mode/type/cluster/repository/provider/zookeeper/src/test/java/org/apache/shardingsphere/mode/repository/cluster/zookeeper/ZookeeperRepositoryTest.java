@@ -17,205 +17,338 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper;
 
-import lombok.SneakyThrows;
-import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
-import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.api.BackgroundVersionable;
 import org.apache.curator.framework.api.CreateBuilder;
 import org.apache.curator.framework.api.DeleteBuilder;
 import org.apache.curator.framework.api.ExistsBuilder;
 import org.apache.curator.framework.api.GetChildrenBuilder;
+import org.apache.curator.framework.api.GetDataBuilder;
 import org.apache.curator.framework.api.ProtectACLCreateModeStatPathAndBytesable;
 import org.apache.curator.framework.api.SetDataBuilder;
-import org.apache.curator.framework.listen.Listenable;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
+import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException.ConnectionLossException;
+import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.data.Stat;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
-import java.nio.charset.StandardCharsets;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class ZookeeperRepositoryTest {
     
-    private static final ZookeeperRepository REPOSITORY = new ZookeeperRepository();
+    private ZookeeperRepository repository;
     
-    private static final String SERVER_LISTS = "127.0.0.1:2181";
-    
-    @Mock
-    private CuratorFramework client;
-    
-    @Mock
-    private ExistsBuilder existsBuilder;
-    
-    @Mock
-    private CreateBuilder createBuilder;
-    
-    @Mock
-    private SetDataBuilder setDataBuilder;
-    
-    @Mock
-    private DeleteBuilder deleteBuilder;
-    
-    @Mock
-    private GetChildrenBuilder getChildrenBuilder;
-    
-    @Mock
-    private ProtectACLCreateModeStatPathAndBytesable<String> protect;
-    
-    @Mock
-    private BackgroundVersionable backgroundVersionable;
-    
-    @Mock
-    private Builder builder;
+    private RepositoryClientFixture fixture;
     
     @BeforeEach
-    void init() {
-        mockClient();
-        mockBuilder();
-        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
-        REPOSITORY.init(config, mock(ComputeNodeInstanceContext.class));
+    void setUp() throws Exception {
+        repository = new ZookeeperRepository();
+        fixture = new RepositoryClientFixture();
+        Plugins.getMemberAccessor().set(ZookeeperRepository.class.getDeclaredField("client"), repository, fixture.createClient());
     }
     
-    @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
-    private void mockClient() {
-        Plugins.getMemberAccessor().set(ZookeeperRepository.class.getDeclaredField("builder"), REPOSITORY, builder);
-        when(builder.connectString(anyString())).thenReturn(builder);
-        when(builder.retryPolicy(any(RetryPolicy.class))).thenReturn(builder);
-        when(builder.ensembleTracker(anyBoolean())).thenReturn(builder);
-        when(builder.namespace(anyString())).thenReturn(builder);
-        when(builder.sessionTimeoutMs(anyInt())).thenReturn(builder);
-        when(builder.connectionTimeoutMs(anyInt())).thenReturn(builder);
-        when(builder.authorization(anyString(), any(byte[].class))).thenReturn(builder);
-        when(builder.aclProvider(any(ACLProvider.class))).thenReturn(builder);
-        when(builder.build()).thenReturn(client);
-        when(client.blockUntilConnected(anyInt(), eq(TimeUnit.MILLISECONDS))).thenReturn(true);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void mockBuilder() {
-        when(client.checkExists()).thenReturn(existsBuilder);
-        when(client.create()).thenReturn(createBuilder);
-        when(createBuilder.creatingParentsIfNeeded()).thenReturn(protect);
-        when(client.setData()).thenReturn(setDataBuilder);
-        when(client.delete()).thenReturn(deleteBuilder);
-        when(deleteBuilder.deletingChildrenIfNeeded()).thenReturn(backgroundVersionable);
-        when(client.getChildren()).thenReturn(getChildrenBuilder);
-        when(client.getConnectionStateListenable()).thenReturn(mock(Listenable.class));
+    @AfterEach
+    void tearDown() {
+        repository.close();
     }
     
     @Test
-    void assertPersist() throws Exception {
-        when(protect.withMode(CreateMode.PERSISTENT)).thenReturn(protect);
-        REPOSITORY.persist("/test", "value1");
-        verify(protect).forPath("/test", "value1".getBytes(StandardCharsets.UTF_8));
+    void assertPersist() {
+        repository.persist("/test", "value1");
+        assertThat(repository.query("/test"), is("value1"));
     }
     
     @Test
-    void assertUpdate() throws Exception {
-        when(existsBuilder.forPath("/test")).thenReturn(new Stat());
-        REPOSITORY.persist("/test", "value2");
-        verify(setDataBuilder).forPath("/test", "value2".getBytes(StandardCharsets.UTF_8));
+    void assertUpdate() {
+        repository.persist("/test", "value1");
+        repository.persist("/test", "value2");
+        assertThat(repository.query("/test"), is("value2"));
     }
     
     @Test
-    void assertPersistEphemeralNotExist() throws Exception {
-        when(protect.withMode(CreateMode.EPHEMERAL)).thenReturn(protect);
-        REPOSITORY.persistEphemeral("/test/ephemeral", "value3");
-        verify(protect).forPath("/test/ephemeral", "value3".getBytes(StandardCharsets.UTF_8));
+    void assertPersistThrowsExceptionWhenConnectionLost() {
+        fixture.throwConnectionLossOnCheckExists = true;
+        assertThrows(ClusterRepositoryPersistException.class, () -> repository.persist("/test", "value"));
     }
     
     @Test
-    void assertPersistEphemeralExist() throws Exception {
-        when(existsBuilder.forPath("/test/ephemeral")).thenReturn(new Stat());
-        when(protect.withMode(CreateMode.EPHEMERAL)).thenReturn(protect);
-        REPOSITORY.persistEphemeral("/test/ephemeral", "value4");
-        verify(backgroundVersionable).forPath("/test/ephemeral");
-        verify(protect).forPath("/test/ephemeral", "value4".getBytes(StandardCharsets.UTF_8));
+    void assertGetChildrenKeysThrowsExceptionWhenConnectionLost() {
+        fixture.throwConnectionLossOnGetChildren = true;
+        assertThrows(ClusterRepositoryPersistException.class, () -> repository.getChildrenKeys("/test/children/keys"));
     }
     
     @Test
-    void assertGetChildrenKeys() throws Exception {
-        List<String> keys = Arrays.asList("/test/children/keys/1", "/test/children/keys/2");
-        when(getChildrenBuilder.forPath("/test/children/keys")).thenReturn(keys);
-        List<String> childrenKeys = REPOSITORY.getChildrenKeys("/test/children/keys");
-        assertThat(childrenKeys.size(), is(2));
+    void assertIsExistedThrowsExceptionWhenConnectionLost() {
+        fixture.throwConnectionLossOnCheckExists = true;
+        assertThrows(ClusterRepositoryPersistException.class, () -> repository.isExisted("/test"));
     }
     
     @Test
-    void assertBuildCuratorClientWithCustomConfiguration() {
-        Properties props = PropertiesBuilder.build(
-                new Property(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000"),
-                new Property(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1"),
-                new Property(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000"),
-                new Property(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000"));
-        assertDoesNotThrow(() -> REPOSITORY.init(new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props),
-                mock(ComputeNodeInstanceContext.class)));
+    void assertPersistEphemeralNotExist() {
+        repository.persistEphemeral("/test/ephemeral", "value3");
+        assertThat(repository.query("/test/ephemeral"), is("value3"));
     }
     
     @Test
-    void assertBuildCuratorClientWithTimeToLiveSecondsEqualsZero() {
-        assertDoesNotThrow(() -> REPOSITORY.init(new ClusterPersistRepositoryConfiguration(
-                REPOSITORY.getType(), "governance", SERVER_LISTS, PropertiesBuilder.build(new Property(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0"))),
-                mock(ComputeNodeInstanceContext.class)));
+    void assertPersistEphemeralThrowsExceptionWhenConnectionLost() {
+        fixture.throwConnectionLossOnCheckExists = true;
+        assertThrows(ClusterRepositoryPersistException.class, () -> repository.persistEphemeral("/test/ephemeral", "value3"));
     }
     
     @Test
-    void assertBuildCuratorClientWithOperationTimeoutMillisecondsEqualsZero() {
-        assertDoesNotThrow(() -> REPOSITORY.init(new ClusterPersistRepositoryConfiguration(
-                REPOSITORY.getType(), "governance", SERVER_LISTS, PropertiesBuilder.build(new Property(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0"))),
-                mock(ComputeNodeInstanceContext.class)));
+    void assertPersistEphemeralExist() {
+        repository.persistEphemeral("/test/ephemeral", "value3");
+        repository.persistEphemeral("/test/ephemeral", "value4");
+        assertThat(repository.query("/test/ephemeral"), is("value4"));
     }
     
     @Test
-    void assertBuildCuratorClientWithDigest() {
-        REPOSITORY.init(new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS,
-                PropertiesBuilder.build(new Property(ZookeeperPropertyKey.DIGEST.getKey(), "any"))), mock(ComputeNodeInstanceContext.class));
-        verify(builder).aclProvider(any(ACLProvider.class));
+    void assertGetChildrenKeys() {
+        repository.persist("/test/children/keys/1", "value1");
+        repository.persist("/test/children/keys/2", "value2");
+        List<String> actual = repository.getChildrenKeys("/test/children/keys");
+        assertThat(actual, is(Arrays.asList("2", "1")));
     }
     
     @Test
     void assertDeleteNotExistKey() {
-        REPOSITORY.delete("/test/children/1");
-        verify(client, never()).delete();
+        repository.delete("/test/children/1");
+        assertNull(repository.query("/test/children/1"));
     }
     
     @Test
-    void assertDeleteExistKey() throws Exception {
-        when(existsBuilder.forPath("/test/children/1")).thenReturn(new Stat());
-        when(deleteBuilder.deletingChildrenIfNeeded()).thenReturn(backgroundVersionable);
-        REPOSITORY.delete("/test/children/1");
-        verify(backgroundVersionable).forPath("/test/children/1");
+    void assertDeleteExistKey() {
+        repository.persist("/test/children/1", "value1");
+        repository.delete("/test/children/1");
+        assertNull(repository.query("/test/children/1"));
+    }
+    
+    private static final class RepositoryClientFixture {
+        
+        private final Map<String, byte[]> persistentData = new LinkedHashMap<>();
+        
+        private final Map<String, byte[]> ephemeralData = new LinkedHashMap<>();
+        
+        private boolean throwConnectionLossOnCheckExists;
+        
+        private boolean throwConnectionLossOnGetChildren;
+        
+        private CuratorFramework createClient() {
+            return (CuratorFramework) Proxy.newProxyInstance(CuratorFramework.class.getClassLoader(), new Class[]{CuratorFramework.class}, this::handleClientInvocation);
+        }
+        
+        private static Object getDefaultValue(final Class<?> returnType) {
+            if (!returnType.isPrimitive()) {
+                return null;
+            }
+            if (boolean.class == returnType) {
+                return false;
+            }
+            if (byte.class == returnType) {
+                return (byte) 0;
+            }
+            if (short.class == returnType) {
+                return (short) 0;
+            }
+            if (int.class == returnType) {
+                return 0;
+            }
+            if (long.class == returnType) {
+                return 0L;
+            }
+            if (float.class == returnType) {
+                return 0F;
+            }
+            if (double.class == returnType) {
+                return 0D;
+            }
+            if (char.class == returnType) {
+                return '\0';
+            }
+            return null;
+        }
+        
+        private Object handleClientInvocation(final Object proxy, final Method method, final Object[] args) {
+            switch (method.getName()) {
+                case "checkExists":
+                    return createExistsBuilder();
+                case "create":
+                    return createCreateBuilder();
+                case "setData":
+                    return createSetDataBuilder();
+                case "delete":
+                    return createDeleteBuilder();
+                case "getChildren":
+                    return createGetChildrenBuilder();
+                case "getData":
+                    return createGetDataBuilder();
+                case "close":
+                    return null;
+                default:
+                    return getDefaultValue(method.getReturnType());
+            }
+        }
+        
+        private ExistsBuilder createExistsBuilder() {
+            return (ExistsBuilder) Proxy.newProxyInstance(ExistsBuilder.class.getClassLoader(), new Class[]{ExistsBuilder.class}, (proxy, method, args) -> {
+                if ("forPath".equals(method.getName())) {
+                    if (throwConnectionLossOnCheckExists) {
+                        throw new ConnectionLossException();
+                    }
+                    String key = (String) args[0];
+                    return persistentData.containsKey(key) || ephemeralData.containsKey(key) ? new Stat() : null;
+                }
+                return getDefaultValue(method.getReturnType());
+            });
+        }
+        
+        private CreateBuilder createCreateBuilder() {
+            ProtectACLCreateModeStatPathAndBytesable<String> protect = (ProtectACLCreateModeStatPathAndBytesable<String>) Proxy.newProxyInstance(
+                    ProtectACLCreateModeStatPathAndBytesable.class.getClassLoader(), new Class[]{ProtectACLCreateModeStatPathAndBytesable.class}, new CreateInvocationHandler());
+            return (CreateBuilder) Proxy.newProxyInstance(CreateBuilder.class.getClassLoader(), new Class[]{CreateBuilder.class}, (proxy, method, args) -> {
+                if ("creatingParentsIfNeeded".equals(method.getName())) {
+                    return protect;
+                }
+                return getDefaultValue(method.getReturnType());
+            });
+        }
+        
+        private SetDataBuilder createSetDataBuilder() {
+            return (SetDataBuilder) Proxy.newProxyInstance(SetDataBuilder.class.getClassLoader(), new Class[]{SetDataBuilder.class},
+                    (proxy, method, args) -> {
+                        if ("forPath".equals(method.getName())) {
+                            return handleSetDataForPath(args);
+                        }
+                        return getDefaultValue(method.getReturnType());
+                    });
+        }
+        
+        private DeleteBuilder createDeleteBuilder() {
+            BackgroundVersionable backgroundVersionable = (BackgroundVersionable) Proxy.newProxyInstance(
+                    BackgroundVersionable.class.getClassLoader(), new Class[]{BackgroundVersionable.class}, (proxy, method, args) -> {
+                        if ("forPath".equals(method.getName())) {
+                            deleteRecursively((String) args[0]);
+                            return null;
+                        }
+                        return getDefaultValue(method.getReturnType());
+                    });
+            return (DeleteBuilder) Proxy.newProxyInstance(DeleteBuilder.class.getClassLoader(), new Class[]{DeleteBuilder.class}, (proxy, method, args) -> {
+                if ("deletingChildrenIfNeeded".equals(method.getName())) {
+                    return backgroundVersionable;
+                }
+                return getDefaultValue(method.getReturnType());
+            });
+        }
+        
+        private GetChildrenBuilder createGetChildrenBuilder() {
+            return (GetChildrenBuilder) Proxy.newProxyInstance(GetChildrenBuilder.class.getClassLoader(), new Class[]{GetChildrenBuilder.class}, (proxy, method, args) -> {
+                if ("forPath".equals(method.getName())) {
+                    if (throwConnectionLossOnGetChildren) {
+                        throw new ConnectionLossException();
+                    }
+                    return getChildren((String) args[0]);
+                }
+                return getDefaultValue(method.getReturnType());
+            });
+        }
+        
+        private GetDataBuilder createGetDataBuilder() {
+            return (GetDataBuilder) Proxy.newProxyInstance(GetDataBuilder.class.getClassLoader(), new Class[]{GetDataBuilder.class},
+                    (proxy, method, args) -> {
+                        if ("forPath".equals(method.getName())) {
+                            return handleGetDataForPath(args);
+                        }
+                        return getDefaultValue(method.getReturnType());
+                    });
+        }
+        
+        private List<String> getChildren(final String key) {
+            List<String> result = new ArrayList<>();
+            collectChildren(result, persistentData, key);
+            collectChildren(result, ephemeralData, key);
+            return result;
+        }
+        
+        private void collectChildren(final List<String> result, final Map<String, byte[]> data, final String key) {
+            String prefix = key + "/";
+            for (String each : data.keySet()) {
+                if (each.startsWith(prefix)) {
+                    String child = each.substring(prefix.length());
+                    if (!child.contains("/")) {
+                        result.add(child);
+                    }
+                }
+            }
+        }
+        
+        private void deleteRecursively(final String key) {
+            deleteEntries(persistentData, key);
+            deleteEntries(ephemeralData, key);
+        }
+        
+        private Stat handleSetDataForPath(final Object[] args) {
+            String key = (String) args[0];
+            byte[] value = (byte[]) args[1];
+            if (persistentData.containsKey(key)) {
+                persistentData.put(key, value);
+            } else if (ephemeralData.containsKey(key)) {
+                ephemeralData.put(key, value);
+            }
+            return new Stat();
+        }
+        
+        private byte[] handleGetDataForPath(final Object[] args) throws NoNodeException {
+            byte[] result = persistentData.get(args[0]);
+            if (null == result) {
+                result = ephemeralData.get(args[0]);
+            }
+            if (null == result) {
+                throw new NoNodeException();
+            }
+            return result;
+        }
+        
+        private void deleteEntries(final Map<String, byte[]> data, final String key) {
+            List<String> keys = new ArrayList<>(data.keySet());
+            for (String each : keys) {
+                if (key.equals(each) || each.startsWith(key + "/")) {
+                    data.remove(each);
+                }
+            }
+        }
+        
+        private final class CreateInvocationHandler implements java.lang.reflect.InvocationHandler {
+            
+            private CreateMode createMode = CreateMode.PERSISTENT;
+            
+            @Override
+            public Object invoke(final Object proxy, final Method method, final Object[] args) {
+                if ("withMode".equals(method.getName())) {
+                    createMode = (CreateMode) args[0];
+                    return proxy;
+                }
+                if ("forPath".equals(method.getName())) {
+                    Map<String, byte[]> target = CreateMode.EPHEMERAL == createMode ? ephemeralData : persistentData;
+                    target.put((String) args[0], (byte[]) args[1]);
+                    return args[0];
+                }
+                return getDefaultValue(method.getReturnType());
+            }
+        }
     }
 }

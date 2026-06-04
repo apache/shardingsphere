@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 
 /**
@@ -38,8 +37,6 @@ public final class YamlTableRuleConfiguration implements YamlConfiguration {
     private YamlShardingStrategyConfiguration databaseStrategy;
     
     private YamlShardingStrategyConfiguration tableStrategy;
-    
-    private YamlKeyGenerateStrategyConfiguration keyGenerateStrategy;
     
     private YamlShardingAuditStrategyConfiguration auditStrategy;
 }

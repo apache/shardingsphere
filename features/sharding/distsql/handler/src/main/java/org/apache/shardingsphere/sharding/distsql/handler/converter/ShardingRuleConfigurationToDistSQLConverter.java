@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.handler.constant.DistSQLConstants;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
@@ -82,7 +83,7 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
     private String convertTableStrategy(final ShardingTableRuleConfiguration tableRuleConfig, final ShardingRuleConfiguration ruleConfig) {
         return convertShardingStrategy(tableRuleConfig.getDatabaseShardingStrategy(), ShardingConvertDistSQLConstants.DATABASE_STRATEGY, ruleConfig.getShardingAlgorithms())
                 + convertShardingStrategy(tableRuleConfig.getTableShardingStrategy(), ShardingConvertDistSQLConstants.TABLE_STRATEGY, ruleConfig.getShardingAlgorithms())
-                + convertKeyGenerateStrategy(ruleConfig.getKeyGenerators(), tableRuleConfig.getKeyGenerateStrategy())
+                + convertKeyGenerateStrategy(ruleConfig.getKeyGenerators(), getKeyGenerateStrategyConfiguration(ruleConfig, tableRuleConfig.getLogicTable()))
                 + convertAuditStrategy(ruleConfig.getAuditors(), null == tableRuleConfig.getAuditStrategy() ? ruleConfig.getDefaultAuditStrategy() : tableRuleConfig.getAuditStrategy());
     }
     
@@ -101,7 +102,7 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
         String shardingColumn = Strings.isNullOrEmpty(strategyConfig.getShardingColumn()) ? ruleConfig.getDefaultShardingColumn() : strategyConfig.getShardingColumn();
         result.append(String.format(ShardingConvertDistSQLConstants.AUTO_TABLE_STRATEGY,
                 shardingColumn, AlgorithmDistSQLConverter.getAlgorithmType(ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName()))));
-        result.append(convertKeyGenerateStrategy(ruleConfig.getKeyGenerators(), autoTableRuleConfig.getKeyGenerateStrategy()));
+        result.append(convertKeyGenerateStrategy(ruleConfig.getKeyGenerators(), getKeyGenerateStrategyConfiguration(ruleConfig, autoTableRuleConfig.getLogicTable())));
         result.append(convertAuditStrategy(ruleConfig.getAuditors(), null == autoTableRuleConfig.getAuditStrategy() ? ruleConfig.getDefaultAuditStrategy() : autoTableRuleConfig.getAuditStrategy()));
         return result.toString();
     }
@@ -115,6 +116,12 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
         String algorithmDefinition = AlgorithmDistSQLConverter.getAlgorithmType(keyGenerators.get(keyGenerateStrategyConfig.getKeyGeneratorName()));
         result.append(String.format(ShardingConvertDistSQLConstants.KEY_GENERATOR_STRATEGY, keyGenerateStrategyConfig.getColumn(), algorithmDefinition));
         return result.toString();
+    }
+    
+    private KeyGenerateStrategyConfiguration getKeyGenerateStrategyConfiguration(final ShardingRuleConfiguration ruleConfig, final String logicTable) {
+        return ruleConfig.getKeyGenerateStrategies().values().stream().filter(ColumnKeyGenerateStrategiesRuleConfiguration.class::isInstance)
+                .map(ColumnKeyGenerateStrategiesRuleConfiguration.class::cast).filter(each -> logicTable.equalsIgnoreCase(each.getLogicTable())).findFirst()
+                .map(each -> new KeyGenerateStrategyConfiguration(each.getKeyGenerateColumn(), each.getKeyGeneratorName())).orElse(null);
     }
     
     private String convertShardingBindingTableRules(final ShardingRuleConfiguration ruleConfig) {

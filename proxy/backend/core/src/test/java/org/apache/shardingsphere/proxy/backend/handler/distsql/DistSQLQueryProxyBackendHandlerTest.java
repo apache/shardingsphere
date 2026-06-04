@@ -103,7 +103,8 @@ class DistSQLQueryProxyBackendHandlerTest {
     @Test
     void assertExecute() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, mock(), mock(), Collections.singleton(new ShardingSphereSchema("foo_db", databaseType, createTables(), Collections.emptyList())));
+                "foo_db", databaseType, mock(), mock(), Collections.singleton(new ShardingSphereSchema("foo_db", databaseType, createTables(), Collections.emptyList())),
+                new ConfigurationProperties(new Properties()));
         ContextManager contextManager = mock(ContextManager.class);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         assertDoesNotThrow(() -> new DistSQLQueryProxyBackendHandler(createSqlStatement(), mock(), mock(ConnectionSession.class, RETURNS_DEEP_STUBS), contextManager).execute());
@@ -116,7 +117,7 @@ class DistSQLQueryProxyBackendHandlerTest {
     }
     
     private ShowTableMetaDataStatement createSqlStatement() {
-        return new ShowTableMetaDataStatement(Collections.singleton("t_order"), new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("foo_db"))));
+        return new ShowTableMetaDataStatement(Collections.singleton(new IdentifierValue("t_order")), new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("foo_db"))));
     }
     
     @SuppressWarnings("unchecked")

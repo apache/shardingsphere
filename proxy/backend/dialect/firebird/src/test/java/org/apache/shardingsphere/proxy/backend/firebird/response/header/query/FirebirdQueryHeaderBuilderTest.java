@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.firebird.response.header.query;
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
@@ -41,11 +41,11 @@ class FirebirdQueryHeaderBuilderTest {
     
     @Test
     void assertBuild() throws SQLException {
-        QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
-        when(queryResultMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
-        when(queryResultMetaData.getColumnTypeName(1)).thenReturn("int");
-        when(queryResultMetaData.getColumnLength(1)).thenReturn(11);
-        QueryHeader actual = queryHeaderBuilder.build(queryResultMetaData, null, null, "foo_label", 1);
+        ShardingSphereResultSetMetaData resultSetMetaData = mock(ShardingSphereResultSetMetaData.class);
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(resultSetMetaData.getColumnTypeName(1)).thenReturn("int");
+        when(resultSetMetaData.getColumnDisplaySize(1)).thenReturn(11);
+        QueryHeader actual = queryHeaderBuilder.build(resultSetMetaData, null, null, "foo_label", 1);
         assertThat(actual.getSchema(), is(""));
         assertThat(actual.getTable(), is(""));
         assertThat(actual.getColumnLabel(), is("foo_label"));

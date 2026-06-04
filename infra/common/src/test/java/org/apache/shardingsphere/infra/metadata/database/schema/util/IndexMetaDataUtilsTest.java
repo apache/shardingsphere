@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.util;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -33,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -78,6 +81,6 @@ class IndexMetaDataUtilsTest {
         ShardingSphereTable table = new ShardingSphereTable(
                 "foo_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("foo_idx", Collections.emptyList(), false)), Collections.emptyList());
         Collection<ShardingSphereSchema> schemas = Collections.singleton(new ShardingSphereSchema("foo_db", mock(DatabaseType.class), Collections.singleton(table), Collections.emptyList()));
-        return new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), mock(ResourceMetaData.class), mock(RuleMetaData.class), schemas);
+        return new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), mock(ResourceMetaData.class), mock(RuleMetaData.class), schemas, new ConfigurationProperties(new Properties()));
     }
 }

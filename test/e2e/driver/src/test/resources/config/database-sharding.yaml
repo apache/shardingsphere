@@ -27,18 +27,24 @@ rules:
       actualDataNodes: jdbc_${0..1}.t_order_${0..1}
     t_order_item:
       actualDataNodes: jdbc_${0..1}.t_order_item_${0..1}
-      keyGenerateStrategy:
-        column: item_id
-        keyGeneratorName: jdbc_increment_fixture
     t_user:
       actualDataNodes: jdbc_0.t_user_${0..1}
       tableStrategy:
         standard:
           shardingColumn: id
           shardingAlgorithmName: table_inline
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: jdbc_reset_increment_fixture
+  keyGenerateStrategies:
+    t_order_item_item_id:
+      keyGenerateType: column
+      keyGeneratorName: jdbc_increment_fixture
+      logicTable: t_order_item
+      keyGenerateColumn: item_id
+    t_user_id:
+      keyGenerateType: column
+      keyGeneratorName: jdbc_reset_increment_fixture
+      logicTable: t_user
+      keyGenerateColumn: id
+
   autoTables:
     t_order_auto:
       actualDataSources: jdbc_0, jdbc_1

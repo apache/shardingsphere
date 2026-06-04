@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ide
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.window.WindowClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjection;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.aggregation.ExpectedAggregationDistinctProjection;
@@ -107,6 +109,9 @@ public final class ProjectionAssert {
         } else if (actual instanceof ExpressionProjectionSegment) {
             assertThat(assertContext.getText("Projection type assertion error: "), expected, isA(ExpectedExpressionProjection.class));
             assertExpressionProjection(assertContext, (ExpressionProjectionSegment) actual, (ExpectedExpressionProjection) expected);
+        } else if (actual instanceof ParameterMarkerExpressionSegment) {
+            assertThat(assertContext.getText("Projection type assertion error: "), expected, isA(ExpectedParameterMarkerExpression.class));
+            ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual, (ExpectedParameterMarkerExpression) expected);
         } else if (actual instanceof TopProjectionSegment) {
             assertThat(assertContext.getText("Projection type assertion error: "), expected, isA(ExpectedTopProjection.class));
             assertTopProjection(assertContext, (TopProjectionSegment) actual, (ExpectedTopProjection) expected);

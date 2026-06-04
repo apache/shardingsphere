@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -75,6 +77,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -345,6 +348,7 @@ class MySQLComStmtPrepareExecutorTest {
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
                 new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList());
-        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
+                new ConfigurationProperties(new Properties()));
     }
 }

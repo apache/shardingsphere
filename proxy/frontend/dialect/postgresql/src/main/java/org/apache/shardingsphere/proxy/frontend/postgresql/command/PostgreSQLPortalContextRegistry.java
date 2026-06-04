@@ -49,7 +49,11 @@ public final class PostgreSQLPortalContextRegistry {
      * @return PostgreSQL portal context
      */
     public PortalContext get(final int connectionId) {
-        return portalContexts.computeIfAbsent(connectionId, unused -> new PortalContext());
+        PortalContext result = portalContexts.get(connectionId);
+        if (null == result) {
+            result = portalContexts.computeIfAbsent(connectionId, unused -> new PortalContext());
+        }
+        return result;
     }
     
     /**

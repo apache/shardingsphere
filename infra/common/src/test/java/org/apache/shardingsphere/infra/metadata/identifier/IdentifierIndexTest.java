@@ -102,6 +102,20 @@ class IdentifierIndexTest {
     }
     
     @Test
+    void assertContainsWithNormalizedLookup() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createPostgreSQLRule())), IdentifierScope.TABLE);
+        index.rebuild(createSingleValueMap("foo", "value_1"));
+        assertTrue(index.contains("FOO"));
+    }
+    
+    @Test
+    void assertGetWithNormalizedLookup() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createPostgreSQLRule())), IdentifierScope.TABLE);
+        index.rebuild(createSingleValueMap("foo", "value_1"));
+        assertThat(index.get("FOO"), is("value_1"));
+    }
+    
+    @Test
     void assertFindWithNormalizedLookupIgnoresNonMatchingStoredCase() {
         IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createPostgreSQLRule())), IdentifierScope.TABLE);
         Map<String, String> values = new LinkedHashMap<>(2, 1F);
@@ -118,6 +132,21 @@ class IdentifierIndexTest {
         index.rebuild(createSingleValueMap("t_mask", "value_1"));
         Optional<String> actualValue = index.find(new IdentifierValue("`T_MASK`"));
         assertThat(actualValue, is(Optional.of("value_1")));
+    }
+    
+    @Test
+    void assertFindPrefersExactIdentifierWhenNormalizedLookupMatchesMultipleValues() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        index.rebuild(createAmbiguousValueMap());
+        Optional<String> actualValue = index.find(new IdentifierValue("foo"));
+        assertThat(actualValue, is(Optional.of("value_2")));
+    }
+    
+    @Test
+    void assertGetPrefersExactIdentifierWhenNormalizedLookupMatchesMultipleValues() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        index.rebuild(createAmbiguousValueMap());
+        assertThat(index.get("foo"), is("value_2"));
     }
     
     @Test
@@ -164,6 +193,14 @@ class IdentifierIndexTest {
         IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
         index.rebuild(createAmbiguousValueMap());
         AmbiguousIdentifierException actualException = assertThrows(AmbiguousIdentifierException.class, () -> index.find(new IdentifierValue("FOO")));
+        assertThat(actualException.getMessage(), is("Identifier 'FOO' is ambiguous, matched actual identifiers: Foo, foo."));
+    }
+    
+    @Test
+    void assertGetThrowsAmbiguousIdentifierException() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        index.rebuild(createAmbiguousValueMap());
+        AmbiguousIdentifierException actualException = assertThrows(AmbiguousIdentifierException.class, () -> index.get("FOO"));
         assertThat(actualException.getMessage(), is("Identifier 'FOO' is ambiguous, matched actual identifiers: Foo, foo."));
     }
     

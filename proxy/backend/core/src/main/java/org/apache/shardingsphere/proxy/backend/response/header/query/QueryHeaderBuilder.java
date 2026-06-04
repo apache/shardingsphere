@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.response.header.query;
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
@@ -33,7 +33,7 @@ public interface QueryHeaderBuilder extends DatabaseTypedSPI {
     /**
      * Build query header.
      *
-     * @param queryResultMetaData query result meta data
+     * @param resultSetMetaData result set meta data
      * @param database database
      * @param columnName column name
      * @param columnLabel column label
@@ -41,5 +41,5 @@ public interface QueryHeaderBuilder extends DatabaseTypedSPI {
      * @return query header
      * @throws SQLException SQL exception
      */
-    QueryHeader build(QueryResultMetaData queryResultMetaData, ShardingSphereDatabase database, String columnName, String columnLabel, int columnIndex) throws SQLException;
+    QueryHeader build(ShardingSphereResultSetMetaData resultSetMetaData, ShardingSphereDatabase database, String columnName, String columnLabel, int columnIndex) throws SQLException;
 }

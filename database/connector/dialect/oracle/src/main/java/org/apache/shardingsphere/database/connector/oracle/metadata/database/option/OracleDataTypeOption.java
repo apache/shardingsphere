@@ -81,7 +81,13 @@ public final class OracleDataTypeOption implements DialectDataTypeOption {
     }
     
     @Override
-    public boolean isBinaryDataType(final int sqlType) {
-        return delegate.isBinaryDataType(sqlType);
+    public boolean isBinaryDataType(final int sqlType, final String dataTypeName) {
+        return delegate.isBinaryDataType(sqlType, dataTypeName) || "RAW".equalsIgnoreCase(dataTypeName)
+                || "LONG RAW".equalsIgnoreCase(dataTypeName) || "BFILE".equalsIgnoreCase(dataTypeName);
+    }
+    
+    @Override
+    public boolean isTextType(final String type) {
+        return delegate.isTextType(type);
     }
 }

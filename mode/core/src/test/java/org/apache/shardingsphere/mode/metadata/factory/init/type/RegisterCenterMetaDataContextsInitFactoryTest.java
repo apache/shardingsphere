@@ -20,11 +20,9 @@ package org.apache.shardingsphere.mode.metadata.factory.init.type;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
@@ -33,13 +31,10 @@ import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNo
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
@@ -65,7 +60,6 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -114,38 +108,6 @@ class RegisterCenterMetaDataContextsInitFactoryTest {
         }
     }
     
-    @Test
-    void assertCreateMergesViewsWhenSchemasNotPersisted() throws SQLException {
-        when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.emptyList());
-        when(ShardingSphereStatisticsFactory.create(any(), any())).thenReturn(new ShardingSphereStatistics());
-        ShardingSphereDatabase fooDatabase = createDatabase("foo_db",
-                Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType, Collections.emptyList(), Collections.singleton(new ShardingSphereView("local_view", "select 1")))));
-        ShardingSphereDatabase barDatabase = createDatabase("bar_db", Collections.emptyList());
-        ComputeNodeInstanceContext instanceContext = mockComputeNodeInstanceContext(mock(JDBCInstanceMetaData.class));
-        when(ShardingSphereDatabasesFactory.create(anyMap(), any(ConfigurationProperties.class), eq(instanceContext), any(DatabaseType.class))).thenReturn(Arrays.asList(fooDatabase, barDatabase));
-        Map<String, DatabaseConfiguration> databaseConfigs = createDatabaseConfigsWithoutStorageUnits();
-        Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.FALSE.toString()));
-        Collection<ShardingSphereSchema> persistedSchemas = Arrays.asList(
-                new ShardingSphereSchema("foo_schema", databaseType, Collections.emptyList(), Collections.singleton(new ShardingSphereView("persisted_view", "select 2"))),
-                new ShardingSphereSchema("missing_schema", databaseType, Collections.emptyList(), Collections.singleton(new ShardingSphereView("ignored_view", "select 3"))));
-        try (
-                MockedConstruction<PropertiesPersistService> ignoredService = mockConstruction(PropertiesPersistService.class, (mock, context) -> when(mock.load()).thenReturn(props));
-                MockedConstruction<MetaDataPersistFacade> ignoredFacade = mockConstruction(MetaDataPersistFacade.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),
-                        (mock, context) -> {
-                            when(mock.getPropsService().load()).thenReturn(new Properties());
-                            when(mock.loadDataSourceConfigurations(anyString())).thenReturn(Collections.emptyMap());
-                            when(mock.getDatabaseMetaDataFacade().getSchema().load(eq("foo_db"), any())).thenReturn(persistedSchemas);
-                            when(mock.getStatisticsService().load(any())).thenReturn(new ShardingSphereStatistics());
-                        });
-                MockedConstruction<DataSourcePoolDestroyer> destroyerMocked = mockConstruction(DataSourcePoolDestroyer.class)) {
-            MetaDataContexts actual = new RegisterCenterMetaDataContextsInitFactory(repository, instanceContext).create(createContextManagerBuilderParameter(databaseConfigs));
-            assertThat(actual.getMetaData().getAllDatabases(), hasSize(2));
-            assertTrue(fooDatabase.getSchema("foo_schema").containsView("persisted_view"));
-            assertTrue(fooDatabase.getSchema("foo_schema").containsView("local_view"));
-            assertThat(destroyerMocked.constructed(), hasSize(0));
-        }
-    }
-    
     private ComputeNodeInstanceContext mockComputeNodeInstanceContext(final InstanceMetaData metaData) {
         ComputeNodeInstanceContext result = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
         when(result.getInstance().getMetaData()).thenReturn(metaData);
@@ -180,7 +142,7 @@ class RegisterCenterMetaDataContextsInitFactoryTest {
     
     private ShardingSphereDatabase createDatabase(final String databaseName, final Collection<ShardingSphereSchema> schemas) {
         return new ShardingSphereDatabase(databaseName,
-                databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas);
+                databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas, new ConfigurationProperties(new Properties()));
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter(final Map<String, DatabaseConfiguration> databaseConfigs) {

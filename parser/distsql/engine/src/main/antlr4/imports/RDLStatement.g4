@@ -48,7 +48,7 @@ urlSource
     ;
 
 hostname
-    : STRING_
+    : distSQLString
     ;
 
 port
@@ -56,19 +56,19 @@ port
     ;
 
 dbName
-    : STRING_
+    : distSQLString
     ;
 
 url
-    : STRING_
+    : distSQLString
     ;
 
 user
-    : STRING_
+    : distSQLString
     ;
 
 password
-    : STRING_
+    : distSQLString
     ;
 
 ignoreTables

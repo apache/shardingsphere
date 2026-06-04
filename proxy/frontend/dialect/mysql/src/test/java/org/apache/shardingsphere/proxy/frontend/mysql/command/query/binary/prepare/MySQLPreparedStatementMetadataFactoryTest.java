@@ -131,7 +131,6 @@ class MySQLPreparedStatementMetadataFactoryTest {
         mockMetaData();
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         when(database.getName()).thenReturn("foo_db");
     }

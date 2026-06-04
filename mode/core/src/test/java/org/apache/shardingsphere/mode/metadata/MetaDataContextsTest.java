@@ -87,7 +87,8 @@ class MetaDataContextsTest {
     private ShardingSphereMetaData createMetaData(final String databaseName) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                databaseName, databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+                databaseName, databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         return new ShardingSphereMetaData(
                 Collections.singleton(database), new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }

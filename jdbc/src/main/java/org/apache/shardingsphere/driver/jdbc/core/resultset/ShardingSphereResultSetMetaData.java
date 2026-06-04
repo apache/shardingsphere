@@ -128,7 +128,8 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getTableName(final int column) throws SQLException {
-        return decorateTableName(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class), resultSetMetaData.getTableName(column));
+        String actualTableName = resultSetMetaData.getTableName(column);
+        return null == database ? actualTableName : decorateTableName(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class), actualTableName);
     }
     
     private String decorateTableName(final Collection<DataNodeRuleAttribute> ruleAttributes, final String actualTableName) {

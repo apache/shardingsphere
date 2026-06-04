@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -38,6 +39,7 @@ import java.util.Optional;
  *
  * @param <T> metadata object type
  */
+@Slf4j
 public final class IdentifierIndex<T> {
     
     private final DatabaseIdentifierContext databaseIdentifierContext;
@@ -143,6 +145,32 @@ public final class IdentifierIndex<T> {
     }
     
     /**
+     * Judge whether contains metadata object by unquoted identifier or not.
+     *
+     * @param identifier unquoted identifier
+     * @return contains metadata object by unquoted identifier or not
+     */
+    public boolean contains(final String identifier) {
+        return null != get(identifier);
+    }
+    
+    /**
+     * Get metadata object by unquoted identifier.
+     *
+     * @param identifier unquoted identifier
+     * @return matched metadata object
+     */
+    public T get(final String identifier) {
+        Objects.requireNonNull(identifier, "identifier cannot be null.");
+        Snapshot<T> currentSnapshot = snapshot;
+        IdentifierCaseRule rule = databaseIdentifierContext.getRule(identifierScope);
+        if (LookupMode.EXACT == rule.getLookupMode(QuoteCharacter.NONE)) {
+            return currentSnapshot.getExactValues().get(identifier);
+        }
+        return getByNormalizedIdentifier(currentSnapshot, rule, identifier);
+    }
+    
+    /**
      * Find metadata object by identifier value.
      *
      * @param identifierValue identifier value
@@ -155,31 +183,38 @@ public final class IdentifierIndex<T> {
         if (LookupMode.EXACT == rule.getLookupMode(identifierValue.getQuoteCharacter())) {
             return Optional.ofNullable(currentSnapshot.getExactValues().get(identifierValue.getValue()));
         }
-        return findByNormalizedIdentifier(currentSnapshot, rule, identifierValue);
+        return QuoteCharacter.NONE == identifierValue.getQuoteCharacter()
+                ? Optional.ofNullable(getByNormalizedIdentifier(currentSnapshot, rule, identifierValue.getValue()))
+                : findByQuotedNormalizedIdentifier(currentSnapshot, rule, identifierValue);
     }
     
-    private Optional<T> findByNormalizedIdentifier(final Snapshot<T> currentSnapshot, final IdentifierCaseRule rule, final IdentifierValue identifierValue) {
+    private T getByNormalizedIdentifier(final Snapshot<T> currentSnapshot, final IdentifierCaseRule rule, final String identifier) {
+        NormalizedBucket<T> normalizedBucket = currentSnapshot.getNormalizedBuckets().get(rule.normalize(identifier));
+        if (null == normalizedBucket) {
+            return null;
+        }
+        return getByUnquotedNormalizedIdentifier(currentSnapshot, normalizedBucket, identifier);
+    }
+    
+    private T getByUnquotedNormalizedIdentifier(final Snapshot<T> currentSnapshot, final NormalizedBucket<T> normalizedBucket, final String identifier) {
+        if (!normalizedBucket.hasUnquotedIdentifier()) {
+            return null;
+        }
+        if (normalizedBucket.hasSingleUnquotedIdentifier()) {
+            return normalizedBucket.getSingleUnquotedValue();
+        }
+        T exactMatchedValue = findExactMatchedValue(currentSnapshot.getExactValues(), normalizedBucket.getUnquotedIdentifiers(), identifier);
+        if (null != exactMatchedValue) {
+            return exactMatchedValue;
+        }
+        throw new AmbiguousIdentifierException(identifier, normalizedBucket.getUnquotedIdentifiers());
+    }
+    
+    private Optional<T> findByQuotedNormalizedIdentifier(final Snapshot<T> currentSnapshot, final IdentifierCaseRule rule, final IdentifierValue identifierValue) {
         NormalizedBucket<T> normalizedBucket = currentSnapshot.getNormalizedBuckets().get(rule.normalize(identifierValue.getValue()));
         if (null == normalizedBucket) {
             return Optional.empty();
         }
-        return QuoteCharacter.NONE == identifierValue.getQuoteCharacter()
-                ? findByUnquotedNormalizedIdentifier(normalizedBucket, identifierValue.getValue())
-                : findByQuotedNormalizedIdentifier(currentSnapshot, rule, normalizedBucket, identifierValue);
-    }
-    
-    private Optional<T> findByUnquotedNormalizedIdentifier(final NormalizedBucket<T> normalizedBucket, final String identifierValue) {
-        if (!normalizedBucket.hasUnquotedIdentifier()) {
-            return Optional.empty();
-        }
-        if (normalizedBucket.hasSingleUnquotedIdentifier()) {
-            return Optional.ofNullable(normalizedBucket.getSingleUnquotedValue());
-        }
-        throw new AmbiguousIdentifierException(identifierValue, normalizedBucket.getUnquotedIdentifiers());
-    }
-    
-    private Optional<T> findByQuotedNormalizedIdentifier(final Snapshot<T> currentSnapshot, final IdentifierCaseRule rule,
-                                                         final NormalizedBucket<T> normalizedBucket, final IdentifierValue identifierValue) {
         if (normalizedBucket.hasSingleIdentifier()) {
             return rule.matches(normalizedBucket.getSingleIdentifier(), identifierValue.getValue(), identifierValue.getQuoteCharacter())
                     ? Optional.ofNullable(normalizedBucket.getSingleValue())
@@ -207,7 +242,19 @@ public final class IdentifierIndex<T> {
         if (null == ambiguousIdentifiers) {
             return Optional.ofNullable(currentSnapshot.getExactValues().get(matchedIdentifier));
         }
+        T exactMatchedValue = findExactMatchedValue(currentSnapshot.getExactValues(), ambiguousIdentifiers, identifierValue.getValue());
+        if (null != exactMatchedValue) {
+            return Optional.of(exactMatchedValue);
+        }
         throw new AmbiguousIdentifierException(identifierValue.getValue(), ambiguousIdentifiers);
+    }
+    
+    private T findExactMatchedValue(final Map<String, T> exactValues, final Collection<String> matchedIdentifiers, final String identifierValue) {
+        if (!matchedIdentifiers.contains(identifierValue)) {
+            return null;
+        }
+        log.warn("Identifier '{}' matched multiple actual identifiers {}. Fallback to exact identifier '{}'.", identifierValue, matchedIdentifiers, identifierValue);
+        return exactValues.get(identifierValue);
     }
     
     private void addNormalizedIdentifier(final Map<String, Collection<String>> values, final IdentifierCaseRule rule, final String name) {

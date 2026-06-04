@@ -24,7 +24,6 @@ import org.awaitility.Awaitility;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -61,10 +60,8 @@ public final class ProxyTestingServer {
     /**
      * Force close ShardingSphere Proxy.
      *
-     * @param logicDataBaseNameList List of logical database names created by Proxy.
      */
-    public void close(final List<String> logicDataBaseNameList) {
-        ResourceUtils.closeProxyDataSource(logicDataBaseNameList);
+    public void close() {
         completableFuture.cancel(false);
         Awaitility.await().atMost(1L, TimeUnit.MINUTES).until(completableFuture::isDone);
     }

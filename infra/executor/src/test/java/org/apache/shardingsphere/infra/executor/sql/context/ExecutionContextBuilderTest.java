@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.sql.context;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -41,6 +43,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -67,7 +70,7 @@ class ExecutionContextBuilderTest {
         String firstDataSourceName = "firstDataSourceName";
         when(resourceMetaData.getAllInstanceDataSourceNames()).thenReturn(Arrays.asList(firstDataSourceName, "lastDataSourceName"));
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.emptyList());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, buildSchemas());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, buildSchemas(), new ConfigurationProperties(new Properties()));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(database, genericSQLRewriteResult, sqlStatementContext);
@@ -83,7 +86,7 @@ class ExecutionContextBuilderTest {
         String firstDataSourceName = "firstDataSourceName";
         when(resourceMetaData.getAllInstanceDataSourceNames()).thenReturn(Arrays.asList(firstDataSourceName, "lastDataSourceName"));
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.emptyList());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, buildSchemas());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, buildSchemas(), new ConfigurationProperties(new Properties()));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(database, genericSQLRewriteResult, sqlStatementContext);
         Collection<ExecutionUnit> expected = Collections.singletonList(new ExecutionUnit(firstDataSourceName, new SQLUnit(sql, Collections.singletonList("foo_param"))));
@@ -94,7 +97,7 @@ class ExecutionContextBuilderTest {
     void assertBuildRouteSQLRewriteResult() {
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.emptyMap());
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.emptyList());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, buildSchemas());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, buildSchemas(), new ConfigurationProperties(new Properties()));
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(database, new RouteSQLRewriteResult(createRouteUnitSQLRewriteUnitMap()), mock(SQLStatementContext.class));
         ExecutionUnit expectedUnit1 = new ExecutionUnit("actual_db_1", new SQLUnit("sql1", Collections.singletonList("parameter1")));
         ExecutionUnit expectedUnit2 = new ExecutionUnit("actual_db_2", new SQLUnit("sql2", Collections.singletonList("parameter2")));
@@ -123,7 +126,8 @@ class ExecutionContextBuilderTest {
         sqlRewriteUnits.put(routeUnit2, sqlRewriteUnit2);
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.emptyMap());
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.emptyList());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, buildSchemasWithoutPrimaryKey());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, buildSchemasWithoutPrimaryKey(), new ConfigurationProperties(new Properties()));
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(database, new RouteSQLRewriteResult(sqlRewriteUnits), mock(SQLStatementContext.class));
         ExecutionUnit expectedUnit2 = new ExecutionUnit("actualName2", new SQLUnit("sql2", Collections.singletonList("parameter2")));
         assertThat(actual, is(Collections.singleton(expectedUnit2)));

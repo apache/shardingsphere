@@ -34,9 +34,9 @@ public final class PostgreSQLParseCompletePacket extends PostgreSQLPacket {
     private static final PostgreSQLParseCompletePacket INSTANCE = new PostgreSQLParseCompletePacket();
     
     /**
-     * Get instance of {@link PostgreSQLParseCompletePacket}.
+     * Get instance of PostgreSQL parse complete packet.
      *
-     * @return instance of {@link PostgreSQLParseCompletePacket}
+     * @return got instance
      */
     public static PostgreSQLParseCompletePacket getInstance() {
         return INSTANCE;

@@ -44,7 +44,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -63,6 +62,17 @@ class ProxySQLComQueryParserTest {
         SQLStatement actual = ProxySQLComQueryParser.parse("   ", databaseType, connectionSession);
         assertThat(actual, isA(EmptyStatement.class));
         assertThat(actual.getDatabaseType(), is(databaseType));
+    }
+    
+    @Test
+    void assertParseWithEmptyDatabaseNameUseDefaultType() {
+        when(connectionSession.getUsedDatabaseName()).thenReturn("");
+        SQLParserEngine parserEngine = mock(SQLParserEngine.class);
+        SQLStatement expected = UpdateStatement.builder().databaseType(databaseType).build();
+        SQLParserRule parserRule = mockParserRule(parserEngine);
+        mockProxyContext(parserRule, false, null);
+        when(parserEngine.parse(anyString(), eq(false))).thenReturn(expected);
+        assertThat(ProxySQLComQueryParser.parse("select 1", databaseType, connectionSession), is(expected));
     }
     
     @Test
@@ -97,10 +107,9 @@ class ProxySQLComQueryParserTest {
     private void mockProxyContext(final SQLParserRule parserRule, final boolean containsDatabase, final DatabaseType protocolType) {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(parserRule)));
-        lenient().when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("logic_db")).thenReturn(containsDatabase);
         if (containsDatabase) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-            when(contextManager.getDatabase(anyString())).thenReturn(database);
+            when(contextManager.getMetaDataContexts().getMetaData().getDatabase("logic_db")).thenReturn(database);
             when(database.getProtocolType()).thenReturn(protocolType);
         }
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

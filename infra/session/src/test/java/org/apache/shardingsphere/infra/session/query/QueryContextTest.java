@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -45,7 +46,6 @@ class QueryContextTest {
         when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
@@ -72,7 +72,6 @@ class QueryContextTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.isComplete()).thenReturn(true);
         when(database.getName()).thenReturn("foo_db");
-        when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getAllDatabases()).thenReturn(Collections.singletonList(database));
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -92,5 +91,27 @@ class QueryContextTest {
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         QueryContext actual = new QueryContext(sqlStatementContext, "SELECT 1", Collections.emptyList(), mock(HintValueContext.class), connectionContext, metaData);
         assertThrows(UnknownDatabaseException.class, actual::getUsedDatabase);
+    }
+    
+    @Test
+    void assertGetUsedDatabases() {
+        ConnectionContext connectionContext = mock(ConnectionContext.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.singleton("foo_db"));
+        when(metaData.getDatabase("foo_db")).thenReturn(database);
+        QueryContext actual = new QueryContext(sqlStatementContext, "SELECT 1", Collections.emptyList(), mock(HintValueContext.class), connectionContext, metaData);
+        assertThat(actual.getUsedDatabases(), contains(database));
+    }
+    
+    @Test
+    void assertGetUsedDatabasesWhenUseUnknownDatabase() {
+        ConnectionContext connectionContext = mock(ConnectionContext.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.singleton("unknown_db"));
+        QueryContext actual = new QueryContext(sqlStatementContext, "SELECT 1", Collections.emptyList(), mock(HintValueContext.class), connectionContext, metaData);
+        assertThrows(UnknownDatabaseException.class, actual::getUsedDatabases);
     }
 }

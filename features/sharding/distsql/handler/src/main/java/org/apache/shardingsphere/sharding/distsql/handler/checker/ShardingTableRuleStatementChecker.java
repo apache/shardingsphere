@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -140,6 +141,7 @@ public final class ShardingTableRuleStatementChecker {
         result.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
         result.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
         result.setDefaultShardingColumn(currentRuleConfig.getDefaultShardingColumn());
+        result.setKeyGenerateStrategies(new LinkedHashMap<>(currentRuleConfig.getKeyGenerateStrategies()));
         result.setShardingAlgorithms(new LinkedHashMap<>(currentRuleConfig.getShardingAlgorithms()));
         result.setKeyGenerators(new LinkedHashMap<>(currentRuleConfig.getKeyGenerators()));
         result.setAuditors(new LinkedHashMap<>(currentRuleConfig.getAuditors()));
@@ -165,8 +167,8 @@ public final class ShardingTableRuleStatementChecker {
         Map<String, ShardingAlgorithm> shardingAlgorithms = new HashMap<>(checkedConfig.getShardingAlgorithms().size(), 1F);
         Map<String, ShardingTable> shardingTables = new HashMap<>();
         checkedConfig.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, TypedSPILoader.getService(ShardingAlgorithm.class, value.getType(), value.getProps())));
-        shardingTables.putAll(createShardingTables(checkedConfig.getTables(), checkedConfig.getDefaultKeyGenerateStrategy(), allDataSourceNames));
-        shardingTables.putAll(createShardingAutoTables(checkedConfig.getAutoTables(), shardingAlgorithms, checkedConfig.getDefaultKeyGenerateStrategy(), allDataSourceNames));
+        shardingTables.putAll(createShardingTables(checkedConfig, allDataSourceNames));
+        shardingTables.putAll(createShardingAutoTables(checkedConfig, shardingAlgorithms, allDataSourceNames));
         ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig = null == checkedConfig.getDefaultDatabaseShardingStrategy()
                 ? new NoneShardingStrategyConfiguration()
                 : checkedConfig.getDefaultDatabaseShardingStrategy();
@@ -208,10 +210,9 @@ public final class ShardingTableRuleStatementChecker {
         return dataNodeStr.contains(DELIMITER) && 2 == Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
     }
     
-    private static Map<String, ShardingTable> createShardingTables(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs,
-                                                                   final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig,
-                                                                   final Collection<String> dataSourceNames) {
-        return tableRuleConfigs.stream().map(each -> new ShardingTable(each, dataSourceNames, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig)))
+    private static Map<String, ShardingTable> createShardingTables(final ShardingRuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
+        return ruleConfig.getTables().stream().map(each -> new ShardingTable(each, dataSourceNames, getKeyGenerateStrategyConfiguration(ruleConfig, each.getLogicTable()),
+                getDefaultGenerateKeyColumn(ruleConfig.getDefaultKeyGenerateStrategy())))
                 .collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
@@ -219,19 +220,25 @@ public final class ShardingTableRuleStatementChecker {
         return Optional.ofNullable(defaultKeyGenerateStrategyConfig).map(KeyGenerateStrategyConfiguration::getColumn).orElse(null);
     }
     
-    private static Map<String, ShardingTable> createShardingAutoTables(final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs,
-                                                                       final Map<String, ShardingAlgorithm> shardingAlgorithms,
-                                                                       final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, final Collection<String> dataSourceNames) {
-        return autoTableRuleConfigs.stream().map(each -> createShardingAutoTable(defaultKeyGenerateStrategyConfig, each, shardingAlgorithms, dataSourceNames))
+    private static Map<String, ShardingTable> createShardingAutoTables(final ShardingRuleConfiguration ruleConfig, final Map<String, ShardingAlgorithm> shardingAlgorithms,
+                                                                       final Collection<String> dataSourceNames) {
+        return ruleConfig.getAutoTables().stream().map(each -> createShardingAutoTable(ruleConfig, each, shardingAlgorithms, dataSourceNames))
                 .collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static ShardingTable createShardingAutoTable(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, final ShardingAutoTableRuleConfiguration autoTableRuleConfig,
+    private static ShardingTable createShardingAutoTable(final ShardingRuleConfiguration ruleConfig, final ShardingAutoTableRuleConfiguration autoTableRuleConfig,
                                                          final Map<String, ShardingAlgorithm> shardingAlgorithms, final Collection<String> dataSourceNames) {
         ShardingAlgorithm shardingAlgorithm = shardingAlgorithms.get(autoTableRuleConfig.getShardingStrategy().getShardingAlgorithmName());
         ShardingSpherePreconditions.checkState(shardingAlgorithm instanceof ShardingAutoTableAlgorithm,
                 () -> new ShardingAlgorithmClassImplementationException(autoTableRuleConfig.getShardingStrategy().getShardingAlgorithmName(), ShardingAutoTableAlgorithm.class));
-        return new ShardingTable(autoTableRuleConfig, dataSourceNames, (ShardingAutoTableAlgorithm) shardingAlgorithm, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig));
+        return new ShardingTable(autoTableRuleConfig, dataSourceNames, (ShardingAutoTableAlgorithm) shardingAlgorithm,
+                getKeyGenerateStrategyConfiguration(ruleConfig, autoTableRuleConfig.getLogicTable()), getDefaultGenerateKeyColumn(ruleConfig.getDefaultKeyGenerateStrategy()));
+    }
+    
+    private static KeyGenerateStrategyConfiguration getKeyGenerateStrategyConfiguration(final ShardingRuleConfiguration ruleConfig, final String logicTable) {
+        return ruleConfig.getKeyGenerateStrategies().values().stream().filter(ColumnKeyGenerateStrategiesRuleConfiguration.class::isInstance)
+                .map(ColumnKeyGenerateStrategiesRuleConfiguration.class::cast).filter(each -> logicTable.equalsIgnoreCase(each.getLogicTable())).findFirst()
+                .map(each -> new KeyGenerateStrategyConfiguration(each.getKeyGenerateColumn(), each.getKeyGeneratorName())).orElse(null);
     }
     
     private static boolean isValidBindingTableConfiguration(final Map<String, ShardingTable> shardingTables, final BindingTableCheckedConfiguration checkedConfig) {

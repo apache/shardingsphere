@@ -41,7 +41,7 @@ class SingleTableMapperRuleAttributeTest {
         SingleTableMapperRuleAttribute actual = new SingleTableMapperRuleAttribute(Arrays.asList(
                 Collections.singleton(new DataNode("foo_ds", "public", "Test3")),
                 Collections.singleton(new DataNode("foo_ds", "public", "test3"))));
-        assertThat(new LinkedList<>(actual.getLogicTableNames()), is(Arrays.asList("Test3", "test3")));
+        assertThat(new LinkedList<>(actual.getLogicTableNames()), is(Collections.singletonList("Test3")));
     }
     
     @Test

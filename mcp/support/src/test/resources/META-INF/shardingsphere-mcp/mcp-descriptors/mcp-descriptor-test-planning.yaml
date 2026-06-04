@@ -1,0 +1,153 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+resources:
+  - uri: shardingsphere://workflow/test-resource
+    name: workflow_test_resource
+    title: Workflow Test Resource
+    description: "Workflow descriptor resource used by descriptor catalog loader tests."
+    mimeType: application/json
+    shardingSphereMetadata:
+      resourceKind: detail
+
+tools:
+  - name: database_gateway_plan_encrypt_rule
+    title: Plan Encrypt Rule
+    description: "Plan a test encrypt workflow descriptor without executing changes."
+    inputSchema:
+      type: object
+      properties:
+        plan_id:
+          type: string
+          description: "Optional existing workflow plan identifier."
+        database:
+          type: string
+          description: "Logical database name."
+        schema:
+          type: string
+          description: "Optional schema name."
+        table:
+          type: string
+          description: "Logical table name."
+        column:
+          type: string
+          description: "Logical column name."
+        operation_type:
+          type: string
+          description: "Lifecycle operation."
+          enum:
+            - create
+            - alter
+            - drop
+        natural_language_intent:
+          type: string
+          description: "Natural language user request."
+        structured_intent_evidence:
+          type: object
+          description: "Structured intent evidence."
+          properties:
+            field_semantics:
+              type: string
+              description: "Field semantics."
+          required: []
+          additionalProperties: false
+        delivery_mode:
+          type: string
+          description: "Delivery mode."
+          enum:
+            - all-at-once
+            - step-by-step
+        execution_mode:
+          type: string
+          description: "Execution mode."
+          enum:
+            - review-then-execute
+            - manual-only
+        algorithm_type:
+          type: string
+          description: "Algorithm type."
+        user_overrides:
+          type: object
+          description: "User overrides."
+          properties:
+            algorithm_type:
+              type: string
+              description: "Algorithm type override."
+          required: []
+          additionalProperties: false
+      required: []
+      additionalProperties: false
+    outputSchema:
+      type: object
+      properties:
+        response_mode:
+          type: string
+          description: "Machine-readable response mode for planning or terminal workflow states."
+        plan_id:
+          type: string
+          description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
+        workflow_kind:
+          type: string
+          description: "Workflow kind resolved by the planner."
+        status:
+          type: string
+          description: "Stable workflow status, such as clarifying, planned, or failed."
+        missing_required_inputs:
+          type: array
+          description: "Inputs still required before the plan can be completed."
+        resources_to_read:
+          type: array
+          description: "Typed resources the model should read before retrying."
+        review_focus:
+          type: object
+          description: "Compact planning review focus."
+        next_actions:
+          type: array
+          description: "Ordered structured model-facing recommendations for the next call or user question."
+          items:
+            type: object
+            properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              reason:
+                type: string
+                description: "Why the model should take this action."
+      examples:
+        - response_mode: planning
+          plan_id: encrypt-rule-20260505-001
+          workflow_kind: encrypt.rule
+          status: planned
+          missing_required_inputs: []
+          resources_to_read: []
+          review_focus: {}
+          next_actions:
+            - order: 1
+              type: tool_call
+              title: Call database_gateway_apply_workflow
+              reason: Preview generated workflow artifacts.
+    annotations:
+      title: Plan Encrypt Rule
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: true

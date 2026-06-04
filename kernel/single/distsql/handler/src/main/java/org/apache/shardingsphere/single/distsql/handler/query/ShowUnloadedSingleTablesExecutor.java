@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.single.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -36,6 +38,7 @@ import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -88,8 +91,9 @@ public final class ShowUnloadedSingleTablesExecutor implements DistSQLQueryExecu
                 resourceMetaData.getStorageUnits().entrySet().stream()
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 database.getRuleMetaData().getRules());
+        Map<String, DatabaseType> databaseTypeMap = aggregateDataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> DatabaseTypeEngine.getStorageType(each.getValue())));
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(database.getRuleMetaData().getRules());
-        return SingleTableDataNodeLoader.load(database.getName(), aggregateDataSourceMap, excludedTables);
+        return SingleTableDataNodeLoader.load(database.getName(), aggregateDataSourceMap, Collections.emptySet(), excludedTables, databaseTypeMap);
     }
     
     @Override

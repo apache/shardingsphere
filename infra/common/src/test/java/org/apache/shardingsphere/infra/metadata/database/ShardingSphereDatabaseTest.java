@@ -59,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -83,7 +84,8 @@ class ShardingSphereDatabaseTest {
     @Test
     void assertGetAllSchemas() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType)));
+                "foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType)),
+                new ConfigurationProperties(new Properties()));
         List<ShardingSphereSchema> actualSchemas = new LinkedList<>(database.getAllSchemas());
         assertThat(actualSchemas.size(), is(1));
         assertThat(actualSchemas.get(0).getName(), is("foo_schema"));
@@ -93,7 +95,8 @@ class ShardingSphereDatabaseTest {
     @MethodSource("containsSchemaArguments")
     void assertContainsSchema(final String name, final String schemaName, final boolean expectedContainsSchema) {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType)));
+                "foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType)),
+                new ConfigurationProperties(new Properties()));
         assertThat(database.containsSchema(schemaName), is(expectedContainsSchema));
     }
     
@@ -101,7 +104,8 @@ class ShardingSphereDatabaseTest {
     @MethodSource("getSchemaArguments")
     void assertGetSchema(final String name, final String schemaName, final String expectedSchemaName) {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType)));
+                "foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType)),
+                new ConfigurationProperties(new Properties()));
         ShardingSphereSchema actualSchema = database.getSchema(schemaName);
         if (null == expectedSchemaName) {
             assertNull(actualSchema);
@@ -112,7 +116,8 @@ class ShardingSphereDatabaseTest {
     
     @Test
     void assertAddSchema() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         ShardingSphereSchema schema = new ShardingSphereSchema("new_schema", databaseType);
         database.addSchema(schema);
         assertThat(database.getAllSchemas().size(), is(1));
@@ -123,7 +128,8 @@ class ShardingSphereDatabaseTest {
     @MethodSource("dropSchemaArguments")
     void assertDropSchema(final String name, final String schemaName, final boolean expectedSchemaRetained) {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType)));
+                "foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType)),
+                new ConfigurationProperties(new Properties()));
         database.dropSchema(schemaName);
         assertThat(database.containsSchema("foo_schema"), is(expectedSchemaRetained));
     }
@@ -131,7 +137,7 @@ class ShardingSphereDatabaseTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("isCompleteArguments")
     void assertIsComplete(final String name, final ResourceMetaData resourceMetaData, final RuleMetaData ruleMetaData, final boolean expectedComplete) {
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, ruleMetaData, Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, ruleMetaData, Collections.emptyList(), new ConfigurationProperties(new Properties()));
         assertThat(database.isComplete(), is(expectedComplete));
     }
     
@@ -139,7 +145,8 @@ class ShardingSphereDatabaseTest {
     @MethodSource("containsDataSourceArguments")
     void assertContainsDataSource(final String name, final ResourceMetaData resourceMetaData, final boolean expectedContainsDataSource) {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.singleton(mock(ShardingSphereRule.class))), Collections.emptyList());
+                "foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.singleton(mock(ShardingSphereRule.class))), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         assertThat(database.containsDataSource(), is(expectedContainsDataSource));
     }
     
@@ -153,7 +160,8 @@ class ShardingSphereDatabaseTest {
         when(ruleAttribute.reloadRule(eq(ruleConfig), eq("foo_db"), anyMap(), anyCollection())).thenReturn(reloadedRule);
         RuleMetaData ruleMetaData = new RuleMetaData(Arrays.asList(mutableRule, immutableRule));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource())), ruleMetaData, Collections.emptyList());
+                "foo_db", databaseType, new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource())), ruleMetaData, Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         database.reloadRules();
         Collection<ShardingSphereRule> actualRules = database.getRuleMetaData().getRules();
         assertThat(actualRules.size(), is(2));
@@ -168,7 +176,8 @@ class ShardingSphereDatabaseTest {
         ShardingSphereRule otherRule = createRule(mock(RuleConfiguration.class), new RuleAttributes());
         RuleMetaData ruleMetaData = new RuleMetaData(Arrays.asList(rule, otherRule));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource())), ruleMetaData, Collections.emptyList());
+                "foo_db", databaseType, new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource())), ruleMetaData, Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         database.reloadRules();
         Collection<ShardingSphereRule> actualRules = database.getRuleMetaData().getRules();
         assertThat(actualRules.size(), is(2));
@@ -181,7 +190,8 @@ class ShardingSphereDatabaseTest {
         DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
         when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_ds", Collections.singleton("actual_ds")));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), createRuleMetaData(ruleAttribute), Collections.emptyList());
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), createRuleMetaData(ruleAttribute), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         assertDoesNotThrow(() -> database.checkStorageUnitsExisted(Collections.singleton("logic_ds")));
     }
     
@@ -190,7 +200,8 @@ class ShardingSphereDatabaseTest {
         DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
         when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_ds", Collections.singleton("actual_ds")));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), createRuleMetaData(ruleAttribute), Collections.emptyList());
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), createRuleMetaData(ruleAttribute), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         MissingRequiredStorageUnitsException ex = assertThrows(MissingRequiredStorageUnitsException.class, () -> database.checkStorageUnitsExisted(Collections.singleton("missing_ds")));
         assertThat(ex.getMessage(), is("Storage units 'missing_ds' do not exist in database 'foo_db'."));
     }
@@ -207,7 +218,8 @@ class ShardingSphereDatabaseTest {
     void assertRefreshIdentifierContext() {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
+                new ConfigurationProperties(new Properties()));
         database.refreshIdentifierContext(new ConfigurationProperties(
                 PropertiesBuilder.build(new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name()))));
         DatabaseIdentifierContext actualIdentifierContext = getIdentifierContext(database);
@@ -229,7 +241,8 @@ class ShardingSphereDatabaseTest {
     void assertDecorateRuleConfiguration() {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.singleton(mock())), Collections.emptyList());
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.singleton(mock())), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         try (MockedStatic<TypedSPILoader> mockedTypedSPILoader = mockStatic(TypedSPILoader.class)) {
             mockedTypedSPILoader.when(() -> TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass())).thenReturn(Optional.empty());
             RuleConfiguration actualRuleConfig = database.decorateRuleConfiguration(ruleConfig);
@@ -245,7 +258,8 @@ class ShardingSphereDatabaseTest {
         RuleConfiguration decoratedRuleConfig = mock(RuleConfiguration.class);
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(mock(ShardingSphereRule.class)));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource())), ruleMetaData, Collections.emptyList());
+                "foo_db", databaseType, new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource())), ruleMetaData, Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         try (MockedStatic<TypedSPILoader> mockedTypedSPILoader = mockStatic(TypedSPILoader.class)) {
             mockedTypedSPILoader.when(() -> TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass())).thenReturn(Optional.of(decorator));
             when(decorator.decorate(eq("foo_db"), anyMap(), eq(ruleMetaData.getRules()), eq(ruleConfig))).thenReturn(decoratedRuleConfig);
@@ -257,7 +271,8 @@ class ShardingSphereDatabaseTest {
     @Test
     void assertGetDefaultSchemaName() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         try (
                 MockedConstruction<DatabaseTypeRegistry> mockedConstruction = mockConstruction(DatabaseTypeRegistry.class,
                         (mock, context) -> when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_schema"))) {

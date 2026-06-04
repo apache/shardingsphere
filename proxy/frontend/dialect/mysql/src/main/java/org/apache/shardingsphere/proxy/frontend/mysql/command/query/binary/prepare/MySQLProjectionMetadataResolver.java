@@ -24,14 +24,13 @@ import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacter
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 
 import java.sql.PreparedStatement;
@@ -68,17 +67,17 @@ public final class MySQLProjectionMetadataResolver {
     public static Collection<MySQLPacket> resolveProjectionPackets(final ConnectionSession connectionSession, final MySQLServerPreparedStatement preparedStatement,
                                                                    final SelectStatementContext selectStatementContext, final int characterSet) throws SQLException {
         try (PreparedStatement actualPreparedStatement = MySQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement)) {
-            ResultSetMetaData resultSetMetaData = actualPreparedStatement.getMetaData();
-            if (null == resultSetMetaData) {
+            ResultSetMetaData actualResultSetMetaData = actualPreparedStatement.getMetaData();
+            if (null == actualResultSetMetaData) {
                 return createDefaultPackets(selectStatementContext, characterSet);
             }
-            QueryResultMetaData queryResultMetaData = new JDBCQueryResultMetaData(resultSetMetaData);
             String databaseName = selectStatementContext.getTablesContext().getDatabaseName().orElseGet(connectionSession::getCurrentDatabaseName);
             ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
+            ShardingSphereResultSetMetaData resultSetMetaData = new ShardingSphereResultSetMetaData(actualResultSetMetaData, database, selectStatementContext);
             QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
             Collection<MySQLPacket> result = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections().size());
             for (int columnIndex = 1; columnIndex <= selectStatementContext.getProjectionsContext().getExpandProjections().size(); columnIndex++) {
-                QueryHeader queryHeader = queryHeaderBuilderEngine.build(selectStatementContext.getProjectionsContext(), queryResultMetaData, database, columnIndex);
+                QueryHeader queryHeader = queryHeaderBuilderEngine.build(selectStatementContext.getProjectionsContext(), resultSetMetaData, database, columnIndex);
                 result.add(createMySQLColumnDefinition41Packet(queryHeader, characterSet));
             }
             return result;

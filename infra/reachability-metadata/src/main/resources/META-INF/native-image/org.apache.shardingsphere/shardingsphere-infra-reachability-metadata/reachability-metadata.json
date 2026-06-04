@@ -231,6 +231,13 @@
     },
     {
       "condition": {
+        "typeReached": "java.lang.Module"
+      },
+      "type": "java.lang.Module",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
         "typeReached": "sun.net.www.protocol.http.HttpURLConnection"
       },
       "type": "java.net.SocketException",
@@ -421,14 +428,16 @@
         "typeReached": "org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"
       },
       "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn",
-      "allPublicMethods": true
+      "allPublicMethods": true,
+      "allPublicConstructors": true
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"
       },
       "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex",
-      "allPublicMethods": true
+      "allPublicMethods": true,
+      "allPublicConstructors": true
     },
     {
       "condition": {
@@ -447,7 +456,8 @@
         "typeReached": "org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"
       },
       "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
-      "allPublicMethods": true
+      "allPublicMethods": true,
+      "allPublicConstructors": true
     },
     {
       "condition": {
@@ -1162,6 +1172,26 @@
         "typeReached": "org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration"
       },
       "type": "org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration",
+      "allPublicConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration"
+      },
+      "type": "org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfigurationBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration"
+      },
+      "type": "org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfigurationCustomizer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyRuleConfiguration"
+      },
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyRuleConfiguration",
       "allPublicConstructors": true,
       "allPublicMethods": true
     },

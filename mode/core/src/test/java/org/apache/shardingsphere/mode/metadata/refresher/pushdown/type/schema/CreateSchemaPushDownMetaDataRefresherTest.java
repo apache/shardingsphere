@@ -57,7 +57,7 @@ class CreateSchemaPushDownMetaDataRefresherTest {
         Properties props = new Properties();
         props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
         refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(props));
-        assertThat(persistService.getCreatedSchemaName(), is("FOO_SCHEMA"));
+        assertThat(persistService.getCreatedSchemaName(), is("foo_schema"));
     }
     
     @Test
@@ -68,6 +68,7 @@ class CreateSchemaPushDownMetaDataRefresherTest {
     }
     
     private ShardingSphereDatabase createDatabase() {
-        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
     }
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -34,9 +36,11 @@ import org.mockito.ArgumentMatchers;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -61,7 +65,7 @@ class DropMaskRuleExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(createSQLStatement(false, "T_MASK"), "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
-        metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfigurationWithoutIfExists));
+        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfigurationWithoutIfExists)));
     }
     
     private boolean assertRuleConfigurationWithoutIfExists(final MaskRuleConfiguration actual) {
@@ -80,7 +84,7 @@ class DropMaskRuleExecutorTest {
         new DistSQLUpdateExecuteEngine(createSQLStatement(true, "T_USER"), "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfigurationWithoutIfExists));
-        metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfigurationWithIfExists));
+        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfigurationWithIfExists)));
     }
     
     private DropMaskRuleStatement createSQLStatement(final boolean ifExists, final String tableName) {
@@ -99,7 +103,8 @@ class DropMaskRuleExecutorTest {
     }
     
     private ContextManager mockContextManager(final MaskRule rule) {
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase("foo_db")).thenReturn(database);
         return result;

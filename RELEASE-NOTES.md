@@ -4,10 +4,13 @@
 
 1. DistSQL: Add DistSQL to manage sharding key generate strategies - [#38572](https://github.com/apache/shardingsphere/pull/38572)
 1. DistSQL: Add DistSQL to manage sharding key generators - [#38576](https://github.com/apache/shardingsphere/pull/38576)
+1. SHARDING: Adjustment sharding api to support column-level auto-increment and global auto-increment for key generate strategy -[#38528](https://github.com/apache/shardingsphere/pull/38528)
 
 ### Bug Fixes
 
 1. SQL Parser: Preserve unary NOT as NotExpression for scalar-subquery table extraction in PostgreSQL - [#38187](https://github.com/apache/shardingsphere/pull/38187)
+1. SQL Parser: Fix wrong parameter index parse in MySQL, Doris - [#38624](https://github.com/apache/shardingsphere/pull/38624)
+1. SQL Parser: Fix No value specified for parameter exception when sql is 'INSERT INTO tableName ON CONFLICT  DO UPDATE set  WHERE ' - [#38668](https://github.com/apache/shardingsphere/pull/38668)
 1. SQL Binder: Add DialectFunctionOption to handle wrong skip column bind in ColumnSegmentBinder - [#38350](https://github.com/apache/shardingsphere/pull/38350)
 1. SQL Binder: Fix wrong bind info when order by refer column from with temporary table - [#38353](https://github.com/apache/shardingsphere/pull/38353)
 1. JDBC: Fix stale generated values leaking into prepared statement executeBatch calls without pending batches - [#38160](https://github.com/apache/shardingsphere/pull/38160)
@@ -16,18 +19,26 @@
 1. Proxy: Resolve PostgreSQL prepared statement parameter types before bind - [#38384](https://github.com/apache/shardingsphere/pull/38384)
 1. Proxy: Resolve openGauss batch bind parameter types before reading values - [#38390](https://github.com/apache/shardingsphere/pull/38390)
 1. Proxy: Fix primary key metadata loss for aliased columns in mysql prepare probe path - [#38517](https://github.com/apache/shardingsphere/pull/38517)
-1. Sharding: Fix incorrect routing when irrelevant sharding conditions are present - [#38527](https://github.com/apache/shardingsphere/pull/38527)
+1. Proxy: Force PostgreSQL backend `client_encoding` to UTF8 and reject non-UTF8 values to keep pgjdbc parameter encoding consistent - [#38645](https://github.com/apache/shardingsphere/pull/38645)
+1. Mode: Fix rule metadata not removed from memory after dropping rules in Etcd cluster mode - [#38561](https://github.com/apache/shardingsphere/pull/38561)
+1. Pipeline: Fix MySQL JSON literal decoding in migration - [#38622](https://github.com/apache/shardingsphere/pull/38622)
+1. Pipeline: Fix MySQL zero-value temporal binlog decoding with fractional precision in migration - [#35531](https://github.com/apache/shardingsphere/issues/35531)
+1. Sharding: Support ORDER BY MySQL VARBINARY column by wrapping byte[] values in a Comparable adapter - [#38699](https://github.com/apache/shardingsphere/pull/38699)
 
 ### Enhancements
 
+1. Build: Support compiling and using ShardingSphere under OpenJDK 26 - [#38625](https://github.com/apache/shardingsphere/issues/38625)
 1. Metadata: Support Oracle dictionary views by adding SYS default system schema and YAML definitions - [#38388](https://github.com/apache/shardingsphere/pull/38388)
+1. SQL Parser: Support Hive DELETE ORPHAN-FILES Statement about iceberg statement parse - [#38669](https://github.com/apache/shardingsphere/pull/38669)
 1. SQL Parser: Support MySQL Function statement parse - [#38182](https://github.com/apache/shardingsphere/pull/38182) [#38219](https://github.com/apache/shardingsphere/pull/38219)
 1. SQL Parser: Support additional MySQL SELECT index hint and MATCH ... AGAINST WITH ROLLUP syntax - [#38233](https://github.com/apache/shardingsphere/pull/38233)
 1. SQL Parser: Support MySQL CREATE EVENT and additional CREATE FUNCTION RETURN syntax - [#38237](https://github.com/apache/shardingsphere/pull/38237)
 1. SQL Parser: Support MySQL subquery table projection alias visit to SQL statement - [#38320](https://github.com/apache/shardingsphere/pull/38320)
+1. SQL Parser: Support Oracle Create TABLE sql statement parse - [#38667](https://github.com/apache/shardingsphere/pull/38667)
 1. SQL Parser: Enhance select window partition by order by, lead placeholder parse - [#38392](https://github.com/apache/shardingsphere/pull/38392)
 1. SQL Parser: Support MariaDB cycleClause, groupConcatLimitClause, MEDIAN window function parse - [#38579](https://github.com/apache/shardingsphere/pull/38579)
 1. SQL Parser: Support mysql, doris insert & replace rows statement parse - [#38585](https://github.com/apache/shardingsphere/pull/38585)
+1. SQL Parser: Support Oracle model, pivot, XML and hierarchical query parsing and binding - [#38689](https://github.com/apache/shardingsphere/pull/38689)
 1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
 1. SQL Binder: Support SQL bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
 1. JDBC: Support setMaxRows and getMaxRows method in jdbc when not execute SQL - [#38337](https://github.com/apache/shardingsphere/pull/38337)

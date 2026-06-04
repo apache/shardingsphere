@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.constant.EncryptConstants;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryptQueryAlgorithmException;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionValues;
@@ -86,7 +87,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     }
     
     private boolean containsLikeOperator(final EncryptBinaryCondition encryptCondition) {
-        return "LIKE".equalsIgnoreCase(encryptCondition.getOperator()) || "NOT LIKE".equalsIgnoreCase(encryptCondition.getOperator());
+        return EncryptConstants.LIKE_OPERATORS.contains(encryptCondition.getOperator());
     }
     
     private void encryptParameters(final ParameterBuilder paramBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {

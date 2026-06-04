@@ -54,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableA
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -65,6 +66,10 @@ import java.util.List;
  * PostgreSQL portal.
  */
 public final class Portal {
+    
+    private static final String CLIENT_ENCODING = "client_encoding";
+    
+    private static final String UTF8 = "UTF8";
     
     @Getter
     private final String name;
@@ -153,6 +158,10 @@ public final class Portal {
             result.addAll(createParameterStatusResponse((SetStatement) sqlStatement));
             return result;
         }
+        if (responseHeader instanceof UpdateResponseHeader && sqlStatement instanceof PostgreSQLResetParameterStatement) {
+            result.addAll(createParameterStatusResponse((PostgreSQLResetParameterStatement) sqlStatement));
+            return result;
+        }
         result.add(createExecutionCompletedPacket(maxRows > 0 && maxRows == result.size(), result.size()));
         return result;
     }
@@ -161,9 +170,24 @@ public final class Portal {
         List<PostgreSQLPacket> result = new ArrayList<>(2);
         result.add(new PostgreSQLCommandCompletePacket("SET", 0L));
         for (VariableAssignSegment each : sqlStatement.getVariableAssigns()) {
-            result.add(new PostgreSQLParameterStatusPacket(each.getVariable().getVariable(), null == each.getAssignValue() ? null : QuoteCharacter.unwrapText(each.getAssignValue())));
+            String variableName = each.getVariable().getVariable();
+            String variableValue = isClientEncodingVariable(variableName) ? UTF8 : null == each.getAssignValue() ? null : QuoteCharacter.unwrapText(each.getAssignValue());
+            result.add(new PostgreSQLParameterStatusPacket(variableName, variableValue));
         }
         return result;
+    }
+    
+    private List<PostgreSQLPacket> createParameterStatusResponse(final PostgreSQLResetParameterStatement sqlStatement) {
+        List<PostgreSQLPacket> result = new ArrayList<>(2);
+        result.add(new PostgreSQLCommandCompletePacket("RESET", 0L));
+        if (isClientEncodingVariable(sqlStatement.getConfigurationParameter())) {
+            result.add(new PostgreSQLParameterStatusPacket(CLIENT_ENCODING, UTF8));
+        }
+        return result;
+    }
+    
+    private boolean isClientEncodingVariable(final String variableName) {
+        return CLIENT_ENCODING.equalsIgnoreCase(variableName);
     }
     
     private boolean hasNext() throws SQLException {

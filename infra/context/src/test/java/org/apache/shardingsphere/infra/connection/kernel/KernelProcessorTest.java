@@ -121,7 +121,8 @@ class KernelProcessorTest {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class, RETURNS_DEEP_STUBS)));
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, resourceMetaData, new RuleMetaData(Arrays.asList(mockSQLTranslatorRule(), mockAggregatedDataSourceRule())), Collections.emptyList());
+                "foo_db", databaseType, resourceMetaData, new RuleMetaData(Arrays.asList(mockSQLTranslatorRule(), mockAggregatedDataSourceRule())), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         when(metaData.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(SelectStatement.builder().databaseType(databaseType).build());

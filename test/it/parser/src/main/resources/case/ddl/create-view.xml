@@ -1778,11 +1778,29 @@
                     </parameter>
                 </aggregation-projection>
                 <aggregation-projection type="MAX" alias="best_year" expression="MAX(calendar_year) KEEP (DENSE_RANK FIRST ORDER BY SUM(amount_sold) DESC)     OVER (PARTITION BY country_name, prod_name)" start-index="154" stop-index="274">
+                    <window-item start-index="232" stop-index="274">
+                        <partition-by>
+                            <column name="country_name" start-index="251" stop-index="262" />
+                            <column name="prod_name" start-index="265" stop-index="273" />
+                        </partition-by>
+                        <order-by start-index="196" stop-index="225">
+                            <expression-item expression="SUM(amount_sold)" order-direction="DESC" start-index="205" stop-index="220" />
+                        </order-by>
+                    </window-item>
                     <parameter>
                         <column name="calendar_year" start-index="158" stop-index="170" />
                     </parameter>
                 </aggregation-projection>
                 <aggregation-projection type="MAX" alias="worst_year" expression="MAX(calendar_year) KEEP (DENSE_RANK LAST ORDER BY SUM(amount_sold) DESC)     OVER (PARTITION BY country_name, prod_name)" start-index="291" stop-index="410">
+                    <window-item start-index="368" stop-index="410">
+                        <partition-by>
+                            <column name="country_name" start-index="387" stop-index="398" />
+                            <column name="prod_name" start-index="401" stop-index="409" />
+                        </partition-by>
+                        <order-by start-index="332" stop-index="361">
+                            <expression-item expression="SUM(amount_sold)" order-direction="DESC" start-index="341" stop-index="356" />
+                        </order-by>
+                    </window-item>
                     <parameter>
                         <column name="calendar_year" start-index="295" stop-index="307" />
                     </parameter>

@@ -30,5 +30,5 @@ public interface MessageDigestAlgorithm extends ShardingSphereAlgorithm {
      * @param plainValue plain value
      * @return digest value
      */
-    String digest(Object plainValue);
+    Object digest(Object plainValue);
 }

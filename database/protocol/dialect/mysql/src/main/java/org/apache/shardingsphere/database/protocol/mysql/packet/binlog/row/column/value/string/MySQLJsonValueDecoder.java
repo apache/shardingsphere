@@ -89,6 +89,9 @@ public final class MySQLJsonValueDecoder {
                 case JsonValueTypes.STRING:
                     outputString(decodeString(byteBuf.slice()), stringBuilder);
                     break;
+                case JsonValueTypes.LITERAL:
+                    outputLiteral(byteBuf.readUnsignedByte(), stringBuilder);
+                    break;
                 default:
                     throw new UnsupportedSQLOperationException(String.valueOf(type));
             }

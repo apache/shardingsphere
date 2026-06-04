@@ -61,6 +61,8 @@ class OpenGaussDataTypeOptionTest {
     
     @Test
     void assertIsBinaryDataType() {
-        assertTrue(dataTypeOption.isBinaryDataType(Types.BINARY));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.BINARY, null));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "BYTEA"));
+        assertFalse(dataTypeOption.isBinaryDataType(Types.OTHER, "VARCHAR"));
     }
 }

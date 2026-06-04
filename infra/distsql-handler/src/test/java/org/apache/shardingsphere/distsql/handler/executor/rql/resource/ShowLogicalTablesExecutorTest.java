@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,7 +58,7 @@ class ShowLogicalTablesExecutorTest {
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(database.getSchema("foo_db")).thenReturn(schema);
+        when(database.getSchema(new IdentifierValue("foo_db"))).thenReturn(schema);
         Collection<ShardingSphereTable> tables = Arrays.asList(mockShardingSphereTable("t_order"), mockShardingSphereTable("t_order_item"));
         when(schema.getAllTables()).thenReturn(tables);
         executor.setDatabase(database);

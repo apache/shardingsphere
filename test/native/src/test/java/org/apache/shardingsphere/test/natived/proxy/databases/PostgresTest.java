@@ -39,7 +39,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
-import java.util.Collections;
 
 @SuppressWarnings("SqlNoDataSourceInspection")
 @EnabledInNativeImage
@@ -76,7 +75,7 @@ class PostgresTest {
     
     @AfterEach
     void afterEach() {
-        proxyTestingServer.close(Collections.singletonList("sharding_db"));
+        proxyTestingServer.close();
     }
     
     /**

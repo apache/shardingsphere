@@ -37,6 +37,7 @@ import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class EncryptRuleConfigurationCheckerTest {
@@ -53,7 +54,7 @@ class EncryptRuleConfigurationCheckerTest {
     @Test
     void assertCheckSuccess() {
         EncryptRuleConfiguration ruleConfig = createValidRuleConfiguration();
-        checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
+        assertDoesNotThrow(() -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
     }
     
     private EncryptRuleConfiguration createValidRuleConfiguration() {

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -63,29 +64,10 @@ public final class ShardingSphereDatabase {
     
     private final RuleMetaData ruleMetaData;
     
-    @Getter(AccessLevel.NONE)
     private final DatabaseIdentifierContext identifierContext;
     
     @Getter(AccessLevel.NONE)
     private final IdentifierIndex<ShardingSphereSchema> schemaIndex;
-    
-    /**
-     * Construct database through the legacy compatibility path.
-     *
-     * <p>This constructor keeps existing callers and tests working until all database creation paths pass protocol-aware identifier rules explicitly.</p>
-     *
-     * <p>TODO(haoran): Remove this constructor after all metadata builders and tests migrate to the protocol-aware constructor.</p>
-     *
-     * @param name database name
-     * @param protocolType protocol type
-     * @param resourceMetaData resource meta data
-     * @param ruleMetaData rule meta data
-     * @param schemas schemas
-     */
-    public ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
-                                  final RuleMetaData ruleMetaData, final Collection<ShardingSphereSchema> schemas) {
-        this(name, protocolType, resourceMetaData, ruleMetaData, schemas, DatabaseIdentifierContextFactory.createDefault());
-    }
     
     /**
      * Construct database with protocol-aware identifier rules.
@@ -173,6 +155,16 @@ public final class ShardingSphereDatabase {
      */
     public ShardingSphereSchema getSchema(final IdentifierValue schemaName) {
         return findSchema(schemaName).orElse(null);
+    }
+    
+    /**
+     * Get identifier case rule by scope.
+     *
+     * @param identifierScope identifier scope
+     * @return identifier case rule
+     */
+    public IdentifierCaseRule getIdentifierCaseRule(final IdentifierScope identifierScope) {
+        return identifierContext.getRule(identifierScope);
     }
     
     /**

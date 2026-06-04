@@ -86,6 +86,7 @@ class RenameTablePushDownMetaDataRefresherTest {
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereTable table = new ShardingSphereTable("Foo_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("Foo_Schema", databaseType, Collections.singleton(table), Collections.emptyList());
-        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
+                new ConfigurationProperties(new Properties()));
     }
 }

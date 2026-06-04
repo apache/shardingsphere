@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,9 +35,18 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MySQLIncrementalPositionManagerTest {
+    
+    private static final String MYSQL_DATABASE_PRODUCT_NAME = "MySQL";
+    
+    private static final String MARIADB_DATABASE_PRODUCT_NAME = "MariaDB";
+    
+    private static final String SHOW_MASTER_STATUS_SQL = "SHOW MASTER STATUS";
+    
+    private static final String SHOW_BINARY_LOG_STATUS_SQL = "SHOW BINARY LOG STATUS";
     
     private static final String LOG_FILE_NAME = "binlog-000001";
     
@@ -59,16 +69,41 @@ class MySQLIncrementalPositionManagerTest {
     }
     
     @Test
-    void assertInitWithDataSource() throws SQLException {
-        MySQLBinlogPosition actual = (MySQLBinlogPosition) incrementalPositionManager.init(createDataSource(), "");
-        assertThat(actual.getFilename(), is(LOG_FILE_NAME));
-        assertThat(actual.getPosition(), is(LOG_POSITION));
+    void assertInitWithDataSourceByShowMasterStatus() throws SQLException {
+        assertInitWithDataSource(MYSQL_DATABASE_PRODUCT_NAME, 8, 3, SHOW_MASTER_STATUS_SQL);
     }
     
-    DataSource createDataSource() throws SQLException {
+    @Test
+    void assertInitWithDataSourceByShowBinaryLogStatus() throws SQLException {
+        assertInitWithDataSource(MYSQL_DATABASE_PRODUCT_NAME, 8, 4, SHOW_BINARY_LOG_STATUS_SQL);
+    }
+    
+    @Test
+    void assertInitWithDataSourceByShowBinaryLogStatusForHigherMajorVersion() throws SQLException {
+        assertInitWithDataSource(MYSQL_DATABASE_PRODUCT_NAME, 9, 0, SHOW_BINARY_LOG_STATUS_SQL);
+    }
+    
+    @Test
+    void assertInitWithDataSourceByShowMasterStatusForMariaDB() throws SQLException {
+        assertInitWithDataSource(MARIADB_DATABASE_PRODUCT_NAME, 11, 4, SHOW_MASTER_STATUS_SQL);
+    }
+    
+    private void assertInitWithDataSource(final String productName, final int majorVersion, final int minorVersion, final String expectedStatusSQL) throws SQLException {
         Connection connection = mock(Connection.class);
+        MySQLBinlogPosition actual = (MySQLBinlogPosition) incrementalPositionManager.init(createDataSource(connection, productName, majorVersion, minorVersion, expectedStatusSQL), "");
+        assertThat(actual.getFilename(), is(LOG_FILE_NAME));
+        assertThat(actual.getPosition(), is(LOG_POSITION));
+        verify(connection).prepareStatement(expectedStatusSQL);
+    }
+    
+    private DataSource createDataSource(final Connection connection, final String productName, final int majorVersion, final int minorVersion, final String expectedStatusSQL) throws SQLException {
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getDatabaseProductName()).thenReturn(productName);
+        when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(majorVersion);
+        when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(minorVersion);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatement positionStatement = mockPositionStatement();
-        when(connection.prepareStatement("SHOW MASTER STATUS")).thenReturn(positionStatement);
+        when(connection.prepareStatement(expectedStatusSQL)).thenReturn(positionStatement);
         return new MockedDataSource(connection);
     }
     

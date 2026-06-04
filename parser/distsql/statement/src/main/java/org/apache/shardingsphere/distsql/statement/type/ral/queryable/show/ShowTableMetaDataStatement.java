@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableR
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 
@@ -31,13 +32,13 @@ import java.util.Collection;
 @Getter
 public final class ShowTableMetaDataStatement extends QueryableRALStatement {
     
-    private final Collection<String> tableNames;
+    private final Collection<IdentifierValue> tableNames;
     
     private final FromDatabaseSegment fromDatabase;
     
     private final SQLStatementAttributes attributes;
     
-    public ShowTableMetaDataStatement(final Collection<String> tableNames, final FromDatabaseSegment fromDatabase) {
+    public ShowTableMetaDataStatement(final Collection<IdentifierValue> tableNames, final FromDatabaseSegment fromDatabase) {
         this.tableNames = tableNames;
         this.fromDatabase = fromDatabase;
         attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));

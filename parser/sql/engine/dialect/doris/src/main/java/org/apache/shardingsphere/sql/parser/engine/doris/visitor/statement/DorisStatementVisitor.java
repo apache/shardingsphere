@@ -755,6 +755,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitQueryExpression(final QueryExpressionContext ctx) {
+        WithSegment with = null == ctx.withClause() ? null : (WithSegment) visit(ctx.withClause());
         SelectStatement result;
         if (null != ctx.queryExpressionBody()) {
             result = (SelectStatement) visit(ctx.queryExpressionBody());
@@ -762,14 +763,14 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             result = (SelectStatement) visit(ctx.queryExpressionParens());
         }
         SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result);
+        if (null != with) {
+            selectStatementBuilder.with(with);
+        }
         if (null != ctx.orderByClause()) {
             selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.limitClause()) {
             selectStatementBuilder.limit((LimitSegment) visit(ctx.limitClause()));
-        }
-        if (null != ctx.withClause()) {
-            selectStatementBuilder.with((WithSegment) visit(ctx.withClause()));
         }
         return selectStatementBuilder.build();
     }

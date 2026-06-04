@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
@@ -29,6 +31,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
@@ -42,6 +45,7 @@ import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -92,7 +96,7 @@ class AlterEncryptRuleExecutorTest {
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         new DistSQLUpdateExecuteEngine(createSQLStatementWithAssistQueryAndLikeColumns(), "foo_db", contextManager, null).executeUpdate();
         metaDataManagerPersistService.removeRuleConfigurationItem(any(), ArgumentMatchers.argThat(this::assertToBeDroppedRuleConfiguration));
-        metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertToBeAlteredRuleConfiguration));
+        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertToBeAlteredRuleConfiguration)));
     }
     
     @Test
@@ -104,12 +108,17 @@ class AlterEncryptRuleExecutorTest {
         new DistSQLUpdateExecuteEngine(createSQLStatementWithoutAssistQueryAndLikeColumns(), "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         metaDataManagerPersistService.removeRuleConfigurationItem(any(), ArgumentMatchers.argThat(this::assertToBeDroppedRuleConfiguration));
-        metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertToBeAlteredRuleConfiguration));
+        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertToBeAlteredRuleConfiguration)));
     }
     
     private ContextManager mockContextManager(final EncryptRule rule) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabase("foo_db")).thenReturn(new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList()));
+        DatabaseType databaseType = mock(DatabaseType.class);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.singleton(rule)), Collections.emptyList(),
+                        new ConfigurationProperties(new Properties()));
+        when(result.getDatabase("foo_db")).thenReturn(database);
         return result;
     }
     

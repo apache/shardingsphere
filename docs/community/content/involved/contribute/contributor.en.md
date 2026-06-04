@@ -45,6 +45,14 @@ cd shardingsphere
 
 When you pull the latest code from ShardingSphere and create new branch later, you might get similar compile error of parser again, then you could run this command again.
 
+If you only need to rebuild generated parser classes for changed `.g4` files, you can use the helper script below instead of running the full build again. The script scans ANTLR modules on the first run or after switching branches, and then recompiles only the affected Maven modules according to grammar file changes.
+
+```shell
+./scripts/smart-antlr-rebuild.sh
+```
+
+Use this script when parser sources are out of date after pulling changes, rebasing, or editing grammar files locally. If you also need to refresh dependencies in the local Maven repository, keep using the full `./mvnw clean install ...` command above.
+
 **2. Choose Issue**
 
  - Please choose the issue to be edited. If it is a new issue discovered or a new function enhancement to offer, please create an issue and set the right label for it.

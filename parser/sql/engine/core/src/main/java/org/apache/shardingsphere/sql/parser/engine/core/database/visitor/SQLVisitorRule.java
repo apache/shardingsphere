@@ -299,6 +299,8 @@ public enum SQLVisitorRule {
     
     CANCEL_TASK("CancelTask", SQLStatementType.DDL),
     
+    CANCEL_MATERIALIZED_VIEW_TASK("CancelMaterializedViewTask", SQLStatementType.DDL),
+    
     RESUME_JOB("ResumeJob", SQLStatementType.DDL),
     
     RESUME_SYNC_JOB("ResumeSyncJob", SQLStatementType.DDL),
@@ -480,6 +482,8 @@ public enum SQLVisitorRule {
     SHOW_REPLICAS("ShowReplicas", SQLStatementType.DAL),
     
     SHOW_REPLICA_STATUS("ShowReplicaStatus", SQLStatementType.DAL),
+    
+    SHOW_RESOURCES("ShowResources", SQLStatementType.DAL),
     
     SHOW_SLAVE_HOSTS("ShowSlaveHosts", SQLStatementType.DAL),
     

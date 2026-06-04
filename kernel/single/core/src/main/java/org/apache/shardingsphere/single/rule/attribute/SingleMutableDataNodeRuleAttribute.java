@@ -109,7 +109,7 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
     public Optional<DataNode> findTableDataNode(final String schemaName, final String tableName) {
         Collection<DataNode> dataNodes = findTableDataNodes(tableName);
         for (DataNode each : dataNodes) {
-            if (schemaName.equals(each.getSchemaName())) {
+            if (schemaName.equalsIgnoreCase(each.getSchemaName())) {
                 return Optional.of(each);
             }
         }
