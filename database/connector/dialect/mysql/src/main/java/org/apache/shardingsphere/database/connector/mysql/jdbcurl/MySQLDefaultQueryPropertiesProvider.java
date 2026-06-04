@@ -38,6 +38,7 @@ public final class MySQLDefaultQueryPropertiesProvider implements DialectDefault
         result.setProperty("netTimeoutForStreamingResults", "0");
         result.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
         result.setProperty("useSSL", Boolean.FALSE.toString());
+        result.setProperty("yearIsDateType", Boolean.FALSE.toString());
         result.setProperty("zeroDateTimeBehavior", "round");
         return result;
     }

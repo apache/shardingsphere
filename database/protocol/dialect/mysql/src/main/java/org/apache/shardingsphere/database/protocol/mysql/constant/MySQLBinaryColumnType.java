@@ -147,6 +147,31 @@ public enum MySQLBinaryColumnType implements BinaryColumnType {
     }
     
     /**
+     * Value of JDBC type.
+     *
+     * @param jdbcType JDBC type
+     * @param columnTypeName column type name
+     * @return column type enum
+     */
+    public static MySQLBinaryColumnType valueOfJDBCType(final int jdbcType, final String columnTypeName) {
+        if (isYear(jdbcType, columnTypeName)) {
+            return YEAR;
+        }
+        return valueOfJDBCType(jdbcType);
+    }
+    
+    /**
+     * Check if MySQL YEAR type.
+     *
+     * @param jdbcType JDBC type
+     * @param columnTypeName column type name
+     * @return whether is MySQL YEAR
+     */
+    public static boolean isYear(final int jdbcType, final String columnTypeName) {
+        return Types.DATE == jdbcType && "YEAR".equalsIgnoreCase(columnTypeName);
+    }
+    
+    /**
      * Value of.
      *
      * @param value value

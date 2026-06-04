@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
@@ -56,7 +57,7 @@ class ResponsePacketBuilderTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("queryResponsePacketsProvider")
     void assertBuildQueryResponsePackets(final String name, final QueryHeader queryHeader, final int sessionCharacterSet, final int statusFlags,
-                                         final int expectedCharacterSet, final int expectedFlags, final int expectedDecimals) {
+                                         final int expectedCharacterSet, final int expectedFlags, final int expectedDecimals, final int expectedColumnType) {
         QueryResponseHeader queryResponseHeader = new QueryResponseHeader(Collections.singletonList(queryHeader));
         Collection<DatabasePacket> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, sessionCharacterSet, statusFlags);
         List<DatabasePacket> actualPackets = new ArrayList<>(actual);
@@ -77,9 +78,10 @@ class ResponsePacketBuilderTest {
         payload.readIntLenenc();
         int actualCharacterSet = payload.readInt2();
         payload.readInt4();
-        payload.readInt1();
+        int actualColumnType = payload.readInt1();
         int actualFlags = payload.readInt2();
         assertThat(actualCharacterSet, is(expectedCharacterSet));
+        assertThat(actualColumnType, is(expectedColumnType));
         assertThat(actualFlags, is(expectedFlags));
         int actualDecimals = payload.readInt1();
         assertThat(actualDecimals, is(expectedDecimals));
@@ -111,7 +113,8 @@ class ResponsePacketBuilderTest {
                         1,
                         SESSION_CHARACTER_SET,
                         MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue() + MySQLColumnDefinitionFlag.UNSIGNED.getValue() + MySQLColumnDefinitionFlag.AUTO_INCREMENT.getValue(),
-                        2),
+                        2,
+                        MySQLBinaryColumnType.LONG.getValue()),
                 Arguments.of(
                         "Binary column type sets BINARY charset, binary collation and blob flag",
                         new QueryHeader("schema2", "table2", "columnLabel2", "columnName2", Types.BINARY, "BLOB", 9, 1, true, false, true, false),
@@ -119,7 +122,8 @@ class ResponsePacketBuilderTest {
                         2,
                         MySQLCharacterSets.BINARY.getId(),
                         MySQLColumnDefinitionFlag.NOT_NULL.getValue() + MySQLColumnDefinitionFlag.BINARY_COLLATION.getValue() + MySQLColumnDefinitionFlag.BLOB.getValue(),
-                        1),
+                        1,
+                        MySQLBinaryColumnType.LONG_BLOB.getValue()),
                 Arguments.of(
                         "Binary type name only keeps session charset and binary collation without blob flag",
                         new QueryHeader("schema3", "table3", "columnLabel3", "columnName3", Types.VARCHAR, "VARBINARY", 12, 0, true, false, false, false),
@@ -127,6 +131,25 @@ class ResponsePacketBuilderTest {
                         4,
                         SESSION_CHARACTER_SET,
                         MySQLColumnDefinitionFlag.BINARY_COLLATION.getValue(),
-                        0));
+                        0,
+                        MySQLBinaryColumnType.VAR_STRING.getValue()),
+                Arguments.of(
+                        "YEAR column encodes as protocol type YEAR",
+                        new QueryHeader("schema4", "table4", "columnLabel4", "columnName4", Types.DATE, "YEAR", 4, 0, true, false, true, false),
+                        SESSION_CHARACTER_SET,
+                        1,
+                        SESSION_CHARACTER_SET,
+                        MySQLColumnDefinitionFlag.NOT_NULL.getValue(),
+                        0,
+                        MySQLBinaryColumnType.YEAR.getValue()),
+                Arguments.of(
+                        "DATE column encodes as protocol type DATE",
+                        new QueryHeader("schema5", "table5", "columnLabel5", "columnName5", Types.DATE, "DATE", 10, 0, true, false, false, false),
+                        SESSION_CHARACTER_SET,
+                        1,
+                        SESSION_CHARACTER_SET,
+                        0,
+                        0,
+                        MySQLBinaryColumnType.DATE.getValue()));
     }
 }

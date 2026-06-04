@@ -142,7 +142,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             if (null != column) {
                 int columnDefinitionFlag = calculateColumnDefinitionFlag(column);
                 result.add(createMySQLColumnDefinition41PacketByCache(characterSet, columnPacketCache, column, columnDefinitionFlag));
-                MySQLBinaryColumnType columnType = MySQLBinaryColumnType.valueOfJDBCType(column.getDataType());
+                MySQLBinaryColumnType columnType = MySQLBinaryColumnType.valueOfJDBCType(column.getDataType(), column.getColumnTypeName());
                 paramColumnDefinitionFlags.add(columnDefinitionFlag);
                 parameterColumnTypes.add(columnType);
             } else {
@@ -166,7 +166,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         if (null != cachedPacket) {
             return cachedPacket;
         }
-        MySQLColumnDefinition41Packet result = createMySQLColumnDefinition41Packet(characterSet, columnDefinitionFlag, MySQLBinaryColumnType.valueOfJDBCType(column.getDataType()));
+        MySQLColumnDefinition41Packet result =
+                createMySQLColumnDefinition41Packet(characterSet, columnDefinitionFlag, MySQLBinaryColumnType.valueOfJDBCType(column.getDataType(), column.getColumnTypeName()));
         columnPacketCache.put(column, result);
         return result;
     }
@@ -202,7 +203,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             ColumnProjection columnProjection = (ColumnProjection) each;
             result.add(Optional.ofNullable(schema.getTable(columnProjection.getOriginalTable().getValue()))
                     .map(table -> table.getColumn(columnProjection.getOriginalColumn().getValue()))
-                    .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateColumnDefinitionFlag(column), MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
+                    .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateColumnDefinitionFlag(column),
+                            MySQLBinaryColumnType.valueOfJDBCType(column.getDataType(), column.getColumnTypeName())))
                     .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING)));
         }
         return result;

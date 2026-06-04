@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.execute;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
@@ -77,6 +80,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
@@ -188,6 +193,120 @@ class MySQLComStmtExecuteExecutorTest {
         assertThat(actualQueryRowPacket, isA(MySQLBinaryResultSetRowPacket.class));
         executor.close();
         verify(proxyBackendHandler).close();
+    }
+    
+    @Test
+    void assertYearColumnEncodedAsShortFromDate() throws SQLException {
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(1);
+        QueryHeader yearHeader = mock(QueryHeader.class);
+        when(yearHeader.getColumnTypeName()).thenReturn("YEAR");
+        when(yearHeader.getColumnType()).thenReturn(Types.DATE);
+        when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(yearHeader)));
+        when(proxyBackendHandler.next()).thenReturn(true, false);
+        when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.DATE, Date.valueOf("1925-01-01"), "YEAR"))));
+        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
+        MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
+        executor.execute();
+        assertTrue(executor.next());
+        MySQLPacket rowPacket = executor.getQueryRowPacket();
+        ByteBuf buffer = Unpooled.buffer();
+        rowPacket.write(new MySQLPacketPayload(buffer, StandardCharsets.UTF_8));
+        assertThat(buffer.readUnsignedByte(), is((short) 0x00));
+        assertThat(buffer.readUnsignedByte(), is((short) 0x00));
+        assertThat(buffer.readShortLE(), is((short) 1925));
+    }
+    
+    @Test
+    void assertYearColumnFromShortValueEncodedAsShort() throws SQLException {
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(1);
+        QueryHeader yearHeader = mock(QueryHeader.class);
+        when(yearHeader.getColumnTypeName()).thenReturn("YEAR");
+        when(yearHeader.getColumnType()).thenReturn(Types.DATE);
+        when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(yearHeader)));
+        when(proxyBackendHandler.next()).thenReturn(true, false);
+        when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.DATE, Short.valueOf((short) 1925), "YEAR"))));
+        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
+        MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
+        executor.execute();
+        assertTrue(executor.next());
+        MySQLPacket rowPacket = executor.getQueryRowPacket();
+        ByteBuf buffer = Unpooled.buffer();
+        rowPacket.write(new MySQLPacketPayload(buffer, StandardCharsets.UTF_8));
+        assertThat(buffer.readUnsignedByte(), is((short) 0x00));
+        assertThat(buffer.readUnsignedByte(), is((short) 0x00));
+        assertThat(buffer.readShortLE(), is((short) 1925));
+    }
+    
+    @Test
+    void assertYearColumnFromShortZeroValueEncodedAsShortZero() throws SQLException {
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(1);
+        QueryHeader yearHeader = mock(QueryHeader.class);
+        when(yearHeader.getColumnTypeName()).thenReturn("YEAR");
+        when(yearHeader.getColumnType()).thenReturn(Types.DATE);
+        when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(yearHeader)));
+        when(proxyBackendHandler.next()).thenReturn(true, false);
+        when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.DATE, Short.valueOf((short) 0), "YEAR"))));
+        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
+        MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
+        executor.execute();
+        assertTrue(executor.next());
+        MySQLPacket rowPacket = executor.getQueryRowPacket();
+        ByteBuf buffer = Unpooled.buffer();
+        rowPacket.write(new MySQLPacketPayload(buffer, StandardCharsets.UTF_8));
+        assertThat(buffer.readUnsignedByte(), is((short) 0x00));
+        assertThat(buffer.readUnsignedByte(), is((short) 0x00));
+        assertThat(buffer.readShortLE(), is((short) 0));
+    }
+    
+    @Test
+    void assertYearColumnFromShortTwoThousandValueEncodedAsShortTwoThousand() throws SQLException {
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(1);
+        QueryHeader yearHeader = mock(QueryHeader.class);
+        when(yearHeader.getColumnTypeName()).thenReturn("YEAR");
+        when(yearHeader.getColumnType()).thenReturn(Types.DATE);
+        when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(yearHeader)));
+        when(proxyBackendHandler.next()).thenReturn(true, false);
+        when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.DATE, Short.valueOf((short) 2000), "YEAR"))));
+        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
+        MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
+        executor.execute();
+        assertTrue(executor.next());
+        MySQLPacket rowPacket = executor.getQueryRowPacket();
+        ByteBuf buffer = Unpooled.buffer();
+        rowPacket.write(new MySQLPacketPayload(buffer, StandardCharsets.UTF_8));
+        assertThat(buffer.readUnsignedByte(), is((short) 0x00));
+        assertThat(buffer.readUnsignedByte(), is((short) 0x00));
+        assertThat(buffer.readShortLE(), is((short) 2000));
+    }
+    
+    @Test
+    void assertDateColumnNotAdjustedAsYear() throws SQLException {
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(1);
+        QueryHeader dateHeader = mock(QueryHeader.class);
+        when(dateHeader.getColumnTypeName()).thenReturn("DATE");
+        when(dateHeader.getColumnType()).thenReturn(Types.DATE);
+        when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(dateHeader)));
+        when(proxyBackendHandler.next()).thenReturn(true, false);
+        Date payloadDate = Date.valueOf("2025-05-25");
+        when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.DATE, payloadDate, "DATE"))));
+        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
+        MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
+        executor.execute();
+        assertTrue(executor.next());
+        MySQLPacket rowPacket = executor.getQueryRowPacket();
+        ByteBuf buffer = Unpooled.buffer();
+        rowPacket.write(new MySQLPacketPayload(buffer, StandardCharsets.UTF_8));
+        assertThat(buffer.readUnsignedByte(), is((short) 0x00));
+        assertThat(buffer.readUnsignedByte(), is((short) 0x00));
+        assertThat(buffer.readUnsignedByte(), is((short) 4));
+        assertThat(buffer.readShortLE(), is((short) 2025));
+        assertThat(buffer.readUnsignedByte(), is((short) 5));
+        assertThat(buffer.readUnsignedByte(), is((short) 25));
     }
     
     @Test

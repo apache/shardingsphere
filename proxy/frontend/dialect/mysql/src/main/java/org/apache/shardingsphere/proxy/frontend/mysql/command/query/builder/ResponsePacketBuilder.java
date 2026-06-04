@@ -66,7 +66,8 @@ public final class ResponsePacketBuilder {
         for (QueryHeader each : queryHeaders) {
             int characterSet = BINARY_TYPES.contains(each.getColumnType()) ? MySQLCharacterSets.BINARY.getId() : sessionCharacterSet;
             result.add(new MySQLColumnDefinition41Packet(characterSet, getColumnDefinitionFlag(each), each.getSchema(), each.getTable(), each.getTable(),
-                    each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals(), false));
+                    each.getColumnLabel(), each.getColumnName(), each.getColumnLength(),
+                    MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType(), each.getColumnTypeName()), each.getDecimals(), false));
         }
         result.add(new MySQLEofPacket(statusFlags));
         return result;

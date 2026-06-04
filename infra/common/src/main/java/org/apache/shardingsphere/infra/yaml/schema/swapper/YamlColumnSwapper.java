@@ -37,12 +37,13 @@ public final class YamlColumnSwapper implements YamlConfigurationSwapper<YamlSha
         result.setVisible(data.isVisible());
         result.setUnsigned(data.isUnsigned());
         result.setNullable(data.isNullable());
+        result.setColumnTypeName(data.getColumnTypeName());
         return result;
     }
     
     @Override
     public ShardingSphereColumn swapToObject(final YamlShardingSphereColumn yamlConfig) {
-        return new ShardingSphereColumn(yamlConfig.getName(), yamlConfig.getDataType(),
-                yamlConfig.isPrimaryKey(), yamlConfig.isGenerated(), yamlConfig.isCaseSensitive(), yamlConfig.isVisible(), yamlConfig.isUnsigned(), yamlConfig.isNullable());
+        return new ShardingSphereColumn(yamlConfig.getName(), yamlConfig.getDataType(), yamlConfig.isPrimaryKey(), yamlConfig.isGenerated(),
+                yamlConfig.isCaseSensitive(), yamlConfig.isVisible(), yamlConfig.isUnsigned(), yamlConfig.isNullable(), yamlConfig.getColumnTypeName());
     }
 }
