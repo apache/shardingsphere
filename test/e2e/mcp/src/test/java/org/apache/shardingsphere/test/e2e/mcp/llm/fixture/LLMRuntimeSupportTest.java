@@ -41,6 +41,9 @@ class LLMRuntimeSupportTest {
     
     private static final String REQUIRED_MODEL = "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M";
     
+    private static final LLME2EConfiguration.ModelMetadata MODEL_METADATA = new LLME2EConfiguration.ModelMetadata(
+            "ggml-org/Qwen3-1.7B-GGUF", "Qwen3-1.7B-Q4_K_M.gguf", "Q4_K_M", "daeb8e2d528a760970442092f6bf1e55c3b659eb", 1282439264L, "configured-model-sha256");
+    
     private static final String DOCKER_REQUIRED_MESSAGE = "Docker is required to start the prepackaged llama.cpp server for MCP LLM E2E.";
     
     @Test
@@ -82,21 +85,15 @@ class LLMRuntimeSupportTest {
     @Test
     void assertPrepareWithUnsupportedProvider() {
         LLME2EConfiguration config = new LLME2EConfiguration("http://127.0.0.1:8080/v1", "openai", REQUIRED_MODEL, "mcp-llm-score", 600, 240, 10,
-                Path.of("target/llm-e2e"), "run-id", RuntimeMode.DOCKER, "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server", "sha256:foo", "bar");
+                Path.of("target/llm-e2e"), "run-id", RuntimeMode.DOCKER, "llama.cpp", "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server",
+                "test-base-server-image-digest", MODEL_METADATA);
         IllegalStateException actualException = assertThrows(IllegalStateException.class, () -> LLMRuntimeSupport.prepare(config));
         assertThat(actualException.getMessage(), is("MCP LLM E2E requires provider openai-compatible."));
     }
     
-    @Test
-    void assertPrepareWithUnsupportedDockerModel() {
-        IllegalStateException actualException = assertThrows(IllegalStateException.class,
-                () -> LLMRuntimeSupport.prepare(createConfiguration(RuntimeMode.DOCKER, "debug-model", "http://127.0.0.1:8080/v1")));
-        assertThat(actualException.getMessage(), is("MCP LLM Docker score mode requires model ggml-org/Qwen3-1.7B-GGUF:Q4_K_M."));
-    }
-    
     private LLME2EConfiguration createConfiguration(final RuntimeMode runtimeMode, final String modelName, final String baseUrl) {
         return new LLME2EConfiguration(baseUrl, "openai-compatible", modelName, "mcp-llm-score", 2, 2, 10, Path.of("target/llm-e2e"), "run-id",
-                runtimeMode, "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server", "sha256:foo", "bar");
+                runtimeMode, "llama.cpp", "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server", "test-base-server-image-digest", MODEL_METADATA);
     }
     
     private HttpServer startModelServer(final String modelName) throws IOException {

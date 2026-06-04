@@ -94,6 +94,12 @@ jobs:
           {
             echo "server_image=$(load_property 'mcp.llm.server-image')"
             echo "base_server_image=${base_server_image}"
+            echo "server_runtime=$(load_property 'mcp.llm.server-runtime')"
+            echo "model_repository=$(load_property 'mcp.llm.model-repository')"
+            echo "model_quantization=$(load_property 'mcp.llm.model-quantization')"
+            echo "model_reference=$(load_property 'mcp.llm.model')"
+            echo "model_revision=$(load_property 'mcp.llm.model-revision')"
+            echo "model_file_name=$(load_property 'mcp.llm.model-file-name')"
             echo "model_sha256=$(load_property 'mcp.llm.model-sha256')"
           } >> "${GITHUB_OUTPUT}"
       - name: Build MCP LLM Runtime Image
@@ -105,6 +111,12 @@ jobs:
           load: true
           build-args: |
             BASE_IMAGE=${{ steps.mcp-e2e-properties.outputs.base_server_image }}
+            SERVER_RUNTIME=${{ steps.mcp-e2e-properties.outputs.server_runtime }}
+            MODEL_REPOSITORY=${{ steps.mcp-e2e-properties.outputs.model_repository }}
+            MODEL_QUANTIZATION=${{ steps.mcp-e2e-properties.outputs.model_quantization }}
+            MODEL_REFERENCE=${{ steps.mcp-e2e-properties.outputs.model_reference }}
+            MODEL_REVISION=${{ steps.mcp-e2e-properties.outputs.model_revision }}
+            MODEL_FILE_NAME=${{ steps.mcp-e2e-properties.outputs.model_file_name }}
             MODEL_SHA256=${{ steps.mcp-e2e-properties.outputs.model_sha256 }}
           cache-from: type=gha,scope=mcp-llm-runtime
           cache-to: type=gha,mode=max,scope=mcp-llm-runtime,ignore-error=true

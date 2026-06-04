@@ -51,6 +51,9 @@ class LLMChatModelClientTest {
     
     private static final String REQUIRED_MODEL = "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M";
     
+    private static final LLME2EConfiguration.ModelMetadata MODEL_METADATA = new LLME2EConfiguration.ModelMetadata(
+            "ggml-org/Qwen3-1.7B-GGUF", "Qwen3-1.7B-Q4_K_M.gguf", "Q4_K_M", "daeb8e2d528a760970442092f6bf1e55c3b659eb", 1282439264L, "configured-model-sha256");
+    
     @Test
     void assertWaitUntilReady() throws IOException, InterruptedException {
         List<String> actualBodies = new LinkedList<>();
@@ -70,14 +73,14 @@ class LLMChatModelClientTest {
     @Test
     void assertWaitUntilReadyReportsProbeFailure() throws IOException, InterruptedException {
         HttpClient httpClient = mock(HttpClient.class);
-        HttpResponse<String> modelListResponse = createResponse(200, "{\"data\":[{\"id\":\"ggml-org/Qwen3-1.7B-GGUF:Q4_K_M\"}]}");
+        HttpResponse<String> modelListResponse = createResponse(200, String.format("{\"data\":[{\"id\":\"%s\"}]}", REQUIRED_MODEL));
         HttpResponse<String> completionResponse = createResponse(401, "{\"error\":{\"code\":\"unauthorized\"}}");
         when(httpClient.send(any(HttpRequest.class), ArgumentMatchers.<HttpResponse.BodyHandler<String>>any()))
                 .thenReturn(modelListResponse, completionResponse);
         IllegalStateException actualException = assertThrows(IllegalStateException.class,
                 () -> new LLMChatModelClient(createConfiguration("http://127.0.0.1:8080/v1", 1), httpClient).waitUntilReady());
         assertTrue(actualException.getMessage().startsWith(
-                "Model service is not ready for `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M` after 1 readiness attempt(s), elapsedMillis="));
+                String.format("Model service is not ready for `%s` after 1 readiness attempt(s), elapsedMillis=", REQUIRED_MODEL)));
         assertTrue(actualException.getMessage().endsWith(
                 "timeoutSeconds=1. Last readiness failure: completion readiness request returned HTTP 401 with error code `unauthorized`."));
     }
@@ -91,7 +94,7 @@ class LLMChatModelClientTest {
                     List.of(
                             LLMChatMessage.system("system"),
                             LLMChatMessage.user("user"),
-                            LLMChatMessage.assistant("", List.of(new LLMToolCall("call_0", "mcp_read_resource", "{\"uri\":\"mcp://foo\"}"))),
+                            LLMChatMessage.assistant("", List.of(new LLMToolCall("call_0", "mcp_read_resource", "{\"uri\":\"mcp://test-resource\"}"))),
                             LLMChatMessage.tool("call_0", "tool result")),
                     createToolDefinitions(), "required", true);
             assertThat(actual.getContent(), is("done"));
@@ -159,7 +162,8 @@ class LLMChatModelClientTest {
     
     private LLME2EConfiguration createConfiguration(final String baseUrl, final int readyTimeoutSeconds) {
         return new LLME2EConfiguration(baseUrl, "openai-compatible", REQUIRED_MODEL, "mcp-llm-score", readyTimeoutSeconds, 30, 10,
-                Path.of("target/llm-e2e"), "run-id", RuntimeMode.DOCKER, "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server", "sha256:foo", "bar");
+                Path.of("target/llm-e2e"), "run-id", RuntimeMode.DOCKER, "llama.cpp", "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server",
+                "test-base-server-image-digest", MODEL_METADATA);
     }
     
     private HttpServer startModelServer(final String modelName, final List<String> requestBodies) throws IOException {

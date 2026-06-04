@@ -73,6 +73,12 @@ read_optional_property() {
 IMAGE_TAG="${MCP_LLM_SERVER_IMAGE:-$(read_required_property "mcp.llm.server-image")}"
 BASE_IMAGE="${MCP_LLM_BASE_SERVER_IMAGE:-$(read_required_property "mcp.llm.base-server-image")}"
 BASE_DIGEST="${MCP_LLM_BASE_SERVER_IMAGE_DIGEST:-$(read_optional_property "mcp.llm.base-server-image-digest")}"
+SERVER_RUNTIME="${MCP_LLM_SERVER_RUNTIME:-$(read_required_property "mcp.llm.server-runtime")}"
+MODEL_REPOSITORY="${MCP_LLM_MODEL_REPOSITORY:-$(read_required_property "mcp.llm.model-repository")}"
+MODEL_QUANTIZATION="${MCP_LLM_MODEL_QUANTIZATION:-$(read_required_property "mcp.llm.model-quantization")}"
+MODEL_REFERENCE="${MCP_LLM_MODEL:-$(read_required_property "mcp.llm.model")}"
+MODEL_REVISION="${MCP_LLM_MODEL_REVISION:-$(read_required_property "mcp.llm.model-revision")}"
+MODEL_FILE_NAME="${MCP_LLM_MODEL_FILE_NAME:-$(read_required_property "mcp.llm.model-file-name")}"
 MODEL_SHA256="${MCP_LLM_MODEL_SHA256:-$(read_required_property "mcp.llm.model-sha256")}"
 
 case "${BASE_IMAGE}" in
@@ -87,6 +93,12 @@ esac
 
 if [ "--dry-run" = "${MODE}" ] || [ "--print" = "${MODE}" ]; then
   echo "base_image=${BASE_IMAGE}"
+  echo "server_runtime=${SERVER_RUNTIME}"
+  echo "model_repository=${MODEL_REPOSITORY}"
+  echo "model_quantization=${MODEL_QUANTIZATION}"
+  echo "model_reference=${MODEL_REFERENCE}"
+  echo "model_revision=${MODEL_REVISION}"
+  echo "model_file_name=${MODEL_FILE_NAME}"
   echo "model_sha256=${MODEL_SHA256}"
   echo "image_tag=${IMAGE_TAG}"
   echo "dockerfile=${DOCKERFILE_PATH}"
@@ -101,6 +113,12 @@ fi
 
 docker build \
   --build-arg "BASE_IMAGE=${BASE_IMAGE}" \
+  --build-arg "SERVER_RUNTIME=${SERVER_RUNTIME}" \
+  --build-arg "MODEL_REPOSITORY=${MODEL_REPOSITORY}" \
+  --build-arg "MODEL_QUANTIZATION=${MODEL_QUANTIZATION}" \
+  --build-arg "MODEL_REFERENCE=${MODEL_REFERENCE}" \
+  --build-arg "MODEL_REVISION=${MODEL_REVISION}" \
+  --build-arg "MODEL_FILE_NAME=${MODEL_FILE_NAME}" \
   --build-arg "MODEL_SHA256=${MODEL_SHA256}" \
   -t "${IMAGE_TAG}" \
   -f "${DOCKERFILE_PATH}" \

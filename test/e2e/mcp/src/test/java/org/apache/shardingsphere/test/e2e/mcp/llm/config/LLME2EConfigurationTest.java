@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.config;
 
+import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration.RuntimeMode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -37,11 +39,25 @@ class LLME2EConfigurationTest {
     
     private String originalApiKey;
     
+    private String originalReadyTimeoutSeconds;
+    
     private String originalServerImage;
     
     private String originalBaseServerImage;
     
     private String originalBaseServerImageDigest;
+    
+    private String originalServerRuntime;
+    
+    private String originalModelRepository;
+    
+    private String originalModelFileName;
+    
+    private String originalModelQuantization;
+    
+    private String originalModelRevision;
+    
+    private String originalModelSizeBytes;
     
     private String originalModelSha256;
     
@@ -50,15 +66,29 @@ class LLME2EConfigurationTest {
         originalRuntimeMode = System.getProperty("mcp.llm.runtime-mode");
         originalModel = System.getProperty("mcp.llm.model");
         originalApiKey = System.getProperty("mcp.llm.api-key");
+        originalReadyTimeoutSeconds = System.getProperty("mcp.llm.ready-timeout-seconds");
         originalServerImage = System.getProperty("mcp.llm.server-image");
         originalBaseServerImage = System.getProperty("mcp.llm.base-server-image");
         originalBaseServerImageDigest = System.getProperty("mcp.llm.base-server-image-digest");
+        originalServerRuntime = System.getProperty("mcp.llm.server-runtime");
+        originalModelRepository = System.getProperty("mcp.llm.model-repository");
+        originalModelFileName = System.getProperty("mcp.llm.model-file-name");
+        originalModelQuantization = System.getProperty("mcp.llm.model-quantization");
+        originalModelRevision = System.getProperty("mcp.llm.model-revision");
+        originalModelSizeBytes = System.getProperty("mcp.llm.model-size-bytes");
         originalModelSha256 = System.getProperty("mcp.llm.model-sha256");
         System.clearProperty("mcp.llm.model");
         System.clearProperty("mcp.llm.api-key");
+        System.clearProperty("mcp.llm.ready-timeout-seconds");
         System.clearProperty("mcp.llm.server-image");
         System.clearProperty("mcp.llm.base-server-image");
         System.clearProperty("mcp.llm.base-server-image-digest");
+        System.clearProperty("mcp.llm.server-runtime");
+        System.clearProperty("mcp.llm.model-repository");
+        System.clearProperty("mcp.llm.model-file-name");
+        System.clearProperty("mcp.llm.model-quantization");
+        System.clearProperty("mcp.llm.model-revision");
+        System.clearProperty("mcp.llm.model-size-bytes");
         System.clearProperty("mcp.llm.model-sha256");
     }
     
@@ -67,9 +97,16 @@ class LLME2EConfigurationTest {
         restoreProperty("mcp.llm.runtime-mode", originalRuntimeMode);
         restoreProperty("mcp.llm.model", originalModel);
         restoreProperty("mcp.llm.api-key", originalApiKey);
+        restoreProperty("mcp.llm.ready-timeout-seconds", originalReadyTimeoutSeconds);
         restoreProperty("mcp.llm.server-image", originalServerImage);
         restoreProperty("mcp.llm.base-server-image", originalBaseServerImage);
         restoreProperty("mcp.llm.base-server-image-digest", originalBaseServerImageDigest);
+        restoreProperty("mcp.llm.server-runtime", originalServerRuntime);
+        restoreProperty("mcp.llm.model-repository", originalModelRepository);
+        restoreProperty("mcp.llm.model-file-name", originalModelFileName);
+        restoreProperty("mcp.llm.model-quantization", originalModelQuantization);
+        restoreProperty("mcp.llm.model-revision", originalModelRevision);
+        restoreProperty("mcp.llm.model-size-bytes", originalModelSizeBytes);
         restoreProperty("mcp.llm.model-sha256", originalModelSha256);
     }
     
@@ -77,13 +114,21 @@ class LLME2EConfigurationTest {
     void assertLoadWithDockerRuntimeMode() {
         System.setProperty("mcp.llm.runtime-mode", "docker");
         LLME2EConfiguration actual = LLME2EConfiguration.load();
+        Properties expectedProps = EnvironmentPropertiesLoader.loadProperties();
         assertThat(actual.getRuntimeMode(), is(RuntimeMode.DOCKER));
         assertThat(actual.getBaseUrl(), is("http://127.0.0.1:8080/v1"));
-        assertThat(actual.getModelName(), is("ggml-org/Qwen3-1.7B-GGUF:Q4_K_M"));
+        String expectedModelReference = expectedProps.getProperty("mcp.llm.model");
+        assertThat(actual.getModelName(), is(expectedModelReference));
         assertThat(actual.getApiKey(), is("mcp-llm-score"));
+        assertThat(actual.getServerRuntime(), is(expectedProps.getProperty("mcp.llm.server-runtime")));
         assertThat(actual.getServerImage(), is("apache/shardingsphere-mcp-llm-runtime:local"));
         assertThat(actual.getBaseServerImage(), is("ghcr.io/ggml-org/llama.cpp:server"));
         assertThat(actual.getBaseServerImageDigest(), is(""));
+        assertThat(actual.getModelMetadata().getRepository(), is(expectedProps.getProperty("mcp.llm.model-repository")));
+        assertThat(actual.getModelMetadata().getFileName(), is(expectedProps.getProperty("mcp.llm.model-file-name")));
+        assertThat(actual.getModelMetadata().getQuantization(), is(expectedProps.getProperty("mcp.llm.model-quantization")));
+        assertThat(actual.getModelMetadata().getRevision(), is(expectedProps.getProperty("mcp.llm.model-revision")));
+        assertThat(actual.getModelMetadata().getSizeBytes(), is(Long.parseLong(expectedProps.getProperty("mcp.llm.model-size-bytes"))));
         assertFalse(actual.getModelSha256().isBlank());
     }
     
@@ -103,17 +148,44 @@ class LLME2EConfigurationTest {
     }
     
     @Test
+    void assertLoadWithMissingRequiredProperty() {
+        System.setProperty("mcp.llm.model-repository", " ");
+        IllegalStateException actualException = assertThrows(IllegalStateException.class, LLME2EConfiguration::load);
+        assertThat(actualException.getMessage(), is("MCP LLM E2E property `mcp.llm.model-repository` is required."));
+    }
+    
+    @Test
+    void assertLoadWithInvalidIntegerProperty() {
+        System.setProperty("mcp.llm.ready-timeout-seconds", "invalid-number");
+        LLME2EConfiguration actual = LLME2EConfiguration.load();
+        assertThat(actual.getReadyTimeoutSeconds(), is(600));
+    }
+    
+    @Test
     void assertLoadWithConfiguredServerImage() {
         System.setProperty("mcp.llm.runtime-mode", "docker");
-        System.setProperty("mcp.llm.server-image", "foo/mcp-llm-runtime:bar");
-        System.setProperty("mcp.llm.base-server-image", "foo/llama.cpp:bar");
-        System.setProperty("mcp.llm.base-server-image-digest", "sha256:foo");
-        System.setProperty("mcp.llm.model-sha256", "bar");
+        System.setProperty("mcp.llm.server-image", "test/mcp-llm-runtime:test");
+        System.setProperty("mcp.llm.base-server-image", "test/llama.cpp:test");
+        System.setProperty("mcp.llm.base-server-image-digest", "test-base-server-image-digest");
+        System.setProperty("mcp.llm.server-runtime", "test-runtime");
+        System.setProperty("mcp.llm.model-repository", "ggml-org/Qwen3-1.7B-GGUF");
+        System.setProperty("mcp.llm.model-file-name", "Qwen3-1.7B-Q4_K_M.gguf");
+        System.setProperty("mcp.llm.model-quantization", "Q4_K_M");
+        System.setProperty("mcp.llm.model-revision", "daeb8e2d528a760970442092f6bf1e55c3b659eb");
+        System.setProperty("mcp.llm.model-size-bytes", "1282439264");
+        System.setProperty("mcp.llm.model-sha256", "configured-model-sha256");
         LLME2EConfiguration actual = LLME2EConfiguration.load();
-        assertThat(actual.getServerImage(), is("foo/mcp-llm-runtime:bar"));
-        assertThat(actual.getBaseServerImage(), is("foo/llama.cpp:bar"));
-        assertThat(actual.getBaseServerImageDigest(), is("sha256:foo"));
-        assertThat(actual.getModelSha256(), is("bar"));
+        assertThat(actual.getServerRuntime(), is("test-runtime"));
+        assertThat(actual.getServerImage(), is("test/mcp-llm-runtime:test"));
+        assertThat(actual.getBaseServerImage(), is("test/llama.cpp:test"));
+        assertThat(actual.getBaseServerImageDigest(), is("test-base-server-image-digest"));
+        assertThat(actual.getModelMetadata().getRepository(), is("ggml-org/Qwen3-1.7B-GGUF"));
+        assertThat(actual.getModelMetadata().getFileName(), is("Qwen3-1.7B-Q4_K_M.gguf"));
+        assertThat(actual.getModelMetadata().getQuantization(), is("Q4_K_M"));
+        assertThat(actual.getModelMetadata().getRevision(), is("daeb8e2d528a760970442092f6bf1e55c3b659eb"));
+        assertThat(actual.getModelMetadata().getSizeBytes(), is(1282439264L));
+        assertThat(actual.getModelName(), is("ggml-org/Qwen3-1.7B-GGUF:Q4_K_M"));
+        assertThat(actual.getModelSha256(), is("configured-model-sha256"));
     }
     
     @Test
@@ -126,11 +198,12 @@ class LLME2EConfigurationTest {
     
     @Test
     void assertWithModelEndpoint() {
-        LLME2EConfiguration actual = createConfiguration(RuntimeMode.DOCKER).withModelEndpoint("http://127.0.0.1:8081/v1/", "foo-key");
+        LLME2EConfiguration actual = createConfiguration(RuntimeMode.DOCKER).withModelEndpoint("http://127.0.0.1:8081/v1/", "test-api-key");
         assertThat(actual.getBaseUrl(), is("http://127.0.0.1:8081/v1"));
-        assertThat(actual.getApiKey(), is("foo-key"));
+        assertThat(actual.getApiKey(), is("test-api-key"));
         assertThat(actual.getServerImage(), is("apache/shardingsphere-mcp-llm-runtime:local"));
-        assertThat(actual.getModelSha256(), is("bar"));
+        assertThat(actual.getModelMetadata().getRevision(), is("daeb8e2d528a760970442092f6bf1e55c3b659eb"));
+        assertThat(actual.getModelSha256(), is("configured-model-sha256"));
     }
     
     @Test
@@ -144,8 +217,9 @@ class LLME2EConfigurationTest {
     
     private LLME2EConfiguration createConfiguration(final RuntimeMode runtimeMode) {
         return new LLME2EConfiguration("http://127.0.0.1:8080/v1", "openai-compatible", "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M", "mcp-llm-score", 600, 240, 10,
-                Path.of("target/llm-e2e"), "run-id", runtimeMode, "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server", "",
-                "bar");
+                Path.of("target/llm-e2e"), "run-id", runtimeMode, "llama.cpp", "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server", "",
+                new LLME2EConfiguration.ModelMetadata("ggml-org/Qwen3-1.7B-GGUF", "Qwen3-1.7B-Q4_K_M.gguf", "Q4_K_M", "daeb8e2d528a760970442092f6bf1e55c3b659eb", 1282439264L,
+                        "configured-model-sha256"));
     }
     
     private void restoreProperty(final String name, final String value) {
