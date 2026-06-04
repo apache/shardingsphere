@@ -57,8 +57,6 @@ class LLME2EConfigurationTest {
     
     private String originalModelRevision;
     
-    private String originalModelSizeBytes;
-    
     private String originalModelSha256;
     
     @BeforeEach
@@ -75,7 +73,6 @@ class LLME2EConfigurationTest {
         originalModelFileName = System.getProperty("mcp.llm.model-file-name");
         originalModelQuantization = System.getProperty("mcp.llm.model-quantization");
         originalModelRevision = System.getProperty("mcp.llm.model-revision");
-        originalModelSizeBytes = System.getProperty("mcp.llm.model-size-bytes");
         originalModelSha256 = System.getProperty("mcp.llm.model-sha256");
         System.clearProperty("mcp.llm.model");
         System.clearProperty("mcp.llm.api-key");
@@ -88,7 +85,6 @@ class LLME2EConfigurationTest {
         System.clearProperty("mcp.llm.model-file-name");
         System.clearProperty("mcp.llm.model-quantization");
         System.clearProperty("mcp.llm.model-revision");
-        System.clearProperty("mcp.llm.model-size-bytes");
         System.clearProperty("mcp.llm.model-sha256");
     }
     
@@ -106,7 +102,6 @@ class LLME2EConfigurationTest {
         restoreProperty("mcp.llm.model-file-name", originalModelFileName);
         restoreProperty("mcp.llm.model-quantization", originalModelQuantization);
         restoreProperty("mcp.llm.model-revision", originalModelRevision);
-        restoreProperty("mcp.llm.model-size-bytes", originalModelSizeBytes);
         restoreProperty("mcp.llm.model-sha256", originalModelSha256);
     }
     
@@ -128,7 +123,6 @@ class LLME2EConfigurationTest {
         assertThat(actual.getModelMetadata().getFileName(), is(expectedProps.getProperty("mcp.llm.model-file-name")));
         assertThat(actual.getModelMetadata().getQuantization(), is(expectedProps.getProperty("mcp.llm.model-quantization")));
         assertThat(actual.getModelMetadata().getRevision(), is(expectedProps.getProperty("mcp.llm.model-revision")));
-        assertThat(actual.getModelMetadata().getSizeBytes(), is(Long.parseLong(expectedProps.getProperty("mcp.llm.model-size-bytes"))));
         assertFalse(actual.getModelSha256().isBlank());
     }
     
@@ -172,7 +166,6 @@ class LLME2EConfigurationTest {
         System.setProperty("mcp.llm.model-file-name", "Qwen3-1.7B-Q4_K_M.gguf");
         System.setProperty("mcp.llm.model-quantization", "Q4_K_M");
         System.setProperty("mcp.llm.model-revision", "daeb8e2d528a760970442092f6bf1e55c3b659eb");
-        System.setProperty("mcp.llm.model-size-bytes", "1282439264");
         System.setProperty("mcp.llm.model-sha256", "configured-model-sha256");
         LLME2EConfiguration actual = LLME2EConfiguration.load();
         assertThat(actual.getServerRuntime(), is("test-runtime"));
@@ -183,7 +176,6 @@ class LLME2EConfigurationTest {
         assertThat(actual.getModelMetadata().getFileName(), is("Qwen3-1.7B-Q4_K_M.gguf"));
         assertThat(actual.getModelMetadata().getQuantization(), is("Q4_K_M"));
         assertThat(actual.getModelMetadata().getRevision(), is("daeb8e2d528a760970442092f6bf1e55c3b659eb"));
-        assertThat(actual.getModelMetadata().getSizeBytes(), is(1282439264L));
         assertThat(actual.getModelName(), is("ggml-org/Qwen3-1.7B-GGUF:Q4_K_M"));
         assertThat(actual.getModelSha256(), is("configured-model-sha256"));
     }
@@ -218,7 +210,7 @@ class LLME2EConfigurationTest {
     private LLME2EConfiguration createConfiguration(final RuntimeMode runtimeMode) {
         return new LLME2EConfiguration("http://127.0.0.1:8080/v1", "openai-compatible", "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M", "mcp-llm-score", 600, 240, 10,
                 Path.of("target/llm-e2e"), "run-id", runtimeMode, "llama.cpp", "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server", "",
-                new LLME2EConfiguration.ModelMetadata("ggml-org/Qwen3-1.7B-GGUF", "Qwen3-1.7B-Q4_K_M.gguf", "Q4_K_M", "daeb8e2d528a760970442092f6bf1e55c3b659eb", 1282439264L,
+                new LLME2EConfiguration.ModelMetadata("ggml-org/Qwen3-1.7B-GGUF", "Qwen3-1.7B-Q4_K_M.gguf", "Q4_K_M", "daeb8e2d528a760970442092f6bf1e55c3b659eb",
                         "configured-model-sha256"));
     }
     

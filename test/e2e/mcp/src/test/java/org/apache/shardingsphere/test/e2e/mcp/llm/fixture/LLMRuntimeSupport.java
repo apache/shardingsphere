@@ -175,7 +175,7 @@ public final class LLMRuntimeSupport {
         }
         
         private static Map<String, Object> createScoreClosingEvidence(final LLME2EConfiguration config, final String serverImageId) {
-            Map<String, Object> result = new LinkedHashMap<>(18, 1F);
+            Map<String, Object> result = new LinkedHashMap<>(17, 1F);
             result.put("runtimeMode", config.getRuntimeMode().getValue());
             result.put("dockerOwned", true);
             result.put("provider", config.getModelProvider());
@@ -187,7 +187,6 @@ public final class LLMRuntimeSupport {
             result.put("modelReference", config.getModelName());
             result.put("servedModelId", config.getModelName());
             result.put("modelQuantization", config.getModelMetadata().getQuantization());
-            result.put("modelSizeBytes", config.getModelMetadata().getSizeBytes());
             result.put("modelRevision", config.getModelMetadata().getRevision());
             result.put("modelFileName", config.getModelMetadata().getFileName());
             result.put("modelSha256", config.getModelSha256());

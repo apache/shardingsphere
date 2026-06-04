@@ -84,7 +84,6 @@ class LLME2EArtifactWriterTest {
                 Map.entry("modelReference", MODEL_NAME),
                 Map.entry("servedModelId", MODEL_NAME),
                 Map.entry("modelQuantization", "Q4_K_M"),
-                Map.entry("modelSizeBytes", 1282439264L),
                 Map.entry("modelRevision", "daeb8e2d528a760970442092f6bf1e55c3b659eb"),
                 Map.entry("modelFileName", "Qwen3-1.7B-Q4_K_M.gguf"),
                 Map.entry("modelSha256", "configured-model-sha256"),

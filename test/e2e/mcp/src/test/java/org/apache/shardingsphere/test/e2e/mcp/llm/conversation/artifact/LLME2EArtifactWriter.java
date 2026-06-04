@@ -39,7 +39,7 @@ public final class LLME2EArtifactWriter {
     
     private static final List<String> REQUIRED_SCORE_EVIDENCE_KEYS = List.of(
             "runtimeMode", "dockerOwned", "provider", "serverRuntime", "serverImage", "serverImageId", "baseServerImage", "modelReference", "servedModelId",
-            "modelQuantization", "modelSizeBytes", "modelRevision", "modelFileName", "modelSha256", "modelPackaging", "baseUrlOwnedByTest", "scoreClosing");
+            "modelQuantization", "modelRevision", "modelFileName", "modelSha256", "modelPackaging", "baseUrlOwnedByTest", "scoreClosing");
     
     /**
      * Write.
@@ -85,10 +85,6 @@ public final class LLME2EArtifactWriter {
         }
         if (!Boolean.TRUE.equals(runtimeEvidence.get("dockerOwned")) || !Boolean.TRUE.equals(runtimeEvidence.get("baseUrlOwnedByTest"))) {
             throw new IllegalStateException("Score-closing LLM runtime evidence must be Docker-owned and test-owned.");
-        }
-        Object modelSizeBytes = runtimeEvidence.get("modelSizeBytes");
-        if (!(modelSizeBytes instanceof Number) || 0L >= ((Number) modelSizeBytes).longValue()) {
-            throw new IllegalStateException("Score-closing LLM runtime evidence must include a positive modelSizeBytes value.");
         }
     }
     
