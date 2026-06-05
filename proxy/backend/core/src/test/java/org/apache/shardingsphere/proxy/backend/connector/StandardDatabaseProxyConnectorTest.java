@@ -130,6 +130,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -144,6 +145,7 @@ import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -642,6 +644,55 @@ class StandardDatabaseProxyConnectorTest {
         verify(firstPreparedStatement).close();
         verify(firstConnection).close();
         assertThat(testContext.connectionSession.getPreparedStatementCacheContext().size(), is(1));
+    }
+    
+    @Test
+    void assertCloseExecutionResourcesAfterHandlerCleanupAndCacheInvalidation() throws SQLException, BackendConnectionException {
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        AtomicBoolean closed = new AtomicBoolean(false);
+        doAnswer(invocation -> {
+            if (closed.get()) {
+                throw new SQLException("cancel after close");
+            }
+            return null;
+        }).when(preparedStatement).cancel();
+        doAnswer(invocation -> {
+            closed.set(true);
+            return null;
+        }).when(preparedStatement).close();
+        when(preparedStatement.isClosed()).thenAnswer(invocation -> closed.get());
+        FirebirdPreparedStatementExecutionTestContext testContext = createFirebirdPreparedStatementExecutionTestContext("UPDATE tbl SET col = ?", connection);
+        when(connection.prepareStatement("UPDATE tbl SET col = ?")).thenReturn(preparedStatement);
+        ExecutionContext executionContext = createFirebirdExecutionContext(testContext, 1);
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        try (
+                MockedConstruction<DatabaseTypeRegistry> mockedDatabaseTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
+                        (mock, context) -> {
+                            when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_db");
+                            when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
+                        });
+                MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
+                        (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext));
+                MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS)) {
+            DatabaseProxyConnector engine = createFirebirdPreparedStatementConnector(testContext);
+            testContext.connectionSession.getDatabaseConnectionManager().add(engine);
+            testContext.connectionSession.getDatabaseConnectionManager().markResourceInUse(engine);
+            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
+            testContext.connectionSession.beginPreparedStatementCache(createPreparedStatementCacheKey(1));
+            assertThat(engine.execute(), isA(UpdateResponseHeader.class));
+            testContext.connectionSession.finishPreparedStatementCache();
+            testContext.connectionSession.getDatabaseConnectionManager().removeResource(engine);
+            engine.close();
+            testContext.connectionSession.invalidatePreparedStatementCache(createPreparedStatementCacheKey(1));
+            testContext.connectionSession.getDatabaseConnectionManager().closeExecutionResources();
+            assertTrue(mockedDatabaseTypeRegistry.constructed().size() >= 2);
+            assertThat(mockedKernelProcessor.constructed().size(), is(1));
+        }
+        verify(connection).prepareStatement("UPDATE tbl SET col = ?");
+        verify(preparedStatement, never()).cancel();
+        verify(preparedStatement).close();
+        assertTrue(closed.get());
     }
     
     @Test

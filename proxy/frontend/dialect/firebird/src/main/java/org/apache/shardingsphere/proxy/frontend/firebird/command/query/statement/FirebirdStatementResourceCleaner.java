@@ -24,6 +24,8 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 
+import java.sql.SQLException;
+
 /**
  * Firebird statement resource cleaner.
  */
@@ -48,16 +50,30 @@ public final class FirebirdStatementResourceCleaner {
      * @param connectionSession connection session
      * @param statementId statement ID
      * @param invalidatePreparedStatementCache whether invalidate prepared statement cache
+     * @throws SQLException SQL exception
      */
-    public static void clean(final ConnectionSession connectionSession, final int statementId, final boolean invalidatePreparedStatementCache) {
+    public static void clean(final ConnectionSession connectionSession, final int statementId, final boolean invalidatePreparedStatementCache) throws SQLException {
+        ProxyBackendHandler proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), statementId);
+        if (null != proxyBackendHandler) {
+            connectionSession.getDatabaseConnectionManager().removeResource(proxyBackendHandler);
+            FirebirdFetchStatementCache.getInstance().unregisterStatement(connectionSession.getConnectionId(), statementId);
+            connectionSession.getConnectionContext().clearCursorContext();
+            try {
+                proxyBackendHandler.close();
+            } finally {
+                invalidatePreparedStatementCacheIfNecessary(connectionSession, statementId, invalidatePreparedStatementCache);
+            }
+            return;
+        }
+        FirebirdFetchStatementCache.getInstance().unregisterStatement(connectionSession.getConnectionId(), statementId);
+        connectionSession.getConnectionContext().clearCursorContext();
+        invalidatePreparedStatementCacheIfNecessary(connectionSession, statementId, invalidatePreparedStatementCache);
+    }
+    
+    private static void invalidatePreparedStatementCacheIfNecessary(final ConnectionSession connectionSession, final int statementId,
+                                                                    final boolean invalidatePreparedStatementCache) {
         if (invalidatePreparedStatementCache) {
             connectionSession.invalidatePreparedStatementCache(createPreparedStatementCacheKey(statementId));
         }
-        connectionSession.getConnectionContext().clearCursorContext();
-        ProxyBackendHandler proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), statementId);
-        if (null != proxyBackendHandler) {
-            connectionSession.getDatabaseConnectionManager().unmarkResourceInUse(proxyBackendHandler);
-        }
-        FirebirdFetchStatementCache.getInstance().unregisterStatement(connectionSession.getConnectionId(), statementId);
     }
 }

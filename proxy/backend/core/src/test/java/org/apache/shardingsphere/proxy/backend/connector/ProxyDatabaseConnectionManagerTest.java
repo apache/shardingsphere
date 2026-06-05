@@ -465,6 +465,18 @@ class ProxyDatabaseConnectionManagerTest {
     }
     
     @Test
+    void assertRemoveDatabaseProxyConnectorResource() {
+        ProxyBackendHandler engine = mock(DatabaseProxyConnector.class);
+        Collection<ProxyBackendHandler> backendHandlers = getProxyBackendHandlers();
+        Collection<ProxyBackendHandler> inUseProxyBackendHandlers = getInUseProxyBackendHandlers();
+        backendHandlers.add(engine);
+        inUseProxyBackendHandlers.add(engine);
+        databaseConnectionManager.removeResource(engine);
+        assertFalse(backendHandlers.contains(engine));
+        assertFalse(inUseProxyBackendHandlers.contains(engine));
+    }
+    
+    @Test
     void assertCloseHandlers() throws SQLException {
         ProxyBackendHandler engine = mock(DatabaseProxyConnector.class);
         ProxyBackendHandler inUseEngine = mock(DatabaseProxyConnector.class);

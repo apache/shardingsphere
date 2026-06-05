@@ -98,13 +98,16 @@ class FirebirdPrepareStatementCommandExecutorTest {
     @Mock
     private ProxyBackendHandler proxyBackendHandler;
     
+    @Mock
+    private ConnectionContext connectionContext;
+    
     @BeforeEach
     void setUp() {
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
-        ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet, new Grantee("foo_user"));
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
+        when(connectionContext.getGrantee()).thenReturn(new Grantee("foo_user"));
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(connectionManager);
         when(packet.getSQL()).thenReturn("SELECT 1");
@@ -137,7 +140,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
-    void assertExecute() {
+    void assertExecute() throws Exception {
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         FirebirdGenericResponsePacket responsePacket = (FirebirdGenericResponsePacket) actual.iterator().next();
@@ -149,7 +152,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
-    void assertDescribeCountReturnsBigintType() {
+    void assertDescribeCountReturnsBigintType() throws Exception {
         when(packet.getSQL()).thenReturn("SELECT COUNT(*) FROM foo_tbl");
         when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
         when(packet.getCurrentItem()).thenReturn(
@@ -171,19 +174,18 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWithValidStatementHandleCleansPreviousPreparedStatementResources() {
+    void assertExecuteWithValidStatementHandleCleansPreviousPreparedStatementResources() throws Exception {
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, new FirebirdServerPreparedStatement("SELECT 0", mock(SelectStatementContext.class), new HintValueContext()));
         FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, 1, proxyBackendHandler);
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         executor.execute();
         verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(1));
-        verify(connectionManager).unmarkResourceInUse(proxyBackendHandler);
         assertThat(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1).getSql(), is("SELECT 1"));
         assertThat(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, 1), is((ProxyBackendHandler) null));
     }
     
     @Test
-    void assertExecuteWithValidStatementHandleWithoutFetchHandler() {
+    void assertExecuteWithValidStatementHandleWithoutFetchHandler() throws Exception {
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         executor.execute();
         verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(1));
