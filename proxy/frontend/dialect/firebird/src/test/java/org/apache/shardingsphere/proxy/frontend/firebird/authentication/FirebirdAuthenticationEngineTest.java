@@ -24,6 +24,7 @@ import org.apache.shardingsphere.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.authentication.result.AuthenticationResult;
 import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdAuthenticationMethod;
@@ -231,6 +232,7 @@ class FirebirdAuthenticationEngineTest {
         Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("authData"), authenticationEngine, authData);
         FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.ATTACH);
         FirebirdAuthenticator authenticator = mock(FirebirdAuthenticator.class);
+        lenient().when(authenticator.authenticate(any(), any())).thenReturn(true);
         if (expectException) {
             try (MockedConstruction<FirebirdAttachPacket> ignored = mockConstruction(FirebirdAttachPacket.class, (attachPacket, construction) -> {
                 when(attachPacket.getEncoding()).thenReturn(encoding);
@@ -266,6 +268,72 @@ class FirebirdAuthenticationEngineTest {
         }
     }
     
+    @Test
+    void assertAuthenticateConnectWithUnknownUser() {
+        AuthorityRule rule = mock(AuthorityRule.class);
+        when(rule.findUser(any(Grantee.class))).thenReturn(Optional.empty());
+        mockProxyContext(rule, true);
+        Attribute<Charset> charsetAttr = mock(Attribute.class);
+        Attribute<FirebirdProtocolVersion> protocolVersionAttr = mock(Attribute.class);
+        when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(charsetAttr);
+        when(context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION)).thenReturn(protocolVersionAttr);
+        FirebirdProtocol protocol = mock(FirebirdProtocol.class);
+        when(protocol.getVersion()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION10);
+        List<FirebirdProtocol> userProtocols = new ArrayList<>(Collections.singletonList(protocol));
+        FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.CONNECT);
+        try (MockedConstruction<FirebirdConnectPacket> ignored = mockConstruction(FirebirdConnectPacket.class, (mockConnect, construction) -> {
+            when(mockConnect.getUserProtocols()).thenReturn(userProtocols);
+            when(mockConnect.getLogin()).thenReturn("absent");
+            when(mockConnect.getHost()).thenReturn("host");
+        })) {
+            assertThrows(AccessDeniedException.class, () -> authenticationEngine.authenticate(context, payload));
+        }
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    @Test
+    void assertAuthenticateAttachWithUnknownUser() {
+        AuthorityRule rule = mock(AuthorityRule.class);
+        when(rule.findUser(any(Grantee.class))).thenReturn(Optional.empty());
+        mockProxyContext(rule, true);
+        Attribute<Charset> charsetAttr = mock(Attribute.class);
+        when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(charsetAttr);
+        Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine,
+                AuthenticationResultBuilder.continued("absent", "", "db"));
+        FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.ATTACH);
+        try (MockedConstruction<FirebirdAttachPacket> ignored = mockConstruction(FirebirdAttachPacket.class, (attachPacket, construction) -> when(attachPacket.getEncoding()).thenReturn("UTF8"))) {
+            assertThrows(AccessDeniedException.class, () -> authenticationEngine.authenticate(context, payload));
+        }
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @SneakyThrows(ReflectiveOperationException.class)
+    @Test
+    void assertAuthenticateAttachWithWrongPassword() {
+        AuthorityRule rule = mock(AuthorityRule.class);
+        ShardingSphereUser user = new ShardingSphereUser("root", "pwd", "");
+        when(rule.findUser(any(Grantee.class))).thenReturn(Optional.of(user));
+        mockProxyContext(rule, true);
+        Attribute<Charset> charsetAttr = mock(Attribute.class);
+        when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(charsetAttr);
+        Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine,
+                AuthenticationResultBuilder.continued("root", "", "db"));
+        FirebirdSRPAuthenticationData authData = mock(FirebirdSRPAuthenticationData.class);
+        Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("authData"), authenticationEngine, authData);
+        FirebirdAuthenticator authenticator = mock(FirebirdAuthenticator.class);
+        when(authenticator.authenticate(any(), any())).thenReturn(false);
+        FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.ATTACH);
+        try (MockedConstruction<FirebirdAttachPacket> ignoredPacket = mockConstruction(FirebirdAttachPacket.class, (attachPacket, construction) -> {
+            when(attachPacket.getEncoding()).thenReturn("UTF8");
+            when(attachPacket.getEncPassword()).thenReturn("cipher_pwd");
+            when(attachPacket.getAuthData()).thenReturn("client_auth");
+        });
+                MockedConstruction<AuthenticatorFactory> ignoredFactory = mockConstruction(AuthenticatorFactory.class,
+                        (factory, construction) -> when(factory.newInstance(user)).thenReturn(authenticator))) {
+            assertThrows(AccessDeniedException.class, () -> authenticationEngine.authenticate(context, payload));
+        }
+    }
+    
     private FirebirdPacketPayload mockFirebirdPayload(final FirebirdCommandPacketType commandPacketType) {
         FirebirdPacketPayload result = mock(FirebirdPacketPayload.class, RETURNS_DEEP_STUBS);
         when(result.readInt4()).thenReturn(commandPacketType.getValue());
@@ -294,8 +362,7 @@ class FirebirdAuthenticationEngineTest {
     private static Stream<Arguments> attachArguments() {
         return Stream.of(
                 Arguments.of("attachWithUser", true, new ShardingSphereUser("root", "pwd", ""), "root", "db", "UTF8", false, true, true, "db", "root", "cipher_pwd", "client_auth"),
-                Arguments.of("attachWithoutUser", true, null, "absent", "db", "NONE", false, false, true, "db", "absent", null, null),
                 Arguments.of("attachUnknownDatabase", false, new ShardingSphereUser("root", "pwd", ""), "root", "missing_db", "UTF8", true, false, false, "", "root", null, null),
-                Arguments.of("attachEmptyDatabase", false, null, "root", "", "NONE", false, false, true, "", "root", null, null));
+                Arguments.of("attachEmptyDatabase", false, new ShardingSphereUser("root", "pwd", ""), "root", "", "NONE", false, true, true, "", "root", "cipher_pwd", "client_auth"));
     }
 }
