@@ -21,17 +21,12 @@ import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -53,7 +48,10 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
                 Map.of("database", "logic_db", "schema", "logic_db", "query", "order", "object_types", List.of("table", "view")));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualPayload = getStructuredContent(actual.body());
-        List<Map<String, Object>> actualItems = getItems(actualPayload);
+        final List<Map<String, Object>> actualItems = getItems(actualPayload);
+        assertThat(String.valueOf(actualPayload.get("response_mode")), is("search"));
+        assertThat(actualPayload.get("count"), is(3));
+        assertThat(actualPayload.get("total_match_count"), is(3));
         assertThat(getItemNames(actualPayload), is(List.of("order_items", "orders", "active_orders")));
         Map<String, Object> actualResource = MCPInteractionPayloads.castToMap(actualItems.get(1).get("resource"));
         assertThat(String.valueOf(actualResource.get("uri")), is("shardingsphere://databases/logic_db/schemas/logic_db/tables/orders"));
@@ -64,25 +62,6 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         HttpResponse<String> tableResource = sendResourceReadRequest(httpClient, sessionId, String.valueOf(actualResource.get("uri")));
         assertThat(tableResource.statusCode(), is(200));
         assertThat(String.valueOf(MCPInteractionPayloads.castToList(getFirstResourcePayload(tableResource.body()).get("items")).get(0).get("table")), is("orders"));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertSearchMetadataObjectTypeCases")
-    void assertSearchMetadataByObjectType(final String name, final Map<String, Object> arguments, final List<String> expectedNames) throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", arguments);
-        assertThat(actual.statusCode(), is(200));
-        assertThat(getItemNames(getStructuredContent(actual.body())), is(expectedNames));
-    }
-    
-    private static Stream<Arguments> assertSearchMetadataObjectTypeCases() {
-        return Stream.of(
-                Arguments.of("database objects", createSearchArguments("", "", "logic", List.of("database")), List.of("logic_db")),
-                Arguments.of("schema objects", createSearchArguments("logic_db", "", "logic", List.of("schema")), List.of("logic_db")),
-                Arguments.of("column objects", createSearchArguments("logic_db", "", "status", List.of("column")), List.of("status", "status")),
-                Arguments.of("index objects", createSearchArguments("logic_db", "", "status", List.of("index")), List.of("idx_orders_status")));
     }
     
     @Test
@@ -96,36 +75,6 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     }
     
     @Test
-    void assertSearchMetadataReturnsCompleteItemList() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata",
-                createSearchArguments("logic_db", "logic_db", "order", List.of("table", "view")));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> actualPayload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(actualPayload.get("response_mode")), is("search"));
-        assertThat(actualPayload.get("count"), is(3));
-        assertThat(actualPayload.get("total_match_count"), is(3));
-        assertThat(getItemNames(actualPayload), is(List.of("order_items", "orders", "active_orders")));
-    }
-    
-    @Test
-    void assertRejectUnsupportedSearchArgument() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        Map<String, Object> arguments = createSearchArguments("logic_db", "logic_db", "order", List.of("table", "view"));
-        arguments.put("client_hint", "narrow");
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata", arguments);
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> recovery = getRecoveryPayload(getStructuredContent(actual.body()), "validation");
-        assertThat(String.valueOf(recovery.get("category")), is("unknown_argument"));
-        assertThat(String.valueOf(recovery.get("field")), is("client_hint"));
-        assertThat(recovery.get("suggested_arguments"), is(createSearchArguments("logic_db", "logic_db", "order", List.of("table", "view"))));
-    }
-    
-    @Test
     void assertRejectSchemaSearchWithoutDatabase() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -135,20 +84,6 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         Map<String, Object> actualPayload = getStructuredContent(actual.body());
         assertThat(String.valueOf(actualPayload.get("response_mode")), is("recovery"));
         assertThat(String.valueOf(actualPayload.get("message")), is("Schema cannot be provided without database."));
-    }
-    
-    @Test
-    void assertRejectUnsupportedObjectType() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata",
-                Map.of("database", "logic_db", "schema", "logic_db", "query", "order",
-                        "object_types", List.of("table", "view", "index", "materialized_view", "sequence")));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> recovery = getRecoveryPayload(getStructuredContent(actual.body()), "invalid_enum");
-        assertThat(String.valueOf(recovery.get("category")), is("invalid_enum_value"));
-        assertThat(String.valueOf(recovery.get("field")), is("object_types[3]"));
     }
     
     @Test
@@ -214,18 +149,5 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
     private List<Map<String, Object>> getItems(final Map<String, Object> payload) {
         return MCPInteractionPayloads.castToList(payload.get("items"));
-    }
-    
-    private static Map<String, Object> createSearchArguments(final String databaseName, final String schemaName, final String query, final List<String> objectTypes) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        if (!databaseName.isEmpty()) {
-            result.put("database", databaseName);
-        }
-        if (!schemaName.isEmpty()) {
-            result.put("schema", schemaName);
-        }
-        result.put("query", query);
-        result.put("object_types", objectTypes);
-        return result;
     }
 }

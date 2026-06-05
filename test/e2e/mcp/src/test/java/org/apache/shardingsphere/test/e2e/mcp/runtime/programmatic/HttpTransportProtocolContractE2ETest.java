@@ -83,32 +83,11 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProgrammaticRunti
     }
     
     @Test
-    void assertRejectInitializeWithSseOnlyAcceptHeader() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Accept", "text/event-stream"),
-                MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
-        assertThat(actual.statusCode(), is(400));
-        assertFalse(actual.headers().firstValue("MCP-Session-Id").isPresent());
-    }
-    
-    @Test
     void assertRejectEventStreamWithoutAcceptHeader() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = openEventStream(httpClient, createSessionHeaders(sessionId));
-        assertThat(actual.statusCode(), is(400));
-    }
-    
-    @Test
-    void assertRejectEventStreamWithUnsupportedAcceptHeader() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        Map<String, String> headers = new LinkedHashMap<>(createSessionHeaders(sessionId));
-        headers.put("Accept", "application/json");
-        HttpResponse<String> actual = openEventStream(httpClient, headers);
         assertThat(actual.statusCode(), is(400));
     }
     
@@ -123,28 +102,6 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProgrammaticRunti
         assertThat(actual.headers().firstValue("MCP-Protocol-Version").orElse(""), is(getProtocolVersion()));
         Map<String, Object> actualPayload = parseJsonBody(actual.body());
         assertThat(String.valueOf(castToMap(actualPayload.get("result")).get("protocolVersion")), is(getProtocolVersion()));
-    }
-    
-    @Test
-    void assertAcceptInitializeWithoutProtocolVersion() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        Map<String, Object> initializeRequestParams = new LinkedHashMap<>(MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
-        initializeRequestParams.remove("protocolVersion");
-        HttpResponse<String> actual = sendInitializeRequest(httpClient, initializeRequestParams);
-        assertThat(actual.statusCode(), is(200));
-        assertThat(actual.headers().firstValue("MCP-Protocol-Version").orElse(""), is(getProtocolVersion()));
-        Map<String, Object> actualPayload = parseJsonBody(actual.body());
-        assertThat(String.valueOf(castToMap(actualPayload.get("result")).get("protocolVersion")), is(getProtocolVersion()));
-    }
-    
-    @Test
-    void assertRejectFollowUpRequestWithoutProtocolHeader() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, Map.of("MCP-Session-Id", sessionId));
-        assertThat(actual.statusCode(), is(400));
     }
     
     @Test

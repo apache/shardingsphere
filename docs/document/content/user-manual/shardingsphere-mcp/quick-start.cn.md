@@ -83,4 +83,5 @@ start "ShardingSphere MCP" cmd /c "bin\start.bat > logs\mcp-http.log 2>&1"
 - “查询 `<table-name>` 前 10 行。”
 
 如果可以返回逻辑库、表结构或查询结果，说明 MCP Server 已经可以通过 AI 应用访问目标 ShardingSphere-Proxy 逻辑库。
+进一步的部署方式、健康检查和基础可观测入口，请参考[部署说明](../deployment/)。
 如果 AI 应用无法连接或看不到逻辑库，请查看[常见问题](../troubleshooting/)。
