@@ -92,7 +92,7 @@ public final class MaskWorkflowPlanningService {
             String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
             return workflowSessionContext.persist(result, currentStep, result.getStatus());
         }
-        String databaseType = "";
+        String databaseType = queryFacade.getDatabaseType(mergedRequest.getDatabase());
         List<Map<String, Object>> existingRules = ruleInspectionService.queryMaskRules(queryFacade, mergedRequest.getDatabase(), mergedRequest.getTable());
         if (!ensureLifecycleState(clarifiedIntent, mergedRequest, existingRules, result, databaseType)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);

@@ -75,9 +75,13 @@ class MaskWorkflowPlanningServiceTest {
     void assertPlanRejectsLifecycleMismatchForCreate() {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone")));
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.getDatabaseType("logic_db")).thenReturn("MySQL");
+        WorkflowRequest request = createRequest("create");
+        request.setColumn("Phone");
         WorkflowContextSnapshot actual = createService(ruleInspectionService, mock(MaskAlgorithmRecommendationService.class),
                 mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class))
-                .plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create"));
+                .plan(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
         assertThat(actual.getStatus(), is("failed"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
