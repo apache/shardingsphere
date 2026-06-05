@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
@@ -70,6 +71,25 @@ class AutoIntervalShardingAlgorithmTest {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
         assertThat(shardingAlgorithm.doSharding(availableTargetNames,
                 new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_INFO, "2021-01-01 00:00:02")), is("t_order_5"));
+    }
+    
+    @Test
+    void assertDoShardingWithCommaDecimalDefaultLocale() {
+        Locale defaultLocale = Locale.getDefault();
+        Locale.setDefault(Locale.GERMANY);
+        try {
+            List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4");
+            assertThat(shardingAlgorithm.doSharding(availableTargetNames,
+                    new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_INFO, "2020-01-01 00:00:01")), is("t_order_1"));
+            Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
+                    new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("2020-01-01 00:00:04", "2020-01-01 00:00:10")));
+            assertThat(actual.size(), is(3));
+            assertTrue(actual.contains("t_order_1"));
+            assertTrue(actual.contains("t_order_2"));
+            assertTrue(actual.contains("t_order_3"));
+        } finally {
+            Locale.setDefault(defaultLocale);
+        }
     }
     
     @Test
