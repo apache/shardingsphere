@@ -22,11 +22,11 @@ import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdPr
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -41,17 +41,15 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket> execute() {
+    public Collection<DatabasePacket> execute() throws SQLException {
         switch (packet.getOption()) {
             case FirebirdFreeStatementPacket.DROP:
             case FirebirdFreeStatementPacket.UNPREPARE:
                 connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
+                FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), true);
                 break;
             case FirebirdFreeStatementPacket.CLOSE:
-                connectionSession.getConnectionContext().clearCursorContext();
-                ProxyBackendHandler proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), packet.getStatementId());
-                connectionSession.getDatabaseConnectionManager().unmarkResourceInUse(proxyBackendHandler);
-                FirebirdFetchStatementCache.getInstance().unregisterStatement(connectionSession.getConnectionId(), packet.getStatementId());
+                FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), false);
                 break;
             default:
                 throw new FirebirdProtocolException("Unknown DSQL option type %d", packet.getOption());
