@@ -19,19 +19,24 @@ package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class DerivedColumnPlanTest {
+class ValidationReportTest {
     
     @Test
-    void assertNormalizeStringValues() {
-        DerivedColumnPlan actual = new DerivedColumnPlan();
-        actual.setLogicalColumn(" phone ");
-        actual.setCipherColumnName(null);
-        actual.setAssistedQueryColumnName(" phone_assisted_query ");
-        assertThat(actual.getLogicalColumn(), is("phone"));
-        assertThat(actual.getCipherColumnName(), is(""));
-        assertThat(actual.getAssistedQueryColumnName(), is("phone_assisted_query"));
+    void assertToMap() {
+        ValidationReport validationReport = new ValidationReport();
+        validationReport.setRuleValidation(new ValidationSection("passed", Map.of(), "ok"));
+        validationReport.setOverallStatus("passed");
+        Map<String, Object> actual = validationReport.toMap();
+        assertFalse(actual.containsKey("ddl_validation"));
+        assertFalse(actual.containsKey("logical_metadata_validation"));
+        assertFalse(actual.containsKey("sql_executability_validation"));
+        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        assertThat(actual.get("overall_status"), is("passed"));
     }
 }

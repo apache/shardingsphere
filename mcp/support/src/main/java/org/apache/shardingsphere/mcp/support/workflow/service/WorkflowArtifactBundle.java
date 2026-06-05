@@ -72,10 +72,30 @@ public final class WorkflowArtifactBundle {
         return result;
     }
     
+    /**
+     * Convert rule artifacts into executable artifacts.
+     *
+     * @return executable rule artifacts
+     */
+    public List<ExecutableWorkflowArtifact> toRuleExecutableArtifacts() {
+        List<ExecutableWorkflowArtifact> result = new LinkedList<>();
+        for (RuleArtifact each : ruleArtifacts) {
+            result.add(new ExecutableWorkflowArtifact(WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL, WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, each.getSql(), true));
+        }
+        return result;
+    }
+    
     Map<String, Object> toPayload(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DDL_ARTIFACTS, ddlArtifacts.stream().map(DDLArtifact::toMap).toList());
         result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_INDEX_PLAN, indexPlans.stream().map(IndexPlan::toMap).toList());
+        result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS, ruleArtifacts.stream()
+                .map(each -> WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(each, propertySource, propertyRequirements)).toList());
+        return result;
+    }
+    
+    Map<String, Object> toRulePayload(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+        Map<String, Object> result = new LinkedHashMap<>(1, 1F);
         result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS, ruleArtifacts.stream()
                 .map(each -> WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(each, propertySource, propertyRequirements)).toList());
         return result;

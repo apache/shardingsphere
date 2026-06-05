@@ -30,6 +30,10 @@ public final class WorkflowIssueCode {
     
     public static final String SESSION_OWNERSHIP_MISMATCH = "WF-CTX-002";
     
+    public static final String TABLE_REQUIRED = "WF-CTX-003";
+    
+    public static final String COLUMN_REQUIRED = "WF-CTX-004";
+    
     public static final String TABLE_NOT_FOUND = "WF-META-001";
     
     public static final String COLUMN_NOT_FOUND = "WF-META-002";
@@ -67,6 +71,8 @@ public final class WorkflowIssueCode {
     public static final String DDL_EXECUTION_FAILED = "WF-DDL-002";
     
     public static final String RULE_EXECUTION_FAILED = "WF-RULE-001";
+    
+    public static final String RULE_INPUT_REQUIRED = "WF-RULE-002";
     
     public static final String MANUAL_EXECUTION_PENDING = "WF-MODE-001";
     

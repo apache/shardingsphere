@@ -90,13 +90,14 @@ class MaskToolHandlerTest {
                 "column", "phone")));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("first-n"), is("3"));
-        assertThat(((List<?>) actualPayload.get("ddl_artifacts")).size(), is(0));
-        assertThat(((List<?>) actualPayload.get("index_plan")).size(), is(0));
+        assertFalse(actualPayload.containsKey("ddl_artifacts"));
+        assertFalse(actualPayload.containsKey("index_plan"));
         assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).get(0)).get("sql")).contains("keep_first_n_last_m"));
         List<String> actualResourceUris = extractResourceUris((List<?>) actualPayload.get("resources_to_read"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/mask/algorithms"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/rules"));
-        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
+        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/tables/orders/rules"));
+        assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
         assertThat(actualNextAction.get("type"), is("tool_call"));
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));

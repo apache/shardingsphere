@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
@@ -88,6 +89,29 @@ class WorkflowExecutionServiceTest {
         Map<?, ?> actualManualArtifactPackage = (Map<?, ?>) actualResponse.get("manual_artifact_package");
         Map<?, ?> actualArtifact = (Map<?, ?>) ((List<?>) actualManualArtifactPackage.get("distsql_artifacts")).get(0);
         assertThat(actualArtifact.get("sql"), is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
+    }
+    
+    @Test
+    void assertApplyMasksRuleOnlyManualArtifactPackage() {
+        WorkflowContextSnapshot snapshot = createSnapshot();
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "AES key.", ""));
+        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        WorkflowExecutionService executionService = new WorkflowExecutionService();
+        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
+                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "manual-only");
+        assertFalse(actualResponse.containsKey("executed_ddl"));
+        Map<?, ?> actualManualArtifactSummary = (Map<?, ?>) actualResponse.get("manual_artifact_summary");
+        assertFalse(actualManualArtifactSummary.containsKey("ddl_artifact_count"));
+        assertFalse(actualManualArtifactSummary.containsKey("index_plan_count"));
+        assertThat(actualManualArtifactSummary.get("distsql_artifact_count"), is(1));
+        assertThat(actualManualArtifactSummary.get("total_artifact_count"), is(1));
+        Map<?, ?> actualManualArtifactPackage = (Map<?, ?>) actualResponse.get("manual_artifact_package");
+        assertFalse(actualManualArtifactPackage.containsKey("ddl_artifacts"));
+        assertFalse(actualManualArtifactPackage.containsKey("index_plan"));
+        assertThat(((List<?>) actualManualArtifactPackage.get("distsql_artifacts")).size(), is(1));
     }
     
     @Test
@@ -213,6 +237,28 @@ class WorkflowExecutionServiceTest {
                 mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "preview");
         assertThat(actualResponse.get("review_summary"), is("Previewed 0 workflow artifacts. Nothing has been applied."));
         assertFalse(actualResponse.containsKey("approval_question"));
+    }
+    
+    @Test
+    void assertApplyPreviewUsesRuleArtifactsOnlyForRuleWorkflow() {
+        WorkflowContextSnapshot snapshot = createSnapshot();
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
+        snapshot.getIndexPlans().add(new IndexPlan("idx_orders_order_id_cipher", "order_id_cipher", "assist lookup", "CREATE INDEX idx_orders_order_id_cipher ON orders(order_id_cipher)"));
+        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders"));
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        WorkflowExecutionService executionService = new WorkflowExecutionService();
+        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
+                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "preview");
+        assertFalse(actualResponse.containsKey("executed_ddl"));
+        assertThat(((List<?>) actualResponse.get("preview_artifacts")).size(), is(1));
+        Map<?, ?> actualManualArtifactPackage = (Map<?, ?>) actualResponse.get("manual_artifact_package");
+        assertFalse(actualManualArtifactPackage.containsKey("ddl_artifacts"));
+        assertFalse(actualManualArtifactPackage.containsKey("index_plan"));
+        Map<?, ?> actualReviewFocus = (Map<?, ?>) actualResponse.get("review_focus");
+        assertThat(actualReviewFocus.get("artifact_categories"), is(List.of("rule_distsql")));
+        assertThat(actualReviewFocus.get("side_effect_scope"), is(List.of("rule-metadata")));
     }
     
     @Test
