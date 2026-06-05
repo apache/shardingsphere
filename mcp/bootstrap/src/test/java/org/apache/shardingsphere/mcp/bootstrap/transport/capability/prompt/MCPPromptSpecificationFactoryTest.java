@@ -94,7 +94,7 @@ class MCPPromptSpecificationFactoryTest {
                 "- column: phone",
                 "- algorithm_type: AES",
                 "2. Read shardingsphere://features/encrypt/algorithms before choosing algorithm_type.",
-                "4. Call database_gateway_plan_encrypt_rule with gathered logical names and any reviewed algorithm choices."));
+                "4. Call database_gateway_plan_encrypt_rule with gathered logical names, explicit rule column names, and reviewed algorithm choices."));
     }
     
     @Test
@@ -119,10 +119,20 @@ class MCPPromptSpecificationFactoryTest {
                 "plan_mask_rule", Map.of("database", "logic_db", "schema", "public", "table", "orders", "column", "phone", "algorithm_type", "KEEP_FIRST_N_LAST_M", "plan_id", "plan-1"));
         for (Entry<String, Map<String, Object>> entry : promptArguments.entrySet()) {
             String actual = readText(renderPrompt(entry.getKey(), entry.getValue()));
-            assertTrue(actual.contains("completion/complete"), () -> "Missing completion guidance in " + entry.getKey());
             assertTrue(actual.contains("do not guess"), () -> "Missing no-guess guidance in " + entry.getKey());
             assertTrue(actual.contains("Final answer rule:"), () -> "Missing final answer rule heading in " + entry.getKey());
             assertTrue(actual.contains("Summarize confirmed facts, the selected MCP path, and any required next user action."), () -> "Missing final answer rule in " + entry.getKey());
+        }
+    }
+    
+    @Test
+    void assertMetadataAndWorkflowPromptsContainCompletionGuidance() {
+        Map<String, Map<String, Object>> promptArguments = Map.of(
+                "inspect_metadata", Map.of("database", "logic_db", "schema", "public", "query", "orders"),
+                "safe_sql_execution", Map.of("database", "logic_db", "schema", "public", "sql_intent", "count orders"),
+                "recover_workflow", Map.of("plan_id", "plan-1", "failure_summary", "metadata mismatch"));
+        for (Entry<String, Map<String, Object>> entry : promptArguments.entrySet()) {
+            assertTrue(readText(renderPrompt(entry.getKey(), entry.getValue())).contains("completion/complete"), () -> "Missing completion guidance in " + entry.getKey());
         }
     }
     

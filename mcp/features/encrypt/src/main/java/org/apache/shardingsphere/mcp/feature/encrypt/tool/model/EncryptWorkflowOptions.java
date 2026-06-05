@@ -30,8 +30,6 @@ import java.util.Map;
 @Setter
 public final class EncryptWorkflowOptions {
     
-    private Boolean allowIndexDDL;
-    
     private Boolean requiresDecrypt;
     
     private Boolean requiresEqualityFilter;
@@ -89,7 +87,6 @@ public final class EncryptWorkflowOptions {
     }
     
     void copyTo(final EncryptWorkflowOptions target) {
-        target.setAllowIndexDDL(allowIndexDDL);
         target.setRequiresDecrypt(requiresDecrypt);
         target.setRequiresEqualityFilter(requiresEqualityFilter);
         target.setRequiresLikeQuery(requiresLikeQuery);
@@ -105,9 +102,6 @@ public final class EncryptWorkflowOptions {
     }
     
     void overlayTo(final EncryptWorkflowOptions target) {
-        if (null != allowIndexDDL) {
-            target.setAllowIndexDDL(allowIndexDDL);
-        }
         if (null != requiresDecrypt) {
             target.setRequiresDecrypt(requiresDecrypt);
         }

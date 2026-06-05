@@ -76,6 +76,34 @@ class WorkflowPlanningSupportTest {
     }
     
     @Test
+    void assertEnsureRulePlanningContextDoesNotReadMetadata() {
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        WorkflowRequest request = new WorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setTable("orders");
+        request.setColumn("phone");
+        boolean actual = planningSupport.ensureRulePlanningContext(request, clarifiedIntent, snapshot);
+        assertTrue(actual);
+        assertTrue(clarifiedIntent.getClarificationMessages().isEmpty());
+        assertTrue(snapshot.getIssues().isEmpty());
+    }
+    
+    @Test
+    void assertEnsureRulePlanningContextRejectsMissingTableAndColumn() {
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        WorkflowRequest request = new WorkflowRequest();
+        request.setDatabase("logic_db");
+        boolean actual = planningSupport.ensureRulePlanningContext(request, clarifiedIntent, snapshot);
+        assertFalse(actual);
+        assertThat(snapshot.getStatus(), is("clarifying"));
+        assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please specify target table.", "Please specify target column.")));
+        assertThat(snapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.TABLE_REQUIRED));
+        assertThat(snapshot.getIssues().get(1).getCode(), is(WorkflowIssueCode.COLUMN_REQUIRED));
+    }
+    
+    @Test
     void assertEnsurePlanningContextRejectsUnsupportedIdentifier() {
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();

@@ -55,6 +55,14 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
     
+    private static final String ENCRYPT_RULE_WORKFLOW_KIND = "encrypt.rule";
+    
+    private static final String MASK_RULE_WORKFLOW_KIND = "mask.rule";
+    
+    private static final String PLAN_ENCRYPT_RULE = "database_gateway_plan_encrypt_rule";
+    
+    private static final String PLAN_MASK_RULE = "database_gateway_plan_mask_rule";
+    
     /**
      * Append model-facing next action guidance to a planning response.
      *
@@ -73,10 +81,15 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static Map<String, Object> createProxyTopologyHint(final WorkflowContextSnapshot snapshot) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("expected_runtime_view", "proxy_logical_database");
+        boolean ruleDistSQLOnlyWorkflow = WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot);
+        result.put("expected_runtime_view", ruleDistSQLOnlyWorkflow ? "proxy_rule_distsql" : "proxy_logical_database");
         result.put("workflow_kind", resolveWorkflowKind(snapshot));
-        result.put(MCPPayloadFieldNames.REASON, "Encrypt and mask workflow planning must use Proxy logical metadata; physical-database metadata can hide or misrepresent rule-visible objects.");
-        result.put("safe_recovery", "Reconnect the MCP runtime to ShardingSphere Proxy for this logical database if metadata appears to be physical-table-first.");
+        result.put(MCPPayloadFieldNames.REASON, ruleDistSQLOnlyWorkflow
+                ? "Mask and encrypt rule workflow planning must use Proxy DistSQL-visible rule and algorithm state."
+                : "Workflow planning must use Proxy logical metadata; physical-database metadata can hide or misrepresent rule-visible objects.");
+        result.put("safe_recovery", ruleDistSQLOnlyWorkflow
+                ? "Read the feature algorithm and rule resources from ShardingSphere Proxy before retrying."
+                : "Reconnect the MCP runtime to ShardingSphere Proxy for this logical database if metadata appears to be physical-table-first.");
         return result;
     }
     
@@ -197,8 +210,17 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static void addMissingInputsFromIssue(final Collection<String> missingInputs, final WorkflowContextSnapshot snapshot, final WorkflowIssue issue) {
-        if (WorkflowIssueCode.DATABASE_REQUIRED.equals(issue.getCode()) && !missingInputs.contains(WorkflowFieldNames.DATABASE)) {
-            missingInputs.add(WorkflowFieldNames.DATABASE);
+        addRequiredIdentifierInput(missingInputs, issue, WorkflowIssueCode.DATABASE_REQUIRED, WorkflowFieldNames.DATABASE);
+        addRequiredIdentifierInput(missingInputs, issue, WorkflowIssueCode.TABLE_REQUIRED, WorkflowFieldNames.TABLE);
+        addRequiredIdentifierInput(missingInputs, issue, WorkflowIssueCode.COLUMN_REQUIRED, WorkflowFieldNames.COLUMN);
+        Object missingRuleInputs = issue.getDetails().get("missing_inputs");
+        if (missingRuleInputs instanceof Collection) {
+            for (Object each : (Collection<?>) missingRuleInputs) {
+                String missingInput = String.valueOf(each);
+                if (!missingInputs.contains(missingInput)) {
+                    missingInputs.add(missingInput);
+                }
+            }
         }
         Object missingProperties = issue.getDetails().get("missing_properties");
         if (missingProperties instanceof Collection) {
@@ -208,6 +230,12 @@ public final class WorkflowGuidancePayloadBuilder {
                     missingInputs.add(missingInput);
                 }
             }
+        }
+    }
+    
+    private static void addRequiredIdentifierInput(final Collection<String> missingInputs, final WorkflowIssue issue, final String issueCode, final String fieldName) {
+        if (issueCode.equals(issue.getCode()) && !missingInputs.contains(fieldName)) {
+            missingInputs.add(fieldName);
         }
     }
     
@@ -255,8 +283,10 @@ public final class WorkflowGuidancePayloadBuilder {
         WorkflowRequest request = snapshot.getRequest();
         if (!request.getDatabase().isEmpty()) {
             addRuleResources(result, snapshot, request);
-            if (!request.getSchema().isEmpty() && !request.getTable().isEmpty()) {
-                addTableResources(result, snapshot, request);
+            if (WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot) && !request.getTable().isEmpty()) {
+                addFeatureTableRuleResources(result, snapshot, request);
+            } else if (!request.getSchema().isEmpty() && !request.getTable().isEmpty()) {
+                addTableResources(result, request);
             }
         }
         return result;
@@ -264,37 +294,45 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static void addFeatureResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot) {
         String workflowKind = resolveWorkflowKind(snapshot);
-        if ("encrypt.rule".equals(workflowKind)) {
+        if (ENCRYPT_RULE_WORKFLOW_KIND.equals(workflowKind)) {
             resourcesToRead.add(MCPResourceHintUtils.create("shardingsphere://features/encrypt/algorithms", "algorithm", "read_first",
                     "Read encrypt algorithm metadata before choosing algorithm arguments.", MCPPayloadFieldNames.RESOURCES_TO_READ));
-        } else if ("mask.rule".equals(workflowKind)) {
+        } else if (MASK_RULE_WORKFLOW_KIND.equals(workflowKind)) {
             resourcesToRead.add(MCPResourceHintUtils.create("shardingsphere://features/mask/algorithms", "algorithm", "read_first",
                     "Read mask algorithm metadata before choosing algorithm arguments.", MCPPayloadFieldNames.RESOURCES_TO_READ));
         }
     }
     
+    private static void addFeatureTableRuleResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+        String workflowKind = resolveWorkflowKind(snapshot);
+        if (ENCRYPT_RULE_WORKFLOW_KIND.equals(workflowKind)) {
+            resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/encrypt/databases/%s/tables/%s/rules",
+                    MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()), MCPUriPathSegmentUtils.encodePathSegment(request.getTable())), "rule", "inspect_detail",
+                    "Inspect current encrypt table rule DistSQL state before planning changes.", MCPPayloadFieldNames.RESOURCES_TO_READ));
+        } else if (MASK_RULE_WORKFLOW_KIND.equals(workflowKind)) {
+            resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/mask/databases/%s/tables/%s/rules",
+                    MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()), MCPUriPathSegmentUtils.encodePathSegment(request.getTable())), "rule", "inspect_detail",
+                    "Inspect current mask table rule DistSQL state before planning changes.", MCPPayloadFieldNames.RESOURCES_TO_READ));
+        }
+    }
+    
     private static void addRuleResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
         String workflowKind = resolveWorkflowKind(snapshot);
-        if ("encrypt.rule".equals(workflowKind)) {
+        if (ENCRYPT_RULE_WORKFLOW_KIND.equals(workflowKind)) {
             resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/encrypt/databases/%s/rules",
                     MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail",
                     "Inspect current encrypt rules before planning changes.", MCPPayloadFieldNames.RESOURCES_TO_READ));
-        } else if ("mask.rule".equals(workflowKind)) {
+        } else if (MASK_RULE_WORKFLOW_KIND.equals(workflowKind)) {
             resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/mask/databases/%s/rules",
                     MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail",
                     "Inspect current mask rules before planning changes.", MCPPayloadFieldNames.RESOURCES_TO_READ));
         }
     }
     
-    private static void addTableResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+    private static void addTableResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
         resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
                 MCPUriPathSegmentUtils.encodePathSegment(request.getSchema()), MCPUriPathSegmentUtils.encodePathSegment(request.getTable())),
                 "column", "validate_scope", "Read table columns before planning column-level workflow changes.", MCPPayloadFieldNames.RESOURCES_TO_READ));
-        if ("encrypt.rule".equals(resolveWorkflowKind(snapshot))) {
-            resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
-                    MCPUriPathSegmentUtils.encodePathSegment(request.getSchema()), MCPUriPathSegmentUtils.encodePathSegment(request.getTable())),
-                    "index", "validate_scope", "Read table indexes before planning assisted-query encrypt rules.", MCPPayloadFieldNames.RESOURCES_TO_READ));
-        }
     }
     
     private static List<Map<String, Object>> createPlanningNextActions(final WorkflowContextSnapshot snapshot, final List<String> missingRequiredInputs) {
@@ -343,10 +381,10 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static String resolvePlanningTool(final WorkflowContextSnapshot snapshot) {
         String workflowKind = resolveWorkflowKind(snapshot);
-        if ("encrypt.rule".equals(workflowKind)) {
-            return "database_gateway_plan_encrypt_rule";
+        if (ENCRYPT_RULE_WORKFLOW_KIND.equals(workflowKind)) {
+            return PLAN_ENCRYPT_RULE;
         }
-        return "mask.rule".equals(workflowKind) ? "database_gateway_plan_mask_rule" : "";
+        return MASK_RULE_WORKFLOW_KIND.equals(workflowKind) ? PLAN_MASK_RULE : "";
     }
     
     private static String resolveWorkflowKind(final WorkflowContextSnapshot snapshot) {

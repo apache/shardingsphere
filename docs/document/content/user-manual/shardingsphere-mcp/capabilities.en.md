@@ -80,13 +80,13 @@ Usage boundaries:
 
 ## ShardingSphere Rule Changes
 
-| Task | Natural language example | Connection target | User focus |
-| --- | --- | --- | --- |
-| Check existing rules | "Check whether `orders.phone` already has a masking rule." | Proxy only | Rule state comes from ShardingSphere-Proxy. |
-| Plan a data encryption rule | "Plan reversible encryption for `orders.status` and preview it without execution." | Proxy only | Review the rule change, physical columns, and index suggestions. |
-| Plan a data masking rule | "Plan phone-number masking for `orders.phone`, keep the first 3 and last 4 characters, and preview it without execution." | Proxy only | Review the masking algorithm, properties, and impact scope. |
-| Adjust a rule plan | "Change the previous plan to use AES." | Proxy only | Preview again after changing the plan. |
-| Apply a rule change | "Confirm and execute the previous rule change plan." | Proxy only | Side-effecting; review must be completed before execution. |
-| Validate a rule change | "Validate whether the previous masking rule has taken effect." | Proxy only | Check rule state, metadata, and SQL executability. |
+| Task                        | Natural language example                                                                                                  | Connection target | User focus                                                              |
+|-----------------------------|---------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------------------------------------------------------------|
+| Check existing rules        | "Check whether `orders.phone` already has a masking rule."                                                                | Proxy only        | Rule state comes from ShardingSphere-Proxy.                             |
+| Plan a data encryption rule | "Plan reversible encryption for `orders.status` and preview it without execution."                                        | Proxy only        | Review the rule DistSQL, algorithms, properties, and rule column names. |
+| Plan a data masking rule    | "Plan phone-number masking for `orders.phone`, keep the first 3 and last 4 characters, and preview it without execution." | Proxy only        | Review the masking algorithm, properties, and impact scope.             |
+| Adjust a rule plan          | "Change the previous plan to use AES."                                                                                    | Proxy only        | Preview again after changing the plan.                                  |
+| Apply a rule change         | "Confirm and execute the previous rule change plan."                                                                      | Proxy only        | Side-effecting; review must be completed before execution.              |
+| Validate a rule change      | "Validate whether the previous masking rule has taken effect."                                                            | Proxy only        | Check rule state and workflow execution result.                         |
 
 For detailed usage, see [Data Encryption](../features/encrypt/) and [Data Masking](../features/mask/).

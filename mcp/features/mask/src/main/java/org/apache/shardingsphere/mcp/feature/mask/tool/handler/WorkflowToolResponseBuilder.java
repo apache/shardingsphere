@@ -38,8 +38,7 @@ final class WorkflowToolResponseBuilder {
         WorkflowPropertySource propertySource = getPropertySource(snapshot);
         Map<String, Object> result = WorkflowPlanPayloadBuilder.build(snapshot);
         result.put("masked_property_preview", createMaskedPropertyPreview(snapshot, propertySource));
-        result.put("derived_column_plan", null);
-        result.putAll(WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, propertySource));
+        result.putAll(WorkflowArtifactPayloadUtils.createRuleArtifactPayload(snapshot, propertySource));
         return result;
     }
     

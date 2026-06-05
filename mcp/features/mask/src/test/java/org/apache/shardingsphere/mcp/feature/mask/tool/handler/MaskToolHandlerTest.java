@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlann
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
@@ -59,7 +58,7 @@ class MaskToolHandlerTest {
     void assertHandlePlanMaskRule() throws ReflectiveOperationException {
         PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
         MaskWorkflowPlanningService planningService = mock(MaskWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+        when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
         setField(handler, "planningService", planningService);
         setField(handler, "propertyTemplateService", new MaskAlgorithmPropertyTemplateService());
         WorkflowContextFixture fixture = createWorkflowContextFixture();
@@ -71,7 +70,7 @@ class MaskToolHandlerTest {
                 "user_overrides", Map.of("algorithm_type", "KEEP_FIRST_N_LAST_M"))));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
         ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
         WorkflowRequest actualRequest = requestCaptor.getValue();
         assertThat(actualRequest.getAlgorithmType(), is("KEEP_FIRST_N_LAST_M"));
         assertThat(actualRequest.getFieldSemantics(), is("phone"));
@@ -81,7 +80,7 @@ class MaskToolHandlerTest {
     void assertHandlePlanMaskRuleWithMaskedArtifacts() throws ReflectiveOperationException {
         PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
         MaskWorkflowPlanningService planningService = mock(MaskWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
+        when(planningService.plan(any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
         setField(handler, "planningService", planningService);
         setField(handler, "propertyTemplateService", new MaskAlgorithmPropertyTemplateService());
         MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of(
@@ -90,13 +89,14 @@ class MaskToolHandlerTest {
                 "column", "phone")));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("first-n"), is("3"));
-        assertThat(((List<?>) actualPayload.get("ddl_artifacts")).size(), is(0));
-        assertThat(((List<?>) actualPayload.get("index_plan")).size(), is(0));
+        assertFalse(actualPayload.containsKey("ddl_artifacts"));
+        assertFalse(actualPayload.containsKey("index_plan"));
         assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).get(0)).get("sql")).contains("keep_first_n_last_m"));
         List<String> actualResourceUris = extractResourceUris((List<?>) actualPayload.get("resources_to_read"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/mask/algorithms"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/rules"));
-        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
+        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/tables/orders/rules"));
+        assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
         assertThat(actualNextAction.get("type"), is("tool_call"));
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
@@ -154,19 +154,16 @@ class MaskToolHandlerTest {
         MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
-        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(result.getDatabaseContext()).thenReturn(databaseContext);
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        when(databaseContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        return new WorkflowContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
+        return new WorkflowContextFixture(result, workflowSessionContext, queryFacade, executionFacade);
     }
     
     private record WorkflowContextFixture(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,
-                                          MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade,
-                                          MCPFeatureExecutionFacade executionFacade) {
+                                          MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
     }
 }

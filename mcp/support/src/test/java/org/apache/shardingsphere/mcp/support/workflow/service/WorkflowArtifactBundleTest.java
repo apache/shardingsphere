@@ -43,4 +43,17 @@ class WorkflowArtifactBundleTest {
         assertThat(actual.get(1).artifactType(), is(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_CREATE_INDEX));
         assertTrue(actual.get(2).ruleDistSql());
     }
+    
+    @Test
+    void assertToRuleExecutableArtifacts() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE t ADD COLUMN c_cipher VARCHAR(32)", 1));
+        snapshot.getIndexPlans().add(new IndexPlan("idx_t_c_cipher", "c_cipher", "lookup", "CREATE INDEX idx_t_c_cipher ON t(c_cipher)"));
+        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t"));
+        List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> actual = WorkflowArtifactBundle.from(snapshot).toRuleExecutableArtifacts();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).approvalStep(), is(WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL));
+        assertThat(actual.get(0).artifactType(), is(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL));
+        assertTrue(actual.get(0).ruleDistSql());
+    }
 }

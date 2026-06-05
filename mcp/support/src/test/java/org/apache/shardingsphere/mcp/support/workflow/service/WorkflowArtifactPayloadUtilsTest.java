@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.DDLArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.IndexPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +31,8 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowArtifactPayloadUtilsTest {
     
@@ -53,5 +56,21 @@ class WorkflowArtifactPayloadUtilsTest {
         assertThat(actualRedaction.get("marker"), is("******"));
         assertThat(actualRedaction.get("redacted_count"), is(1));
         assertThat(actualRedaction.get("redacted_properties"), is(List.of("primary.aes-key-value")));
+    }
+    
+    @Test
+    void assertCreateRuleArtifactPayload() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        WorkflowRequest request = new WorkflowRequest();
+        snapshot.setRequest(request);
+        snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE t ADD COLUMN c_cipher VARCHAR(32)", 1));
+        snapshot.getIndexPlans().add(new IndexPlan("idx_t_c_cipher", "c_cipher", "lookup", "CREATE INDEX idx_t_c_cipher ON t(c_cipher)"));
+        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t"));
+        Map<String, Object> actual = WorkflowArtifactPayloadUtils.createRuleArtifactPayload(snapshot, snapshot.getRequest());
+        assertFalse(actual.containsKey(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DDL_ARTIFACTS));
+        assertFalse(actual.containsKey(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_INDEX_PLAN));
+        assertThat(((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).size(), is(1));
+        assertTrue(WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot));
     }
 }

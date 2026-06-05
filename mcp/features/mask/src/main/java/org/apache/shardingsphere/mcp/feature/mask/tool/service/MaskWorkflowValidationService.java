@@ -72,7 +72,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
         }
-        ValidationReport validationReport = createValidationReport(snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId);
+        ValidationReport validationReport = createValidationReport(snapshot, queryFacade);
         snapshot.setValidationReport(validationReport);
         return validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
     }
@@ -80,26 +80,16 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     @Override
     public void synchronize(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
                             final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId) {
-        workflowSynchronizationSupport.synchronize(() -> createValidationReport(snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId));
+        workflowSynchronizationSupport.synchronize(() -> createValidationReport(snapshot, queryFacade));
     }
     
-    private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
-                                                    final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId) {
+    private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         ValidationReport result = new ValidationReport();
-        String databaseType = metadataQueryFacade.queryDatabase(WorkflowSQLUtils.normalizeIdentifier(snapshot.getRequest().getDatabase()))
-                .map(each -> each.getDatabaseType()).orElse("");
+        String databaseType = queryFacade.getDatabaseType(snapshot.getRequest().getDatabase());
         List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(queryFacade, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
-        result.setDdlValidation(validateDdl());
         result.setRuleValidation(validateRules(snapshot, maskRules, result, databaseType));
-        result.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, result));
-        result.setSqlExecutabilityValidation(validateSqlExecutability(executionFacade, sessionId, snapshot, result, databaseType));
-        result.setOverallStatus(validationSupport.resolveOverallStatus(result.getDdlValidation(), result.getRuleValidation(),
-                result.getLogicalMetadataValidation(), result.getSqlExecutabilityValidation()));
+        result.setOverallStatus(validationSupport.resolveOverallStatus(result.getRuleValidation()));
         return result;
-    }
-    
-    private ValidationSection validateDdl() {
-        return new ValidationSection(WorkflowLifecycle.STATUS_SKIPPED, List.of(), "Mask workflows do not require physical DDL validation.");
     }
     
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> maskRules,
@@ -126,11 +116,5 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, actualRule.get(), "Mask algorithm type does not match.");
         }
         return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, actualRule.get(), "Mask rule matches the planned algorithm.");
-    }
-    
-    private ValidationSection validateSqlExecutability(final MCPFeatureExecutionFacade executionFacade, final String sessionId,
-                                                       final WorkflowContextSnapshot snapshot, final ValidationReport validationReport, final String databaseType) {
-        return validationSupport.validateSqlExecutability(executionFacade, sessionId, snapshot, validationReport,
-                List.of(validationSupport.createProjectionValidationSql(snapshot, databaseType)), "Validation SQL is executable from the logical view.");
     }
 }

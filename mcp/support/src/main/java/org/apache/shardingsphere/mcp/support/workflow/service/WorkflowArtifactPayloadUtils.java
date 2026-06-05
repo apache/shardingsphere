@@ -45,6 +45,10 @@ public final class WorkflowArtifactPayloadUtils {
     
     public static final String STEP_RULE_DISTSQL = "rule_distsql";
     
+    private static final String ENCRYPT_RULE_WORKFLOW_KIND = "encrypt.rule";
+    
+    private static final String MASK_RULE_WORKFLOW_KIND = "mask.rule";
+    
     private WorkflowArtifactPayloadUtils() {
     }
     
@@ -57,5 +61,27 @@ public final class WorkflowArtifactPayloadUtils {
      */
     public static Map<String, Object> createArtifactPayload(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
         return WorkflowArtifactBundle.from(snapshot).toPayload(propertySource, snapshot.getPropertyRequirements());
+    }
+    
+    /**
+     * Create rule DistSQL only workflow artifact payload.
+     *
+     * @param snapshot workflow snapshot
+     * @param propertySource workflow property source
+     * @return rule DistSQL only workflow artifact payload
+     */
+    public static Map<String, Object> createRuleArtifactPayload(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
+        return WorkflowArtifactBundle.from(snapshot).toRulePayload(propertySource, snapshot.getPropertyRequirements());
+    }
+    
+    /**
+     * Judge whether workflow must expose rule DistSQL artifacts only.
+     *
+     * @param snapshot workflow snapshot
+     * @return whether workflow is rule DistSQL only
+     */
+    public static boolean isRuleDistSQLOnlyWorkflow(final WorkflowContextSnapshot snapshot) {
+        String workflowKind = null == snapshot.getWorkflowKind() ? "" : snapshot.getWorkflowKind().getValue();
+        return ENCRYPT_RULE_WORKFLOW_KIND.equals(workflowKind) || MASK_RULE_WORKFLOW_KIND.equals(workflowKind);
     }
 }

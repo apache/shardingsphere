@@ -90,7 +90,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertTrue((Boolean) ((Map<?, ?>) actualClarificationQuestions.get(1)).get("secret"));
         assertFalse(actual.containsKey("recommended_next_tool"));
         assertFalse(actual.containsKey("requires_user_approval"));
-        assertThat(((Map<?, ?>) actual.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_logical_database"));
+        assertThat(((Map<?, ?>) actual.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
         assertTrue(extractResourceUris((List<?>) actual.get("resources_to_read")).contains("shardingsphere://features/encrypt/algorithms"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("type"), is("ask_user"));
     }
@@ -137,7 +137,9 @@ class WorkflowPlanPayloadBuilderTest {
         List<?> actualResourcesToRead = (List<?>) actual.get("resources_to_read");
         List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
         assertTrue(actualResourceUris.contains("shardingsphere://features/mask/algorithms"));
-        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
+        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/rules"));
+        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/tables/orders/rules"));
+        assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
         assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes"));
         assertFalse(actual.containsKey("recommended_next_tool"));
         assertFalse(actual.containsKey("requires_user_approval"));
