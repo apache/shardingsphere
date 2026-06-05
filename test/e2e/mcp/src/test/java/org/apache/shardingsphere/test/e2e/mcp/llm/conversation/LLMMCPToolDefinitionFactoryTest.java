@@ -28,6 +28,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LLMMCPToolDefinitionFactoryTest {
     
@@ -57,6 +58,12 @@ class LLMMCPToolDefinitionFactoryTest {
         assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_PROMPTS)));
         assertGetPromptBridgeSchema(getParameters(findTool(actual, MCPInteractionActionNames.GET_PROMPT)));
         assertCompleteBridgeSchema(getParameters(findTool(actual, MCPInteractionActionNames.COMPLETE)));
+    }
+    
+    @Test
+    void assertCreateWithUnsupportedToolDescriptor() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new LLMMCPToolDefinitionFactory().create(List.of("unsupported_tool")));
+        assertThat(actual.getMessage(), is("Unsupported tool descriptor: unsupported_tool"));
     }
     
     private void assertOfficialToolDefinition(final Map<?, ?> toolDefinition, final MCPToolDescriptor toolDescriptor) {
