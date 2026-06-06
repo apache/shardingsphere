@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
@@ -70,6 +71,19 @@ public final class WorkflowPlanPayloadBuilder {
         result.put("argument_provenance", createArgumentProvenance(snapshot));
         result.put("review_focus", createReviewFocus(snapshot));
         WorkflowGuidancePayloadBuilder.appendPlanningGuidance(result, snapshot);
+        return result;
+    }
+    
+    /**
+     * Build one rule DistSQL-only workflow-plan payload map.
+     *
+     * @param snapshot workflow snapshot
+     * @param propertySource workflow property source
+     * @return rule DistSQL-only workflow-plan payload
+     */
+    public static Map<String, Object> buildRuleDistSQLOnly(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
+        Map<String, Object> result = build(snapshot);
+        result.putAll(WorkflowArtifactPayloadUtils.createRuleArtifactPayload(snapshot, propertySource));
         return result;
     }
     

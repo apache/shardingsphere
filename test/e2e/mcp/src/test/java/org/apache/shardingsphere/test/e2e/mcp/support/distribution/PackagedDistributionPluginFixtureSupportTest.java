@@ -77,11 +77,25 @@ class PackagedDistributionPluginFixtureSupportTest {
     void assertRemoveOfficialFeatureJars() throws IOException {
         Files.writeString(tempDir.resolve("shardingsphere-mcp-feature-encrypt-test.jar"), "");
         Files.writeString(tempDir.resolve("shardingsphere-mcp-feature-mask-test.jar"), "");
+        Files.writeString(tempDir.resolve("shardingsphere-mcp-feature-broadcast-test.jar"), "");
+        Files.writeString(tempDir.resolve("shardingsphere-mcp-feature-readwrite-splitting-test.jar"), "");
+        Files.writeString(tempDir.resolve("shardingsphere-mcp-feature-shadow-test.jar"), "");
+        Files.writeString(tempDir.resolve("shardingsphere-mcp-feature-sharding-test.jar"), "");
         Files.writeString(tempDir.resolve("shardingsphere-mcp-feature-other-test.jar"), "");
         List<String> actual = PackagedDistributionPluginFixtureSupport.removeOfficialFeatureJars(tempDir);
-        assertThat(actual, containsInAnyOrder("shardingsphere-mcp-feature-encrypt-test.jar", "shardingsphere-mcp-feature-mask-test.jar"));
+        assertThat(actual, containsInAnyOrder(
+                "shardingsphere-mcp-feature-encrypt-test.jar",
+                "shardingsphere-mcp-feature-mask-test.jar",
+                "shardingsphere-mcp-feature-broadcast-test.jar",
+                "shardingsphere-mcp-feature-readwrite-splitting-test.jar",
+                "shardingsphere-mcp-feature-shadow-test.jar",
+                "shardingsphere-mcp-feature-sharding-test.jar"));
         assertTrue(Files.notExists(tempDir.resolve("shardingsphere-mcp-feature-encrypt-test.jar")));
         assertTrue(Files.notExists(tempDir.resolve("shardingsphere-mcp-feature-mask-test.jar")));
+        assertTrue(Files.notExists(tempDir.resolve("shardingsphere-mcp-feature-broadcast-test.jar")));
+        assertTrue(Files.notExists(tempDir.resolve("shardingsphere-mcp-feature-readwrite-splitting-test.jar")));
+        assertTrue(Files.notExists(tempDir.resolve("shardingsphere-mcp-feature-shadow-test.jar")));
+        assertTrue(Files.notExists(tempDir.resolve("shardingsphere-mcp-feature-sharding-test.jar")));
         assertTrue(Files.isRegularFile(tempDir.resolve("shardingsphere-mcp-feature-other-test.jar")));
     }
 }

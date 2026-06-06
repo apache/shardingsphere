@@ -73,4 +73,37 @@ class WorkflowArtifactPayloadUtilsTest {
         assertThat(((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).size(), is(1));
         assertTrue(WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot));
     }
+    
+    @Test
+    void assertBroadcastWorkflowIsRuleDistSQLOnly() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("broadcast.rule"));
+        assertTrue(WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot));
+    }
+    
+    @Test
+    void assertReadwriteWorkflowsAreRuleDistSQLOnly() {
+        WorkflowContextSnapshot ruleSnapshot = new WorkflowContextSnapshot();
+        ruleSnapshot.setWorkflowKind(WorkflowKind.valueOf("readwrite.rule"));
+        WorkflowContextSnapshot statusSnapshot = new WorkflowContextSnapshot();
+        statusSnapshot.setWorkflowKind(WorkflowKind.valueOf("readwrite.status"));
+        assertTrue(WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(ruleSnapshot));
+        assertTrue(WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(statusSnapshot));
+    }
+    
+    @Test
+    void assertShardingWorkflowsAreRuleDistSQLOnly() {
+        assertTrue(isRuleDistSQLOnlyWorkflow("sharding.table.rule"));
+        assertTrue(isRuleDistSQLOnlyWorkflow("sharding.table.reference"));
+        assertTrue(isRuleDistSQLOnlyWorkflow("sharding.default.strategy"));
+        assertTrue(isRuleDistSQLOnlyWorkflow("sharding.key.generator"));
+        assertTrue(isRuleDistSQLOnlyWorkflow("sharding.key.generate.strategy"));
+        assertTrue(isRuleDistSQLOnlyWorkflow("sharding.component.cleanup"));
+    }
+    
+    private boolean isRuleDistSQLOnlyWorkflow(final String workflowKind) {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setWorkflowKind(WorkflowKind.valueOf(workflowKind));
+        return WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot);
+    }
 }

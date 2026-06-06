@@ -17,7 +17,7 @@ Available tasks include:
 - Searching metadata objects such as tables, views, columns, and indexes.
 - Running read-only SQL queries.
 - Previewing SQL that may change data, metadata, or rules.
-- Planning, reviewing, applying, and validating data encryption or data masking rule changes.
+- Planning, reviewing, applying, and validating official DistSQL-only rule changes for data encryption, data masking, broadcast, readwrite-splitting, shadow, and sharding.
 
 Usage boundaries:
 
@@ -40,7 +40,7 @@ Available tasks include:
 Usage boundaries:
 
 - ShardingSphere rule state is not available.
-- Feature plugins that depend on ShardingSphere rules, such as data encryption and data masking, do not apply.
+- Feature plugins that depend on ShardingSphere rules, such as data encryption, data masking, broadcast, readwrite-splitting, shadow, and sharding, do not apply.
 - Returned metadata comes from the target database itself and does not represent a ShardingSphere logical rule view.
 
 ## Metadata Inspection
@@ -85,8 +85,12 @@ Usage boundaries:
 | Check existing rules        | "Check whether `orders.phone` already has a masking rule."                                                                | Proxy only        | Rule state comes from ShardingSphere-Proxy.                             |
 | Plan a data encryption rule | "Plan reversible encryption for `orders.status` and preview it without execution."                                        | Proxy only        | Review the rule DistSQL, algorithms, properties, and rule column names. |
 | Plan a data masking rule    | "Plan phone-number masking for `orders.phone`, keep the first 3 and last 4 characters, and preview it without execution." | Proxy only        | Review the masking algorithm, properties, and impact scope.             |
+| Plan a broadcast rule       | "Plan `config_region` as a broadcast table and preview it without execution."                                             | Proxy only        | Review logical table names and broadcast rule DistSQL.                  |
+| Plan a readwrite rule       | "Plan a readwrite-splitting rule with write storage unit `write_ds` and read storage units `read_ds_0, read_ds_1`."       | Proxy only        | Review existing storage units, load-balance algorithm, and status plan. |
+| Plan a shadow rule          | "Plan a shadow rule for `t_order` using source storage unit `ds_0` and shadow storage unit `ds_shadow`."                  | Proxy only        | Review existing storage units, algorithm properties, and cleanup proof. |
+| Plan a sharding rule        | "Plan a sharding table rule for `t_order` with explicit data nodes and a standard strategy."                             | Proxy only        | Review data nodes, strategy, key generation, and unused component proof. |
 | Adjust a rule plan          | "Change the previous plan to use AES."                                                                                    | Proxy only        | Preview again after changing the plan.                                  |
 | Apply a rule change         | "Confirm and execute the previous rule change plan."                                                                      | Proxy only        | Side-effecting; review must be completed before execution.              |
 | Validate a rule change      | "Validate whether the previous masking rule has taken effect."                                                            | Proxy only        | Check rule state and workflow execution result.                         |
 
-For detailed usage, see [Data Encryption](../features/encrypt/) and [Data Masking](../features/mask/).
+For detailed usage, see [Data Encryption](../features/encrypt/), [Data Masking](../features/mask/), [Broadcast](../features/broadcast/), [Readwrite-Splitting](../features/readwrite-splitting/), [Shadow](../features/shadow/), and [Sharding](../features/sharding/).
