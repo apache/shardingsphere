@@ -58,7 +58,7 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkf
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
         WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getMetadataQueryFacade(),
                 workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
-        return new MCPMapResponse(new WorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
+        return new MCPMapResponse(new EncryptWorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     
     private void bindFeatureArguments(final EncryptWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
