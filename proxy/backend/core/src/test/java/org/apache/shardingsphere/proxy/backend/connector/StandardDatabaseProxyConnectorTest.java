@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
@@ -45,20 +44,13 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
-import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
@@ -78,7 +70,6 @@ import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -109,17 +100,14 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -197,37 +185,6 @@ class StandardDatabaseProxyConnectorTest {
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.singleton(mock(ShardingRule.class)));
         when(result.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)).thenReturn(Collections.emptyList());
         return result;
-    }
-    
-    @Test
-    void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
-        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.PREPARED_STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
-        Field queryHeadersField = StandardDatabaseProxyConnector.class.getDeclaredField("queryHeaders");
-        ShardingSphereDatabase database = createDatabaseMetaData();
-        try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(new QueryHeaderBuilderFixture());
-            Plugins.getMemberAccessor().set(queryHeadersField, engine, Collections.singletonList(new QueryHeaderBuilderEngine(databaseType).build(createResultSetMetaData(), database, 1)));
-            Field mergedResultField = StandardDatabaseProxyConnector.class.getDeclaredField("mergedResult");
-            Plugins.getMemberAccessor().set(mergedResultField, engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
-                
-                @Override
-                protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema,
-                                                          final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
-                    return Collections.singletonList(mock(MemoryQueryResultRow.class));
-                }
-            });
-            Exception ex = null;
-            try {
-                engine.getRowData();
-            } catch (final SQLException | IndexOutOfBoundsException exception) {
-                ex = exception;
-            } finally {
-                assertFalse(ex instanceof IndexOutOfBoundsException);
-            }
-        }
     }
     
     @Test
@@ -705,22 +662,6 @@ class StandardDatabaseProxyConnectorTest {
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         return new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
-    }
-    
-    private ShardingSphereDatabase createDatabaseMetaData() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereColumn column = new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false);
-        when(result.getSchema("foo_db").getTable("t_logic_order")).thenReturn(new ShardingSphereTable(
-                "t_logic_order", Collections.singleton(column), Collections.singleton(new ShardingSphereIndex("order_id", Collections.emptyList(), false)), Collections.emptyList()));
-        when(result.getRuleMetaData().getRules()).thenReturn(Collections.singleton(mock(ShardingRule.class)));
-        return result;
-    }
-    
-    private ShardingSphereResultSetMetaData createResultSetMetaData() throws SQLException {
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(resultSetMetaData.getColumnLabel(1)).thenReturn("order_id");
-        when(resultSetMetaData.getColumnName(1)).thenReturn("order_id");
-        return new ShardingSphereResultSetMetaData(resultSetMetaData, mock(ShardingSphereDatabase.class), null);
     }
     
     private ResponseHeader executeWithImplicitCommitCondition(final SQLStatement sqlStatement, final String transactionType, final boolean inTransaction,

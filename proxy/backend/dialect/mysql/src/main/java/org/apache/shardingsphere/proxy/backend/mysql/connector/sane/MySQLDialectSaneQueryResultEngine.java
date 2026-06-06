@@ -72,16 +72,17 @@ public final class MySQLDialectSaneQueryResultEngine implements DialectSaneQuery
         List<RawQueryResultColumnMetaData> queryResultColumnMetaDataList = new ArrayList<>(sqlStatement.getProjections().getProjections().size());
         List<Object> data = new ArrayList<>(sqlStatement.getProjections().getProjections().size());
         for (ProjectionSegment each : sqlStatement.getProjections().getProjections()) {
-            if (each instanceof ExpressionProjectionSegment) {
-                ExpressionProjectionSegment expressionProjection = (ExpressionProjectionSegment) each;
-                String text = expressionProjection.getText();
-                String alias = expressionProjection.getAliasName().orElse(expressionProjection.getText());
-                queryResultColumnMetaDataList.add(createRawQueryResultColumnMetaData(text, alias));
-                String value = expressionProjection.getExpr() instanceof VariableSegment
-                        ? MySQLSystemVariable.findSystemVariable(((VariableSegment) expressionProjection.getExpr()).getVariable()).map(MySQLSystemVariable::getDefaultValue).orElse("1")
-                        : "1";
-                data.add(value);
+            if (!(each instanceof ExpressionProjectionSegment)) {
+                return Optional.empty();
             }
+            ExpressionProjectionSegment expressionProjection = (ExpressionProjectionSegment) each;
+            String text = expressionProjection.getText();
+            String alias = expressionProjection.getAliasName().orElse(expressionProjection.getText());
+            queryResultColumnMetaDataList.add(createRawQueryResultColumnMetaData(text, alias));
+            String value = expressionProjection.getExpr() instanceof VariableSegment
+                    ? MySQLSystemVariable.findSystemVariable(((VariableSegment) expressionProjection.getExpr()).getVariable()).map(MySQLSystemVariable::getDefaultValue).orElse("1")
+                    : "1";
+            data.add(value);
         }
         return queryResultColumnMetaDataList.isEmpty()
                 ? Optional.empty()
