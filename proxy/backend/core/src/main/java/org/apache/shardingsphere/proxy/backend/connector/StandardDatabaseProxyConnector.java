@@ -97,6 +97,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import static org.apache.shardingsphere.proxy.backend.connector.ProxySQLExecutor.isReturnGeneratedKeys;
+
 /**
  * Standard database proxy connector.
  */
@@ -422,12 +424,5 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             }
         }
         return Optional.empty();
-    }
-    
-    private boolean isReturnGeneratedKeys(final SQLStatementContext sqlStatementContext, final DialectDatabaseMetaData dialectDatabaseMetaData) {
-        if (!(sqlStatementContext instanceof InsertStatementContext) || !dialectDatabaseMetaData.getGeneratedKeyOption().isPresent()) {
-            return false;
-        }
-        return ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().filter(GeneratedKeyContext::isGenerated).isPresent();
     }
 }

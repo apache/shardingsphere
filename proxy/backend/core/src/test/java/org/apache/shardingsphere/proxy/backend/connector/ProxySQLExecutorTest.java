@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.connector;
 
 import com.google.common.collect.LinkedHashMultimap;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -257,7 +258,7 @@ class ProxySQLExecutorTest {
         setExecutorField(proxySQLExecutor, "rawExecutor", rawExecutor);
         setExecutorField(proxySQLExecutor, "regularExecutor", regularExecutor);
         setExecutorField(proxySQLExecutor, "transactionHooks", Collections.singletonMap(shardingSphereRule, transactionHook));
-        ExecutionContext executionContext = createExecutionContext(sqlStatement, isReturnGeneratedKeys);
+        ExecutionContext executionContext = createExecutionContext(name, sqlStatement, isReturnGeneratedKeys);
         ExecuteResult expectedExecuteResult = mock(ExecuteResult.class);
         List<ExecuteResult> expected = Collections.singletonList(expectedExecuteResult);
         if (hasRawExecutionRule) {
@@ -297,7 +298,10 @@ class ProxySQLExecutorTest {
         return Stream.of(
                 Arguments.of("execute-with-raw-rule", true, createCreateTableStatement(mysqlDatabaseType), true, false, false),
                 Arguments.of("execute-with-driver-and-generated-keys", false, createInsertStatement(mysqlDatabaseType), true, true, true),
-                Arguments.of("execute-with-driver-and-explicit-keys", false, createInsertStatement(mysqlDatabaseType), true, true, false),
+                Arguments.of("execute-with-driver-and-explicit-keys-nonspecial", false, createInsertStatement(mysqlDatabaseType), true, true, false),
+                Arguments.of("execute-with-driver-and-explicit-keys-special-null", false, createInsertStatement(mysqlDatabaseType), true, true, true),
+                Arguments.of("execute-with-driver-param-marker-nonspecial", false, createInsertStatement(mysqlDatabaseType), true, true, false),
+                Arguments.of("execute-with-driver-param-marker-special-zero", false, createInsertStatement(mysqlDatabaseType), true, true, true),
                 Arguments.of("execute-with-driver-and-no-transaction", false, createInsertStatement(postgresqlDatabaseType), false, false, false));
     }
     
@@ -310,7 +314,7 @@ class ProxySQLExecutorTest {
         setExecutorField(proxySQLExecutor, "rawExecutor", rawExecutor);
         setExecutorField(proxySQLExecutor, "regularExecutor", regularExecutor);
         setExecutorField(proxySQLExecutor, "transactionHooks", Collections.singletonMap(shardingSphereRule, transactionHook));
-        ExecutionContext executionContext = createExecutionContext(sqlStatement, false);
+        ExecutionContext executionContext = createExecutionContext(name, sqlStatement, false);
         SQLException expectedException = new SQLException("mock prepare failure");
         try (MockedStatic<DatabaseTypedSPILoader> mockedDatabaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
             mockedDatabaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, fixtureDatabaseType)).thenReturn(Optional.of(saneQueryResultEngine));
@@ -394,12 +398,40 @@ class ProxySQLExecutorTest {
         return result;
     }
     
-    private ExecutionContext createExecutionContext(final SQLStatement sqlStatement, final boolean isReturnGeneratedKeys) {
+    @SuppressWarnings({"rawtypes"})
+    private ExecutionContext createExecutionContext(final String name, final SQLStatement sqlStatement, final boolean isReturnGeneratedKeys) {
         SQLStatementContext sqlStatementContext;
         if (sqlStatement instanceof InsertStatement) {
-            sqlStatementContext = mock(InsertStatementContext.class);
-            GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", isReturnGeneratedKeys);
-            when(((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+            InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
+            if ("execute-with-driver-and-explicit-keys-nonspecial".equals(name)) {
+                GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
+                when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
+                List<Object> expressions = Collections.singletonList(new LiteralExpressionSegment(-3));
+                when((List) insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(new StubInsertValueContext(expressions, Collections.emptyList())));
+            } else if ("execute-with-driver-and-explicit-keys-special-null".equals(name)) {
+                GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
+                when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
+                List<Object> expressions = Collections.singletonList(new LiteralExpressionSegment(null));
+                when((List) insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(new StubInsertValueContext(expressions, Collections.emptyList())));
+            } else if ("execute-with-driver-param-marker-nonspecial".equals(name)) {
+                GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
+                when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
+                List<Object> expressions = Collections.singletonList(new ParameterMarkerExpressionSegment());
+                when((List) insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(new StubInsertValueContext(expressions, Collections.singletonList(-3))));
+            } else if ("execute-with-driver-param-marker-special-zero".equals(name)) {
+                GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
+                when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
+                List<Object> expressions = Collections.singletonList(new ParameterMarkerExpressionSegment());
+                when((List) insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(new StubInsertValueContext(expressions, Collections.singletonList(0))));
+            } else {
+                GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", isReturnGeneratedKeys);
+                when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+            }
+            sqlStatementContext = insertStatementContext;
         } else {
             sqlStatementContext = mock(SQLStatementContext.class);
         }
@@ -449,5 +481,34 @@ class ProxySQLExecutorTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setExecutorField(final ProxySQLExecutor target, final String fieldName, final Object value) {
         Plugins.getMemberAccessor().set(ProxySQLExecutor.class.getDeclaredField(fieldName), target, value);
+    }
+    
+    public static class StubInsertValueContext {
+        
+        private final List<Object> expressions;
+        @Getter
+        private final List<Object> parameters;
+        
+        public StubInsertValueContext(final List<Object> expressions, final List<Object> parameters) {
+            this.expressions = expressions;
+            this.parameters = parameters;
+        }
+        
+        @SuppressWarnings("unused")
+        public List<Object> getValueExpressions() {
+            return expressions;
+        }
+    }
+    
+    @Getter
+    public static class LiteralExpressionSegment {
+        
+        private final Object literal;
+        public LiteralExpressionSegment(final Object literal) {
+            this.literal = literal;
+        }
+    }
+    
+    public static class ParameterMarkerExpressionSegment {
     }
 }
