@@ -3729,4 +3729,11 @@
             </column-definition>
         </modify-column>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_execute_cherry_pick">
+        <table name="test" start-index="12" stop-index="15" />
+        <execute-segment start-index="17" stop-index="55" execute-type="CHERRY-PICK">
+            <snapshot-id value="8602659039622823857" start-index="37" stop-index="55" />
+        </execute-segment>
+    </alter-table>
 </sql-parser-test-cases>

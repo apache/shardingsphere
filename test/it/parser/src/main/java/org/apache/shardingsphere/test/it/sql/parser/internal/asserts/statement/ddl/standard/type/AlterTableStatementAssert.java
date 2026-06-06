@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.Dr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ModifyTableCommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ExecuteSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.OrderByColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
@@ -137,6 +138,7 @@ public final class AlterTableStatementAssert {
         assertConvertTable(assertContext, actual, expected);
         assertModifyCollectionRetrievalDefinitions(assertContext, actual, expected);
         assertDropPrimaryKeyDefinition(assertContext, actual, expected);
+        assertExecuteSegment(assertContext, actual, expected);
         assertSetPropertiesDefinitions(assertContext, actual, expected);
         assertEnableFeatureDefinitions(assertContext, actual, expected);
         assertModifyTableCommentDefinitions(assertContext, actual, expected);
@@ -574,6 +576,19 @@ public final class AlterTableStatementAssert {
         }
         assertNotNull(expected.getDropPrimaryKeyDefinition(), assertContext.getText("Actual drop primary key definition should exist."));
         SQLSegmentAssert.assertIs(assertContext, actual.getDropPrimaryKeyDefinition().get(), expected.getDropPrimaryKeyDefinition());
+    }
+    
+    private static void assertExecuteSegment(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        Optional<ExecuteSegment> executeSegment = actual.getExecuteSegment();
+        if (null == expected.getExecuteSegment()) {
+            assertFalse(executeSegment.isPresent(), assertContext.getText("Actual execute segment should not exist."));
+        } else {
+            assertTrue(executeSegment.isPresent(), assertContext.getText("Actual execute segment should exist."));
+            ExecuteSegment actualExecuteSegment = executeSegment.get();
+            assertThat(assertContext.getText("Execute type assertion error: "), actualExecuteSegment.getExecuteType(), is(expected.getExecuteSegment().getExecuteType()));
+            ExpressionAssert.assertLiteralExpression(assertContext, actualExecuteSegment.getSnapshotId(), expected.getExecuteSegment().getSnapshotId());
+            SQLSegmentAssert.assertIs(assertContext, actualExecuteSegment, expected.getExecuteSegment());
+        }
     }
     
     private static void assertSetPropertiesDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {

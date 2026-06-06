@@ -471,4 +471,5 @@
     <sql-case id="alter_table_modify_column_with_key_after_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN col1 BIGINT KEY DEFAULT &quot;1&quot; AFTER col2;" db-types="Doris" />
     <sql-case id="alter_table_modify_column_with_key_null_comment_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k3 VARCHAR(50) KEY NULL COMMENT 'to 50'" db-types="Doris" />
     <sql-case id="alter_table_modify_column_with_key_not_null_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k3 VARCHAR(50) KEY NOT NULL COMMENT 'not null'" db-types="Doris" />
+    <sql-case id="alter_table_execute_cherry_pick" value="ALTER table test EXECUTE CHERRY-PICK 8602659039622823857;" db-types="Hive" />
 </sql-cases>

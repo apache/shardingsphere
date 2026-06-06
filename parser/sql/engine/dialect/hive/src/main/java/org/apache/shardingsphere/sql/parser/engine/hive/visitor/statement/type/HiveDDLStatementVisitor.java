@@ -65,7 +65,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.po
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ExecuteSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -93,6 +95,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.vi
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -147,6 +150,14 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
                     && !"REBALANCE".equalsIgnoreCase(compactionType)) {
                 throw new IllegalArgumentException("[CLUSTERED INTO n BUCKETS] and [ORDER BY col_list] clauses can only be used with REBALANCE compaction");
             }
+        }
+        if (null != ctx.cherryPickClause()) {
+            int numberStartIndex = ctx.cherryPickClause().NUMBER_().getSymbol().getStartIndex();
+            int numberStopIndex = ctx.cherryPickClause().NUMBER_().getSymbol().getStopIndex();
+            LiteralExpressionSegment snapshotId = new LiteralExpressionSegment(numberStartIndex, numberStopIndex,
+                    new NumberLiteralValue(ctx.cherryPickClause().NUMBER_().getText()).getValue());
+            result.executeSegment(new ExecuteSegment(ctx.cherryPickClause().EXECUTE().getSymbol().getStartIndex(), numberStopIndex,
+                    ctx.cherryPickClause().CHERRY_PICK().getText(), snapshotId));
         }
         return result.build();
     }
