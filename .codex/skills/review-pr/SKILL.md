@@ -125,6 +125,10 @@ Do not turn speculative risks, personal style preferences, or out-of-scope polis
    - Bug fixes should have regression tests for the reported symptom or root-cause path.
    - New features should cover the main success path and important boundary, disabled, or error paths.
    - Existing tests may satisfy this gate only when they clearly exercise the changed behavior.
+   - Judge tests by behavior and root-cause coverage, not by coverage-rate or environment breadth alone.
+   - High-cost environment, native-image, distributed-system, or end-to-end validation blocks mergeability only when lower-level public-path tests and code evidence cannot prove the root-cause repair,
+     or when the current PR itself owns that environment integration behavior.
+   - For narrow split PRs whose code path can be proven locally, environment validation may be delegated to the umbrella PR or integration test scope; state that boundary in `Review Details` instead of turning it into a blocker.
    - Do not require coverage-rate proof, and do not block mergeability solely because a coverage report was not produced.
 6. Code Quality Gate:
    - Block only concrete maintainability problems, such as unclear responsibility, duplicated logic, dead code, over-complex control flow, hidden state, magic values, or hard-to-read temporary design.
@@ -134,14 +138,18 @@ Do not turn speculative risks, personal style preferences, or out-of-scope polis
    - The PR must preserve module ownership, explicit contracts, SPI/metadata boundaries, and clear state models.
    - Broken layering, bypassed owner modules, target-specific semantics in shared code, or implicit lifecycle states block mergeability.
 8. Release Note Gate:
-   - Required when the PR introduces or changes user-visible behavior, including new features, bug fixes, API/SPI/config/protocol/metadata/security/performance/compatibility changes,
-     distribution changes, or behavior users may need to notice during upgrade, troubleshooting, configuration, or rollback.
+   - Required when the PR introduces or changes user-visible behavior that users, DBAs, operators, or application developers need to know for upgrade, troubleshooting, configuration,
+     migration, rollback, compatibility assessment, or meaningful release awareness.
    - Usually not required for test-only changes, pure refactoring with no behavior change, formatter/import/typo/comment-only changes,
-     or CI/build changes that do not affect released artifacts, supported platforms, dependencies, or user-visible build behavior.
+     internal bug fixes that restore already documented behavior without new user action, or CI/build changes that do not affect released artifacts, supported platforms, dependencies,
+     or user-visible build behavior.
+   - For split or staging PRs, a release note may be deferred to the umbrella PR when the umbrella PR owns the user-facing release story and the split PR is not expected to ship independently.
+     If deferring, verify and state the delegation reason; do not require duplicate release-note entries that would only create low-signal changelog noise.
+   - If the split PR can be released independently and the fix has meaningful user-facing impact, require the release note in the split PR.
    - Required release notes must update `RELEASE-NOTES.md` in the proper category and describe the user-visible outcome, affected module or feature,
      and important compatibility, configuration, upgrade, or rollback impact when applicable.
    - Release notes must be understandable to users, DBAs, operators, and application developers, not only maintainers.
-   - Missing, misleading, implementation-only, wrong-category, or over-claimed release notes block mergeability.
+   - Missing, misleading, implementation-only, wrong-category, or over-claimed release notes block mergeability only after the gate determines that a release note is required for the current PR.
 9. User Documentation Impact Gate:
    - If users need documentation to correctly use, configure, upgrade, troubleshoot, or understand the changed behavior, check the relevant user docs.
    - Missing required docs for user-facing configuration, DistSQL, SQL support, API/SPI usage, Proxy/JDBC behavior, or upgrade flow block mergeability.
@@ -302,6 +310,9 @@ CI/check-run review is not part of this workflow unless explicitly requested; do
    - Are major branches, boundaries, and counterexamples covered?
    - Are tests mapped one-to-one with fix points?
    - Does new or changed production code or behavior have corresponding test evidence, either from new/adjusted tests or existing tests that clearly cover the changed behavior?
+   - Does the requested validation prove a real behavior branch or root-cause path, rather than merely improving coverage percentage?
+   - If native-image, container, cluster, performance, or other expensive environment validation is missing, decide whether the current PR truly owns that integration proof,
+     or whether public-path tests plus code evidence are enough for this split PR and the environment proof belongs to a broader umbrella PR.
    - Do not require coverage-rate proof as part of this review.
    - For SQL parser family scans, check whether each related dialect with the same root cause has direct validation or explicit evidence for non-applicability
    - Distinguish fixture-assisted validation from production-path validation; if tests bypass the real assembly chain,
@@ -314,7 +325,8 @@ CI/check-run review is not part of this workflow unless explicitly requested; do
 7. Unrelated-change screening: identify substantive code/config/refactor changes not directly tied to PR goal; require removal, rollback, or scope narrowing.
    Ignore non-behavioral import-only, whitespace-only, and formatter-only churn for mergeability unless it meets the Non-Behavioral Churn Rule escalation conditions.
 8. User-facing impact screening:
-   - Decide whether `RELEASE-NOTES.md` is required, not required, missing, misleading, or over-claimed.
+   - Decide whether `RELEASE-NOTES.md` is valuable and required for the current PR, not required with reason, delegated to an umbrella PR, missing, misleading, or over-claimed.
+   - Do not require low-signal release-note entries for narrow internal fixes that only restore already documented behavior and do not change what users must do.
    - Decide whether user docs, migration notes, compatibility notes, or rollback guidance are required for the changed behavior.
 9. Version baseline control:
    - Base conclusion only on PR latest code version
@@ -415,7 +427,7 @@ If target-specific semantics leak into shared code, or if implicit state is used
 - Functional degradation risk: old-scenario regression, boundary input behavior changes, error-code/exception semantic drift.
 - Cross-dialect/shared-path risk: a target-specific fix changing generic behavior for other databases or features.
 - SQL parser family risk: the target dialect is fixed but branch dialects or copied parser variants still retain the same defect or become inconsistent.
-- Documentation risk: user-visible behavior changes without matching official-doc support, ShardingSphere docs/examples, or required release notes.
+- Documentation risk: user-visible behavior changes without matching official-doc support, ShardingSphere docs/examples, or release notes that are valuable and required for the current PR.
 - Migration risk: breaking behavior, config, API/SPI, protocol, metadata storage, SQL semantic, distribution, or rollback impact without clear user-facing guidance.
 - Diagnostics risk: error messages, error codes, logs, or troubleshooting output that is misleading, unactionable, regressed, or unsafe.
 - Operational risk: config migration complexity, gray-release and rollback complexity.
@@ -439,12 +451,14 @@ Each review must include a `Review Details` section with:
 - `Reviewed Scope`: files/modules actually reviewed this round, plus the latest PR head SHA, local merge-base SHA when local git is used, and whether the local file list matched GitHub `/pulls/{number}/files`.
 - `Not Reviewed Scope`: unreviewed or only superficially reviewed areas.
 - `Verification`: reviewer-run commands and exit codes, or a short reason why local verification was not run.
-- `Release Note / User Docs`: required and verified, missing, not required with reason, or not reviewed.
+- `Release Note / User Docs`: required and verified, delegated to an umbrella PR with reason, missing, not required with reason, or not reviewed.
 - For SQL parser reviews, `Reviewed Scope` must explicitly name the target dialect, any related trunk / branch dialects checked, and the documentation pages / repo doc paths used to validate syntax behavior.
 
 If a required domain expert review is still needed, include `Expert Review Needed` in `Summary`; omit it when no expert review is required.
-Treat required expert review as blocking unless the evidence proves the remaining review is advisory only.
-Require expert review when merge safety depends on specialized domains such as security, parser grammar or dialect semantics, Proxy protocol/authentication/packet behavior,
+Treat expert review as blocking only when the current PR's merge safety cannot be decided from available code, tests, docs, and authoritative evidence.
+Do not mark expert review as blocking merely because the PR is adjacent to a specialized domain, or because broader umbrella/integration validation remains outside this PR's scope.
+When the remaining specialized review is advisory, delegated to an umbrella PR, or only needed before a larger feature release, state that boundary in `Review Details` instead of blocking mergeability.
+Require blocking expert review when merge safety for the current PR depends on specialized domains such as security, parser grammar or dialect semantics, Proxy protocol/authentication/packet behavior,
 high-concurrency or high-frequency performance paths, transaction/pipeline/data consistency, shared metadata/binder/routing/default-schema behavior, dependency/license changes,
 or any area the reviewer cannot confidently validate from available evidence.
 
@@ -565,7 +579,7 @@ When required, add `- **Expert Review Needed:** ...` under `Summary`; omit this 
 - **Reviewed Scope:** ...
 - **Not Reviewed Scope:** ...
 - **Verification:** Reviewer-run local verification and exit codes, or why local verification was not run.
-- **Release Note / User Docs:** Required and verified, missing, not required with reason, or not reviewed.
+- **Release Note / User Docs:** Required and verified, delegated to an umbrella PR with reason, missing, not required with reason, or not reviewed.
 ```
 
 ## Change Request Tone Guidelines
