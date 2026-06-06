@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
+import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureData;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
@@ -134,6 +135,42 @@ class MaskWorkflowValidationServiceTest {
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateExpectedStateDetectsPropertyMismatch() throws ReflectiveOperationException {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of(
+                "column", "phone",
+                "algorithm_type", "MASK_FROM_X_TO_Y",
+                "algorithm_props", Map.of("from-x", "1")))));
+        workflowSessionContext.save(snapshot);
+        MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
+        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of(
+                "column", "phone",
+                "algorithm_type", "MASK_FROM_X_TO_Y",
+                "algorithm_props", Map.of("from-x", "2"))));
+        Map<String, Object> actual = createService(ruleInspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).get(0)).get("expected"), is("algorithm_props={from-x=1}"));
+    }
+    
+    @Test
+    void assertValidateExpectedStateDetectsMissingNonTargetRule() throws ReflectiveOperationException {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(
+                Map.of("column", "phone", "algorithm_type", "MD5"),
+                Map.of("column", "email", "algorithm_type", "MD5"))));
+        workflowSessionContext.save(snapshot);
+        MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
+        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
+        Map<String, Object> actual = createService(ruleInspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).get(0)).get("expected"), is("column=email"));
     }
     
     private MaskWorkflowValidationService createService(final MaskRuleInspectionService ruleInspectionService) throws ReflectiveOperationException {

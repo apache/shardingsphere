@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureData;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
@@ -30,6 +32,8 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueU
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -78,17 +82,19 @@ public final class MaskWorkflowPlanningService {
      * Plan mask workflow.
      *
      * @param workflowSessionContext workflow session context
+     * @param metadataQueryFacade metadata query facade
      * @param queryFacade query facade
      * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
-    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade, final String sessionId, final WorkflowRequest request) {
+    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
+                                        final String sessionId, final WorkflowRequest request) {
         WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
         WorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
-        if (!planningSupport.ensureRulePlanningContext(mergedRequest, clarifiedIntent, result)) {
+        if (!planningSupport.ensurePlanningContext(metadataQueryFacade, mergedRequest, clarifiedIntent, result)) {
             String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
             return workflowSessionContext.persist(result, currentStep, result.getStatus());
         }
@@ -151,5 +157,43 @@ public final class MaskWorkflowPlanningService {
         snapshot.getRuleArtifacts().add(isDropWorkflow(clarifiedIntent)
                 ? ruleDistSQLPlanningService.planMaskDropRule(request, maskRules, databaseType)
                 : ruleDistSQLPlanningService.planMaskRule(request, maskRules, databaseType));
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(maskRules, isDropWorkflow(clarifiedIntent)
+                ? createExpectedDropRules(request, maskRules, databaseType)
+                : createExpectedMaskRules(request, maskRules, databaseType)));
+    }
+    
+    private List<Map<String, Object>> createExpectedDropRules(final WorkflowRequest request, final List<Map<String, Object>> existingRules, final String databaseType) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : existingRules) {
+            if (!WorkflowSQLUtils.isSameIdentifier(databaseType, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column"))) {
+                result.add(new LinkedHashMap<>(each));
+            }
+        }
+        return result;
+    }
+    
+    private List<Map<String, Object>> createExpectedMaskRules(final WorkflowRequest request, final List<Map<String, Object>> existingRules, final String databaseType) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        boolean targetRuleHandled = false;
+        for (Map<String, Object> each : existingRules) {
+            if (WorkflowSQLUtils.isSameIdentifier(databaseType, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column"))) {
+                result.add(createExpectedTargetRule(request));
+                targetRuleHandled = true;
+            } else {
+                result.add(new LinkedHashMap<>(each));
+            }
+        }
+        if (!targetRuleHandled) {
+            result.add(createExpectedTargetRule(request));
+        }
+        return result;
+    }
+    
+    private Map<String, Object> createExpectedTargetRule(final WorkflowRequest request) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("column", request.getColumn());
+        result.put("algorithm_type", request.getAlgorithmType());
+        result.put("algorithm_props", request.getPrimaryAlgorithmProperties());
+        return result;
     }
 }

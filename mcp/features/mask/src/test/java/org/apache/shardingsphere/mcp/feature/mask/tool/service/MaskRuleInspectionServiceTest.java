@@ -51,8 +51,7 @@ class MaskRuleInspectionServiceTest {
     void assertQueryMaskRulesForDatabaseWithUnavailableDistSQL() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("logic_db", "", "SHOW MASK RULES FROM logic_db")).thenThrow(new MCPQueryFailedException("unsupported"));
-        List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "logic_db");
-        assertThat(actual, is(List.of()));
+        assertThrows(MCPQueryFailedException.class, () -> service.queryMaskRules(queryFacade, "logic_db"));
     }
     
     @Test
@@ -68,8 +67,7 @@ class MaskRuleInspectionServiceTest {
     void assertQueryMaskRulesWithUnavailableDistSQL() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("logic_db", "", "SHOW MASK RULE orders FROM logic_db")).thenThrow(new MCPQueryFailedException("unsupported"));
-        List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "logic_db", "orders");
-        assertThat(actual, is(List.of()));
+        assertThrows(MCPQueryFailedException.class, () -> service.queryMaskRules(queryFacade, "logic_db", "orders"));
     }
     
     @Test
@@ -105,12 +103,6 @@ class MaskRuleInspectionServiceTest {
     void assertQueryMaskAlgorithmsWithUnavailableDistSQL() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")).thenThrow(new MCPQueryFailedException("unsupported"));
-        List<Map<String, Object>> actual = service.queryMaskAlgorithms(queryFacade);
-        assertThat(actual.size(), is(8));
-        assertThat(actual.get(0).get("type"), is("KEEP_FIRST_N_LAST_M"));
-        assertThat(actual.get(0).get("source"), is("builtin_template"));
-        assertThat(actual.get(3).get("type"), is("MASK_FROM_X_TO_Y"));
-        assertThat(actual.get(3).get("required_properties"), is(List.of("from-x", "to-y", "replace-char")));
-        assertThat(actual.get(7).get("type"), is("MD5"));
+        assertThrows(MCPQueryFailedException.class, () -> service.queryMaskAlgorithms(queryFacade));
     }
 }

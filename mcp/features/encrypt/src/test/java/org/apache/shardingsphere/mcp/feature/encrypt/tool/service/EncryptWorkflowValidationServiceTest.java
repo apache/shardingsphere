@@ -24,8 +24,10 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFac
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
+import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureData;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
@@ -147,6 +149,47 @@ class EncryptWorkflowValidationServiceTest {
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).get(0)).get("expected"), is("cipher_column=phone_cipher"));
+    }
+    
+    @Test
+    void assertValidateExpectedStateMasksSecretPropertyMismatch() throws ReflectiveOperationException {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
+        snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "key", ""));
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of(
+                "logic_column", "phone",
+                "cipher_column", "phone_cipher",
+                "encryptor_type", "AES",
+                "encryptor_props", Map.of("aes-key-value", "123456")))));
+        workflowSessionContext.save(snapshot);
+        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
+                "logic_column", "phone",
+                "cipher_column", "phone_cipher",
+                "encryptor_type", "AES",
+                "encryptor_props", Map.of("aes-key-value", "old-key"))));
+        Map<String, Object> actual = createService(ruleInspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
+        assertFalse(String.valueOf(actual.get("mismatches")).contains("123456"));
+        assertFalse(String.valueOf(actual.get("mismatches")).contains("old-key"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).get(0)).get("expected"), is("encryptor_props={aes-key-value=******}"));
+    }
+    
+    @Test
+    void assertValidateExpectedStateDetectsMissingNonTargetRule() throws ReflectiveOperationException {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(
+                createRuleRow(),
+                Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES"))));
+        workflowSessionContext.save(snapshot);
+        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(createRuleRow()));
+        Map<String, Object> actual = createService(ruleInspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).get(0)).get("expected"), is("logic_column=email"));
     }
     
     private EncryptWorkflowValidationService createService(final EncryptRuleInspectionService ruleInspectionService) throws ReflectiveOperationException {
