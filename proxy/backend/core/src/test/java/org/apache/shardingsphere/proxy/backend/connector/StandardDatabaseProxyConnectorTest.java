@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -108,6 +109,9 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
@@ -163,8 +167,6 @@ import static org.mockito.Mockito.when;
 class StandardDatabaseProxyConnectorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
-    private final DatabaseType firebirdDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ProxyDatabaseConnectionManager databaseConnectionManager;
@@ -455,31 +457,6 @@ class StandardDatabaseProxyConnectorTest {
         SQLFederationEngine sqlFederationEngine = mock(SQLFederationEngine.class);
         when(proxySQLExecutor.getSqlFederationEngine()).thenReturn(sqlFederationEngine);
         when(sqlFederationEngine.decide(any(QueryContext.class), any(RuleMetaData.class))).thenReturn(true);
-        when(databaseConnectionManager.getConnectionSession().getStatementManager()).thenReturn(mock(JDBCBackendStatement.class));
-        when(resultSet.getMetaData().getColumnCount()).thenReturn(1);
-        when(resultSet.getMetaData().getColumnName(1)).thenReturn("order_id");
-        when(resultSet.getMetaData().getColumnLabel(1)).thenReturn("order_id");
-        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, queryContext);
-        setField(engine, "proxySQLExecutor", proxySQLExecutor);
-        try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            when(sqlFederationEngine.executeQuery(any(), any(), any())).thenAnswer(invocation -> {
-                setField(engine, "database", null);
-                return resultSet;
-            });
-            spiLoader.when(() -> DatabaseTypedSPILoader.getService(eq(QueryHeaderBuilder.class), any(DatabaseType.class))).thenReturn(new QueryHeaderBuilderFixture());
-            spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(new QueryHeaderBuilderFixture());
-            assertThat(engine.execute(), isA(QueryResponseHeader.class));
-        }
-    }
-    
-    @Test
-    void assertExecuteWithFederationAndNotNullDatabase() throws SQLException {
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(SelectStatement.builder().databaseType(databaseType).build());
-        QueryContext queryContext = createQueryContext(sqlStatementContext, mockDatabase());
-        ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
-        SQLFederationEngine sqlFederationEngine = mock(SQLFederationEngine.class);
-        when(proxySQLExecutor.getSqlFederationEngine()).thenReturn(sqlFederationEngine);
-        when(sqlFederationEngine.decide(any(QueryContext.class), any(RuleMetaData.class))).thenReturn(true);
         when(sqlFederationEngine.executeQuery(any(), any(), any())).thenReturn(resultSet);
         when(databaseConnectionManager.getConnectionSession().getStatementManager()).thenReturn(mock(JDBCBackendStatement.class));
         when(resultSet.getMetaData().getColumnCount()).thenReturn(1);
@@ -518,26 +495,18 @@ class StandardDatabaseProxyConnectorTest {
     }
     
     @Test
-    void assertExecuteWithFirebirdPreparedStatementReuseInHeldConnection() throws SQLException, BackendConnectionException {
+    void assertExecuteWithPreparedStatementCacheReuseInHeldConnection() throws SQLException, BackendConnectionException {
         Connection connection = mock(Connection.class);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
-        FirebirdPreparedStatementExecutionTestContext testContext = createFirebirdPreparedStatementExecutionTestContext("UPDATE tbl SET col = ?", connection);
+        PreparedStatementExecutionTestContext testContext = createPreparedStatementExecutionTestContext("UPDATE tbl SET col = ?", connection);
         when(connection.prepareStatement("UPDATE tbl SET col = ?")).thenReturn(preparedStatement);
-        ExecutionContext firstExecutionContext = createFirebirdExecutionContext(testContext, 1);
-        ExecutionContext secondExecutionContext = createFirebirdExecutionContext(testContext, 2);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        ExecutionContext firstExecutionContext = createPreparedStatementExecutionContext(testContext, 1);
+        ExecutionContext secondExecutionContext = createPreparedStatementExecutionContext(testContext, 2);
         try (
-                MockedConstruction<DatabaseTypeRegistry> mockedDatabaseTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
-                        (mock, context) -> {
-                            when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_db");
-                            when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
-                        });
-                MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
-                        (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class)))
-                                .thenReturn(1 == context.getCount() ? firstExecutionContext : secondExecutionContext));
-                MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS)) {
-            DatabaseProxyConnector engine = createFirebirdPreparedStatementConnector(testContext);
-            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
+                MockedConstruction<DatabaseTypeRegistry> mockedDatabaseTypeRegistry = mockPreparedStatementDatabaseTypeRegistry();
+                MockedConstruction<KernelProcessor> mockedKernelProcessor = mockKernelProcessor(firstExecutionContext, secondExecutionContext);
+                MockedStatic<ShardingSphereServiceLoader> ignoredServiceLoader = mockNoAdvancedProxySQLExecutorsWithRealMethods()) {
+            DatabaseProxyConnector engine = createPreparedStatementConnector(testContext);
             testContext.connectionSession.beginPreparedStatementCache(createPreparedStatementCacheKey(1));
             assertThat(engine.execute(), isA(UpdateResponseHeader.class));
             assertThat(testContext.connectionSession.getPreparedStatementCacheContext().size(), is(1));
@@ -559,27 +528,19 @@ class StandardDatabaseProxyConnectorTest {
     }
     
     @Test
-    void assertExecuteWithNewPreparedStatementAfterFirebirdPreparedStatementInvalidation() throws SQLException, BackendConnectionException {
+    void assertExecuteWithNewPreparedStatementAfterCacheInvalidation() throws SQLException {
         Connection connection = mock(Connection.class);
         PreparedStatement firstPreparedStatement = mock(PreparedStatement.class);
         PreparedStatement secondPreparedStatement = mock(PreparedStatement.class);
-        FirebirdPreparedStatementExecutionTestContext testContext = createFirebirdPreparedStatementExecutionTestContext("UPDATE tbl SET col = ?", connection);
+        PreparedStatementExecutionTestContext testContext = createPreparedStatementExecutionTestContext("UPDATE tbl SET col = ?", connection);
         when(connection.prepareStatement("UPDATE tbl SET col = ?")).thenReturn(firstPreparedStatement, secondPreparedStatement);
-        ExecutionContext firstExecutionContext = createFirebirdExecutionContext(testContext, 1);
-        ExecutionContext secondExecutionContext = createFirebirdExecutionContext(testContext, 2);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        ExecutionContext firstExecutionContext = createPreparedStatementExecutionContext(testContext, 1);
+        ExecutionContext secondExecutionContext = createPreparedStatementExecutionContext(testContext, 2);
         try (
-                MockedConstruction<DatabaseTypeRegistry> mockedDatabaseTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
-                        (mock, context) -> {
-                            when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_db");
-                            when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
-                        });
-                MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
-                        (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class)))
-                                .thenReturn(1 == context.getCount() ? firstExecutionContext : secondExecutionContext));
-                MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS)) {
-            DatabaseProxyConnector engine = createFirebirdPreparedStatementConnector(testContext);
-            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
+                MockedConstruction<DatabaseTypeRegistry> mockedDatabaseTypeRegistry = mockPreparedStatementDatabaseTypeRegistry();
+                MockedConstruction<KernelProcessor> mockedKernelProcessor = mockKernelProcessor(firstExecutionContext, secondExecutionContext);
+                MockedStatic<ShardingSphereServiceLoader> ignoredServiceLoader = mockNoAdvancedProxySQLExecutorsWithRealMethods()) {
+            DatabaseProxyConnector engine = createPreparedStatementConnector(testContext);
             testContext.connectionSession.beginPreparedStatementCache(createPreparedStatementCacheKey(1));
             assertThat(engine.execute(), isA(UpdateResponseHeader.class));
             testContext.connectionSession.finishPreparedStatementCache();
@@ -601,29 +562,21 @@ class StandardDatabaseProxyConnectorTest {
     }
     
     @Test
-    void assertExecuteWithNewPreparedStatementAfterClosingConnections() throws SQLException, BackendConnectionException {
+    void assertExecuteWithNewPreparedStatementAfterClosingConnections() throws SQLException {
         Connection firstConnection = mock(Connection.class);
         Connection secondConnection = mock(Connection.class);
         PreparedStatement firstPreparedStatement = mock(PreparedStatement.class);
         PreparedStatement secondPreparedStatement = mock(PreparedStatement.class);
-        FirebirdPreparedStatementExecutionTestContext testContext = createFirebirdPreparedStatementExecutionTestContext("UPDATE tbl SET col = ?", firstConnection, secondConnection);
+        PreparedStatementExecutionTestContext testContext = createPreparedStatementExecutionTestContext("UPDATE tbl SET col = ?", firstConnection, secondConnection);
         when(firstConnection.prepareStatement("UPDATE tbl SET col = ?")).thenReturn(firstPreparedStatement);
         when(secondConnection.prepareStatement("UPDATE tbl SET col = ?")).thenReturn(secondPreparedStatement);
-        ExecutionContext firstExecutionContext = createFirebirdExecutionContext(testContext, 1);
-        ExecutionContext secondExecutionContext = createFirebirdExecutionContext(testContext, 2);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        ExecutionContext firstExecutionContext = createPreparedStatementExecutionContext(testContext, 1);
+        ExecutionContext secondExecutionContext = createPreparedStatementExecutionContext(testContext, 2);
         try (
-                MockedConstruction<DatabaseTypeRegistry> mockedDatabaseTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
-                        (mock, context) -> {
-                            when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_db");
-                            when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
-                        });
-                MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
-                        (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class)))
-                                .thenReturn(1 == context.getCount() ? firstExecutionContext : secondExecutionContext));
-                MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS)) {
-            DatabaseProxyConnector engine = createFirebirdPreparedStatementConnector(testContext);
-            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
+                MockedConstruction<DatabaseTypeRegistry> mockedDatabaseTypeRegistry = mockPreparedStatementDatabaseTypeRegistry();
+                MockedConstruction<KernelProcessor> mockedKernelProcessor = mockKernelProcessor(firstExecutionContext, secondExecutionContext);
+                MockedStatic<ShardingSphereServiceLoader> ignoredServiceLoader = mockNoAdvancedProxySQLExecutorsWithRealMethods()) {
+            DatabaseProxyConnector engine = createPreparedStatementConnector(testContext);
             testContext.connectionSession.beginPreparedStatementCache(createPreparedStatementCacheKey(1));
             assertThat(engine.execute(), isA(UpdateResponseHeader.class));
             testContext.connectionSession.finishPreparedStatementCache();
@@ -647,7 +600,7 @@ class StandardDatabaseProxyConnectorTest {
     }
     
     @Test
-    void assertCloseExecutionResourcesAfterHandlerCleanupAndCacheInvalidation() throws SQLException, BackendConnectionException {
+    void assertCloseExecutionResourcesAfterCachedStatementInvalidation() throws SQLException, BackendConnectionException {
         Connection connection = mock(Connection.class);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         AtomicBoolean closed = new AtomicBoolean(false);
@@ -662,23 +615,16 @@ class StandardDatabaseProxyConnectorTest {
             return null;
         }).when(preparedStatement).close();
         when(preparedStatement.isClosed()).thenAnswer(invocation -> closed.get());
-        FirebirdPreparedStatementExecutionTestContext testContext = createFirebirdPreparedStatementExecutionTestContext("UPDATE tbl SET col = ?", connection);
+        PreparedStatementExecutionTestContext testContext = createPreparedStatementExecutionTestContext("UPDATE tbl SET col = ?", connection);
         when(connection.prepareStatement("UPDATE tbl SET col = ?")).thenReturn(preparedStatement);
-        ExecutionContext executionContext = createFirebirdExecutionContext(testContext, 1);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        ExecutionContext executionContext = createPreparedStatementExecutionContext(testContext, 1);
         try (
-                MockedConstruction<DatabaseTypeRegistry> mockedDatabaseTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
-                        (mock, context) -> {
-                            when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_db");
-                            when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
-                        });
-                MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
-                        (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext));
-                MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS)) {
-            DatabaseProxyConnector engine = createFirebirdPreparedStatementConnector(testContext);
+                MockedConstruction<DatabaseTypeRegistry> mockedDatabaseTypeRegistry = mockPreparedStatementDatabaseTypeRegistry();
+                MockedConstruction<KernelProcessor> mockedKernelProcessor = mockKernelProcessor(executionContext);
+                MockedStatic<ShardingSphereServiceLoader> ignoredServiceLoader = mockNoAdvancedProxySQLExecutorsWithRealMethods()) {
+            DatabaseProxyConnector engine = createPreparedStatementConnector(testContext);
             testContext.connectionSession.getDatabaseConnectionManager().add(engine);
             testContext.connectionSession.getDatabaseConnectionManager().markResourceInUse(engine);
-            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
             testContext.connectionSession.beginPreparedStatementCache(createPreparedStatementCacheKey(1));
             assertThat(engine.execute(), isA(UpdateResponseHeader.class));
             testContext.connectionSession.finishPreparedStatementCache();
@@ -844,34 +790,21 @@ class StandardDatabaseProxyConnectorTest {
         }
     }
     
-    @Test
-    void assertExecuteWithoutImplicitCommitWhenSingleExecutionUnit() throws SQLException {
-        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
-        assertThat(executeWithImplicitCommitCondition(insertStatement, "XA", false, 1), isA(UpdateResponseHeader.class));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("implicitCommitSkippedCases")
+    void assertExecuteWithoutImplicitCommit(final String scenario, final SQLStatement sqlStatement, final String transactionType, final boolean inTransaction,
+                                            final int executionUnitCount) throws SQLException {
+        assertThat(executeWithImplicitCommitCondition(sqlStatement, transactionType, inTransaction, executionUnitCount), isA(UpdateResponseHeader.class));
     }
     
-    @Test
-    void assertExecuteWithoutImplicitCommitWhenLocalTransaction() throws SQLException {
-        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
-        assertThat(executeWithImplicitCommitCondition(insertStatement, "LOCAL", false, 2), isA(UpdateResponseHeader.class));
-    }
-    
-    @Test
-    void assertExecuteWithoutImplicitCommitWhenAlreadyInTransaction() throws SQLException {
-        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
-        assertThat(executeWithImplicitCommitCondition(insertStatement, "XA", true, 2), isA(UpdateResponseHeader.class));
-    }
-    
-    @Test
-    void assertExecuteWithoutImplicitCommitWhenSelectStatement() throws SQLException {
-        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
-        assertThat(executeWithImplicitCommitCondition(selectStatement, "XA", false, 2), isA(UpdateResponseHeader.class));
-    }
-    
-    @Test
-    void assertExecuteWithoutImplicitCommitWhenSQLStatementIsNotDML() throws SQLException {
-        SQLStatement sqlStatement = new SQLStatement(databaseType);
-        assertThat(executeWithImplicitCommitCondition(sqlStatement, "XA", false, 2), isA(UpdateResponseHeader.class));
+    private static Collection<Arguments> implicitCommitSkippedCases() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+        return Arrays.asList(
+                Arguments.of("singleExecutionUnit", InsertStatement.builder().databaseType(databaseType).build(), "XA", false, 1),
+                Arguments.of("localTransaction", InsertStatement.builder().databaseType(databaseType).build(), "LOCAL", false, 2),
+                Arguments.of("alreadyInTransaction", InsertStatement.builder().databaseType(databaseType).build(), "XA", true, 2),
+                Arguments.of("selectStatement", SelectStatement.builder().databaseType(databaseType).build(), "XA", false, 2),
+                Arguments.of("notDMLStatement", new SQLStatement(databaseType), "XA", false, 2));
     }
     
     @Test
@@ -950,87 +883,65 @@ class StandardDatabaseProxyConnectorTest {
                         (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext));
                 MockedConstruction<DatabaseTypeRegistry> mockedDatabaseTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
                         (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(mock(DialectDatabaseMetaData.class)));
+                MockedConstruction<ProxyBackendTransactionManager> mockedTransactionManager = mockConstruction(ProxyBackendTransactionManager.class);
                 MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
             ResponseHeader result = engine.execute();
-            assertThat(mockedKernelProcessor.constructed().size(), is(1));
-            assertThat(mockedDatabaseTypeRegistry.constructed().size(), is(1));
+            assertTrue(mockedTransactionManager.constructed().isEmpty());
             return result;
         }
     }
     
     @Test
-    void assertAddStatementCorrectly() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
-        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
+    void assertAddStatementCorrectly() throws SQLException {
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
         engine.add(statement);
-        Collection<?> actual = getField(engine, "cachedStatements");
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(statement));
+        engine.close();
+        verify(statement).cancel();
+        verify(statement).close();
     }
     
     @Test
-    void assertAddResultSetCorrectly() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
-        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
+    void assertAddResultSetCorrectly() throws SQLException {
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
         engine.add(resultSet);
-        Collection<?> actual = getField(engine, "cachedResultSets");
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(resultSet));
+        engine.close();
+        verify(resultSet).close();
     }
     
     @Test
     void assertCloseCorrectly() throws SQLException {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
-        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
-        Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
-        cachedResultSets.add(resultSet);
-        Collection<Statement> cachedStatements = getField(engine, "cachedStatements");
-        cachedStatements.add(statement);
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
+        engine.add(resultSet);
+        engine.add(statement);
+        engine.close();
         engine.close();
         verify(resultSet).close();
         verify(statement).cancel();
         verify(statement).close();
-        assertTrue(cachedResultSets.isEmpty());
-        assertTrue(cachedStatements.isEmpty());
     }
     
     @Test
     void assertCloseSkipCachedPreparedStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
-        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
-        Collection<Statement> cachedStatements = getField(engine, "cachedStatements");
-        cachedStatements.add(preparedStatement);
-        when(databaseConnectionManager.getConnectionSession().getPreparedStatementCacheContext().contains(preparedStatement)).thenReturn(true);
+        engine.add(preparedStatement);
+        when(databaseConnectionManager.getConnectionSession().getPreparedStatementCacheContext().contains(preparedStatement)).thenReturn(true, false);
+        engine.close();
         engine.close();
         verify(preparedStatement, never()).cancel();
         verify(preparedStatement, never()).close();
-        assertTrue(cachedStatements.isEmpty());
     }
     
     @Test
     void assertCloseResultSetsWithExceptionThrown() throws SQLException {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
-        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
-        Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
         SQLException sqlExceptionByResultSet = new SQLException("ResultSet");
         doThrow(sqlExceptionByResultSet).when(resultSet).close();
-        cachedResultSets.add(resultSet);
-        Collection<Statement> cachedStatements = getField(engine, "cachedStatements");
+        engine.add(resultSet);
         SQLException sqlExceptionByStatement = new SQLException("Statement");
         doThrow(sqlExceptionByStatement).when(statement).close();
-        cachedStatements.add(statement);
+        engine.add(statement);
         SQLException actual = null;
         try {
             engine.close();
@@ -1039,8 +950,6 @@ class StandardDatabaseProxyConnectorTest {
         }
         verify(resultSet).close();
         verify(statement).close();
-        assertTrue(cachedResultSets.isEmpty());
-        assertTrue(cachedStatements.isEmpty());
         assertNotNull(actual);
         assertThat(actual.getNextException(), is(sqlExceptionByResultSet));
         assertThat(actual.getNextException().getNextException(), is(sqlExceptionByStatement));
@@ -1098,10 +1007,7 @@ class StandardDatabaseProxyConnectorTest {
         when(proxySQLExecutor.getSqlFederationEngine()).thenReturn(null);
         setField(engine, "proxySQLExecutor", proxySQLExecutor);
         engine.close();
-        Collection<?> cachedStatements = getField(engine, "cachedStatements");
-        Collection<?> cachedResultSets = getField(engine, "cachedResultSets");
-        assertTrue(cachedStatements.isEmpty());
-        assertTrue(cachedResultSets.isEmpty());
+        verify(proxySQLExecutor).getSqlFederationEngine();
     }
     
     private SQLStatementContext createSQLStatementContext(final SQLStatement sqlStatement) {
@@ -1113,9 +1019,9 @@ class StandardDatabaseProxyConnectorTest {
         return result;
     }
     
-    private ConnectionSession createFirebirdConnectionSession(final ContextManager contextManager) {
+    private ConnectionSession createPreparedStatementConnectionSession(final ContextManager contextManager) {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ConnectionSession result = new ConnectionSession(firebirdDatabaseType, null);
+        ConnectionSession result = new ConnectionSession(databaseType, null);
         result.setGrantee(new Grantee("foo_user"));
         result.setCurrentDatabaseName("foo_db");
         result.getConnectionContext().getTransactionContext().beginTransaction("XA", null);
@@ -1123,12 +1029,11 @@ class StandardDatabaseProxyConnectorTest {
         return result;
     }
     
-    private FirebirdPreparedStatementExecutionTestContext createFirebirdPreparedStatementExecutionTestContext(final String sql, final Connection... connections) throws SQLException {
+    private PreparedStatementExecutionTestContext createPreparedStatementExecutionTestContext(final String sql, final Connection... connections) throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         StorageUnit storageUnit = mock(StorageUnit.class);
-        DatabaseType storageDatabaseType = mock(DatabaseType.class);
         JDBCBackendDataSource backendDataSource = mock(JDBCBackendDataSource.class);
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(database);
@@ -1139,12 +1044,11 @@ class StandardDatabaseProxyConnectorTest {
         when(database.getName()).thenReturn("foo_db");
         when(database.containsDataSource()).thenReturn(true);
         when(database.isComplete()).thenReturn(true);
-        when(database.getProtocolType()).thenReturn(firebirdDatabaseType);
+        when(database.getProtocolType()).thenReturn(databaseType);
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds", storageUnit));
-        when(storageDatabaseType.getType()).thenReturn("Firebird");
-        when(storageUnit.getStorageType()).thenReturn(storageDatabaseType);
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         when(ProxyContext.getInstance().getBackendDataSource()).thenReturn(backendDataSource);
@@ -1153,37 +1057,56 @@ class StandardDatabaseProxyConnectorTest {
         } else {
             when(backendDataSource.getConnections(eq("foo_db"), eq("ds"), eq(1), any())).thenReturn(Collections.singletonList(connections[0]), Collections.singletonList(connections[1]));
         }
-        ConnectionSession connectionSession = createFirebirdConnectionSession(contextManager);
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(new SQLStatement(firebirdDatabaseType));
-        return new FirebirdPreparedStatementExecutionTestContext(connectionSession, metaData, sqlStatementContext,
+        ConnectionSession connectionSession = createPreparedStatementConnectionSession(contextManager);
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(new SQLStatement(databaseType));
+        return new PreparedStatementExecutionTestContext(connectionSession, metaData, sqlStatementContext,
                 new QueryContext(sqlStatementContext, sql, Collections.singletonList(1), new HintValueContext(), connectionSession.getConnectionContext(), metaData), sql);
     }
     
-    private ExecutionContext createFirebirdExecutionContext(final FirebirdPreparedStatementExecutionTestContext testContext, final int parameter) {
+    private ExecutionContext createPreparedStatementExecutionContext(final PreparedStatementExecutionTestContext testContext, final int parameter) {
         return new ExecutionContext(new QueryContext(testContext.sqlStatementContext, testContext.sql, Collections.singletonList(parameter),
                 new HintValueContext(), testContext.connectionSession.getConnectionContext(), testContext.metaData),
                 Collections.singletonList(new ExecutionUnit("ds", new SQLUnit(testContext.sql, Collections.singletonList(parameter)))), mock());
     }
     
-    private PreparedStatementCacheKey createPreparedStatementCacheKey(final int statementId) {
-        return new PreparedStatementCacheKey("firebird:" + statementId);
+    private MockedConstruction<DatabaseTypeRegistry> mockPreparedStatementDatabaseTypeRegistry() {
+        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
+            when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_db");
+            when(mock.getDialectDatabaseMetaData()).thenReturn(mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS));
+        });
     }
     
-    private DatabaseProxyConnector createFirebirdPreparedStatementConnector(final FirebirdPreparedStatementExecutionTestContext testContext) throws SQLException {
-        DatabaseProxyConnector result = new StandardDatabaseProxyConnector(
-                JDBCDriverType.PREPARED_STATEMENT, testContext.queryContext, testContext.connectionSession.getDatabaseConnectionManager());
-        ProxySQLExecutor proxySQLExecutor = getField(result, "proxySQLExecutor");
-        ProxyJDBCExecutor proxyJDBCExecutor = mock(ProxyJDBCExecutor.class);
-        List<ExecuteResult> executeResults = Collections.singletonList(new UpdateResult(1, 0L));
-        when(proxyJDBCExecutor.execute(any(), any(), eq(false), anyBoolean())).thenReturn(executeResults);
-        setProxySQLExecutorField(proxySQLExecutor, "regularExecutor", proxyJDBCExecutor);
+    private MockedConstruction<KernelProcessor> mockKernelProcessor(final ExecutionContext executionContext) {
+        return mockConstruction(KernelProcessor.class,
+                (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext));
+    }
+    
+    private MockedConstruction<KernelProcessor> mockKernelProcessor(final ExecutionContext firstExecutionContext, final ExecutionContext secondExecutionContext) {
+        return mockConstruction(KernelProcessor.class,
+                (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class)))
+                        .thenReturn(1 == context.getCount() ? firstExecutionContext : secondExecutionContext));
+    }
+    
+    private MockedStatic<ShardingSphereServiceLoader> mockNoAdvancedProxySQLExecutorsWithRealMethods() {
+        MockedStatic<ShardingSphereServiceLoader> result = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS);
+        result.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
         return result;
     }
     
-    @SuppressWarnings("unchecked")
+    private PreparedStatementCacheKey createPreparedStatementCacheKey(final int statementId) {
+        return new PreparedStatementCacheKey("prepared-statement:" + statementId);
+    }
+    
     @SneakyThrows(ReflectiveOperationException.class)
-    private <T> T getField(final DatabaseProxyConnector target, final String fieldName) {
-        return (T) Plugins.getMemberAccessor().get(StandardDatabaseProxyConnector.class.getDeclaredField(fieldName), target);
+    private DatabaseProxyConnector createPreparedStatementConnector(final PreparedStatementExecutionTestContext testContext) throws SQLException {
+        DatabaseProxyConnector result = new StandardDatabaseProxyConnector(
+                JDBCDriverType.PREPARED_STATEMENT, testContext.queryContext, testContext.connectionSession.getDatabaseConnectionManager());
+        ProxySQLExecutor proxySQLExecutor = (ProxySQLExecutor) Plugins.getMemberAccessor().get(StandardDatabaseProxyConnector.class.getDeclaredField("proxySQLExecutor"), result);
+        ProxyJDBCExecutor proxyJDBCExecutor = mock(ProxyJDBCExecutor.class);
+        List<ExecuteResult> executeResults = Collections.singletonList(new UpdateResult(1, 0L));
+        when(proxyJDBCExecutor.execute(any(), any(), eq(false), anyBoolean())).thenReturn(executeResults);
+        Plugins.getMemberAccessor().set(ProxySQLExecutor.class.getDeclaredField("regularExecutor"), proxySQLExecutor, proxyJDBCExecutor);
+        return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -1191,12 +1114,8 @@ class StandardDatabaseProxyConnectorTest {
         Plugins.getMemberAccessor().set(StandardDatabaseProxyConnector.class.getDeclaredField(fieldName), target, value);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setProxySQLExecutorField(final ProxySQLExecutor target, final String fieldName, final Object value) {
-        Plugins.getMemberAccessor().set(ProxySQLExecutor.class.getDeclaredField(fieldName), target, value);
-    }
-    
-    private static final class FirebirdPreparedStatementExecutionTestContext {
+    @RequiredArgsConstructor
+    private static final class PreparedStatementExecutionTestContext {
         
         private final ConnectionSession connectionSession;
         
@@ -1207,14 +1126,5 @@ class StandardDatabaseProxyConnectorTest {
         private final QueryContext queryContext;
         
         private final String sql;
-        
-        private FirebirdPreparedStatementExecutionTestContext(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData,
-                                                              final SQLStatementContext sqlStatementContext, final QueryContext queryContext, final String sql) {
-            this.connectionSession = connectionSession;
-            this.metaData = metaData;
-            this.sqlStatementContext = sqlStatementContext;
-            this.queryContext = queryContext;
-            this.sql = sql;
-        }
     }
 }
