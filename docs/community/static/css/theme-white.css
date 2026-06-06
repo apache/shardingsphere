@@ -1,5 +1,5 @@
 body{
-    font-family: 'roboto,sans-serif';
+    font-family: 'roboto',sans-serif;
     letter-spacing: .33px;
     font-weight: 400;
     text-rendering: optimizeLegibility;
@@ -307,7 +307,7 @@ a:hover{
 }
 
 
-h1, h2, h3, h4, h5, h6{font-weight: bold;font-family:'roboto,sans-serif' ;}
+h1, h2, h3, h4, h5, h6{font-weight: bold;font-family:'roboto',sans-serif;}
 h1{
     text-align: left;
 }
