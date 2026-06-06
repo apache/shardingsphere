@@ -334,7 +334,7 @@ public final class ProxySQLExecutor {
                 return true;
             }
         } catch (final ReflectiveOperationException ex) {
-            //ignored, fallback to false
+            // ignored, fallback to false
         }
         return false;
     }
