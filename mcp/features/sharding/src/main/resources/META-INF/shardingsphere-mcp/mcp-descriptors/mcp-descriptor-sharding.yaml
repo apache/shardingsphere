@@ -122,7 +122,7 @@ resourceTemplates:
     title: Sharding Table Reference Rule
     description: "Read one sharding table reference rule."
     mimeType: application/json
-    shardingSphereMetadata: &databaseRuleMetadata
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -197,7 +197,7 @@ resourceTemplates:
     title: Sharding Key Generate Strategy
     description: "Read one configured sharding key generate strategy."
     mimeType: application/json
-    shardingSphereMetadata: &databaseStrategyMetadata
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -255,7 +255,7 @@ resourceTemplates:
     title: Sharding Algorithm Used Table Rules
     description: "List table rules using one sharding algorithm."
     mimeType: application/json
-    shardingSphereMetadata: &databaseAlgorithmMetadata
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -286,7 +286,7 @@ resourceTemplates:
     title: Sharding Auditor Used Table Rules
     description: "List table rules using one sharding auditor."
     mimeType: application/json
-    shardingSphereMetadata: &databaseAuditorMetadata
+    shardingSphereMetadata:
       uriVariables:
         - name: database
           title: Logical Database
@@ -433,12 +433,13 @@ tools:
         plan_id: {type: string, description: "Optional workflow plan id."}
         database: {type: string, description: "Logical database."}
         table: {type: string, description: "Logical table."}
-        column: {type: string, description: "Sharding or key generate column."}
+        column: {type: string, description: "Standard sharding column, auto-table sharding column, or key generate column."}
         rule: {type: string, description: "Rule name."}
         operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
         data_nodes: {type: string, description: "Explicit data nodes expression for sharding table rule."}
         storage_units: {type: string, description: "Comma-separated storage units for auto table rule."}
-        strategy_type: {type: string, description: "Sharding strategy type such as standard, complex, hint, or none."}
+        strategy_type: {type: string, description: "Sharding strategy type.", enum: [standard, complex, hint, none]}
+        sharding_columns: {type: string, description: "Comma-separated sharding columns for complex sharding strategy."}
         default_strategy_type: {type: string, description: "DATABASE or TABLE default strategy type."}
         algorithm_type: {type: string, description: "Sharding or key generator algorithm type."}
         algorithm_properties: {type: object, description: "Algorithm properties.", additionalProperties: {type: string}}

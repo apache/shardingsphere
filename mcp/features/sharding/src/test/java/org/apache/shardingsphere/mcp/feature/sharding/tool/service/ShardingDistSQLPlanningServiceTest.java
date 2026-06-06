@@ -41,6 +41,40 @@ class ShardingDistSQLPlanningServiceTest {
     }
     
     @Test
+    void assertPlanTableRuleCreateWithComplexStrategy() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setColumn("");
+        request.setStrategyType("complex");
+        request.setShardingColumns("order_id, user_id");
+        assertThat(new ShardingDistSQLPlanningService().planTableRule(request, "create").getSql(),
+                is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), "
+                        + "TABLE_STRATEGY(TYPE='complex', SHARDING_COLUMNS=order_id, user_id, "
+                        + "SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))), "
+                        + "KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake')))"));
+    }
+    
+    @Test
+    void assertPlanTableRuleCreateWithHintStrategy() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setColumn("");
+        request.setStrategyType("hint");
+        assertThat(new ShardingDistSQLPlanningService().planTableRule(request, "create").getSql(),
+                is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), "
+                        + "TABLE_STRATEGY(TYPE='hint', SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))), "
+                        + "KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake')))"));
+    }
+    
+    @Test
+    void assertPlanTableRuleCreateWithNoneStrategy() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setColumn("");
+        request.setStrategyType("none");
+        request.setAlgorithmType("");
+        assertThat(new ShardingDistSQLPlanningService().planTableRule(request, "create").getSql(),
+                is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake')))"));
+    }
+    
+    @Test
     void assertPlanTableRuleDrop() {
         assertThat(new ShardingDistSQLPlanningService().planTableRule(createTableRuleRequest(), "drop").getSql(), is("DROP SHARDING TABLE RULE t_order"));
     }
@@ -61,6 +95,39 @@ class ShardingDistSQLPlanningServiceTest {
         assertThat(new ShardingDistSQLPlanningService().planDefaultStrategy(request, "create").getSql(),
                 is("CREATE DEFAULT SHARDING DATABASE STRATEGY (TYPE='standard', SHARDING_COLUMN=order_id, "
                         + "SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"));
+    }
+    
+    @Test
+    void assertPlanDefaultStrategyWithComplexStrategy() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setColumn("");
+        request.setDefaultStrategyType("DATABASE");
+        request.setStrategyType("complex");
+        request.setShardingColumns("order_id, user_id");
+        assertThat(new ShardingDistSQLPlanningService().planDefaultStrategy(request, "create").getSql(),
+                is("CREATE DEFAULT SHARDING DATABASE STRATEGY (TYPE='complex', SHARDING_COLUMNS=order_id, user_id, "
+                        + "SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"));
+    }
+    
+    @Test
+    void assertPlanDefaultStrategyWithHintStrategy() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setColumn("");
+        request.setDefaultStrategyType("DATABASE");
+        request.setStrategyType("hint");
+        assertThat(new ShardingDistSQLPlanningService().planDefaultStrategy(request, "create").getSql(),
+                is("CREATE DEFAULT SHARDING DATABASE STRATEGY (TYPE='hint', "
+                        + "SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"));
+    }
+    
+    @Test
+    void assertPlanDefaultStrategyWithNoneStrategy() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setColumn("");
+        request.setDefaultStrategyType("DATABASE");
+        request.setStrategyType("none");
+        request.setAlgorithmType("");
+        assertThat(new ShardingDistSQLPlanningService().planDefaultStrategy(request, "create").getSql(), is("CREATE DEFAULT SHARDING DATABASE STRATEGY (TYPE='none')"));
     }
     
     @Test

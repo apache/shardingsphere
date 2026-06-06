@@ -140,7 +140,10 @@ public final class ShardingDistSQLPlanningService {
             segments.add(createKeyGeneratorFragment(request));
         } else {
             segments.add(String.format("DATANODES('%s')", WorkflowSQLUtils.escapeLiteral(request.getDataNodes())));
-            segments.add(String.format("TABLE_STRATEGY(%s)", createShardingStrategy(request)));
+            String tableStrategy = createTableStrategy(request);
+            if (!tableStrategy.isEmpty()) {
+                segments.add(tableStrategy);
+            }
         }
         if (!request.getKeyGenerateColumn().isEmpty()) {
             segments.add(String.format("KEY_GENERATE_STRATEGY(COLUMN=%s, %s)", format(request.getKeyGenerateColumn()), createKeyGenerateAlgorithmDefinition(request)));
@@ -152,13 +155,26 @@ public final class ShardingDistSQLPlanningService {
         return String.join(", ", segments);
     }
     
+    private String createTableStrategy(final ShardingWorkflowRequest request) {
+        return "none".equals(normalizeStrategyType(request)) ? "" : String.format("TABLE_STRATEGY(%s)", createShardingStrategy(request));
+    }
+    
     private String createShardingStrategy(final ShardingWorkflowRequest request) {
-        String strategyType = request.getStrategyType().isEmpty() ? "standard" : request.getStrategyType().toLowerCase(Locale.ENGLISH);
-        if ("none".equals(strategyType)) {
-            return "TYPE='none'";
+        String strategyType = normalizeStrategyType(request);
+        switch (strategyType) {
+            case "complex":
+                return String.format("TYPE='%s', SHARDING_COLUMNS=%s, SHARDING_ALGORITHM(%s)",
+                        WorkflowSQLUtils.escapeLiteral(strategyType), joinIdentifiers(splitCsv(request.getShardingColumns())),
+                        createAlgorithmFragment(request.getAlgorithmType(), request.getPrimaryAlgorithmProperties()));
+            case "hint":
+                return String.format("TYPE='%s', SHARDING_ALGORITHM(%s)",
+                        WorkflowSQLUtils.escapeLiteral(strategyType), createAlgorithmFragment(request.getAlgorithmType(), request.getPrimaryAlgorithmProperties()));
+            case "none":
+                return "TYPE='none'";
+            default:
+                return String.format("TYPE='%s', SHARDING_COLUMN=%s, SHARDING_ALGORITHM(%s)",
+                        WorkflowSQLUtils.escapeLiteral(strategyType), format(request.getColumn()), createAlgorithmFragment(request.getAlgorithmType(), request.getPrimaryAlgorithmProperties()));
         }
-        return String.format("TYPE='%s', SHARDING_COLUMN=%s, SHARDING_ALGORITHM(%s)",
-                WorkflowSQLUtils.escapeLiteral(strategyType), format(request.getColumn()), createAlgorithmFragment(request.getAlgorithmType(), request.getPrimaryAlgorithmProperties()));
     }
     
     private String createKeyGenerateStrategyBody(final ShardingWorkflowRequest request) {
@@ -204,6 +220,10 @@ public final class ShardingDistSQLPlanningService {
     
     private String normalizeComponentType(final String componentType) {
         return componentType.trim().toLowerCase(Locale.ENGLISH).replace('_', '-');
+    }
+    
+    private String normalizeStrategyType(final ShardingWorkflowRequest request) {
+        return request.getStrategyType().isEmpty() ? "standard" : request.getStrategyType().toLowerCase(Locale.ENGLISH);
     }
     
     private String format(final String value) {

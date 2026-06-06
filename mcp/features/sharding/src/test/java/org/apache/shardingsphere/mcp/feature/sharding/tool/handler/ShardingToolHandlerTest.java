@@ -59,12 +59,13 @@ class ShardingToolHandlerTest {
         WorkflowContextFixture fixture = createWorkflowContextFixture();
         MCPResponse actual = new PlanShardingTableRuleToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
                 "database", "logic_db",
-                "structured_intent_evidence", Map.of("table", "t_order", "column", "order_id"),
+                "structured_intent_evidence", Map.of("table", "t_order", "column", "order_id", "sharding_columns", "order_id, user_id"),
                 "user_overrides", Map.of("algorithm_type", "INLINE", "algorithm_properties", Map.of("algorithm-expression", "t_order_${order_id % 2}")))));
         assertFalse(actual.toPayload().containsKey("ddl_artifacts"));
         ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
         verify(planningService).planTableRule(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
         assertThat(requestCaptor.getValue().getTable(), is("t_order"));
+        assertThat(requestCaptor.getValue().getShardingColumns(), is("order_id, user_id"));
         assertThat(requestCaptor.getValue().getAlgorithmType(), is("INLINE"));
         assertThat(requestCaptor.getValue().getPrimaryAlgorithmProperties(), is(Map.of("algorithm-expression", "t_order_${order_id % 2}")));
     }

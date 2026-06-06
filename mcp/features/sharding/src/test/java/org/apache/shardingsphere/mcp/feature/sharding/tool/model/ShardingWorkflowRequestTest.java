@@ -34,6 +34,7 @@ class ShardingWorkflowRequestTest {
         ShardingWorkflowRequest actual = request.copy();
         assertThat(actual.getDatabase(), is("logic_db"));
         assertThat(actual.getTable(), is("t_order"));
+        assertThat(actual.getShardingColumns(), is("order_id, user_id"));
         assertThat(actual.getRuleName(), is("ref_rule"));
         assertThat(actual.getReferenceTables(), is(List.of("t_order", "t_order_item")));
         assertThat(actual.getAuditorNames(), is(List.of("dml_auditor")));
@@ -44,6 +45,7 @@ class ShardingWorkflowRequestTest {
     void assertMerge() {
         ShardingWorkflowRequest current = new ShardingWorkflowRequest();
         current.setTable("t_order_item");
+        current.setShardingColumns("order_item_id, user_id");
         current.setAlgorithmType("MOD");
         current.getReferenceTables().add("t_order_item");
         current.putKeyGeneratorProperties(Map.of("worker-id", "2"));
@@ -51,6 +53,7 @@ class ShardingWorkflowRequestTest {
         ShardingWorkflowRequest actual = ShardingWorkflowRequest.merge(previous, current);
         assertThat(actual.getDatabase(), is("logic_db"));
         assertThat(actual.getTable(), is("t_order_item"));
+        assertThat(actual.getShardingColumns(), is("order_item_id, user_id"));
         assertThat(actual.getAlgorithmType(), is("MOD"));
         assertThat(actual.getReferenceTables(), is(List.of("t_order_item")));
         assertThat(actual.getKeyGeneratorProperties(), is(Map.of("worker-id", "2")));
@@ -73,6 +76,7 @@ class ShardingWorkflowRequestTest {
         result.setDataNodes("ds_${0..1}.t_order_${0..1}");
         result.setStorageUnits("ds_0,ds_1");
         result.setStrategyType("standard");
+        result.setShardingColumns("order_id, user_id");
         result.setDefaultStrategyType("DATABASE");
         result.setKeyGenerateColumn("id");
         result.setKeyGeneratorName("snowflake_generator");

@@ -49,9 +49,67 @@ class ShardingWorkflowPlanningServiceTest {
     }
     
     @Test
+    void assertPlanTableRuleCreateWithComplexStrategy() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setColumn("");
+        request.setStrategyType("complex");
+        request.setShardingColumns("order_id, user_id");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
+        when(inspectionService.queryTableRule(queryFacade, "logic_db", "t_order")).thenReturn(List.of());
+        WorkflowContextSnapshot actual = createPlanningService(inspectionService)
+                .planTableRule(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
+        assertThat(actual.getRuleArtifacts().get(0).getSql(), is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), "
+                + "TABLE_STRATEGY(TYPE='complex', SHARDING_COLUMNS=order_id, user_id, "
+                + "SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))))"));
+    }
+    
+    @Test
+    void assertPlanTableRuleCreateWithHintStrategy() {
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setColumn("");
+        request.setStrategyType("hint");
+        when(inspectionService.queryTableRule(queryFacade, "logic_db", "t_order")).thenReturn(List.of());
+        WorkflowContextSnapshot actual = createPlanningService(inspectionService)
+                .planTableRule(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
+        assertThat(actual.getRuleArtifacts().get(0).getSql(), is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), "
+                + "TABLE_STRATEGY(TYPE='hint', SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))))"));
+    }
+    
+    @Test
+    void assertPlanTableRuleCreateWithNoneStrategy() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setColumn("");
+        request.setStrategyType("none");
+        request.setAlgorithmType("");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
+        when(inspectionService.queryTableRule(queryFacade, "logic_db", "t_order")).thenReturn(List.of());
+        WorkflowContextSnapshot actual = createPlanningService(inspectionService)
+                .planTableRule(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
+        assertThat(actual.getRuleArtifacts().get(0).getSql(), is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'))"));
+    }
+    
+    @Test
     void assertPlanTableRuleMissingInputs() {
         ShardingWorkflowRequest request = createTableRuleRequest();
         request.setAlgorithmType("");
+        WorkflowContextSnapshot actual = new ShardingWorkflowPlanningService()
+                .planTableRule(new TestWorkflowSessionContext(), createQueryFacade(), "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
+    }
+    
+    @Test
+    void assertPlanTableRuleComplexStrategyMissingColumns() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setColumn("");
+        request.setStrategyType("complex");
         WorkflowContextSnapshot actual = new ShardingWorkflowPlanningService()
                 .planTableRule(new TestWorkflowSessionContext(), createQueryFacade(), "session-1", request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));

@@ -56,6 +56,7 @@ class ShardingToolDescriptorValidatorTest {
         Map<String, Object> properties = (Map<String, Object>) descriptor.getInputSchema().get("properties");
         assertTrue(properties.containsKey("data_nodes"));
         assertTrue(properties.containsKey("storage_units"));
+        assertTrue(properties.containsKey("sharding_columns"));
         assertTrue(properties.containsKey("algorithm_properties"));
         assertTrue(properties.containsKey("key_generator_properties"));
         assertTrue(properties.containsKey("reference_tables"));

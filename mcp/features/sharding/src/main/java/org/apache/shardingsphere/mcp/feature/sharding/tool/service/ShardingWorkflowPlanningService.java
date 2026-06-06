@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSu
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -236,7 +237,8 @@ public final class ShardingWorkflowPlanningService {
     private boolean ensureIdentifiers(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
         if (WorkflowSQLUtils.isSupportedIdentifier(request.getDatabase()) && WorkflowSQLUtils.isSupportedIdentifier(request.getTable())
                 && WorkflowSQLUtils.isSupportedIdentifier(request.getColumn()) && WorkflowSQLUtils.isSupportedIdentifier(request.getRuleName())
-                && WorkflowSQLUtils.isSupportedIdentifier(request.getKeyGeneratorName()) && WorkflowSQLUtils.isSupportedIdentifier(request.getKeyGenerateStrategyName())) {
+                && WorkflowSQLUtils.isSupportedIdentifier(request.getKeyGeneratorName()) && WorkflowSQLUtils.isSupportedIdentifier(request.getKeyGenerateStrategyName())
+                && areSupportedIdentifiers(splitCsv(request.getShardingColumns()))) {
             return true;
         }
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", "intaking",
@@ -249,10 +251,14 @@ public final class ShardingWorkflowPlanningService {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType())) {
             return require(request, request.getTable(), "Please provide target logical table.");
         }
-        return require(request, request.getTable(), "Please provide target logical table.")
-                && require(request, request.getColumn(), "Please provide sharding column.")
-                && require(request, request.getAlgorithmType(), "Please provide sharding algorithm type.")
-                && require(request, request.getDataNodes().isEmpty() ? request.getStorageUnits() : request.getDataNodes(), "Please provide data nodes or storage units.");
+        if (!require(request, request.getTable(), "Please provide target logical table.")
+                || !require(request, request.getDataNodes().isEmpty() ? request.getStorageUnits() : request.getDataNodes(), "Please provide data nodes or storage units.")) {
+            return false;
+        }
+        return request.getStorageUnits().isEmpty()
+                ? hasRequiredStrategyInputs(request)
+                : require(request, request.getColumn(), "Please provide auto table sharding column.")
+                        && require(request, request.getAlgorithmType(), "Please provide auto table sharding algorithm type.");
     }
     
     private boolean hasRequiredReferenceRuleInputs(final ShardingWorkflowRequest request) {
@@ -270,7 +276,35 @@ public final class ShardingWorkflowPlanningService {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType()) || "none".equalsIgnoreCase(request.getStrategyType())) {
             return true;
         }
-        return require(request, request.getColumn(), "Please provide sharding column.") && require(request, request.getAlgorithmType(), "Please provide sharding algorithm type.");
+        return hasRequiredStrategyInputs(request);
+    }
+    
+    private boolean hasRequiredStrategyInputs(final ShardingWorkflowRequest request) {
+        switch (normalizeStrategyType(request)) {
+            case "standard":
+                return require(request, request.getColumn(), "Please provide sharding column.")
+                        && require(request, request.getAlgorithmType(), "Please provide sharding algorithm type.");
+            case "complex":
+                return hasRequiredComplexStrategyInputs(request);
+            case "hint":
+                return require(request, request.getAlgorithmType(), "Please provide sharding algorithm type.");
+            case "none":
+                return true;
+            default:
+                request.setFieldSemantics("Please provide strategy_type as standard, complex, hint, or none.");
+                return false;
+        }
+    }
+    
+    private boolean hasRequiredComplexStrategyInputs(final ShardingWorkflowRequest request) {
+        if (!require(request, request.getShardingColumns(), "Please provide at least two sharding columns for complex strategy.")) {
+            return false;
+        }
+        if (splitCsv(request.getShardingColumns()).size() < 2) {
+            request.setFieldSemantics("Please provide at least two sharding columns for complex strategy.");
+            return false;
+        }
+        return require(request, request.getAlgorithmType(), "Please provide sharding algorithm type.");
     }
     
     private boolean hasRequiredKeyGeneratorInputs(final ShardingWorkflowRequest request) {
@@ -340,6 +374,18 @@ public final class ShardingWorkflowPlanningService {
     
     private boolean containsNamedRow(final Collection<Map<String, Object>> rows, final String fieldName, final String expected, final String databaseType) {
         return rows.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, expected, WorkflowRuleValueUtils.getRuleValue(each, fieldName)));
+    }
+    
+    private boolean areSupportedIdentifiers(final Collection<String> identifiers) {
+        return identifiers.stream().allMatch(WorkflowSQLUtils::isSupportedIdentifier);
+    }
+    
+    private List<String> splitCsv(final String value) {
+        return Arrays.stream(value.split(",")).map(String::trim).filter(each -> !each.isEmpty()).toList();
+    }
+    
+    private String normalizeStrategyType(final ShardingWorkflowRequest request) {
+        return request.getStrategyType().isEmpty() ? "standard" : request.getStrategyType().trim().toLowerCase(Locale.ENGLISH);
     }
     
     private String normalizeComponentType(final String componentType) {

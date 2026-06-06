@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.model;
 
+import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import java.util.Map;
 /**
  * Sharding workflow request.
  */
+@Getter
 public final class ShardingWorkflowRequest extends WorkflowRequest {
     
     private String ruleName = "";
@@ -36,6 +38,8 @@ public final class ShardingWorkflowRequest extends WorkflowRequest {
     private String storageUnits = "";
     
     private String strategyType = "";
+    
+    private String shardingColumns = "";
     
     private String defaultStrategyType = "";
     
@@ -84,6 +88,7 @@ public final class ShardingWorkflowRequest extends WorkflowRequest {
         result.setDataNodes(dataNodes);
         result.setStorageUnits(storageUnits);
         result.setStrategyType(strategyType);
+        result.setShardingColumns(shardingColumns);
         result.setDefaultStrategyType(defaultStrategyType);
         result.setKeyGenerateColumn(keyGenerateColumn);
         result.setKeyGeneratorName(keyGeneratorName);
@@ -99,120 +104,60 @@ public final class ShardingWorkflowRequest extends WorkflowRequest {
         return result;
     }
     
-    public String getRuleName() {
-        return ruleName;
-    }
-    
     public void setRuleName(final String ruleName) {
         this.ruleName = normalize(ruleName);
-    }
-    
-    public String getDataNodes() {
-        return dataNodes;
     }
     
     public void setDataNodes(final String dataNodes) {
         this.dataNodes = normalize(dataNodes);
     }
     
-    public String getStorageUnits() {
-        return storageUnits;
-    }
-    
     public void setStorageUnits(final String storageUnits) {
         this.storageUnits = normalize(storageUnits);
-    }
-    
-    public String getStrategyType() {
-        return strategyType;
     }
     
     public void setStrategyType(final String strategyType) {
         this.strategyType = normalize(strategyType);
     }
     
-    public String getDefaultStrategyType() {
-        return defaultStrategyType;
+    public void setShardingColumns(final String shardingColumns) {
+        this.shardingColumns = normalize(shardingColumns);
     }
     
     public void setDefaultStrategyType(final String defaultStrategyType) {
         this.defaultStrategyType = normalize(defaultStrategyType);
     }
     
-    public String getKeyGenerateColumn() {
-        return keyGenerateColumn;
-    }
-    
     public void setKeyGenerateColumn(final String keyGenerateColumn) {
         this.keyGenerateColumn = normalize(keyGenerateColumn);
-    }
-    
-    public String getKeyGeneratorName() {
-        return keyGeneratorName;
     }
     
     public void setKeyGeneratorName(final String keyGeneratorName) {
         this.keyGeneratorName = normalize(keyGeneratorName);
     }
     
-    public String getKeyGeneratorType() {
-        return keyGeneratorType;
-    }
-    
     public void setKeyGeneratorType(final String keyGeneratorType) {
         this.keyGeneratorType = normalize(keyGeneratorType);
-    }
-    
-    public String getSequenceName() {
-        return sequenceName;
     }
     
     public void setSequenceName(final String sequenceName) {
         this.sequenceName = normalize(sequenceName);
     }
     
-    public String getKeyGenerateStrategyName() {
-        return keyGenerateStrategyName;
-    }
-    
     public void setKeyGenerateStrategyName(final String keyGenerateStrategyName) {
         this.keyGenerateStrategyName = normalize(keyGenerateStrategyName);
-    }
-    
-    public String getComponentType() {
-        return componentType;
     }
     
     public void setComponentType(final String componentType) {
         this.componentType = normalize(componentType);
     }
     
-    public String getComponentName() {
-        return componentName;
-    }
-    
     public void setComponentName(final String componentName) {
         this.componentName = normalize(componentName);
     }
     
-    public String getAllowHintDisable() {
-        return allowHintDisable;
-    }
-    
     public void setAllowHintDisable(final String allowHintDisable) {
         this.allowHintDisable = normalize(allowHintDisable);
-    }
-    
-    public List<String> getReferenceTables() {
-        return referenceTables;
-    }
-    
-    public List<String> getAuditorNames() {
-        return auditorNames;
-    }
-    
-    public Map<String, String> getKeyGeneratorProperties() {
-        return keyGeneratorProperties;
     }
     
     /**
@@ -239,6 +184,7 @@ public final class ShardingWorkflowRequest extends WorkflowRequest {
         target.setDataNodes(resolveValue(target.getDataNodes(), dataNodes));
         target.setStorageUnits(resolveValue(target.getStorageUnits(), storageUnits));
         target.setStrategyType(resolveValue(target.getStrategyType(), strategyType));
+        target.setShardingColumns(resolveValue(target.getShardingColumns(), shardingColumns));
         target.setDefaultStrategyType(resolveValue(target.getDefaultStrategyType(), defaultStrategyType));
         target.setKeyGenerateColumn(resolveValue(target.getKeyGenerateColumn(), keyGenerateColumn));
         target.setKeyGeneratorName(resolveValue(target.getKeyGeneratorName(), keyGeneratorName));

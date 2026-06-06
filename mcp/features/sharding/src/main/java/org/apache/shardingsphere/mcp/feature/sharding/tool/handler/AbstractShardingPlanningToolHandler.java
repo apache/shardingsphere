@@ -71,6 +71,7 @@ abstract class AbstractShardingPlanningToolHandler implements MCPToolHandler<MCP
         applyStringArgument(workflowPlanningArguments, "data_nodes", request::setDataNodes);
         applyStringArgument(workflowPlanningArguments, "storage_units", request::setStorageUnits);
         applyStringArgument(workflowPlanningArguments, "strategy_type", request::setStrategyType);
+        applyStringArgument(workflowPlanningArguments, "sharding_columns", request::setShardingColumns);
         applyStringArgument(workflowPlanningArguments, "default_strategy_type", request::setDefaultStrategyType);
         applyStringArgument(workflowPlanningArguments, "algorithm_type", request::setAlgorithmType);
         applyStringArgument(workflowPlanningArguments, "key_generate_column", request::setKeyGenerateColumn);
@@ -94,6 +95,7 @@ abstract class AbstractShardingPlanningToolHandler implements MCPToolHandler<MCP
         applyStringField(values, "data_nodes", request::setDataNodes);
         applyStringField(values, "storage_units", request::setStorageUnits);
         applyStringField(values, "strategy_type", request::setStrategyType);
+        applyStringField(values, "sharding_columns", request::setShardingColumns);
         applyStringField(values, "default_strategy_type", request::setDefaultStrategyType);
         applyStringField(values, "algorithm_type", request::setAlgorithmType);
         applyStringField(values, "key_generate_column", request::setKeyGenerateColumn);
