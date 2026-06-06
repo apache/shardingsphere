@@ -18,14 +18,11 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
@@ -43,15 +40,15 @@ public final class MaskWorkflowPlanningService {
     
     private static final List<String> INTERACTION_STEPS = List.of(
             "Confirm database, table, column and target lifecycle",
-            "Inspect existing mask rules and logical metadata",
+            "Inspect mask algorithm plugins and DistSQL-visible rules",
             "Clarify masking intent and choose algorithm",
             "Collect algorithm properties",
-            "Generate DistSQL artifacts",
+            "Generate mask rule DistSQL artifacts",
             "Review artifacts and choose execution mode",
             "Execute or export artifacts",
             "Validate and summarize");
     
-    private static final List<String> VALIDATION_LAYERS = List.of("rules", "logical_metadata", "sql_executability");
+    private static final List<String> VALIDATION_LAYERS = List.of("rules");
     
     private final WorkflowPlanningSupport planningSupport;
     
@@ -81,24 +78,21 @@ public final class MaskWorkflowPlanningService {
      * Plan mask workflow.
      *
      * @param workflowSessionContext workflow session context
-     * @param metadataQueryFacade metadata query facade
      * @param queryFacade query facade
      * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
-    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
-                                        final MCPFeatureQueryFacade queryFacade, final String sessionId, final WorkflowRequest request) {
+    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade, final String sessionId, final WorkflowRequest request) {
         WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
         WorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
-        if (!planningSupport.ensurePlanningContext(metadataQueryFacade, mergedRequest, clarifiedIntent, result)) {
+        if (!planningSupport.ensureRulePlanningContext(mergedRequest, clarifiedIntent, result)) {
             String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
             return workflowSessionContext.persist(result, currentStep, result.getStatus());
         }
-        String databaseType = metadataQueryFacade.queryDatabase(WorkflowSQLUtils.normalizeIdentifier(mergedRequest.getDatabase()))
-                .map(each -> each.getDatabaseType()).orElse("");
+        String databaseType = queryFacade.getDatabaseType(mergedRequest.getDatabase());
         List<Map<String, Object>> existingRules = ruleInspectionService.queryMaskRules(queryFacade, mergedRequest.getDatabase(), mergedRequest.getTable());
         if (!ensureLifecycleState(clarifiedIntent, mergedRequest, existingRules, result, databaseType)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
@@ -135,9 +129,6 @@ public final class MaskWorkflowPlanningService {
         if (!planningSupport.isReadyForArtifactPlanning(request, clarifiedIntent, snapshot, findPropertyRequirements(request), "Please use a mask algorithm visible in the current Proxy.")) {
             return false;
         }
-        if (!ensureSupportedTableRuleExpansion(request, existingRules, snapshot, databaseType)) {
-            return false;
-        }
         planArtifacts(clarifiedIntent, request, existingRules, snapshot, databaseType);
         return true;
     }
@@ -153,18 +144,6 @@ public final class MaskWorkflowPlanningService {
     
     private List<AlgorithmPropertyRequirement> findPropertyRequirements(final WorkflowRequest request) {
         return algorithmPropertyTemplateService.findRequirements(request.getAlgorithmType());
-    }
-    
-    private boolean ensureSupportedTableRuleExpansion(final WorkflowRequest request, final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot, final String databaseType) {
-        if (maskRules.isEmpty() || maskRules.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column")))) {
-            return true;
-        }
-        snapshot.getClarifiedIntent().getClarificationMessages().add(
-                "Current Proxy DistSQL cannot automatically expand an existing mask table rule with new logic columns. Recreate the rule manually during a maintenance window.");
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED, "error", "planning-artifacts",
-                "Mask planning cannot expand an existing table rule with new logic columns in V1.",
-                "Manually recreate the mask rule with the complete column set after reviewing data impact.", true, Map.of("adds_logic_column", true)));
-        return false;
     }
     
     private void planArtifacts(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,

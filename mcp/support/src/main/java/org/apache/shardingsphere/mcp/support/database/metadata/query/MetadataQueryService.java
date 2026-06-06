@@ -51,34 +51,17 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
     
     private final RequestScopedMetadataContext metadataContext;
     
-    /**
-     * Query databases.
-     *
-     * @return database metadata
-     */
     @Override
     public List<MCPDatabaseMetadata> queryDatabases() {
         return databaseCapabilityProvider.getDatabaseProfiles().stream()
                 .map(this::createDatabaseSummary).sorted(Comparator.comparing(MCPDatabaseMetadata::getDatabase)).toList();
     }
     
-    /**
-     * Query database.
-     *
-     * @param databaseName database name
-     * @return database metadata
-     */
     @Override
     public Optional<MCPDatabaseMetadata> queryDatabase(final String databaseName) {
         return metadataContext.loadDatabaseMetadata(databaseName).map(MCPDatabaseMetadata::createDetail);
     }
     
-    /**
-     * Query schemas.
-     *
-     * @param databaseName database name
-     * @return schema metadata
-     */
     @Override
     public List<MCPSchemaMetadata> querySchemas(final String databaseName) {
         if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.SCHEMA)) {
@@ -88,13 +71,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
                 .map(MCPSchemaMetadata::createSummary).sorted(Comparator.comparing(MCPSchemaMetadata::getSchema)).toList()).orElse(Collections.emptyList());
     }
     
-    /**
-     * Query schema.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return schema metadata
-     */
     @Override
     public Optional<MCPSchemaMetadata> querySchema(final String databaseName, final String schemaName) {
         if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.SCHEMA)) {
@@ -103,13 +79,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return findSchema(databaseName, schemaName).map(MCPSchemaMetadata::createDetail);
     }
     
-    /**
-     * Query tables.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return table metadata
-     */
     @Override
     public List<MCPTableMetadata> queryTables(final String databaseName, final String schemaName) {
         if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.TABLE)) {
@@ -121,14 +90,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
                 .toList()).orElse(Collections.emptyList());
     }
     
-    /**
-     * Query table.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return table metadata
-     */
     @Override
     public Optional<MCPTableMetadata> queryTable(final String databaseName, final String schemaName, final String tableName) {
         if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.TABLE)) {
@@ -137,13 +98,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return findTable(databaseName, schemaName, tableName).map(MCPTableMetadata::createDetail);
     }
     
-    /**
-     * Query views.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return view metadata
-     */
     @Override
     public List<MCPViewMetadata> queryViews(final String databaseName, final String schemaName) {
         if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.VIEW)) {
@@ -155,14 +109,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
                 .toList()).orElse(Collections.emptyList());
     }
     
-    /**
-     * Query view.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param viewName view name
-     * @return view metadata
-     */
     @Override
     public Optional<MCPViewMetadata> queryView(final String databaseName, final String schemaName, final String viewName) {
         if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.VIEW)) {
@@ -171,14 +117,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return findView(databaseName, schemaName, viewName).map(MCPViewMetadata::createDetail);
     }
     
-    /**
-     * Query table columns.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return column metadata
-     */
     @Override
     public List<MCPColumnMetadata> queryTableColumns(final String databaseName, final String schemaName, final String tableName) {
         if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.COLUMN)) {
@@ -193,15 +131,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return result;
     }
     
-    /**
-     * Query table column.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnName column name
-     * @return column metadata
-     */
     @Override
     public Optional<MCPColumnMetadata> queryTableColumn(final String databaseName, final String schemaName, final String tableName, final String columnName) {
         if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.COLUMN)) {
@@ -210,14 +139,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return findColumn(queryTableColumns(databaseName, schemaName, tableName), columnName);
     }
     
-    /**
-     * Query view columns.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param viewName view name
-     * @return column metadata
-     */
     @Override
     public List<MCPColumnMetadata> queryViewColumns(final String databaseName, final String schemaName, final String viewName) {
         if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.COLUMN)) {
@@ -226,15 +147,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return findView(databaseName, schemaName, viewName).map(optional -> sortColumns(optional.getColumns())).orElse(Collections.emptyList());
     }
     
-    /**
-     * Query view column.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param viewName view name
-     * @param columnName column name
-     * @return column metadata
-     */
     @Override
     public Optional<MCPColumnMetadata> queryViewColumn(final String databaseName, final String schemaName, final String viewName, final String columnName) {
         if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.COLUMN)) {
@@ -243,14 +155,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return findColumn(queryViewColumns(databaseName, schemaName, viewName), columnName);
     }
     
-    /**
-     * Query indexes.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return index metadata
-     */
     @Override
     public List<MCPIndexMetadata> queryIndexes(final String databaseName, final String schemaName, final String tableName) {
         ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.INDEX),
@@ -264,15 +168,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return result;
     }
     
-    /**
-     * Query index.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param indexName index name
-     * @return index metadata
-     */
     @Override
     public Optional<MCPIndexMetadata> queryIndex(final String databaseName, final String schemaName, final String tableName, final String indexName) {
         ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.INDEX),
@@ -280,13 +175,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return findIndex(queryIndexes(databaseName, schemaName, tableName), indexName);
     }
     
-    /**
-     * Query sequences.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return sequence metadata
-     */
     @Override
     public List<MCPSequenceMetadata> querySequences(final String databaseName, final String schemaName) {
         ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.SEQUENCE),
@@ -300,14 +188,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return result;
     }
     
-    /**
-     * Query sequence.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param sequenceName sequence name
-     * @return sequence metadata
-     */
     @Override
     public Optional<MCPSequenceMetadata> querySequence(final String databaseName, final String schemaName, final String sequenceName) {
         ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.SEQUENCE),
@@ -340,13 +220,6 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return sequences.stream().filter(each -> sequenceName.equals(each.getSequence())).findFirst();
     }
     
-    /**
-     * Judge whether the metadata object type is supported for the database.
-     *
-     * @param databaseName database name
-     * @param objectType metadata object type
-     * @return supported or not
-     */
     @Override
     public boolean isSupportedMetadataObjectType(final String databaseName, final SupportedMCPMetadataObjectType objectType) {
         Optional<MCPDatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(databaseName);

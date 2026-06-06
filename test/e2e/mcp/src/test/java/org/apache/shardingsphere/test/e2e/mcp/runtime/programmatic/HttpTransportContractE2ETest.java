@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadat
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
+import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -43,9 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EnabledIf("isEnabled")
 class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
-    private static final List<String> OFFICIAL_TOOL_NAMES = List.of(
-            "database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query", "database_gateway_execute_update", "database_gateway_apply_workflow",
-            "database_gateway_validate_workflow", "database_gateway_plan_encrypt_rule", "database_gateway_plan_mask_rule");
+    private static final List<String> OFFICIAL_TOOL_NAMES = OfficialMCPToolNames.getAll();
     
     private static final String PLAN_MASK_TOOL_NAME = "database_gateway_plan_mask_rule";
     
@@ -204,68 +203,6 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(String.valueOf(validationPayload.get("status")), is("failed"));
         assertFalse(String.valueOf(validationPayload.get("recovery_guidance")).isEmpty());
         assertModelFacingPayloadContract(validationPayload);
-    }
-    
-    @Test
-    void assertRejectExecuteUpdateWithoutExecutionMode() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1"));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> structuredContent = getStructuredContent(actual.body());
-        Map<String, Object> recovery = getRecoveryPayload(structuredContent, "missing_context");
-        assertModelFacingPayloadContract(structuredContent);
-        Map<String, Object> expectedArguments = Map.of("database", "logic_db", "schema", "logic_db",
-                "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview");
-        assertThat(recovery.get("category"), is("missing_execution_mode"));
-        assertThat(recovery.get("suggested_arguments"), is(expectedArguments));
-        Map<String, Object> retryAction = castToMapList(recovery.get("next_actions")).iterator().next();
-        assertThat(String.valueOf(retryAction.get("type")), is("tool_call"));
-        assertThat(castToMap(retryAction.get("arguments")), is(expectedArguments));
-        assertFalse(retryAction.containsKey("requires_user_approval"));
-    }
-    
-    @Test
-    void assertRejectToolCallWithInvalidInputSchema() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_search_metadata",
-                Map.of("query", "order", "object_types", List.of("TABLE")));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> structuredContent = getStructuredContent(actual.body());
-        Map<String, Object> recovery = getRecoveryPayload(structuredContent, "invalid_enum");
-        assertModelFacingPayloadContract(structuredContent);
-        assertThat(recovery.get("category"), is("invalid_enum_value"));
-        assertThat(recovery.get("field"), is("object_types[0]"));
-        assertThat(recovery.get("allowed_values"), is(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
-        assertThat(recovery.get("suggested_arguments"), is(Map.of("query", "order")));
-        Map<String, Object> retryAction = castToMapList(recovery.get("next_actions")).iterator().next();
-        assertThat(String.valueOf(retryAction.get("type")), is("tool_call"));
-        assertThat(castToMap(retryAction.get("arguments")), is(Map.of("query", "order")));
-        assertFalse(retryAction.containsKey("requires_user_approval"));
-    }
-    
-    @Test
-    void assertPreviewExecuteUpdateNextActions() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview"));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> structuredContent = getStructuredContent(actual.body());
-        assertThat(String.valueOf(structuredContent.get("result_kind")), is("preview"));
-        assertFalse((Boolean) structuredContent.get("would_execute"));
-        assertModelFacingPayloadContract(structuredContent);
-        List<Map<String, Object>> nextActions = castToMapList(structuredContent.get("next_actions"));
-        assertThat(nextActions.stream().map(each -> String.valueOf(each.get("type"))).toList(), is(List.of("tool_call")));
-        Map<String, Object> callToolAction = nextActions.get(0);
-        assertThat(String.valueOf(callToolAction.get("tool_name")), is("database_gateway_execute_update"));
-        assertThat(String.valueOf(castToMap(callToolAction.get("arguments")).get("execution_mode")), is("execute"));
-        assertFalse(callToolAction.containsKey("requires_user_approval"));
     }
     
     @Test

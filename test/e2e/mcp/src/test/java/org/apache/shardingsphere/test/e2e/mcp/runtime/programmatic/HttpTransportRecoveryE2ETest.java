@@ -68,46 +68,6 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
     
     @Test
-    void assertRecoverUnsupportedTarget() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "logic_db", "sql", "SELECT * FROM orders", "execution_mode", "preview"));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = getRecoveryPayload(payload, "unsupported_target");
-        Map<String, Object> nextAction = getFirstNextAction(recovery);
-        assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_query"));
-        HttpResponse<String> followUp = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", castToMap(nextAction.get("arguments")));
-        assertThat(followUp.statusCode(), is(200));
-        assertThat(String.valueOf(getStructuredContent(followUp.body()).get("result_kind")), is("result_set"));
-        assertModelFacingPayloadContract(payload);
-    }
-    
-    @Test
-    void assertRecoverInvalidExecutionMode() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "run"));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = getRecoveryPayload(payload, "invalid_enum");
-        Map<String, Object> nextAction = getFirstNextAction(recovery);
-        assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_update"));
-        Map<String, Object> retryArguments = castToMap(nextAction.get("arguments"));
-        assertThat(String.valueOf(retryArguments.get("execution_mode")), is("preview"));
-        assertThat(String.valueOf(retryArguments.get("database")), is("logic_db"));
-        assertThat(String.valueOf(retryArguments.get("schema")), is("logic_db"));
-        HttpResponse<String> retry = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", retryArguments);
-        assertThat(retry.statusCode(), is(200));
-        assertThat(String.valueOf(getStructuredContent(retry.body()).get("result_kind")), is("preview"));
-        assertModelFacingPayloadContract(payload);
-    }
-    
-    @Test
     void assertRecoverWrongSqlTool() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();

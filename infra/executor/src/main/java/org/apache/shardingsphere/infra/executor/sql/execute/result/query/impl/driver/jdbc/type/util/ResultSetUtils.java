@@ -94,9 +94,6 @@ public final class ResultSetUtils {
         if (value instanceof byte[]) {
             return convertByteArrayValue((byte[]) value, convertType);
         }
-        if (boolean.class.equals(convertType)) {
-            return convertBooleanValue(value);
-        }
         if (String.class.equals(convertType)) {
             return value.toString();
         }
@@ -105,6 +102,9 @@ public final class ResultSetUtils {
             if (result.isPresent()) {
                 return result.get();
             }
+        }
+        if (boolean.class.equals(convertType)) {
+            return convertBooleanValue(value);
         }
         try {
             return convertType.cast(value);

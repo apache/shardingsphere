@@ -20,11 +20,13 @@ package org.apache.shardingsphere.mcp.feature.encrypt.descriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +53,9 @@ class EncryptToolDescriptorValidatorTest {
     }
     
     @Test
-    void assertCompletionTargetUsesPromptName() {
-        assertTrue(MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream().anyMatch(this::isEncryptPlanningPromptCompletionTarget));
+    void assertDoesNotExposeCompletionTargets() {
+        assertFalse(MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream().anyMatch(each -> EncryptFeatureDefinition.PLAN_PROMPT_NAME.equals(each.getReference())));
+        assertFalse(MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream().anyMatch(each -> "shardingsphere://features/encrypt/algorithms".equals(each.getReference())));
     }
     
     @Test
@@ -66,6 +69,30 @@ class EncryptToolDescriptorValidatorTest {
         assertTrue(supportProperties.containsKey("form_mode"));
         assertTrue(supportProperties.containsKey("url_mode"));
         assertTrue(supportProperties.containsKey("selected_interaction"));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertDescriptorIsRuleDistSQLOnly() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> properties = (Map<String, Object>) descriptor.getInputSchema().get("properties");
+        assertFalse(properties.containsKey("allow_index_ddl"));
+        String descriptorText = descriptor.getDescription() + descriptor.getInputSchema() + descriptor.getOutputSchema() + descriptor.getMeta();
+        assertFalse(descriptorText.contains("generated DDL"));
+        assertFalse(descriptorText.contains("physical DDL"));
+        assertFalse(descriptorText.contains("logical metadata"));
+        assertFalse(descriptorText.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns"));
+        assertFalse(descriptorText.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes"));
+    }
+    
+    @Test
+    void assertPromptIsRuleDistSQLOnly() throws IOException {
+        String prompt = readResource("META-INF/shardingsphere-mcp/prompts/plan-encrypt-rule.md");
+        assertFalse(prompt.contains("column metadata"));
+        assertFalse(prompt.contains("logical metadata"));
+        assertFalse(prompt.contains("generated DDL"));
+        assertFalse(prompt.contains("safe completion"));
+        assertFalse(prompt.contains("completion/complete"));
     }
     
     @Test
@@ -85,7 +112,9 @@ class EncryptToolDescriptorValidatorTest {
         return MCPDescriptorCatalogIndex.getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
     }
     
-    private boolean isEncryptPlanningPromptCompletionTarget(final MCPCompletionTargetDescriptor descriptor) {
-        return "prompt".equals(descriptor.getReferenceType()) && EncryptFeatureDefinition.PLAN_PROMPT_NAME.equals(descriptor.getReference());
+    private String readResource(final String resourceName) throws IOException {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName)) {
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 }

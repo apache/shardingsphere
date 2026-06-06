@@ -28,6 +28,11 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       For simple internal two-path flows, avoid marker interfaces, multi-type result hierarchies, or extra DTO-style helpers.
       Add them only when they define a stable boundary, keep owner classes readable, or remove meaningful duplicated logic.
     - Delete unused code; when changing functionality, remove legacy compatibility shims.
+    - Do not add or keep Javadocs on methods that only override or implement a documented parent method.
+      Keep the public contract on the declaring API, SPI, or interface.
+      An overriding method should add Javadocs only when it documents implementation-specific behavior, stricter preconditions, side effects, exceptions, compatibility notes,
+      or semantics not already covered by the parent declaration.
+      When cleaning redundant override Javadocs, change comments only and verify no public contract information is lost.
     - Keep variable declarations adjacent to first use; if a value must be retained, declare it `final` to satisfy Checkstyle VariableDeclarationUsageDistance.
     - Single-use local variables must be inlined by default; keep a local variable only when it is reused (for stubbing/verification/assertions) or materially improves readability.
     - Do not add explicit defensive immutable collection copies in constructors or method return values by default.
@@ -105,6 +110,8 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - **Think before coding**: inspect existing code, contracts, tests, and relevant standards before editing; do not guess, hide uncertainty, or invent unsupported facts.
 - **Simple first**: solve the verified goal with the smallest clear implementation that preserves existing behavior.
 - **Precise modification**: change only the files and code paths required by the task; avoid drive-by refactors and unrelated cleanup.
+- **Path portability**: when writing code, tests, scripts, or skills, do not hard-code local machine paths or workspace-specific absolute paths.
+  Use repository-relative paths, configurable parameters, temporary directories, or documented environment variables instead.
 - **Scope declaration gate**: before planning or editing, determine and declare the requested change boundary.
   If the boundary is clear from the user request, state the inferred scope explicitly before making changes.
   If the boundary is missing or ambiguous, pause and ask the developer to confirm it before making changes.
@@ -139,6 +146,7 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - **Risk gate:** if any action fits the Dangerous Operation Checklist, pause and use the confirmation template before proceeding.
 - **Planning rules:** use Sequential Thinking with 3-10 actionable steps (no single-step plans) via the plan tool for non-trivial tasks; convert all hard requirements (SPI usage, mocking rules, coverage/test naming, forbidden APIs) into a checklist inside the plan and do not code until each item is addressed or explicitly waived.
 - **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use and mark retained values `final`; inline single-use locals by default unless reuse/readability justifies retention; delete dead code and avoid placeholders/TODOs.
+  Verify code and skills do not contain local machine paths before handoff.
 - **AGENTS.md maintenance:** do not add or update a `Session Notes` section in `AGENTS.md`. Keep task-specific notes in the active conversation, issue, or PR; only stable project-level rules may be generalized into this file.
 - **Post-task self-check (before replying):** confirm all instructions were honored; verify no placeholders/unused code; ensure Checkstyle/Spotless gates for touched modules are satisfied or explain why not run and what to run; list commands with exit codes; call out risks and follow-ups; complete all applicable checks before replying and do not rely on users to find missed rule violations.
 - **End-of-task format/style gate:** for any task that edits files, run `./mvnw spotless:apply -Pcheck -T1C` after the final edit, then run `./mvnw checkstyle:check -Pcheck -T1C` when production, test, or project-rule files are touched.

@@ -44,6 +44,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 
 import java.sql.SQLException;
@@ -70,9 +71,30 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
-        List<Object> params = packet.getParameterValues();
-        final List<Long> blobIdsToRemove = bindBlobParameters(params);
+        connectionSession.beginPreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(packet.getStatementId()));
+        try {
+            FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
+            ResponseHeader responseHeader = executePreparedStatement(preparedStatement, packet.getParameterValues());
+            if (responseHeader instanceof QueryResponseHeader) {
+                responseType = ResponseType.QUERY;
+                FirebirdFetchStatementCache.getInstance().registerStatement(connectionSession.getConnectionId(), packet.getStatementId(), proxyBackendHandler);
+                connectionSession.getDatabaseConnectionManager().markResourceInUse(proxyBackendHandler);
+            } else {
+                responseType = ResponseType.UPDATE;
+            }
+            Collection<DatabasePacket> result = new LinkedList<>();
+            if (packet.isStoredProcedure() && proxyBackendHandler.next()) {
+                result.add(getSQLResponse());
+            }
+            result.add(new FirebirdGenericResponsePacket());
+            return result;
+        } finally {
+            connectionSession.finishPreparedStatementCache();
+        }
+    }
+    
+    private ResponseHeader executePreparedStatement(final FirebirdServerPreparedStatement preparedStatement, final List<Object> params) throws SQLException {
+        List<Long> blobIdsToRemove = bindBlobParameters(params);
         SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).bindParameters(params);
@@ -80,22 +102,10 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
         QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(), connectionSession.getConnectionContext(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), true);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "Firebird"), queryContext, connectionSession, true);
-        ResponseHeader responseHeader = proxyBackendHandler.execute();
-        if (responseHeader instanceof QueryResponseHeader) {
-            responseType = ResponseType.QUERY;
-            FirebirdFetchStatementCache.getInstance().registerStatement(connectionSession.getConnectionId(), packet.getStatementId(), proxyBackendHandler);
-            connectionSession.getDatabaseConnectionManager().markResourceInUse(proxyBackendHandler);
-        } else {
-            responseType = ResponseType.UPDATE;
-        }
-        if (responseHeader instanceof UpdateResponseHeader) {
+        ResponseHeader result = proxyBackendHandler.execute();
+        if (result instanceof UpdateResponseHeader) {
             clearBlobUploads(blobIdsToRemove);
         }
-        Collection<DatabasePacket> result = new LinkedList<>();
-        if (packet.isStoredProcedure() && proxyBackendHandler.next()) {
-            result.add(getSQLResponse());
-        }
-        result.add(new FirebirdGenericResponsePacket());
         return result;
     }
     

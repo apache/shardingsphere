@@ -20,20 +20,15 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @EnabledIf("isEnabled")
 class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
@@ -65,21 +60,6 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("result_kind")), is("result_set"));
         assertThat(String.valueOf(payload.get("statement_class")), is("query"));
-    }
-    
-    @Test
-    void assertRecoverSideEffectQuery() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
-                createExecuteQueryArguments("logic_db", "logic_db", "UPDATE orders SET status = status WHERE order_id = -1"));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = getRecoveryPayload(payload, "unsafe_sql");
-        Map<String, Object> nextAction = castToMapList(recovery.get("next_actions")).get(0);
-        assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_update"));
-        assertThat(String.valueOf(castToMap(nextAction.get("arguments")).get("execution_mode")), is("preview"));
     }
     
     @Test
@@ -127,87 +107,6 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(String.valueOf(((List<?>) ((List<?>) payload.get("rows")).get(0)).get(0)), is("NEW"));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertPreviewSideEffectStatementCases")
-    void assertPreviewSideEffectStatement(final String name, final String sql, final String expectedStatementClass,
-                                          final String expectedStatementType) throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "logic_db", "sql", sql, "execution_mode", "preview"));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("result_kind")), is("preview"));
-        assertThat(String.valueOf(payload.get("statement_class")), is(expectedStatementClass));
-        assertThat(String.valueOf(payload.get("statement_type")), is(expectedStatementType));
-        assertThat(payload.get("side_effect_scope"), is(List.of("transaction-state")));
-        assertFalse((Boolean) payload.get("would_execute"));
-    }
-    
-    @Test
-    void assertExecuteSingleStatementValidation() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
-                createExecuteQueryArguments("logic_db", "logic_db", "SELECT 1; SELECT 2"));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = getRecoveryPayload(payload, "unsafe_sql");
-        assertThat(String.valueOf(recovery.get("category")), is("multiple_sql_statements"));
-    }
-    
-    @Test
-    void assertRejectMetadataIntrospectionSql() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
-                createExecuteQueryArguments("logic_db", "logic_db", "SHOW TABLES"));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = getRecoveryPayload(payload, "validation");
-        assertThat(String.valueOf(recovery.get("category")), is("metadata_introspection_sql"));
-    }
-    
-    @Test
-    void assertRejectBannedSql() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
-                createExecuteQueryArguments("logic_db", "logic_db", "USE logic_db"));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        Map<String, Object> recovery = getRecoveryPayload(payload, "terminal_operator_action");
-        assertThat(String.valueOf(recovery.get("category")), is("banned_sql_statement"));
-    }
-    
-    @Test
-    void assertRejectMissingRequiredSqlArgument() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", Map.of("database", "logic_db", "schema", "logic_db"));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        getRecoveryPayload(payload, "missing_context");
-        assertThat(String.valueOf(payload.get("message")), is("sql is required."));
-    }
-    
-    @Test
-    void assertRejectUnsupportedTool() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "unsupported_tool", Map.of());
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("error_code")), is("json_rpc_error"));
-        assertFalse(String.valueOf(payload.get("message")).isEmpty());
-    }
-    
     private Map<String, Object> createExecuteSQLArguments(final String databaseName, final String schemaName, final String sql) {
         return Map.of("database", databaseName, "schema", schemaName, "sql", sql, "execution_mode", "execute");
     }
@@ -227,15 +126,5 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         return -1 == maxRows
                 ? Map.of("database", databaseName, "schema", schemaName, "sql", sql)
                 : Map.of("database", databaseName, "schema", schemaName, "sql", sql, "max_rows", maxRows);
-    }
-    
-    private List<Map<String, Object>> castToMapList(final Object value) {
-        return ((List<?>) value).stream().map(this::castToMap).toList();
-    }
-    
-    private static Stream<Arguments> assertPreviewSideEffectStatementCases() {
-        return Stream.of(
-                Arguments.of("transaction control", "BEGIN", "transaction_control", "BEGIN"),
-                Arguments.of("savepoint", "SAVEPOINT foo_sp_1", "savepoint", "SAVEPOINT"));
     }
 }

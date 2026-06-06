@@ -372,6 +372,11 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-database-exception-firebird</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-database-protocol-core</artifactId>
                 <version>${project.version}</version>
             </dependency>

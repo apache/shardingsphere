@@ -32,7 +32,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @EnabledIf("isEnabled")
 class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
@@ -53,63 +52,20 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         assertThat(String.valueOf(payload.get("response_mode")), is("executed"));
         assertThat(String.valueOf(payload.get("result_kind")), is("update_count"));
         assertThat(String.valueOf(payload.get("affected_rows")), is("0"));
-        assertModelFacingPayloadContract(payload);
-    }
-    
-    @Test
-    void assertExecuteUpdateReturnsExecutionMode() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1",
-                        "execution_mode", "execute"));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("execution_mode")), is("execute"));
         assertModelFacingPayloadContract(payload);
     }
     
     @Test
-    void assertPreviewExecuteUpdateWithoutExecution() throws IOException, InterruptedException {
+    void assertApplyWorkflowReviewThenExecuteMode() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
-                Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "preview"));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("result_kind")), is("preview"));
-        assertFalse((Boolean) payload.get("would_execute"));
-        List<Map<String, Object>> nextActions = castToMapList(payload.get("next_actions"));
-        assertThat(nextActions.size(), is(1));
-        assertThat(String.valueOf(nextActions.get(0).get("type")), is("tool_call"));
-        assertThat(String.valueOf(nextActions.get(0).get("tool_name")), is("database_gateway_execute_update"));
-        assertThat(String.valueOf(castToMap(nextActions.get(0).get("arguments")).get("execution_mode")), is("execute"));
-        assertFalse(payload.containsKey("requires_user_approval"));
-        assertFalse(nextActions.get(0).containsKey("requires_user_approval"));
-        assertModelFacingPayloadContract(payload);
-    }
-    
-    @Test
-    void assertApplyWorkflowPreviewManualAndExecuteModes() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        Map<String, Object> previewPayload = callApplyWorkflow(httpClient, sessionId, createMaskRulePlan(httpClient, sessionId), Map.of("execution_mode", "preview"));
-        assertThat(String.valueOf(previewPayload.get("status")), is("preview"));
-        assertFalse((Boolean) previewPayload.get("would_apply"));
-        assertFalse(previewPayload.containsKey("requires_user_approval"));
-        Map<String, Object> manualPayload = callApplyWorkflow(httpClient, sessionId, createMaskRulePlan(httpClient, sessionId), Map.of("execution_mode", "manual-only"));
-        assertThat(String.valueOf(manualPayload.get("status")), is("awaiting-manual-execution"));
-        assertThat(String.valueOf(manualPayload.get("execution_mode")), is("manual-only"));
         Map<String, Object> executionPayload = callApplyWorkflow(httpClient, sessionId, createMaskRulePlan(httpClient, sessionId),
                 Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl")));
         assertThat(String.valueOf(executionPayload.get("status")), is("completed"));
         assertThat(String.valueOf(executionPayload.get("execution_mode")), is("review-then-execute"));
         assertThat(((List<?>) executionPayload.get("skipped_artifacts")).size(), is(1));
-        assertModelFacingPayloadContract(previewPayload);
-        assertModelFacingPayloadContract(manualPayload);
         assertModelFacingPayloadContract(executionPayload);
     }
     
@@ -156,7 +112,4 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
     }
     
-    private List<Map<String, Object>> castToMapList(final Object value) {
-        return ((List<?>) value).stream().map(this::castToMap).toList();
-    }
 }

@@ -74,11 +74,6 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
         return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
     }
     
-    /**
-     * Get alias segment.
-     *
-     * @return alias segment
-     */
     @Override
     public Optional<AliasSegment> getAliasSegment() {
         return Optional.ofNullable(alias);

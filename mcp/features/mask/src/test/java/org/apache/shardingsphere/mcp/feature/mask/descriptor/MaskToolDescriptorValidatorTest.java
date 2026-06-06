@@ -20,11 +20,13 @@ package org.apache.shardingsphere.mcp.feature.mask.descriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +53,9 @@ class MaskToolDescriptorValidatorTest {
     }
     
     @Test
-    void assertCompletionTargetUsesPromptName() {
-        assertTrue(MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream().anyMatch(this::isMaskPlanningPromptCompletionTarget));
+    void assertDoesNotExposeCompletionTargets() {
+        assertFalse(MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream().anyMatch(each -> MaskFeatureDefinition.PLAN_PROMPT_NAME.equals(each.getReference())));
+        assertFalse(MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream().anyMatch(each -> "shardingsphere://features/mask/algorithms".equals(each.getReference())));
     }
     
     @Test
@@ -82,6 +85,23 @@ class MaskToolDescriptorValidatorTest {
     }
     
     @Test
+    void assertDescriptorIsRuleDistSQLOnly() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(MaskFeatureDefinition.PLAN_TOOL_NAME);
+        String descriptorText = descriptor.getDescription() + descriptor.getInputSchema() + descriptor.getOutputSchema() + descriptor.getMeta();
+        assertFalse(descriptorText.contains("logical metadata"));
+        assertFalse(descriptorText.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns"));
+    }
+    
+    @Test
+    void assertPromptIsRuleDistSQLOnly() throws IOException {
+        String prompt = readResource("META-INF/shardingsphere-mcp/prompts/plan-mask-rule.md");
+        assertFalse(prompt.contains("column metadata"));
+        assertFalse(prompt.contains("logical metadata"));
+        assertFalse(prompt.contains("safe completion"));
+        assertFalse(prompt.contains("completion/complete"));
+    }
+    
+    @Test
     @SuppressWarnings("unchecked")
     void assertValidateRejectsMissingOutputField() {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(MaskFeatureDefinition.PLAN_TOOL_NAME);
@@ -98,7 +118,9 @@ class MaskToolDescriptorValidatorTest {
         return MCPDescriptorCatalogIndex.getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
     }
     
-    private boolean isMaskPlanningPromptCompletionTarget(final MCPCompletionTargetDescriptor descriptor) {
-        return "prompt".equals(descriptor.getReferenceType()) && MaskFeatureDefinition.PLAN_PROMPT_NAME.equals(descriptor.getReference());
+    private String readResource(final String resourceName) throws IOException {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName)) {
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 }

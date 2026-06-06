@@ -57,6 +57,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.metadata.FirebirdBlobColumnMetaData;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.metadata.FirebirdBlobColumnMetaDataResolver;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
@@ -85,6 +86,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Ro
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
@@ -106,15 +108,19 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private ReturningSegment returningSegment;
     
     @Override
-    public Collection<DatabasePacket> execute() {
+    public Collection<DatabasePacket> execute() throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(packet.getSQL(), true);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(
                 metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement);
+        int statementId = getStatementId();
+        if (packet.isValidStatementHandle()) {
+            FirebirdStatementResourceCleaner.clean(connectionSession, statementId, true);
+        }
         FirebirdServerPreparedStatement serverPreparedStatement = new FirebirdServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext());
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(getStatementId(), serverPreparedStatement);
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
         return createResponse(sqlStatementContext, metaDataContexts);
     }
     

@@ -19,12 +19,10 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 
 import java.util.LinkedHashMap;
@@ -37,12 +35,9 @@ final class WorkflowToolResponseBuilder {
     private final EncryptAlgorithmPropertyTemplateService propertyTemplateService;
     
     Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
-        EncryptWorkflowState workflowState = (EncryptWorkflowState) snapshot.getFeatureData();
         WorkflowPropertySource propertySource = getPropertySource(snapshot);
-        Map<String, Object> result = WorkflowPlanPayloadBuilder.build(snapshot);
+        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, propertySource);
         result.put("masked_property_preview", createMaskedPropertyPreview(snapshot, propertySource));
-        result.put("derived_column_plan", null == workflowState.getDerivedColumnPlan() ? null : workflowState.getDerivedColumnPlan().toMap());
-        result.putAll(WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, propertySource));
         return result;
     }
     

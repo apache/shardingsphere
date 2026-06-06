@@ -28,13 +28,13 @@ transport:
   type: STDIO
 ```
 
-| 配置项 | 说明 |
-| --- | --- |
-| `transport.type` | 传输方式，支持 `STREAMABLE_HTTP` 和 `STDIO`。 |
-| `transport.http` | HTTP 传输配置，只在 `transport.type` 为 `STREAMABLE_HTTP` 时生效。 |
-| `transport.http.bindHost` | HTTP 监听地址，默认值为 `127.0.0.1`。`127.0.0.1`、`localhost`、`::1` 只允许本机访问；`0.0.0.0` 或指定内网 IP 允许对应网络接口访问。 |
-| `transport.http.port` | HTTP 监听端口，默认值为 `18088`。 |
-| `transport.http.endpointPath` | HTTP 端点路径，默认值为 `/mcp`。 |
+| 配置项                           | 说明                                                                                              |
+|-------------------------------|-------------------------------------------------------------------------------------------------|
+| `transport.type`              | 传输方式，支持 `STREAMABLE_HTTP` 和 `STDIO`。                                                            |
+| `transport.http`              | HTTP 传输配置，只在 `transport.type` 为 `STREAMABLE_HTTP` 时生效。                                          |
+| `transport.http.bindHost`     | HTTP 监听地址，默认值为 `127.0.0.1`。`127.0.0.1`、`localhost`、`::1` 只允许本机访问；`0.0.0.0` 或指定内网 IP 允许对应网络接口访问。 |
+| `transport.http.port`         | HTTP 监听端口，默认值为 `18088`。                                                                         |
+| `transport.http.endpointPath` | HTTP 端点路径，默认值为 `/mcp`。                                                                          |
 
 ### HTTP 会话归属（可选）
 
@@ -51,12 +51,12 @@ transport:
       attributeHeaderPrefix: X-ShardingSphere-MCP-Attribute-
 ```
 
-| 配置项 | 说明 |
-| --- | --- |
-| `transport.http.sessionAttributionSource` | HTTP 会话归属来源。未配置时不绑定会话归属。 |
-| `transport.http.sessionAttributionSource.subjectHeader` | 表示外部用户、租户或调用主体的请求头名称。 |
-| `transport.http.sessionAttributionSource.sourceHeader` | 表示调用来源的请求头名称。 |
-| `transport.http.sessionAttributionSource.attributeHeaderPrefix` | 自定义归属属性的请求头前缀。 |
+| 配置项                                                             | 说明                       |
+|-----------------------------------------------------------------|--------------------------|
+| `transport.http.sessionAttributionSource`                       | HTTP 会话归属来源。未配置时不绑定会话归属。 |
+| `transport.http.sessionAttributionSource.subjectHeader`         | 表示外部用户、租户或调用主体的请求头名称。    |
+| `transport.http.sessionAttributionSource.sourceHeader`          | 表示调用来源的请求头名称。            |
+| `transport.http.sessionAttributionSource.attributeHeaderPrefix` | 自定义归属属性的请求头前缀。           |
 
 只有确认客户端不能直接伪造这些请求头时，才应启用该配置。
 
@@ -75,13 +75,13 @@ runtimeDatabases:
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
-| *名称* | *说明* |
-| --- | --- |
-| `databaseType` (+) | 连接端点的数据库协议或方言类型，例如 `MySQL` 或 `PostgreSQL`。它影响元数据识别和 SQL 能力判断，不表示连接目标一定是数据库直连或 ShardingSphere-Proxy。 |
-| `jdbcUrl` (+) | MCP Server 连接运行时数据库的 JDBC URL；使用 ShardingSphere 规则能力时应指向 Proxy 逻辑库。 |
-| `username` (+) | 连接运行时数据库的用户名，通常是 ShardingSphere-Proxy 逻辑库用户名。 |
-| `password` (?) | 连接运行时数据库的密码。 |
-| `driverClassName` (+) | JDBC 驱动类名，例如 MySQL 驱动使用 `com.mysql.cj.jdbc.Driver`。 |
+| *名称*                  | *说明*                                                                                                |
+|-----------------------|-----------------------------------------------------------------------------------------------------|
+| `databaseType` (+)    | 连接端点的数据库协议或方言类型，例如 `MySQL` 或 `PostgreSQL`。它影响元数据识别和 SQL 能力判断，不表示连接目标一定是数据库直连或 ShardingSphere-Proxy。 |
+| `jdbcUrl` (+)         | MCP Server 连接运行时数据库的 JDBC URL；使用 ShardingSphere 规则能力时应指向 Proxy 逻辑库。                                 |
+| `username` (+)        | 连接运行时数据库的用户名，通常是 ShardingSphere-Proxy 逻辑库用户名。                                                       |
+| `password` (?)        | 连接运行时数据库的密码。                                                                                        |
+| `driverClassName` (+) | JDBC 驱动类名，例如 MySQL 驱动使用 `com.mysql.cj.jdbc.Driver`。                                                 |
 
 说明：
 
@@ -104,7 +104,7 @@ runtimeDatabases:
 如果需要使用 ShardingSphere 规则状态、数据加密、数据脱敏或规则变更能力，应连接 ShardingSphere-Proxy 逻辑库。
 
 此时用户看到的是 Proxy 暴露的逻辑库、逻辑表和逻辑列。
-Proxy 可见元数据可能不同于底层物理库的完整结构；涉及物理列、索引或规则变更的计划应先审查再执行。
+Proxy 可见元数据可能不同于底层物理库的完整结构；涉及元数据解释或规则变更的计划应先审查再执行。
 
 ### 数据库直连
 

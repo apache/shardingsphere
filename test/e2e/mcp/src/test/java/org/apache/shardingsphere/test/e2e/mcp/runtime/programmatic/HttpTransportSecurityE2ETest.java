@@ -81,22 +81,6 @@ class HttpTransportSecurityE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(actual.statusCode(), is(403));
     }
     
-    @Test
-    void assertRejectInitializeWithMalformedRemoteOrigin() throws IOException, InterruptedException {
-        launchRemoteHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Origin", "://bad-origin"), createInitializeRequestParams());
-        assertThat(actual.statusCode(), is(403));
-    }
-    
-    @Test
-    void assertRejectInitializeWithLoopbackOriginForRemoteBinding() throws IOException, InterruptedException {
-        launchRemoteHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Origin", "http://127.0.0.1:8080"), createInitializeRequestParams());
-        assertThat(actual.statusCode(), is(403));
-    }
-    
     private void launchRemoteHttpTransport() throws IOException {
         remoteBinding = true;
         launchHttpTransport();

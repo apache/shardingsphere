@@ -249,6 +249,16 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     }
     
     /**
+     * Remove proxy backend handler resource.
+     *
+     * @param handler proxy backend handler to be removed
+     */
+    public void removeResource(final ProxyBackendHandler handler) {
+        proxyBackendHandlers.remove(handler);
+        inUseProxyBackendHandlers.remove(handler);
+    }
+    
+    /**
      * Handle auto commit.
      */
     public void handleAutoCommit() {
@@ -349,6 +359,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
             }
             cachedConnections.clear();
         }
+        connectionSession.getPreparedStatementCacheContext().closeAll();
         if (!forceRollback) {
             connectionPostProcessors.clear();
         }

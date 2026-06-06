@@ -51,12 +51,18 @@ public final class ValidationReport {
      */
     public Map<String, Object> toMap() {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        result.put("ddl_validation", null == ddlValidation ? null : ddlValidation.toMap());
-        result.put("rule_validation", null == ruleValidation ? null : ruleValidation.toMap());
-        result.put("logical_metadata_validation", null == logicalMetadataValidation ? null : logicalMetadataValidation.toMap());
-        result.put("sql_executability_validation", null == sqlExecutabilityValidation ? null : sqlExecutabilityValidation.toMap());
+        putValidationSection(result, "ddl_validation", ddlValidation);
+        putValidationSection(result, "rule_validation", ruleValidation);
+        putValidationSection(result, "logical_metadata_validation", logicalMetadataValidation);
+        putValidationSection(result, "sql_executability_validation", sqlExecutabilityValidation);
         result.put("overall_status", overallStatus);
         result.put("mismatches", mismatches);
         return result;
+    }
+    
+    private void putValidationSection(final Map<String, Object> target, final String key, final ValidationSection section) {
+        if (null != section) {
+            target.put(key, section.toMap());
+        }
     }
 }

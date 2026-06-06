@@ -55,6 +55,31 @@ class FirebirdStatusVectorTest {
     }
     
     @Test
+    void assertWriteOmitsArgumentWhenMessageIsEmpty() {
+        SQLException emptyMessage = new SQLException("", "28000", ISCConstants.isc_login);
+        FirebirdStatusVector vector = new FirebirdStatusVector(emptyMessage);
+        vector.write(payload);
+        InOrder inOrder = inOrder(payload);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_login);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
+        verifyNoMoreInteractions(payload);
+    }
+    
+    @Test
+    void assertWriteWithNullMessage() {
+        SQLException nullMessage = new SQLException(null, "28000", ISCConstants.isc_login);
+        FirebirdStatusVector vector = new FirebirdStatusVector(nullMessage);
+        assertThat(vector.getErrorMessage(), is(""));
+        vector.write(payload);
+        InOrder inOrder = inOrder(payload);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_login);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
+        verifyNoMoreInteractions(payload);
+    }
+    
+    @Test
     void assertWriteUsesRandomCodeWhenErrorCodeIsLowerThanArithExcept() {
         SQLException plainMessage = new SQLException("plain", "00000", ISCConstants.isc_arith_except - 1);
         FirebirdStatusVector vector = new FirebirdStatusVector(plainMessage);

@@ -67,14 +67,22 @@ class PackagedDistributionE2ETest {
     private static final String IMAGE_PROPERTY = "mcp.e2e.container.image";
     
     private static final List<String> EXPECTED_RUNTIME_ARTIFACT_IDS = List.of(
-            "shardingsphere-mcp-bootstrap", "shardingsphere-mcp-feature-encrypt", "shardingsphere-mcp-feature-mask");
+            "shardingsphere-mcp-bootstrap", "shardingsphere-mcp-feature-encrypt", "shardingsphere-mcp-feature-mask",
+            "shardingsphere-mcp-feature-broadcast", "shardingsphere-mcp-feature-readwrite-splitting", "shardingsphere-mcp-feature-shadow",
+            "shardingsphere-mcp-feature-sharding");
     
     private static final List<String> CORE_TOOL_NAMES = List.of("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity",
             "database_gateway_execute_query", "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow");
     
     private static final List<String> REMOVED_FEATURE_TOOL_NAMES = OfficialMCPToolNames.getAll().stream().filter(each -> !CORE_TOOL_NAMES.contains(each)).toList();
     
-    private static final List<String> REMOVED_FEATURE_RESOURCE_URIS = List.of("shardingsphere://features/encrypt/algorithms", "shardingsphere://features/mask/algorithms");
+    private static final List<String> REMOVED_FEATURE_RESOURCE_URIS = List.of(
+            "shardingsphere://features/encrypt/algorithms",
+            "shardingsphere://features/mask/algorithms",
+            "shardingsphere://features/broadcast/databases/{database}/rules",
+            "shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins",
+            "shardingsphere://features/shadow/algorithm-plugins",
+            "shardingsphere://features/sharding/algorithm-plugins");
     
     private static final String FIXTURE_RESOURCE_URI = "shardingsphere://features/test-fixture/status";
     
@@ -124,6 +132,10 @@ class PackagedDistributionE2ETest {
         List<String> actualRemovedJarNames = PackagedDistributionPluginFixtureSupport.removeOfficialFeatureJars(distribution.home().resolve("lib"));
         assertTrue(actualRemovedJarNames.stream().anyMatch(each -> each.contains("shardingsphere-mcp-feature-encrypt")));
         assertTrue(actualRemovedJarNames.stream().anyMatch(each -> each.contains("shardingsphere-mcp-feature-mask")));
+        assertTrue(actualRemovedJarNames.stream().anyMatch(each -> each.contains("shardingsphere-mcp-feature-broadcast")));
+        assertTrue(actualRemovedJarNames.stream().anyMatch(each -> each.contains("shardingsphere-mcp-feature-readwrite-splitting")));
+        assertTrue(actualRemovedJarNames.stream().anyMatch(each -> each.contains("shardingsphere-mcp-feature-shadow")));
+        assertTrue(actualRemovedJarNames.stream().anyMatch(each -> each.contains("shardingsphere-mcp-feature-sharding")));
         Path actualFixturePluginJar = PackagedDistributionPluginFixtureSupport.createFixturePluginJar(distribution.home().resolve("plugins"));
         assertTrue(Files.isRegularFile(actualFixturePluginJar));
         try (MCPInteractionClient interactionClient = new PackagedDistributionStdioInteractionClient(distribution.home(), distribution.configFile())) {
