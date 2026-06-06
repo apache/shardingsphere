@@ -124,7 +124,7 @@ class LLME2EConfigurationTest {
         assertThat(actual.getServerRuntime(), is(expectedProps.getProperty("mcp.llm.server-runtime")));
         assertThat(actual.getServerImage(), is("apache/shardingsphere-mcp-llm-runtime:local"));
         assertThat(actual.getBaseServerImage(), is("ghcr.io/ggml-org/llama.cpp:server"));
-        assertThat(actual.getBaseServerImageDigest(), is(""));
+        assertThat(actual.getBaseServerImageDigest(), is(expectedProps.getProperty("mcp.llm.base-server-image-digest")));
         assertThat(actual.getModelMetadata().getRepository(), is(expectedProps.getProperty("mcp.llm.model-repository")));
         assertThat(actual.getModelMetadata().getFileName(), is(expectedProps.getProperty("mcp.llm.model-file-name")));
         assertThat(actual.getModelMetadata().getQuantization(), is(expectedProps.getProperty("mcp.llm.model-quantization")));
@@ -137,7 +137,7 @@ class LLME2EConfigurationTest {
         System.setProperty("mcp.llm.runtime-mode", "external-debug");
         LLME2EConfiguration actual = LLME2EConfiguration.load();
         assertThat(actual.getRuntimeMode(), is(RuntimeMode.EXTERNAL_DEBUG));
-        assertThat(actual.getBaseServerImageDigest(), is(""));
+        assertThat(actual.getBaseServerImageDigest(), is(EnvironmentPropertiesLoader.loadProperties().getProperty("mcp.llm.base-server-image-digest")));
     }
     
     @Test
