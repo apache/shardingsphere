@@ -80,6 +80,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final List<Statement> statements;
     
+    @Getter
     private String usedDatabaseName;
     
     private QueryContext queryContext;
