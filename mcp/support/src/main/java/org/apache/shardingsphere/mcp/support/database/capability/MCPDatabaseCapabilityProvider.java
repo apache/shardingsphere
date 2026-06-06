@@ -43,33 +43,16 @@ public final class MCPDatabaseCapabilityProvider implements MCPFeatureCapability
         databaseCapabilities = createDatabaseCapabilities(databaseProfiles);
     }
     
-    /**
-     * Provide the database-level capability.
-     *
-     * @param databaseName database name
-     * @return database-level capability
-     */
     @Override
     public Optional<MCPDatabaseCapability> provide(final String databaseName) {
         return Optional.ofNullable(databaseCapabilities.get(databaseName));
     }
     
-    /**
-     * Find runtime database profile.
-     *
-     * @param databaseName database name
-     * @return runtime database profile
-     */
     @Override
     public Optional<RuntimeDatabaseProfile> findDatabaseProfile(final String databaseName) {
         return Optional.ofNullable(databaseProfiles.get(databaseName));
     }
     
-    /**
-     * Get runtime database profiles.
-     *
-     * @return runtime database profiles
-     */
     @Override
     public List<RuntimeDatabaseProfile> getDatabaseProfiles() {
         return new LinkedList<>(databaseProfiles.values());
