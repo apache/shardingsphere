@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.err;
 
+import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +41,20 @@ class FirebirdErrorPacketFactoryTest {
         FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(new SQLException("Table not found", "42000", 335544374));
         assertThat(actual.getErrorCode(), is(335544374));
         assertThat(actual.getErrorMessage(), is("Table not found"));
+    }
+    
+    @Test
+    void assertNewInstanceWithUnknownDatabaseException() {
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(new UnknownDatabaseException("logic_db"));
+        assertThat(actual.getErrorCode(), is(335544375));
+        assertThat(actual.getErrorMessage(), is("logic_db"));
+    }
+    
+    @Test
+    void assertNewInstanceWithAccessDeniedException() {
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(new AccessDeniedException("root", "127.0.0.1", true));
+        assertThat(actual.getErrorCode(), is(335544472));
+        assertThat(actual.getErrorMessage(), is(""));
     }
     
     @Test
