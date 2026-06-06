@@ -60,10 +60,6 @@ jobs:
           cache-suffix: 'e2e-mcp'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
-      - name: Set Up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Show Docker Buildx Version
-        run: docker buildx version
       - name: Check Docker Environment
         run: |
           docker version
@@ -103,23 +99,21 @@ jobs:
             echo "model_sha256=$(load_property 'mcp.llm.model-sha256')"
           } >> "${GITHUB_OUTPUT}"
       - name: Build MCP LLM Runtime Image
-        uses: docker/build-push-action@v6
-        with:
-          context: test/e2e/mcp/src/test/resources/docker/llm-runtime
-          file: test/e2e/mcp/src/test/resources/docker/llm-runtime/Dockerfile
-          tags: ${{ steps.mcp-e2e-properties.outputs.server_image }}
-          load: true
-          build-args: |
-            BASE_IMAGE=${{ steps.mcp-e2e-properties.outputs.base_server_image }}
-            SERVER_RUNTIME=${{ steps.mcp-e2e-properties.outputs.server_runtime }}
-            MODEL_REPOSITORY=${{ steps.mcp-e2e-properties.outputs.model_repository }}
-            MODEL_QUANTIZATION=${{ steps.mcp-e2e-properties.outputs.model_quantization }}
-            MODEL_REFERENCE=${{ steps.mcp-e2e-properties.outputs.model_reference }}
-            MODEL_REVISION=${{ steps.mcp-e2e-properties.outputs.model_revision }}
-            MODEL_FILE_NAME=${{ steps.mcp-e2e-properties.outputs.model_file_name }}
-            MODEL_SHA256=${{ steps.mcp-e2e-properties.outputs.model_sha256 }}
-          cache-from: type=gha,scope=mcp-llm-runtime
-          cache-to: type=gha,mode=max,scope=mcp-llm-runtime,ignore-error=true
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build \
+            -f test/e2e/mcp/src/test/resources/docker/llm-runtime/Dockerfile \
+            -t "${{ steps.mcp-e2e-properties.outputs.server_image }}" \
+            --build-arg "BASE_IMAGE=${{ steps.mcp-e2e-properties.outputs.base_server_image }}" \
+            --build-arg "SERVER_RUNTIME=${{ steps.mcp-e2e-properties.outputs.server_runtime }}" \
+            --build-arg "MODEL_REPOSITORY=${{ steps.mcp-e2e-properties.outputs.model_repository }}" \
+            --build-arg "MODEL_QUANTIZATION=${{ steps.mcp-e2e-properties.outputs.model_quantization }}" \
+            --build-arg "MODEL_REFERENCE=${{ steps.mcp-e2e-properties.outputs.model_reference }}" \
+            --build-arg "MODEL_REVISION=${{ steps.mcp-e2e-properties.outputs.model_revision }}" \
+            --build-arg "MODEL_FILE_NAME=${{ steps.mcp-e2e-properties.outputs.model_file_name }}" \
+            --build-arg "MODEL_SHA256=${{ steps.mcp-e2e-properties.outputs.model_sha256 }}" \
+            test/e2e/mcp/src/test/resources/docker/llm-runtime
       - name: Build MCP E2E Test Dependencies
         run: ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
       - name: Package MCP Distribution
