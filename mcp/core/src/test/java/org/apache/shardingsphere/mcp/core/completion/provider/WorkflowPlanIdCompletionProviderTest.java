@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescr
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.junit.jupiter.api.Test;
 
@@ -52,15 +53,19 @@ class WorkflowPlanIdCompletionProviderTest {
     @Test
     void assertComplete() {
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
-        when(workflowSessionContext.list("session-1")).thenReturn(List.of(createSnapshot("plan-ready", WorkflowLifecycle.STATUS_PLANNED), createSnapshot("plan-draft",
-                WorkflowLifecycle.STATUS_CLARIFYING)));
+        when(workflowSessionContext.list("session-1")).thenReturn(List.of(
+                createSnapshot("plan-ready", WorkflowLifecycle.STATUS_PLANNED),
+                createSnapshot("plan-previewed", WorkflowLifecycle.STATUS_PREVIEWED),
+                createSnapshot("plan-draft", WorkflowLifecycle.STATUS_CLARIFYING)));
         MCPWorkflowHandlerContext handlerContext = mock(MCPWorkflowHandlerContext.class);
         when(handlerContext.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
         MCPCompletionProviderResult actual = new WorkflowPlanIdCompletionProvider().complete(handlerContext, createRequestContext());
         List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());
-        assertThat(actualCandidates.size(), is(1));
+        assertThat(actualCandidates.size(), is(2));
         assertThat(actualCandidates.get(0).getValue(), is("plan-ready"));
-        assertThat(actualCandidates.get(0).getRankingReason(), is("recent-plan-first-for-plan_id"));
+        assertThat(actualCandidates.get(1).getValue(), is("plan-previewed"));
+        assertThat(actualCandidates.get(1).getLabel(), is("encrypt.rule previewed"));
+        assertThat(actualCandidates.get(1).getRankingReason(), is("recent-plan-first-for-plan_id"));
     }
     
     private MCPCompletionRequestContext createRequestContext() {
@@ -70,6 +75,7 @@ class WorkflowPlanIdCompletionProviderTest {
     private WorkflowContextSnapshot createSnapshot(final String planId, final String status) {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId(planId);
+        result.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
         result.setStatus(status);
         return result;
     }

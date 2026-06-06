@@ -36,7 +36,7 @@ import java.util.Set;
 public final class WorkflowPlanIdCompletionProvider implements MCPCompletionProvider<MCPWorkflowHandlerContext> {
     
     private static final Set<String> COMPLETION_ELIGIBLE_WORKFLOW_STATUSES = Set.of(WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION,
-            WorkflowLifecycle.STATUS_EXECUTED, WorkflowLifecycle.STATUS_FAILED, WorkflowLifecycle.STATUS_PLANNED, WorkflowLifecycle.STATUS_VALIDATED);
+            WorkflowLifecycle.STATUS_EXECUTED, WorkflowLifecycle.STATUS_FAILED, WorkflowLifecycle.STATUS_PLANNED, WorkflowLifecycle.STATUS_PREVIEWED, WorkflowLifecycle.STATUS_VALIDATED);
     
     @Override
     public Class<MCPWorkflowHandlerContext> getContextType() {

@@ -163,7 +163,9 @@ resourceNavigation:
 tools:
   - name: database_gateway_apply_workflow
     title: Apply Workflow
-    description: "Preview or apply a previously planned ShardingSphere MCP workflow. Use execution_mode=preview before side effects; automatic execution requires a previewed plan and explicit approved_steps."
+    description: >-
+      Preview or apply a previously planned ShardingSphere MCP workflow. Use execution_mode=preview before side effects;
+      automatic execution requires a previewed plan and explicit approved_steps.
     inputSchema:
       type: object
       properties:
@@ -349,11 +351,9 @@ tools:
           review_summary: Previewed 0 workflow artifacts. Nothing has been applied.
           next_actions:
             - order: 1
-              type: ask_user
-              title: Ask user
-              required_inputs:
-                - approved_steps
-              reason: Confirm the preview_artifacts.approval_step values to approve before execution.
+              type: terminal
+              title: Stop
+              reason: Preview has no artifacts to approve.
     annotations:
       title: Apply Workflow
       readOnlyHint: false
@@ -371,7 +371,9 @@ tools:
         - database_gateway_validate_workflow
   - name: database_gateway_validate_workflow
     title: Validate Workflow
-    description: "Validate a planned or applied workflow against visible metadata and generated artifacts. Use after planning for review, and after database_gateway_apply_workflow to confirm the runtime state."
+    description: >-
+      Validate a planned or applied workflow against visible metadata and generated artifacts. Use after planning for review,
+      and after database_gateway_apply_workflow to confirm the runtime state.
     inputSchema:
       type: object
       properties:

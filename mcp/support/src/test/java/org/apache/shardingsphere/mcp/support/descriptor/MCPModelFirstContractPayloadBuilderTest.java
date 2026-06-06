@@ -45,6 +45,8 @@ class MCPModelFirstContractPayloadBuilderTest {
         Map<?, ?> actualWorkflowRule = castToMap(actual.get("workflow_rule"));
         assertThat(actualWorkflowRule.get("planning_tools"), is(List.of("database_gateway_plan_encrypt_rule")));
         assertThat(castToMap(actualWorkflowRule.get("preview_tool")).get("execution_mode"), is("preview"));
+        assertThat(castToMap(actualWorkflowRule.get("execute_tool")).get("execute_requires"),
+                is("execution_mode=review-then-execute and explicit approved_steps copied from preview_artifacts.approval_step"));
         assertThat(actualWorkflowRule.get("validate_tool"), is("database_gateway_validate_workflow"));
     }
     
@@ -77,6 +79,9 @@ class MCPModelFirstContractPayloadBuilderTest {
         Map<?, ?> actualSideEffectingSql = findByKey(actual, "flow_id", "side_effecting_sql");
         assertThat(actualSideEffectingSql.get("referenced_tools"), is(List.of("database_gateway_execute_update")));
         assertTrue(((Collection<?>) actualSideEffectingSql.get("steps")).contains("call_tool database_gateway_execute_update execution_mode=preview"));
+        Map<?, ?> actualWorkflow = findByKey(actual, "flow_id", "workflow_plan_apply_validate");
+        assertTrue(((Collection<?>) actualWorkflow.get("steps")).contains(
+                "call_tool database_gateway_apply_workflow execution_mode=review-then-execute approved_steps=<preview_artifacts.approval_step>"));
     }
     
     @Test

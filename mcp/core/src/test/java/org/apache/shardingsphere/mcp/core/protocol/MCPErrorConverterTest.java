@@ -167,7 +167,13 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("recovery_category"), is("invalid_enum"));
         assertThat(actualRecovery.get("field"), is("approved_steps"));
         assertThat(actualRecovery.get("allowed_values"), is(List.of("ddl", "index_ddl", "rule_distsql")));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("tool_name"), is("database_gateway_apply_workflow"));
+        assertThat(actualRecovery.get("model_action"),
+                is("Retry database_gateway_apply_workflow with execution_mode=preview, review the returned preview_artifacts, "
+                        + "then pass explicit approved_steps copied from visible preview_artifacts.approval_step values."));
+        assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
+        assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
+        assertThat(actualNextAction.get("arguments"), is(Map.of("execution_mode", "preview")));
     }
     
     @Test
