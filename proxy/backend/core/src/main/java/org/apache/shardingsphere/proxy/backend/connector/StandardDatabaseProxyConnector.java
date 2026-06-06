@@ -78,7 +78,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -261,7 +260,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     private ResponseHeader doExecuteFederation() throws SQLException {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData();
-        boolean isReturnGeneratedKeys = sqlStatement instanceof InsertStatement && dialectDatabaseMetaData.getGeneratedKeyOption().isPresent();
+        boolean isReturnGeneratedKeys = isReturnGeneratedKeys(queryContext.getSqlStatementContext(), dialectDatabaseMetaData);
         DatabaseType protocolType = database.getProtocolType();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(driverType, protocolType, database.getResourceMetaData(),
                 sqlStatement, this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
@@ -423,5 +422,12 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             }
         }
         return Optional.empty();
+    }
+    
+    private boolean isReturnGeneratedKeys(final SQLStatementContext sqlStatementContext, final DialectDatabaseMetaData dialectDatabaseMetaData) {
+        if (!(sqlStatementContext instanceof InsertStatementContext) || !dialectDatabaseMetaData.getGeneratedKeyOption().isPresent()) {
+            return false;
+        }
+        return ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().filter(GeneratedKeyContext::isGenerated).isPresent();
     }
 }

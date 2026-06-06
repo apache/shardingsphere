@@ -24,8 +24,10 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.TableModifyInTransactionException;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -38,6 +40,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -242,6 +245,7 @@ class ProxySQLExecutorTest {
                 Arguments.of("dml-insert-mysql-xa-pass", createInsertStatement(mysqlDatabaseType), TransactionType.XA, true, true, false));
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @ParameterizedTest(name = "{0}")
     @MethodSource("executeScenarios")
     void assertExecute(final String name, final boolean hasRawExecutionRule, final SQLStatement sqlStatement, final boolean inTransaction,
@@ -253,7 +257,7 @@ class ProxySQLExecutorTest {
         setExecutorField(proxySQLExecutor, "rawExecutor", rawExecutor);
         setExecutorField(proxySQLExecutor, "regularExecutor", regularExecutor);
         setExecutorField(proxySQLExecutor, "transactionHooks", Collections.singletonMap(shardingSphereRule, transactionHook));
-        ExecutionContext executionContext = createExecutionContext(sqlStatement);
+        ExecutionContext executionContext = createExecutionContext(sqlStatement, isReturnGeneratedKeys);
         ExecuteResult expectedExecuteResult = mock(ExecuteResult.class);
         List<ExecuteResult> expected = Collections.singletonList(expectedExecuteResult);
         if (hasRawExecutionRule) {
@@ -272,7 +276,11 @@ class ProxySQLExecutorTest {
         ExecutionGroupContext<JDBCExecutionUnit> jdbcExecutionGroupContext = mock(ExecutionGroupContext.class);
         try (
                 MockedConstruction<DriverExecutionPrepareEngine> ignored = mockConstruction(DriverExecutionPrepareEngine.class,
-                        (mock, context) -> when(mock.prepare(anyString(), eq(executionContext), anyCollection(), any(ExecutionGroupReportContext.class))).thenReturn(jdbcExecutionGroupContext))) {
+                        (mock, context) -> {
+                            StatementOption statementOption = (StatementOption) context.arguments().get(4);
+                            assertThat(statementOption.isReturnGeneratedKeys(), is(isReturnGeneratedKeys));
+                            when(mock.prepare(anyString(), eq(executionContext), anyCollection(), any(ExecutionGroupReportContext.class))).thenReturn(jdbcExecutionGroupContext);
+                        })) {
             when(regularExecutor.execute(any(), eq(jdbcExecutionGroupContext), eq(isReturnGeneratedKeys), anyBoolean())).thenReturn(expected);
             assertThat(proxySQLExecutor.execute(executionContext), is(expected));
         }
@@ -289,6 +297,7 @@ class ProxySQLExecutorTest {
         return Stream.of(
                 Arguments.of("execute-with-raw-rule", true, createCreateTableStatement(mysqlDatabaseType), true, false, false),
                 Arguments.of("execute-with-driver-and-generated-keys", false, createInsertStatement(mysqlDatabaseType), true, true, true),
+                Arguments.of("execute-with-driver-and-explicit-keys", false, createInsertStatement(mysqlDatabaseType), true, true, false),
                 Arguments.of("execute-with-driver-and-no-transaction", false, createInsertStatement(postgresqlDatabaseType), false, false, false));
     }
     
@@ -301,7 +310,7 @@ class ProxySQLExecutorTest {
         setExecutorField(proxySQLExecutor, "rawExecutor", rawExecutor);
         setExecutorField(proxySQLExecutor, "regularExecutor", regularExecutor);
         setExecutorField(proxySQLExecutor, "transactionHooks", Collections.singletonMap(shardingSphereRule, transactionHook));
-        ExecutionContext executionContext = createExecutionContext(sqlStatement);
+        ExecutionContext executionContext = createExecutionContext(sqlStatement, false);
         SQLException expectedException = new SQLException("mock prepare failure");
         try (MockedStatic<DatabaseTypedSPILoader> mockedDatabaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
             mockedDatabaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, fixtureDatabaseType)).thenReturn(Optional.of(saneQueryResultEngine));
@@ -385,8 +394,15 @@ class ProxySQLExecutorTest {
         return result;
     }
     
-    private ExecutionContext createExecutionContext(final SQLStatement sqlStatement) {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+    private ExecutionContext createExecutionContext(final SQLStatement sqlStatement, final boolean isReturnGeneratedKeys) {
+        SQLStatementContext sqlStatementContext;
+        if (sqlStatement instanceof InsertStatement) {
+            sqlStatementContext = mock(InsertStatementContext.class);
+            GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", isReturnGeneratedKeys);
+            when(((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+        } else {
+            sqlStatementContext = mock(SQLStatementContext.class);
+        }
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ExecutionContext result = mock(ExecutionContext.class);
         when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);

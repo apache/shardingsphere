@@ -25,8 +25,10 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.TableModifyInTransactionException;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -67,7 +69,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DD
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
@@ -186,7 +187,7 @@ public final class ProxySQLExecutor {
         int maxConnectionsSizePerQuery = ProxyContext.getInstance()
                 .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(executionContext.getSqlStatementContext().getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
-        boolean isReturnGeneratedKeys = executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement && dialectDatabaseMetaData.getGeneratedKeyOption().isPresent();
+        boolean isReturnGeneratedKeys = isReturnGeneratedKeys(executionContext.getSqlStatementContext(), dialectDatabaseMetaData);
         return hasRawExecutionRule(rules)
                 ? rawExecute(executionContext, rules, maxConnectionsSizePerQuery)
                 : useDriverToExecute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
@@ -256,5 +257,12 @@ public final class ProxySQLExecutor {
         Optional<ExecuteResult> executeResult = DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, databaseType)
                 .flatMap(optional -> optional.getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement(), originalException));
         return executeResult.map(Collections::singletonList).orElseThrow(() -> originalException);
+    }
+    
+    private boolean isReturnGeneratedKeys(final SQLStatementContext sqlStatementContext, final DialectDatabaseMetaData dialectDatabaseMetaData) {
+        if (!(sqlStatementContext instanceof InsertStatementContext) || !dialectDatabaseMetaData.getGeneratedKeyOption().isPresent()) {
+            return false;
+        }
+        return ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().filter(GeneratedKeyContext::isGenerated).isPresent();
     }
 }
