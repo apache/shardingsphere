@@ -56,7 +56,7 @@ class WorkflowToolDescriptorsTest {
         assertThat(findInputProperty(actual, "execution_mode").get("enum"), is(List.of("preview", "review-then-execute", "manual-only")));
         assertThat(findInputProperty(actual, "approved_steps"), is(Map.of(
                 "type", "array",
-                "description", "Optional execution filter. Omit to apply every artifact after review, or pass only visible preview_artifacts.approval_step values.",
+                "description", "Required when execution_mode=review-then-execute. Pass only user-reviewed preview_artifacts.approval_step values; an empty or omitted list does not approve artifacts.",
                 "items", Map.of("type", "string", "description", "Allowed workflow artifact step: ddl, index_ddl, or rule_distsql.", "enum", List.of("ddl", "index_ddl", "rule_distsql")))));
         assertTrue(actual.getAnnotations().isDestructiveHint());
     }

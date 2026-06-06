@@ -115,6 +115,8 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> workflowRule = (Map<?, ?>) actual.get("workflow_rule");
         assertTrue(workflowRule.containsKey("planning_tools"));
         assertThat(((Map<?, ?>) workflowRule.get("preview_tool")).get("tool"), is("database_gateway_apply_workflow"));
+        assertThat(((Map<?, ?>) workflowRule.get("execute_tool")).get("execute_requires"),
+                is("execution_mode=review-then-execute and explicit approved_steps copied from preview_artifacts.approval_step"));
         assertThat(workflowRule.get("validate_tool"), is("database_gateway_validate_workflow"));
         assertTrue(String.valueOf(actual.get("completion_rule")).contains("before guessing identifiers"));
         assertTrue(String.valueOf(actual.get("recovery_rule")).contains("recovery.next_actions"));
@@ -181,7 +183,8 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(((List<?>) sideEffectingSql.get("steps")).contains("call_tool database_gateway_execute_update execution_mode=execute"));
         assertReferencedFlowEntries(sideEffectingSql, supportedTools, supportedResources);
         Map<?, ?> workflow = findByKey((List<?>) capabilities.get("common_flows"), "flow_id", "workflow_plan_apply_validate");
-        assertTrue(((List<?>) workflow.get("steps")).contains("call_tool database_gateway_apply_workflow review-then-execute"));
+        assertTrue(((List<?>) workflow.get("steps")).contains(
+                "call_tool database_gateway_apply_workflow execution_mode=review-then-execute approved_steps=<preview_artifacts.approval_step>"));
         assertThat(workflow.get("stop_condition"), is("Reuse the same current-session plan_id and stop after validation succeeds."));
         assertReferencedFlowEntries(workflow, supportedTools, supportedResources);
     }

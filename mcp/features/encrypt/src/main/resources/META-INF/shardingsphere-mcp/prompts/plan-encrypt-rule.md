@@ -26,16 +26,19 @@ User context:
 - plan_id: {{plan_id}}
 
 Model path:
-1. Collect database, table, and column values from user context or explicit user input before calling database_gateway_plan_encrypt_rule; schema is optional.
+1. Collect database, table, and column values from user context or explicit user input before calling database_gateway_plan_encrypt_rule.
+   Schema is optional, and the planning tool verifies database, table, and column visibility before generating DistSQL.
 2. Read shardingsphere://features/encrypt/algorithms before choosing algorithm_type.
 3. Read existing encrypt rules for the database or table when database and table are known.
 4. Call database_gateway_plan_encrypt_rule with gathered logical names, explicit rule column names, and reviewed algorithm choices.
 5. Use database_gateway_apply_workflow with execution_mode=preview before applying generated encrypt rule DistSQL.
-6. Before choosing uncertain database, schema, table, column, algorithm, or plan_id values, ask the user or read feature algorithm/rule resources whose URI can be built from already-known identifiers; do not guess identifiers.
+   Call review-then-execute only after the user confirms explicit approved_steps from preview_artifacts.
+6. Before choosing uncertain database, schema, table, column, algorithm, or plan_id values, ask the user or read feature algorithm/rule resources.
+   Build resource URIs only from already-known identifiers; do not guess identifiers.
 
 Ask-user conditions:
 - Ask when decrypt, equality, LIKE, or sensitive-field semantics are unclear.
-- Ask before applying generated encrypt rule DistSQL that changes runtime state.
+- Ask which preview_artifacts.approval_step values are approved before applying generated encrypt rule DistSQL that changes runtime state.
 
 Stop conditions:
 - Stop after database_gateway_plan_encrypt_rule returns a planned workflow with plan_id and reviewable artifacts.

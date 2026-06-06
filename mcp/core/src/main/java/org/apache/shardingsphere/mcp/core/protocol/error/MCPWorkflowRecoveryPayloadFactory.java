@@ -47,7 +47,8 @@ final class MCPWorkflowRecoveryPayloadFactory {
     
     static Map<String, Object> createInvalidApprovedStepsRecovery(final MCPInvalidApprovedStepsException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
-                "invalid_enum_value", "Retry database_gateway_apply_workflow with approved_steps copied from preview_artifacts.approval_step, or omit approved_steps to apply every artifact.");
+                "invalid_enum_value", "Retry database_gateway_apply_workflow with execution_mode=preview, review the returned preview_artifacts, "
+                        + "then pass explicit approved_steps copied from visible preview_artifacts.approval_step values.");
         Map<String, Object> suggestedArguments = MCPRecoveryPayloadSupport.getSuggestedArguments(cause.getSuggestedArguments(), Map.of(WorkflowFieldNames.EXECUTION_MODE, "preview"));
         result.put(MCPPayloadFieldNames.FIELD, "approved_steps");
         result.put(MCPPayloadFieldNames.ALLOWED_VALUES, cause.getAllowedValues());

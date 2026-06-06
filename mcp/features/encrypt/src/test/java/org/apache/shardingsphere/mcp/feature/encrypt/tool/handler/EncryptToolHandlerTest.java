@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflo
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
@@ -58,7 +59,7 @@ class EncryptToolHandlerTest {
     void assertHandlePlanEncryptRule() throws ReflectiveOperationException {
         PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
         EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
         setField(handler, "planningService", planningService);
         setField(handler, "propertyTemplateService", new EncryptAlgorithmPropertyTemplateService());
         WorkflowContextFixture fixture = createWorkflowContextFixture();
@@ -71,7 +72,7 @@ class EncryptToolHandlerTest {
                 "user_overrides", Map.of("cipher_column_name", "phone_cipher"))));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
         ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
         EncryptWorkflowRequest actualRequest = requestCaptor.getValue();
         assertThat(actualRequest.getAlgorithmType(), is("AES"));
         assertThat(actualRequest.getFieldSemantics(), is("phone"));
@@ -82,7 +83,7 @@ class EncryptToolHandlerTest {
     void assertHandlePlanEncryptRuleWithRuleOnlyArtifacts() throws ReflectiveOperationException {
         PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
         EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
+        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
         setField(handler, "planningService", planningService);
         setField(handler, "propertyTemplateService", new EncryptAlgorithmPropertyTemplateService());
         MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of(
@@ -154,16 +155,18 @@ class EncryptToolHandlerTest {
         MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(result.getDatabaseContext()).thenReturn(databaseContext);
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
+        when(databaseContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        return new WorkflowContextFixture(result, workflowSessionContext, queryFacade, executionFacade);
+        return new WorkflowContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
     }
     
     private record WorkflowContextFixture(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,
-                                          MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
+                                          MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
     }
 }

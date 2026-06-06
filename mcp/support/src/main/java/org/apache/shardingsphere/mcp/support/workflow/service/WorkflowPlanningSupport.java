@@ -201,7 +201,7 @@ public final class WorkflowPlanningSupport {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
-        addMissingQuestions(request, clarifiedIntent);
+        addMissingQuestions(request, clarifiedIntent, snapshot);
         if (isEmptyIdentifier(request.getSchema()) || isEmptyIdentifier(request.getTable()) || isEmptyIdentifier(request.getColumn())) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
@@ -248,15 +248,19 @@ public final class WorkflowPlanningSupport {
         return WorkflowSQLUtils.normalizeIdentifier(identifier).isEmpty();
     }
     
-    private void addMissingQuestions(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+    private void addMissingQuestions(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (isEmptyIdentifier(request.getSchema())) {
             clarifiedIntent.getClarificationMessages().add("Please specify schema.");
         }
         if (isEmptyIdentifier(request.getTable())) {
             clarifiedIntent.getClarificationMessages().add("Please specify target table.");
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.TABLE_REQUIRED, "error", "intaking",
+                    "Table is required before planning.", "Provide the logical table name.", true, Map.of()));
         }
         if (isEmptyIdentifier(request.getColumn())) {
             clarifiedIntent.getClarificationMessages().add("Please specify target column.");
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.COLUMN_REQUIRED, "error", "intaking",
+                    "Column is required before planning.", "Provide the logical column name.", true, Map.of()));
         }
     }
     

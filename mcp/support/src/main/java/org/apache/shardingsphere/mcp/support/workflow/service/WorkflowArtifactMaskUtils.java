@@ -73,6 +73,19 @@ public final class WorkflowArtifactMaskUtils {
         return result;
     }
     
+    /**
+     * Mask sensitive property values.
+     *
+     * @param properties property values
+     * @param propertyRequirements property requirements
+     * @return masked property values
+     */
+    public static Map<String, String> maskPropertyMap(final Map<String, String> properties, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+        Map<String, String> result = new LinkedHashMap<>(properties.size(), 1F);
+        properties.forEach((key, value) -> result.put(key, isSecretProperty(propertyRequirements, key) ? "******" : value));
+        return result;
+    }
+    
     private static Map<String, Object> createRedactionPayload(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
         List<String> redactedProperties = collectSecretPropertyNames(propertySource, propertyRequirements).stream().toList();
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
@@ -127,5 +140,17 @@ public final class WorkflowArtifactMaskUtils {
     
     private static String getPropertyValue(final WorkflowPropertySource propertySource, final AlgorithmPropertyRequirement propertyRequirement) {
         return propertySource.getAlgorithmProperties(propertyRequirement.getAlgorithmRole()).get(propertyRequirement.getPropertyKey());
+    }
+    
+    private static boolean isSecretProperty(final List<AlgorithmPropertyRequirement> propertyRequirements, final String propertyKey) {
+        for (AlgorithmPropertyRequirement each : propertyRequirements) {
+            if (each.isSecret() && propertyKey.equals(each.getPropertyKey())) {
+                return true;
+            }
+        }
+        String actualPropertyKey = propertyKey.toLowerCase();
+        return actualPropertyKey.contains("password") || actualPropertyKey.contains("secret") || actualPropertyKey.contains("token")
+                || "key".equals(actualPropertyKey) || actualPropertyKey.contains("-key") || actualPropertyKey.contains("key-")
+                || actualPropertyKey.contains("_key") || actualPropertyKey.contains("key_");
     }
 }
