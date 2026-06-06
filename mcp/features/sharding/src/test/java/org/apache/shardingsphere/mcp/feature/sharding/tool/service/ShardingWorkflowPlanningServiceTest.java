@@ -106,6 +106,16 @@ class ShardingWorkflowPlanningServiceTest {
     }
     
     @Test
+    void assertPlanTableRuleKeyGenerateMissingGenerator() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setKeyGenerateColumn("id");
+        WorkflowContextSnapshot actual = new ShardingWorkflowPlanningService()
+                .planTableRule(new TestWorkflowSessionContext(), createQueryFacade(), "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
+    }
+    
+    @Test
     void assertPlanTableRuleComplexStrategyMissingColumns() {
         ShardingWorkflowRequest request = createTableRuleRequest();
         request.setColumn("");
@@ -147,6 +157,19 @@ class ShardingWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = createPlanningService(inspectionService)
                 .planDefaultStrategy(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
         assertThat(actual.getRuleArtifacts().get(0).getSql(), is("DROP DEFAULT SHARDING DATABASE STRATEGY"));
+    }
+    
+    @Test
+    void assertPlanDefaultStrategyInvalidType() {
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setDefaultStrategyType("FOO");
+        when(inspectionService.queryDefaultStrategy(queryFacade, "logic_db")).thenReturn(List.of());
+        WorkflowContextSnapshot actual = createPlanningService(inspectionService)
+                .planDefaultStrategy(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
     }
     
     @Test

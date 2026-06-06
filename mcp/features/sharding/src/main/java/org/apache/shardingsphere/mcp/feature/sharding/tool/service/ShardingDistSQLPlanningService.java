@@ -137,7 +137,7 @@ public final class ShardingDistSQLPlanningService {
         if (!request.getStorageUnits().isEmpty()) {
             segments.add(String.format("STORAGE_UNITS(%s)", joinIdentifiers(splitCsv(request.getStorageUnits()))));
             segments.add(String.format("SHARDING_COLUMN=%s", format(request.getColumn())));
-            segments.add(createKeyGeneratorFragment(request));
+            segments.add(createAlgorithmFragment(request.getAlgorithmType(), request.getPrimaryAlgorithmProperties()));
         } else {
             segments.add(String.format("DATANODES('%s')", WorkflowSQLUtils.escapeLiteral(request.getDataNodes())));
             String tableStrategy = createTableStrategy(request);

@@ -75,6 +75,22 @@ class ShardingDistSQLPlanningServiceTest {
     }
     
     @Test
+    void assertPlanTableRuleCreateWithAutoTable() {
+        ShardingWorkflowRequest request = new ShardingWorkflowRequest();
+        request.setTable("t_order");
+        request.setColumn("order_id");
+        request.setStorageUnits("ds_0, ds_1");
+        request.setAlgorithmType("HASH_MOD");
+        request.putAlgorithmProperties(Map.of("sharding-count", "4"));
+        request.setKeyGenerateColumn("id");
+        request.setKeyGeneratorType("SNOWFLAKE");
+        request.putKeyGeneratorProperties(Map.of("worker-id", "1"));
+        assertThat(new ShardingDistSQLPlanningService().planTableRule(request, "create").getSql(),
+                is("CREATE SHARDING TABLE RULE t_order(STORAGE_UNITS(ds_0, ds_1), SHARDING_COLUMN=order_id, TYPE(NAME='hash_mod', PROPERTIES('sharding-count'='4')), "
+                        + "KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake', PROPERTIES('worker-id'='1'))))"));
+    }
+    
+    @Test
     void assertPlanTableRuleDrop() {
         assertThat(new ShardingDistSQLPlanningService().planTableRule(createTableRuleRequest(), "drop").getSql(), is("DROP SHARDING TABLE RULE t_order"));
     }

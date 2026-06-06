@@ -255,10 +255,20 @@ public final class ShardingWorkflowPlanningService {
                 || !require(request, request.getDataNodes().isEmpty() ? request.getStorageUnits() : request.getDataNodes(), "Please provide data nodes or storage units.")) {
             return false;
         }
-        return request.getStorageUnits().isEmpty()
-                ? hasRequiredStrategyInputs(request)
-                : require(request, request.getColumn(), "Please provide auto table sharding column.")
-                        && require(request, request.getAlgorithmType(), "Please provide auto table sharding algorithm type.");
+        return (request.getStorageUnits().isEmpty() ? hasRequiredStrategyInputs(request) : hasRequiredAutoTableRuleInputs(request))
+                && hasRequiredTableRuleKeyGenerateInputs(request);
+    }
+    
+    private boolean hasRequiredAutoTableRuleInputs(final ShardingWorkflowRequest request) {
+        return require(request, request.getColumn(), "Please provide auto table sharding column.")
+                && require(request, request.getAlgorithmType(), "Please provide auto table sharding algorithm type.");
+    }
+    
+    private boolean hasRequiredTableRuleKeyGenerateInputs(final ShardingWorkflowRequest request) {
+        if (request.getKeyGenerateColumn().isEmpty() || !request.getKeyGeneratorName().isEmpty()) {
+            return true;
+        }
+        return require(request, request.getKeyGeneratorType(), "Please provide key generator type or key generator name for key generate strategy.");
     }
     
     private boolean hasRequiredReferenceRuleInputs(final ShardingWorkflowRequest request) {
@@ -273,10 +283,18 @@ public final class ShardingWorkflowPlanningService {
         if (!require(request, request.getDefaultStrategyType(), "Please provide DATABASE or TABLE default strategy type.")) {
             return false;
         }
+        if (!isDefaultStrategyType(request.getDefaultStrategyType())) {
+            request.setFieldSemantics("Please provide default_strategy_type as DATABASE or TABLE.");
+            return false;
+        }
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType()) || "none".equalsIgnoreCase(request.getStrategyType())) {
             return true;
         }
         return hasRequiredStrategyInputs(request);
+    }
+    
+    private boolean isDefaultStrategyType(final String defaultStrategyType) {
+        return "DATABASE".equalsIgnoreCase(defaultStrategyType) || "TABLE".equalsIgnoreCase(defaultStrategyType);
     }
     
     private boolean hasRequiredStrategyInputs(final ShardingWorkflowRequest request) {
