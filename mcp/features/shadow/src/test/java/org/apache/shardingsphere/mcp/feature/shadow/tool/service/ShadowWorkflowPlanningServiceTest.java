@@ -1,0 +1,118 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
+
+import org.apache.shardingsphere.mcp.feature.shadow.TestWorkflowSessionContext;
+import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
+import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgorithmWorkflowRequest;
+import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowRuleWorkflowRequest;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class ShadowWorkflowPlanningServiceTest {
+    
+    @Test
+    void assertPlanRuleCreate() {
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of());
+        WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService(inspectionService, new ShadowDistSQLPlanningService())
+                .planRule(new TestWorkflowSessionContext(), queryFacade, "session-1", createRuleRequest());
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
+        assertTrue(actual.getRuleArtifacts().get(0).getSql().startsWith("CREATE SHADOW RULE shadow_rule"));
+    }
+    
+    @Test
+    void assertPlanRuleMissingProperties() {
+        ShadowRuleWorkflowRequest request = createRuleRequest();
+        request.getAlgorithmProperties().clear();
+        WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService()
+                .planRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
+    }
+    
+    @Test
+    void assertPlanDefaultAlgorithmDrop() {
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setOperationType("drop");
+        when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "default_shadow_algorithm")));
+        WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService(inspectionService, new ShadowDistSQLPlanningService())
+                .planDefaultAlgorithm(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
+        assertThat(actual.getRuleArtifacts().get(0).getSql(), is("DROP DEFAULT SHADOW ALGORITHM"));
+    }
+    
+    @Test
+    void assertPlanAlgorithmCleanup() {
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        ShadowAlgorithmCleanupWorkflowRequest request = createCleanupRequest();
+        when(inspectionService.queryAlgorithms(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "unused_algorithm")));
+        when(inspectionService.queryTableRules(queryFacade, "logic_db")).thenReturn(List.of());
+        when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of());
+        WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService(inspectionService, new ShadowDistSQLPlanningService())
+                .planAlgorithmCleanup(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
+        assertThat(actual.getRuleArtifacts().get(0).getSql(), is("DROP SHADOW ALGORITHM unused_algorithm"));
+    }
+    
+    @Test
+    void assertPlanAlgorithmCleanupReferenced() {
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        ShadowAlgorithmCleanupWorkflowRequest request = createCleanupRequest();
+        when(inspectionService.queryAlgorithms(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "unused_algorithm")));
+        when(inspectionService.queryTableRules(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "unused_algorithm")));
+        when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of());
+        WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService(inspectionService, new ShadowDistSQLPlanningService())
+                .planAlgorithmCleanup(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
+    }
+    
+    private ShadowRuleWorkflowRequest createRuleRequest() {
+        ShadowRuleWorkflowRequest result = new ShadowRuleWorkflowRequest();
+        result.setDatabase("logic_db");
+        result.setRuleName("shadow_rule");
+        result.setSourceStorageUnit("demo_ds");
+        result.setShadowStorageUnit("demo_ds_shadow");
+        result.setTableName("t_order");
+        result.setAlgorithmType("VALUE_MATCH");
+        result.putAlgorithmProperties(Map.of("operation", "insert", "column", "user_id", "value", "1"));
+        return result;
+    }
+    
+    private ShadowAlgorithmCleanupWorkflowRequest createCleanupRequest() {
+        ShadowAlgorithmCleanupWorkflowRequest result = new ShadowAlgorithmCleanupWorkflowRequest();
+        result.setDatabase("logic_db");
+        result.setAlgorithmName("unused_algorithm");
+        return result;
+    }
+}

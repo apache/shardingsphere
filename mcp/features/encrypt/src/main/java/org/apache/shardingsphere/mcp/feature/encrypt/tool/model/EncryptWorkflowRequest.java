@@ -25,16 +25,11 @@ import java.util.Map;
 /**
  * Encrypt workflow request.
  */
+@Getter
 public final class EncryptWorkflowRequest extends WorkflowRequest {
     
-    @Getter
     private final EncryptWorkflowOptions options = new EncryptWorkflowOptions();
     
-    /**
-     * Create a defensive copy of the encrypt workflow request.
-     *
-     * @return copied encrypt workflow request
-     */
     @Override
     public EncryptWorkflowRequest copy() {
         EncryptWorkflowRequest result = copyTo(new EncryptWorkflowRequest());
@@ -75,7 +70,7 @@ public final class EncryptWorkflowRequest extends WorkflowRequest {
             return ((EncryptWorkflowRequest) previousRequest).copy();
         }
         EncryptWorkflowRequest result = new EncryptWorkflowRequest();
-        WorkflowRequest.copyFieldsTo(previousRequest, result);
+        copyFieldsTo(previousRequest, result);
         return result;
     }
 }
