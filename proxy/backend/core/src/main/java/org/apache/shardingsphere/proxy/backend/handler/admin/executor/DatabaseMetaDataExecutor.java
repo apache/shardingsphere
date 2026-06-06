@@ -139,17 +139,25 @@ public class DatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private RawQueryResultMetaData createQueryResultMetaData() {
-        if (rows.isEmpty() && !labels.isEmpty()) {
-            List<RawQueryResultColumnMetaData> columns = labels.stream().map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0)).collect(Collectors.toList());
-            return new RawQueryResultMetaData(columns);
-        }
-        List<RawQueryResultColumnMetaData> columns = rows.stream().flatMap(each -> each.keySet().stream()).collect(Collectors.toCollection(LinkedHashSet::new))
+        Collection<String> columnLabels = rows.isEmpty() && !labels.isEmpty()
+                ? labels
+                : rows.stream().flatMap(each -> each.keySet().stream()).collect(Collectors.toCollection(LinkedHashSet::new));
+        List<RawQueryResultColumnMetaData> columns = columnLabels
                 .stream().map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0)).collect(Collectors.toList());
         return new RawQueryResultMetaData(columns);
     }
     
     private MergedResult createMergedResult() {
-        List<MemoryQueryResultDataRow> resultDataRows = rows.stream().map(each -> new MemoryQueryResultDataRow(new LinkedList<>(each.values()))).collect(Collectors.toList());
+        Collection<String> columnLabels = rows.isEmpty() && !labels.isEmpty()
+                ? labels
+                : rows.stream().flatMap(each -> each.keySet().stream()).collect(Collectors.toCollection(LinkedHashSet::new));
+        List<MemoryQueryResultDataRow> resultDataRows = rows.stream().map(each -> {
+            List<Object> rowData = new LinkedList<>();
+            for (String columnLabel : columnLabels) {
+                rowData.add(each.getOrDefault(columnLabel, ""));
+            }
+            return new MemoryQueryResultDataRow(rowData);
+        }).collect(Collectors.toList());
         return new TransparentMergedResult(new RawMemoryQueryResult(queryResultMetaData, resultDataRows));
     }
 }

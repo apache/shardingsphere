@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
@@ -33,6 +34,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.MySQLShowOtherStatement;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -63,11 +66,17 @@ class MySQLDialectSaneQueryResultEngineTest {
         assertThat(new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(selectStatement, new SQLException("")), is(Optional.empty()));
     }
     
-    @Test
-    void assertGetSaneQueryResultForSelectStatementWithoutFrom() {
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"expression_projections", "unsupported_projection"})
+    void assertGetSaneQueryResultForSelectStatementWithoutFrom(final String scenario) {
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@session.transaction_read_only", new VariableSegment(0, 0, "transaction_read_only")));
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "unknown_variable"));
+        if ("unsupported_projection".equals(scenario)) {
+            selectStatement.getProjections().getProjections().add(new ShorthandProjectionSegment(0, 0));
+            assertThat(new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(selectStatement, new SQLException("")), is(Optional.empty()));
+            return;
+        }
         Optional<ExecuteResult> actual = new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(selectStatement, new SQLException(""));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(RawMemoryQueryResult.class));
