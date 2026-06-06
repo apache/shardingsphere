@@ -246,7 +246,7 @@ class ProxySQLExecutorTest {
                 Arguments.of("dml-insert-mysql-xa-pass", createInsertStatement(mysqlDatabaseType), TransactionType.XA, true, true, false));
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
     @ParameterizedTest(name = "{0}")
     @MethodSource("executeScenarios")
     void assertExecute(final String name, final boolean hasRawExecutionRule, final SQLStatement sqlStatement, final boolean inTransaction,
@@ -398,7 +398,7 @@ class ProxySQLExecutorTest {
         return result;
     }
     
-    @SuppressWarnings({"rawtypes"})
+    @SuppressWarnings("rawtypes")
     private ExecutionContext createExecutionContext(final String name, final SQLStatement sqlStatement, final boolean isReturnGeneratedKeys) {
         SQLStatementContext sqlStatementContext;
         if (sqlStatement instanceof InsertStatement) {
@@ -483,13 +483,14 @@ class ProxySQLExecutorTest {
         Plugins.getMemberAccessor().set(ProxySQLExecutor.class.getDeclaredField(fieldName), target, value);
     }
     
-    public static class StubInsertValueContext {
+    static class StubInsertValueContext {
         
         private final List<Object> expressions;
+        
         @Getter
         private final List<Object> parameters;
         
-        public StubInsertValueContext(final List<Object> expressions, final List<Object> parameters) {
+        StubInsertValueContext(final List<Object> expressions, final List<Object> parameters) {
             this.expressions = expressions;
             this.parameters = parameters;
         }
@@ -498,17 +499,19 @@ class ProxySQLExecutorTest {
         public List<Object> getValueExpressions() {
             return expressions;
         }
+        
     }
     
     @Getter
-    public static class LiteralExpressionSegment {
+    static class LiteralExpressionSegment {
         
         private final Object literal;
-        public LiteralExpressionSegment(final Object literal) {
+        
+        LiteralExpressionSegment(final Object literal) {
             this.literal = literal;
         }
     }
     
-    public static class ParameterMarkerExpressionSegment {
+    static class ParameterMarkerExpressionSegment {
     }
 }

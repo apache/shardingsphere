@@ -97,8 +97,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import static org.apache.shardingsphere.proxy.backend.connector.ProxySQLExecutor.isReturnGeneratedKeys;
-
 /**
  * Standard database proxy connector.
  */
@@ -262,7 +260,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     private ResponseHeader doExecuteFederation() throws SQLException {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData();
-        boolean isReturnGeneratedKeys = isReturnGeneratedKeys(queryContext.getSqlStatementContext(), dialectDatabaseMetaData);
+        boolean isReturnGeneratedKeys = ProxySQLExecutor.isReturnGeneratedKeys(queryContext.getSqlStatementContext(), dialectDatabaseMetaData);
         DatabaseType protocolType = database.getProtocolType();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(driverType, protocolType, database.getResourceMetaData(),
                 sqlStatement, this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
