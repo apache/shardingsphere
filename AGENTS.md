@@ -28,6 +28,11 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       For simple internal two-path flows, avoid marker interfaces, multi-type result hierarchies, or extra DTO-style helpers.
       Add them only when they define a stable boundary, keep owner classes readable, or remove meaningful duplicated logic.
     - Delete unused code; when changing functionality, remove legacy compatibility shims.
+    - Do not add or keep Javadocs on methods that only override or implement a documented parent method.
+      Keep the public contract on the declaring API, SPI, or interface.
+      An overriding method should add Javadocs only when it documents implementation-specific behavior, stricter preconditions, side effects, exceptions, compatibility notes,
+      or semantics not already covered by the parent declaration.
+      When cleaning redundant override Javadocs, change comments only and verify no public contract information is lost.
     - Keep variable declarations adjacent to first use; if a value must be retained, declare it `final` to satisfy Checkstyle VariableDeclarationUsageDistance.
     - Single-use local variables must be inlined by default; keep a local variable only when it is reused (for stubbing/verification/assertions) or materially improves readability.
     - Do not add explicit defensive immutable collection copies in constructors or method return values by default.
