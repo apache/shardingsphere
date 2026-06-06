@@ -97,9 +97,6 @@ public interface ShardingSphereDistributedTransactionManager extends TypedSPI, T
      */
     boolean containsProviderType(String providerType);
     
-    /**
-     * Close transaction manager.
-     */
     @Override
     void close();
 }

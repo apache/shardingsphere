@@ -50,17 +50,6 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     
     private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
     
-    /**
-     * Validate workflow artifacts.
-     *
-     * @param workflowSessionContext workflow session context
-     * @param metadataQueryFacade metadata query facade
-     * @param queryFacade query facade
-     * @param executionFacade execution facade
-     * @param sessionId session id
-     * @param snapshot workflow snapshot
-     * @return validation payload
-     */
     @Override
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
                                         final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId,
