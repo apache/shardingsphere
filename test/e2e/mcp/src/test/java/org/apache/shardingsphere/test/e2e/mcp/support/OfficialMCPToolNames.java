@@ -32,7 +32,19 @@ public final class OfficialMCPToolNames {
             "database_gateway_apply_workflow",
             "database_gateway_validate_workflow",
             "database_gateway_plan_encrypt_rule",
-            "database_gateway_plan_mask_rule");
+            "database_gateway_plan_mask_rule",
+            "database_gateway_plan_broadcast_rule",
+            "database_gateway_plan_readwrite_splitting_rule",
+            "database_gateway_plan_readwrite_splitting_status",
+            "database_gateway_plan_shadow_rule",
+            "database_gateway_plan_default_shadow_algorithm",
+            "database_gateway_plan_shadow_algorithm_cleanup",
+            "database_gateway_plan_sharding_table_rule",
+            "database_gateway_plan_sharding_table_reference_rule",
+            "database_gateway_plan_sharding_default_strategy",
+            "database_gateway_plan_sharding_key_generator",
+            "database_gateway_plan_sharding_key_generate_strategy",
+            "database_gateway_plan_sharding_rule_component_cleanup");
     
     private OfficialMCPToolNames() {
     }

@@ -3,8 +3,8 @@ title = "Rule Change Flow"
 weight = 1
 +++
 
-The rule change flow guides users through requirement confirmation, preview, apply, and validation when features such as data encryption or data masking create reviewable database governance changes.
-It is not a standalone business feature. Users usually enter this flow from a concrete data encryption or data masking task.
+The rule change flow guides users through requirement confirmation, preview, apply, and validation when official DistSQL-only features create reviewable database governance changes.
+It is not a standalone business feature. Users usually enter this flow from a concrete data encryption, data masking, broadcast, readwrite-splitting, shadow, or sharding task.
 
 ## When to Use
 
@@ -50,7 +50,7 @@ When using a manual package, placeholders can remain in the statements and be re
 
 - Whether the statements match the expected rule change.
 - Whether change artifacts match the current feature plugin's capability boundary.
-- For data encryption and data masking, ShardingSphere-MCP only generates rule DistSQL and does not generate physical DDL, indexes, data cleansing, or SQL executability probes.
+- Official feature plugins only generate rule DistSQL within their documented boundary and do not generate physical DDL, indexes, migration, backfill, data cleansing, physical metadata probes, or storage unit mutation tasks.
 - Whether runtime rules, metadata, or data may be changed.
 - Whether manual execution, backup, rollback planning, or business approval is required.
 - Whether validation matches the rule-state or workflow-result boundary documented by the corresponding feature plugin.

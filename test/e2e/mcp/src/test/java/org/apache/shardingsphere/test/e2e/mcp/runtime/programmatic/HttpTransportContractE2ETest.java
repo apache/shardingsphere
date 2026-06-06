@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadat
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
+import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -43,9 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EnabledIf("isEnabled")
 class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
-    private static final List<String> OFFICIAL_TOOL_NAMES = List.of(
-            "database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query", "database_gateway_execute_update", "database_gateway_apply_workflow",
-            "database_gateway_validate_workflow", "database_gateway_plan_encrypt_rule", "database_gateway_plan_mask_rule");
+    private static final List<String> OFFICIAL_TOOL_NAMES = OfficialMCPToolNames.getAll();
     
     private static final String PLAN_MASK_TOOL_NAME = "database_gateway_plan_mask_rule";
     

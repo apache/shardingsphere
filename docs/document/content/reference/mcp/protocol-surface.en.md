@@ -79,6 +79,18 @@ Feature plugin planning tools:
 
 - `database_gateway_plan_encrypt_rule`
 - `database_gateway_plan_mask_rule`
+- `database_gateway_plan_broadcast_rule`
+- `database_gateway_plan_readwrite_splitting_rule`
+- `database_gateway_plan_readwrite_splitting_status`
+- `database_gateway_plan_shadow_rule`
+- `database_gateway_plan_default_shadow_algorithm`
+- `database_gateway_plan_shadow_algorithm_cleanup`
+- `database_gateway_plan_sharding_table_rule`
+- `database_gateway_plan_sharding_table_reference_rule`
+- `database_gateway_plan_sharding_default_strategy`
+- `database_gateway_plan_sharding_key_generator`
+- `database_gateway_plan_sharding_key_generate_strategy`
+- `database_gateway_plan_sharding_rule_component_cleanup`
 
 ## Resources
 
@@ -119,6 +131,44 @@ Feature resources:
 - `shardingsphere://features/mask/algorithms`
 - `shardingsphere://features/mask/databases/{database}/rules`
 - `shardingsphere://features/mask/databases/{database}/tables/{table}/rules`
+- `shardingsphere://features/broadcast/databases/{database}/rules`
+- `shardingsphere://features/broadcast/databases/{database}/rule-count`
+- `shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins`
+- `shardingsphere://features/readwrite-splitting/databases/{database}/rules`
+- `shardingsphere://features/readwrite-splitting/databases/{database}/rules/{rule}`
+- `shardingsphere://features/readwrite-splitting/databases/{database}/status`
+- `shardingsphere://features/readwrite-splitting/databases/{database}/rules/{rule}/status`
+- `shardingsphere://features/readwrite-splitting/databases/{database}/rule-count`
+- `shardingsphere://features/shadow/algorithm-plugins`
+- `shardingsphere://features/shadow/databases/{database}/rules`
+- `shardingsphere://features/shadow/databases/{database}/rules/{rule}`
+- `shardingsphere://features/shadow/databases/{database}/table-rules`
+- `shardingsphere://features/shadow/databases/{database}/tables/{table}/rules`
+- `shardingsphere://features/shadow/databases/{database}/algorithms`
+- `shardingsphere://features/shadow/databases/{database}/default-algorithm`
+- `shardingsphere://features/shadow/databases/{database}/rule-count`
+- `shardingsphere://features/sharding/algorithm-plugins`
+- `shardingsphere://features/sharding/key-generate-algorithm-plugins`
+- `shardingsphere://features/sharding/databases/{database}/algorithms`
+- `shardingsphere://features/sharding/databases/{database}/table-rules`
+- `shardingsphere://features/sharding/databases/{database}/tables/{table}/table-rule`
+- `shardingsphere://features/sharding/databases/{database}/table-nodes`
+- `shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes`
+- `shardingsphere://features/sharding/databases/{database}/table-reference-rules`
+- `shardingsphere://features/sharding/databases/{database}/table-reference-rules/{rule}`
+- `shardingsphere://features/sharding/databases/{database}/default-strategy`
+- `shardingsphere://features/sharding/databases/{database}/key-generators`
+- `shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}`
+- `shardingsphere://features/sharding/databases/{database}/key-generate-strategies`
+- `shardingsphere://features/sharding/databases/{database}/key-generate-strategies/{strategy}`
+- `shardingsphere://features/sharding/databases/{database}/auditors`
+- `shardingsphere://features/sharding/databases/{database}/unused-algorithms`
+- `shardingsphere://features/sharding/databases/{database}/unused-key-generators`
+- `shardingsphere://features/sharding/databases/{database}/unused-auditors`
+- `shardingsphere://features/sharding/databases/{database}/algorithms/{algorithm}/table-rules`
+- `shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}/table-rules`
+- `shardingsphere://features/sharding/databases/{database}/auditors/{auditor}/table-rules`
+- `shardingsphere://features/sharding/databases/{database}/rule-count`
 
 ## Prompts
 
@@ -127,6 +177,18 @@ Feature resources:
 - `recover_workflow`: guides recovery from failed or stale workflows.
 - `plan_encrypt_rule`: guides Encrypt feature workflow planning.
 - `plan_mask_rule`: guides Mask feature workflow planning.
+- `plan_broadcast_rule`: guides Broadcast feature workflow planning.
+- `plan_readwrite_splitting_rule`: guides Readwrite-Splitting rule workflow planning.
+- `plan_readwrite_splitting_status`: guides Readwrite-Splitting status workflow planning.
+- `plan_shadow_rule`: guides Shadow rule workflow planning.
+- `plan_default_shadow_algorithm`: guides default Shadow algorithm workflow planning.
+- `plan_shadow_algorithm_cleanup`: guides unused Shadow algorithm cleanup workflow planning.
+- `plan_sharding_table_rule`: guides Sharding table rule workflow planning.
+- `plan_sharding_table_reference_rule`: guides Sharding table reference rule workflow planning.
+- `plan_sharding_default_strategy`: guides default Sharding strategy workflow planning.
+- `plan_sharding_key_generator`: guides Sharding key generator workflow planning.
+- `plan_sharding_key_generate_strategy`: guides Sharding key generate strategy workflow planning.
+- `plan_sharding_rule_component_cleanup`: guides unused Sharding algorithm, key generator, or auditor cleanup workflow planning.
 
 ## Completions
 

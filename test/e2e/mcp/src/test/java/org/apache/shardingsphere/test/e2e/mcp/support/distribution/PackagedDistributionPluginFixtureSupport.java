@@ -42,7 +42,9 @@ public final class PackagedDistributionPluginFixtureSupport {
     
     private static final List<String> DIRECTORY_ENTRIES = List.of("META-INF/", "META-INF/services/", "META-INF/shardingsphere-mcp/", "META-INF/shardingsphere-mcp/mcp-descriptors/");
     
-    private static final List<String> OFFICIAL_FEATURE_ARTIFACT_IDS = List.of("shardingsphere-mcp-feature-encrypt", "shardingsphere-mcp-feature-mask");
+    private static final List<String> OFFICIAL_FEATURE_ARTIFACT_IDS = List.of(
+            "shardingsphere-mcp-feature-encrypt", "shardingsphere-mcp-feature-mask", "shardingsphere-mcp-feature-broadcast",
+            "shardingsphere-mcp-feature-readwrite-splitting", "shardingsphere-mcp-feature-shadow", "shardingsphere-mcp-feature-sharding");
     
     private static final List<Class<?>> FIXTURE_PLUGIN_CLASSES = List.of(
             PluginFixtureHandlerProvider.class, PluginFixturePingToolHandler.class, PluginFixtureStatusResourceHandler.class);
