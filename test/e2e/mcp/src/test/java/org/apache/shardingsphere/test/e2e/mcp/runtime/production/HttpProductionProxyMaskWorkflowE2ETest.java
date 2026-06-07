@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
@@ -72,24 +71,25 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
                             "operation_type", "create", "algorithm_type", "KEEP_FIRST_N_LAST_M",
                             "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
             assertThat(String.valueOf(actualCreatePlanResponse.get("status")), is("planned"));
-            assertThat(String.valueOf(getMapList(actualCreatePlanResponse.get("distsql_artifacts")).get(0).get("sql")), containsString("CREATE MASK RULE orders"));
+            assertThat(String.valueOf(getMapList(actualCreatePlanResponse.get("distsql_artifacts")).getFirst().get("sql")), containsString("CREATE MASK RULE orders"));
             String createPlanId = String.valueOf(actualCreatePlanResponse.get("plan_id"));
-            assertApplyCompleted(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(createPlanId)));
+            assertApplyCompleted(applyReviewedWorkflow(interactionClient, createPlanId));
             Map<String, Object> actualCreateValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", createPlanId));
             assertValidationPassed(actualCreateValidationResponse);
-            assertThat(String.valueOf(getMap(getMap(actualCreateValidationResponse.get("rule_validation")).get("evidence")).get("algorithm_type")).toUpperCase(Locale.ENGLISH),
+            assertThat(String.valueOf(getMapList(getMap(actualCreateValidationResponse.get("rule_validation")).get("evidence")).getFirst().get("algorithm_type")).toUpperCase(Locale.ENGLISH),
                     is("KEEP_FIRST_N_LAST_M"));
             Map<String, Object> actualAlterPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
                             "operation_type", "alter", "algorithm_type", "KEEP_FIRST_N_LAST_M",
                             "primary_algorithm_properties", Map.of("first-n", "2", "last-m", "2", "replace-char", "#")));
             assertThat(String.valueOf(actualAlterPlanResponse.get("status")), is("planned"));
-            assertThat(String.valueOf(getMapList(actualAlterPlanResponse.get("distsql_artifacts")).get(0).get("sql")), containsString("ALTER MASK RULE orders"));
+            assertThat(String.valueOf(getMapList(actualAlterPlanResponse.get("distsql_artifacts")).getFirst().get("sql")), is("DROP MASK RULE orders"));
+            assertThat(String.valueOf(getMapList(actualAlterPlanResponse.get("distsql_artifacts")).getLast().get("sql")), containsString("CREATE MASK RULE orders"));
             String alterPlanId = String.valueOf(actualAlterPlanResponse.get("plan_id"));
-            assertApplyCompleted(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(alterPlanId)));
+            assertApplyCompleted(applyReviewedWorkflow(interactionClient, alterPlanId));
             Map<String, Object> actualAlterValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", alterPlanId));
             assertValidationPassed(actualAlterValidationResponse);
-            assertThat(String.valueOf(getMap(getMap(actualAlterValidationResponse.get("rule_validation")).get("evidence")).get("algorithm_type")).toUpperCase(Locale.ENGLISH),
+            assertThat(String.valueOf(getMapList(getMap(actualAlterValidationResponse.get("rule_validation")).get("evidence")).getFirst().get("algorithm_type")).toUpperCase(Locale.ENGLISH),
                     is("KEEP_FIRST_N_LAST_M"));
         }
     }
@@ -101,31 +101,34 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             Map<String, Object> actualDropPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "operation_type", "drop"));
             assertThat(String.valueOf(actualDropPlanResponse.get("status")), is("planned"));
-            assertThat(String.valueOf(getMapList(actualDropPlanResponse.get("distsql_artifacts")).get(0).get("sql")), is("DROP MASK RULE orders"));
+            assertThat(String.valueOf(getMapList(actualDropPlanResponse.get("distsql_artifacts")).getFirst().get("sql")), is("DROP MASK RULE orders"));
             String planId = String.valueOf(actualDropPlanResponse.get("plan_id"));
-            assertApplyCompleted(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId)));
+            assertApplyCompleted(applyReviewedWorkflow(interactionClient, planId));
             Map<String, Object> actualValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
             assertValidationPassed(actualValidationResponse);
-            assertThat(String.valueOf(getMap(actualValidationResponse.get("rule_validation")).get("details")), is("Mask rule has been removed."));
+            assertThat(String.valueOf(getMap(actualValidationResponse.get("rule_validation")).get("details")), is("Mask table rule state matches the planned state."));
         }
     }
     
     @Test
-    void assertPlanRejectsUnsupportedSecondMaskColumnThroughProxy() throws IOException, InterruptedException {
+    void assertPlanAddsSecondMaskColumnThroughProxy() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             createMaskRule(interactionClient);
             Map<String, Object> actualSecondCreatePlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "amount",
                             "operation_type", "create", "algorithm_type", "KEEP_FIRST_N_LAST_M",
                             "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "#")));
-            assertThat(String.valueOf(actualSecondCreatePlanResponse.get("status")), is("clarifying"));
-            assertThat(getIssueCodes(actualSecondCreatePlanResponse), hasItem(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED));
-            assertFalse(getClarificationMessages(actualSecondCreatePlanResponse).isEmpty());
-            assertThat(getMapList(actualSecondCreatePlanResponse.get("distsql_artifacts")).size(), is(0));
+            assertThat(String.valueOf(actualSecondCreatePlanResponse.get("status")), is("planned"));
+            assertThat(String.valueOf(getMapList(actualSecondCreatePlanResponse.get("distsql_artifacts")).getFirst().get("sql")), is("DROP MASK RULE orders"));
+            assertThat(String.valueOf(getMapList(actualSecondCreatePlanResponse.get("distsql_artifacts")).getLast().get("sql")), containsString("CREATE MASK RULE orders"));
+            String planId = String.valueOf(actualSecondCreatePlanResponse.get("plan_id"));
+            assertApplyCompleted(applyReviewedWorkflow(interactionClient, planId));
+            assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
             List<Map<String, Object>> actualMaskRules = getPayloadItems(
                     interactionClient.readResource(String.format(TABLE_RULES_RESOURCE_URI, getLogicalDatabaseName(), "orders")));
-            assertThat(actualMaskRules.size(), is(1));
-            assertThat(String.valueOf(actualMaskRules.get(0).get("column")), is("status"));
+            assertThat(actualMaskRules.size(), is(2));
+            assertThat(String.valueOf(findItemByField(actualMaskRules, "column", "status").get("column")), is("status"));
+            assertThat(String.valueOf(findItemByField(actualMaskRules, "column", "amount").get("column")), is("amount"));
         }
     }
     
@@ -139,16 +142,16 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(getIssueCodes(actualClarifyingResponse), hasItem(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
             List<Map<String, Object>> actualRecommendations = getMapList(actualClarifyingResponse.get("algorithm_recommendations"));
             assertThat(actualRecommendations.size(), is(1));
-            assertThat(String.valueOf(actualRecommendations.get(0).get("algorithm_type")).toUpperCase(Locale.ENGLISH), is("MASK_FROM_X_TO_Y"));
+            assertThat(String.valueOf(actualRecommendations.getFirst().get("algorithm_type")).toUpperCase(Locale.ENGLISH), is("MASK_FROM_X_TO_Y"));
             assertThat(getClarificationMessages(actualClarifyingResponse), is(List.of("Please provide property `from-x`.", "Please provide property `to-y`.")));
             String planId = String.valueOf(actualClarifyingResponse.get("plan_id"));
             Map<String, Object> actualPlannedResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("plan_id", planId, "primary_algorithm_properties", Map.of("from-x", "4", "to-y", "7")));
             assertThat(String.valueOf(actualPlannedResponse.get("status")), is("planned"));
-            assertApplyCompleted(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId)));
+            assertApplyCompleted(applyReviewedWorkflow(interactionClient, planId));
             Map<String, Object> actualValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
             assertValidationPassed(actualValidationResponse);
-            assertThat(String.valueOf(getMap(getMap(actualValidationResponse.get("rule_validation")).get("evidence")).get("algorithm_type")).toUpperCase(Locale.ENGLISH),
+            assertThat(String.valueOf(getMapList(getMap(actualValidationResponse.get("rule_validation")).get("evidence")).getFirst().get("algorithm_type")).toUpperCase(Locale.ENGLISH),
                     is("MASK_FROM_X_TO_Y"));
         }
     }
@@ -162,14 +165,10 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
                             "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
-            Map<String, Object> actualSkippedRuleApplyResponse = interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId, List.of("ddl")));
-            assertThat(String.valueOf(actualSkippedRuleApplyResponse.get("status")), is("completed"));
-            assertThat(getStringList(actualSkippedRuleApplyResponse.get("executed_distsql")).size(), is(0));
-            assertThat(getStringList(actualSkippedRuleApplyResponse.get("skipped_artifacts")).size(), is(1));
-            assertThat(String.valueOf(getMapList(actualSkippedRuleApplyResponse.get("step_results")).get(0).get("status")), is("skipped"));
-            Map<String, Object> actualFailedValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
-            assertValidationFailed(actualFailedValidationResponse);
-            assertThat(String.valueOf(getMap(actualFailedValidationResponse.get("rule_validation")).get("status")), is("failed"));
+            Map<String, Object> actualPreviewResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "preview"));
+            assertThat(String.valueOf(actualPreviewResponse.get("status")), is("preview"));
+            assertThat(getMapList(actualPreviewResponse.get("preview_artifacts")).stream().map(each -> String.valueOf(each.get("approval_step"))).distinct().toList(),
+                    is(List.of("rule_distsql")));
             Map<String, Object> actualRuleApplyResponse = interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId, List.of("rule_distsql")));
             assertThat(String.valueOf(actualRuleApplyResponse.get("status")), is("completed"));
             assertThat(getStringList(actualRuleApplyResponse.get("executed_distsql")).size(), is(1));
@@ -186,7 +185,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
                             "operation_type", "create", "algorithm_type", "MCP_MASK_CUSTOM"));
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
-            assertApplyCompleted(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId)));
+            assertApplyCompleted(applyReviewedWorkflow(interactionClient, planId));
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
             List<Map<String, Object>> actualMaskPluginItems = getPayloadItems(interactionClient.readResource(ALGORITHMS_RESOURCE_URI));
             assertThat(String.valueOf(findItemByField(actualMaskPluginItems, "type", "MCP_MASK_CUSTOM").get("type")), is("MCP_MASK_CUSTOM"));
@@ -197,7 +196,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             List<Map<String, Object>> actualSingleRuleItems = getPayloadItems(
                     interactionClient.readResource(String.format(TABLE_RULES_RESOURCE_URI, getLogicalDatabaseName(), "orders")));
             assertThat(actualSingleRuleItems.size(), is(1));
-            assertThat(String.valueOf(actualSingleRuleItems.get(0).get("column")), is("status"));
+            assertThat(String.valueOf(actualSingleRuleItems.getFirst().get("column")), is("status"));
         }
     }
     
@@ -208,12 +207,15 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
                         "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
         assertThat(String.valueOf(actualCreatePlanResponse.get("status")), is("planned"));
         String planId = String.valueOf(actualCreatePlanResponse.get("plan_id"));
-        assertApplyCompleted(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId)));
+        assertApplyCompleted(applyReviewedWorkflow(interactionClient, planId));
         assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
     }
     
-    private Map<String, Object> createApplyArguments(final String planId) {
-        return Map.of("plan_id", planId, "execution_mode", "review-then-execute");
+    private Map<String, Object> applyReviewedWorkflow(final MCPInteractionClient interactionClient, final String planId) throws IOException, InterruptedException {
+        Map<String, Object> previewResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "preview"));
+        assertThat(String.valueOf(previewResponse.get("status")), is("preview"));
+        List<String> approvedSteps = getMapList(previewResponse.get("preview_artifacts")).stream().map(each -> String.valueOf(each.get("approval_step"))).distinct().toList();
+        return interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId, approvedSteps));
     }
     
     private Map<String, Object> createApplyArguments(final String planId, final List<String> approvedSteps) {

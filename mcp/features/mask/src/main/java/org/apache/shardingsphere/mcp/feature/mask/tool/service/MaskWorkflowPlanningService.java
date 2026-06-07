@@ -144,7 +144,7 @@ public final class MaskWorkflowPlanningService {
         List<AlgorithmCandidate> algorithmCandidates = algorithmRecommendationService.recommendMaskAlgorithms(clarifiedIntent, request, maskAlgorithms, snapshot.getIssues());
         snapshot.getAlgorithmCandidates().addAll(algorithmCandidates);
         if (!algorithmCandidates.isEmpty()) {
-            request.setAlgorithmType(algorithmCandidates.get(0).getAlgorithmType());
+            request.setAlgorithmType(algorithmCandidates.getFirst().getAlgorithmType());
         }
     }
     
@@ -154,7 +154,7 @@ public final class MaskWorkflowPlanningService {
     
     private void planArtifacts(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
                                final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot, final String databaseType) {
-        snapshot.getRuleArtifacts().add(isDropWorkflow(clarifiedIntent)
+        snapshot.getRuleArtifacts().addAll(isDropWorkflow(clarifiedIntent)
                 ? ruleDistSQLPlanningService.planMaskDropRule(request, maskRules, databaseType)
                 : ruleDistSQLPlanningService.planMaskRule(request, maskRules, databaseType));
         snapshot.setFeatureData(new RuleWorkflowFeatureData(maskRules, isDropWorkflow(clarifiedIntent)

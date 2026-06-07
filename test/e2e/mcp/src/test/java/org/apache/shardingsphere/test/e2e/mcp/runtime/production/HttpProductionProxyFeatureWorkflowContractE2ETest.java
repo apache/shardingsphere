@@ -91,7 +91,10 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
                     Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "tables", "orders"));
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
-            Map<String, Object> actualApplyResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "review-then-execute"));
+            Map<String, Object> actualPreviewResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "preview"));
+            assertThat(String.valueOf(actualPreviewResponse.get("status")), is("preview"));
+            List<String> approvedSteps = getMapList(actualPreviewResponse.get("preview_artifacts")).stream().map(each -> String.valueOf(each.get("approval_step"))).distinct().toList();
+            Map<String, Object> actualApplyResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "review-then-execute", "approved_steps", approvedSteps));
             assertApplyCompleted(actualApplyResponse);
             assertThat(getStringList(actualApplyResponse.get("executed_distsql")).size(), is(1));
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));

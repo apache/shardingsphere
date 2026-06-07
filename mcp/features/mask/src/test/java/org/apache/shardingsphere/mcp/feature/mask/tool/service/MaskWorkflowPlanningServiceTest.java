@@ -60,7 +60,7 @@ class MaskWorkflowPlanningServiceTest {
                 mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class))
                 .plan(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), "session-1", new WorkflowRequest());
         assertThat(actual.getStatus(), is("clarifying"));
-        assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
     }
     
     @Test
@@ -85,7 +85,7 @@ class MaskWorkflowPlanningServiceTest {
                 mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class))
                 .plan(new TestWorkflowSessionContext(), metadataQueryFacade, mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create"));
         assertThat(actual.getStatus(), is("failed"));
-        assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.COLUMN_NOT_FOUND));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.COLUMN_NOT_FOUND));
     }
     
     @Test
@@ -100,7 +100,7 @@ class MaskWorkflowPlanningServiceTest {
                 mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class))
                 .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), queryFacade, "session-1", request);
         assertThat(actual.getStatus(), is("failed"));
-        assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
     
     @Test
@@ -115,9 +115,10 @@ class MaskWorkflowPlanningServiceTest {
         request.getPrimaryAlgorithmProperties().put("from-x", "1");
         WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", request);
         assertThat(actual.getStatus(), is("planned"));
-        assertThat(actual.getRuleArtifacts().size(), is(1));
-        assertTrue(actual.getRuleArtifacts().get(0).getSql().contains("NAME=phone"));
-        assertTrue(actual.getRuleArtifacts().get(0).getSql().contains("NAME=amount"));
+        assertThat(actual.getRuleArtifacts().size(), is(2));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP MASK RULE orders"));
+        assertTrue(actual.getRuleArtifacts().getLast().getSql().contains("NAME=phone"));
+        assertTrue(actual.getRuleArtifacts().getLast().getSql().contains("NAME=amount"));
     }
     
     @Test
@@ -125,7 +126,7 @@ class MaskWorkflowPlanningServiceTest {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone")));
         MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(MaskRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planMaskDropRule(any(), any(), any())).thenReturn(new RuleArtifact("drop", "DROP MASK RULE orders"));
+        when(ruleDistSQLPlanningService.planMaskDropRule(any(), any(), any())).thenReturn(List.of(new RuleArtifact("drop", "DROP MASK RULE orders")));
         WorkflowContextSnapshot actual = createService(ruleInspectionService, mock(MaskAlgorithmRecommendationService.class),
                 mock(MaskAlgorithmPropertyTemplateService.class), ruleDistSQLPlanningService)
                 .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("drop"));
@@ -164,7 +165,7 @@ class MaskWorkflowPlanningServiceTest {
                 mock(MaskRuleDistSQLPlanningService.class)).plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1",
                         createRequest("create"));
         assertThat(actual.getStatus(), is("clarifying"));
-        assertThat(actual.getClarifiedIntent().getClarificationMessages().get(0), is("Please use a mask algorithm visible in the current Proxy."));
+        assertThat(actual.getClarifiedIntent().getClarificationMessages().getFirst(), is("Please use a mask algorithm visible in the current Proxy."));
     }
     
     @Test
@@ -175,7 +176,7 @@ class MaskWorkflowPlanningServiceTest {
                 mock(MaskRuleDistSQLPlanningService.class)).plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1",
                         createRequest("create"));
         assertThat(actual.getStatus(), is("clarifying"));
-        assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
     }
     
     @Test
