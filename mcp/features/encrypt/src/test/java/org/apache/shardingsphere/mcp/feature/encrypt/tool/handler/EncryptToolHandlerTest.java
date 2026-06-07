@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
@@ -32,6 +33,9 @@ import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.support.workflow.model.DDLArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
+import org.apache.shardingsphere.mcp.support.workflow.model.IndexPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -68,6 +72,7 @@ class EncryptToolHandlerTest {
                 "table", "orders",
                 "column", "phone",
                 "algorithm_type", "AES",
+                "allow_index_ddl", false,
                 "structured_intent_evidence", Map.of("field_semantics", "phone", "requires_decrypt", true),
                 "user_overrides", Map.of("cipher_column_name", "phone_cipher"))));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
@@ -77,10 +82,11 @@ class EncryptToolHandlerTest {
         assertThat(actualRequest.getAlgorithmType(), is("AES"));
         assertThat(actualRequest.getFieldSemantics(), is("phone"));
         assertThat(actualRequest.getOptions().getCipherColumnName(), is("phone_cipher"));
+        assertFalse(actualRequest.getOptions().getAllowIndexDDL());
     }
     
     @Test
-    void assertHandlePlanEncryptRuleWithRuleOnlyArtifacts() throws ReflectiveOperationException {
+    void assertHandlePlanEncryptRuleWithMaskedArtifacts() throws ReflectiveOperationException {
         PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
         EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);
         when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
@@ -92,16 +98,14 @@ class EncryptToolHandlerTest {
                 "column", "phone")));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("aes-key-value"), is("******"));
-        assertFalse(actualPayload.containsKey("derived_column_plan"));
-        assertFalse(actualPayload.containsKey("ddl_artifacts"));
-        assertFalse(actualPayload.containsKey("index_plan"));
+        assertThat(((Map<?, ?>) actualPayload.get("derived_column_plan")).get("cipher_column_name"), is("phone_cipher"));
+        assertThat(((List<?>) actualPayload.get("ddl_artifacts")).size(), is(1));
+        assertThat(((List<?>) actualPayload.get("index_plan")).size(), is(1));
         assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("******"));
         List<String> actualResourceUris = extractResourceUris((List<?>) actualPayload.get("resources_to_read"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/algorithms"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/databases/logic_db/rules"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"));
-        assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
-        assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes"));
+        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
         assertThat(actualNextAction.get("type"), is("tool_call"));
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
@@ -132,6 +136,7 @@ class EncryptToolHandlerTest {
         result.setStatus(status);
         result.setRequest(new EncryptWorkflowRequest());
         result.setClarifiedIntent(new ClarifiedIntent());
+        result.setFeatureData(new EncryptWorkflowState());
         result.setInteractionPlan(createInteractionPlan());
         return result;
     }
@@ -153,9 +158,22 @@ class EncryptToolHandlerTest {
         request.getPrimaryAlgorithmProperties().put("aes-key-value", "123456");
         WorkflowContextSnapshot result = createSnapshot("plan-1", "planned");
         result.setRequest(request);
+        EncryptWorkflowState workflowState = new EncryptWorkflowState();
+        workflowState.setDerivedColumnPlan(createDerivedColumnPlan());
+        result.setFeatureData(workflowState);
         result.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "key", ""));
+        result.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN phone_cipher VARCHAR(32)", 10));
+        result.getIndexPlans().add(new IndexPlan("idx_orders_phone_cipher", "phone_cipher", "accelerate equality lookup", "CREATE INDEX idx_orders_phone_cipher ON orders(phone_cipher)"));
         result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
         result.setInteractionPlan(createInteractionPlan());
+        return result;
+    }
+    
+    private DerivedColumnPlan createDerivedColumnPlan() {
+        DerivedColumnPlan result = new DerivedColumnPlan();
+        result.setLogicalColumn("phone");
+        result.setCipherColumnName("phone_cipher");
+        result.setCipherColumnRequired(true);
         return result;
     }
     
