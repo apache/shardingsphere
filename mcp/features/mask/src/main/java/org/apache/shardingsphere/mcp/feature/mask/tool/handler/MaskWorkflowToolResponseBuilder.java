@@ -41,11 +41,13 @@ final class MaskWorkflowToolResponseBuilder {
     }
     
     private Map<String, Object> createMaskedPropertyPreview(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
-        return Map.of("primary", propertyTemplateService.maskProperties(filterRequirements(snapshot), propertySource.getAlgorithmProperties("primary")));
+        return Map.of("primary", propertyTemplateService.maskProperties(createPropertyRequirements(snapshot), propertySource.getAlgorithmProperties("primary")));
     }
     
-    private List<AlgorithmPropertyRequirement> filterRequirements(final WorkflowContextSnapshot snapshot) {
-        return snapshot.getPropertyRequirements().stream().filter(each -> "primary".equals(each.getAlgorithmRole())).toList();
+    private List<AlgorithmPropertyRequirement> createPropertyRequirements(final WorkflowContextSnapshot snapshot) {
+        return snapshot.getPropertyRequirements().isEmpty()
+                ? propertyTemplateService.findRequirements(snapshot.getRequest().getAlgorithmType())
+                : snapshot.getPropertyRequirements().stream().filter(each -> "primary".equals(each.getAlgorithmRole())).toList();
     }
     
     private WorkflowPropertySource getPropertySource(final WorkflowContextSnapshot snapshot) {

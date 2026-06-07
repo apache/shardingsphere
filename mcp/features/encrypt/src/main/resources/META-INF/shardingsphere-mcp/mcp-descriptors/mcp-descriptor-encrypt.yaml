@@ -124,6 +124,21 @@ prompts:
         - "Ask when decrypt, equality, LIKE, or sensitive-field semantics are unclear."
         - "Ask before applying generated encrypt rule DistSQL that changes runtime state."
 
+completionTargets:
+  - referenceType: prompt
+    reference: plan_encrypt_rule
+    arguments:
+      - algorithm_type
+      - assisted_query_algorithm_type
+      - like_query_algorithm_type
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://features/encrypt/algorithms
+    arguments:
+      - algorithm_type
+      - assisted_query_algorithm_type
+      - like_query_algorithm_type
+    maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/encrypt/algorithms
     to: database_gateway_plan_encrypt_rule

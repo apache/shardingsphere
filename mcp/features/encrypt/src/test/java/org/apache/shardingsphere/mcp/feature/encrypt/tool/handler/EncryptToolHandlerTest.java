@@ -95,18 +95,34 @@ class EncryptToolHandlerTest {
         assertFalse(actualPayload.containsKey("derived_column_plan"));
         assertFalse(actualPayload.containsKey("ddl_artifacts"));
         assertFalse(actualPayload.containsKey("index_plan"));
-        assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).get(0)).get("sql")).contains("******"));
+        assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("******"));
         List<String> actualResourceUris = extractResourceUris((List<?>) actualPayload.get("resources_to_read"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/algorithms"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/databases/logic_db/rules"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"));
         assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
         assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
         assertThat(actualNextAction.get("type"), is("tool_call"));
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("plan_id"), is("plan-1"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
+    }
+    
+    @Test
+    void assertHandlePlanEncryptRuleMasksPropertiesBeforeRequirementsCollected() throws ReflectiveOperationException {
+        PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
+        EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);
+        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createClarifyingSnapshot());
+        setField(handler, "planningService", planningService);
+        setField(handler, "propertyTemplateService", new EncryptAlgorithmPropertyTemplateService());
+        MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of(
+                "database", "logic_db",
+                "table", "orders",
+                "column", "phone")));
+        Map<String, Object> actualPayload = actual.toPayload();
+        assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("aes-key-value"), is("******"));
+        assertFalse(String.valueOf(actualPayload).contains("recovery-secret-value"));
     }
     
     private WorkflowContextSnapshot createSnapshot(final String planId, final String status) {
@@ -117,6 +133,15 @@ class EncryptToolHandlerTest {
         result.setRequest(new EncryptWorkflowRequest());
         result.setClarifiedIntent(new ClarifiedIntent());
         result.setInteractionPlan(createInteractionPlan());
+        return result;
+    }
+    
+    private WorkflowContextSnapshot createClarifyingSnapshot() {
+        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
+        request.setAlgorithmType("AES");
+        request.getPrimaryAlgorithmProperties().put("aes-key-value", "recovery-secret-value");
+        WorkflowContextSnapshot result = createSnapshot("plan-1", "clarifying");
+        result.setRequest(request);
         return result;
     }
     

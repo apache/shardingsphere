@@ -32,6 +32,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
@@ -108,7 +109,9 @@ class HttpTransportCompletionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
                                          final Map<String, String> contextArguments) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendCompletionRequest(httpClient, sessionId, reference, argumentName, argumentValue, contextArguments);
         assertThat(actual.statusCode(), is(200));
-        return castToMap(parseJsonBody(actual.body()).get("result"));
+        Map<String, Object> result = castToMap(parseJsonBody(actual.body()).get("result"));
+        assertNotNull(result, actual.body());
+        return result;
     }
     
     private HttpResponse<String> sendCompletionRequest(final HttpClient httpClient, final String sessionId, final Map<String, Object> reference,
