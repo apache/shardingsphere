@@ -104,7 +104,7 @@ class MaskWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanAddsColumnToExistingTableRule() {
+    void assertPlanRejectsAddingColumnToExistingTableRule() {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
         when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of());
@@ -114,11 +114,9 @@ class MaskWorkflowPlanningServiceTest {
         request.setColumn("amount");
         request.getPrimaryAlgorithmProperties().put("from-x", "1");
         WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", request);
-        assertThat(actual.getStatus(), is("planned"));
-        assertThat(actual.getRuleArtifacts().size(), is(2));
-        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP MASK RULE orders"));
-        assertTrue(actual.getRuleArtifacts().getLast().getSql().contains("NAME=phone"));
-        assertTrue(actual.getRuleArtifacts().getLast().getSql().contains("NAME=amount"));
+        assertThat(actual.getStatus(), is("clarifying"));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED));
+        assertThat(actual.getRuleArtifacts().size(), is(0));
     }
     
     @Test
@@ -126,12 +124,26 @@ class MaskWorkflowPlanningServiceTest {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone")));
         MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(MaskRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planMaskDropRule(any(), any(), any())).thenReturn(List.of(new RuleArtifact("drop", "DROP MASK RULE orders")));
+        when(ruleDistSQLPlanningService.planMaskDropRule(any())).thenReturn(new RuleArtifact("drop", "DROP MASK RULE orders"));
         WorkflowContextSnapshot actual = createService(ruleInspectionService, mock(MaskAlgorithmRecommendationService.class),
                 mock(MaskAlgorithmPropertyTemplateService.class), ruleDistSQLPlanningService)
                 .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("drop"));
         assertThat(actual.getStatus(), is("planned"));
         assertThat(actual.getRuleArtifacts().size(), is(1));
+    }
+    
+    @Test
+    void assertPlanRejectsDropWithRemainingTableRules() {
+        MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
+        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone"), Map.of("column", "email")));
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.getDatabaseType("logic_db")).thenReturn("MySQL");
+        WorkflowContextSnapshot actual = createService(ruleInspectionService, mock(MaskAlgorithmRecommendationService.class),
+                mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class))
+                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), queryFacade, "session-1", createRequest("drop"));
+        assertThat(actual.getStatus(), is("clarifying"));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED));
+        assertThat(actual.getRuleArtifacts().size(), is(0));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -269,7 +281,7 @@ class MaskWorkflowPlanningServiceTest {
     private static Stream<Arguments> assertPlanWithNaturalLanguageInferenceArguments() {
         return Stream.of(
                 Arguments.of("create from default verb", "mask phone column", false, "create", "phone", "planned"),
-                Arguments.of("alter from english verb", "update phone number mask rule", true, "alter", "phone", "planned"),
+                Arguments.of("alter from english verb", "update phone number mask rule", true, "alter", "phone", "clarifying"),
                 Arguments.of("drop from english verb", "delete phone number mask rule", true, "drop", "phone", "planned"));
     }
 }
