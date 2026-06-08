@@ -57,7 +57,7 @@ public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflow
         WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(toolCall.getArguments(), this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
         WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getMetadataQueryFacade(),
                 workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
-        return new MCPMapResponse(new WorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
+        return new MCPMapResponse(new MaskWorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     
     private void bindFeatureArguments(final WorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {

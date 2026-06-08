@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkf
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
@@ -57,7 +58,7 @@ abstract class AbstractShardingPlanningToolHandler implements MCPToolHandler<MCP
         ShardingWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShardingWorkflowRequest::new, toolCall.getArguments(),
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyStructuredIntentEvidence);
         WorkflowContextSnapshot snapshot = plan(workflowContext, toolCall, request);
-        return new MCPMapResponse(new WorkflowToolResponseBuilder().buildPlanResponse(snapshot));
+        return new MCPMapResponse(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
     }
     
     protected abstract WorkflowContextSnapshot plan(MCPWorkflowHandlerContext workflowContext, MCPToolCall toolCall, ShardingWorkflowRequest request);

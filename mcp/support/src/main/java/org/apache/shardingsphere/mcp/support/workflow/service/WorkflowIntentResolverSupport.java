@@ -126,16 +126,14 @@ public final class WorkflowIntentResolverSupport {
     }
     
     static String resolveExecutionMode(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
-        String actualExecutionMode = request.getExecutionMode().toLowerCase(Locale.ENGLISH);
-        if (!actualExecutionMode.isEmpty()) {
-            return actualExecutionMode;
-        }
         String naturalLanguageIntent = getNaturalLanguageIntent(request);
-        return containsAny(naturalLanguageIntent, "manual", "manual-only", "manual only", "manual execution", "manual artifacts",
+        if (containsAny(naturalLanguageIntent, "manual", "manual-only", "manual only", "manual execution", "manual artifacts",
                 "export", "outside mcp", "without applying", "do not apply", "no runtime side effects", "side effects out of mcp",
-                "手动", "手工", "人工", "导出", "不要执行", "不执行", "不要应用", "不应用", "不产生副作用")
-                        ? recordInferredValue(clarifiedIntent, WorkflowFieldNames.EXECUTION_MODE, EXECUTION_MODE_MANUAL_ONLY)
-                        : "";
+                "手动", "手工", "人工", "导出", "不要执行", "不执行", "不要应用", "不应用", "不产生副作用")) {
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.EXECUTION_MODE, EXECUTION_MODE_MANUAL_ONLY);
+        }
+        String actualExecutionMode = request.getExecutionMode().toLowerCase(Locale.ENGLISH);
+        return actualExecutionMode.isEmpty() ? "" : actualExecutionMode;
     }
     
     /**

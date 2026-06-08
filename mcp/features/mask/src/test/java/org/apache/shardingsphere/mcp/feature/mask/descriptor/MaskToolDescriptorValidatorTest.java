@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.mask.descriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
@@ -53,9 +54,11 @@ class MaskToolDescriptorValidatorTest {
     }
     
     @Test
-    void assertDoesNotExposeCompletionTargets() {
-        assertFalse(MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream().anyMatch(each -> MaskFeatureDefinition.PLAN_PROMPT_NAME.equals(each.getReference())));
-        assertFalse(MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream().anyMatch(each -> "shardingsphere://features/mask/algorithms".equals(each.getReference())));
+    void assertExposeCompletionTargets() {
+        MCPCompletionTargetDescriptor promptCompletionTarget = findCompletionTarget("prompt", MaskFeatureDefinition.PLAN_PROMPT_NAME);
+        assertThat(promptCompletionTarget.getArguments(), is(List.of("algorithm_type")));
+        MCPCompletionTargetDescriptor resourceCompletionTarget = findCompletionTarget("resource", MaskFeatureDefinition.ALGORITHMS_RESOURCE_URI);
+        assertThat(resourceCompletionTarget.getArguments(), is(List.of("algorithm_type")));
     }
     
     @Test
@@ -116,6 +119,11 @@ class MaskToolDescriptorValidatorTest {
     
     private MCPPromptDescriptor findPrompt(final String promptName) {
         return MCPDescriptorCatalogIndex.getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private MCPCompletionTargetDescriptor findCompletionTarget(final String referenceType, final String reference) {
+        return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
+                .filter(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference())).findFirst().orElseThrow();
     }
     
     private String readResource(final String resourceName) throws IOException {

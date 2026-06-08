@@ -82,12 +82,30 @@ jobs:
           load_optional_property() {
             awk -F= -v key="$1" '$1 == key {sub(/^[^=]*=/, ""); print; found = 1; exit} END {if (!found) exit 1}' "${property_file}" || true
           }
+          normalize_arch() {
+            case "$1" in
+              x86_64)
+                echo "amd64"
+                ;;
+              aarch64)
+                echo "arm64"
+                ;;
+              *)
+                echo "$1"
+                ;;
+            esac
+          }
+          target_platform="$(load_optional_property 'mcp.llm.target-platform')"
+          if [[ -z "${target_platform}" ]]; then
+            target_platform="$(docker version --format '{{.Server.Os}}')/$(normalize_arch "$(docker version --format '{{.Server.Arch}}')")"
+          fi
           base_server_image="$(load_property 'mcp.llm.base-server-image')"
           base_server_image_digest="$(load_optional_property 'mcp.llm.base-server-image-digest')"
           if [[ "${base_server_image}" != *@sha256:* && -n "${base_server_image_digest}" ]]; then
             base_server_image="${base_server_image}@${base_server_image_digest}"
           fi
           {
+            echo "target_platform=${target_platform}"
             echo "server_image=$(load_property 'mcp.llm.server-image')"
             echo "base_server_image=${base_server_image}"
             echo "server_runtime=$(load_property 'mcp.llm.server-runtime')"
@@ -103,6 +121,7 @@ jobs:
         run: |
           set -euo pipefail
           docker build \
+            --platform "${{ steps.mcp-e2e-properties.outputs.target_platform }}" \
             -f test/e2e/mcp/src/test/resources/docker/llm-runtime/Dockerfile \
             -t "${{ steps.mcp-e2e-properties.outputs.server_image }}" \
             --build-arg "BASE_IMAGE=${{ steps.mcp-e2e-properties.outputs.base_server_image }}" \
@@ -119,7 +138,7 @@ jobs:
       - name: Package MCP Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
       - name: Build MCP Distribution Image
-        run: docker build -f distribution/mcp/Dockerfile -t "${{ env.MCP_DISTRIBUTION_IMAGE }}" distribution/mcp/target
+        run: docker build --platform "${{ steps.mcp-e2e-properties.outputs.target_platform }}" -f distribution/mcp/Dockerfile -t "${{ env.MCP_DISTRIBUTION_IMAGE }}" distribution/mcp/target
       - name: Run MCP E2E
         shell: bash
         run: |

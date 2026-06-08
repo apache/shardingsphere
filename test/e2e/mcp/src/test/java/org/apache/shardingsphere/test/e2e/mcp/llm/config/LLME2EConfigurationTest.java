@@ -123,8 +123,8 @@ class LLME2EConfigurationTest {
         assertThat(actual.getApiKey(), is("mcp-llm-score"));
         assertThat(actual.getServerRuntime(), is(expectedProps.getProperty("mcp.llm.server-runtime")));
         assertThat(actual.getServerImage(), is("apache/shardingsphere-mcp-llm-runtime:local"));
-        assertThat(actual.getBaseServerImage(), is("ghcr.io/ggml-org/llama.cpp:server"));
-        assertThat(actual.getBaseServerImageDigest(), is(""));
+        assertThat(actual.getBaseServerImage(), is("ghcr.io/ggml-org/llama.cpp:server-b9191"));
+        assertThat(actual.getBaseServerImageDigest(), is(expectedProps.getProperty("mcp.llm.base-server-image-digest")));
         assertThat(actual.getModelMetadata().getRepository(), is(expectedProps.getProperty("mcp.llm.model-repository")));
         assertThat(actual.getModelMetadata().getFileName(), is(expectedProps.getProperty("mcp.llm.model-file-name")));
         assertThat(actual.getModelMetadata().getQuantization(), is(expectedProps.getProperty("mcp.llm.model-quantization")));
@@ -137,7 +137,7 @@ class LLME2EConfigurationTest {
         System.setProperty("mcp.llm.runtime-mode", "external-debug");
         LLME2EConfiguration actual = LLME2EConfiguration.load();
         assertThat(actual.getRuntimeMode(), is(RuntimeMode.EXTERNAL_DEBUG));
-        assertThat(actual.getBaseServerImageDigest(), is(""));
+        assertThat(actual.getBaseServerImageDigest(), is(EnvironmentPropertiesLoader.loadProperties().getProperty("mcp.llm.base-server-image-digest")));
     }
     
     @Test
@@ -210,7 +210,7 @@ class LLME2EConfigurationTest {
         assertThat(actual.getReadyTimeoutSeconds(), is(1));
         assertThat(actual.getRequestTimeoutSeconds(), is(2));
         assertThat(actual.getRuntimeMode(), is(RuntimeMode.EXTERNAL_DEBUG));
-        assertThat(actual.getBaseServerImage(), is("ghcr.io/ggml-org/llama.cpp:server"));
+        assertThat(actual.getBaseServerImage(), is("ghcr.io/ggml-org/llama.cpp:server-b9191"));
     }
     
     @Test
@@ -241,7 +241,7 @@ class LLME2EConfigurationTest {
     
     private LLME2EConfiguration createConfiguration(final RuntimeMode runtimeMode, final Path artifactRoot) {
         return new LLME2EConfiguration("http://127.0.0.1:8080/v1", "openai-compatible", "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M", "mcp-llm-score", 600, 240, 10,
-                artifactRoot, "run-id", runtimeMode, "llama.cpp", "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server", "",
+                artifactRoot, "run-id", runtimeMode, "llama.cpp", "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server-b9191", "",
                 new LLME2EConfiguration.ModelMetadata("ggml-org/Qwen3-1.7B-GGUF", "Qwen3-1.7B-Q4_K_M.gguf", "Q4_K_M", "daeb8e2d528a760970442092f6bf1e55c3b659eb",
                         "configured-model-sha256"));
     }

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowWorkflowP
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
@@ -63,7 +64,7 @@ public final class PlanShadowAlgorithmCleanupToolHandler implements MCPToolHandl
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
         WorkflowContextSnapshot snapshot = planningService.planAlgorithmCleanup(
                 workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
-        return new MCPMapResponse(new WorkflowToolResponseBuilder().buildPlanResponse(snapshot));
+        return new MCPMapResponse(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
     }
     
     private void bindFeatureArguments(final ShadowAlgorithmCleanupWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {

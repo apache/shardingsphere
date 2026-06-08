@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt.descriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
@@ -53,9 +54,12 @@ class EncryptToolDescriptorValidatorTest {
     }
     
     @Test
-    void assertDoesNotExposeCompletionTargets() {
-        assertFalse(MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream().anyMatch(each -> EncryptFeatureDefinition.PLAN_PROMPT_NAME.equals(each.getReference())));
-        assertFalse(MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream().anyMatch(each -> "shardingsphere://features/encrypt/algorithms".equals(each.getReference())));
+    void assertExposeCompletionTargets() {
+        List<String> expectedArguments = List.of("algorithm_type", "assisted_query_algorithm_type", "like_query_algorithm_type");
+        MCPCompletionTargetDescriptor promptCompletionTarget = findCompletionTarget("prompt", EncryptFeatureDefinition.PLAN_PROMPT_NAME);
+        assertThat(promptCompletionTarget.getArguments(), is(expectedArguments));
+        MCPCompletionTargetDescriptor resourceCompletionTarget = findCompletionTarget("resource", EncryptFeatureDefinition.ALGORITHMS_RESOURCE_URI);
+        assertThat(resourceCompletionTarget.getArguments(), is(expectedArguments));
     }
     
     @Test
@@ -110,6 +114,11 @@ class EncryptToolDescriptorValidatorTest {
     
     private MCPPromptDescriptor findPrompt(final String promptName) {
         return MCPDescriptorCatalogIndex.getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private MCPCompletionTargetDescriptor findCompletionTarget(final String referenceType, final String reference) {
+        return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
+                .filter(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference())).findFirst().orElseThrow();
     }
     
     private String readResource(final String resourceName) throws IOException {

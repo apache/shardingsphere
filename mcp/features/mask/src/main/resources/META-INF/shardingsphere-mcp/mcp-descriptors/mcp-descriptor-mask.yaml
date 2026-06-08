@@ -116,6 +116,17 @@ prompts:
         - "Ask when field semantics or masking strategy are unclear."
         - "Ask before applying generated mask rule DistSQL that changes runtime state."
 
+completionTargets:
+  - referenceType: prompt
+    reference: plan_mask_rule
+    arguments:
+      - algorithm_type
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://features/mask/algorithms
+    arguments:
+      - algorithm_type
+    maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/mask/algorithms
     to: database_gateway_plan_mask_rule

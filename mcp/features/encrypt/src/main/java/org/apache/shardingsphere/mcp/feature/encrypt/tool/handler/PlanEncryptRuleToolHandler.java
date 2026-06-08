@@ -58,10 +58,14 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkf
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
         WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getMetadataQueryFacade(),
                 workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
-        return new MCPMapResponse(new WorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
+        return new MCPMapResponse(new EncryptWorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     
     private void bindFeatureArguments(final EncryptWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
+        String allowIndexDDL = workflowPlanningArguments.getStringArgument(WorkflowFieldNames.ALLOW_INDEX_DDL);
+        if (!allowIndexDDL.isEmpty()) {
+            request.getOptions().setAllowIndexDDL(workflowPlanningArguments.getBooleanArgument(WorkflowFieldNames.ALLOW_INDEX_DDL, true));
+        }
         request.setAlgorithmType(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.ALGORITHM_TYPE));
         request.getOptions().setAssistedQueryAlgorithmType(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.ASSISTED_QUERY_ALGORITHM_TYPE));
         request.getOptions().setLikeQueryAlgorithmType(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.LIKE_QUERY_ALGORITHM_TYPE));

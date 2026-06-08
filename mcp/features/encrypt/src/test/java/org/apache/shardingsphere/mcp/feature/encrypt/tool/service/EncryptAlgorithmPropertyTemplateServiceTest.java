@@ -48,6 +48,12 @@ class EncryptAlgorithmPropertyTemplateServiceTest {
     }
     
     @Test
+    void assertGetSupportedAlgorithmTypes() {
+        List<String> actual = service.getSupportedAlgorithmTypes();
+        assertThat(actual, is(List.of("AES", "MD5")));
+    }
+    
+    @Test
     void assertMaskProperties() {
         List<AlgorithmPropertyRequirement> requirements = List.of(
                 new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "key", ""),

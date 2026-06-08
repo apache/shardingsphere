@@ -55,7 +55,7 @@ class LLME2EArtifactWriterTest {
         assertTrue((boolean) castToMap(runContext.get("runtime")).get("dockerOwned"));
         assertThat(castToMap(runContext.get("runtime")).get("serverRuntime"), is("llama.cpp"));
         assertThat(castToMap(runContext.get("runtime")).get("serverImage"), is("apache/shardingsphere-mcp-llm-runtime:local"));
-        assertThat(castToMap(runContext.get("runtime")).get("baseServerImage"), is("ghcr.io/ggml-org/llama.cpp:server"));
+        assertThat(castToMap(runContext.get("runtime")).get("baseServerImage"), is("ghcr.io/ggml-org/llama.cpp:server-b9191"));
         assertThat(castToMap(runContext.get("runtime")).get("modelPackaging"), is("prepackaged"));
         assertThat(Files.readString(tempDir.resolve("raw-model-output.txt")), is("{\"token\":\"<redacted>\"}"));
         assertThat(Files.readString(tempDir.resolve("mcp-runtime.log")), is("Authorization: Bearer <redacted>" + System.lineSeparator() + "MCP_LLM_API_KEY=<redacted>"));
@@ -79,7 +79,7 @@ class LLME2EArtifactWriterTest {
                 Map.entry("serverRuntime", "llama.cpp"),
                 Map.entry("serverImage", "apache/shardingsphere-mcp-llm-runtime:local"),
                 Map.entry("serverImageId", "test-server-image-id"),
-                Map.entry("baseServerImage", "ghcr.io/ggml-org/llama.cpp:server"),
+                Map.entry("baseServerImage", "ghcr.io/ggml-org/llama.cpp:server-b9191"),
                 Map.entry("baseServerImageDigest", "test-base-server-image-digest"),
                 Map.entry("modelReference", MODEL_NAME),
                 Map.entry("servedModelId", MODEL_NAME),

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
@@ -63,7 +64,7 @@ public final class PlanBroadcastRuleToolHandler implements MCPToolHandler<MCPWor
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
         WorkflowContextSnapshot snapshot = planningService.plan(
                 workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
-        return new MCPMapResponse(new WorkflowToolResponseBuilder().buildPlanResponse(snapshot));
+        return new MCPMapResponse(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
     }
     
     private void bindFeatureArguments(final BroadcastWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
