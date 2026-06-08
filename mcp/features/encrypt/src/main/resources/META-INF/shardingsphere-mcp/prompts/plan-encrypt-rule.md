@@ -23,6 +23,8 @@ User context:
 - table: {{table}}
 - column: {{column}}
 - algorithm_type: {{algorithm_type}}
+- assisted_query_algorithm_type: {{assisted_query_algorithm_type}}
+- like_query_algorithm_type: {{like_query_algorithm_type}}
 - plan_id: {{plan_id}}
 
 Model path:

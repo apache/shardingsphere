@@ -377,9 +377,46 @@ tools:
         intent_inference:
           type: object
           description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+        argument_provenance:
+          type: object
+          description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."
         review_focus:
           type: object
           description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
+        proxy_topology_hint:
+          type: object
+          description: "Proxy metadata view expected by this workflow and safe recovery guidance when runtime metadata looks inconsistent."
+        distsql_artifacts:
+          type: array
+          description: "Masked rule DistSQL artifacts generated for review before applying the workflow."
+          items:
+            type: object
+        ddl_artifacts:
+          type: array
+          description: "Reviewable DDL artifact list returned by workflow payloads; encrypt rule planning normally leaves this empty."
+          items:
+            type: object
+        index_plan:
+          type: array
+          description: "Reviewable index plan list returned by workflow payloads; encrypt rule planning normally leaves this empty."
+          items:
+            type: object
+        derived_column_plan:
+          type: object
+          description: "Encrypt-specific physical column plan for cipher, assisted-query, and LIKE-query columns."
+        masked_property_preview:
+          type: object
+          description: "Encrypt-specific preview of algorithm properties with secret values masked before returning them to MCP clients."
+          properties:
+            primary:
+              type: object
+              description: "Masked primary encrypt algorithm properties."
+            assisted_query:
+              type: object
+              description: "Masked assisted-query algorithm properties."
+            like_query:
+              type: object
+              description: "Masked LIKE-query algorithm properties."
         next_actions:
           type: array
           description: "Ordered model-facing recommendations for the next call or user question."

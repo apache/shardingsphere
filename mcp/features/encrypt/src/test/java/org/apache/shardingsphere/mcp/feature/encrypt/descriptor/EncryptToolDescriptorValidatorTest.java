@@ -23,7 +23,10 @@ import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -43,6 +47,11 @@ class EncryptToolDescriptorValidatorTest {
     @Test
     void assertSupports() {
         assertTrue(new EncryptToolDescriptorValidator().supports(MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME)));
+    }
+    
+    @Test
+    void assertLoadByServiceLoader() {
+        assertTrue(ServiceLoader.load(MCPToolDescriptorValidator.class).stream().map(ServiceLoader.Provider::type).anyMatch(EncryptToolDescriptorValidator.class::equals));
     }
     
     @Test
@@ -63,6 +72,14 @@ class EncryptToolDescriptorValidatorTest {
     }
     
     @Test
+    void assertPromptExposesCompletionArguments() throws IOException {
+        String actual = readResource("META-INF/shardingsphere-mcp/prompts/plan-encrypt-rule.md");
+        for (String each : findCompletionTarget("prompt", EncryptFeatureDefinition.PLAN_PROMPT_NAME).getArguments()) {
+            assertTrue(actual.contains("- " + each + ": {{" + each + "}}"));
+        }
+    }
+    
+    @Test
     @SuppressWarnings("unchecked")
     void assertOutputSchemaDeclaresElicitationFallback() {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
@@ -73,6 +90,18 @@ class EncryptToolDescriptorValidatorTest {
         assertTrue(supportProperties.containsKey("form_mode"));
         assertTrue(supportProperties.containsKey("url_mode"));
         assertTrue(supportProperties.containsKey("selected_interaction"));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertOutputSchemaDeclaresPlanResponseFields() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> actual = (Map<String, Object>) descriptor.getOutputSchema().get("properties");
+        assertTrue(actual.keySet().containsAll(List.of(
+                "response_mode", "plan_id", "workflow_kind", "status", "issues", "global_steps", "current_step", "algorithm_recommendations",
+                "property_requirements", "validation_strategy", "delivery_mode", "execution_mode", "intent_inference", "argument_provenance", "review_focus",
+                "missing_required_inputs", "clarification_questions", "resources_to_read", "proxy_topology_hint", "next_actions", "distsql_artifacts",
+                "ddl_artifacts", "index_plan", "derived_column_plan", "masked_property_preview")));
     }
     
     @Test
@@ -110,6 +139,20 @@ class EncryptToolDescriptorValidatorTest {
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new EncryptToolDescriptorValidator().validate(new MCPToolDescriptor(
                 descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), outputSchema, descriptor.getAnnotations(), descriptor.getMeta())));
         assertThat(actual.getMessage(), is("Tool `database_gateway_plan_encrypt_rule` outputSchema must declare `resources_to_read`."));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"argument_provenance", "masked_property_preview"})
+    @SuppressWarnings("unchecked")
+    void assertValidateRejectsMissingTemplateOutputField(final String fieldName) {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> outputSchema = new LinkedHashMap<>(descriptor.getOutputSchema());
+        Map<String, Object> properties = new LinkedHashMap<>((Map<String, Object>) outputSchema.get("properties"));
+        properties.remove(fieldName);
+        outputSchema.put("properties", properties);
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new EncryptToolDescriptorValidator().validate(new MCPToolDescriptor(
+                descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), outputSchema, descriptor.getAnnotations(), descriptor.getMeta())));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_plan_encrypt_rule` outputSchema must declare `" + fieldName + "`."));
     }
     
     private MCPPromptDescriptor findPrompt(final String promptName) {
