@@ -116,11 +116,11 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> planResponse = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_encrypt_rule", createEncryptRulePlanArguments());
         assertThat(planResponse.statusCode(), is(200));
-        assertFalse(planResponse.body().contains(RECOVERY_SECRET));
+        assertFalse(planResponse.body().contains(RECOVERY_SECRET), planResponse.body());
         String planId = String.valueOf(getStructuredContent(planResponse.body()).get("plan_id"));
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME, Map.of("plan_id", planId));
         assertThat(actual.statusCode(), is(200));
-        assertFalse(actual.body().contains(RECOVERY_SECRET));
+        assertFalse(actual.body().contains(RECOVERY_SECRET), actual.body());
         Map<String, Object> payload = getStructuredContent(actual.body());
         Map<String, Object> recovery = getRecoveryPayload(payload, "missing_context");
         assertThat(String.valueOf(recovery.get("category")), is("missing_execution_mode"));
@@ -128,7 +128,7 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
     
     private Map<String, Object> getFirstNextAction(final Map<String, Object> recovery) {
-        return castToMapList(recovery.get("next_actions")).iterator().next();
+        return castToMapList(recovery.get("next_actions")).getFirst();
     }
     
     private void assertDatabaseListContains(final Map<String, Object> payload, final String expectedDatabase) {

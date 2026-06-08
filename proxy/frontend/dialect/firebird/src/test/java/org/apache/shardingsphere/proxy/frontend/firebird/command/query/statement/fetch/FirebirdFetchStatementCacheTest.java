@@ -29,7 +29,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -75,11 +74,22 @@ class FirebirdFetchStatementCacheTest {
     }
     
     @Test
+    void assertGetFetchBackendHandlerWithoutConnection() {
+        assertNull(cache.getFetchBackendHandler(1, 10));
+    }
+    
+    @Test
     void assertUnregisterStatement() {
         cache.registerConnection(1);
         cache.registerStatement(1, 10, mock(ProxyBackendHandler.class));
         cache.unregisterStatement(1, 10);
         assertNull(cache.getFetchBackendHandler(1, 10));
+    }
+    
+    @Test
+    void assertUnregisterStatementWithoutConnection() {
+        cache.unregisterStatement(1, 10);
+        assertFalse(statementRegistry.containsKey(1));
     }
     
     @Test
@@ -91,10 +101,4 @@ class FirebirdFetchStatementCacheTest {
         verify(handler).close();
         assertFalse(statementRegistry.containsKey(1));
     }
-    
-    @Test
-    void assertGetFetchBackendHandlerWithoutRegisteredConnection() {
-        assertThrows(IllegalStateException.class, () -> cache.getFetchBackendHandler(1, 10));
-    }
-    
 }

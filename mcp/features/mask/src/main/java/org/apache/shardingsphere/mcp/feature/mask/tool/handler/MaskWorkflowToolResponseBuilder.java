@@ -23,32 +23,31 @@ import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmProp
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 
 import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class WorkflowToolResponseBuilder {
+final class MaskWorkflowToolResponseBuilder {
     
     private final MaskAlgorithmPropertyTemplateService propertyTemplateService;
     
     Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
         WorkflowPropertySource propertySource = getPropertySource(snapshot);
-        Map<String, Object> result = WorkflowPlanPayloadBuilder.build(snapshot);
+        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, propertySource);
         result.put("masked_property_preview", createMaskedPropertyPreview(snapshot, propertySource));
-        result.put("derived_column_plan", null);
-        result.putAll(WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, propertySource));
         return result;
     }
     
     private Map<String, Object> createMaskedPropertyPreview(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
-        return Map.of("primary", propertyTemplateService.maskProperties(filterRequirements(snapshot), propertySource.getAlgorithmProperties("primary")));
+        return Map.of("primary", propertyTemplateService.maskProperties(createPropertyRequirements(snapshot), propertySource.getAlgorithmProperties("primary")));
     }
     
-    private List<AlgorithmPropertyRequirement> filterRequirements(final WorkflowContextSnapshot snapshot) {
-        return snapshot.getPropertyRequirements().stream().filter(each -> "primary".equals(each.getAlgorithmRole())).toList();
+    private List<AlgorithmPropertyRequirement> createPropertyRequirements(final WorkflowContextSnapshot snapshot) {
+        return snapshot.getPropertyRequirements().isEmpty()
+                ? propertyTemplateService.findRequirements(snapshot.getRequest().getAlgorithmType())
+                : snapshot.getPropertyRequirements().stream().filter(each -> "primary".equals(each.getAlgorithmRole())).toList();
     }
     
     private WorkflowPropertySource getPropertySource(final WorkflowContextSnapshot snapshot) {

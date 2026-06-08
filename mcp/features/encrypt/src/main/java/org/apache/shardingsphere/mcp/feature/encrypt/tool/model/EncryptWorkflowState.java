@@ -23,16 +23,30 @@ import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFeatureData;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Encrypt workflow state.
  */
+@Getter
 public final class EncryptWorkflowState implements WorkflowFeatureData {
     
-    @Getter
+    private final List<Map<String, Object>> beforeRules = new LinkedList<>();
+    
+    private final List<Map<String, Object>> expectedRules = new LinkedList<>();
+    
     @Setter
     private DerivedColumnPlan derivedColumnPlan;
+    
+    public EncryptWorkflowState() {
+    }
+    
+    public EncryptWorkflowState(final List<Map<String, Object>> beforeRules, final List<Map<String, Object>> expectedRules) {
+        this.beforeRules.addAll(copyRules(beforeRules));
+        this.expectedRules.addAll(copyRules(expectedRules));
+    }
     
     @Override
     public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
@@ -41,7 +55,7 @@ public final class EncryptWorkflowState implements WorkflowFeatureData {
     
     @Override
     public EncryptWorkflowState copy() {
-        EncryptWorkflowState result = new EncryptWorkflowState();
+        EncryptWorkflowState result = new EncryptWorkflowState(beforeRules, expectedRules);
         result.setDerivedColumnPlan(copyDerivedColumnPlan());
         return result;
     }
@@ -61,5 +75,31 @@ public final class EncryptWorkflowState implements WorkflowFeatureData {
         result.setDataTypeStrategy(derivedColumnPlan.getDataTypeStrategy());
         derivedColumnPlan.getNameCollisions().forEach(each -> result.getNameCollisions().add(new LinkedHashMap<>(each)));
         return result;
+    }
+    
+    private List<Map<String, Object>> copyRules(final List<Map<String, Object>> rules) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : rules) {
+            result.add(copyMap(each));
+        }
+        return result;
+    }
+    
+    private Map<String, Object> copyMap(final Map<String, Object> original) {
+        Map<String, Object> result = new LinkedHashMap<>(original.size(), 1F);
+        original.forEach((key, value) -> result.put(key, copyValue(value)));
+        return result;
+    }
+    
+    private Object copyValue(final Object original) {
+        if (original instanceof final Map<?, ?> originalMap) {
+            Map<String, Object> result = new LinkedHashMap<>(originalMap.size(), 1F);
+            originalMap.forEach((key, value) -> result.put(String.valueOf(key), copyValue(value)));
+            return result;
+        }
+        if (original instanceof List) {
+            return ((List<?>) original).stream().map(this::copyValue).toList();
+        }
+        return original;
     }
 }

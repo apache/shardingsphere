@@ -121,6 +121,9 @@ class WorkflowIntentResolverSupportTest {
         WorkflowRequest noSideEffectRequest = new WorkflowRequest();
         noSideEffectRequest.setExecutionMode("");
         noSideEffectRequest.setNaturalLanguageIntent("keep runtime side effects out of MCP");
+        WorkflowRequest conflictingModeRequest = new WorkflowRequest();
+        conflictingModeRequest.setExecutionMode("review-then-execute");
+        conflictingModeRequest.setNaturalLanguageIntent("export reviewable artifacts for manual execution");
         WorkflowRequest chineseManualRequest = new WorkflowRequest();
         chineseManualRequest.setExecutionMode("");
         chineseManualRequest.setNaturalLanguageIntent("导出脚本，不要执行");
@@ -130,6 +133,7 @@ class WorkflowIntentResolverSupportTest {
                 Arguments.of("explicit execution mode", explicitRequest, "manual-only"),
                 Arguments.of("manual execution intent", manualRequest, "manual-only"),
                 Arguments.of("no side effect intent", noSideEffectRequest, "manual-only"),
+                Arguments.of("manual intent over nonmanual mode", conflictingModeRequest, "manual-only"),
                 Arguments.of("chinese manual intent", chineseManualRequest, "manual-only"),
                 Arguments.of("default execution mode", defaultRequest, ""));
     }

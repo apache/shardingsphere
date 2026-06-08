@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptWorkflowOptionsTest {
@@ -44,7 +43,6 @@ class EncryptWorkflowOptionsTest {
     @Test
     void assertOverlayKeepsExistingValuesForBlankInputs() {
         EncryptWorkflowOptions previousOptions = new EncryptWorkflowOptions();
-        previousOptions.setAllowIndexDDL(false);
         previousOptions.setAssistedQueryAlgorithmType("MD5");
         previousOptions.setCipherColumnName("phone_cipher");
         previousOptions.getAssistedQueryAlgorithmProperties().put("digest-algorithm-name", "SHA-256");
@@ -54,7 +52,6 @@ class EncryptWorkflowOptionsTest {
         currentOptions.setCipherColumnName(null);
         currentOptions.getLikeQueryAlgorithmProperties().put("delta", "1");
         currentOptions.overlayTo(previousOptions);
-        assertFalse(previousOptions.getAllowIndexDDL());
         assertTrue(previousOptions.getRequiresLikeQuery());
         assertThat(previousOptions.getAssistedQueryAlgorithmType(), is("MD5"));
         assertThat(previousOptions.getCipherColumnName(), is("phone_cipher"));

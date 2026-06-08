@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration.Run
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatModelClient;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.testcontainers.DockerClientFactory;
+import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
@@ -53,6 +54,7 @@ public final class LLMRuntimeSupport {
      *
      * @param config LLM E2E configuration
      * @return prepared LLM runtime
+     * @throws IllegalStateException when the runtime cannot be prepared
      * @throws InterruptedException interrupted exception
      */
     public static synchronized ModelRuntime prepare(final LLME2EConfiguration config) throws InterruptedException {
@@ -67,7 +69,21 @@ public final class LLMRuntimeSupport {
         requireDockerAvailable();
         String serverImageId = requireScoreImageAvailable(config.getServerImage());
         GenericContainer<?> container = createContainer(config);
-        container.start();
+        try {
+            container.start();
+        } catch (final ContainerLaunchException ex) {
+            String containerLogs;
+            try {
+                containerLogs = container.getLogs();
+            } catch (final IllegalStateException logException) {
+                containerLogs = "<unavailable: " + logException.getMessage() + ">";
+            }
+            containerLogs = containerLogs.isBlank() ? "<empty>" : containerLogs;
+            throw new IllegalStateException(String.format(
+                    "MCP LLM Docker runtime container failed to start. serverImage=`%s`, baseServerImage=`%s`, baseServerImageDigest=`%s`, javaOs=`%s`, javaArch=`%s`, containerLogs=%s",
+                    config.getServerImage(), config.getBaseServerImage(), config.getBaseServerImageDigest(), System.getProperty("os.name"), System.getProperty("os.arch"),
+                    containerLogs), ex);
+        }
         LLME2EConfiguration actualConfig = createDockerRuntimeConfiguration(config, container);
         new LLMChatModelClient(actualConfig, HttpClient.newHttpClient()).waitUntilReady();
         sharedContainerRuntime = ModelRuntime.container(actualConfig, container, serverImageId);

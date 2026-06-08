@@ -163,7 +163,9 @@ resourceNavigation:
 tools:
   - name: database_gateway_apply_workflow
     title: Apply Workflow
-    description: "Preview or apply a previously planned ShardingSphere MCP workflow. Use execution_mode=preview before side effects unless the plan has already been reviewed."
+    description: >-
+      Preview or apply a previously planned ShardingSphere MCP workflow. Use execution_mode=preview before side effects;
+      automatic execution requires a previewed plan and explicit approved_steps.
     inputSchema:
       type: object
       properties:
@@ -179,7 +181,7 @@ tools:
             - manual-only
         approved_steps:
           type: array
-          description: "Optional execution filter. Omit to apply every artifact after review, or pass only visible preview_artifacts.approval_step values."
+          description: "Required when execution_mode=review-then-execute. Pass only user-reviewed preview_artifacts.approval_step values; an empty or omitted list does not approve artifacts."
           items:
             type: string
             description: "Allowed workflow artifact step: ddl, index_ddl, or rule_distsql."
@@ -349,13 +351,9 @@ tools:
           review_summary: Previewed 0 workflow artifacts. Nothing has been applied.
           next_actions:
             - order: 1
-              type: tool_call
-              title: Call database_gateway_apply_workflow
-              tool_name: database_gateway_apply_workflow
-              arguments:
-                plan_id: encrypt-rule-20260505-001
-                execution_mode: review-then-execute
-              reason: Apply workflow artifacts after reviewing the previewed side effects.
+              type: terminal
+              title: Stop
+              reason: Preview has no artifacts to approve.
     annotations:
       title: Apply Workflow
       readOnlyHint: false
@@ -373,7 +371,9 @@ tools:
         - database_gateway_validate_workflow
   - name: database_gateway_validate_workflow
     title: Validate Workflow
-    description: "Validate a planned or applied workflow against visible metadata and generated artifacts. Use after planning for review, and after database_gateway_apply_workflow to confirm the runtime state."
+    description: >-
+      Validate a planned or applied workflow against visible metadata and generated artifacts. Use after planning for review,
+      and after database_gateway_apply_workflow to confirm the runtime state.
     inputSchema:
       type: object
       properties:

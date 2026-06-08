@@ -126,6 +126,11 @@ class ResultSetUtilsTest {
     }
     
     @Test
+    void assertConvertStringToInteger() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> ResultSetUtils.convertValue("123", Integer.class));
+    }
+    
+    @Test
     void assertConvertDateValue() throws SQLException {
         Date now = new Date();
         assertThat(ResultSetUtils.convertValue(now, Date.class), is(now));

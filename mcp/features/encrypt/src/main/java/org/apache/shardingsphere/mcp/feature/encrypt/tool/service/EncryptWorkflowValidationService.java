@@ -19,15 +19,19 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
+import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureData;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
@@ -35,6 +39,7 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchroniz
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,17 +56,6 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     
     private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
     
-    /**
-     * Validate workflow artifacts.
-     *
-     * @param workflowSessionContext workflow session context
-     * @param metadataQueryFacade metadata query facade
-     * @param queryFacade query facade
-     * @param executionFacade execution facade
-     * @param sessionId session id
-     * @param snapshot workflow snapshot
-     * @return validation payload
-     */
     @Override
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
                                         final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId,
@@ -85,14 +79,18 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
                                                     final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId) {
         ValidationReport result = new ValidationReport();
         EncryptWorkflowRequest request = getWorkflowRequest(snapshot);
-        EncryptWorkflowState workflowState = getWorkflowState(snapshot);
-        String databaseType = metadataQueryFacade.queryDatabase(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()))
-                .map(each -> each.getDatabaseType()).orElse("");
         List<Map<String, Object>> encryptRules = ruleInspectionService.queryEncryptRules(queryFacade, request.getDatabase(), request.getTable());
-        result.setDdlValidation(validateDdl(snapshot, workflowState, encryptRules, result, databaseType));
+        Optional<EncryptWorkflowState> workflowState = getEncryptWorkflowState(snapshot);
+        String databaseType = workflowState.isPresent()
+                ? metadataQueryFacade.queryDatabase(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase())).map(MCPDatabaseMetadata::getDatabaseType)
+                        .orElse(queryFacade.getDatabaseType(request.getDatabase()))
+                : queryFacade.getDatabaseType(request.getDatabase());
+        workflowState.ifPresent(optional -> result.setDdlValidation(validateDdl(snapshot, optional, encryptRules, result, databaseType)));
         result.setRuleValidation(validateRules(snapshot, request, encryptRules, result, databaseType));
-        result.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, result));
-        result.setSqlExecutabilityValidation(validateSqlExecutability(executionFacade, sessionId, snapshot, request, result, databaseType));
+        if (workflowState.isPresent()) {
+            result.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, result));
+            result.setSqlExecutabilityValidation(validateSqlExecutability(executionFacade, sessionId, snapshot, request, result, databaseType));
+        }
         result.setOverallStatus(validationSupport.resolveOverallStatus(result.getDdlValidation(), result.getRuleValidation(),
                 result.getLogicalMetadataValidation(), result.getSqlExecutabilityValidation()));
         return result;
@@ -106,8 +104,8 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         return null == result ? new EncryptWorkflowRequest() : result;
     }
     
-    private EncryptWorkflowState getWorkflowState(final WorkflowContextSnapshot snapshot) {
-        return snapshot.getFeatureData() instanceof EncryptWorkflowState ? (EncryptWorkflowState) snapshot.getFeatureData() : new EncryptWorkflowState();
+    private Optional<EncryptWorkflowState> getEncryptWorkflowState(final WorkflowContextSnapshot snapshot) {
+        return snapshot.getFeatureData() instanceof EncryptWorkflowState ? Optional.of((EncryptWorkflowState) snapshot.getFeatureData()) : Optional.empty();
     }
     
     private ValidationSection validateDdl(final WorkflowContextSnapshot snapshot, final EncryptWorkflowState workflowState,
@@ -115,43 +113,49 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
             return new ValidationSection(WorkflowLifecycle.STATUS_SKIPPED, List.of(), "Encrypt drop does not validate physical cleanup in V1.");
         }
-        if (null == workflowState.getDerivedColumnPlan()) {
+        DerivedColumnPlan derivedColumnPlan = workflowState.getDerivedColumnPlan();
+        if (null == derivedColumnPlan) {
             return new ValidationSection(WorkflowLifecycle.STATUS_SKIPPED, List.of(), "No derived column plan is available for validation.");
         }
         Optional<Map<String, Object>> actualRule = findEncryptRule(snapshot, encryptRules, databaseType);
         if (actualRule.isEmpty()) {
-            validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", createExpectedDerivedColumnSummary(workflowState), "",
+            validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", createExpectedDerivedColumnSummary(derivedColumnPlan), "",
                     "Encrypt rule is missing, so derived column mappings cannot be validated.", "Create or alter the encrypt rule again."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Encrypt rule is missing.");
         }
         List<Map<String, Object>> mismatches = new LinkedList<>();
-        addDerivedColumnMismatch(mismatches, "cipher_column", workflowState.getDerivedColumnPlan().getCipherColumnName(),
+        addDerivedColumnMismatch(mismatches, "cipher_column", derivedColumnPlan.getCipherColumnName(),
                 WorkflowRuleValueUtils.getRuleValue(actualRule.get(), "cipher_column"), "Cipher column mapping does not match.");
         addDerivedColumnMismatch(mismatches, "assisted_query_column",
-                workflowState.getDerivedColumnPlan().isAssistedQueryColumnRequired() ? workflowState.getDerivedColumnPlan().getAssistedQueryColumnName() : "",
+                derivedColumnPlan.isAssistedQueryColumnRequired() ? derivedColumnPlan.getAssistedQueryColumnName() : "",
                 WorkflowRuleValueUtils.getRuleValue(actualRule.get(), "assisted_query_column"), "Assisted-query column mapping does not match.");
         addDerivedColumnMismatch(mismatches, "like_query_column",
-                workflowState.getDerivedColumnPlan().isLikeQueryColumnRequired() ? workflowState.getDerivedColumnPlan().getLikeQueryColumnName() : "",
+                derivedColumnPlan.isLikeQueryColumnRequired() ? derivedColumnPlan.getLikeQueryColumnName() : "",
                 WorkflowRuleValueUtils.getRuleValue(actualRule.get(), "like_query_column"), "LIKE-query column mapping does not match.");
         if (!mismatches.isEmpty()) {
             validationReport.getMismatches().addAll(mismatches);
-            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, actualRule.get(),
+            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(),
                     "Derived column mappings do not match the plan.");
         }
-        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, actualRule.get(),
+        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(),
                 "Derived column mappings match the encrypt rule exposed by Proxy logical metadata.");
     }
     
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot,
                                             final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptRules, final ValidationReport validationReport, final String databaseType) {
+        Optional<List<Map<String, Object>>> expectedRules = getExpectedRules(snapshot);
+        if (expectedRules.isPresent()) {
+            return validateExpectedRules(snapshot, expectedRules.get(), encryptRules, validationReport, databaseType);
+        }
         Optional<Map<String, Object>> actualRule = findEncryptRule(snapshot, encryptRules, databaseType);
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
             if (actualRule.isEmpty()) {
                 return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, List.of(), "Encrypt rule has been removed.");
             }
-            validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", "no encrypt rule", String.valueOf(actualRule.get()),
+            validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", "no encrypt rule",
+                    String.valueOf(createMaskedRules(snapshot, List.of(actualRule.get())).getFirst()),
                     "Encrypt rule still exists after drop.", "Drop the encrypt rule again or investigate the failure."));
-            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, actualRule.get(), "Encrypt rule still exists.");
+            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(), "Encrypt rule still exists.");
         }
         if (actualRule.isEmpty()) {
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getColumn(), "",
@@ -159,6 +163,14 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Encrypt rule is missing.");
         }
         List<Map<String, Object>> mismatches = new LinkedList<>();
+        addRuleValueMismatch(mismatches, "cipher_column", request.getOptions().getCipherColumnName(),
+                WorkflowRuleValueUtils.getRuleValue(actualRule.get(), "cipher_column"), "Cipher column mapping does not match.");
+        addRuleValueMismatch(mismatches, "assisted_query_column",
+                Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter()) ? request.getOptions().getAssistedQueryColumnName() : "",
+                WorkflowRuleValueUtils.getRuleValue(actualRule.get(), "assisted_query_column"), "Assisted-query column mapping does not match.");
+        addRuleValueMismatch(mismatches, "like_query_column",
+                Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery()) ? request.getOptions().getLikeQueryColumnName() : "",
+                WorkflowRuleValueUtils.getRuleValue(actualRule.get(), "like_query_column"), "LIKE-query column mapping does not match.");
         addAlgorithmTypeMismatch(mismatches, "encryptor_type", request.getAlgorithmType(),
                 WorkflowRuleValueUtils.getRuleValue(actualRule.get(), "encryptor_type"), "Encrypt algorithm type does not match.");
         addAlgorithmTypeMismatch(mismatches, "assisted_query_type",
@@ -169,9 +181,110 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
                 WorkflowRuleValueUtils.getRuleValue(actualRule.get(), "like_query_type"), "LIKE-query algorithm type does not match.");
         if (!mismatches.isEmpty()) {
             validationReport.getMismatches().addAll(mismatches);
-            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, actualRule.get(), "Encrypt algorithm configuration does not match.");
+            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(), "Encrypt rule configuration does not match.");
         }
-        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, actualRule.get(), "Encrypt rule matches the planned algorithm and mapping.");
+        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(), "Encrypt rule matches the planned columns and algorithms.");
+    }
+    
+    private Optional<List<Map<String, Object>>> getExpectedRules(final WorkflowContextSnapshot snapshot) {
+        if (snapshot.getFeatureData() instanceof EncryptWorkflowState) {
+            return Optional.of(((EncryptWorkflowState) snapshot.getFeatureData()).getExpectedRules());
+        }
+        return snapshot.getFeatureData() instanceof RuleWorkflowFeatureData ? Optional.of(((RuleWorkflowFeatureData) snapshot.getFeatureData()).getExpectedRules()) : Optional.empty();
+    }
+    
+    private ValidationSection validateExpectedRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> expectedRules, final List<Map<String, Object>> actualRules,
+                                                    final ValidationReport validationReport, final String databaseType) {
+        List<Map<String, Object>> mismatches = createExpectedRuleMismatches(snapshot, expectedRules, actualRules, databaseType);
+        if (!mismatches.isEmpty()) {
+            validationReport.getMismatches().addAll(mismatches);
+            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, actualRules), "Encrypt table rule state does not match the planned state.");
+        }
+        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, createMaskedRules(snapshot, actualRules), "Encrypt table rule state matches the planned state.");
+    }
+    
+    private List<Map<String, Object>> createExpectedRuleMismatches(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> expectedRules,
+                                                                   final List<Map<String, Object>> actualRules, final String databaseType) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : expectedRules) {
+            String expectedColumn = WorkflowRuleValueUtils.getRuleValue(each, "logic_column");
+            Optional<Map<String, Object>> actualRule = findRuleByColumn(actualRules, databaseType, expectedColumn);
+            if (actualRule.isEmpty()) {
+                result.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", formatFieldValue("logic_column", expectedColumn), "",
+                        "Expected encrypt rule column is missing.", "Re-apply the intended encrypt rule."));
+                continue;
+            }
+            addExpectedRuleValueMismatches(result, snapshot, each, actualRule.get(), databaseType);
+        }
+        for (Map<String, Object> each : actualRules) {
+            String actualColumn = WorkflowRuleValueUtils.getRuleValue(each, "logic_column");
+            if (findRuleByColumn(expectedRules, databaseType, actualColumn).isEmpty()) {
+                result.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", "no extra encrypt rule column",
+                        formatFieldValue("logic_column", actualColumn), "Unexpected encrypt rule column exists.", "Inspect concurrent rule changes before retrying validation."));
+            }
+        }
+        return result;
+    }
+    
+    private Optional<Map<String, Object>> findRuleByColumn(final List<Map<String, Object>> rules, final String databaseType, final String column) {
+        return rules.stream()
+                .filter(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, column, WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))).findFirst();
+    }
+    
+    private void addExpectedRuleValueMismatches(final List<Map<String, Object>> mismatches, final WorkflowContextSnapshot snapshot, final Map<String, Object> expectedRule,
+                                                final Map<String, Object> actualRule, final String databaseType) {
+        addIdentifierMismatch(mismatches, databaseType, "cipher_column", WorkflowRuleValueUtils.getRuleValue(expectedRule, "cipher_column"),
+                WorkflowRuleValueUtils.getRuleValue(actualRule, "cipher_column"), "Cipher column mapping does not match.");
+        addIdentifierMismatch(mismatches, databaseType, "assisted_query_column", WorkflowRuleValueUtils.getRuleValue(expectedRule, "assisted_query_column"),
+                WorkflowRuleValueUtils.getRuleValue(actualRule, "assisted_query_column"), "Assisted-query column mapping does not match.");
+        addIdentifierMismatch(mismatches, databaseType, "like_query_column", WorkflowRuleValueUtils.getRuleValue(expectedRule, "like_query_column"),
+                WorkflowRuleValueUtils.getRuleValue(actualRule, "like_query_column"), "LIKE-query column mapping does not match.");
+        addAlgorithmTypeMismatch(mismatches, "encryptor_type", WorkflowRuleValueUtils.getRuleValue(expectedRule, "encryptor_type"),
+                WorkflowRuleValueUtils.getRuleValue(actualRule, "encryptor_type"), "Encrypt algorithm type does not match.");
+        addAlgorithmTypeMismatch(mismatches, "assisted_query_type", WorkflowRuleValueUtils.getRuleValue(expectedRule, "assisted_query_type"),
+                WorkflowRuleValueUtils.getRuleValue(actualRule, "assisted_query_type"), "Assisted-query algorithm type does not match.");
+        addAlgorithmTypeMismatch(mismatches, "like_query_type", WorkflowRuleValueUtils.getRuleValue(expectedRule, "like_query_type"),
+                WorkflowRuleValueUtils.getRuleValue(actualRule, "like_query_type"), "LIKE-query algorithm type does not match.");
+        addPropertyMismatch(mismatches, snapshot, "encryptor_props", expectedRule.get("encryptor_props"), actualRule.get("encryptor_props"), "Encrypt algorithm properties do not match.");
+        addPropertyMismatch(mismatches, snapshot, "assisted_query_props", expectedRule.get("assisted_query_props"), actualRule.get("assisted_query_props"),
+                "Assisted-query algorithm properties do not match.");
+        addPropertyMismatch(mismatches, snapshot, "like_query_props", expectedRule.get("like_query_props"), actualRule.get("like_query_props"),
+                "LIKE-query algorithm properties do not match.");
+    }
+    
+    private void addIdentifierMismatch(final List<Map<String, Object>> mismatches, final String databaseType, final String fieldName, final String expected,
+                                       final String actual, final String impact) {
+        if (WorkflowSQLUtils.isSameIdentifier(databaseType, expected, actual)) {
+            return;
+        }
+        mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", formatFieldValue(fieldName, expected), formatFieldValue(fieldName, actual), impact,
+                "Re-apply the intended encrypt rule."));
+    }
+    
+    private void addPropertyMismatch(final List<Map<String, Object>> mismatches, final WorkflowContextSnapshot snapshot, final String fieldName,
+                                     final Object expected, final Object actual, final String impact) {
+        Map<String, String> expectedProperties = WorkflowSQLUtils.createPropertyMap(expected);
+        Map<String, String> actualProperties = WorkflowSQLUtils.createPropertyMap(actual);
+        if (expectedProperties.equals(actualProperties)) {
+            return;
+        }
+        mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule",
+                formatFieldValue(fieldName, WorkflowArtifactMaskUtils.maskPropertyMap(expectedProperties, snapshot.getPropertyRequirements())),
+                formatFieldValue(fieldName, WorkflowArtifactMaskUtils.maskPropertyMap(actualProperties, snapshot.getPropertyRequirements())), impact,
+                "Re-apply the intended encrypt rule."));
+    }
+    
+    private List<Map<String, Object>> createMaskedRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> rules) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : rules) {
+            Map<String, Object> rule = new LinkedHashMap<>(each);
+            rule.put("encryptor_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("encryptor_props")), snapshot.getPropertyRequirements()));
+            rule.put("assisted_query_props",
+                    WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("assisted_query_props")), snapshot.getPropertyRequirements()));
+            rule.put("like_query_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("like_query_props")), snapshot.getPropertyRequirements()));
+            result.add(rule);
+        }
+        return result;
     }
     
     private ValidationSection validateSqlExecutability(final MCPFeatureExecutionFacade executionFacade, final String sessionId, final WorkflowContextSnapshot snapshot,
@@ -210,6 +323,14 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
                 "Recheck DDL and encrypt rule state."));
     }
     
+    private void addRuleValueMismatch(final List<Map<String, Object>> mismatches, final String fieldName, final String expected, final String actual, final String impact) {
+        if (expected.equals(actual)) {
+            return;
+        }
+        mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", formatFieldValue(fieldName, expected), formatFieldValue(fieldName, actual), impact,
+                "Re-apply the intended encrypt rule."));
+    }
+    
     private void addAlgorithmTypeMismatch(final List<Map<String, Object>> mismatches, final String fieldName, final String expected, final String actual, final String impact) {
         if (matchesValue(expected, actual)) {
             return;
@@ -222,12 +343,12 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         return expected.equalsIgnoreCase(actual);
     }
     
-    private String formatFieldValue(final String fieldName, final String value) {
+    private String formatFieldValue(final String fieldName, final Object value) {
         return String.format("%s=%s", fieldName, value);
     }
     
-    private String createExpectedDerivedColumnSummary(final EncryptWorkflowState workflowState) {
-        return String.format("cipher=%s, assisted_query=%s, like_query=%s", workflowState.getDerivedColumnPlan().getCipherColumnName(),
-                workflowState.getDerivedColumnPlan().getAssistedQueryColumnName(), workflowState.getDerivedColumnPlan().getLikeQueryColumnName());
+    private String createExpectedDerivedColumnSummary(final DerivedColumnPlan derivedColumnPlan) {
+        return String.format("cipher=%s, assisted_query=%s, like_query=%s", derivedColumnPlan.getCipherColumnName(),
+                derivedColumnPlan.getAssistedQueryColumnName(), derivedColumnPlan.getLikeQueryColumnName());
     }
 }

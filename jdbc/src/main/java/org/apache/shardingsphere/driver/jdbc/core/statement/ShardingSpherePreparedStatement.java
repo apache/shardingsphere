@@ -81,6 +81,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final SQLStatementContext sqlStatementContext;
     
+    @Getter
     private final ShardingSphereDatabase usedDatabase;
     
     private final StatementOption statementOption;

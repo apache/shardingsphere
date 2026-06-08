@@ -72,7 +72,7 @@ resourceTemplates:
 prompts:
   - name: plan_mask_rule
     title: Plan Mask Rule
-    description: "Guide the model to plan a ShardingSphere mask rule by reading logical metadata, mask algorithms, and existing mask rules before calling database_gateway_plan_mask_rule."
+    description: "Guide the model to plan a ShardingSphere mask rule by reading mask algorithms and existing mask rules before calling database_gateway_plan_mask_rule."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-mask-rule.md
     arguments:
@@ -108,23 +108,19 @@ prompts:
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/mask/algorithms
         - shardingsphere://features/mask/databases/{database}/rules
+        - shardingsphere://features/mask/databases/{database}/tables/{table}/rules
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_plan_mask_rule returns a planned workflow with plan_id and reviewable artifacts."
         - "Stop after a clarifying response lists missing inputs instead of guessing mask strategy."
       org.apache.shardingsphere/ask-user-conditions:
         - "Ask when field semantics or masking strategy are unclear."
-        - "Ask before applying generated DistSQL that changes runtime state."
+        - "Ask before applying generated mask rule DistSQL that changes runtime state."
 
 completionTargets:
   - referenceType: prompt
     reference: plan_mask_rule
     arguments:
-      - database
-      - schema
-      - table
-      - column
       - algorithm_type
-      - plan_id
     maxValues: 50
   - referenceType: resource
     reference: shardingsphere://features/mask/algorithms
@@ -357,7 +353,7 @@ tools:
                 description: "User inputs needed before continuing."
         resources_to_read:
           type: array
-          description: "Typed resources the model should read when more metadata or algorithm context is useful."
+          description: "Typed resources the model should read when more rule or algorithm context is useful."
       examples:
         - response_mode: planning
           plan_id: mask-rule-20260505-001
@@ -390,7 +386,7 @@ tools:
               title: Call database_gateway_apply_workflow
               tool_name: database_gateway_apply_workflow
               arguments: {}
-              reason: Preview generated workflow artifacts.
+              reason: Preview generated mask rule DistSQL artifacts.
     annotations:
       title: Plan Mask Rule
       readOnlyHint: false
@@ -405,7 +401,6 @@ tools:
         - shardingsphere://features/mask/algorithms
         - "shardingsphere://features/mask/databases/{database}/rules"
         - "shardingsphere://features/mask/databases/{database}/tables/{table}/rules"
-        - "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns"
       org.apache.shardingsphere/follow-up-tools:
         - database_gateway_apply_workflow
         - database_gateway_validate_workflow

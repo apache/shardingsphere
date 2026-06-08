@@ -141,7 +141,8 @@ final class MCPModelFirstContractPayloadBuilder {
                         "call_tool database_gateway_execute_update execution_mode=execute"),
                         "Execute only after reviewing the previewed SQL and side-effect scope.", List.of("database_gateway_execute_update"), List.of()),
                 createCommonFlow("workflow_plan_apply_validate", List.of("call_tool descriptor-backed feature planning tool", "call_tool database_gateway_apply_workflow execution_mode=preview",
-                        "call_tool database_gateway_apply_workflow review-then-execute", "call_tool database_gateway_validate_workflow"),
+                        "call_tool database_gateway_apply_workflow execution_mode=review-then-execute approved_steps=<preview_artifacts.approval_step>",
+                        "call_tool database_gateway_validate_workflow"),
                         "Reuse the same current-session plan_id and stop after validation succeeds.",
                         List.of("database_gateway_apply_workflow", "database_gateway_validate_workflow"), List.of()),
                 createCommonFlow("recover_from_error", List.of("follow recovery.next_actions", "prefer official list discovery methods when surface information is needed",
@@ -216,7 +217,7 @@ final class MCPModelFirstContractPayloadBuilder {
         Map<String, Object> executeTool = new LinkedHashMap<>(3, 1F);
         executeTool.put("tool", "database_gateway_apply_workflow");
         executeTool.put(MCPPayloadFieldNames.EXECUTION_MODE, "review-then-execute");
-        executeTool.put("execute_requires", "execution_mode=review-then-execute");
+        executeTool.put("execute_requires", "execution_mode=review-then-execute and explicit approved_steps copied from preview_artifacts.approval_step");
         result.put("execute_tool", executeTool);
         result.put("validate_tool", "database_gateway_validate_workflow");
         return result;

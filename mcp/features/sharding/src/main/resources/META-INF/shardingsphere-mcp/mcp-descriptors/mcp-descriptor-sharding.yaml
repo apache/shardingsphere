@@ -1,0 +1,554 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+resources:
+  - uri: shardingsphere://features/sharding/algorithm-plugins
+    name: sharding-algorithm-plugins
+    title: Sharding Algorithm Plugins
+    description: "List sharding algorithm plugins visible from the current ShardingSphere runtime."
+    mimeType: application/json
+    shardingSphereMetadata:
+      resourceKind: list
+      feature: sharding
+      relatedTools:
+        - database_gateway_plan_sharding_table_rule
+        - database_gateway_plan_sharding_default_strategy
+  - uri: shardingsphere://features/sharding/key-generate-algorithm-plugins
+    name: sharding-key-generate-algorithm-plugins
+    title: Sharding Key Generate Algorithm Plugins
+    description: "List key generate algorithm plugins visible from the current ShardingSphere runtime."
+    mimeType: application/json
+    shardingSphereMetadata:
+      resourceKind: list
+      feature: sharding
+      relatedTools:
+        - database_gateway_plan_sharding_key_generator
+        - database_gateway_plan_sharding_key_generate_strategy
+resourceTemplates:
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/algorithms
+    name: sharding-algorithms
+    title: Sharding Algorithms
+    description: "List configured sharding algorithms for one logical database."
+    mimeType: application/json
+    shardingSphereMetadata: &databaseListMetadata
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database."
+          required: true
+          scope: logical-database
+      resourceKind: list
+      feature: sharding
+      relatedTools:
+        - database_gateway_plan_sharding_table_rule
+        - database_gateway_plan_sharding_default_strategy
+        - database_gateway_plan_sharding_rule_component_cleanup
+        - database_gateway_validate_workflow
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/table-rules
+    name: sharding-table-rules
+    title: Sharding Table Rules
+    description: "List sharding table rules for one logical database."
+    mimeType: application/json
+    shardingSphereMetadata:
+      <<: *databaseListMetadata
+      relatedTools:
+        - database_gateway_plan_sharding_table_rule
+        - database_gateway_validate_workflow
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/tables/{table}/table-rule
+    name: sharding-table-rule
+    title: Sharding Table Rule
+    description: "Read one sharding table rule by logical table name."
+    mimeType: application/json
+    shardingSphereMetadata: &databaseTableMetadata
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database."
+          required: true
+          scope: logical-database
+        - name: table
+          title: Logical Table
+          description: "Logical table name."
+          required: true
+          scope: logical-table
+      resourceKind: rule
+      feature: sharding
+      relatedTools:
+        - database_gateway_plan_sharding_table_rule
+        - database_gateway_validate_workflow
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/table-nodes
+    name: sharding-table-nodes
+    title: Sharding Table Nodes
+    description: "List DistSQL-visible actual data nodes for sharding tables."
+    mimeType: application/json
+    shardingSphereMetadata:
+      <<: *databaseListMetadata
+      relatedTools:
+        - database_gateway_plan_sharding_table_rule
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes
+    name: sharding-table-node
+    title: Sharding Table Node
+    description: "Read DistSQL-visible actual data nodes for one sharding table."
+    mimeType: application/json
+    shardingSphereMetadata:
+      <<: *databaseTableMetadata
+      relatedTools:
+        - database_gateway_plan_sharding_table_rule
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/table-reference-rules
+    name: sharding-table-reference-rules
+    title: Sharding Table Reference Rules
+    description: "List sharding table reference rules for one logical database."
+    mimeType: application/json
+    shardingSphereMetadata:
+      <<: *databaseListMetadata
+      relatedTools:
+        - database_gateway_plan_sharding_table_reference_rule
+        - database_gateway_validate_workflow
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/table-reference-rules/{rule}
+    name: sharding-table-reference-rule
+    title: Sharding Table Reference Rule
+    description: "Read one sharding table reference rule."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database."
+          required: true
+          scope: logical-database
+        - name: rule
+          title: Rule Name
+          description: "Logical rule name."
+          required: true
+          scope: logical-rule
+      resourceKind: rule
+      feature: sharding
+      relatedTools:
+        - database_gateway_plan_sharding_table_reference_rule
+        - database_gateway_validate_workflow
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/default-strategy
+    name: sharding-default-strategy
+    title: Default Sharding Strategy
+    description: "Read default database and table sharding strategies."
+    mimeType: application/json
+    shardingSphereMetadata:
+      <<: *databaseListMetadata
+      relatedTools:
+        - database_gateway_plan_sharding_default_strategy
+        - database_gateway_validate_workflow
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/key-generators
+    name: sharding-key-generators
+    title: Sharding Key Generators
+    description: "List configured sharding key generators."
+    mimeType: application/json
+    shardingSphereMetadata:
+      <<: *databaseListMetadata
+      relatedTools:
+        - database_gateway_plan_sharding_key_generator
+        - database_gateway_plan_sharding_key_generate_strategy
+        - database_gateway_plan_sharding_rule_component_cleanup
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}
+    name: sharding-key-generator
+    title: Sharding Key Generator
+    description: "Read one configured sharding key generator."
+    mimeType: application/json
+    shardingSphereMetadata: &databaseKeyGeneratorMetadata
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database."
+          required: true
+          scope: logical-database
+        - name: keyGenerator
+          title: Key Generator
+          description: "Sharding key generator name."
+          required: true
+          scope: logical-rule
+      resourceKind: rule
+      feature: sharding
+      relatedTools:
+        - database_gateway_plan_sharding_key_generator
+        - database_gateway_validate_workflow
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/key-generate-strategies
+    name: sharding-key-generate-strategies
+    title: Sharding Key Generate Strategies
+    description: "List configured sharding key generate strategies."
+    mimeType: application/json
+    shardingSphereMetadata:
+      <<: *databaseListMetadata
+      relatedTools:
+        - database_gateway_plan_sharding_key_generate_strategy
+        - database_gateway_validate_workflow
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/key-generate-strategies/{strategy}
+    name: sharding-key-generate-strategy
+    title: Sharding Key Generate Strategy
+    description: "Read one configured sharding key generate strategy."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database."
+          required: true
+          scope: logical-database
+        - name: strategy
+          title: Strategy Name
+          description: "Sharding key generate strategy name."
+          required: true
+          scope: logical-rule
+      resourceKind: rule
+      feature: sharding
+      relatedTools:
+        - database_gateway_plan_sharding_key_generate_strategy
+        - database_gateway_validate_workflow
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/auditors
+    name: sharding-auditors
+    title: Sharding Auditors
+    description: "List configured sharding auditors."
+    mimeType: application/json
+    shardingSphereMetadata:
+      <<: *databaseListMetadata
+      relatedTools:
+        - database_gateway_plan_sharding_rule_component_cleanup
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/unused-algorithms
+    name: unused-sharding-algorithms
+    title: Unused Sharding Algorithms
+    description: "List DistSQL-visible unused sharding algorithms."
+    mimeType: application/json
+    shardingSphereMetadata:
+      <<: *databaseListMetadata
+      relatedTools:
+        - database_gateway_plan_sharding_rule_component_cleanup
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/unused-key-generators
+    name: unused-sharding-key-generators
+    title: Unused Sharding Key Generators
+    description: "List DistSQL-visible unused sharding key generators."
+    mimeType: application/json
+    shardingSphereMetadata:
+      <<: *databaseListMetadata
+      relatedTools:
+        - database_gateway_plan_sharding_rule_component_cleanup
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/unused-auditors
+    name: unused-sharding-auditors
+    title: Unused Sharding Auditors
+    description: "List DistSQL-visible unused sharding auditors."
+    mimeType: application/json
+    shardingSphereMetadata:
+      <<: *databaseListMetadata
+      relatedTools:
+        - database_gateway_plan_sharding_rule_component_cleanup
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/algorithms/{algorithm}/table-rules
+    name: sharding-algorithm-used-table-rules
+    title: Sharding Algorithm Used Table Rules
+    description: "List table rules using one sharding algorithm."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database."
+          required: true
+          scope: logical-database
+        - name: algorithm
+          title: Algorithm Name
+          description: "Sharding algorithm name."
+          required: true
+          scope: logical-rule
+      resourceKind: list
+      feature: sharding
+      relatedTools:
+        - database_gateway_plan_sharding_rule_component_cleanup
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}/table-rules
+    name: sharding-key-generator-used-table-rules
+    title: Sharding Key Generator Used Table Rules
+    description: "List table rules using one sharding key generator."
+    mimeType: application/json
+    shardingSphereMetadata:
+      <<: *databaseKeyGeneratorMetadata
+      resourceKind: list
+      relatedTools:
+        - database_gateway_plan_sharding_rule_component_cleanup
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/auditors/{auditor}/table-rules
+    name: sharding-auditor-used-table-rules
+    title: Sharding Auditor Used Table Rules
+    description: "List table rules using one sharding auditor."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database."
+          required: true
+          scope: logical-database
+        - name: auditor
+          title: Auditor Name
+          description: "Sharding auditor name."
+          required: true
+          scope: logical-rule
+      resourceKind: list
+      feature: sharding
+      relatedTools:
+        - database_gateway_plan_sharding_rule_component_cleanup
+  - uriTemplate: shardingsphere://features/sharding/databases/{database}/rule-count
+    name: sharding-rule-count
+    title: Sharding Rule Count
+    description: "Count sharding table and table-reference rules."
+    mimeType: application/json
+    shardingSphereMetadata:
+      <<: *databaseListMetadata
+      relatedTools:
+        - database_gateway_plan_sharding_table_rule
+        - database_gateway_validate_workflow
+prompts:
+  - name: plan_sharding_table_rule
+    title: Plan Sharding Table Rule
+    description: "Guide the model to plan sharding table rule DistSQL."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-table-rule.md
+    arguments: &commonPromptArguments
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database."
+        required: false
+      - name: operation_type
+        title: Operation Type
+        description: "create, alter, or drop."
+        required: false
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_plan_sharding_table_rule
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after database_gateway_plan_sharding_table_rule returns a planned workflow with plan_id and reviewable artifacts."
+        - "Stop after a clarifying response lists missing table, data nodes, storage units, strategy, algorithm, key generator, or auditor inputs."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask when database, table, data nodes, storage units, sharding column, strategy type, algorithm type, key generator, or auditor input is unclear."
+        - "Ask before applying generated sharding table rule DistSQL that changes runtime state."
+  - name: plan_sharding_table_reference_rule
+    title: Plan Sharding Table Reference Rule
+    description: "Guide the model to plan sharding table reference rule DistSQL."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-table-reference-rule.md
+    arguments: *commonPromptArguments
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_plan_sharding_table_reference_rule
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after database_gateway_plan_sharding_table_reference_rule returns a planned workflow with plan_id and reviewable artifacts."
+        - "Stop after a clarifying response lists missing rule name or reference table inputs."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask when database, rule name, or reference table list is unclear."
+        - "Ask before applying generated sharding table reference DistSQL that changes runtime state."
+  - name: plan_sharding_default_strategy
+    title: Plan Sharding Default Strategy
+    description: "Guide the model to plan default sharding strategy DistSQL."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-default-strategy.md
+    arguments: *commonPromptArguments
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_plan_sharding_default_strategy
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after database_gateway_plan_sharding_default_strategy returns a planned workflow with plan_id and reviewable artifacts."
+        - "Stop after a clarifying response lists missing default strategy type, sharding column, or algorithm input."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask when database, default strategy type, operation, sharding column, or algorithm type is unclear."
+        - "Ask before applying generated default sharding strategy DistSQL that changes runtime state."
+  - name: plan_sharding_key_generator
+    title: Plan Sharding Key Generator
+    description: "Guide the model to plan sharding key generator DistSQL."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-key-generator.md
+    arguments: *commonPromptArguments
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_plan_sharding_key_generator
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after database_gateway_plan_sharding_key_generator returns a planned workflow with plan_id and reviewable artifacts."
+        - "Stop after a clarifying response lists missing key generator name, type, or properties."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask when database, key generator name, operation, type, or required properties are unclear."
+        - "Ask before applying generated sharding key generator DistSQL that changes runtime state."
+  - name: plan_sharding_key_generate_strategy
+    title: Plan Sharding Key Generate Strategy
+    description: "Guide the model to plan sharding key generate strategy DistSQL."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-key-generate-strategy.md
+    arguments: *commonPromptArguments
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_plan_sharding_key_generate_strategy
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after database_gateway_plan_sharding_key_generate_strategy returns a planned workflow with plan_id and reviewable artifacts."
+        - "Stop after a clarifying response lists missing table, column, sequence, or generator input."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask when database, strategy name, table, column, sequence, generator name, or generator type is unclear."
+        - "Ask before applying generated key generate strategy DistSQL that changes runtime state."
+  - name: plan_sharding_rule_component_cleanup
+    title: Plan Sharding Rule Component Cleanup
+    description: "Guide the model to clean up unused sharding algorithms, key generators, or auditors."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-rule-component-cleanup.md
+    arguments: *commonPromptArguments
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_plan_sharding_rule_component_cleanup
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after database_gateway_plan_sharding_rule_component_cleanup returns a planned workflow with plan_id and reviewable artifacts."
+        - "Stop after a clarifying response lists missing component type or component name."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask when database, component type, or component name is unclear."
+        - "Ask before applying generated component cleanup DistSQL that changes runtime state."
+tools:
+  - name: database_gateway_plan_sharding_table_rule
+    title: Plan Sharding Table Rule
+    description: "Plan reviewable sharding table rule DistSQL without executing it."
+    inputSchema: &shardingPlanInputSchema
+      type: object
+      properties:
+        plan_id: {type: string, description: "Optional workflow plan id."}
+        database: {type: string, description: "Logical database."}
+        table: {type: string, description: "Logical table."}
+        column: {type: string, description: "Standard sharding column, auto-table sharding column, or key generate column."}
+        rule: {type: string, description: "Rule name."}
+        operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
+        data_nodes: {type: string, description: "Explicit data nodes expression for sharding table rule."}
+        storage_units: {type: string, description: "Comma-separated storage units for auto table rule."}
+        strategy_type: {type: string, description: "Sharding strategy type.", enum: [standard, complex, hint, none]}
+        sharding_columns: {type: string, description: "Comma-separated sharding columns for complex sharding strategy."}
+        default_strategy_type: {type: string, description: "DATABASE or TABLE default strategy type."}
+        algorithm_type: {type: string, description: "Sharding or key generator algorithm type."}
+        algorithm_properties: {type: object, description: "Algorithm properties.", additionalProperties: {type: string}}
+        key_generate_column: {type: string, description: "Key generate column."}
+        key_generator: {type: string, description: "Existing or target key generator name."}
+        key_generator_type: {type: string, description: "Key generator algorithm type."}
+        key_generator_properties: {type: object, description: "Key generator properties.", additionalProperties: {type: string}}
+        key_generate_strategy: {type: string, description: "Key generate strategy name."}
+        sequence: {type: string, description: "Sequence name for sequence key generate strategy."}
+        reference_tables: {type: string, description: "Comma-separated reference table names."}
+        auditors: {type: string, description: "Comma-separated auditor algorithm types."}
+        allow_hint_disable: {type: string, description: "Whether audit strategy allows hint disable."}
+        component_type: {type: string, description: "algorithm, key-generator, or auditor."}
+        component_name: {type: string, description: "Component name to clean up."}
+        natural_language_intent: {type: string, description: "Original user request."}
+        structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
+        delivery_mode: {type: string, enum: [all-at-once, step-by-step]}
+        execution_mode: {type: string, enum: [review-then-execute, manual-only]}
+        user_overrides: {type: object, description: "Explicit user overrides.", additionalProperties: true}
+      required: []
+      additionalProperties: false
+    outputSchema: &workflowPlanOutputSchema
+      type: object
+      properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker for workflow planning, or terminal when planning cannot continue."
+          enum: [planning, terminal]
+        plan_id:
+          type: string
+          description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
+        workflow_kind:
+          type: string
+          description: "Workflow kind resolved by the planner."
+        status:
+          type: string
+          description: "Stable workflow status, such as clarifying, planned, or failed."
+        missing_required_inputs:
+          type: array
+          description: "Inputs still required before the plan can be completed."
+          items: {type: string}
+        clarification_questions:
+          type: array
+          description: "Structured questions for missing workflow inputs."
+          items: {type: object}
+        distsql_artifacts:
+          type: array
+          description: "Generated sharding DistSQL artifacts for review."
+          items: {type: object}
+        resources_to_read:
+          type: array
+          description: "Resources the model should read before retrying or validating the plan."
+          items: {type: object}
+        next_actions:
+          type: array
+          description: "Ordered next actions for the model or user."
+          items:
+            type: object
+            properties:
+              order: {type: integer, description: "1-based action order."}
+              type: {type: string, description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."}
+              title: {type: string, description: "Short model-facing action title."}
+              tool_name: {type: string, description: "Canonical tool name when type is tool_call."}
+              resource_uri: {type: string, description: "Canonical resource URI when type is resource_read."}
+              arguments: {type: object, description: "Canonical arguments to provide to the target tool."}
+              reason: {type: string, description: "Why the model should take this action."}
+              required_inputs: {type: array, description: "User inputs needed before continuing."}
+      required: [response_mode, plan_id, workflow_kind, status, missing_required_inputs, resources_to_read, next_actions]
+      additionalProperties: true
+      examples:
+        - response_mode: planning
+          plan_id: sharding-table-rule-20260606-001
+          workflow_kind: sharding.table.rule
+          status: planned
+          missing_required_inputs: []
+          resources_to_read: []
+          next_actions: []
+    annotations: &planningAnnotations
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+      readOnlyHint: false
+  - name: database_gateway_plan_sharding_table_reference_rule
+    title: Plan Sharding Table Reference Rule
+    description: "Plan reviewable sharding table reference rule DistSQL without executing it."
+    inputSchema: *shardingPlanInputSchema
+    outputSchema: *workflowPlanOutputSchema
+    annotations: *planningAnnotations
+  - name: database_gateway_plan_sharding_default_strategy
+    title: Plan Sharding Default Strategy
+    description: "Plan reviewable default sharding strategy DistSQL without executing it."
+    inputSchema: *shardingPlanInputSchema
+    outputSchema: *workflowPlanOutputSchema
+    annotations: *planningAnnotations
+  - name: database_gateway_plan_sharding_key_generator
+    title: Plan Sharding Key Generator
+    description: "Plan reviewable sharding key generator DistSQL without executing it."
+    inputSchema: *shardingPlanInputSchema
+    outputSchema: *workflowPlanOutputSchema
+    annotations: *planningAnnotations
+  - name: database_gateway_plan_sharding_key_generate_strategy
+    title: Plan Sharding Key Generate Strategy
+    description: "Plan reviewable sharding key generate strategy DistSQL without executing it."
+    inputSchema: *shardingPlanInputSchema
+    outputSchema: *workflowPlanOutputSchema
+    annotations: *planningAnnotations
+  - name: database_gateway_plan_sharding_rule_component_cleanup
+    title: Plan Sharding Rule Component Cleanup
+    description: "Plan reviewable cleanup DistSQL only for unused sharding algorithms, key generators, or auditors."
+    inputSchema: *shardingPlanInputSchema
+    outputSchema: *workflowPlanOutputSchema
+    annotations: *planningAnnotations

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.authentication;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.authentication.AuthenticatorFactory;
@@ -25,6 +24,7 @@ import org.apache.shardingsphere.authentication.AuthenticatorType;
 import org.apache.shardingsphere.authentication.result.AuthenticationResult;
 import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdAuthenticationMethod;
@@ -112,9 +112,10 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
                 Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(databaseName),
                 () -> new UnknownDatabaseException(databaseName));
         Grantee grantee = new Grantee(username, "");
-        Optional<ShardingSphereUser> user = rule.findUser(grantee);
-        user.ifPresent(shardingSphereUser -> new AuthenticatorFactory<>(FirebirdAuthenticatorType.class, rule)
-                .newInstance(shardingSphereUser).authenticate(shardingSphereUser, new Object[]{attachPacket.getEncPassword(), authData, attachPacket.getAuthData()}));
+        ShardingSphereUser user = rule.findUser(grantee).orElseThrow(() -> new AccessDeniedException(username, "", true));
+        boolean authenticated = new AuthenticatorFactory<>(FirebirdAuthenticatorType.class, rule)
+                .newInstance(user).authenticate(user, new Object[]{attachPacket.getEncPassword(), authData, attachPacket.getAuthData()});
+        ShardingSpherePreconditions.checkState(authenticated, () -> new AccessDeniedException(username, "", true));
     }
     
     private AuthenticationResult processConnect(final ChannelHandlerContext context, final FirebirdPacketPayload payload, final AuthorityRule rule) {
@@ -126,7 +127,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         String username = connectPacket.getLogin();
         Grantee grantee = new Grantee(username, "");
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
-        Preconditions.checkState(user.isPresent());
+        ShardingSpherePreconditions.checkState(user.isPresent(), () -> new AccessDeniedException(username, connectPacket.getHost(), true));
         FirebirdAuthenticationMethod plugin = FirebirdAuthenticationMethod.valueOf(getPluginName(rule, user.get()));
         FirebirdAuthenticationMethod userPlugin = connectPacket.getPlugin();
         if (plugin != userPlugin) {

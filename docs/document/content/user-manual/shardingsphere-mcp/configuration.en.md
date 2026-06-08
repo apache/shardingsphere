@@ -28,13 +28,13 @@ transport:
   type: STDIO
 ```
 
-| Configuration item | Description |
-| --- | --- |
-| `transport.type` | Transport type. Supported values are `STREAMABLE_HTTP` and `STDIO`. |
-| `transport.http` | HTTP transport configuration, used only when `transport.type` is `STREAMABLE_HTTP`. |
-| `transport.http.bindHost` | HTTP bind host. Defaults to `127.0.0.1`. Loopback values allow local access only. `0.0.0.0` or an intranet IP allows access through that interface. |
-| `transport.http.port` | HTTP bind port. The default value is `18088`. |
-| `transport.http.endpointPath` | HTTP endpoint path. The default value is `/mcp`. |
+| Configuration item            | Description                                                                                                                                         |
+|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `transport.type`              | Transport type. Supported values are `STREAMABLE_HTTP` and `STDIO`.                                                                                 |
+| `transport.http`              | HTTP transport configuration, used only when `transport.type` is `STREAMABLE_HTTP`.                                                                 |
+| `transport.http.bindHost`     | HTTP bind host. Defaults to `127.0.0.1`. Loopback values allow local access only. `0.0.0.0` or an intranet IP allows access through that interface. |
+| `transport.http.port`         | HTTP bind port. The default value is `18088`.                                                                                                       |
+| `transport.http.endpointPath` | HTTP endpoint path. The default value is `/mcp`.                                                                                                    |
 
 ### HTTP Session Attribution (Optional)
 
@@ -51,12 +51,12 @@ transport:
       attributeHeaderPrefix: X-ShardingSphere-MCP-Attribute-
 ```
 
-| Configuration item | Description |
-| --- | --- |
-| `transport.http.sessionAttributionSource` | HTTP session attribution source. When omitted, session attribution is not bound. |
-| `transport.http.sessionAttributionSource.subjectHeader` | Header name for the external user, tenant, or request subject. |
-| `transport.http.sessionAttributionSource.sourceHeader` | Header name for the request source. |
-| `transport.http.sessionAttributionSource.attributeHeaderPrefix` | Header prefix for custom attribution attributes. |
+| Configuration item                                              | Description                                                                      |
+|-----------------------------------------------------------------|----------------------------------------------------------------------------------|
+| `transport.http.sessionAttributionSource`                       | HTTP session attribution source. When omitted, session attribution is not bound. |
+| `transport.http.sessionAttributionSource.subjectHeader`         | Header name for the external user, tenant, or request subject.                   |
+| `transport.http.sessionAttributionSource.sourceHeader`          | Header name for the request source.                                              |
+| `transport.http.sessionAttributionSource.attributeHeaderPrefix` | Header prefix for custom attribution attributes.                                 |
 
 Enable this only when clients cannot forge these headers directly.
 
@@ -75,13 +75,13 @@ runtimeDatabases:
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
-| *Name* | *Description* |
-| --- | --- |
-| `databaseType` (+) | Database protocol or dialect type of the connection endpoint, such as `MySQL` or `PostgreSQL`. It affects metadata recognition and SQL capability judgment; it does not mean the endpoint is necessarily a direct database connection or ShardingSphere-Proxy. |
-| `jdbcUrl` (+) | JDBC URL used by the MCP Server to connect to the runtime database. Point it to a Proxy logical database when using ShardingSphere rule capabilities. |
-| `username` (+) | Username for the runtime database, usually the ShardingSphere-Proxy logical database username. |
-| `password` (?) | Password for the runtime database. |
-| `driverClassName` (+) | JDBC driver class name, such as `com.mysql.cj.jdbc.Driver` for the MySQL driver. |
+| *Name*                | *Description*                                                                                                                                                                                                                                                  |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `databaseType` (+)    | Database protocol or dialect type of the connection endpoint, such as `MySQL` or `PostgreSQL`. It affects metadata recognition and SQL capability judgment; it does not mean the endpoint is necessarily a direct database connection or ShardingSphere-Proxy. |
+| `jdbcUrl` (+)         | JDBC URL used by the MCP Server to connect to the runtime database. Point it to a Proxy logical database when using ShardingSphere rule capabilities.                                                                                                          |
+| `username` (+)        | Username for the runtime database, usually the ShardingSphere-Proxy logical database username.                                                                                                                                                                 |
+| `password` (?)        | Password for the runtime database.                                                                                                                                                                                                                             |
+| `driverClassName` (+) | JDBC driver class name, such as `com.mysql.cj.jdbc.Driver` for the MySQL driver.                                                                                                                                                                               |
 
 Legend:
 
@@ -104,7 +104,7 @@ Notes:
 Connect to a ShardingSphere-Proxy logical database when ShardingSphere rule state, data encryption, data masking, or rule change capabilities are required.
 
 Users see the logical databases, tables, and columns exposed by Proxy.
-Proxy-visible metadata may differ from the complete physical database structure. Plans involving physical columns, indexes, or rule changes should be reviewed before execution.
+Proxy-visible metadata may differ from the complete physical database structure. Plans involving metadata interpretation or rule changes should be reviewed before execution.
 
 ### Direct database connection
 

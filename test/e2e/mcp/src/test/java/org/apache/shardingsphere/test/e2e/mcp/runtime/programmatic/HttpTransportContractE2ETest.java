@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
-
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
+import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
@@ -37,15 +35,15 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
 class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
-    private static final List<String> OFFICIAL_TOOL_NAMES = List.of(
-            "database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query", "database_gateway_execute_update", "database_gateway_apply_workflow",
-            "database_gateway_validate_workflow", "database_gateway_plan_encrypt_rule", "database_gateway_plan_mask_rule");
+    private static final List<String> OFFICIAL_TOOL_NAMES = OfficialMCPToolNames.getAll();
     
     private static final String PLAN_MASK_TOOL_NAME = "database_gateway_plan_mask_rule";
     
@@ -181,8 +179,8 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 createMaskRulePlanArguments());
         assertThat(planResponse.statusCode(), is(200));
         Map<String, Object> planPayload = getStructuredContent(planResponse.body());
-        assertThat(String.valueOf(planPayload.get("status")), is("planned"));
-        assertThat(String.valueOf(castToMapList(planPayload.get("next_actions")).get(0).get("tool_name")), is(WorkflowToolDescriptors.APPLY_TOOL_NAME));
+        assertThat(planResponse.body(), String.valueOf(planPayload.get("status")), is("planned"));
+        assertThat(String.valueOf(castToMapList(planPayload.get("next_actions")).getFirst().get("tool_name")), is(WorkflowToolDescriptors.APPLY_TOOL_NAME));
         assertModelFacingPayloadContract(planPayload);
         String planId = String.valueOf(planPayload.get("plan_id"));
         HttpResponse<String> previewResponse = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME,

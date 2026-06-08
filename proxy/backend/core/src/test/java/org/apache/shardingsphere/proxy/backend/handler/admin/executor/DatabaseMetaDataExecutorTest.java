@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
@@ -36,6 +37,8 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 
@@ -46,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -161,41 +165,89 @@ class DatabaseMetaDataExecutorTest {
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
     }
     
-    @Test
-    void assertExecuteFillLabelsWhenRowsFilteredOut() throws SQLException {
-        Map<String, String> expectedResultSetMap = Collections.singletonMap("foo_column", "foo_value");
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"filtered_rows", "aligned_rows"})
+    void assertExecuteWithPreProcessedRows(final String scenario) throws SQLException {
+        if ("filtered_rows".equals(scenario)) {
+            Map<String, String> expectedResultSetMap = Collections.singletonMap("foo_column", "foo_value");
+            ShardingSphereDatabase database = new ShardingSphereDatabase("auth_db",
+                    databaseType, new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))), mock(), Collections.emptyList(),
+                    new ConfigurationProperties(new Properties()));
+            DatabaseMetaDataExecutor executor = mock(DatabaseMetaDataExecutor.class, withSettings().useConstructor(
+                    "SELECT foo_column FROM foo_table", Collections.emptyList()).defaultAnswer(CALLS_REAL_METHODS));
+            doAnswer(invocation -> {
+                Map<String, Object> rows = invocation.getArgument(1);
+                rows.clear();
+                return null;
+            }).when(executor).preProcess(any(ShardingSphereDatabase.class), anyMap(), anyMap());
+            executor.execute(connectionSession, mockMetaData(database, Collections.singleton("auth_db")));
+            assertTrue(executor.getRows().isEmpty());
+            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+            assertFalse(executor.getMergedResult().next());
+            return;
+        }
+        Map<String, String> firstResultSetMap = new LinkedHashMap<>(2, 1F);
+        firstResultSetMap.put("foo_column", "foo_value");
+        firstResultSetMap.put("bar_column", "bar_value");
+        Map<String, String> secondResultSetMap = new LinkedHashMap<>(2, 1F);
+        secondResultSetMap.put("foo_column", "second_foo_value");
+        secondResultSetMap.put("bar_column", "second_bar_value");
         ShardingSphereDatabase database = new ShardingSphereDatabase("auth_db",
-                databaseType, new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))), mock(), Collections.emptyList(),
-                new ConfigurationProperties(new Properties()));
-        DatabaseMetaDataExecutor executor = mock(DatabaseMetaDataExecutor.class, withSettings().useConstructor(
-                "SELECT foo_column FROM foo_table", Collections.emptyList()).defaultAnswer(CALLS_REAL_METHODS));
+                databaseType, new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(firstResultSetMap, secondResultSetMap)))), mock(),
+                Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        DatabaseMetaDataExecutor executor =
+                mock(DatabaseMetaDataExecutor.class, withSettings().useConstructor("SELECT foo_column, bar_column FROM foo_table", Collections.emptyList()).defaultAnswer(CALLS_REAL_METHODS));
         doAnswer(invocation -> {
             Map<String, Object> rows = invocation.getArgument(1);
-            rows.clear();
+            if ("foo_value".equals(rows.get("foo_column"))) {
+                rows.remove("bar_column");
+                rows.put("baz_column", "baz_value");
+            }
             return null;
         }).when(executor).preProcess(any(ShardingSphereDatabase.class), anyMap(), anyMap());
         executor.execute(connectionSession, mockMetaData(database, Collections.singleton("auth_db")));
-        assertTrue(executor.getRows().isEmpty());
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
-        assertFalse(executor.getMergedResult().next());
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(3));
+        assertThat(executor.getQueryResultMetaData().getColumnLabel(1), is("foo_column"));
+        assertThat(executor.getQueryResultMetaData().getColumnLabel(2), is("baz_column"));
+        assertThat(executor.getQueryResultMetaData().getColumnLabel(3), is("bar_column"));
+        MergedResult actualMergedResult = executor.getMergedResult();
+        assertTrue(actualMergedResult.next());
+        assertThat(actualMergedResult.getValue(1, String.class), is("foo_value"));
+        assertThat(actualMergedResult.getValue(2, String.class), is("baz_value"));
+        assertThat(actualMergedResult.getValue(3, String.class), is(""));
+        assertTrue(actualMergedResult.next());
+        assertThat(actualMergedResult.getValue(1, String.class), is("second_foo_value"));
+        assertThat(actualMergedResult.getValue(2, String.class), is(""));
+        assertThat(actualMergedResult.getValue(3, String.class), is("second_bar_value"));
+        assertFalse(actualMergedResult.next());
     }
     
-    private Connection mockConnection(final Map<String, String> expectedResultSetMap) throws SQLException {
+    private Connection mockConnection(final Map<String, String> expectedResultSetMap, final Map<String, String>... additionalExpectedResultSetMaps) throws SQLException {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
-        ResultSet resultSet = mockResultSet(expectedResultSetMap);
+        ResultSet resultSet = mockResultSet(expectedResultSetMap, additionalExpectedResultSetMaps);
         when(result.prepareStatement(any(String.class)).executeQuery()).thenReturn(resultSet);
         return result;
     }
     
-    private ResultSet mockResultSet(final Map<String, String> expectedResultSetMap) throws SQLException {
+    private ResultSet mockResultSet(final Map<String, String> expectedResultSetMap, final Map<String, String>... additionalExpectedResultSetMaps) throws SQLException {
         ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
         List<String> keys = new ArrayList<>(expectedResultSetMap.keySet());
         for (int i = 0; i < keys.size(); i++) {
             when(result.getMetaData().getColumnName(i + 1)).thenReturn(keys.get(i));
             when(result.getMetaData().getColumnLabel(i + 1)).thenReturn(keys.get(i));
-            when(result.getString(i + 1)).thenReturn(expectedResultSetMap.get(keys.get(i)));
+            List<String> columnValues = new ArrayList<>(additionalExpectedResultSetMaps.length + 1);
+            columnValues.add(expectedResultSetMap.get(keys.get(i)));
+            for (Map<String, String> each : additionalExpectedResultSetMaps) {
+                columnValues.add(each.get(keys.get(i)));
+            }
+            when(result.getString(i + 1)).thenReturn(columnValues.get(0), columnValues.subList(1, columnValues.size()).toArray(new String[0]));
         }
-        when(result.next()).thenReturn(true, false);
+        List<Boolean> nextResults = new ArrayList<>(additionalExpectedResultSetMaps.length + 2);
+        for (int i = 0; i < additionalExpectedResultSetMaps.length + 1; i++) {
+            nextResults.add(true);
+        }
+        nextResults.add(false);
+        when(result.next()).thenReturn(nextResults.get(0), nextResults.subList(1, nextResults.size()).toArray(new Boolean[0]));
         when(result.getMetaData().getColumnCount()).thenReturn(expectedResultSetMap.size());
         return result;
     }

@@ -74,12 +74,6 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         this.sqlExecutionTraceFactory = sqlExecutionTraceFactory;
     }
     
-    /**
-     * Execute one MCP SQL request.
-     *
-     * @param executionRequest SQL execution request
-     * @return execution response
-     */
     @Override
     public SQLExecutionResponse execute(final SQLExecutionRequest executionRequest) {
         try {

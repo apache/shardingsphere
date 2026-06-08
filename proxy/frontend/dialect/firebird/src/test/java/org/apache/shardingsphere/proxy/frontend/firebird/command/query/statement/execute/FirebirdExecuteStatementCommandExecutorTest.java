@@ -46,6 +46,7 @@ import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRe
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
@@ -77,6 +78,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -156,6 +158,8 @@ class FirebirdExecuteStatementCommandExecutorTest {
         assertThat(iterator.next(), isA(FirebirdGenericResponsePacket.class));
         assertFalse(iterator.hasNext());
         assertThat(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID), is(proxyBackendHandler));
+        verify(connectionSession).beginPreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(1));
+        verify(connectionSession).finishPreparedStatementCache();
     }
     
     @Test
@@ -170,6 +174,8 @@ class FirebirdExecuteStatementCommandExecutorTest {
         assertThat(executor.getResponseType(), is(ResponseType.UPDATE));
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
+        verify(connectionSession).beginPreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(2));
+        verify(connectionSession).finishPreparedStatementCache();
     }
     
     @Test

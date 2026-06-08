@@ -48,6 +48,13 @@ class WorkflowArtifactMaskUtilsTest {
         assertThat(actualRedaction.get("redacted_properties"), is(List.of("primary.aes-key-value", "assisted_query.salt", "like_query.token")));
     }
     
+    @Test
+    void assertMaskPropertyMapMasksSecretKeys() {
+        Map<String, String> actual = WorkflowArtifactMaskUtils.maskPropertyMap(Map.of("aes-key-value", "123456", "replace-char", "*", "token", "abc"),
+                List.of(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "primary", "")));
+        assertThat(actual, is(Map.of("aes-key-value", "******", "replace-char", "*", "token", "******")));
+    }
+    
     private WorkflowPropertySource createPropertySource() {
         Map<String, Map<String, String>> properties = Map.of(
                 "primary", Map.of("aes-key-value", "primary-secret"),

@@ -28,7 +28,11 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>broadcast</module>
         <module>encrypt</module>
         <module>mask</module>
+        <module>readwrite-splitting</module>
+        <module>shadow</module>
+        <module>sharding</module>
     </modules>
 </project>

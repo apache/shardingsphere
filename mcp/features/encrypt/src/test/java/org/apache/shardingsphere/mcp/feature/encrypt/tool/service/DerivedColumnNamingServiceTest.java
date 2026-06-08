@@ -55,7 +55,7 @@ class DerivedColumnNamingServiceTest {
         List<WorkflowIssue> issues = new LinkedList<>();
         DerivedColumnPlan actual = service.createPlan(request, new LinkedHashSet<>(), issues);
         assertThat(actual.getCipherColumnName(), is("phone_cipher"));
-        assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.USER_OVERRIDE_NAME_UNSAFE));
+        assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.USER_OVERRIDE_NAME_UNSAFE));
     }
     
     @Test
@@ -68,7 +68,7 @@ class DerivedColumnNamingServiceTest {
         assertThat(actual.getLogicalColumn(), is("phone"));
         assertThat(actual.getCipherColumnName(), is("phone_cipher_1"));
         assertThat(actual.getAssistedQueryColumnName(), is("phone_assisted_query"));
-        assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.AUTO_RENAMED_DUE_TO_CONFLICT));
+        assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.AUTO_RENAMED_DUE_TO_CONFLICT));
     }
     
     @Test
@@ -111,7 +111,7 @@ class DerivedColumnNamingServiceTest {
         List<WorkflowIssue> issues = new LinkedList<>();
         DerivedColumnPlan actual = service.createPlan(request, existingNames, issues, "PostgreSQL");
         assertThat(actual.getCipherColumnName(), is("\"Phone_Cipher_1\""));
-        assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.AUTO_RENAMED_DUE_TO_CONFLICT));
+        assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.AUTO_RENAMED_DUE_TO_CONFLICT));
     }
     
     @Test
@@ -122,7 +122,7 @@ class DerivedColumnNamingServiceTest {
         DerivedColumnPlan actual = service.createPlan(request, existingNames, issues);
         assertThat(actual.getCipherColumnName(), is("phone_cipher_2"));
         assertThat(actual.getNameCollisions().size(), is(1));
-        assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.AUTO_RENAMED_DUE_TO_CONFLICT));
+        assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.AUTO_RENAMED_DUE_TO_CONFLICT));
         assertFalse(existingNames.isEmpty());
     }
     

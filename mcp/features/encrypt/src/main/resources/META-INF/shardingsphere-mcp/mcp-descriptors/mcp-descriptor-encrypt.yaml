@@ -72,7 +72,7 @@ resourceTemplates:
 prompts:
   - name: plan_encrypt_rule
     title: Plan Encrypt Rule
-    description: "Guide the model to plan a ShardingSphere encrypt rule by reading logical metadata, encrypt algorithms, and existing encrypt rules before calling database_gateway_plan_encrypt_rule."
+    description: "Guide the model to plan a ShardingSphere encrypt rule by reading encrypt algorithms and existing encrypt rules before calling database_gateway_plan_encrypt_rule."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-encrypt-rule.md
     arguments:
@@ -116,25 +116,21 @@ prompts:
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/encrypt/algorithms
         - shardingsphere://features/encrypt/databases/{database}/rules
+        - shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_plan_encrypt_rule returns a planned workflow with plan_id and reviewable artifacts."
         - "Stop after a clarifying response lists missing inputs instead of guessing algorithm or column choices."
       org.apache.shardingsphere/ask-user-conditions:
         - "Ask when decrypt, equality, LIKE, or sensitive-field semantics are unclear."
-        - "Ask before applying generated DDL or DistSQL that changes runtime state."
+        - "Ask before applying generated encrypt rule DistSQL that changes runtime state."
 
 completionTargets:
   - referenceType: prompt
     reference: plan_encrypt_rule
     arguments:
-      - database
-      - schema
-      - table
-      - column
       - algorithm_type
       - assisted_query_algorithm_type
       - like_query_algorithm_type
-      - plan_id
     maxValues: 50
   - referenceType: resource
     reference: shardingsphere://features/encrypt/algorithms
@@ -179,13 +175,13 @@ resourceNavigation:
       - plan_id
     carriedArguments:
       - plan_id
-    description: "Preview or apply generated encrypt workflow artifacts after reviewing the plan."
+    description: "Preview or apply generated encrypt rule DistSQL after reviewing the plan."
 tools:
   - name: database_gateway_plan_encrypt_rule
     title: Plan Encrypt Rule
     description: >-
-      Plan a ShardingSphere encrypt rule workflow for a logical table column. This tool creates reviewable rule, DistSQL,
-      and physical DDL artifacts but does not execute them; use database_gateway_apply_workflow only after user review.
+      Plan a ShardingSphere encrypt rule workflow for a logical table column. This tool creates reviewable rule DistSQL
+      artifacts but does not execute them; use database_gateway_apply_workflow only after user review.
     inputSchema:
       type: object
       properties:
@@ -244,12 +240,9 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        allow_index_ddl:
-          type: boolean
-          description: "Whether the plan may generate index DDL for assisted-query columns."
         user_overrides:
           type: object
-          description: "Optional user-selected encrypt algorithm and generated column names."
+          description: "Optional user-selected encrypt algorithms and explicit rule column names."
           properties:
             algorithm_type:
               type: string
@@ -262,13 +255,13 @@ tools:
               description: "LIKE-query encrypt algorithm type override."
             cipher_column_name:
               type: string
-              description: "Cipher column name override."
+              description: "Cipher column name to put into CREATE or ALTER ENCRYPT RULE."
             assisted_query_column_name:
               type: string
-              description: "Assisted-query column name override."
+              description: "Assisted-query column name to put into CREATE or ALTER ENCRYPT RULE when equality filtering is required."
             like_query_column_name:
               type: string
-              description: "LIKE-query column name override."
+              description: "LIKE-query column name to put into CREATE or ALTER ENCRYPT RULE when LIKE query support is required."
           required: []
           additionalProperties: false
         algorithm_type:
@@ -282,13 +275,13 @@ tools:
           description: "LIKE-query algorithm type override used when LIKE predicates must remain usable."
         cipher_column_name:
           type: string
-          description: "Cipher column name override."
+          description: "Cipher column name to put into CREATE or ALTER ENCRYPT RULE."
         assisted_query_column_name:
           type: string
-          description: "Assisted-query column name override."
+          description: "Assisted-query column name to put into CREATE or ALTER ENCRYPT RULE when equality filtering is required."
         like_query_column_name:
           type: string
-          description: "LIKE-query column name override."
+          description: "LIKE-query column name to put into CREATE or ALTER ENCRYPT RULE when LIKE query support is required."
         primary_algorithm_properties:
           type: object
           description: "Plugin-defined primary encrypt algorithm properties. Accepted keys depend on the selected algorithm descriptor returned in planning output."
@@ -419,7 +412,7 @@ tools:
                 description: "User inputs needed before continuing."
         resources_to_read:
           type: array
-          description: "Typed resources the model should read when more metadata or algorithm context is useful."
+          description: "Typed resources the model should read when more rule or algorithm context is useful."
       examples:
         - response_mode: planning
           plan_id: encrypt-rule-20260505-001
@@ -452,7 +445,7 @@ tools:
               title: Call database_gateway_apply_workflow
               tool_name: database_gateway_apply_workflow
               arguments: {}
-              reason: Preview generated workflow artifacts.
+              reason: Preview generated encrypt rule DistSQL artifacts.
     annotations:
       title: Plan Encrypt Rule
       readOnlyHint: false
@@ -467,8 +460,6 @@ tools:
         - shardingsphere://features/encrypt/algorithms
         - "shardingsphere://features/encrypt/databases/{database}/rules"
         - "shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules"
-        - "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns"
-        - "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes"
       org.apache.shardingsphere/follow-up-tools:
         - database_gateway_apply_workflow
         - database_gateway_validate_workflow

@@ -44,7 +44,7 @@ public final class MCPPromptTemplateLoader {
      * @throws IllegalStateException when the template cannot be loaded
      */
     public static String load(final String templateResource) {
-        return MCPMarkdownResourceLoader.loadRequired(templateResource, "prompt template");
+        return MCPMarkdownResourceLoader.load(templateResource, "prompt template");
     }
     
     /**

@@ -79,6 +79,18 @@ Feature plugin planning tools：
 
 - `database_gateway_plan_encrypt_rule`
 - `database_gateway_plan_mask_rule`
+- `database_gateway_plan_broadcast_rule`
+- `database_gateway_plan_readwrite_splitting_rule`
+- `database_gateway_plan_readwrite_splitting_status`
+- `database_gateway_plan_shadow_rule`
+- `database_gateway_plan_default_shadow_algorithm`
+- `database_gateway_plan_shadow_algorithm_cleanup`
+- `database_gateway_plan_sharding_table_rule`
+- `database_gateway_plan_sharding_table_reference_rule`
+- `database_gateway_plan_sharding_default_strategy`
+- `database_gateway_plan_sharding_key_generator`
+- `database_gateway_plan_sharding_key_generate_strategy`
+- `database_gateway_plan_sharding_rule_component_cleanup`
 
 ## Resources
 
@@ -119,6 +131,44 @@ Feature resources：
 - `shardingsphere://features/mask/algorithms`
 - `shardingsphere://features/mask/databases/{database}/rules`
 - `shardingsphere://features/mask/databases/{database}/tables/{table}/rules`
+- `shardingsphere://features/broadcast/databases/{database}/rules`
+- `shardingsphere://features/broadcast/databases/{database}/rule-count`
+- `shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins`
+- `shardingsphere://features/readwrite-splitting/databases/{database}/rules`
+- `shardingsphere://features/readwrite-splitting/databases/{database}/rules/{rule}`
+- `shardingsphere://features/readwrite-splitting/databases/{database}/status`
+- `shardingsphere://features/readwrite-splitting/databases/{database}/rules/{rule}/status`
+- `shardingsphere://features/readwrite-splitting/databases/{database}/rule-count`
+- `shardingsphere://features/shadow/algorithm-plugins`
+- `shardingsphere://features/shadow/databases/{database}/rules`
+- `shardingsphere://features/shadow/databases/{database}/rules/{rule}`
+- `shardingsphere://features/shadow/databases/{database}/table-rules`
+- `shardingsphere://features/shadow/databases/{database}/tables/{table}/rules`
+- `shardingsphere://features/shadow/databases/{database}/algorithms`
+- `shardingsphere://features/shadow/databases/{database}/default-algorithm`
+- `shardingsphere://features/shadow/databases/{database}/rule-count`
+- `shardingsphere://features/sharding/algorithm-plugins`
+- `shardingsphere://features/sharding/key-generate-algorithm-plugins`
+- `shardingsphere://features/sharding/databases/{database}/algorithms`
+- `shardingsphere://features/sharding/databases/{database}/table-rules`
+- `shardingsphere://features/sharding/databases/{database}/tables/{table}/table-rule`
+- `shardingsphere://features/sharding/databases/{database}/table-nodes`
+- `shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes`
+- `shardingsphere://features/sharding/databases/{database}/table-reference-rules`
+- `shardingsphere://features/sharding/databases/{database}/table-reference-rules/{rule}`
+- `shardingsphere://features/sharding/databases/{database}/default-strategy`
+- `shardingsphere://features/sharding/databases/{database}/key-generators`
+- `shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}`
+- `shardingsphere://features/sharding/databases/{database}/key-generate-strategies`
+- `shardingsphere://features/sharding/databases/{database}/key-generate-strategies/{strategy}`
+- `shardingsphere://features/sharding/databases/{database}/auditors`
+- `shardingsphere://features/sharding/databases/{database}/unused-algorithms`
+- `shardingsphere://features/sharding/databases/{database}/unused-key-generators`
+- `shardingsphere://features/sharding/databases/{database}/unused-auditors`
+- `shardingsphere://features/sharding/databases/{database}/algorithms/{algorithm}/table-rules`
+- `shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}/table-rules`
+- `shardingsphere://features/sharding/databases/{database}/auditors/{auditor}/table-rules`
+- `shardingsphere://features/sharding/databases/{database}/rule-count`
 
 ## Prompts
 
@@ -127,6 +177,18 @@ Feature resources：
 - `recover_workflow`：引导模型从失败或过期 workflow 中恢复。
 - `plan_encrypt_rule`：引导模型规划 Encrypt feature workflow。
 - `plan_mask_rule`：引导模型规划 Mask feature workflow。
+- `plan_broadcast_rule`：引导模型规划 Broadcast feature workflow。
+- `plan_readwrite_splitting_rule`：引导模型规划 Readwrite-Splitting 规则 workflow。
+- `plan_readwrite_splitting_status`：引导模型规划 Readwrite-Splitting 状态 workflow。
+- `plan_shadow_rule`：引导模型规划 Shadow 规则 workflow。
+- `plan_default_shadow_algorithm`：引导模型规划默认 Shadow 算法 workflow。
+- `plan_shadow_algorithm_cleanup`：引导模型规划未使用 Shadow 算法清理 workflow。
+- `plan_sharding_table_rule`：引导模型规划 Sharding 表规则 workflow。
+- `plan_sharding_table_reference_rule`：引导模型规划 Sharding 绑定规则 workflow。
+- `plan_sharding_default_strategy`：引导模型规划默认 Sharding 策略 workflow。
+- `plan_sharding_key_generator`：引导模型规划 Sharding 键生成器 workflow。
+- `plan_sharding_key_generate_strategy`：引导模型规划 Sharding 键生成策略 workflow。
+- `plan_sharding_rule_component_cleanup`：引导模型规划未使用 Sharding 算法、键生成器或审计器清理 workflow。
 
 ## Completions
 

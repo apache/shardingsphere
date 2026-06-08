@@ -45,13 +45,18 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -77,6 +82,8 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class FirebirdPrepareStatementCommandExecutorTest {
     
+    private static final int CONNECTION_ID = 1;
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
     
     @Mock
@@ -85,12 +92,24 @@ class FirebirdPrepareStatementCommandExecutorTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
+    @Mock
+    private ProxyDatabaseConnectionManager connectionManager;
+    
+    @Mock
+    private ProxyBackendHandler proxyBackendHandler;
+    
+    @Mock
+    private ConnectionContext connectionContext;
+    
     @BeforeEach
     void setUp() {
-        ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet, new Grantee("foo_user"));
+        FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
+        when(connectionContext.getGrantee()).thenReturn(new Grantee("foo_user"));
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(connectionManager);
         when(packet.getSQL()).thenReturn("SELECT 1");
         when(packet.getHintValueContext()).thenReturn(new HintValueContext());
         when(packet.isValidStatementHandle()).thenReturn(true);
@@ -98,6 +117,12 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(packet.nextItem()).thenReturn(true, false);
         when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts()).thenReturn(createMetaDataContexts());
+    }
+    
+    @AfterEach
+    void tearDown() {
+        FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, 1);
+        FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     private MetaDataContexts createMetaDataContexts() {
@@ -115,7 +140,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
-    void assertExecute() {
+    void assertExecute() throws Exception {
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         FirebirdGenericResponsePacket responsePacket = (FirebirdGenericResponsePacket) actual.iterator().next();
@@ -127,7 +152,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
-    void assertDescribeCountReturnsBigintType() {
+    void assertDescribeCountReturnsBigintType() throws Exception {
         when(packet.getSQL()).thenReturn("SELECT COUNT(*) FROM foo_tbl");
         when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
         when(packet.getCurrentItem()).thenReturn(
@@ -146,5 +171,23 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdReturnColumnPacket columnPacket = returnPacket.getDescribeSelect().get(0);
         columnPacket.write(payload);
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.INT64.getValue() + 1);
+    }
+    
+    @Test
+    void assertExecuteWithValidStatementHandleCleansPreviousPreparedStatementResources() throws Exception {
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, new FirebirdServerPreparedStatement("SELECT 0", mock(SelectStatementContext.class), new HintValueContext()));
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, 1, proxyBackendHandler);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        executor.execute();
+        verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(1));
+        assertThat(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1).getSql(), is("SELECT 1"));
+        assertThat(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, 1), is((ProxyBackendHandler) null));
+    }
+    
+    @Test
+    void assertExecuteWithValidStatementHandleWithoutFetchHandler() throws Exception {
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        executor.execute();
+        verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(1));
     }
 }

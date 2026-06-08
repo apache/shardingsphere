@@ -46,7 +46,7 @@ class IndexPlanningServiceTest {
         Set<String> existingIndexes = new LinkedHashSet<>(List.of("idx_orders_phone_assisted_query"));
         List<IndexPlan> actual = service.planIndexes("MySQL", "orders", createDerivedColumnPlan(true, false), existingIndexes);
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getIndexName(), is("idx_orders_phone_assisted_query_1"));
+        assertThat(actual.getFirst().getIndexName(), is("idx_orders_phone_assisted_query_1"));
     }
     
     @Test
@@ -54,7 +54,7 @@ class IndexPlanningServiceTest {
         Set<String> existingIndexes = new LinkedHashSet<>(List.of("IDX_ORDERS_PHONE_ASSISTED_QUERY"));
         List<IndexPlan> actual = service.planIndexes("MySQL", "orders", createDerivedColumnPlan(true, false), existingIndexes);
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getIndexName(), is("idx_orders_phone_assisted_query_1"));
+        assertThat(actual.getFirst().getIndexName(), is("idx_orders_phone_assisted_query_1"));
     }
     
     @Test
@@ -62,7 +62,7 @@ class IndexPlanningServiceTest {
         Set<String> existingIndexes = new LinkedHashSet<>(List.of("IDX_ORDERS_PHONE_ASSISTED_QUERY"));
         List<IndexPlan> actual = service.planIndexes("PostgreSQL", "orders", createDerivedColumnPlan(true, false), existingIndexes);
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getIndexName(), is("idx_orders_phone_assisted_query"));
+        assertThat(actual.getFirst().getIndexName(), is("idx_orders_phone_assisted_query"));
     }
     
     @Test
@@ -71,22 +71,22 @@ class IndexPlanningServiceTest {
         derivedColumnPlan.setAssistedQueryColumnName("phone assisted");
         List<IndexPlan> actual = service.planIndexes("MySQL", "order detail", derivedColumnPlan, new LinkedHashSet<>());
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getSql(), is("CREATE INDEX `idx_order detail_phone assisted` ON `order detail` (`phone assisted`)"));
+        assertThat(actual.getFirst().getSql(), is("CREATE INDEX `idx_order detail_phone assisted` ON `order detail` (`phone assisted`)"));
     }
     
     @Test
     void assertPlanIndexesNormalizesDelimitedTableForIndexName() {
         List<IndexPlan> actual = service.planIndexes("MySQL", "`orders`", createDerivedColumnPlan(true, false), new LinkedHashSet<>());
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getIndexName(), is("idx_orders_phone_assisted_query"));
-        assertThat(actual.get(0).getSql(), is("CREATE INDEX idx_orders_phone_assisted_query ON `orders` (phone_assisted_query)"));
+        assertThat(actual.getFirst().getIndexName(), is("idx_orders_phone_assisted_query"));
+        assertThat(actual.getFirst().getSql(), is("CREATE INDEX idx_orders_phone_assisted_query ON `orders` (phone_assisted_query)"));
     }
     
     @Test
     void assertPlanIndexesFormatsDelimitedIdentifiers() {
         List<IndexPlan> actual = service.planIndexes("MySQL", "`key`", createDerivedColumnPlan(true, false), new LinkedHashSet<>());
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getSql(), is("CREATE INDEX idx_key_phone_assisted_query ON `key` (phone_assisted_query)"));
+        assertThat(actual.getFirst().getSql(), is("CREATE INDEX idx_key_phone_assisted_query ON `key` (phone_assisted_query)"));
     }
     
     @Test
@@ -95,7 +95,7 @@ class IndexPlanningServiceTest {
         derivedColumnPlan.setAssistedQueryColumnName("phone assisted");
         List<IndexPlan> actual = service.planIndexes("PostgreSQL", "order detail", derivedColumnPlan, new LinkedHashSet<>());
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getSql(), is("CREATE INDEX \"idx_order detail_phone assisted\" ON \"order detail\" (\"phone assisted\")"));
+        assertThat(actual.getFirst().getSql(), is("CREATE INDEX \"idx_order detail_phone assisted\" ON \"order detail\" (\"phone assisted\")"));
     }
     
     @Test

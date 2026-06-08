@@ -20,9 +20,11 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
+import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
@@ -32,33 +34,43 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class WorkflowToolResponseBuilder {
+final class EncryptWorkflowToolResponseBuilder {
     
     private final EncryptAlgorithmPropertyTemplateService propertyTemplateService;
     
     Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
-        EncryptWorkflowState workflowState = (EncryptWorkflowState) snapshot.getFeatureData();
-        WorkflowPropertySource propertySource = getPropertySource(snapshot);
+        WorkflowPropertySource propertySource = snapshot.getRequest();
         Map<String, Object> result = WorkflowPlanPayloadBuilder.build(snapshot);
-        result.put("masked_property_preview", createMaskedPropertyPreview(snapshot, propertySource));
-        result.put("derived_column_plan", null == workflowState.getDerivedColumnPlan() ? null : workflowState.getDerivedColumnPlan().toMap());
         result.putAll(WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, propertySource));
+        result.put("derived_column_plan", createDerivedColumnPlan(snapshot));
+        result.put("masked_property_preview", createMaskedPropertyPreview(snapshot, propertySource));
         return result;
+    }
+    
+    private Map<String, Object> createDerivedColumnPlan(final WorkflowContextSnapshot snapshot) {
+        if (!(snapshot.getFeatureData() instanceof EncryptWorkflowState)) {
+            return Map.of();
+        }
+        DerivedColumnPlan derivedColumnPlan = ((EncryptWorkflowState) snapshot.getFeatureData()).getDerivedColumnPlan();
+        return null == derivedColumnPlan ? Map.of() : derivedColumnPlan.toMap();
     }
     
     private Map<String, Object> createMaskedPropertyPreview(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
+        List<AlgorithmPropertyRequirement> requirements = createPropertyRequirements(snapshot);
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("primary", propertyTemplateService.maskProperties(filterRequirements(snapshot, "primary"), propertySource.getAlgorithmProperties("primary")));
-        result.put("assisted_query", propertyTemplateService.maskProperties(filterRequirements(snapshot, "assisted_query"), propertySource.getAlgorithmProperties("assisted_query")));
-        result.put("like_query", propertyTemplateService.maskProperties(filterRequirements(snapshot, "like_query"), propertySource.getAlgorithmProperties("like_query")));
+        result.put("primary", propertyTemplateService.maskProperties(filterRequirements(requirements, "primary"), propertySource.getAlgorithmProperties("primary")));
+        result.put("assisted_query", propertyTemplateService.maskProperties(filterRequirements(requirements, "assisted_query"), propertySource.getAlgorithmProperties("assisted_query")));
+        result.put("like_query", propertyTemplateService.maskProperties(filterRequirements(requirements, "like_query"), propertySource.getAlgorithmProperties("like_query")));
         return result;
     }
     
-    private List<AlgorithmPropertyRequirement> filterRequirements(final WorkflowContextSnapshot snapshot, final String role) {
-        return snapshot.getPropertyRequirements().stream().filter(each -> role.equals(each.getAlgorithmRole())).toList();
+    private List<AlgorithmPropertyRequirement> createPropertyRequirements(final WorkflowContextSnapshot snapshot) {
+        return snapshot.getPropertyRequirements().isEmpty() && snapshot.getRequest() instanceof final EncryptWorkflowRequest request
+                ? propertyTemplateService.findRequirements(request.getAlgorithmType(), request.getOptions().getAssistedQueryAlgorithmType(), request.getOptions().getLikeQueryAlgorithmType())
+                : snapshot.getPropertyRequirements();
     }
     
-    private WorkflowPropertySource getPropertySource(final WorkflowContextSnapshot snapshot) {
-        return snapshot.getRequest();
+    private List<AlgorithmPropertyRequirement> filterRequirements(final List<AlgorithmPropertyRequirement> requirements, final String role) {
+        return requirements.stream().filter(each -> role.equals(each.getAlgorithmRole())).toList();
     }
 }
