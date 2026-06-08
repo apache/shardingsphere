@@ -31,16 +31,17 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mockConstruction;
@@ -72,23 +73,47 @@ class FirebirdBatchExecuteCommandExecutorTest {
     private FirebirdServerPreparedStatement preparedStatement;
     
     @Test
-    void assertExecute() throws SQLException {
+    void assertExecuteWithoutRecordCounts() throws ReflectiveOperationException, SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
-        when(batchStatement.getParameterValues()).thenReturn(Collections.singletonList(Arrays.asList(1, "foo_1")));
+        when(batchStatement.getParameterValues()).thenReturn(Arrays.asList(Arrays.asList(1, "foo_1"), Arrays.asList(2, "foo_2")));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
         try (
                 MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class);
                 MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class,
-                        (mock, context) -> when(mock.executeBatch()).thenReturn(new int[]{1, 0, -2, 3}))) {
+                        (mock, context) -> when(mock.executeBatch()).thenReturn(new int[]{5, 5}))) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
             Collection<DatabasePacket> actual = new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute();
             assertThat(actual.size(), is(1));
-            assertThat(actual.iterator().next(), isA(FirebirdBatchCompletionStateResponse.class));
+            FirebirdBatchCompletionStateResponse actualResponse = (FirebirdBatchCompletionStateResponse) actual.iterator().next();
+            assertThat(actualResponse, isA(FirebirdBatchCompletionStateResponse.class));
+            assertThat(getRecordsCount(actualResponse), is(2L));
+            assertArrayEquals(new int[0], getUpdateCounts(actualResponse));
             verify(batchRegistry).getBatchStatement(CONNECTION_ID, STATEMENT_ID);
             verify(connectionSession.getServerPreparedStatementRegistry()).getPreparedStatement(STATEMENT_ID);
+            verify(batchStatement).reset();
+        }
+    }
+    
+    @Test
+    void assertExecuteWithRecordCounts() throws ReflectiveOperationException, SQLException {
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(batchStatement.isRecordCounts()).thenReturn(true);
+        when(batchStatement.getParameterValues()).thenReturn(Arrays.asList(Arrays.asList(1, "foo_1"), Arrays.asList(2, "foo_2")));
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
+        when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
+        try (
+                MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class);
+                MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class,
+                        (mock, context) -> when(mock.executeBatch()).thenReturn(new int[]{5, 5}))) {
+            mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
+            FirebirdBatchCompletionStateResponse actual = (FirebirdBatchCompletionStateResponse) new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute().iterator().next();
+            assertThat(getRecordsCount(actual), is(2L));
+            assertArrayEquals(new int[]{5, 5}, getUpdateCounts(actual));
             verify(batchStatement).reset();
         }
     }
@@ -105,5 +130,13 @@ class FirebirdBatchExecuteCommandExecutorTest {
             verify(batchRegistry).getBatchStatement(CONNECTION_ID, STATEMENT_ID);
             verify(connectionSession.getServerPreparedStatementRegistry(), never()).getPreparedStatement(anyInt());
         }
+    }
+    
+    private long getRecordsCount(final FirebirdBatchCompletionStateResponse response) throws ReflectiveOperationException {
+        return (Long) Plugins.getMemberAccessor().get(FirebirdBatchCompletionStateResponse.class.getDeclaredField("recordsCount"), response);
+    }
+    
+    private int[] getUpdateCounts(final FirebirdBatchCompletionStateResponse response) throws ReflectiveOperationException {
+        return (int[]) Plugins.getMemberAccessor().get(FirebirdBatchCompletionStateResponse.class.getDeclaredField("updateCounts"), response);
     }
 }

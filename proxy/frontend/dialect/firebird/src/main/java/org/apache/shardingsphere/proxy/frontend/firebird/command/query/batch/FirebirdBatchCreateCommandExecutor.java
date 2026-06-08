@@ -94,7 +94,8 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         for (FirebirdParseBatchBlr.FirebirdBlrFieldDescriptor each : messageFormat.getFields()) {
             columnTypes.add(each.getType());
         }
-        FirebirdBatchRegistry.getInstance().registerBatchStatement(connectionId, statementId, new FirebirdBatchStatement(statementId, columnTypes, batchParameters.getBufferSize()));
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(connectionId, statementId,
+                new FirebirdBatchStatement(statementId, columnTypes, batchParameters.getBufferSize(), batchParameters.isRecordCounts()));
     }
     
     @Getter

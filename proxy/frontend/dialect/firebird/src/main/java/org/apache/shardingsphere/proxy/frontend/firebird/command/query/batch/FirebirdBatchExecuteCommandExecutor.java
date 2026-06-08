@@ -48,15 +48,9 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(batchStatement.getStatementHandle());
         int[] updateCounts = new FirebirdBatchedStatementsExecutor(connectionSession, preparedStatement, batchStatement.getParameterValues()).executeBatch();
         batchStatement.reset();
-        long updatedRecordsCount = 0L;
-        for (int each : updateCounts) {
-            if (each > 0) {
-                updatedRecordsCount += each;
-            }
-        }
         return Collections.singleton(new FirebirdBatchCompletionStateResponse()
                 .setHandle(packet.getStatementHandle())
-                .setRecordsCount(updatedRecordsCount)
-                .setUpdateCounts(updateCounts));
+                .setRecordsCount(updateCounts.length)
+                .setUpdateCounts(batchStatement.isRecordCounts() ? updateCounts : new int[0]));
     }
 }

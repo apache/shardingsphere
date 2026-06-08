@@ -36,6 +36,8 @@ public final class FirebirdBatchStatement {
     
     private final long bufferSize;
     
+    private final boolean recordCounts;
+    
     private final List<List<Object>> parameterValues = new ArrayList<>();
     
     private long accumulatedSize;
@@ -45,13 +47,18 @@ public final class FirebirdBatchStatement {
     private long framedCount;
     
     public FirebirdBatchStatement(final int statementHandle) {
-        this(statementHandle, Collections.emptyList(), 0L);
+        this(statementHandle, Collections.emptyList(), 0L, false);
     }
     
     public FirebirdBatchStatement(final int statementHandle, final List<FirebirdBinaryColumnType> columnTypes, final long bufferSize) {
+        this(statementHandle, columnTypes, bufferSize, false);
+    }
+    
+    public FirebirdBatchStatement(final int statementHandle, final List<FirebirdBinaryColumnType> columnTypes, final long bufferSize, final boolean recordCounts) {
         this.statementHandle = statementHandle;
         this.columnTypes = columnTypes;
         this.bufferSize = bufferSize;
+        this.recordCounts = recordCounts;
     }
     
     /**

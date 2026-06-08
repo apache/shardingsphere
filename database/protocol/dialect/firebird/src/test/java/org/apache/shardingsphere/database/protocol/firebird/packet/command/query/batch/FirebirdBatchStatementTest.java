@@ -24,6 +24,7 @@ import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdBatchStatementTest {
@@ -33,8 +34,16 @@ class FirebirdBatchStatementTest {
         FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32);
         batchStatement.addParameterValues(Arrays.asList("foo", 1L));
         assertThat(batchStatement.getStatementHandle(), is(32));
+        assertFalse(batchStatement.isRecordCounts());
         assertThat(batchStatement.getParameterValues().size(), is(1));
         assertThat(batchStatement.getParameterValues().get(0), is(Arrays.asList("foo", 1L)));
+    }
+    
+    @Test
+    void assertCreateWithRecordCounts() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L, true);
+        assertTrue(batchStatement.isRecordCounts());
+        assertThat(batchStatement.getBufferSize(), is(1024L));
     }
     
     @Test
