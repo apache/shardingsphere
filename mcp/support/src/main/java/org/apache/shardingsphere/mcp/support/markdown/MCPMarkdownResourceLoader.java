@@ -19,10 +19,12 @@ package org.apache.shardingsphere.mcp.support.markdown;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 /**
  * MCP Markdown resource loader.
@@ -39,31 +41,23 @@ public final class MCPMarkdownResourceLoader {
     private static final String APACHE_LICENSE_MARKER = "Apache License, Version 2.0";
     
     /**
-     * Load required Markdown resource from classpath.
+     * Load resource from classpath.
      *
      * @param resourceName resource name
      * @param resourceDescription resource description
      * @return Markdown content without source-control header
      * @throws IllegalStateException when the resource cannot be loaded or is blank
      */
-    public static String loadRequired(final String resourceName, final String resourceDescription) {
-        String result = stripSourceHeader(readResource(resourceName, resourceDescription, getResourceClassLoader())).strip();
-        if (result.isBlank()) {
-            throw new IllegalStateException(String.format("MCP %s resource `%s` is blank.", resourceDescription, resourceName));
-        }
+    public static String load(final String resourceName, final String resourceDescription) {
+        ClassLoader resourceClassLoader = Optional.ofNullable(Thread.currentThread().getContextClassLoader()).orElse(MCPMarkdownResourceLoader.class.getClassLoader());
+        String result = stripSourceHeader(load(resourceName, resourceDescription, resourceClassLoader)).strip();
+        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalStateException(String.format("MCP %s resource `%s` is blank.", resourceDescription, resourceName)));
         return result;
     }
     
-    private static ClassLoader getResourceClassLoader() {
-        ClassLoader result = Thread.currentThread().getContextClassLoader();
-        return null == result ? MCPMarkdownResourceLoader.class.getClassLoader() : result;
-    }
-    
-    private static String readResource(final String resourceName, final String resourceDescription, final ClassLoader classLoader) {
+    private static String load(final String resourceName, final String resourceDescription, final ClassLoader classLoader) {
         try (InputStream inputStream = classLoader.getResourceAsStream(resourceName)) {
-            if (null == inputStream) {
-                throw new IllegalStateException(String.format("MCP %s resource `%s` is not found.", resourceDescription, resourceName));
-            }
+            ShardingSpherePreconditions.checkNotNull(inputStream, () -> new IllegalStateException(String.format("MCP %s resource `%s` is not found.", resourceDescription, resourceName)));
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (final IOException ex) {
             throw new IllegalStateException(String.format("Failed to load MCP %s resource `%s`.", resourceDescription, resourceName), ex);
