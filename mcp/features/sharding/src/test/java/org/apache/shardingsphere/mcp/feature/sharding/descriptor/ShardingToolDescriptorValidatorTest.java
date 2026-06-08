@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.feature.sharding.descriptor;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidator;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -47,6 +49,16 @@ class ShardingToolDescriptorValidatorTest {
         assertTrue(validator.supports(MCPDescriptorCatalogIndex.getRequiredToolDescriptor(ShardingFeatureDefinition.PLAN_KEY_GENERATOR_TOOL_NAME)));
         assertTrue(validator.supports(MCPDescriptorCatalogIndex.getRequiredToolDescriptor(ShardingFeatureDefinition.PLAN_KEY_GENERATE_STRATEGY_TOOL_NAME)));
         assertTrue(validator.supports(MCPDescriptorCatalogIndex.getRequiredToolDescriptor(ShardingFeatureDefinition.PLAN_COMPONENT_CLEANUP_TOOL_NAME)));
+    }
+    
+    @Test
+    void assertExposeCompletionTargets() {
+        MCPCompletionTargetDescriptor algorithmCompletionTarget = findCompletionTarget("resource", ShardingFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI);
+        assertThat(algorithmCompletionTarget.getArguments(), is(List.of("algorithm_type")));
+        assertThat(algorithmCompletionTarget.getMaxValues(), is(50));
+        MCPCompletionTargetDescriptor keyGeneratorCompletionTarget = findCompletionTarget("resource", ShardingFeatureDefinition.KEY_GENERATE_ALGORITHM_PLUGINS_RESOURCE_URI);
+        assertThat(keyGeneratorCompletionTarget.getArguments(), is(List.of("key_generator_type")));
+        assertThat(keyGeneratorCompletionTarget.getMaxValues(), is(50));
     }
     
     @Test
@@ -94,5 +106,10 @@ class ShardingToolDescriptorValidatorTest {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName)) {
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         }
+    }
+    
+    private MCPCompletionTargetDescriptor findCompletionTarget(final String referenceType, final String reference) {
+        return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
+                .filter(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference())).findFirst().orElseThrow();
     }
 }

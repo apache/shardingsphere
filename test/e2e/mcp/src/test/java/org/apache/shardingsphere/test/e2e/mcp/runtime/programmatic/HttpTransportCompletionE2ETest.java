@@ -77,6 +77,21 @@ class HttpTransportCompletionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     }
     
     @Test
+    void assertCompleteFeaturePluginValues() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        assertTrue(completeValues(httpClient, sessionId, createResourceReference("shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"),
+                "load_balancer_type", "ROUND", Map.of()).contains("ROUND_ROBIN"));
+        assertTrue(completeValues(httpClient, sessionId, createResourceReference("shardingsphere://features/shadow/algorithm-plugins"),
+                "algorithm_type", "VALUE", Map.of()).contains("VALUE_MATCH"));
+        assertTrue(completeValues(httpClient, sessionId, createResourceReference("shardingsphere://features/sharding/algorithm-plugins"),
+                "algorithm_type", "INLINE", Map.of()).contains("INLINE"));
+        assertTrue(completeValues(httpClient, sessionId, createResourceReference("shardingsphere://features/sharding/key-generate-algorithm-plugins"),
+                "key_generator_type", "SNOW", Map.of()).contains("SNOWFLAKE"));
+    }
+    
+    @Test
     void assertCompleteWorkflowPlanIdsWithinCurrentSession() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();

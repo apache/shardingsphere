@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.readwritesplitting.descriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,16 @@ class ReadwriteSplittingToolDescriptorValidatorTest {
         ReadwriteSplittingToolDescriptorValidator validator = new ReadwriteSplittingToolDescriptorValidator();
         assertTrue(validator.supports(MCPDescriptorCatalogIndex.getRequiredToolDescriptor(ReadwriteSplittingFeatureDefinition.PLAN_RULE_TOOL_NAME)));
         assertTrue(validator.supports(MCPDescriptorCatalogIndex.getRequiredToolDescriptor(ReadwriteSplittingFeatureDefinition.PLAN_STATUS_TOOL_NAME)));
+    }
+    
+    @Test
+    void assertExposeCompletionTargets() {
+        MCPCompletionTargetDescriptor promptCompletionTarget = findCompletionTarget("prompt", ReadwriteSplittingFeatureDefinition.PLAN_RULE_PROMPT_NAME);
+        assertThat(promptCompletionTarget.getArguments(), is(List.of(ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD)));
+        assertThat(promptCompletionTarget.getMaxValues(), is(50));
+        MCPCompletionTargetDescriptor resourceCompletionTarget = findCompletionTarget("resource", ReadwriteSplittingFeatureDefinition.LOAD_BALANCE_ALGORITHM_PLUGINS_RESOURCE_URI);
+        assertThat(resourceCompletionTarget.getArguments(), is(List.of(ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD)));
+        assertThat(resourceCompletionTarget.getMaxValues(), is(50));
     }
     
     @Test
@@ -96,6 +107,11 @@ class ReadwriteSplittingToolDescriptorValidatorTest {
     
     private MCPPromptDescriptor findPrompt(final String promptName) {
         return MCPDescriptorCatalogIndex.getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private MCPCompletionTargetDescriptor findCompletionTarget(final String referenceType, final String reference) {
+        return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
+                .filter(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference())).findFirst().orElseThrow();
     }
     
     private String readResource(final String resourceName) throws IOException {
