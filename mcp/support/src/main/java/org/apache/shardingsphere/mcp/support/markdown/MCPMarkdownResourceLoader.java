@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * MCP Markdown resource loader.
@@ -32,13 +33,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPMarkdownResourceLoader {
     
-    private static final String HTML_COMMENT_START = "<!--";
-    
-    private static final String HTML_COMMENT_END = "-->";
-    
-    private static final String ASF_LICENSE_MARKER = "Licensed to the Apache Software Foundation";
-    
-    private static final String APACHE_LICENSE_MARKER = "Apache License, Version 2.0";
+    private static final Pattern APACHE_LICENSE_HEADER_PATTERN = Pattern.compile(
+            "\\A<!--(?:(?!-->)[\\s\\S])*Licensed to the Apache Software Foundation(?:(?!-->)[\\s\\S])*Apache License, Version 2\\.0(?:(?!-->)[\\s\\S])*-->\\s*");
     
     /**
      * Load resource from classpath.
@@ -46,11 +42,10 @@ public final class MCPMarkdownResourceLoader {
      * @param resourceName resource name
      * @param resourceDescription resource description
      * @return Markdown content without source-control header
-     * @throws IllegalStateException when the resource cannot be loaded or is blank
      */
     public static String load(final String resourceName, final String resourceDescription) {
         ClassLoader resourceClassLoader = Optional.ofNullable(Thread.currentThread().getContextClassLoader()).orElse(MCPMarkdownResourceLoader.class.getClassLoader());
-        String result = stripSourceHeader(load(resourceName, resourceDescription, resourceClassLoader)).strip();
+        String result = removeApacheLicenseHeader(load(resourceName, resourceDescription, resourceClassLoader)).strip();
         ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalStateException(String.format("MCP %s resource `%s` is blank.", resourceDescription, resourceName)));
         return result;
     }
@@ -64,19 +59,7 @@ public final class MCPMarkdownResourceLoader {
         }
     }
     
-    private static String stripSourceHeader(final String content) {
-        if (!content.startsWith(HTML_COMMENT_START)) {
-            return content;
-        }
-        int commentEndIndex = content.indexOf(HTML_COMMENT_END);
-        if (commentEndIndex < 0) {
-            return content;
-        }
-        String leadingComment = content.substring(0, commentEndIndex + HTML_COMMENT_END.length());
-        return isApacheLicenseHeader(leadingComment) ? content.substring(commentEndIndex + HTML_COMMENT_END.length()) : content;
-    }
-    
-    private static boolean isApacheLicenseHeader(final String value) {
-        return value.contains(ASF_LICENSE_MARKER) && value.contains(APACHE_LICENSE_MARKER);
+    private static String removeApacheLicenseHeader(final String content) {
+        return APACHE_LICENSE_HEADER_PATTERN.matcher(content).replaceFirst("");
     }
 }
