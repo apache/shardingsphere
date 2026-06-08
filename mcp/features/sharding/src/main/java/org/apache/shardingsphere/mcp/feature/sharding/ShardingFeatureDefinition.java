@@ -48,6 +48,18 @@ public final class ShardingFeatureDefinition {
     
     public static final String PLAN_COMPONENT_CLEANUP_TOOL_NAME = "database_gateway_plan_sharding_rule_component_cleanup";
     
+    public static final String PLAN_TABLE_RULE_PROMPT_NAME = "plan_sharding_table_rule";
+    
+    public static final String PLAN_TABLE_REFERENCE_PROMPT_NAME = "plan_sharding_table_reference_rule";
+    
+    public static final String PLAN_DEFAULT_STRATEGY_PROMPT_NAME = "plan_sharding_default_strategy";
+    
+    public static final String PLAN_KEY_GENERATOR_PROMPT_NAME = "plan_sharding_key_generator";
+    
+    public static final String PLAN_KEY_GENERATE_STRATEGY_PROMPT_NAME = "plan_sharding_key_generate_strategy";
+    
+    public static final String PLAN_COMPONENT_CLEANUP_PROMPT_NAME = "plan_sharding_rule_component_cleanup";
+    
     public static final String ALGORITHM_PLUGINS_RESOURCE_URI = "shardingsphere://features/sharding/algorithm-plugins";
     
     public static final String KEY_GENERATE_ALGORITHM_PLUGINS_RESOURCE_URI = "shardingsphere://features/sharding/key-generate-algorithm-plugins";

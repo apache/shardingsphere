@@ -423,6 +423,17 @@ prompts:
       org.apache.shardingsphere/ask-user-conditions:
         - "Ask when database, component type, or component name is unclear."
         - "Ask before applying generated component cleanup DistSQL that changes runtime state."
+completionTargets:
+  - referenceType: resource
+    reference: shardingsphere://features/sharding/algorithm-plugins
+    arguments:
+      - algorithm_type
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://features/sharding/key-generate-algorithm-plugins
+    arguments:
+      - key_generator_type
+    maxValues: 50
 tools:
   - name: database_gateway_plan_sharding_table_rule
     title: Plan Sharding Table Rule
