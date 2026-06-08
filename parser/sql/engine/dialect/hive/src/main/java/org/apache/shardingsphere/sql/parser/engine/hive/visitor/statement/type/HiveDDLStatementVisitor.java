@@ -65,7 +65,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.po
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ExecuteSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CherryPickDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
@@ -156,8 +156,7 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
             int numberStopIndex = ctx.cherryPickClause().NUMBER_().getSymbol().getStopIndex();
             LiteralExpressionSegment snapshotId = new LiteralExpressionSegment(numberStartIndex, numberStopIndex,
                     new NumberLiteralValue(ctx.cherryPickClause().NUMBER_().getText()).getValue());
-            result.executeSegment(new ExecuteSegment(ctx.cherryPickClause().EXECUTE().getSymbol().getStartIndex(), numberStopIndex,
-                    ctx.cherryPickClause().CHERRY_PICK().getText(), snapshotId));
+            result.cherryPickDefinition(new CherryPickDefinitionSegment(ctx.cherryPickClause().EXECUTE().getSymbol().getStartIndex(), numberStopIndex, snapshotId));
         }
         return result.build();
     }
