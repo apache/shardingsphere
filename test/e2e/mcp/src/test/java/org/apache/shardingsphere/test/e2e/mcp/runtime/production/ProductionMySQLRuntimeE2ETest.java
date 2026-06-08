@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.support.markdown.MCPMarkdownResourceLoader;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
@@ -35,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -138,7 +137,7 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualResult = getMap(interactionClient.getInitializePayload().get("result"));
             String actualInstructions = String.valueOf(actualResult.get("instructions"));
-            assertThat(actualInstructions, is(MCPMarkdownResourceLoader.loadRequired(MCPTransportConstants.SERVER_INSTRUCTIONS_RESOURCE, "server instruction")));
+            assertThat(actualInstructions, is(MCPMarkdownResourceLoader.load(MCPTransportConstants.SERVER_INSTRUCTIONS_RESOURCE, "server instruction")));
             assertThat(actualInstructions.lines().findFirst().orElse(""), is("Apache ShardingSphere MCP."));
         }
     }
@@ -181,7 +180,7 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
             List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(
                     String.format("shardingsphere://databases/%s/schemas/%s/tables/orders", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME)));
             assertThat(items.size(), is(1));
-            Map<String, Object> actualItem = items.get(0);
+            Map<String, Object> actualItem = items.getFirst();
             assertThat(String.valueOf(actualItem.get("table")), is("orders"));
             assertThat(getNestedNames(actualItem, "columns", "column"), is(List.of("amount", "order_id", "status")));
             assertThat(getNestedNames(actualItem, "indexes", "index"), containsInAnyOrder("PRIMARY", "idx_orders_status"));
@@ -207,7 +206,7 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
             List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(
                     String.format("shardingsphere://databases/%s/schemas/%s/views", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME)));
             assertThat(items.size(), is(1));
-            assertThat(String.valueOf(items.get(0).get("view")), is("active_orders"));
+            assertThat(String.valueOf(items.getFirst().get("view")), is("active_orders"));
         }
     }
     
