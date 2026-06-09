@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
@@ -50,8 +51,9 @@ public final class FirebirdBatchSendMessageCommandExecutor implements CommandExe
             throw new FirebirdProtocolException("Batch statement not found for connectionId: %d, statement handle: %d", connectionId, packet.getStatementHandle());
         }
         if (batchStatement.getAccumulatedSize() + packet.getDataLength() > batchStatement.getBufferSize()) {
-            throw new FirebirdProtocolException("Batch is too big: accumulated %d + %d bytes exceeds buffer size limit %d bytes",
-                    batchStatement.getAccumulatedSize(), packet.getDataLength(), batchStatement.getBufferSize());
+            BatchTooBigException ex = new BatchTooBigException(packet.getStatementHandle(), batchStatement.getAccumulatedSize(), packet.getDataLength(), batchStatement.getBufferSize());
+            batchStatement.reset();
+            throw ex;
         }
         for (List<Object> each : packet.readParameterValues(batchStatement.getColumnDescriptors())) {
             batchStatement.addParameterValues(each);

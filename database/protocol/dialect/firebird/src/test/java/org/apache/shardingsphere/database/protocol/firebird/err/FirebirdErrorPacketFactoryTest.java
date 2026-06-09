@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.err;
+package org.apache.shardingsphere.database.protocol.firebird.err;
 
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.junit.jupiter.api.Test;
 
@@ -54,6 +55,13 @@ class FirebirdErrorPacketFactoryTest {
     void assertNewInstanceWithAccessDeniedException() {
         FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(new AccessDeniedException("root", "127.0.0.1", true));
         assertThat(actual.getErrorCode(), is(335544472));
+        assertThat(actual.getErrorMessage(), is(""));
+    }
+    
+    @Test
+    void assertNewInstanceWithBatchTooBigException() {
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(new BatchTooBigException(42, 1L, 8L, 8L));
+        assertThat(actual.getErrorCode(), is(335545198));
         assertThat(actual.getErrorMessage(), is(""));
     }
     

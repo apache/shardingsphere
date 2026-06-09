@@ -19,19 +19,23 @@ package org.apache.shardingsphere.database.protocol.firebird.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.embedded.EmbeddedChannel;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
+import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.firebirdsql.gds.BlrConstants;
@@ -42,6 +46,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -57,8 +62,8 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -76,6 +81,8 @@ class FirebirdPacketCodecEngineTest {
     private static final int BATCH_CONNECTION_ID = 1;
     
     private static final int BATCH_STATEMENT_HANDLE = 42;
+    
+    private static final int UNKNOWN_COMMAND_TYPE = 99999;
     
     private final FirebirdPacketCodecEngine codecEngine = new FirebirdPacketCodecEngine();
     
@@ -184,9 +191,15 @@ class FirebirdPacketCodecEngineTest {
     @Test
     void assertDecodeWithProcessPacketsExceptionAndNoPendingMessages() {
         when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenThrow(IllegalStateException.class);
+        ChannelFuture errorResponseFuture = mock(ChannelFuture.class);
+        when(context.channel().writeAndFlush(any())).thenReturn(errorResponseFuture);
         ByteBuf in = createCommandPacket(FirebirdCommandPacketType.INFO_REQUEST, 8);
         List<Object> out = new LinkedList<>();
-        assertThrows(IllegalStateException.class, () -> codecEngine.decode(context, in, out));
+        codecEngine.decode(context, in, out);
+        assertTrue(out.isEmpty());
+        assertThat(in.readableBytes(), is(0));
+        assertThat(captureErrorResponse().getErrorCode(), is(335544382));
+        verify(errorResponseFuture).addListener(ChannelFutureListener.CLOSE);
     }
     
     @Test
@@ -196,7 +209,17 @@ class FirebirdPacketCodecEngineTest {
         getPendingMessages().add(pendingMessage);
         ByteBuf in = createCommandPacket(FirebirdCommandPacketType.INFO_REQUEST, 8);
         List<Object> out = new LinkedList<>();
-        assertThrows(IllegalStateException.class, () -> codecEngine.decode(context, in, out));
+        codecEngine.decode(context, in, out);
+        assertTrue(out.isEmpty());
+        assertTrue(getPendingMessages().isEmpty());
+        assertThat(pendingMessage.refCnt(), is(0));
+        assertThat(captureErrorResponse().getErrorCode(), is(335544382));
+    }
+    
+    private FirebirdGenericResponsePacket captureErrorResponse() {
+        ArgumentCaptor<DatabasePacket> captor = ArgumentCaptor.forClass(DatabasePacket.class);
+        verify(context.channel()).writeAndFlush(captor.capture());
+        return (FirebirdGenericResponsePacket) captor.getValue();
     }
     
     @Test
@@ -208,13 +231,42 @@ class FirebirdPacketCodecEngineTest {
     }
     
     @Test
-    void assertEncodeWithException() {
+    void assertEncodeWritesErrorResponseOnException() {
         DatabasePacket packet = mock(DatabasePacket.class);
-        ByteBuf byteBuf = mock(ByteBuf.class);
+        ByteBuf byteBuf = Unpooled.buffer();
         doThrow(RuntimeException.class).when(packet).write(any(FirebirdPacketPayload.class));
-        assertThrows(RuntimeException.class, () -> codecEngine.encode(context, packet, byteBuf));
-        verify(byteBuf).resetWriterIndex();
-        verify(context).close();
+        codecEngine.encode(context, packet, byteBuf);
+        assertThat(byteBuf.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
+        verify(context, never()).close();
+    }
+    
+    @Test
+    void assertDecodeUnknownCommandWritesEncodedErrorAndClosesChannel() {
+        EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
+        channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
+        channel.writeInbound(Unpooled.buffer().writeInt(UNKNOWN_COMMAND_TYPE).writeInt(0));
+        channel.runPendingTasks();
+        assertNull(channel.readInbound());
+        ByteBuf encodedError = channel.readOutbound();
+        assertThat(encodedError.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
+        assertFalse(channel.isOpen());
+        encodedError.release();
+    }
+    
+    @Test
+    void assertDecodeValidPacketFollowedByInvalidDiscardsValidPacket() {
+        EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
+        channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
+        ByteBuf in = Unpooled.buffer()
+                .writeInt(FirebirdCommandPacketType.ALLOCATE_STATEMENT.getValue()).writeInt(0)
+                .writeInt(UNKNOWN_COMMAND_TYPE).writeInt(0);
+        channel.writeInbound(in);
+        channel.runPendingTasks();
+        assertNull(channel.readInbound());
+        ByteBuf encodedError = channel.readOutbound();
+        assertThat(encodedError.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
+        assertFalse(channel.isOpen());
+        encodedError.release();
     }
     
     @Test
@@ -267,12 +319,33 @@ class FirebirdPacketCodecEngineTest {
     }
     
     @Test
-    void assertDecodeBatchMessageWithoutRegisteredBatchStatementThrows() {
+    void assertDecodeBatchMessageWithoutRegisteredBatchStatementSendsErrorResponse() {
         FirebirdBatchRegistry.getInstance().registerConnection(BATCH_CONNECTION_ID);
         try {
             ByteBuf in = buildBatchMessage(999, 100);
             List<Object> out = new LinkedList<>();
-            assertThrows(FirebirdProtocolException.class, () -> codecEngine.decode(context, in, out));
+            codecEngine.decode(context, in, out);
+            assertTrue(out.isEmpty());
+            assertThat(captureErrorResponse().getErrorCode(), is(335544382));
+        } finally {
+            FirebirdBatchRegistry.getInstance().unregisterConnection(BATCH_CONNECTION_ID);
+        }
+    }
+    
+    @Test
+    void assertDecodeBatchMessageOverBufferSizeIsStillFramedWithoutCodecError() {
+        FirebirdBatchRegistry.getInstance().registerConnection(BATCH_CONNECTION_ID);
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(BATCH_STATEMENT_HANDLE,
+                Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.LONG, Integer.BYTES, 0, 0)), 8L);
+        batchStatement.addSize(1L);
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE, batchStatement);
+        try {
+            ByteBuf in = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100);
+            List<Object> out = new LinkedList<>();
+            codecEngine.decode(context, in, out);
+            assertThat(out.size(), is(1));
+            assertThat(createBatchSendMessagePacket((ByteBuf) out.iterator().next()).getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
+            verify(context.channel(), never()).writeAndFlush(any());
         } finally {
             FirebirdBatchRegistry.getInstance().unregisterConnection(BATCH_CONNECTION_ID);
         }
@@ -391,11 +464,16 @@ class FirebirdPacketCodecEngineTest {
     }
     
     @Test
-    void assertDecodeCoalescedBatchCreateWithMalformedBlrClosesChannelAsFramingCorruption() {
+    void assertDecodeCoalescedBatchCreateWithMalformedBlrWritesErrorResponseAndClosesChannel() {
+        ChannelFuture errorResponseFuture = mock(ChannelFuture.class);
+        when(context.channel().writeAndFlush(any())).thenReturn(errorResponseFuture);
         ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildInvalidBatchCreate(), buildBatchMessage(BATCH_STATEMENT_HANDLE, 100));
         List<Object> out = new LinkedList<>();
-        assertThrows(IllegalArgumentException.class, () -> codecEngine.decode(context, in, out));
-        verify(context).close();
+        codecEngine.decode(context, in, out);
+        assertTrue(out.isEmpty());
+        assertThat(in.readableBytes(), is(0));
+        assertThat(captureErrorResponse().getErrorCode(), is(335544382));
+        verify(errorResponseFuture).addListener(ChannelFutureListener.CLOSE);
     }
     
     private ByteBuf buildInvalidBatchCreate() {
