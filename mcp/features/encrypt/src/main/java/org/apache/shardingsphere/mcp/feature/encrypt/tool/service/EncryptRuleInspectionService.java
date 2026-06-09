@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
@@ -34,8 +35,6 @@ import java.util.Objects;
  * Encrypt rule inspection service.
  */
 public final class EncryptRuleInspectionService {
-    
-    private final EncryptAlgorithmPropertyTemplateService propertyTemplateService = new EncryptAlgorithmPropertyTemplateService();
     
     /**
      * Query encrypt rules.
@@ -72,12 +71,13 @@ public final class EncryptRuleInspectionService {
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : queryAlgorithmRows(queryFacade)) {
             String type = Objects.toString(each.get("type"), "").trim().toUpperCase(Locale.ENGLISH);
-            Map<String, Boolean> capability = EncryptAlgorithmRecommendationService.findEncryptCapability(type);
-            List<AlgorithmPropertyRequirement> propertyTemplates = propertyTemplateService.findRequirements(type, "", "");
+            Map<String, Boolean> capability = EncryptAlgorithmCatalog.findCapability(type);
+            List<AlgorithmPropertyRequirement> propertyTemplates = EncryptAlgorithmCatalog.findRequirements(EncryptFeatureDefinition.ALGORITHM_ROLE_PRIMARY, type);
             Map<String, Object> row = new LinkedHashMap<>(each);
-            row.put("supports_decrypt", capability.get("supports_decrypt"));
-            row.put("supports_equivalent_filter", capability.get("supports_equivalent_filter"));
-            row.put("supports_like", capability.get("supports_like"));
+            row.put(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_DECRYPT, capability.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_DECRYPT));
+            row.put(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_EQUIVALENT_FILTER, capability.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_EQUIVALENT_FILTER));
+            row.put(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_LIKE, capability.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_LIKE));
+            row.put("capability_confirmed", EncryptAlgorithmCatalog.isCapabilityConfirmed(type));
             row.put("property_templates", propertyTemplates.stream().map(AlgorithmPropertyRequirement::toMap).toList());
             row.put("required_properties", propertyTemplates.stream().filter(AlgorithmPropertyRequirement::isRequired).map(AlgorithmPropertyRequirement::getPropertyKey).toList());
             row.put("optional_properties", propertyTemplates.stream().filter(eachRequirement -> !eachRequirement.isRequired()).map(AlgorithmPropertyRequirement::getPropertyKey).toList());
@@ -103,7 +103,7 @@ public final class EncryptRuleInspectionService {
             return queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS");
         } catch (final MCPQueryFailedException ex) {
             if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return propertyTemplateService.getSupportedAlgorithmTypes().stream().map(each -> Map.<String, Object>of("type", each)).toList();
+                return EncryptAlgorithmCatalog.getSupportedAlgorithmTypes().stream().map(each -> Map.<String, Object>of("type", each)).toList();
             }
             throw ex;
         }

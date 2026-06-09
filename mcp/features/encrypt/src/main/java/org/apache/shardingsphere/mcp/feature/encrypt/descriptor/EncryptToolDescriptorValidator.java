@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidat
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidationUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 
 import java.util.List;
 
@@ -32,10 +31,11 @@ import java.util.List;
  */
 public final class EncryptToolDescriptorValidator implements MCPToolDescriptorValidator {
     
-    private static final List<String> REQUIRED_OUTPUT_FIELDS = List.of("response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs",
-            MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS, "argument_provenance", "proxy_topology_hint",
-            WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS, WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DDL_ARTIFACTS, WorkflowArtifactPayloadUtils.PAYLOAD_KEY_INDEX_PLAN,
-            "derived_column_plan", "masked_property_preview");
+    private static final List<String> REQUIRED_OUTPUT_FIELDS = List.of(
+            "response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs", "clarification_questions",
+            "elicitation_support", "fallback_reason", "issues", "global_steps", "current_step", "algorithm_recommendations", "property_requirements",
+            "validation_strategy", "delivery_mode", "execution_mode", "intent_inference", "argument_provenance", "review_focus", "proxy_topology_hint",
+            "distsql_artifacts", "masked_property_preview", MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS);
     
     @Override
     public boolean supports(final MCPToolDescriptor toolDescriptor) {

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,8 +30,6 @@ import java.util.Map;
 @Getter
 @Setter
 public final class EncryptWorkflowOptions {
-    
-    private Boolean allowIndexDDL;
     
     private Boolean requiresDecrypt;
     
@@ -73,10 +72,10 @@ public final class EncryptWorkflowOptions {
     }
     
     Map<String, String> getAlgorithmProperties(final String algorithmRole) {
-        if ("assisted_query".equals(algorithmRole)) {
+        if (EncryptFeatureDefinition.ALGORITHM_ROLE_ASSISTED_QUERY.equals(algorithmRole)) {
             return assistedQueryAlgorithmProperties;
         }
-        if ("like_query".equals(algorithmRole)) {
+        if (EncryptFeatureDefinition.ALGORITHM_ROLE_LIKE_QUERY.equals(algorithmRole)) {
             return likeQueryAlgorithmProperties;
         }
         return Map.of();
@@ -89,7 +88,6 @@ public final class EncryptWorkflowOptions {
     }
     
     void copyTo(final EncryptWorkflowOptions target) {
-        target.setAllowIndexDDL(allowIndexDDL);
         target.setRequiresDecrypt(requiresDecrypt);
         target.setRequiresEqualityFilter(requiresEqualityFilter);
         target.setRequiresLikeQuery(requiresLikeQuery);
@@ -105,9 +103,6 @@ public final class EncryptWorkflowOptions {
     }
     
     void overlayTo(final EncryptWorkflowOptions target) {
-        if (null != allowIndexDDL) {
-            target.setAllowIndexDDL(allowIndexDDL);
-        }
         if (null != requiresDecrypt) {
             target.setRequiresDecrypt(requiresDecrypt);
         }

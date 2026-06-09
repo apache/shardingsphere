@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
-import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureData;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 
 import java.util.Map;
@@ -113,6 +112,6 @@ public final class WorkflowArtifactPayloadUtils {
      */
     public static boolean isRuleDistSQLOnlyWorkflow(final WorkflowContextSnapshot snapshot) {
         String workflowKind = null == snapshot.getWorkflowKind() ? "" : snapshot.getWorkflowKind().getValue();
-        return RULE_DISTSQL_ONLY_WORKFLOW_KINDS.contains(workflowKind) && (null == snapshot.getFeatureData() || snapshot.getFeatureData() instanceof RuleWorkflowFeatureData);
+        return RULE_DISTSQL_ONLY_WORKFLOW_KINDS.contains(workflowKind);
     }
 }
