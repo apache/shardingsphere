@@ -101,6 +101,8 @@ class MCPDescriptorCatalogIndexTest {
     void assertGetCompletionTargetDescriptors() {
         Collection<MCPCompletionTargetDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getCompletionTargetDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "prompt".equals(each.getReferenceType()) && "inspect_metadata".equals(each.getReference())));
+        assertTrue(actualDescriptors.stream().filter(each -> "resource".equals(each.getReferenceType()))
+                .allMatch(each -> MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(each.getReference()).isTemplated()));
     }
     
     @Test

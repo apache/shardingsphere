@@ -67,8 +67,7 @@ class EncryptToolDescriptorValidatorTest {
         List<String> expectedArguments = List.of("algorithm_type", "assisted_query_algorithm_type", "like_query_algorithm_type");
         MCPCompletionTargetDescriptor promptCompletionTarget = findCompletionTarget("prompt", EncryptFeatureDefinition.PLAN_PROMPT_NAME);
         assertThat(promptCompletionTarget.getArguments(), is(expectedArguments));
-        MCPCompletionTargetDescriptor resourceCompletionTarget = findCompletionTarget("resource", EncryptFeatureDefinition.ALGORITHMS_RESOURCE_URI);
-        assertThat(resourceCompletionTarget.getArguments(), is(expectedArguments));
+        assertFalse(hasCompletionTarget("resource", EncryptFeatureDefinition.ALGORITHMS_RESOURCE_URI));
     }
     
     @Test
@@ -162,6 +161,11 @@ class EncryptToolDescriptorValidatorTest {
     private MCPCompletionTargetDescriptor findCompletionTarget(final String referenceType, final String reference) {
         return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
                 .filter(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference())).findFirst().orElseThrow();
+    }
+    
+    private boolean hasCompletionTarget(final String referenceType, final String reference) {
+        return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
+                .anyMatch(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference()));
     }
     
     private String readResource(final String resourceName) throws IOException {

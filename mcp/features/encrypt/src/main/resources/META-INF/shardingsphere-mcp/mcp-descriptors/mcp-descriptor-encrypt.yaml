@@ -132,13 +132,6 @@ completionTargets:
       - assisted_query_algorithm_type
       - like_query_algorithm_type
     maxValues: 50
-  - referenceType: resource
-    reference: shardingsphere://features/encrypt/algorithms
-    arguments:
-      - algorithm_type
-      - assisted_query_algorithm_type
-      - like_query_algorithm_type
-    maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/encrypt/algorithms
     to: database_gateway_plan_encrypt_rule

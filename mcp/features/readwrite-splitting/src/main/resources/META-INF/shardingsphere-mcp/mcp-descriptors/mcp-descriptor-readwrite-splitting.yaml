@@ -212,11 +212,6 @@ completionTargets:
     arguments:
       - load_balancer_type
     maxValues: 50
-  - referenceType: resource
-    reference: shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins
-    arguments:
-      - load_balancer_type
-    maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/readwrite-splitting/databases/{database}/rules
     to: database_gateway_plan_readwrite_splitting_rule

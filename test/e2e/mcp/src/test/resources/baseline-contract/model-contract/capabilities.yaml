@@ -171,9 +171,9 @@ common_flows:
   referenced_resources: ['shardingsphere://capabilities']
 protocolAvailability: {resources: true, resourceTemplates: true, tools: true, toolAnnotations: true,
   toolOutputSchemas: true, prompts: true, completions: true, resourceNavigation: true}
-fingerprints: {algorithm: sha256, descriptorCatalog: 0b3cb84bfe1e23964958210cf6ce96c8b613202cd5f5611b7845bb968d558370,
-  promptSet: 41a84db849ce19f25f172068e5a176f74fc726429402b9d675d5197acc51d7e2, resourceNavigation: 64bf1a1ca4856b55a21b09922aa8df6e7bb7f043faa38977680d1a1e3c060bae,
-  modelFacingSchemas: 83b4b8d44382cbbfdee351e86dea044690caa90032832ce08bade4dff11777b9}
+fingerprints: {algorithm: sha256, descriptorCatalog: 20e22dc1490af50d39f00aeb1d5fb35c298773096268b70adc898d7f31800d06,
+  promptSet: 63e5b9cb3fada77bc332fd0f958c390d66b538944bdc4ba75501cac5106cd3f3, resourceNavigation: 64bf1a1ca4856b55a21b09922aa8df6e7bb7f043faa38977680d1a1e3c060bae,
+  modelFacingSchemas: 424743fa39de1312cfc2c19748d2da2773638c31596b747334468b3f130b1067}
 resources:
 - uri: shardingsphere://capabilities
   name: server-capability-catalog
@@ -802,16 +802,19 @@ prompts:
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
+  - {name: algorithm_type, required: false}
 - name: plan_sharding_key_generate_strategy
   title: Plan Sharding Key Generate Strategy
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
+  - {name: key_generator_type, required: false}
 - name: plan_sharding_key_generator
   title: Plan Sharding Key Generator
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
+  - {name: key_generator_type, required: false}
 - name: plan_sharding_rule_component_cleanup
   title: Plan Sharding Rule Component Cleanup
   arguments:
@@ -827,6 +830,7 @@ prompts:
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
+  - {name: algorithm_type, required: false}
 - name: recover_workflow
   title: Recover Workflow
   arguments:
@@ -887,17 +891,37 @@ completionTargets:
   reference: plan_encrypt_rule
   arguments: [algorithm_type, assisted_query_algorithm_type, like_query_algorithm_type]
   maxValues: 50
-- referenceType: resource
-  reference: shardingsphere://features/encrypt/algorithms
-  arguments: [algorithm_type, assisted_query_algorithm_type, like_query_algorithm_type]
-  maxValues: 50
 - referenceType: prompt
   reference: plan_mask_rule
   arguments: [algorithm_type]
   maxValues: 50
-- referenceType: resource
-  reference: shardingsphere://features/mask/algorithms
+- referenceType: prompt
+  reference: plan_readwrite_splitting_rule
+  arguments: [load_balancer_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_shadow_rule
   arguments: [algorithm_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_default_shadow_algorithm
+  arguments: [algorithm_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_sharding_table_rule
+  arguments: [algorithm_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_sharding_default_strategy
+  arguments: [algorithm_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_sharding_key_generator
+  arguments: [key_generator_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_sharding_key_generate_strategy
+  arguments: [key_generator_type]
   maxValues: 50
 - referenceType: prompt
   reference: inspect_metadata

@@ -53,12 +53,18 @@ class ShardingToolDescriptorValidatorTest {
     
     @Test
     void assertExposeCompletionTargets() {
-        MCPCompletionTargetDescriptor algorithmCompletionTarget = findCompletionTarget("resource", ShardingFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI);
+        MCPCompletionTargetDescriptor algorithmCompletionTarget = findCompletionTarget("prompt", ShardingFeatureDefinition.PLAN_TABLE_RULE_PROMPT_NAME);
         assertThat(algorithmCompletionTarget.getArguments(), is(List.of("algorithm_type")));
         assertThat(algorithmCompletionTarget.getMaxValues(), is(50));
-        MCPCompletionTargetDescriptor keyGeneratorCompletionTarget = findCompletionTarget("resource", ShardingFeatureDefinition.KEY_GENERATE_ALGORITHM_PLUGINS_RESOURCE_URI);
+        MCPCompletionTargetDescriptor defaultStrategyCompletionTarget = findCompletionTarget("prompt", ShardingFeatureDefinition.PLAN_DEFAULT_STRATEGY_PROMPT_NAME);
+        assertThat(defaultStrategyCompletionTarget.getArguments(), is(List.of("algorithm_type")));
+        MCPCompletionTargetDescriptor keyGeneratorCompletionTarget = findCompletionTarget("prompt", ShardingFeatureDefinition.PLAN_KEY_GENERATOR_PROMPT_NAME);
         assertThat(keyGeneratorCompletionTarget.getArguments(), is(List.of("key_generator_type")));
         assertThat(keyGeneratorCompletionTarget.getMaxValues(), is(50));
+        MCPCompletionTargetDescriptor keyGenerateStrategyCompletionTarget = findCompletionTarget("prompt", ShardingFeatureDefinition.PLAN_KEY_GENERATE_STRATEGY_PROMPT_NAME);
+        assertThat(keyGenerateStrategyCompletionTarget.getArguments(), is(List.of("key_generator_type")));
+        assertFalse(hasCompletionTarget("resource", ShardingFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI));
+        assertFalse(hasCompletionTarget("resource", ShardingFeatureDefinition.KEY_GENERATE_ALGORITHM_PLUGINS_RESOURCE_URI));
     }
     
     @Test
@@ -111,5 +117,10 @@ class ShardingToolDescriptorValidatorTest {
     private MCPCompletionTargetDescriptor findCompletionTarget(final String referenceType, final String reference) {
         return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
                 .filter(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference())).findFirst().orElseThrow();
+    }
+    
+    private boolean hasCompletionTarget(final String referenceType, final String reference) {
+        return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
+                .anyMatch(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference()));
     }
 }

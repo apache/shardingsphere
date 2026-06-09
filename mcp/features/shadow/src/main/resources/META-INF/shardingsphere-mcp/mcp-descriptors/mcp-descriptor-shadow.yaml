@@ -282,11 +282,6 @@ completionTargets:
     arguments:
       - algorithm_type
     maxValues: 50
-  - referenceType: resource
-    reference: shardingsphere://features/shadow/algorithm-plugins
-    arguments:
-      - algorithm_type
-    maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/shadow/databases/{database}/rules
     to: database_gateway_plan_shadow_rule
