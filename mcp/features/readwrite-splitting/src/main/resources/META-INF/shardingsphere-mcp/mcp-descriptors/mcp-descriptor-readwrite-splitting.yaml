@@ -206,6 +206,12 @@ prompts:
       org.apache.shardingsphere/ask-user-conditions:
         - "Ask when database, rule name, read storage unit, or target status is unclear."
         - "Ask before applying generated readwrite-splitting status DistSQL that changes runtime state."
+completionTargets:
+  - referenceType: prompt
+    reference: plan_readwrite_splitting_rule
+    arguments:
+      - load_balancer_type
+    maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/readwrite-splitting/databases/{database}/rules
     to: database_gateway_plan_readwrite_splitting_rule

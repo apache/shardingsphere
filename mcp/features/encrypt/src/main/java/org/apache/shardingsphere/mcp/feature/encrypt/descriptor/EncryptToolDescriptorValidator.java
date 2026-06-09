@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidat
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidationUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 
 import java.util.List;
 
@@ -31,6 +32,11 @@ import java.util.List;
  */
 public final class EncryptToolDescriptorValidator implements MCPToolDescriptorValidator {
     
+    private static final List<String> REQUIRED_OUTPUT_FIELDS = List.of("response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs",
+            MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS, "argument_provenance", "proxy_topology_hint",
+            WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS, WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DDL_ARTIFACTS, WorkflowArtifactPayloadUtils.PAYLOAD_KEY_INDEX_PLAN,
+            "derived_column_plan", "masked_property_preview");
+    
     @Override
     public boolean supports(final MCPToolDescriptor toolDescriptor) {
         return EncryptFeatureDefinition.PLAN_TOOL_NAME.equals(toolDescriptor.getName());
@@ -38,8 +44,6 @@ public final class EncryptToolDescriptorValidator implements MCPToolDescriptorVa
     
     @Override
     public void validate(final MCPToolDescriptor toolDescriptor) {
-        MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor,
-                List.of("response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs",
-                        MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS));
+        MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor, REQUIRED_OUTPUT_FIELDS);
     }
 }

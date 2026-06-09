@@ -271,6 +271,17 @@ prompts:
       org.apache.shardingsphere/ask-user-conditions:
         - "Ask when database or algorithm name is unclear."
         - "Ask before applying generated shadow algorithm cleanup DistSQL that changes runtime state."
+completionTargets:
+  - referenceType: prompt
+    reference: plan_shadow_rule
+    arguments:
+      - algorithm_type
+    maxValues: 50
+  - referenceType: prompt
+    reference: plan_default_shadow_algorithm
+    arguments:
+      - algorithm_type
+    maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/shadow/databases/{database}/rules
     to: database_gateway_plan_shadow_rule

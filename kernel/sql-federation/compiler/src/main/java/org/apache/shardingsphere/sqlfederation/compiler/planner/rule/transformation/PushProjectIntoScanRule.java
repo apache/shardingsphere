@@ -23,6 +23,8 @@ import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.rules.TransformationRule;
 import org.apache.calcite.rex.RexCall;
+import org.apache.calcite.rex.RexCorrelVariable;
+import org.apache.calcite.rex.RexFieldAccess;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexSubQuery;
 import org.apache.shardingsphere.sqlfederation.compiler.rel.operator.logical.LogicalScan;
@@ -55,11 +57,28 @@ public final class PushProjectIntoScanRule extends RelRule<PushProjectIntoScanRu
         }
         LogicalProject logicalProject = call.rel(0);
         for (RexNode each : logicalProject.getProjects()) {
-            if (each instanceof RexSubQuery || containsCastFunction(each)) {
+            if (each instanceof RexSubQuery || containsCorrelate(each) || containsCastFunction(each)) {
                 return false;
             }
         }
         return true;
+    }
+    
+    private boolean containsCorrelate(final RexNode rexNode) {
+        if (rexNode instanceof RexCorrelVariable) {
+            return true;
+        }
+        if (rexNode instanceof RexFieldAccess) {
+            return containsCorrelate(((RexFieldAccess) rexNode).getReferenceExpr());
+        }
+        if (rexNode instanceof RexCall) {
+            for (RexNode each : ((RexCall) rexNode).getOperands()) {
+                if (containsCorrelate(each)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     private boolean containsCastFunction(final RexNode rexNode) {

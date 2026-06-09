@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.feature.shadow.descriptor;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,6 +44,15 @@ class ShadowToolDescriptorValidatorTest {
         assertTrue(validator.supports(MCPDescriptorCatalogIndex.getRequiredToolDescriptor(ShadowFeatureDefinition.PLAN_RULE_TOOL_NAME)));
         assertTrue(validator.supports(MCPDescriptorCatalogIndex.getRequiredToolDescriptor(ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_TOOL_NAME)));
         assertTrue(validator.supports(MCPDescriptorCatalogIndex.getRequiredToolDescriptor(ShadowFeatureDefinition.PLAN_ALGORITHM_CLEANUP_TOOL_NAME)));
+    }
+    
+    @Test
+    void assertExposeCompletionTargets() {
+        MCPCompletionTargetDescriptor rulePromptCompletionTarget = findCompletionTarget("prompt", ShadowFeatureDefinition.PLAN_RULE_PROMPT_NAME);
+        assertThat(rulePromptCompletionTarget.getArguments(), is(List.of(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD)));
+        MCPCompletionTargetDescriptor defaultPromptCompletionTarget = findCompletionTarget("prompt", ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_PROMPT_NAME);
+        assertThat(defaultPromptCompletionTarget.getArguments(), is(List.of(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD)));
+        assertFalse(hasCompletionTarget("resource", ShadowFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI));
     }
     
     @Test
@@ -81,5 +92,15 @@ class ShadowToolDescriptorValidatorTest {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName)) {
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         }
+    }
+    
+    private MCPCompletionTargetDescriptor findCompletionTarget(final String referenceType, final String reference) {
+        return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
+                .filter(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference())).findFirst().orElseThrow();
+    }
+    
+    private boolean hasCompletionTarget(final String referenceType, final String reference) {
+        return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
+                .anyMatch(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference()));
     }
 }

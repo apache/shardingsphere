@@ -21,6 +21,8 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rex.RexCall;
+import org.apache.calcite.rex.RexCorrelVariable;
+import org.apache.calcite.rex.RexFieldAccess;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexSubQuery;
 import org.apache.calcite.sql.SqlOperator;
@@ -73,6 +75,15 @@ class PushProjectIntoScanRuleTest {
     void assertNotMatchWhenProjectContainsSubQuery() {
         mockQualifiedName("public", "t_order");
         when(logicalProject.getProjects()).thenReturn(Collections.singletonList(mock(RexSubQuery.class)));
+        assertFalse(rule.matches(call));
+    }
+    
+    @Test
+    void assertNotMatchWhenProjectContainsCorrelate() {
+        mockQualifiedName("public", "t_order");
+        RexFieldAccess rexFieldAccess = mock(RexFieldAccess.class);
+        when(rexFieldAccess.getReferenceExpr()).thenReturn(mock(RexCorrelVariable.class));
+        when(logicalProject.getProjects()).thenReturn(Collections.singletonList(rexFieldAccess));
         assertFalse(rule.matches(call));
     }
     

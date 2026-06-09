@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedHashMap;
@@ -118,7 +120,18 @@ public final class ShadowInspectionService {
      * @return shadow algorithm plugin rows with built-in property guidance
      */
     public List<Map<String, Object>> queryAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
-        return queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS").stream().map(this::appendPropertyGuidance).toList();
+        return queryAlgorithmRows(queryFacade).stream().map(this::appendPropertyGuidance).toList();
+    }
+    
+    private List<Map<String, Object>> queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
+        try {
+            return queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS");
+        } catch (final MCPQueryFailedException ex) {
+            if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
+                return List.of(Map.of("type", "SQL_HINT"), Map.of("type", "REGEX_MATCH"), Map.of("type", "VALUE_MATCH"));
+            }
+            throw ex;
+        }
     }
     
     private Map<String, Object> appendPropertyGuidance(final Map<String, Object> row) {

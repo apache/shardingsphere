@@ -77,6 +77,26 @@ class HttpTransportCompletionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     }
     
     @Test
+    void assertCompleteFeaturePluginValues() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        Map<String, Object> loadBalanceAlgorithmCompletion = complete(httpClient, sessionId, Map.of("type", "ref/prompt", "name", "plan_readwrite_splitting_rule"),
+                "load_balancer_type", "ROUND", Map.of());
+        List<String> loadBalanceAlgorithmValues = extractCompletionValues(loadBalanceAlgorithmCompletion);
+        assertTrue(loadBalanceAlgorithmValues.contains("ROUND_ROBIN"), loadBalanceAlgorithmCompletion::toString);
+        List<String> shadowAlgorithmValues = completeValues(httpClient, sessionId, Map.of("type", "ref/prompt", "name", "plan_shadow_rule"),
+                "algorithm_type", "VALUE", Map.of());
+        assertTrue(shadowAlgorithmValues.contains("VALUE_MATCH"), shadowAlgorithmValues::toString);
+        List<String> shardingAlgorithmValues = completeValues(httpClient, sessionId, Map.of("type", "ref/prompt", "name", "plan_sharding_table_rule"),
+                "algorithm_type", "INLINE", Map.of());
+        assertTrue(shardingAlgorithmValues.contains("INLINE"), shardingAlgorithmValues::toString);
+        List<String> keyGenerateAlgorithmValues = completeValues(httpClient, sessionId, Map.of("type", "ref/prompt", "name", "plan_sharding_key_generator"),
+                "key_generator_type", "SNOW", Map.of());
+        assertTrue(keyGenerateAlgorithmValues.contains("SNOWFLAKE"), keyGenerateAlgorithmValues::toString);
+    }
+    
+    @Test
     void assertCompleteWorkflowPlanIdsWithinCurrentSession() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -96,7 +116,11 @@ class HttpTransportCompletionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     private List<String> completeValues(final HttpClient httpClient, final String sessionId, final Map<String, Object> reference,
                                         final String argumentName, final String argumentValue,
                                         final Map<String, String> contextArguments) throws IOException, InterruptedException {
-        Map<String, Object> completion = castToMap(complete(httpClient, sessionId, reference, argumentName, argumentValue, contextArguments).get("completion"));
+        return extractCompletionValues(complete(httpClient, sessionId, reference, argumentName, argumentValue, contextArguments));
+    }
+    
+    private List<String> extractCompletionValues(final Map<String, Object> result) {
+        Map<String, Object> completion = castToMap(result.get("completion"));
         return ((List<?>) completion.get("values")).stream().map(String::valueOf).toList();
     }
     

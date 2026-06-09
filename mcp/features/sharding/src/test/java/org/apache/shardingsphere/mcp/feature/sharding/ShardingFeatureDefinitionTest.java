@@ -33,6 +33,12 @@ class ShardingFeatureDefinitionTest {
         assertThat(ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND.getValue(), is("sharding.key.generate.strategy"));
         assertThat(ShardingFeatureDefinition.COMPONENT_CLEANUP_WORKFLOW_KIND.getValue(), is("sharding.component.cleanup"));
         assertThat(ShardingFeatureDefinition.PLAN_TABLE_RULE_TOOL_NAME, is("database_gateway_plan_sharding_table_rule"));
+        assertThat(ShardingFeatureDefinition.PLAN_TABLE_RULE_PROMPT_NAME, is("plan_sharding_table_rule"));
+        assertThat(ShardingFeatureDefinition.PLAN_TABLE_REFERENCE_PROMPT_NAME, is("plan_sharding_table_reference_rule"));
+        assertThat(ShardingFeatureDefinition.PLAN_DEFAULT_STRATEGY_PROMPT_NAME, is("plan_sharding_default_strategy"));
+        assertThat(ShardingFeatureDefinition.PLAN_KEY_GENERATOR_PROMPT_NAME, is("plan_sharding_key_generator"));
+        assertThat(ShardingFeatureDefinition.PLAN_KEY_GENERATE_STRATEGY_PROMPT_NAME, is("plan_sharding_key_generate_strategy"));
+        assertThat(ShardingFeatureDefinition.PLAN_COMPONENT_CLEANUP_PROMPT_NAME, is("plan_sharding_rule_component_cleanup"));
         assertThat(ShardingFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI, is("shardingsphere://features/sharding/algorithm-plugins"));
         assertThat(ShardingFeatureDefinition.RULE_COUNT_RESOURCE_URI, is("shardingsphere://features/sharding/databases/{database}/rule-count"));
     }
