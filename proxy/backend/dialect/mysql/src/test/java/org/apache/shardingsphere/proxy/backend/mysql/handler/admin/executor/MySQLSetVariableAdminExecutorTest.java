@@ -31,6 +31,7 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
@@ -101,6 +102,17 @@ class MySQLSetVariableAdminExecutorTest {
         assertThat(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), is(StandardCharsets.UTF_8));
     }
     
+    @Test
+    void assertExecuteWithUserVariable() throws SQLException {
+        SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "@test_var"), "1")));
+        MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        RequiredSessionVariableRecorder recorder = new RequiredSessionVariableRecorder();
+        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(recorder);
+        executor.execute(connectionSession, mock());
+        assertThat(recorder.toSetSQLs(databaseType.getType()), is(Collections.singletonList("SET @test_var=1")));
+    }
+
     private ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
         when(result.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
