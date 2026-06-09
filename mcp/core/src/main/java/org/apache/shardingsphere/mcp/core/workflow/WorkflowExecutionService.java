@@ -35,6 +35,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowGuidancePayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
@@ -322,7 +323,8 @@ public final class WorkflowExecutionService {
     private Map<String, Object> failApply(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot, final String executionMode,
                                           final WorkflowApplyOutcome applyOutcome, final String artifactType, final String artifactSql, final RuntimeException ex) {
         persistSnapshot(workflowSessionContext, snapshot, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
-        applyOutcome.addFailedArtifact(resolveIssueCode(artifactType), artifactType, artifactSql, ex.getMessage());
+        applyOutcome.addFailedArtifact(resolveIssueCode(artifactType), artifactType, artifactSql, WorkflowArtifactMaskUtils.maskSensitiveSql(
+                null == ex.getMessage() ? "" : ex.getMessage(), getPropertySource(snapshot), snapshot.getPropertyRequirements()));
         return applyOutcome.createResponse(WorkflowLifecycle.STATUS_FAILED, snapshot, executionMode, Map.of());
     }
     

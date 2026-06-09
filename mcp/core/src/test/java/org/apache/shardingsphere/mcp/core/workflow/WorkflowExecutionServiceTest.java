@@ -462,20 +462,24 @@ class WorkflowExecutionServiceTest {
     }
     
     @Test
-    void assertApplyReturnsRuleExecutionFailureForRuleArtifact() {
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+    void assertApplyReturnsMaskedRuleExecutionFailureForRuleArtifact() {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.setStatus("previewed");
-        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "ALTER MASK RULE orders"));
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "AES key.", ""));
+        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
         workflowSessionContext.save(snapshot);
         WorkflowExecutionService executionService = new WorkflowExecutionService();
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenThrow(new IllegalStateException("rule failed"));
+        when(executionFacade.execute(any())).thenThrow(new IllegalStateException("Failed to execute CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("rule_distsql"), "review-then-execute");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.RULE_EXECUTION_FAILED));
+        assertThat(actualIssue.get("message"), is("Failed to execute CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
+        assertFalse(String.valueOf(actualResponse).contains("123456"));
     }
     
     private WorkflowContextSnapshot createSnapshot() {
