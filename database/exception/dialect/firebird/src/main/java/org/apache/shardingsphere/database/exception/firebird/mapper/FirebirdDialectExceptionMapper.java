@@ -19,7 +19,6 @@ package org.apache.shardingsphere.database.exception.firebird.mapper;
 
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
-import org.apache.shardingsphere.database.exception.core.exception.syntax.column.ColumnNotFoundException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
@@ -52,9 +51,6 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof TableExistsException) {
             return toSQLException(FirebirdVendorError.TABLE_ALREADY_EXISTS, ((TableExistsException) sqlDialectException).getTableName());
-        }
-        if (sqlDialectException instanceof ColumnNotFoundException) {
-            return toSQLException(FirebirdVendorError.COLUMN_UNKNOWN, ((ColumnNotFoundException) sqlDialectException).getColumnName());
         }
         return new UnknownSQLException(sqlDialectException).toSQLException();
     }

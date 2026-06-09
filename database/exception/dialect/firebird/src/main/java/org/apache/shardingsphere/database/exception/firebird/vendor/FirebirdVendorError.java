@@ -28,12 +28,9 @@ import org.firebirdsql.gds.ISCConstants;
 /**
  * Firebird vendor error.
  *
- * <p>The vendor code carries the native Firebird GDSCODE, which the client (Jaybird) uses to look up both the message
- * template and the SQL state from its own catalog. The status vector transmits the GDSCODE plus a single string
- * argument, so the reason here holds only that argument. With Jaybird's current message rendering a {@code {0}}
- * placeholder is filled by the argument and a template without placeholders is followed by the argument; an empty reason
- * sends no argument, leaving the catalog message as-is. GDSCODEs whose templates require multiple arguments are avoided
- * until the status vector can carry them.</p>
+ * <p>Kernel {@code ShardingSphereSQLException} types, such as metadata column-not-found errors from the binder, are
+ * converted before the Firebird SQL dialect mapper is reached. They need a separate Firebird remapping path instead of
+ * enum entries here.</p>
  *
  * @see <a href="https://www.firebirdsql.org/file/documentation/chunk/en/refdocs/fblangref40/fblangref40-appx02-sqlcodes.html">SQLCODE and GDSCODE Error Codes</a>
  */
@@ -48,8 +45,6 @@ public enum FirebirdVendorError implements VendorError {
     BATCH_TOO_BIG(FirebirdState.BATCH_TOO_BIG, ISCConstants.isc_batch_too_big, ""),
     
     TABLE_ALREADY_EXISTS(XOpenSQLState.DUPLICATE, ISCConstants.isc_dyn_dup_table, "%s"),
-    
-    COLUMN_UNKNOWN(FirebirdState.COLUMN_UNKNOWN, ISCConstants.isc_dsql_field_err, "%s"),
     
     LOGIN_FAILED(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, ISCConstants.isc_login, "");
     
