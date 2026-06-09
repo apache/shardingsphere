@@ -318,7 +318,7 @@ prompts:
     description: "Guide the model to plan sharding table rule DistSQL."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-table-rule.md
-    arguments: &commonPromptArguments
+    arguments:
       - name: database
         title: Logical Database
         description: "ShardingSphere logical database."
@@ -326,6 +326,10 @@ prompts:
       - name: operation_type
         title: Operation Type
         description: "create, alter, or drop."
+        required: false
+      - name: algorithm_type
+        title: Sharding Algorithm
+        description: "Optional sharding algorithm type."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -343,7 +347,15 @@ prompts:
     description: "Guide the model to plan sharding table reference rule DistSQL."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-table-reference-rule.md
-    arguments: *commonPromptArguments
+    arguments: &commonPromptArguments
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database."
+        required: false
+      - name: operation_type
+        title: Operation Type
+        description: "create, alter, or drop."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_sharding_table_reference_rule
@@ -360,7 +372,19 @@ prompts:
     description: "Guide the model to plan default sharding strategy DistSQL."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-default-strategy.md
-    arguments: *commonPromptArguments
+    arguments:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database."
+        required: false
+      - name: operation_type
+        title: Operation Type
+        description: "create, alter, or drop."
+        required: false
+      - name: algorithm_type
+        title: Sharding Algorithm
+        description: "Optional default sharding algorithm type."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_sharding_default_strategy
@@ -377,7 +401,19 @@ prompts:
     description: "Guide the model to plan sharding key generator DistSQL."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-key-generator.md
-    arguments: *commonPromptArguments
+    arguments:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database."
+        required: false
+      - name: operation_type
+        title: Operation Type
+        description: "create, alter, or drop."
+        required: false
+      - name: key_generator_type
+        title: Key Generator Algorithm
+        description: "Optional key generator algorithm type."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_sharding_key_generator
@@ -394,7 +430,19 @@ prompts:
     description: "Guide the model to plan sharding key generate strategy DistSQL."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-key-generate-strategy.md
-    arguments: *commonPromptArguments
+    arguments:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database."
+        required: false
+      - name: operation_type
+        title: Operation Type
+        description: "create, alter, or drop."
+        required: false
+      - name: key_generator_type
+        title: Key Generator Algorithm
+        description: "Optional key generator algorithm type."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_sharding_key_generate_strategy
@@ -424,13 +472,23 @@ prompts:
         - "Ask when database, component type, or component name is unclear."
         - "Ask before applying generated component cleanup DistSQL that changes runtime state."
 completionTargets:
-  - referenceType: resource
-    reference: shardingsphere://features/sharding/algorithm-plugins
+  - referenceType: prompt
+    reference: plan_sharding_table_rule
     arguments:
       - algorithm_type
     maxValues: 50
-  - referenceType: resource
-    reference: shardingsphere://features/sharding/key-generate-algorithm-plugins
+  - referenceType: prompt
+    reference: plan_sharding_default_strategy
+    arguments:
+      - algorithm_type
+    maxValues: 50
+  - referenceType: prompt
+    reference: plan_sharding_key_generator
+    arguments:
+      - key_generator_type
+    maxValues: 50
+  - referenceType: prompt
+    reference: plan_sharding_key_generate_strategy
     arguments:
       - key_generator_type
     maxValues: 50

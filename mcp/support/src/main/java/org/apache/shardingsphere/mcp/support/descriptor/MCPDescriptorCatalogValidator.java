@@ -305,11 +305,12 @@ final class MCPDescriptorCatalogValidator {
         Map<String, Set<String>> promptArguments = prompts.stream().collect(Collectors.toMap(MCPPromptDescriptor::getName,
                 each -> each.getArguments().stream().map(MCPPromptArgumentDescriptor::getName).collect(Collectors.toSet())));
         Set<String> promptNames = promptArguments.keySet();
-        Set<String> resourceUris = resources.stream().map(MCPResourceDescriptor::getUriTemplate).collect(Collectors.toSet());
+        Map<String, MCPResourceDescriptor> resourceDescriptors = resources.stream().collect(Collectors.toMap(MCPResourceDescriptor::getUriTemplate, each -> each));
         Map<String, MCPCompletionTargetDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         for (MCPCompletionTargetDescriptor each : descriptors) {
-            validateCompletionReference(each, promptNames, resourceUris);
+            validateCompletionReference(each, promptNames, resourceDescriptors.keySet());
             validatePromptCompletionArguments(each, promptArguments);
+            validateResourceCompletionArguments(each, resourceDescriptors);
             ShardingSpherePreconditions.checkState(null == registered.putIfAbsent(each.getReferenceType() + ":" + each.getReference(), each),
                     () -> new IllegalStateException(String.format("Duplicate MCP completion target `%s:%s`.", each.getReferenceType(), each.getReference())));
         }
@@ -323,6 +324,20 @@ final class MCPDescriptorCatalogValidator {
         for (String each : descriptor.getArguments()) {
             ShardingSpherePreconditions.checkState(argumentNames.contains(each), () -> new IllegalStateException(
                     String.format("Completion target `prompt:%s` argument `%s` is not declared by prompt `%s`.", descriptor.getReference(), each, descriptor.getReference())));
+        }
+    }
+    
+    private static void validateResourceCompletionArguments(final MCPCompletionTargetDescriptor descriptor, final Map<String, MCPResourceDescriptor> resources) {
+        if (!"resource".equals(descriptor.getReferenceType())) {
+            return;
+        }
+        MCPResourceDescriptor resource = resources.get(descriptor.getReference());
+        ShardingSpherePreconditions.checkState(resource.isTemplated(),
+                () -> new IllegalStateException(String.format("Completion target `resource:%s` must reference a resource template.", descriptor.getReference())));
+        Set<String> templateVariables = new HashSet<>(new MCPUriTemplate(resource.getUriTemplate()).getVariableNames());
+        for (String each : descriptor.getArguments()) {
+            ShardingSpherePreconditions.checkState(templateVariables.contains(each), () -> new IllegalStateException(
+                    String.format("Completion target `resource:%s` argument `%s` is not a URI template variable.", descriptor.getReference(), each)));
         }
     }
     

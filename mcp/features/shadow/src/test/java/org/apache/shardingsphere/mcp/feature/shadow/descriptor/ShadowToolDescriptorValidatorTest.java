@@ -52,8 +52,7 @@ class ShadowToolDescriptorValidatorTest {
         assertThat(rulePromptCompletionTarget.getArguments(), is(List.of(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD)));
         MCPCompletionTargetDescriptor defaultPromptCompletionTarget = findCompletionTarget("prompt", ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_PROMPT_NAME);
         assertThat(defaultPromptCompletionTarget.getArguments(), is(List.of(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD)));
-        MCPCompletionTargetDescriptor resourceCompletionTarget = findCompletionTarget("resource", ShadowFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI);
-        assertThat(resourceCompletionTarget.getArguments(), is(List.of(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD)));
+        assertFalse(hasCompletionTarget("resource", ShadowFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI));
     }
     
     @Test
@@ -98,5 +97,10 @@ class ShadowToolDescriptorValidatorTest {
     private MCPCompletionTargetDescriptor findCompletionTarget(final String referenceType, final String reference) {
         return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
                 .filter(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference())).findFirst().orElseThrow();
+    }
+    
+    private boolean hasCompletionTarget(final String referenceType, final String reference) {
+        return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
+                .anyMatch(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference()));
     }
 }

@@ -52,9 +52,7 @@ class ReadwriteSplittingToolDescriptorValidatorTest {
         MCPCompletionTargetDescriptor promptCompletionTarget = findCompletionTarget("prompt", ReadwriteSplittingFeatureDefinition.PLAN_RULE_PROMPT_NAME);
         assertThat(promptCompletionTarget.getArguments(), is(List.of(ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD)));
         assertThat(promptCompletionTarget.getMaxValues(), is(50));
-        MCPCompletionTargetDescriptor resourceCompletionTarget = findCompletionTarget("resource", ReadwriteSplittingFeatureDefinition.LOAD_BALANCE_ALGORITHM_PLUGINS_RESOURCE_URI);
-        assertThat(resourceCompletionTarget.getArguments(), is(List.of(ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD)));
-        assertThat(resourceCompletionTarget.getMaxValues(), is(50));
+        assertFalse(hasCompletionTarget("resource", ReadwriteSplittingFeatureDefinition.LOAD_BALANCE_ALGORITHM_PLUGINS_RESOURCE_URI));
     }
     
     @Test
@@ -112,6 +110,11 @@ class ReadwriteSplittingToolDescriptorValidatorTest {
     private MCPCompletionTargetDescriptor findCompletionTarget(final String referenceType, final String reference) {
         return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
                 .filter(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference())).findFirst().orElseThrow();
+    }
+    
+    private boolean hasCompletionTarget(final String referenceType, final String reference) {
+        return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
+                .anyMatch(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference()));
     }
     
     private String readResource(final String resourceName) throws IOException {

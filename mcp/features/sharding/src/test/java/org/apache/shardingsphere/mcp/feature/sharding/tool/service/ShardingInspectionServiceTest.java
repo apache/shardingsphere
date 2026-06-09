@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -30,6 +33,8 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -50,7 +55,25 @@ class ShardingInspectionServiceTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW SHARDING ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "INLINE")));
         List<Map<String, Object>> actual = new ShardingInspectionService().queryAlgorithmPlugins(queryFacade);
-        assertThat(actual.get(0).get("property_guidance").toString(), containsString("algorithm-expression"));
+        assertThat(actual.getFirst().get("property_guidance").toString(), containsString("algorithm-expression"));
+    }
+    
+    @Test
+    void assertQueryAlgorithmPluginsWithUnavailableDistSQL() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.queryWithAnyDatabase("SHOW SHARDING ALGORITHM PLUGINS"))
+                .thenThrow(new MCPQueryFailedException("syntax error near 'SHARDING ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error")));
+        List<Map<String, Object>> actual = new ShardingInspectionService().queryAlgorithmPlugins(queryFacade);
+        assertTrue(actual.stream().anyMatch(each -> "INLINE".equals(each.get("type"))));
+        assertTrue(actual.stream().anyMatch(each -> "INLINE".equals(each.get("type")) && String.valueOf(each.get("property_guidance")).contains("algorithm-expression")));
+    }
+    
+    @Test
+    void assertQueryAlgorithmPluginsPropagatesQueryFailure() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.queryWithAnyDatabase("SHOW SHARDING ALGORITHM PLUGINS"))
+                .thenThrow(new MCPQueryFailedException("Connection refused.", new SQLException("Connection refused.")));
+        assertThrows(MCPQueryFailedException.class, () -> new ShardingInspectionService().queryAlgorithmPlugins(queryFacade));
     }
     
     @Test
@@ -58,7 +81,25 @@ class ShardingInspectionServiceTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW KEY GENERATE ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "UUID")));
         List<Map<String, Object>> actual = new ShardingInspectionService().queryKeyGenerateAlgorithmPlugins(queryFacade);
-        assertThat(actual.get(0).get("property_guidance").toString(), is("No required properties."));
+        assertThat(actual.getFirst().get("property_guidance").toString(), is("No required properties."));
+    }
+    
+    @Test
+    void assertQueryKeyGenerateAlgorithmPluginsWithUnavailableDistSQL() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.queryWithAnyDatabase("SHOW KEY GENERATE ALGORITHM PLUGINS"))
+                .thenThrow(new MCPQueryFailedException("syntax error near 'KEY GENERATE ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error")));
+        List<Map<String, Object>> actual = new ShardingInspectionService().queryKeyGenerateAlgorithmPlugins(queryFacade);
+        assertTrue(actual.stream().anyMatch(each -> "SNOWFLAKE".equals(each.get("type"))));
+        assertTrue(actual.stream().anyMatch(each -> "SNOWFLAKE".equals(each.get("type")) && String.valueOf(each.get("property_guidance")).contains("worker-id")));
+    }
+    
+    @Test
+    void assertQueryKeyGenerateAlgorithmPluginsPropagatesQueryFailure() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.queryWithAnyDatabase("SHOW KEY GENERATE ALGORITHM PLUGINS"))
+                .thenThrow(new MCPQueryFailedException("Connection refused.", new SQLException("Connection refused.")));
+        assertThrows(MCPQueryFailedException.class, () -> new ShardingInspectionService().queryKeyGenerateAlgorithmPlugins(queryFacade));
     }
     
     private static Stream<Arguments> assertDatabaseScopedQueryArguments() {
