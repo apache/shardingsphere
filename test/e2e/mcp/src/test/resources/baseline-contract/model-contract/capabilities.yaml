@@ -171,9 +171,9 @@ common_flows:
   referenced_resources: ['shardingsphere://capabilities']
 protocolAvailability: {resources: true, resourceTemplates: true, tools: true, toolAnnotations: true,
   toolOutputSchemas: true, prompts: true, completions: true, resourceNavigation: true}
-fingerprints: {algorithm: sha256, descriptorCatalog: 20e22dc1490af50d39f00aeb1d5fb35c298773096268b70adc898d7f31800d06,
+fingerprints: {algorithm: sha256, descriptorCatalog: 2a20fbf5d6475bfef35be7553566ee01e846a3970120c698a0d97f1060b0a378,
   promptSet: 63e5b9cb3fada77bc332fd0f958c390d66b538944bdc4ba75501cac5106cd3f3, resourceNavigation: 64bf1a1ca4856b55a21b09922aa8df6e7bb7f043faa38977680d1a1e3c060bae,
-  modelFacingSchemas: 424743fa39de1312cfc2c19748d2da2773638c31596b747334468b3f130b1067}
+  modelFacingSchemas: 3697897d1bf6deed658781b712146728b73944562e0f8e128527f0106eefd493}
 resources:
 - uri: shardingsphere://capabilities
   name: server-capability-catalog
