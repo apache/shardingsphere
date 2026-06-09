@@ -78,13 +78,13 @@ class FirebirdBatchCommandPacketTest {
     }
     
     @Test
-    void assertBatchSendMessageGetLengthWhenDataTooBig() {
+    void assertBatchSendMessageGetLengthIgnoresBufferSize() {
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(FirebirdBinaryColumnType.LONG), 8L);
         batchStatement.addSize(1L);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batchStatement);
         try {
-            assertThrows(FirebirdProtocolException.class, () -> FirebirdBatchSendMessageCommandPacket.getLength(createBatchMessagePayload(), CONNECTION_ID));
+            assertThat(FirebirdBatchSendMessageCommandPacket.getLength(createBatchMessagePayload(), CONNECTION_ID), is(20));
         } finally {
             FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
         }

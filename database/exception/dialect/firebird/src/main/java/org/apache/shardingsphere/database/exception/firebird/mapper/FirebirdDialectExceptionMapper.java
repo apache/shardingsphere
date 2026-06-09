@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.exception.core.exception.SQLDialectExc
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
@@ -39,6 +40,9 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof AccessDeniedException) {
             return toSQLException(FirebirdVendorError.LOGIN_FAILED);
+        }
+        if (sqlDialectException instanceof BatchTooBigException) {
+            return toSQLException(FirebirdVendorError.BATCH_TOO_BIG);
         }
         return new UnknownSQLException(sqlDialectException).toSQLException();
     }

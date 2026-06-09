@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.exception.firebird.sqlstate;
+package org.apache.shardingsphere.database.exception.firebird.exception.protocol;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
+import org.junit.jupiter.api.Test;
 
-/**
- * Firebird SQL state.
- *
- * <p>Holds SQL states that Jaybird derives from a GDSCODE but that are not defined in {@code XOpenSQLState}.</p>
- */
-@RequiredArgsConstructor
-@Getter
-public enum FirebirdState implements SQLState {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class BatchTooBigExceptionTest {
     
-    UNAVAILABLE_DATABASE("08001"),
-    
-    BATCH_TOO_BIG("54000");
-    
-    private final String value;
+    @Test
+    void assertGetMessage() {
+        BatchTooBigException actual = new BatchTooBigException(42, 1L, 8L, 8L);
+        assertThat(actual.getMessage(), is("Batch is too big: accumulated 1 + incoming 8 data bytes exceeds buffer size limit 8 bytes"));
+        assertThat(actual.getStatementHandle(), is(42));
+    }
 }

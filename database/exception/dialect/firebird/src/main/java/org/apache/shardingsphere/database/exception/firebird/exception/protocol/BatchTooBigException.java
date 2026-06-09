@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.exception.firebird.sqlstate;
+package org.apache.shardingsphere.database.exception.firebird.exception.protocol;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 
 /**
- * Firebird SQL state.
- *
- * <p>Holds SQL states that Jaybird derives from a GDSCODE but that are not defined in {@code XOpenSQLState}.</p>
+ * Batch too big exception for Firebird.
  */
-@RequiredArgsConstructor
 @Getter
-public enum FirebirdState implements SQLState {
+public final class BatchTooBigException extends SQLDialectException {
     
-    UNAVAILABLE_DATABASE("08001"),
+    private static final long serialVersionUID = 3614021174166235132L;
     
-    BATCH_TOO_BIG("54000");
+    private final int statementHandle;
     
-    private final String value;
+    public BatchTooBigException(final int statementHandle, final long accumulatedSize, final long incomingSize, final long bufferSize) {
+        super(String.format("Batch is too big: accumulated %d + incoming %d data bytes exceeds buffer size limit %d bytes", accumulatedSize, incomingSize, bufferSize));
+        this.statementHandle = statementHandle;
+    }
 }
