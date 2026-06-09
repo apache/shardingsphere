@@ -76,11 +76,11 @@ class WorkflowArtifactPayloadUtilsTest {
     }
     
     @Test
-    void assertRuleWorkflowWithFeatureStateIsNotRuleDistSQLOnly() {
+    void assertRuleWorkflowWithFeatureStateIsRuleDistSQLOnly() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
         snapshot.setFeatureData(new TestWorkflowFeatureData());
-        assertFalse(WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot));
+        assertTrue(WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot));
     }
     
     @Test

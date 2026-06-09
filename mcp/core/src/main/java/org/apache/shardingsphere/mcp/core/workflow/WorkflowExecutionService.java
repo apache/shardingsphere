@@ -229,7 +229,7 @@ public final class WorkflowExecutionService {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("approval_step", artifact.approvalStep());
         result.put("artifact_type", artifact.artifactType());
-        result.put("sql", artifact.sql());
+        result.put("sql", artifact.displaySql());
         result.put("side_effect_scope", artifact.ruleDistSql() ? "rule-metadata" : "physical-structure");
         return result;
     }
@@ -282,11 +282,11 @@ public final class WorkflowExecutionService {
                                                    final String sessionId, final WorkflowContextSnapshot snapshot, final List<String> approvedSteps, final String executionMode,
                                                    final WorkflowApplyOutcome applyOutcome) {
         String currentArtifactType = "";
-        String currentArtifactSql = "";
+        String currentArtifactDisplaySql = "";
         try {
             for (WorkflowArtifactBundle.ExecutableWorkflowArtifact each : createExecutableArtifacts(snapshot)) {
                 currentArtifactType = each.artifactType();
-                currentArtifactSql = each.sql();
+                currentArtifactDisplaySql = each.displaySql();
                 if (!isApproved(approvedSteps, each.approvalStep())) {
                     applyOutcome.addSkippedArtifact(each);
                     continue;
@@ -303,7 +303,7 @@ public final class WorkflowExecutionService {
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            return failApply(workflowSessionContext, snapshot, executionMode, applyOutcome, currentArtifactType, currentArtifactSql, ex);
+            return failApply(workflowSessionContext, snapshot, executionMode, applyOutcome, currentArtifactType, currentArtifactDisplaySql, ex);
         }
     }
     
@@ -361,7 +361,10 @@ public final class WorkflowExecutionService {
     
     private List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> createExecutableArtifacts(final WorkflowContextSnapshot snapshot) {
         WorkflowArtifactBundle result = WorkflowArtifactBundle.from(snapshot);
-        return WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot) ? result.toRuleExecutableArtifacts() : result.toExecutableArtifacts();
+        WorkflowPropertySource propertySource = getPropertySource(snapshot);
+        return WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot)
+                ? result.toRuleExecutableArtifacts(propertySource, snapshot.getPropertyRequirements())
+                : result.toExecutableArtifacts(propertySource, snapshot.getPropertyRequirements());
     }
     
     private void executeArtifact(final MCPFeatureExecutionFacade executionFacade, final String sessionId, final WorkflowContextSnapshot snapshot,
@@ -462,17 +465,17 @@ public final class WorkflowExecutionService {
         private final List<Map<String, Object>> issues = new LinkedList<>();
         
         private void addSkippedArtifact(final WorkflowArtifactBundle.ExecutableWorkflowArtifact artifact) {
-            skippedArtifacts.add(artifact.sql());
-            stepResults.add(createStepResult(artifact.artifactType(), WorkflowLifecycle.STATUS_SKIPPED, artifact.sql()));
+            skippedArtifacts.add(artifact.displaySql());
+            stepResults.add(createStepResult(artifact.artifactType(), WorkflowLifecycle.STATUS_SKIPPED, artifact.displaySql()));
         }
         
         private void addExecutedArtifact(final WorkflowArtifactBundle.ExecutableWorkflowArtifact artifact) {
             if (artifact.ruleDistSql()) {
-                executedDistSql.add(artifact.sql());
+                executedDistSql.add(artifact.displaySql());
             } else {
-                executedDdl.add(artifact.sql());
+                executedDdl.add(artifact.displaySql());
             }
-            stepResults.add(createStepResult(artifact.artifactType(), WorkflowLifecycle.STATUS_PASSED, artifact.sql()));
+            stepResults.add(createStepResult(artifact.artifactType(), WorkflowLifecycle.STATUS_PASSED, artifact.displaySql()));
         }
         
         private void addFailedArtifact(final String issueCode, final String artifactType, final String artifactSql, final String errorMessage) {

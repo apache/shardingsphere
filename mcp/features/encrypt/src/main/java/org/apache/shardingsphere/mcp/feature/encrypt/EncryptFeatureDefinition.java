@@ -38,4 +38,16 @@ public final class EncryptFeatureDefinition {
     public static final String RULES_RESOURCE_URI = "shardingsphere://features/encrypt/databases/{database}/rules";
     
     public static final String RULE_RESOURCE_URI = "shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules";
+    
+    public static final String ALGORITHM_ROLE_PRIMARY = "primary";
+    
+    public static final String ALGORITHM_ROLE_ASSISTED_QUERY = "assisted_query";
+    
+    public static final String ALGORITHM_ROLE_LIKE_QUERY = "like_query";
+    
+    public static final String ALGORITHM_CAPABILITY_DECRYPT = "supports_decrypt";
+    
+    public static final String ALGORITHM_CAPABILITY_EQUIVALENT_FILTER = "supports_equivalent_filter";
+    
+    public static final String ALGORITHM_CAPABILITY_LIKE = "supports_like";
 }

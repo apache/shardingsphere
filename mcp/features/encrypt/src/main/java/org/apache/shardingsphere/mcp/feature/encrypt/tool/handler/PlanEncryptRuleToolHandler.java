@@ -62,10 +62,6 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkf
     }
     
     private void bindFeatureArguments(final EncryptWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        String allowIndexDDL = workflowPlanningArguments.getStringArgument(WorkflowFieldNames.ALLOW_INDEX_DDL);
-        if (!allowIndexDDL.isEmpty()) {
-            request.getOptions().setAllowIndexDDL(workflowPlanningArguments.getBooleanArgument(WorkflowFieldNames.ALLOW_INDEX_DDL, true));
-        }
         request.setAlgorithmType(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.ALGORITHM_TYPE));
         request.getOptions().setAssistedQueryAlgorithmType(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.ASSISTED_QUERY_ALGORITHM_TYPE));
         request.getOptions().setLikeQueryAlgorithmType(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.LIKE_QUERY_ALGORITHM_TYPE));

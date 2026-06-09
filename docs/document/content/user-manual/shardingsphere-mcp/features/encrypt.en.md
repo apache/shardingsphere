@@ -59,6 +59,17 @@ After a plan is generated, review:
 - Whether keys, credentials, or other sensitive parameters are passed only through placeholders or protected channels.
 - Whether query capability, runtime rules, or existing business SQL may be affected.
 
+## Sensitive parameter handling
+
+Encryption algorithms may require keys, salts, or other sensitive properties.
+Users should provide these values through protected channels and confirm the source and scope before execution.
+
+When ShardingSphere-MCP returns model-facing plans, workflow resources, previews, execution results, validation results, recovery data, and error messages, recognized sensitive properties are masked.
+Built-in algorithms and custom algorithm properties marked as secret in algorithm property templates can be recognized and masked consistently.
+Undeclared custom properties should not be written in plaintext in normal conversations, logs, or ticket descriptions.
+Execution still uses the original property values from the controlled context to generate rule change statements.
+Users should not put plaintext keys into conversation summaries, logs, or ticket descriptions.
+
 ## Review Rule Column Names
 
 Encryption rules may reference cipher, assisted query, or LIKE query columns.
@@ -100,10 +111,6 @@ For the general review flow of rule changes, see [Rule Change Flow](../plugin-wo
 
 - ShardingSphere-MCP plans rule DistSQL from Proxy-visible rule and algorithm state. Planning does not read or infer the real physical table structure.
 - If a physical column referenced by the rule does not exist, users should handle DDL and data processing outside ShardingSphere-MCP.
-
-### ShardingSphere capability boundaries
-
-- Existing data migration, backfill, or data cleansing is not handled.
 
 ### Identifier handling boundaries
 

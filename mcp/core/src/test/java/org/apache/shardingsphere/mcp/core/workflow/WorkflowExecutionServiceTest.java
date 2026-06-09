@@ -45,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -73,7 +74,7 @@ class WorkflowExecutionServiceTest {
         assertFalse(actualResponse.containsKey("recommended_next_tool"));
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
         assertThat(actualNextActions.size(), is(1));
-        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("ask_user"));
+        assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("type"), is("ask_user"));
         assertFalse(actualResponse.containsKey("requires_user_approval"));
         assertThat(((Map<?, ?>) actualResponse.get("manual_follow_up")).get("confirmation_field"), is("manual_artifacts_executed"));
         Map<?, ?> actualManualArtifactSummary = (Map<?, ?>) actualResponse.get("manual_artifact_summary");
@@ -87,7 +88,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualManualArtifactSummary.get("validation_tool_after_manual_execution"), is("database_gateway_validate_workflow"));
         assertThat(((Map<?, ?>) actualManualArtifactSummary.get("validation_arguments_after_manual_execution")).get("plan_id"), is("plan-1"));
         Map<?, ?> actualManualArtifactPackage = (Map<?, ?>) actualResponse.get("manual_artifact_package");
-        Map<?, ?> actualArtifact = (Map<?, ?>) ((List<?>) actualManualArtifactPackage.get("distsql_artifacts")).get(0);
+        Map<?, ?> actualArtifact = (Map<?, ?>) ((List<?>) actualManualArtifactPackage.get("distsql_artifacts")).getFirst();
         assertThat(actualArtifact.get("sql"), is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
     }
     
@@ -126,7 +127,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualResponse.get("response_mode"), is("terminal"));
         assertThat(actualResponse.get("plan_id"), is("plan-1"));
         assertThat(actualResponse.get("execution_mode"), is("review-then-execute"));
-        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
+        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
     }
     
     @Test
@@ -142,7 +143,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualResponse.get("response_mode"), is("terminal"));
         assertThat(actualResponse.get("plan_id"), is("plan-1"));
         assertThat(actualResponse.get("execution_mode"), is("review-then-execute"));
-        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
     }
     
     @Test
@@ -185,7 +186,7 @@ class WorkflowExecutionServiceTest {
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         verify(executionFacade, never()).execute(any());
     }
     
@@ -200,7 +201,7 @@ class WorkflowExecutionServiceTest {
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("ddl"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         verify(executionFacade, never()).execute(any());
     }
     
@@ -216,7 +217,7 @@ class WorkflowExecutionServiceTest {
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("ddl"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         verify(executionFacade, never()).execute(any());
     }
     
@@ -246,7 +247,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualResponse.get("review_summary"), is("Previewed 2 workflow artifacts with side-effect scope physical-structure, rule-metadata. Nothing has been applied."));
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
         assertThat(actualNextActions.size(), is(1));
-        Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.get(0);
+        Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.getFirst();
         assertThat(actualNextAction.get("type"), is("ask_user"));
         assertThat(actualNextAction.get("required_inputs"), is(List.of("approved_steps")));
         assertFalse(actualNextAction.containsKey("depends_on"));
@@ -270,7 +271,7 @@ class WorkflowExecutionServiceTest {
                 mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "preview");
         assertThat(actualResponse.get("review_summary"), is("Previewed 0 workflow artifacts. Nothing has been applied."));
         assertFalse(actualResponse.containsKey("approval_question"));
-        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("next_actions")).get(0)).get("type"), is("terminal"));
+        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("next_actions")).getFirst()).get("type"), is("terminal"));
     }
     
     @Test
@@ -296,6 +297,22 @@ class WorkflowExecutionServiceTest {
     }
     
     @Test
+    void assertApplyPreviewMasksRuleArtifactSql() {
+        WorkflowContextSnapshot snapshot = createSnapshot();
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "AES key.", ""));
+        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        WorkflowExecutionService executionService = new WorkflowExecutionService();
+        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
+                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "preview");
+        Map<?, ?> actualPreviewArtifact = (Map<?, ?>) ((List<?>) actualResponse.get("preview_artifacts")).getFirst();
+        assertThat(actualPreviewArtifact.get("sql"), is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
+        assertFalse(String.valueOf(actualResponse).contains("123456"));
+    }
+    
+    @Test
     void assertApplyPreviewForManualOnlyDoesNotRequireApprovalForExport() {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getRequest().setExecutionMode("manual-only");
@@ -309,7 +326,7 @@ class WorkflowExecutionServiceTest {
         assertFalse(((Map<?, ?>) actualResponse.get("review_focus")).containsKey("requires_user_approval"));
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
         assertThat(actualNextActions.size(), is(1));
-        Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.get(0);
+        Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.getFirst();
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("manual-only"));
         assertFalse(actualNextAction.containsKey("requires_user_approval"));
     }
@@ -339,6 +356,28 @@ class WorkflowExecutionServiceTest {
     }
     
     @Test
+    void assertApplyExecutesRawRuleArtifactAndReturnsMaskedSql() {
+        WorkflowContextSnapshot snapshot = createSnapshot();
+        snapshot.setStatus("previewed");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "AES key.", ""));
+        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        WorkflowExecutionService executionService = new WorkflowExecutionService();
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
+        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
+                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("rule_distsql"), "review-then-execute");
+        assertThat(actualResponse.get("status"), is("completed"));
+        assertThat(((List<?>) actualResponse.get("executed_distsql")).getFirst(), is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
+        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("step_results")).getFirst()).get("sql"),
+                is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
+        assertFalse(String.valueOf(actualResponse).contains("123456"));
+        verify(executionFacade).execute(argThat(each -> each.getSql().contains("123456")));
+    }
+    
+    @Test
     void assertApplySkipsUnapprovedArtifacts() {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.setStatus("previewed");
@@ -356,7 +395,7 @@ class WorkflowExecutionServiceTest {
         List<?> actualStepResults = (List<?>) actualResponse.get("step_results");
         assertThat(actualResponse.get("status"), is("completed"));
         assertThat(((List<?>) actualResponse.get("skipped_artifacts")).size(), is(2));
-        assertThat(((Map<?, ?>) actualStepResults.get(0)).get("status"), is("passed"));
+        assertThat(((Map<?, ?>) actualStepResults.getFirst()).get("status"), is("passed"));
         assertThat(((Map<?, ?>) actualStepResults.get(1)).get("status"), is("skipped"));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("executed"));
         verify(executionFacade).execute(any());
@@ -378,7 +417,7 @@ class WorkflowExecutionServiceTest {
                 List.of(Map.of("code", WorkflowIssueCode.RULE_STATE_MISMATCH)))).when(workflowApplySynchronizationHandler).synchronize(any(), any(), any(), any(), any());
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 executionFacade, workflowApplySynchronizationHandler, "session-1", snapshot, List.of("rule_distsql"), "review-then-execute");
-        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
+        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("failed"));
@@ -396,8 +435,8 @@ class WorkflowExecutionServiceTest {
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("ddl failed"));
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("ddl"), "review-then-execute");
-        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
-        Map<?, ?> actualStep = (Map<?, ?>) ((List<?>) actualResponse.get("step_results")).get(0);
+        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
+        Map<?, ?> actualStep = (Map<?, ?>) ((List<?>) actualResponse.get("step_results")).getFirst();
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.DDL_EXECUTION_FAILED));
         assertThat(actualStep.get("artifact_type"), is("add-column"));
@@ -415,8 +454,8 @@ class WorkflowExecutionServiceTest {
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("index failed"));
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("index_ddl"), "review-then-execute");
-        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
-        Map<?, ?> actualStep = (Map<?, ?>) ((List<?>) actualResponse.get("step_results")).get(0);
+        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
+        Map<?, ?> actualStep = (Map<?, ?>) ((List<?>) actualResponse.get("step_results")).getFirst();
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.DDL_EXECUTION_FAILED));
         assertThat(actualStep.get("artifact_type"), is("create-index"));
@@ -434,7 +473,7 @@ class WorkflowExecutionServiceTest {
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("rule failed"));
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("rule_distsql"), "review-then-execute");
-        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
+        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.RULE_EXECUTION_FAILED));
     }
