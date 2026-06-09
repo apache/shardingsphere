@@ -19,7 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValue;
@@ -64,7 +64,6 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
      * @param payload Firebird packet payload
      * @param connectionId connection ID
      * @return length of packet
-     * @throws FirebirdProtocolException firebird protocol exception
      */
     public static int getLength(final FirebirdPacketPayload payload, final int connectionId) {
         return getLength(payload, connectionId, payload.getByteBuf().readerIndex(), payload.getByteBuf().readableBytes());
@@ -78,7 +77,7 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
         int statementHandle = payload.readInt4();
         FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, statementHandle);
         if (null == batchStatement) {
-            throw new FirebirdProtocolException("Batch statement not found for connectionId: " + connectionId + ", statement handle: " + statementHandle);
+            throw new InvalidBatchHandleException(statementHandle);
         }
         return parseBatchMessages(payload, startReaderIndex, payload.readInt4Unsigned(), batchStatement);
     }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
@@ -85,7 +85,7 @@ class FirebirdBatchSendMessageCommandExecutorTest {
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(null);
         try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
-            assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchSendMessageCommandExecutor(packet, connectionSession).execute());
+            assertThrows(InvalidBatchHandleException.class, () -> new FirebirdBatchSendMessageCommandExecutor(packet, connectionSession).execute());
         }
     }
     

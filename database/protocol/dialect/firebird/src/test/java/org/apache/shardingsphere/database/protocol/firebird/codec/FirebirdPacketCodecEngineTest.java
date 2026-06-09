@@ -326,7 +326,7 @@ class FirebirdPacketCodecEngineTest {
             List<Object> out = new LinkedList<>();
             codecEngine.decode(context, in, out);
             assertTrue(out.isEmpty());
-            assertThat(captureErrorResponse().getErrorCode(), is(335544382));
+            assertThat(captureErrorResponse().getErrorCode(), is(335545159));
         } finally {
             FirebirdBatchRegistry.getInstance().unregisterConnection(BATCH_CONNECTION_ID);
         }

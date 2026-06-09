@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.exception.core.exception.connection.Ac
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -54,6 +55,11 @@ class FirebirdDialectExceptionMapperTest {
     @Test
     void assertConvertWithBatchTooBig() {
         assertSQLException(mapper.convert(new BatchTooBigException(42, 1L, 8L, 8L)), FirebirdVendorError.BATCH_TOO_BIG);
+    }
+    
+    @Test
+    void assertConvertWithInvalidBatchHandle() {
+        assertSQLException(mapper.convert(new InvalidBatchHandleException(42)), FirebirdVendorError.INVALID_BATCH_HANDLE);
     }
     
     @Test
