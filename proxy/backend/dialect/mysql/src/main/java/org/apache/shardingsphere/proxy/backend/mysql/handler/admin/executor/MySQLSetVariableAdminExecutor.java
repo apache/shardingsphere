@@ -69,6 +69,9 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
     
     private void validateSessionVariables(final Collection<String> sessionVariables) {
         for (String each : sessionVariables) {
+            if (each.startsWith("@")) {
+                continue;
+            }
             MySQLSystemVariable systemVariable = MySQLSystemVariable.findSystemVariable(each).orElseThrow(() -> new UnknownSystemVariableException(each));
             systemVariable.validateSetTargetScope(MySQLSystemVariableScope.SESSION);
         }
