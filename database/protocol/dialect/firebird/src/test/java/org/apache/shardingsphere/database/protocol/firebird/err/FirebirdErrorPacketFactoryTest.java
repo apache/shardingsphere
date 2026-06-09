@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.protocol.firebird.err;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.junit.jupiter.api.Test;
 
@@ -62,6 +63,13 @@ class FirebirdErrorPacketFactoryTest {
     void assertNewInstanceWithBatchTooBigException() {
         FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(new BatchTooBigException(42, 1L, 8L, 8L));
         assertThat(actual.getErrorCode(), is(335545198));
+        assertThat(actual.getErrorMessage(), is(""));
+    }
+    
+    @Test
+    void assertNewInstanceWithInvalidBatchHandleException() {
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(new InvalidBatchHandleException(42));
+        assertThat(actual.getErrorCode(), is(335545159));
         assertThat(actual.getErrorMessage(), is(""));
     }
     

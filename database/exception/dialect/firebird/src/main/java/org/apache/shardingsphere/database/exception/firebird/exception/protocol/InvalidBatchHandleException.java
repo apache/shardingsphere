@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.exception.firebird.sqlstate;
+package org.apache.shardingsphere.database.exception.firebird.exception.protocol;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 
 /**
- * Firebird SQL state.
- *
- * <p>Holds SQL states that Jaybird derives from a GDSCODE but that are not defined in {@code XOpenSQLState}.</p>
+ * Invalid batch handle exception for Firebird.
  */
-@RequiredArgsConstructor
 @Getter
-public enum FirebirdState implements SQLState {
+public final class InvalidBatchHandleException extends SQLDialectException {
     
-    UNAVAILABLE_DATABASE("08001"),
+    private static final long serialVersionUID = -4192030586592759285L;
     
-    INVALID_BATCH_HANDLE("08003"),
+    private final int statementHandle;
     
-    BATCH_TOO_BIG("54000");
-    
-    private final String value;
+    public InvalidBatchHandleException(final int statementHandle) {
+        super(String.format("Invalid batch handle: statement handle %d", statementHandle));
+        this.statementHandle = statementHandle;
+    }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
@@ -43,7 +43,7 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
     public Collection<DatabasePacket> execute() throws SQLException {
         FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
         if (null == batchStatement) {
-            throw new FirebirdProtocolException("Batch statement not found for connectionId: %d, statement handle: %d", connectionSession.getConnectionId(), packet.getStatementHandle());
+            throw new InvalidBatchHandleException(packet.getStatementHandle());
         }
         int[] updateCounts = new int[0];
         if (!batchStatement.getParameterValues().isEmpty()) {

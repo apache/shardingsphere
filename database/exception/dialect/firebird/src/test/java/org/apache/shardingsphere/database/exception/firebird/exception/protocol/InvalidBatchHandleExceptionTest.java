@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.exception.firebird.sqlstate;
+package org.apache.shardingsphere.database.exception.firebird.exception.protocol;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
+import org.junit.jupiter.api.Test;
 
-/**
- * Firebird SQL state.
- *
- * <p>Holds SQL states that Jaybird derives from a GDSCODE but that are not defined in {@code XOpenSQLState}.</p>
- */
-@RequiredArgsConstructor
-@Getter
-public enum FirebirdState implements SQLState {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class InvalidBatchHandleExceptionTest {
     
-    UNAVAILABLE_DATABASE("08001"),
-    
-    INVALID_BATCH_HANDLE("08003"),
-    
-    BATCH_TOO_BIG("54000");
-    
-    private final String value;
+    @Test
+    void assertGetMessage() {
+        InvalidBatchHandleException actual = new InvalidBatchHandleException(42);
+        assertThat(actual.getMessage(), is("Invalid batch handle: statement handle 42"));
+        assertThat(actual.getStatementHandle(), is(42));
+    }
 }
