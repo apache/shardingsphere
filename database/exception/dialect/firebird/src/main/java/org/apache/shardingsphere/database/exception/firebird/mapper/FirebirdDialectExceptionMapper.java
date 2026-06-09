@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.exception.firebird.mapper;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
@@ -47,6 +48,9 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof BatchTooBigException) {
             return toSQLException(FirebirdVendorError.BATCH_TOO_BIG);
+        }
+        if (sqlDialectException instanceof TableExistsException) {
+            return toSQLException(FirebirdVendorError.TABLE_EXISTS, ((TableExistsException) sqlDialectException).getTableName());
         }
         return new UnknownSQLException(sqlDialectException).toSQLException();
     }

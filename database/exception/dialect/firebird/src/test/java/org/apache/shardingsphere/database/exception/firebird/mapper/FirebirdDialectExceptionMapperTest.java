@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
@@ -55,6 +56,11 @@ class FirebirdDialectExceptionMapperTest {
     @Test
     void assertConvertWithBatchTooBig() {
         assertSQLException(mapper.convert(new BatchTooBigException(42, 1L, 8L, 8L)), FirebirdVendorError.BATCH_TOO_BIG);
+    }
+    
+    @Test
+    void assertConvertWithTableExists() {
+        assertSQLException(mapper.convert(new TableExistsException("t_order")), FirebirdVendorError.TABLE_EXISTS, "t_order");
     }
     
     @Test
