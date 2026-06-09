@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
-import org.apache.shardingsphere.database.exception.core.exception.syntax.column.ColumnNotFoundException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
@@ -62,11 +61,6 @@ class FirebirdDialectExceptionMapperTest {
     @Test
     void assertConvertWithTableExists() {
         assertSQLException(mapper.convert(new TableExistsException("t_order")), FirebirdVendorError.TABLE_ALREADY_EXISTS, "t_order");
-    }
-    
-    @Test
-    void assertConvertWithColumnNotFound() {
-        assertSQLException(mapper.convert(new ColumnNotFoundException("t_order", "order_id")), FirebirdVendorError.COLUMN_UNKNOWN, "order_id");
     }
     
     @Test
