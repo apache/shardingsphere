@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
@@ -62,6 +63,12 @@ class FirebirdDialectExceptionMapperTest {
     @Test
     void assertConvertWithTableExists() {
         assertSQLException(mapper.convert(new TableExistsException("t_order")), FirebirdVendorError.TABLE_ALREADY_EXISTS, "t_order");
+    }
+    
+    @Test
+    void assertConvertWithDialectSQLParsing() {
+        assertSQLException(mapper.convert(new DialectSQLParsingException("You have an error in your SQL syntax", "SELEC", 1)), FirebirdVendorError.DYNAMIC_SQL_ERROR,
+                "You have an error in your SQL syntax");
     }
     
     @Test
