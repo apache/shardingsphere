@@ -15,32 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.exception.firebird.sqlstate;
+package org.apache.shardingsphere.database.exception.firebird.exception.protocol;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
+import org.junit.jupiter.api.Test;
 
-/**
- * Firebird SQL state.
- *
- * <p>Holds SQL states that Jaybird derives from a GDSCODE but that are not defined in {@code XOpenSQLState}.</p>
- */
-@RequiredArgsConstructor
-@Getter
-public enum FirebirdState implements SQLState {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class InvalidTransactionHandleExceptionTest {
     
-    UNAVAILABLE_DATABASE("08001"),
-    
-    INVALID_BATCH_HANDLE("08003"),
-    
-    BATCH_TOO_BIG("54000"),
-    
-    CHARSET_NOT_FOUND("2C000"),
-    
-    INVALID_STATEMENT_HANDLE("26000"),
-    
-    INVALID_TRANSACTION_HANDLE("08003");
-    
-    private final String value;
+    @Test
+    void assertGetMessage() {
+        InvalidTransactionHandleException actual = new InvalidTransactionHandleException(42);
+        assertThat(actual.getMessage(), is("Invalid transaction handle: 42"));
+        assertThat(actual.getTransactionHandle(), is(42));
+    }
 }
