@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
@@ -67,7 +68,7 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         int connectionId = connectionSession.getConnectionId();
         int statementId = packet.getStatementHandle();
         if (null == connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId)) {
-            throw new FirebirdProtocolException("Statement handle %d was not found", statementId);
+            throw new InvalidStatementHandleException(statementId);
         }
         if (null != FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, statementId)) {
             throw new FirebirdProtocolException("Batch already open for statement handle %d", statementId);

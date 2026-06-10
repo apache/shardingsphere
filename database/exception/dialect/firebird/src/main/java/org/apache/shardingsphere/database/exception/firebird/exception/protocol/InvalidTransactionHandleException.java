@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.exception.firebird.sqlstate;
+package org.apache.shardingsphere.database.exception.firebird.exception.protocol;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 
 /**
- * Firebird SQL state.
- *
- * <p>Holds SQL states that Jaybird derives from a GDSCODE but that are not defined in {@code XOpenSQLState}.</p>
+ * Invalid transaction handle exception for Firebird.
  */
-@RequiredArgsConstructor
 @Getter
-public enum FirebirdState implements SQLState {
+public final class InvalidTransactionHandleException extends SQLDialectException {
+
+    private static final long serialVersionUID = -1877813444031489651L;
+
+    private final int transactionHandle;
     
-    UNAVAILABLE_DATABASE("08001"),
-    
-    INVALID_BATCH_HANDLE("08003"),
-    
-    BATCH_TOO_BIG("54000"),
-    
-    CHARSET_NOT_FOUND("2C000"),
-    
-    INVALID_STATEMENT_HANDLE("26000"),
-    
-    INVALID_TRANSACTION_HANDLE("08003");
-    
-    private final String value;
+    public InvalidTransactionHandleException(final int transactionHandle) {
+        super(String.format("Invalid transaction handle: %d", transactionHandle));
+        this.transactionHandle = transactionHandle;
+    }
 }

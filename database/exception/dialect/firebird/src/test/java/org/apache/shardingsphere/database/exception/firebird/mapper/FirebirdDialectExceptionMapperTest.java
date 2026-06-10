@@ -29,6 +29,8 @@ import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExcept
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -80,6 +82,16 @@ class FirebirdDialectExceptionMapperTest {
     @Test
     void assertConvertWithInvalidBlobHandle() {
         assertSQLException(mapper.convert(new InvalidBlobHandleException(42)), FirebirdVendorError.INVALID_BLOB_HANDLE);
+    }
+    
+    @Test
+    void assertConvertWithInvalidStatementHandle() {
+        assertSQLException(mapper.convert(new InvalidStatementHandleException(42)), FirebirdVendorError.INVALID_STATEMENT_HANDLE);
+    }
+    
+    @Test
+    void assertConvertWithInvalidTransactionHandle() {
+        assertSQLException(mapper.convert(new InvalidTransactionHandleException(42)), FirebirdVendorError.INVALID_TRANSACTION_HANDLE);
     }
     
     @Test

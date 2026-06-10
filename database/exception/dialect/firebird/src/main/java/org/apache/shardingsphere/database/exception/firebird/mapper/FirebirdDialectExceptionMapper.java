@@ -27,6 +27,8 @@ import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExcept
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
@@ -54,6 +56,12 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof BatchTooBigException) {
             return toSQLException(FirebirdVendorError.BATCH_TOO_BIG);
+        }
+        if (sqlDialectException instanceof InvalidStatementHandleException) {
+            return toSQLException(FirebirdVendorError.INVALID_STATEMENT_HANDLE);
+        }
+        if (sqlDialectException instanceof InvalidTransactionHandleException) {
+            return toSQLException(FirebirdVendorError.INVALID_TRANSACTION_HANDLE);
         }
         if (sqlDialectException instanceof DialectSQLParsingException) {
             DialectSQLParsingException ex = (DialectSQLParsingException) sqlDialectException;
