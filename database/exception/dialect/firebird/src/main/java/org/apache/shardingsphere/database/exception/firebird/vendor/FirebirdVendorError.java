@@ -50,7 +50,9 @@ public enum FirebirdVendorError implements VendorError {
     
     TABLE_ALREADY_EXISTS(XOpenSQLState.DUPLICATE, ISCConstants.isc_dyn_dup_table, "%s"),
     
-    LOGIN_FAILED(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, ISCConstants.isc_login, "");
+    LOGIN_FAILED(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, ISCConstants.isc_login, ""),
+    
+    CHARSET_NOT_FOUND(FirebirdState.CHARSET_NOT_FOUND, ISCConstants.isc_charset_not_found, "CHARACTER SET %s is not defined");
     
     private final SQLState sqlState;
     

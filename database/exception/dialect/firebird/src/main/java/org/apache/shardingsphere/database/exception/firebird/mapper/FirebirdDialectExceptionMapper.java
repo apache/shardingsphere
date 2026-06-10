@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.exception.firebird.mapper;
 
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
@@ -60,6 +61,9 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof TableExistsException) {
             return toSQLException(FirebirdVendorError.TABLE_ALREADY_EXISTS, ((TableExistsException) sqlDialectException).getTableName());
+        }
+        if (sqlDialectException instanceof InvalidParameterValueException) {
+            return toSQLException(FirebirdVendorError.CHARSET_NOT_FOUND, ((InvalidParameterValueException) sqlDialectException).getParameterValue());
         }
         return new UnknownSQLException(sqlDialectException).toSQLException();
     }

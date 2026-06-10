@@ -34,7 +34,9 @@ public enum FirebirdState implements SQLState {
     
     INVALID_BATCH_HANDLE("08003"),
     
-    BATCH_TOO_BIG("54000");
+    BATCH_TOO_BIG("54000"),
+    
+    CHARSET_NOT_FOUND("2C000");
     
     private final String value;
 }
