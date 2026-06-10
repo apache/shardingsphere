@@ -46,6 +46,8 @@ public enum FirebirdVendorError implements VendorError {
     
     BATCH_TOO_BIG(FirebirdState.BATCH_TOO_BIG, ISCConstants.isc_batch_too_big, ""),
     
+    DYNAMIC_SQL_ERROR(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_dsql_error, "%s"),
+    
     TABLE_ALREADY_EXISTS(XOpenSQLState.DUPLICATE, ISCConstants.isc_dyn_dup_table, "%s"),
     
     LOGIN_FAILED(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, ISCConstants.isc_login, "");
