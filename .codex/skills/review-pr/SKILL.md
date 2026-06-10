@@ -24,6 +24,15 @@ description: >-
 
 ## Mandatory Constraints
 
+Before applying the numbered review gates, enforce the public evidence boundary:
+
+- Treat every GitHub-facing review body as community-visible output that may be copied directly to a public Apache PR or issue.
+- Base community-visible output only on public PR / issue facts, public commits, public diff, public review threads, public documentation, repository code, and sanitized local verification summaries.
+- Do not include non-public downstream project names, private or internal repository names, customer-specific or vendor-specific context, private chats,
+  intermediate discussion results, prompt process, internal self-review notes, local-only archive details, or private migration background in community-visible output.
+- Do not use non-public context as review evidence. If such context helps orient the reviewer privately, convert it into a public-evidence question
+  and verify it against public artifacts before output.
+
 1. Verify root-cause repair first, then fallback logic; do not accept "fallback only" as a substitute for root-cause repair.
 2. You must scan side effects and risks:
    - Design consistency
@@ -206,6 +215,10 @@ Priority from high to low:
 2. Related issues in the same repo, relevant module code/tests, historical behavior (optional git blame/log).
 3. ShardingSphere official docs and official repo conventions.
 4. External authoritative specs only when necessary (official standards/docs only).
+
+For the GitHub-facing review body, cite or summarize only public evidence from the list above.
+Local verification may support the review, but output only sanitized command summaries, exit codes, and repository-relative paths.
+Do not output local absolute paths, random temporary file or directory names, private/internal/downstream identifiers, private chat content, prompt text, or intermediate reasoning notes.
 
 CI status and check-runs are out of scope unless explicitly requested by the user.
 
@@ -513,13 +526,17 @@ When GitHub-visible previous-round feedback exists, perform incremental comparis
   - The inner GitHub-facing review body contains exactly one bold `Merge Decision: ...` line.
   - File references are repo-relative paths with line numbers, not local absolute paths.
   - Stable labels remain in English.
+  - The inner GitHub-facing review body contains no non-public downstream project names, private/internal repository names, customer-specific or vendor-specific context,
+    private chat content, prompt process, internal self-review notes, local-only archive details, private migration background, or intermediate discussion results.
+  - Local verification evidence is sanitized: no local absolute paths, home directories, random temporary file or directory names, tokens, private addresses, or undisclosed vulnerability details.
 
 ### Codex Chat Delivery
 
 - When returning the review in Codex chat for the user to copy, wrap the GitHub-facing review body in a fenced `markdown` code block.
 - The fenced code block is only a chat delivery wrapper; it is not part of the GitHub-facing review body.
 - Tell the user to copy only the content inside the fenced block.
-- Keep any copy instruction outside the fenced block.
+- Keep any copy instruction outside the fenced block, and keep it free of non-public downstream, private/internal, customer-specific, vendor-specific,
+  prompt-process, or intermediate-discussion details.
 - When posting directly to GitHub through an API or tool, submit only the inner GitHub-facing review body and do not include the outer fence.
 - Apply the formatting self-check to the inner GitHub-facing review body, not to the chat delivery wrapper.
 
@@ -602,6 +619,8 @@ When required, add `- **Expert Review Needed:** ...` under `Summary`; omit this 
 - Do not reuse old conclusions after new commits are added without re-review.
 - Do not include emojis in change request text.
 - Do not inspect or report GitHub Actions / CI status unless explicitly requested.
+- Do not include non-public downstream project names, private/internal repository names, customer-specific or vendor-specific context, private chats, prompt process, internal archive details,
+  private migration background, intermediate discussion results, local absolute paths, or unsanitized temporary file names in GitHub-facing review output.
 - Do not output `Mergeable` when a required hard gate remains unresolved, including missing required test evidence, release notes, user docs, migration guidance, or diagnostic quality evidence.
 - Do not output `Mergeable` for a shared-code change unless you have checked at least one non-target dialect or feature that also uses the changed path.
 - Do not output `Mergeable` when local verification omitted `-am` on a module-scoped Maven run and dependency freshness matters.
