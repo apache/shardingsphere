@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -37,6 +38,7 @@ import java.util.Collection;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -81,5 +83,13 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(0));
         assertThat(((FirebirdGenericResponsePacket) response).getId(), is(blobId));
         assertThat(FirebirdBlobUploadCache.getInstance().getBlobData(CONNECTION_ID, blobId).orElse(new byte[0]).length, is(segment.length));
+    }
+    
+    @Test
+    void assertExecuteWithInvalidBlobHandle() {
+        when(packet.getBlobHandle()).thenReturn(4);
+        FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
+        InvalidBlobHandleException actual = assertThrows(InvalidBlobHandleException.class, executor::execute);
+        assertThat(actual.getBlobHandle(), is(4));
     }
 }

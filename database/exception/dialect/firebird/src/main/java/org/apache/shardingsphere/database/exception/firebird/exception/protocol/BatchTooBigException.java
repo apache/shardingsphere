@@ -26,7 +26,7 @@ import org.apache.shardingsphere.database.exception.core.exception.SQLDialectExc
 @Getter
 public final class BatchTooBigException extends SQLDialectException {
     
-    private static final long serialVersionUID = 3614021174166235132L;
+    private static final long serialVersionUID = 8934524677490596556L;
     
     private final int statementHandle;
     

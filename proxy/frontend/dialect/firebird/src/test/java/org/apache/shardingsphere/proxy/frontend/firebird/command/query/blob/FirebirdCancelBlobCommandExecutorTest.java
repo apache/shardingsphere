@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -38,6 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -77,5 +79,13 @@ class FirebirdCancelBlobCommandExecutorTest {
         assertThat(response, isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(1));
         assertFalse(FirebirdBlobUploadCache.getInstance().getBlobId(CONNECTION_ID, blobHandle).isPresent());
+    }
+    
+    @Test
+    void assertExecuteWithInvalidBlobHandle() {
+        when(packet.getBlobHandle()).thenReturn(5);
+        FirebirdCancelBlobCommandExecutor executor = new FirebirdCancelBlobCommandExecutor(packet, connectionSession);
+        InvalidBlobHandleException actual = assertThrows(InvalidBlobHandleException.class, executor::execute);
+        assertThat(actual.getBlobHandle(), is(5));
     }
 }
