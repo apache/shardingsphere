@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
@@ -79,6 +80,11 @@ class FirebirdDialectExceptionMapperTest {
     @Test
     void assertConvertWithInvalidBlobHandle() {
         assertSQLException(mapper.convert(new InvalidBlobHandleException(42)), FirebirdVendorError.INVALID_BLOB_HANDLE);
+    }
+    
+    @Test
+    void assertConvertWithInvalidParameterValue() {
+        assertSQLException(mapper.convert(new InvalidParameterValueException("names", "foo_charset")), FirebirdVendorError.CHARSET_NOT_FOUND, "foo_charset");
     }
     
     @Test
