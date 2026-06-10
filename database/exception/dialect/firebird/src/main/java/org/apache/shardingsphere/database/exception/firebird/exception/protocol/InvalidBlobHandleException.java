@@ -21,17 +21,17 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 
 /**
- * Invalid batch handle exception for Firebird.
+ * Invalid BLOB handle exception for Firebird.
  */
 @Getter
-public final class InvalidBatchHandleException extends SQLDialectException {
+public final class InvalidBlobHandleException extends SQLDialectException {
     
-    private static final long serialVersionUID = 1209066053518706039L;
+    private static final long serialVersionUID = 4169394713140802855L;
     
-    private final int statementHandle;
+    private final int blobHandle;
     
-    public InvalidBatchHandleException(final int statementHandle) {
-        super(String.format("Invalid batch handle: statement handle %d", statementHandle));
-        this.statementHandle = statementHandle;
+    public InvalidBlobHandleException(final int blobHandle) {
+        super(String.format("Invalid BLOB handle: BLOB handle %d", blobHandle));
+        this.blobHandle = blobHandle;
     }
 }

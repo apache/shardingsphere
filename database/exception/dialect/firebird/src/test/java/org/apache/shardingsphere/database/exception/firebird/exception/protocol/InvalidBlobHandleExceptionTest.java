@@ -17,21 +17,17 @@
 
 package org.apache.shardingsphere.database.exception.firebird.exception.protocol;
 
-import lombok.Getter;
-import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
+import org.junit.jupiter.api.Test;
 
-/**
- * Invalid batch handle exception for Firebird.
- */
-@Getter
-public final class InvalidBatchHandleException extends SQLDialectException {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class InvalidBlobHandleExceptionTest {
     
-    private static final long serialVersionUID = 1209066053518706039L;
-    
-    private final int statementHandle;
-    
-    public InvalidBatchHandleException(final int statementHandle) {
-        super(String.format("Invalid batch handle: statement handle %d", statementHandle));
-        this.statementHandle = statementHandle;
+    @Test
+    void assertGetMessage() {
+        InvalidBlobHandleException actual = new InvalidBlobHandleException(42);
+        assertThat(actual.getMessage(), is("Invalid BLOB handle: BLOB handle 42"));
+        assertThat(actual.getBlobHandle(), is(42));
     }
 }
