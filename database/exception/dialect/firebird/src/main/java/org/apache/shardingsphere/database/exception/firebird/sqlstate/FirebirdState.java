@@ -40,7 +40,11 @@ public enum FirebirdState implements SQLState {
     
     INVALID_STATEMENT_HANDLE("26000"),
     
-    INVALID_TRANSACTION_HANDLE("08003");
+    INVALID_TRANSACTION_HANDLE("08003"),
+    
+    BATCH_ALREADY_OPENED("08002"),
+    
+    SQLDA_ERROR("07002");
     
     private final String value;
 }

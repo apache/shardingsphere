@@ -21,17 +21,17 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 
 /**
- * Invalid statement handle exception for Firebird.
+ * Batch already opened exception for Firebird.
  */
 @Getter
-public final class InvalidStatementHandleException extends SQLDialectException {
+public final class BatchAlreadyOpenedException extends SQLDialectException {
     
-    private static final long serialVersionUID = 1643157744200032161L;
+    private static final long serialVersionUID = 5128401254291859032L;
     
     private final int statementHandle;
     
-    public InvalidStatementHandleException(final int statementHandle) {
-        super(String.format("Invalid statement handle: %d", statementHandle));
+    public BatchAlreadyOpenedException(final int statementHandle) {
+        super(String.format("Batch already opened for statement handle %d", statementHandle));
         this.statementHandle = statementHandle;
     }
 }

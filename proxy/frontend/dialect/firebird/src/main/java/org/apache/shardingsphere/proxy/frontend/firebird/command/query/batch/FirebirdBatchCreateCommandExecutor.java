@@ -20,6 +20,9 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
@@ -71,16 +74,17 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
             throw new InvalidStatementHandleException(statementId);
         }
         if (null != FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, statementId)) {
-            throw new FirebirdProtocolException("Batch already open for statement handle %d", statementId);
+            throw new BatchAlreadyOpenedException(statementId);
         }
         ByteBuf batchBlr = packet.getBatchBlr();
         int blrLength = batchBlr.readableBytes();
         FirebirdParseBatchBlr messageFormat = FirebirdParseBatchBlr.parse(batchBlr, blrLength);
         if (messageFormat.getFields().isEmpty()) {
-            throw new FirebirdProtocolException("Batch message format must contain at least one field");
+            throw new InvalidBatchMessageFormatException("batch message format must contain at least one field");
         }
         if (packet.getBatchMessageLength() != messageFormat.getMessageLength()) {
-            throw new FirebirdProtocolException("Invalid message length: computed %d from BLR but client sent %d", messageFormat.getMessageLength(), packet.getBatchMessageLength());
+            throw new InvalidBatchMessageFormatException(
+                    String.format("invalid message length: computed %d from BLR but client sent %d", messageFormat.getMessageLength(), packet.getBatchMessageLength()));
         }
         ByteBuf batchParametersBuffer = packet.getBatchParametersBuffer();
         BatchParameters batchParameters = BatchParameters.parse(batchParametersBuffer);
@@ -109,7 +113,7 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
             ByteBuf reader = batchParametersBuffer.duplicate();
             int version = reader.readUnsignedByte();
             if (BATCH_VERSION_1 != version) {
-                throw new FirebirdProtocolException("Invalid batch parameters version: %d", version);
+                throw new InvalidBatchParameterVersionException(version, BATCH_VERSION_1);
             }
             long bufferSize = DEFAULT_BUFFER_SIZE;
             boolean recordCounts = false;

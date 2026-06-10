@@ -21,17 +21,17 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 
 /**
- * Invalid statement handle exception for Firebird.
+ * Invalid batch message format exception for Firebird.
  */
 @Getter
-public final class InvalidStatementHandleException extends SQLDialectException {
+public final class InvalidBatchMessageFormatException extends SQLDialectException {
     
-    private static final long serialVersionUID = 1643157744200032161L;
+    private static final long serialVersionUID = 8294120114147655351L;
     
-    private final int statementHandle;
+    private final String detail;
     
-    public InvalidStatementHandleException(final int statementHandle) {
-        super(String.format("Invalid statement handle: %d", statementHandle));
-        this.statementHandle = statementHandle;
+    public InvalidBatchMessageFormatException(final String detail) {
+        super(String.format("Invalid batch message format: %s", detail));
+        this.detail = detail;
     }
 }
