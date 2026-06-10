@@ -17,21 +17,17 @@
 
 package org.apache.shardingsphere.database.exception.firebird.exception.protocol;
 
-import lombok.Getter;
-import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
+import org.junit.jupiter.api.Test;
 
-/**
- * Invalid statement handle exception for Firebird.
- */
-@Getter
-public final class InvalidStatementHandleException extends SQLDialectException {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class BatchAlreadyOpenedExceptionTest {
     
-    private static final long serialVersionUID = 1643157744200032161L;
-    
-    private final int statementHandle;
-    
-    public InvalidStatementHandleException(final int statementHandle) {
-        super(String.format("Invalid statement handle: %d", statementHandle));
-        this.statementHandle = statementHandle;
+    @Test
+    void assertGetMessage() {
+        BatchAlreadyOpenedException actual = new BatchAlreadyOpenedException(42);
+        assertThat(actual.getMessage(), is("Batch already opened for statement handle 42"));
+        assertThat(actual.getStatementHandle(), is(42));
     }
 }

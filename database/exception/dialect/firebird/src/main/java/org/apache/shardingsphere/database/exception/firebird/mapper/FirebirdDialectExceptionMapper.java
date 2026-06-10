@@ -24,9 +24,13 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
@@ -56,6 +60,18 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof BatchTooBigException) {
             return toSQLException(FirebirdVendorError.BATCH_TOO_BIG);
+        }
+        if (sqlDialectException instanceof BatchAlreadyOpenedException) {
+            return toSQLException(FirebirdVendorError.BATCH_ALREADY_OPENED);
+        }
+        if (sqlDialectException instanceof InvalidBatchParameterVersionException) {
+            return toSQLException(FirebirdVendorError.INVALID_BATCH_PARAMETER_VERSION, ((InvalidBatchParameterVersionException) sqlDialectException).getVersion());
+        }
+        if (sqlDialectException instanceof InvalidBatchMessageFormatException) {
+            return toSQLException(FirebirdVendorError.SQLDA_ERROR);
+        }
+        if (sqlDialectException instanceof InvalidBlobIdException) {
+            return toSQLException(FirebirdVendorError.INVALID_BLOB_ID);
         }
         if (sqlDialectException instanceof InvalidStatementHandleException) {
             return toSQLException(FirebirdVendorError.INVALID_STATEMENT_HANDLE);

@@ -21,17 +21,17 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 
 /**
- * Invalid statement handle exception for Firebird.
+ * Invalid BLOB ID exception for Firebird.
  */
 @Getter
-public final class InvalidStatementHandleException extends SQLDialectException {
+public final class InvalidBlobIdException extends SQLDialectException {
     
-    private static final long serialVersionUID = 1643157744200032161L;
+    private static final long serialVersionUID = -6087294349246337624L;
     
-    private final int statementHandle;
+    private final long blobId;
     
-    public InvalidStatementHandleException(final int statementHandle) {
-        super(String.format("Invalid statement handle: %d", statementHandle));
-        this.statementHandle = statementHandle;
+    public InvalidBlobIdException(final long blobId) {
+        super(String.format("Invalid BLOB ID: %d", blobId));
+        this.blobId = blobId;
     }
 }

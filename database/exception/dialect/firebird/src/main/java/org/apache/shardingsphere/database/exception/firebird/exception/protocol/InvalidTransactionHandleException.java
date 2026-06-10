@@ -25,9 +25,9 @@ import org.apache.shardingsphere.database.exception.core.exception.SQLDialectExc
  */
 @Getter
 public final class InvalidTransactionHandleException extends SQLDialectException {
-
+    
     private static final long serialVersionUID = -1877813444031489651L;
-
+    
     private final int transactionHandle;
     
     public InvalidTransactionHandleException(final int transactionHandle) {
