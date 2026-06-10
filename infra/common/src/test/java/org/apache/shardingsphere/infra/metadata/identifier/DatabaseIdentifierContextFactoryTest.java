@@ -267,6 +267,29 @@ class DatabaseIdentifierContextFactoryTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("storageObjectScopes")
+    void assertCreateUsesInsensitiveRuleForStorageObjectScope(final String name, final IdentifierScope identifierScope) {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualRule = actual.getRule(identifierScope);
+        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
+        assertThat(actualRule.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
+        assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.NONE));
+        assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.BACK_QUOTE));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("storageObjectScopes")
+    void assertRefreshUsesInsensitiveRuleForStorageObjectScope(final String name, final IdentifierScope identifierScope) {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualRule = actual.getRule(identifierScope);
+        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
+        assertThat(actualRule.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
+        assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.NONE));
+        assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.BACK_QUOTE));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("createWithSupportedDatabaseSchemaLookupArguments")
     void assertCreateFindSupportedDatabaseSchemaIdentifiers(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
                                                             final String actualSchemaName, final IdentifierValue lookupIdentifier, final String expectedSchemaName) {
@@ -437,9 +460,9 @@ class DatabaseIdentifierContextFactoryTest {
         return Stream.of(
                 createNormalizedLookupArguments("mysql column lower_case_table_names=1", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_col", "`"),
                 createNormalizedLookupArguments("mysql column lower_case_table_names=2", MYSQL_DATABASE_TYPE, MYSQL_QUOTED_INSENSITIVE_RESOURCE_META_DATA, "foo_col", "`"),
-                createLowerCaseLookupArguments("postgresql column", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_col", "\""),
-                createLowerCaseLookupArguments("openGauss column", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_col", "\""),
-                createUpperCaseLookupArguments("oracle column", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_col", "\""))
+                createNormalizedLookupArguments("postgresql column", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_col", "\""),
+                createNormalizedLookupArguments("openGauss column", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_col", "\""),
+                createNormalizedLookupArguments("oracle column", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_col", "\""))
                 .flatMap(each -> each);
     }
     
@@ -494,9 +517,9 @@ class DatabaseIdentifierContextFactoryTest {
         return Stream.of(
                 createNormalizedMixedLookupArguments("mysql column lower_case_table_names=1", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_col", "`"),
                 createNormalizedMixedLookupArguments("mysql column lower_case_table_names=2", MYSQL_DATABASE_TYPE, MYSQL_QUOTED_INSENSITIVE_RESOURCE_META_DATA, "foo_col", "`"),
-                createLowerCaseMixedLookupArguments("postgresql column", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_col", "\""),
-                createLowerCaseMixedLookupArguments("openGauss column", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_col", "\""),
-                createUpperCaseMixedLookupArguments("oracle column", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_col", "\""))
+                createNormalizedMixedLookupArguments("postgresql column", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_col", "\""),
+                createNormalizedMixedLookupArguments("openGauss column", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_col", "\""),
+                createNormalizedMixedLookupArguments("oracle column", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_col", "\""))
                 .flatMap(each -> each);
     }
     
@@ -514,6 +537,13 @@ class DatabaseIdentifierContextFactoryTest {
     
     private static ConfigurationProperties createConfigurationProperties(final MetadataIdentifierCaseSensitivity caseSensitivity) {
         return new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), caseSensitivity.name())));
+    }
+    
+    private static Stream<Arguments> storageObjectScopes() {
+        return Stream.of(
+                Arguments.of("column", IdentifierScope.COLUMN),
+                Arguments.of("index", IdentifierScope.INDEX),
+                Arguments.of("constraint", IdentifierScope.CONSTRAINT));
     }
     
     private static IdentifierIndex<String> createIdentifierIndex(final DatabaseIdentifierContext identifierContext, final IdentifierScope identifierScope, final String... actualNames) {

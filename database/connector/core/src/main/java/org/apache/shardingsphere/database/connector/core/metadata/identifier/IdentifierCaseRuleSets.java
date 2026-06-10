@@ -67,12 +67,21 @@ public final class IdentifierCaseRuleSets {
     }
     
     /**
+     * Create quoted and unquoted case-insensitive rule set.
+     *
+     * @return quoted and unquoted case-insensitive rule set
+     */
+    public static IdentifierCaseRuleSet newQuotedInsensitiveRuleSet() {
+        return new IdentifierCaseRuleSet(new StandardIdentifierCaseRule(LookupMode.NORMALIZED, LookupMode.NORMALIZED, IdentifierCaseRuleSets::toLowerCase, each -> true));
+    }
+    
+    /**
      * Create MySQL case-insensitive rule set.
      *
      * @return MySQL case-insensitive rule set
      */
     public static IdentifierCaseRuleSet newMySQLInsensitiveRuleSet() {
-        return new IdentifierCaseRuleSet(new StandardIdentifierCaseRule(LookupMode.NORMALIZED, LookupMode.NORMALIZED, IdentifierCaseRuleSets::toLowerCase, each -> true));
+        return newQuotedInsensitiveRuleSet();
     }
     
     /**
