@@ -20,6 +20,8 @@ package org.apache.shardingsphere.database.exception.firebird.mapper;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
@@ -48,6 +50,12 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
     public SQLException convert(final SQLDialectException sqlDialectException) {
         if (sqlDialectException instanceof UnknownDatabaseException) {
             return toSQLException(FirebirdVendorError.UNAVAILABLE_DATABASE, ((UnknownDatabaseException) sqlDialectException).getDatabaseName());
+        }
+        if (sqlDialectException instanceof DatabaseCreateExistsException) {
+            return toSQLException(FirebirdVendorError.DATABASE_ALREADY_EXISTS, ((DatabaseCreateExistsException) sqlDialectException).getDatabaseName());
+        }
+        if (sqlDialectException instanceof DatabaseDropNotExistsException) {
+            return toSQLException(FirebirdVendorError.UNAVAILABLE_DATABASE, ((DatabaseDropNotExistsException) sqlDialectException).getDatabaseName());
         }
         if (sqlDialectException instanceof AccessDeniedException) {
             return toSQLException(FirebirdVendorError.LOGIN_FAILED);

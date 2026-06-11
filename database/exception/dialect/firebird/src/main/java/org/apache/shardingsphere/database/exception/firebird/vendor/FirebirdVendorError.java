@@ -40,6 +40,8 @@ public enum FirebirdVendorError implements VendorError {
     
     UNAVAILABLE_DATABASE(FirebirdState.UNAVAILABLE_DATABASE, ISCConstants.isc_unavailable, "%s"),
     
+    DATABASE_ALREADY_EXISTS(XOpenSQLState.GENERAL_ERROR, ISCConstants.isc_db_or_file_exists, "%s"),
+    
     INVALID_BLOB_HANDLE(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_bad_segstr_handle, ""),
     
     INVALID_BATCH_HANDLE(FirebirdState.INVALID_BATCH_HANDLE, ISCConstants.isc_bad_batch_handle, ""),

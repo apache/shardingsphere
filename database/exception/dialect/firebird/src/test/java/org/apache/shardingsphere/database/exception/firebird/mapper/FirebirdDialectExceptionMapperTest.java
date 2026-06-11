@@ -22,6 +22,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
@@ -55,6 +57,16 @@ class FirebirdDialectExceptionMapperTest {
     @Test
     void assertConvertWithUnknownDatabase() {
         assertSQLException(mapper.convert(new UnknownDatabaseException("logic_db")), FirebirdVendorError.UNAVAILABLE_DATABASE, "logic_db");
+    }
+    
+    @Test
+    void assertConvertWithDatabaseCreateExists() {
+        assertSQLException(mapper.convert(new DatabaseCreateExistsException("logic_db")), FirebirdVendorError.DATABASE_ALREADY_EXISTS, "logic_db");
+    }
+    
+    @Test
+    void assertConvertWithDatabaseDropNotExists() {
+        assertSQLException(mapper.convert(new DatabaseDropNotExistsException("logic_db")), FirebirdVendorError.UNAVAILABLE_DATABASE, "logic_db");
     }
     
     @Test
