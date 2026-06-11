@@ -57,9 +57,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MySQLSetVariableAdminExecutorTest {
-    
+
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-    
+
     @Test
     void assertExecute() throws SQLException {
         SetStatement setStatement = prepareSetStatement();
@@ -77,7 +77,7 @@ class MySQLSetVariableAdminExecutorTest {
         }
         assertThat(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), is(StandardCharsets.UTF_8));
     }
-    
+
     @Test
     void assertExecuteWithCharacterSetResults() throws SQLException {
         SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(
@@ -88,7 +88,7 @@ class MySQLSetVariableAdminExecutorTest {
         executor.execute(connectionSession, mock());
         assertThat(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), is(StandardCharsets.UTF_8));
     }
-    
+
     @Test
     void assertExecuteWithCharacterSetResultsAsNull() throws SQLException {
         SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(
@@ -101,7 +101,7 @@ class MySQLSetVariableAdminExecutorTest {
         executor.execute(connectionSession, mock());
         assertThat(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), is(StandardCharsets.UTF_8));
     }
-    
+
     @Test
     void assertExecuteWithUserVariable() throws SQLException {
         SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "@test_var"), "1")));
@@ -118,7 +118,7 @@ class MySQLSetVariableAdminExecutorTest {
         when(result.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         return result;
     }
-    
+
     private SetStatement prepareSetStatement() {
         VariableSegment maxConnectionVariableSegment = new VariableSegment(0, 0, "max_connections", "global");
         VariableAssignSegment setGlobalMaxConnectionAssignSegment = new VariableAssignSegment(0, 0, maxConnectionVariableSegment, "151");
@@ -126,20 +126,20 @@ class MySQLSetVariableAdminExecutorTest {
         VariableAssignSegment setCharacterSetClientVariableSegment = new VariableAssignSegment(0, 0, characterSetClientSegment, "'utf8mb4'");
         return new SetStatement(databaseType, Arrays.asList(setGlobalMaxConnectionAssignSegment, setCharacterSetClientVariableSegment));
     }
-    
+
     private ShardingSphereMetaData mockMetaData() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
         when(result.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(1, 1L), new CacheOption(1, 1L))))));
         return result;
     }
-    
+
     @Test
     void assertSetUnknownSystemVariable() {
         SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "unknown_variable"), "")));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         assertThrows(UnknownSystemVariableException.class, () -> executor.execute(mock(), mock()));
     }
-    
+
     @Test
     void assertSetVariableWithIncorrectScope() {
         SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "max_connections"), "")));
