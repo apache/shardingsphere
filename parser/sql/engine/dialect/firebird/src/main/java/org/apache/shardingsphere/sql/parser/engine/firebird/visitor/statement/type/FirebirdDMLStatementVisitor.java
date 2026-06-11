@@ -59,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Tabl
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.FirebirdStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -66,6 +67,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -113,6 +115,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -261,8 +264,24 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitCombineClause(final CombineClauseContext ctx) {
-        // TODO :Unsupported for union SQL.
-        return visit(ctx.selectClause(0));
+        SelectStatement result = (SelectStatement) visit(ctx.selectClause(0));
+        if (1 == ctx.selectClause().size()) {
+            return result;
+        }
+        SelectClauseContext leftContext = ctx.selectClause(0);
+        SubquerySegment left = new SubquerySegment(leftContext.start.getStartIndex(), leftContext.stop.getStopIndex(), result, getOriginalText(leftContext));
+        for (int i = 1; i < ctx.selectClause().size(); i++) {
+            SelectClauseContext rightContext = ctx.selectClause(i);
+            SubquerySegment right = new SubquerySegment(rightContext.start.getStartIndex(), rightContext.stop.getStopIndex(), (SelectStatement) visit(rightContext), getOriginalText(rightContext));
+            String combineText = leftContext.start.getInputStream().getText(new Interval(leftContext.stop.getStopIndex() + 1, rightContext.start.getStartIndex() - 1));
+            CombineType combineType = combineText.toUpperCase(Locale.ENGLISH).contains("ALL") ? CombineType.UNION_ALL : CombineType.UNION;
+            result = SelectStatement.builder().databaseType(getDatabaseType()).projections(left.getSelect().getProjections())
+                    .from(left.getSelect().getFrom().orElse(null))
+                    .combine(new CombineSegment(left.getStartIndex(), right.getStopIndex(), left, combineType, right)).build();
+            left = new SubquerySegment(left.getStartIndex(), right.getStopIndex(), result, ctx.start.getInputStream().getText(new Interval(left.getStartIndex(), right.getStopIndex())));
+            leftContext = rightContext;
+        }
+        return result;
     }
     
     @Override
