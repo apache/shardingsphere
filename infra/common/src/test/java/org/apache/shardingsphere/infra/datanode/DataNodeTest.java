@@ -151,7 +151,7 @@ class DataNodeTest {
                 Arguments.of("mysql_without_schema_support", "test_db", MYSQL_DATABASE_TYPE, "ds.tbl", "ds", "test_db", "tbl"),
                 Arguments.of("mysql_three_segments_kept_as_table_suffix", "test_db", MYSQL_DATABASE_TYPE, "ds.schema.tbl", "ds", "test_db", "schema.tbl"),
                 Arguments.of("postgresql_preserves_table_case", "test_db", POSTGRESQL_DATABASE_TYPE, "ds.schema.TABLE", "ds", "schema", "TABLE"),
-                Arguments.of("oracle_normalizes_database_schema", "logic_db", ORACLE_DATABASE_TYPE, "ds.tbl", "ds", "LOGIC_DB", "tbl"));
+                Arguments.of("oracle_keeps_database_schema", "logic_db", ORACLE_DATABASE_TYPE, "ds.tbl", "ds", "logic_db", "tbl"));
     }
     
     private static Stream<Arguments> formatArguments() {
