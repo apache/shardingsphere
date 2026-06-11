@@ -13379,16 +13379,6 @@
         </from>
     </select>
 
-    <select sql-case-id="select_union_firebird">
-        <projections start-index="7" stop-index="7">
-            <expression-projection text="1" start-index="7" stop-index="7">
-                <expr>
-                    <literal-expression value="1" start-index="7" stop-index="7" />
-                </expr>
-            </expression-projection>
-        </projections>
-    </select>
-
     <select sql-case-id="select_subquery_table_firebird">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
