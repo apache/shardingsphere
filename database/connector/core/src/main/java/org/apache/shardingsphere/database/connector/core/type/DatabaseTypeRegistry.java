@@ -19,12 +19,10 @@ package org.apache.shardingsphere.database.connector.core.type;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -59,12 +57,7 @@ public final class DatabaseTypeRegistry {
      * @return default schema name
      */
     public String getDefaultSchemaName(final String databaseName) {
-        DialectSchemaOption schemaOption = dialectDatabaseMetaData.getSchemaOption();
-        Optional<String> defaultSchema = schemaOption.getDefaultSchema();
-        if (defaultSchema.isPresent() || null == databaseName) {
-            return defaultSchema.orElse(null);
-        }
-        return schemaOption.isSchemaAvailable() ? formatIdentifierPattern(databaseName) : databaseName;
+        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElse(null == databaseName ? null : formatIdentifierPattern(databaseName));
     }
     
     /**

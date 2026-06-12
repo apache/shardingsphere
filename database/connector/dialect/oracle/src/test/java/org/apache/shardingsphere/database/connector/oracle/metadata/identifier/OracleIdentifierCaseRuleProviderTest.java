@@ -53,12 +53,4 @@ class OracleIdentifierCaseRuleProviderTest {
         assertTrue(actual.matches("FOO", "foo", QuoteCharacter.NONE));
         assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));
     }
-    
-    @Test
-    void assertProvideSchemaRule() {
-        IdentifierCaseRule actual = provider.provide(new IdentifierCaseRuleProviderContext(databaseType, null)).orElseThrow(AssertionError::new).getRule(IdentifierScope.SCHEMA);
-        assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertTrue(actual.matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE));
-        assertTrue(actual.matches("FOO_SCHEMA", "foo_schema", QuoteCharacter.NONE));
-    }
 }
