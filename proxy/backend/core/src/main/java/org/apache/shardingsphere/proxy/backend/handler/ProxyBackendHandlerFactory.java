@@ -126,7 +126,7 @@ public final class ProxyBackendHandlerFactory {
         }
         if (sqlStatement instanceof DistSQLStatement) {
             checkSupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
-            // FIX (CVE candidate): DistSQL authorization was completely absent here.
+      
             // The branch previously returned immediately after the transaction check,
             // allowing any authenticated user to execute every administrative DistSQL
             // operation regardless of admin flag or privilege provider configuration.
