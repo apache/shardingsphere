@@ -48,20 +48,40 @@ final class ReadwriteSplittingWorkflowIntentResolver {
         return result;
     }
     
+    boolean hasConflictingStatusInputs(final ReadwriteSplittingStatusWorkflowRequest request) {
+        String operationType = normalizeStatusOperation(request.getOperationType());
+        String targetStatus = normalizeStatusOperation(request.getTargetStatus());
+        return !operationType.isEmpty() && !targetStatus.isEmpty() && !operationType.equals(targetStatus);
+    }
+    
     private String resolveStatusOperation(final ReadwriteSplittingStatusWorkflowRequest request) {
-        String explicit = request.getOperationType().isEmpty() ? request.getTargetStatus() : request.getOperationType();
-        String actualValue = explicit.toLowerCase(Locale.ENGLISH);
-        if ("enable".equals(actualValue) || "enabled".equals(actualValue)) {
-            return "enable";
+        if (hasConflictingStatusInputs(request)) {
+            return "";
         }
-        if ("disable".equals(actualValue) || "disabled".equals(actualValue)) {
-            return "disable";
+        String targetStatus = normalizeStatusOperation(request.getTargetStatus());
+        if (!targetStatus.isEmpty()) {
+            return targetStatus;
+        }
+        String operationType = normalizeStatusOperation(request.getOperationType());
+        if (!operationType.isEmpty()) {
+            return operationType;
         }
         String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("enable") || naturalLanguageIntent.contains("启用")) {
             return "enable";
         }
         if (naturalLanguageIntent.contains("disable") || naturalLanguageIntent.contains("禁用")) {
+            return "disable";
+        }
+        return "";
+    }
+    
+    private String normalizeStatusOperation(final String value) {
+        String actualValue = value.trim().toLowerCase(Locale.ENGLISH);
+        if ("enable".equals(actualValue) || "enabled".equals(actualValue)) {
+            return "enable";
+        }
+        if ("disable".equals(actualValue) || "disabled".equals(actualValue)) {
             return "disable";
         }
         return "";

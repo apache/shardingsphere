@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.feature.sharding.TestWorkflowSessionContext
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +46,7 @@ class ShardingWorkflowPlanningServiceTest {
                 .planTableRule(new TestWorkflowSessionContext(), queryFacade, "session-1", createTableRuleRequest());
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getWorkflowKind().getValue(), is("sharding.table.rule"));
-        assertTrue(actual.getRuleArtifacts().get(0).getSql().startsWith("CREATE SHARDING TABLE RULE t_order"));
+        assertTrue(actual.getRuleArtifacts().getFirst().getSql().startsWith("CREATE SHARDING TABLE RULE t_order"));
     }
     
     @Test
@@ -60,7 +61,7 @@ class ShardingWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = createPlanningService(inspectionService)
                 .planTableRule(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
-        assertThat(actual.getRuleArtifacts().get(0).getSql(), is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), "
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), "
                 + "TABLE_STRATEGY(TYPE='complex', SHARDING_COLUMNS=order_id, user_id, "
                 + "SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))))"));
     }
@@ -76,7 +77,7 @@ class ShardingWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = createPlanningService(inspectionService)
                 .planTableRule(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
-        assertThat(actual.getRuleArtifacts().get(0).getSql(), is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), "
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), "
                 + "TABLE_STRATEGY(TYPE='hint', SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))))"));
     }
     
@@ -92,7 +93,7 @@ class ShardingWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = createPlanningService(inspectionService)
                 .planTableRule(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
-        assertThat(actual.getRuleArtifacts().get(0).getSql(), is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'))"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'))"));
     }
     
     @Test
@@ -143,7 +144,7 @@ class ShardingWorkflowPlanningServiceTest {
         when(inspectionService.queryTableReferenceRule(queryFacade, "logic_db", "ref_rule")).thenReturn(List.of());
         WorkflowContextSnapshot actual = createPlanningService(inspectionService)
                 .planTableReferenceRule(new TestWorkflowSessionContext(), queryFacade, "session-1", createReferenceRuleRequest());
-        assertThat(actual.getRuleArtifacts().get(0).getSql(), is("CREATE SHARDING TABLE REFERENCE RULE ref_rule(t_order, t_order_item)"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("CREATE SHARDING TABLE REFERENCE RULE ref_rule(t_order, t_order_item)"));
     }
     
     @Test
@@ -156,7 +157,7 @@ class ShardingWorkflowPlanningServiceTest {
         when(inspectionService.queryDefaultStrategy(queryFacade, "logic_db")).thenReturn(List.of(Map.of("name", "DATABASE", "type", "standard")));
         WorkflowContextSnapshot actual = createPlanningService(inspectionService)
                 .planDefaultStrategy(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
-        assertThat(actual.getRuleArtifacts().get(0).getSql(), is("DROP DEFAULT SHARDING DATABASE STRATEGY"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP DEFAULT SHARDING DATABASE STRATEGY"));
     }
     
     @Test
@@ -179,7 +180,7 @@ class ShardingWorkflowPlanningServiceTest {
         when(inspectionService.queryKeyGenerator(queryFacade, "logic_db", "snowflake_generator")).thenReturn(List.of());
         WorkflowContextSnapshot actual = createPlanningService(inspectionService)
                 .planKeyGenerator(new TestWorkflowSessionContext(), queryFacade, "session-1", createKeyGeneratorRequest());
-        assertTrue(actual.getRuleArtifacts().get(0).getSql().startsWith("CREATE SHARDING KEY GENERATOR snowflake_generator"));
+        assertTrue(actual.getRuleArtifacts().getFirst().getSql().startsWith("CREATE SHARDING KEY GENERATOR snowflake_generator"));
     }
     
     @Test
@@ -189,7 +190,7 @@ class ShardingWorkflowPlanningServiceTest {
         when(inspectionService.queryKeyGenerateStrategy(queryFacade, "logic_db", "order_key_strategy")).thenReturn(List.of());
         WorkflowContextSnapshot actual = createPlanningService(inspectionService)
                 .planKeyGenerateStrategy(new TestWorkflowSessionContext(), queryFacade, "session-1", createKeyGenerateStrategyRequest());
-        assertTrue(actual.getRuleArtifacts().get(0).getSql().startsWith("CREATE SHARDING KEY GENERATE STRATEGY order_key_strategy"));
+        assertTrue(actual.getRuleArtifacts().getFirst().getSql().startsWith("CREATE SHARDING KEY GENERATE STRATEGY order_key_strategy"));
     }
     
     @Test
@@ -201,7 +202,18 @@ class ShardingWorkflowPlanningServiceTest {
         when(inspectionService.queryTableRulesUsedAlgorithm(queryFacade, "logic_db", "unused_algorithm")).thenReturn(List.of());
         WorkflowContextSnapshot actual = createPlanningService(inspectionService)
                 .planComponentCleanup(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
-        assertThat(actual.getRuleArtifacts().get(0).getSql(), is("DROP SHARDING ALGORITHM unused_algorithm"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP SHARDING ALGORITHM unused_algorithm"));
+    }
+    
+    @Test
+    void assertPlanComponentCleanupRejectsNonDropOperation() {
+        ShardingWorkflowRequest request = createCleanupRequest();
+        request.setOperationType("create");
+        WorkflowContextSnapshot actual = createPlanningService(mock(ShardingInspectionService.class))
+                .planComponentCleanup(new TestWorkflowSessionContext(), createQueryFacade(), "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
     }
     
     @Test

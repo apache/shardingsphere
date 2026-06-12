@@ -313,9 +313,21 @@ tools:
         intent_inference:
           type: object
           description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+        argument_provenance:
+          type: object
+          description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."
         review_focus:
           type: object
           description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
+        proxy_topology_hint:
+          type: object
+          description: "Proxy metadata view expected by this workflow and safe recovery guidance when runtime metadata looks inconsistent."
+        distsql_artifacts:
+          type: array
+          description: "Masked rule DistSQL artifacts generated for review before applying the workflow."
+        masked_property_preview:
+          type: object
+          description: "Mask-specific preview of algorithm properties with secret values masked before returning them to MCP clients."
         next_actions:
           type: array
           description: "Ordered model-facing recommendations for the next call or user question."

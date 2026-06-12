@@ -171,6 +171,9 @@ public final class ShardingWorkflowPlanningService {
         if (!hasDatabase(mergedRequest, result) || !hasRequiredCleanupInputs(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
+        if (!ensureCleanupDropOnly(mergedRequest, result)) {
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+        }
         if (!isUnusedComponent(queryFacade, mergedRequest) || !queryUsedBy(queryFacade, mergedRequest).isEmpty()) {
             result.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
                     "Sharding component is still used or is not present in unused DistSQL-visible state.",
@@ -179,6 +182,17 @@ public final class ShardingWorkflowPlanningService {
         }
         result.getRuleArtifacts().add(distSQLPlanningService.planComponentCleanup(mergedRequest));
         return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
+    }
+    
+    private boolean ensureCleanupDropOnly(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType())) {
+            return true;
+        }
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.WORKFLOW_STATUS_INVALID, "error", "intaking",
+                "Sharding component cleanup only supports dropping unused components.", "Use operation_type=drop or omit operation_type for cleanup.", false,
+                Map.of("operation_type", request.getOperationType())));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+        return false;
     }
     
     private WorkflowContextSnapshot planLifecycleWorkflow(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,

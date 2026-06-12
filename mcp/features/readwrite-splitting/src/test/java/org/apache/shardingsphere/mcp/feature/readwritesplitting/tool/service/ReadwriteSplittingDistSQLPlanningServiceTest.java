@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ReadwriteSplittingDistSQLPlanningServiceTest {
     
@@ -57,6 +59,18 @@ class ReadwriteSplittingDistSQLPlanningServiceTest {
                 is("ALTER READWRITE_SPLITTING RULE readwrite_ds ENABLE read_ds_0 FROM logic_db"));
     }
     
+    @Test
+    void assertResolveStatusOperationRejectsConflictingInputs() {
+        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("enable", "disable");
+        assertThat(new ReadwriteSplittingStatusDistSQLPlanningService().resolveStatusOperation(request), is(""));
+    }
+    
+    @Test
+    void assertPlanStatusRejectsConflictingInputs() {
+        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("enable", "disable");
+        assertThrows(MCPInvalidRequestException.class, () -> new ReadwriteSplittingStatusDistSQLPlanningService().planStatus(request));
+    }
+    
     private ReadwriteSplittingRuleWorkflowRequest createRuleRequest() {
         ReadwriteSplittingRuleWorkflowRequest result = new ReadwriteSplittingRuleWorkflowRequest();
         result.setRuleName("readwrite_ds");
@@ -65,6 +79,16 @@ class ReadwriteSplittingDistSQLPlanningServiceTest {
         result.setTransactionalReadQueryStrategy("dynamic");
         result.setLoadBalancerType("WEIGHT");
         result.putLoadBalancerProperties(Map.of("read_ds_0", "2"));
+        return result;
+    }
+    
+    private ReadwriteSplittingStatusWorkflowRequest createStatusRequest(final String operationType, final String targetStatus) {
+        ReadwriteSplittingStatusWorkflowRequest result = new ReadwriteSplittingStatusWorkflowRequest();
+        result.setDatabase("logic_db");
+        result.setRuleName("readwrite_ds");
+        result.setStorageUnit("read_ds_0");
+        result.setOperationType(operationType);
+        result.setTargetStatus(targetStatus);
         return result;
     }
 }

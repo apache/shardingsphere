@@ -44,7 +44,7 @@ class BroadcastWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), queryFacade, "session-1", createRequest("create", "t_order,t_order_item"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getWorkflowKind().getValue(), is("broadcast.rule"));
-        assertThat(actual.getRuleArtifacts().iterator().next().getSql(), is("CREATE BROADCAST TABLE RULE t_order, t_order_item"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("CREATE BROADCAST TABLE RULE t_order, t_order_item"));
         assertFalse(actual.getDdlArtifacts().iterator().hasNext());
         assertFalse(actual.getIndexPlans().iterator().hasNext());
     }
@@ -54,7 +54,7 @@ class BroadcastWorkflowPlanningServiceTest {
         MCPFeatureQueryFacade queryFacade = mockQueryFacade(List.of(Map.of("broadcast_table", "t_order")));
         WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), queryFacade, "session-1", createRequest("drop", "t_order"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
-        assertThat(actual.getRuleArtifacts().iterator().next().getSql(), is("DROP BROADCAST TABLE RULE t_order"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP BROADCAST TABLE RULE t_order"));
     }
     
     @Test
@@ -62,8 +62,8 @@ class BroadcastWorkflowPlanningServiceTest {
         BroadcastWorkflowRequest request = createRequest("create", "");
         WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
-        assertThat(actual.getIssues().iterator().next().getCode(), is(WorkflowIssueCode.RULE_INPUT_REQUIRED));
-        assertThat(actual.getClarifiedIntent().getClarificationMessages().iterator().next(), is("Please provide one or more logical table names for broadcast rule planning."));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_REQUIRED));
+        assertThat(actual.getClarifiedIntent().getClarificationMessages().getFirst(), is("Please provide one or more logical table names for broadcast rule planning."));
     }
     
     @Test
@@ -71,7 +71,16 @@ class BroadcastWorkflowPlanningServiceTest {
         MCPFeatureQueryFacade queryFacade = mockQueryFacade(List.of(Map.of("broadcast_table", "t_order")));
         WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), queryFacade, "session-1", createRequest("create", "t_order"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
-        assertThat(actual.getIssues().iterator().next().getCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
+    }
+    
+    @Test
+    void assertPlanCreateFailsForMixedLifecycleTables() {
+        MCPFeatureQueryFacade queryFacade = mockQueryFacade(List.of(Map.of("broadcast_table", "t_order")));
+        WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), queryFacade, "session-1", createRequest("create", "t_order,t_order_item"));
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
+        assertFalse(actual.getRuleArtifacts().iterator().hasNext());
     }
     
     @Test
@@ -79,14 +88,23 @@ class BroadcastWorkflowPlanningServiceTest {
         MCPFeatureQueryFacade queryFacade = mockQueryFacade(List.of());
         WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), queryFacade, "session-1", createRequest("drop", "t_order"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
-        assertThat(actual.getIssues().iterator().next().getCode(), is(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND));
+    }
+    
+    @Test
+    void assertPlanDropFailsForMixedLifecycleTables() {
+        MCPFeatureQueryFacade queryFacade = mockQueryFacade(List.of(Map.of("broadcast_table", "t_order")));
+        WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), queryFacade, "session-1", createRequest("drop", "t_order,t_order_item"));
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND));
+        assertFalse(actual.getRuleArtifacts().iterator().hasNext());
     }
     
     @Test
     void assertPlanFailsForUnsupportedIdentifier() {
         WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create", "bad`table"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
-        assertThat(actual.getIssues().iterator().next().getCode(), is(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER));
     }
     
     private BroadcastWorkflowPlanningService createService() {
