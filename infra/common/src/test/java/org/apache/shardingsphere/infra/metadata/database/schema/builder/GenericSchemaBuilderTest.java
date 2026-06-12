@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Sch
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
@@ -140,6 +141,42 @@ class GenericSchemaBuilderTest {
         assertTrue(actualSchema.getAllTables().isEmpty());
         assertNull(actualSchema.getTable("foo_tbl"));
         assertThat(actualSchema.getName(), is("foo_schema"));
+    }
+    
+    @Test
+    void assertBuildWithMySQLProtocolAndOracleStorage() throws SQLException {
+        DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        GenericSchemaBuilderMaterial newMaterial = createMaterial(storageType, protocolType);
+        when(MetaDataLoader.load(any())).thenReturn(createOracleSchemaMetaDataMap());
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(Collections.singleton("t_log"), protocolType, newMaterial);
+        ShardingSphereSchema actualSchema = actual.get("logical_db");
+        assertThat(actualSchema.getName(), is("logical_db"));
+        assertThat(actualSchema.getAllTables().iterator().next().getName(), is("T_LOG"));
+    }
+    
+    @Test
+    void assertBuildWithOracleProtocolAndOracleStorage() throws SQLException {
+        DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        GenericSchemaBuilderMaterial newMaterial = createMaterial(protocolType, protocolType);
+        when(MetaDataLoader.load(any())).thenReturn(createOracleSchemaMetaDataMap());
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(Collections.singleton("t_log"), protocolType, newMaterial);
+        ShardingSphereSchema actualSchema = actual.get("logical_db");
+        assertThat(actualSchema.getName(), is("logical_db"));
+        assertThat(actualSchema.getAllTables().iterator().next().getName(), is("T_LOG"));
+    }
+    
+    private GenericSchemaBuilderMaterial createMaterial(final DatabaseType storageType, final DatabaseType protocolType) {
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(storageType);
+        Map<String, StorageUnit> storageUnits = Collections.singletonMap("ds_0", storageUnit);
+        return new GenericSchemaBuilderMaterial(storageUnits, Collections.emptyList(), new ConfigurationProperties(new Properties()), "logical_db",
+                DatabaseIdentifierContextFactory.create(protocolType, new ResourceMetaData(Collections.emptyMap(), storageUnits), new ConfigurationProperties(new Properties())));
+    }
+    
+    private Map<String, SchemaMetaData> createOracleSchemaMetaDataMap() {
+        return Collections.singletonMap("logical_db", new SchemaMetaData("logical_db",
+                Collections.singleton(new TableMetaData("T_LOG", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))));
     }
     
     private Map<String, SchemaMetaData> createSchemaMetaDataMap(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) {

@@ -171,6 +171,22 @@ class DatabaseIdentifierContextFactoryTest {
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("createWithOracleUnavailableSchemaLookupArguments")
+    void assertCreateFindsOracleUnavailableSchemaInsensitive(final String name, final IdentifierValue lookupIdentifier) {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierIndex<String> schemaIndex = createIdentifierIndex(actual, IdentifierScope.SCHEMA, "logical_db");
+        assertThat(schemaIndex.find(lookupIdentifier), is(Optional.of("logical_db")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("createWithOracleTableLookupArguments")
+    void assertCreateFindsOracleTableUpperCase(final String name, final IdentifierValue lookupIdentifier) {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierIndex<String> tableIndex = createIdentifierIndex(actual, IdentifierScope.TABLE, "T_LOG");
+        assertThat(tableIndex.find(lookupIdentifier), is(Optional.of("T_LOG")));
+    }
+    
     @Test
     void assertRefreshUsesProtocolRuleForLogicalTableAndEnablesHeterogeneousLookup() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
@@ -442,8 +458,20 @@ class DatabaseIdentifierContextFactoryTest {
                 createNormalizedLookupArguments("mysql schema", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_schema", "`"),
                 createInsensitiveQuotedExactLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
                 createInsensitiveQuotedExactLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
-                createUpperCaseLookupArguments("oracle schema", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_schema", "\""))
+                createInsensitiveQuotedExactLookupArguments("oracle schema", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_schema", "\""))
                 .flatMap(each -> each);
+    }
+    
+    private static Stream<Arguments> createWithOracleUnavailableSchemaLookupArguments() {
+        return Stream.of(
+                Arguments.of("oracle schema finds lower logical database", new IdentifierValue("logical_db")),
+                Arguments.of("oracle schema finds upper logical database", new IdentifierValue("LOGICAL_DB")));
+    }
+    
+    private static Stream<Arguments> createWithOracleTableLookupArguments() {
+        return Stream.of(
+                Arguments.of("oracle table finds lower lookup", new IdentifierValue("t_log")),
+                Arguments.of("oracle table finds upper lookup", new IdentifierValue("T_LOG")));
     }
     
     private static Stream<Arguments> createWithSupportedDatabaseTableLookupArguments() {
@@ -499,7 +527,7 @@ class DatabaseIdentifierContextFactoryTest {
                 createNormalizedMixedLookupArguments("mysql schema", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_schema", "`"),
                 createInsensitiveQuotedExactMixedLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
                 createInsensitiveQuotedExactMixedLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
-                createUpperCaseMixedLookupArguments("oracle schema", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_schema", "\""))
+                createInsensitiveQuotedExactMixedLookupArguments("oracle schema", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_schema", "\""))
                 .flatMap(each -> each);
     }
     
