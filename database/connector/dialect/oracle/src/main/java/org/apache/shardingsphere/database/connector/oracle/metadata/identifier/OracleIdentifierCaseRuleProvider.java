@@ -17,15 +17,11 @@
 
 package org.apache.shardingsphere.database.connector.oracle.metadata.identifier;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 
-import java.util.EnumMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -37,9 +33,7 @@ public final class OracleIdentifierCaseRuleProvider implements IdentifierCaseRul
     @Override
     public Optional<IdentifierCaseRuleSet> provide(final IdentifierCaseRuleProviderContext context) {
         Objects.requireNonNull(context, "context cannot be null.");
-        Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
-        scopedRules.put(IdentifierScope.SCHEMA, IdentifierCaseRuleSets.newInsensitiveRuleSet().getRule(IdentifierScope.SCHEMA));
-        return Optional.of(new IdentifierCaseRuleSet(IdentifierCaseRuleSets.newUpperCaseRuleSet().getRule(IdentifierScope.TABLE), scopedRules));
+        return Optional.of(IdentifierCaseRuleSets.newUpperCaseRuleSet());
     }
     
     @Override

@@ -60,16 +60,16 @@ class DatabaseTypeRegistryTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getDefaultSchemaNameWithIdentifierPatternArguments")
-    void assertGetDefaultSchemaNameWithIdentifierPattern(final String name, final IdentifierPatternType identifierPatternType, final boolean schemaAvailable,
+    void assertGetDefaultSchemaNameWithIdentifierPattern(final String name, final IdentifierPatternType identifierPatternType,
                                                          final String databaseName, final String expectedSchemaName) throws ReflectiveOperationException {
-        DatabaseTypeRegistry databaseTypeRegistry = createDatabaseTypeRegistry(identifierPatternType, schemaAvailable, null);
+        DatabaseTypeRegistry databaseTypeRegistry = createDatabaseTypeRegistry(identifierPatternType, null);
         assertThat(databaseTypeRegistry.getDefaultSchemaName(databaseName), is(expectedSchemaName));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("formatIdentifierPatternArguments")
     void assertFormatIdentifierPattern(final String name, final IdentifierPatternType identifierPatternType, final String expectedIdentifierPattern) throws ReflectiveOperationException {
-        DatabaseTypeRegistry databaseTypeRegistry = createDatabaseTypeRegistry(identifierPatternType, false, null);
+        DatabaseTypeRegistry databaseTypeRegistry = createDatabaseTypeRegistry(identifierPatternType, null);
         assertThat(databaseTypeRegistry.formatIdentifierPattern("Foo"), is(expectedIdentifierPattern));
     }
     
@@ -82,12 +82,10 @@ class DatabaseTypeRegistryTest {
     
     private static Stream<Arguments> getDefaultSchemaNameWithIdentifierPatternArguments() {
         return Stream.of(
-                Arguments.of("schema available upper case identifier pattern formats default schema", IdentifierPatternType.UPPER_CASE, true, "foo_db", "FOO_DB"),
-                Arguments.of("schema available lower case identifier pattern formats default schema", IdentifierPatternType.LOWER_CASE, true, "FOO_DB", "foo_db"),
-                Arguments.of("schema available keep origin identifier pattern keeps default schema", IdentifierPatternType.KEEP_ORIGIN, true, "Foo_Db", "Foo_Db"),
-                Arguments.of("schema unavailable upper case identifier pattern keeps database name", IdentifierPatternType.UPPER_CASE, false, "logical_db", "logical_db"),
-                Arguments.of("schema unavailable keep origin identifier pattern keeps database name", IdentifierPatternType.KEEP_ORIGIN, false, "Logical_DB", "Logical_DB"),
-                Arguments.of("null database name keeps null default schema", IdentifierPatternType.UPPER_CASE, false, null, null));
+                Arguments.of("upper case identifier pattern formats default schema", IdentifierPatternType.UPPER_CASE, "foo_db", "FOO_DB"),
+                Arguments.of("lower case identifier pattern formats default schema", IdentifierPatternType.LOWER_CASE, "FOO_DB", "foo_db"),
+                Arguments.of("keep origin identifier pattern keeps default schema", IdentifierPatternType.KEEP_ORIGIN, "Foo_Db", "Foo_Db"),
+                Arguments.of("null database name keeps null default schema", IdentifierPatternType.UPPER_CASE, null, null));
     }
     
     private static Stream<Arguments> formatIdentifierPatternArguments() {
@@ -97,11 +95,10 @@ class DatabaseTypeRegistryTest {
                 Arguments.of("identifier pattern keep origin", IdentifierPatternType.KEEP_ORIGIN, "Foo"));
     }
     
-    private DatabaseTypeRegistry createDatabaseTypeRegistry(final IdentifierPatternType identifierPatternType, final boolean schemaAvailable,
-                                                            final String defaultSchema) throws ReflectiveOperationException {
+    private DatabaseTypeRegistry createDatabaseTypeRegistry(final IdentifierPatternType identifierPatternType, final String defaultSchema) throws ReflectiveOperationException {
         DatabaseTypeRegistry result = new DatabaseTypeRegistry(trunkDatabaseType);
         Plugins.getMemberAccessor().set(DatabaseTypeRegistry.class.getDeclaredField("dialectDatabaseMetaData"),
-                result, new FixtureDialectDatabaseMetaData(identifierPatternType, schemaAvailable, defaultSchema));
+                result, new FixtureDialectDatabaseMetaData(identifierPatternType, defaultSchema));
         return result;
     }
     
@@ -111,9 +108,9 @@ class DatabaseTypeRegistryTest {
         
         private final DefaultSchemaOption schemaOption;
         
-        private FixtureDialectDatabaseMetaData(final IdentifierPatternType identifierPatternType, final boolean schemaAvailable, final String defaultSchema) {
+        private FixtureDialectDatabaseMetaData(final IdentifierPatternType identifierPatternType, final String defaultSchema) {
             this.identifierPatternType = identifierPatternType;
-            schemaOption = new DefaultSchemaOption(schemaAvailable, defaultSchema);
+            schemaOption = new DefaultSchemaOption(false, defaultSchema);
         }
         
         @Override
