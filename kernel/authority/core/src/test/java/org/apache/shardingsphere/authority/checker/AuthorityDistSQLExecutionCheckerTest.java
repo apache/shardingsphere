@@ -139,9 +139,6 @@ class AuthorityDistSQLExecutionCheckerTest {
     
     // -------------------------------------------------------------------------
     // Non-admin user + write DistSQL → always deny
-    // This reproduces the four exploits from the vulnerability report:
-    //   REGISTER STORAGE UNIT, UNREGISTER STORAGE UNIT, EXPORT DATABASE CONFIGURATION
-    //   all go through RDL or updatable RAL paths.
     // -------------------------------------------------------------------------
     
     @Test
