@@ -171,9 +171,9 @@ common_flows:
   referenced_resources: ['shardingsphere://capabilities']
 protocolAvailability: {resources: true, resourceTemplates: true, tools: true, toolAnnotations: true,
   toolOutputSchemas: true, prompts: true, completions: true, resourceNavigation: true}
-fingerprints: {algorithm: sha256, descriptorCatalog: 2a20fbf5d6475bfef35be7553566ee01e846a3970120c698a0d97f1060b0a378,
-  promptSet: 63e5b9cb3fada77bc332fd0f958c390d66b538944bdc4ba75501cac5106cd3f3, resourceNavigation: 64bf1a1ca4856b55a21b09922aa8df6e7bb7f043faa38977680d1a1e3c060bae,
-  modelFacingSchemas: 3697897d1bf6deed658781b712146728b73944562e0f8e128527f0106eefd493}
+fingerprints: {algorithm: sha256, descriptorCatalog: 38af8134f114058ef606db39d3c2901e05efa50b45f1d90212f9c3298da12477,
+  promptSet: 61bd579b26477b5ac1e65c0325dae45aaa856ed240a9f0baaf27329fc0386c7f, resourceNavigation: d14e4f394dfb82f37109463f47222259bf9ae5631a4fa1f152e424ea123639e1,
+  modelFacingSchemas: 0f0d55d3301fb3b07d3fa7f63e32c3dd359b53b3b7a5cfba65f199d89c3a175a}
 resources:
 - uri: shardingsphere://capabilities
   name: server-capability-catalog
@@ -227,6 +227,15 @@ resourceTemplates:
       database_gateway_validate_workflow]
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
+- uriTemplate: shardingsphere://features/broadcast/databases/{database}/tables/{table}/rule
+  name: broadcast-table-rule
+  _meta:
+    org.apache.shardingsphere/resource-kind: rule
+    org.apache.shardingsphere/related-tools: [database_gateway_plan_broadcast_rule,
+      database_gateway_validate_workflow]
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+    - {name: table, required: true}
 - uriTemplate: shardingsphere://features/broadcast/databases/{database}/rule-count
   name: broadcast-rule-count
   _meta:
