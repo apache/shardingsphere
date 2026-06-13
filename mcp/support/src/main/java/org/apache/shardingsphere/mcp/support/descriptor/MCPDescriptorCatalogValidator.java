@@ -35,6 +35,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 final class MCPDescriptorCatalogValidator {
     
@@ -52,6 +54,10 @@ final class MCPDescriptorCatalogValidator {
     
     private static final Collection<String> RECOVERY_CATEGORIES = List.of("not_found", "ambiguous", "empty_scope", "missing_context", "validation", "terminal",
             "unsupported_target", "invalid_enum", "unsafe_sql", "stale_workflow", "unavailable_runtime", "terminal_operator_action");
+    
+    private static final String CLIENT_FORM_ONLY_ARGUMENTS = "org.apache.shardingsphere/client-form-only-arguments";
+    
+    private static final Pattern SINGLE_BRACE_PLACEHOLDER_PATTERN = Pattern.compile("(?<!\\{)\\{\\s*([a-zA-Z0-9_.-]+)\\s*}(?!})");
     
     private MCPDescriptorCatalogValidator() {
     }
@@ -293,11 +299,66 @@ final class MCPDescriptorCatalogValidator {
     }
     
     private static void validatePromptTemplate(final MCPPromptDescriptor descriptor, final MCPPromptTemplateBinding binding) {
+        String template = MCPPromptTemplateLoader.load(binding.getTemplateResource());
+        validateNoUnsupportedModelFacingPlaceholders(binding, template);
         Set<String> declaredArguments = new HashSet<>(descriptor.getArguments().stream().map(MCPPromptArgumentDescriptor::getName).toList());
-        for (String each : MCPPromptTemplateLoader.extractPlaceholders(MCPPromptTemplateLoader.load(binding.getTemplateResource()))) {
+        Set<String> renderedArguments = MCPPromptTemplateLoader.extractPlaceholders(template);
+        for (String each : renderedArguments) {
             ShardingSpherePreconditions.checkState(declaredArguments.contains(each),
                     () -> new IllegalStateException(String.format("Prompt template `%s` has undeclared placeholder `%s`.", binding.getTemplateResource(), each)));
         }
+        validateDeclaredPromptArgumentsRendered(descriptor, binding, declaredArguments, renderedArguments);
+    }
+    
+    private static void validateNoUnsupportedModelFacingPlaceholders(final MCPPromptTemplateBinding binding, final String template) {
+        for (String each : template.lines().toList()) {
+            validateNoUnsupportedModelFacingPlaceholderInLine(binding, each);
+        }
+    }
+    
+    private static void validateNoUnsupportedModelFacingPlaceholderInLine(final MCPPromptTemplateBinding binding, final String line) {
+        Matcher matcher = SINGLE_BRACE_PLACEHOLDER_PATTERN.matcher(line);
+        while (matcher.find()) {
+            if (!isResourceUriTemplateVariable(line, matcher.start())) {
+                throw new IllegalStateException(String.format("Prompt template `%s` contains unsupported model-facing placeholder `{%s}`.",
+                        binding.getTemplateResource(), matcher.group(1)));
+            }
+        }
+    }
+    
+    private static boolean isResourceUriTemplateVariable(final String line, final int placeholderStartIndex) {
+        int tokenStartIndex = findTokenStartIndex(line, placeholderStartIndex);
+        int resourceUriStartIndex = line.lastIndexOf("shardingsphere://", placeholderStartIndex);
+        return resourceUriStartIndex >= tokenStartIndex;
+    }
+    
+    private static int findTokenStartIndex(final String line, final int index) {
+        for (int i = index - 1; i >= 0; i--) {
+            if (Character.isWhitespace(line.charAt(i))) {
+                return i + 1;
+            }
+        }
+        return 0;
+    }
+    
+    private static void validateDeclaredPromptArgumentsRendered(final MCPPromptDescriptor descriptor, final MCPPromptTemplateBinding binding,
+                                                                final Set<String> declaredArguments, final Set<String> renderedArguments) {
+        Set<String> clientFormOnlyArguments = getClientFormOnlyArguments(descriptor);
+        for (String each : declaredArguments) {
+            ShardingSpherePreconditions.checkState(renderedArguments.contains(each) || clientFormOnlyArguments.contains(each),
+                    () -> new IllegalStateException(String.format("Prompt `%s` declares argument `%s` but template `%s` does not render it.",
+                            descriptor.getName(), each, binding.getTemplateResource())));
+        }
+    }
+    
+    private static Set<String> getClientFormOnlyArguments(final MCPPromptDescriptor descriptor) {
+        Object value = descriptor.getMeta().get(CLIENT_FORM_ONLY_ARGUMENTS);
+        if (null == value) {
+            return Set.of();
+        }
+        ShardingSpherePreconditions.checkState(value instanceof Collection,
+                () -> new IllegalStateException(String.format("Prompt `%s` metadata `%s` must be a list.", descriptor.getName(), CLIENT_FORM_ONLY_ARGUMENTS)));
+        return ((Collection<?>) value).stream().map(String::valueOf).collect(Collectors.toSet());
     }
     
     private static void validateCompletionTargetDescriptors(final Collection<MCPCompletionTargetDescriptor> descriptors, final Collection<MCPPromptDescriptor> prompts,

@@ -197,6 +197,10 @@ prompts:
         title: Algorithm Type
         description: "Shadow algorithm type, such as SQL_HINT, VALUE_MATCH, or REGEX_MATCH."
         required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue a shadow rule plan."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_shadow_rule
@@ -230,6 +234,10 @@ prompts:
         title: Algorithm Type
         description: "Default shadow algorithm type."
         required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue a default shadow algorithm plan."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_default_shadow_algorithm
@@ -257,6 +265,10 @@ prompts:
       - name: algorithm_name
         title: Algorithm Name
         description: "Configured shadow algorithm name to clean up."
+        required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue a shadow algorithm cleanup plan."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -316,8 +328,15 @@ resourceNavigation:
   - from: shardingsphere://features/shadow/algorithm-plugins
     to: database_gateway_plan_shadow_rule
     requiredArguments: []
-    carriedArguments: []
+    carriedArguments:
+      - algorithm_type
     description: "Choose an available shadow algorithm before planning create or alter."
+  - from: shardingsphere://features/shadow/algorithm-plugins
+    to: database_gateway_plan_default_shadow_algorithm
+    requiredArguments: []
+    carriedArguments:
+      - algorithm_type
+    description: "Choose an available shadow algorithm before planning the default algorithm."
   - from: database_gateway_plan_shadow_rule
     to: shardingsphere://workflows/{plan_id}
     requiredArguments:
@@ -325,6 +344,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning shadow rule changes."
+  - from: database_gateway_plan_shadow_rule
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed shadow rule workflow after user approval."
   - from: database_gateway_plan_default_shadow_algorithm
     to: shardingsphere://workflows/{plan_id}
     requiredArguments:
@@ -332,6 +358,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning default shadow algorithm changes."
+  - from: database_gateway_plan_default_shadow_algorithm
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed default shadow algorithm workflow after user approval."
   - from: database_gateway_plan_shadow_algorithm_cleanup
     to: shardingsphere://workflows/{plan_id}
     requiredArguments:
@@ -339,6 +372,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning shadow algorithm cleanup."
+  - from: database_gateway_plan_shadow_algorithm_cleanup
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed shadow algorithm cleanup workflow after user approval."
 tools:
   - name: database_gateway_plan_shadow_rule
     title: Plan Shadow Rule

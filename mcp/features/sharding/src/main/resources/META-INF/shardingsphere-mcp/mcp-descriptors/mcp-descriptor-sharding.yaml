@@ -335,6 +335,10 @@ prompts:
         title: Sharding Algorithm
         description: "Optional sharding algorithm type."
         required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue a sharding table rule plan."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_sharding_table_rule
@@ -365,6 +369,10 @@ prompts:
       - name: operation_type
         title: Operation Type
         description: "create, alter, or drop."
+        required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue this sharding plan."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -397,6 +405,10 @@ prompts:
       - name: algorithm_type
         title: Sharding Algorithm
         description: "Optional default sharding algorithm type."
+        required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue a default sharding strategy plan."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -431,6 +443,10 @@ prompts:
         title: Key Generator Algorithm
         description: "Optional key generator algorithm type."
         required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue a sharding key generator plan."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_sharding_key_generator
@@ -463,6 +479,10 @@ prompts:
       - name: key_generator_type
         title: Key Generator Algorithm
         description: "Optional key generator algorithm type."
+        required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue a sharding key generate strategy plan."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -658,6 +678,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning sharding table rule changes."
+  - from: database_gateway_plan_sharding_table_rule
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed sharding table rule workflow after user approval."
   - from: database_gateway_plan_sharding_table_reference_rule
     to: shardingsphere://workflows/{plan_id}
     requiredArguments:
@@ -665,6 +692,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning table reference rule changes."
+  - from: database_gateway_plan_sharding_table_reference_rule
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed table reference rule workflow after user approval."
   - from: database_gateway_plan_sharding_default_strategy
     to: shardingsphere://workflows/{plan_id}
     requiredArguments:
@@ -672,6 +706,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning default sharding strategy changes."
+  - from: database_gateway_plan_sharding_default_strategy
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed default sharding strategy workflow after user approval."
   - from: database_gateway_plan_sharding_key_generator
     to: shardingsphere://workflows/{plan_id}
     requiredArguments:
@@ -679,6 +720,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning key generator changes."
+  - from: database_gateway_plan_sharding_key_generator
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed sharding key generator workflow after user approval."
   - from: database_gateway_plan_sharding_key_generate_strategy
     to: shardingsphere://workflows/{plan_id}
     requiredArguments:
@@ -686,6 +734,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning key generate strategy changes."
+  - from: database_gateway_plan_sharding_key_generate_strategy
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed key generate strategy workflow after user approval."
   - from: database_gateway_plan_sharding_rule_component_cleanup
     to: shardingsphere://workflows/{plan_id}
     requiredArguments:
@@ -693,6 +748,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning sharding component cleanup."
+  - from: database_gateway_plan_sharding_rule_component_cleanup
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed sharding component cleanup workflow after user approval."
 tools:
   - name: database_gateway_plan_sharding_table_rule
     title: Plan Sharding Table Rule

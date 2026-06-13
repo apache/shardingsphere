@@ -23,6 +23,8 @@ import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgo
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
@@ -38,7 +40,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -76,15 +77,23 @@ public final class ShadowWorkflowPlanningService {
     
     private final ShadowInspectionService inspectionService;
     
+    private final ShadowAlgorithmRecommendationService algorithmRecommendationService;
+    
+    private final ShadowAlgorithmPropertyTemplateService algorithmPropertyTemplateService;
+    
     private final ShadowDistSQLPlanningService distSQLPlanningService;
     
     public ShadowWorkflowPlanningService() {
         inspectionService = new ShadowInspectionService();
+        algorithmRecommendationService = new ShadowAlgorithmRecommendationService();
+        algorithmPropertyTemplateService = new ShadowAlgorithmPropertyTemplateService();
         distSQLPlanningService = new ShadowDistSQLPlanningService();
     }
     
     ShadowWorkflowPlanningService(final ShadowInspectionService inspectionService, final ShadowDistSQLPlanningService distSQLPlanningService) {
         this.inspectionService = inspectionService;
+        algorithmRecommendationService = new ShadowAlgorithmRecommendationService();
+        algorithmPropertyTemplateService = new ShadowAlgorithmPropertyTemplateService();
         this.distSQLPlanningService = distSQLPlanningService;
     }
     
@@ -103,8 +112,16 @@ public final class ShadowWorkflowPlanningService {
         ShadowRuleWorkflowRequest mergedRequest = prepareSnapshot(result, request, ShadowFeatureDefinition.RULE_WORKFLOW_KIND,
                 resolveIntent(request, "create"), "Shadow rule workflow plan.", RULE_INTERACTION_STEPS);
         planningSupport.applyResolvedIntent(mergedRequest, result.getClarifiedIntent());
+        if (!WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(result.getClarifiedIntent().getOperationType()) && !mergedRequest.getDatabase().isEmpty()) {
+            planAlgorithms(queryFacade, mergedRequest, result);
+        }
         if (!ensureRulePlanningContext(mergedRequest, result.getClarifiedIntent(), result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
+        }
+        if (!WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(result.getClarifiedIntent().getOperationType())
+                && !planningSupport.isReadyForArtifactPlanning(mergedRequest, result.getClarifiedIntent(), result, findPropertyRequirements(mergedRequest),
+                        "Please use a shadow algorithm visible in the current Proxy and provide required properties.")) {
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
         String databaseType = queryFacade.getDatabaseType(mergedRequest.getDatabase());
         if (!ensureRuleLifecycle(result.getClarifiedIntent(), mergedRequest, inspectionService.queryRules(queryFacade, mergedRequest.getDatabase()), result, databaseType)) {
@@ -129,8 +146,16 @@ public final class ShadowWorkflowPlanningService {
         ShadowDefaultAlgorithmWorkflowRequest mergedRequest = prepareSnapshot(result, request, ShadowFeatureDefinition.DEFAULT_ALGORITHM_WORKFLOW_KIND,
                 resolveIntent(request, "create"), "Default shadow algorithm workflow plan.", DEFAULT_ALGORITHM_INTERACTION_STEPS);
         planningSupport.applyResolvedIntent(mergedRequest, result.getClarifiedIntent());
+        if (!WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(result.getClarifiedIntent().getOperationType()) && !mergedRequest.getDatabase().isEmpty()) {
+            planAlgorithms(queryFacade, mergedRequest, result);
+        }
         if (!ensureDefaultAlgorithmPlanningContext(mergedRequest, result.getClarifiedIntent(), result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
+        }
+        if (!WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(result.getClarifiedIntent().getOperationType())
+                && !planningSupport.isReadyForArtifactPlanning(mergedRequest, result.getClarifiedIntent(), result, findPropertyRequirements(mergedRequest),
+                        "Please use a shadow algorithm visible in the current Proxy and provide required properties.")) {
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
         boolean exists = !inspectionService.queryDefaultAlgorithm(queryFacade, mergedRequest.getDatabase()).isEmpty();
         if (!planningSupport.ensureLifecycleState("Default shadow algorithm", result.getClarifiedIntent(), exists, result)) {
@@ -209,7 +234,6 @@ public final class ShadowWorkflowPlanningService {
             addMissingInput(missingInputs, request.getShadowStorageUnit(), ShadowFeatureDefinition.SHADOW_STORAGE_UNIT_FIELD);
             addMissingInput(missingInputs, request.getTableName(), ShadowFeatureDefinition.TABLE_FIELD);
             addMissingInput(missingInputs, request.getAlgorithmType(), ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD);
-            addMissingAlgorithmProperties(missingInputs, request.getAlgorithmType(), request.getAlgorithmProperties());
         }
         return ensureNoMissingInputs(missingInputs, clarifiedIntent, snapshot, "Shadow rule DistSQL requires explicit rule, storage unit, table and algorithm inputs.");
     }
@@ -221,7 +245,6 @@ public final class ShadowWorkflowPlanningService {
         List<String> missingInputs = new LinkedList<>();
         if (!WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType())) {
             addMissingInput(missingInputs, request.getAlgorithmType(), ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD);
-            addMissingAlgorithmProperties(missingInputs, request.getAlgorithmType(), request.getAlgorithmProperties());
         }
         return ensureNoMissingInputs(missingInputs, clarifiedIntent, snapshot, "Default shadow algorithm DistSQL requires an explicit algorithm type and properties.");
     }
@@ -258,19 +281,6 @@ public final class ShadowWorkflowPlanningService {
             }
         }
         return true;
-    }
-    
-    private void addMissingAlgorithmProperties(final Collection<String> missingInputs, final String algorithmType, final Map<String, String> properties) {
-        String actualType = algorithmType.toUpperCase(Locale.ENGLISH);
-        if ("VALUE_MATCH".equals(actualType)) {
-            addMissingInput(missingInputs, properties.get("operation"), "algorithm_properties.operation");
-            addMissingInput(missingInputs, properties.get("column"), "algorithm_properties.column");
-            addMissingInput(missingInputs, properties.get("value"), "algorithm_properties.value");
-        } else if ("REGEX_MATCH".equals(actualType)) {
-            addMissingInput(missingInputs, properties.get("operation"), "algorithm_properties.operation");
-            addMissingInput(missingInputs, properties.get("column"), "algorithm_properties.column");
-            addMissingInput(missingInputs, properties.get("regex"), "algorithm_properties.regex");
-        }
     }
     
     private void addMissingInput(final Collection<String> missingInputs, final String value, final String fieldName) {
@@ -326,6 +336,19 @@ public final class ShadowWorkflowPlanningService {
     private boolean isDefaultAlgorithm(final String algorithmName, final List<Map<String, Object>> defaultAlgorithm, final String databaseType) {
         return defaultAlgorithm.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, algorithmName,
                 WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name")));
+    }
+    
+    private void planAlgorithms(final MCPFeatureQueryFacade queryFacade, final WorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        List<AlgorithmCandidate> algorithmCandidates = algorithmRecommendationService.recommendShadowAlgorithms(
+                request, inspectionService.queryAlgorithmPlugins(queryFacade), snapshot.getIssues());
+        snapshot.getAlgorithmCandidates().addAll(algorithmCandidates);
+        if (!algorithmCandidates.isEmpty()) {
+            request.setAlgorithmType(algorithmCandidates.getFirst().getAlgorithmType());
+        }
+    }
+    
+    private List<AlgorithmPropertyRequirement> findPropertyRequirements(final WorkflowRequest request) {
+        return algorithmPropertyTemplateService.findRequirements(request.getAlgorithmType());
     }
     
     private void addRuleArtifact(final WorkflowContextSnapshot snapshot, final ShadowRuleWorkflowRequest request, final String operationType) {

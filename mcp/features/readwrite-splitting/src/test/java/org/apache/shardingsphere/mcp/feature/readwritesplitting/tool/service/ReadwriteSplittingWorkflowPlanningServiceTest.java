@@ -32,6 +32,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -48,6 +49,40 @@ class ReadwriteSplittingWorkflowPlanningServiceTest {
                 is("CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_STORAGE_UNIT=write_ds, READ_STORAGE_UNITS(read_ds_0), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')"));
         assertFalse(actual.getDdlArtifacts().iterator().hasNext());
         assertFalse(actual.getIndexPlans().iterator().hasNext());
+    }
+    
+    @Test
+    void assertPlanCreateRuleWithLoadBalancerProperties() {
+        ReadwriteSplittingRuleWorkflowRequest request = createRuleRequest("create");
+        request.setLoadBalancerType("WEIGHT");
+        request.putLoadBalancerProperties(Map.of("read_ds_0", "2"));
+        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), "session-1", request);
+        assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmType(), is("WEIGHT"));
+        assertThat(actual.getPropertyRequirements().getFirst().getPropertyKey(), is("read_ds_0"));
+        String expectedSQL = "CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_STORAGE_UNIT=write_ds, READ_STORAGE_UNITS(read_ds_0), "
+                + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC', TYPE(NAME='weight', PROPERTIES('read_ds_0'='2')))";
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is(expectedSQL));
+    }
+    
+    @Test
+    void assertPlanCreateRuleClarifiesMissingLoadBalancerProperties() {
+        ReadwriteSplittingRuleWorkflowRequest request = createRuleRequest("create");
+        request.setLoadBalancerType("WEIGHT");
+        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
+        assertThat(actual.getPropertyRequirements().getFirst().getPropertyKey(), is("read_ds_0"));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
+    }
+    
+    @Test
+    void assertPlanCreateRuleWithLoadBalancerRecommendation() {
+        ReadwriteSplittingRuleWorkflowRequest request = createRuleRequest("create");
+        request.setLoadBalancerType("RANDOM");
+        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
+        assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmType(), is("RANDOM"));
+        assertTrue(actual.getPropertyRequirements().isEmpty());
     }
     
     @Test

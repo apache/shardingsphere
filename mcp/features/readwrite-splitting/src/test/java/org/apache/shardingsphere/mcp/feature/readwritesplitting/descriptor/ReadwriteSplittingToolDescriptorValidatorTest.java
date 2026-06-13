@@ -22,6 +22,8 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateLoader;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -112,6 +114,34 @@ class ReadwriteSplittingToolDescriptorValidatorTest {
         assertTrue(prompt.contains("physical metadata probes"));
     }
     
+    @Test
+    void assertPromptsRenderPlanningContext() throws IOException {
+        String actualRulePrompt = MCPPromptTemplateLoader.render(readResource("META-INF/shardingsphere-mcp/prompts/plan-readwrite-splitting-rule.md"), Map.of(
+                "database", "logic_db", "rule", "readwrite_ds", "operation_type", "create", "write_storage_unit", "write_ds", "read_storage_units", "read_ds_0",
+                "transactional_read_query_strategy", "DYNAMIC", "load_balancer_type", "ROUND_ROBIN", "plan_id", "plan-1"));
+        assertTrue(actualRulePrompt.contains("- database: logic_db"));
+        assertTrue(actualRulePrompt.contains("- plan_id: plan-1"));
+        assertFalse(actualRulePrompt.contains("{{"));
+        String actualStatusPrompt = MCPPromptTemplateLoader.render(readResource("META-INF/shardingsphere-mcp/prompts/plan-readwrite-splitting-status.md"), Map.of(
+                "database", "logic_db", "rule", "readwrite_ds", "storage_unit", "read_ds_0", "target_status", "enable", "plan_id", "plan-1"));
+        assertTrue(actualStatusPrompt.contains("- storage_unit: read_ds_0"));
+        assertTrue(actualStatusPrompt.contains("- plan_id: plan-1"));
+        assertFalse(actualStatusPrompt.contains("{{"));
+    }
+    
+    @Test
+    void assertPlanToolsNavigateToWorkflowAndApply() {
+        assertPlanToolNavigation(ReadwriteSplittingFeatureDefinition.PLAN_RULE_TOOL_NAME);
+        assertPlanToolNavigation(ReadwriteSplittingFeatureDefinition.PLAN_STATUS_TOOL_NAME);
+    }
+    
+    @Test
+    void assertAlgorithmResourceNavigationCarriesLoadBalancerType() {
+        MCPResourceNavigationDescriptor actual = findNavigation(ReadwriteSplittingFeatureDefinition.LOAD_BALANCE_ALGORITHM_PLUGINS_RESOURCE_URI,
+                ReadwriteSplittingFeatureDefinition.PLAN_RULE_TOOL_NAME);
+        assertThat(actual.getCarriedArguments(), is(List.of(ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD)));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("requiredOutputFields")
     @SuppressWarnings("unchecked")
@@ -160,6 +190,22 @@ class ReadwriteSplittingToolDescriptorValidatorTest {
     private boolean hasCompletionTarget(final String referenceType, final String reference) {
         return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
                 .anyMatch(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference()));
+    }
+    
+    private void assertPlanToolNavigation(final String toolName) {
+        assertNavigation(toolName, "shardingsphere://workflows/{plan_id}");
+        assertNavigation(toolName, "database_gateway_apply_workflow");
+    }
+    
+    private void assertNavigation(final String from, final String to) {
+        MCPResourceNavigationDescriptor actual = findNavigation(from, to);
+        assertThat(actual.getRequiredArguments(), is(List.of("plan_id")));
+        assertThat(actual.getCarriedArguments(), is(List.of("plan_id")));
+    }
+    
+    private MCPResourceNavigationDescriptor findNavigation(final String from, final String to) {
+        return MCPDescriptorCatalogIndex.getResourceNavigationDescriptors(from).stream()
+                .filter(each -> to.equals(each.getTo())).findFirst().orElseThrow();
     }
     
     private String readResource(final String resourceName) throws IOException {

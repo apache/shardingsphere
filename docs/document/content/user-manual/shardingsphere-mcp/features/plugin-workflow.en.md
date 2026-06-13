@@ -24,6 +24,19 @@ It is not a standalone business feature. Users usually enter this flow from a co
 | Apply the change            | Confirm automatic execution, or export a manual package for operators.                       | Side-effecting changes must be confirmed.                       |
 | Validate the result         | Check rule state or workflow execution results returned by the feature plugin.               | Confirm that the change has taken effect.                       |
 
+## Plan Response Fields
+
+Planning tools return a `plan_id` that links the generated plan to workflow resources, preview, apply, and validation tools.
+Use the workflow resource to review the persisted plan before applying it.
+Use preview before execution when the user needs one more confirmation step.
+
+Model-facing planning responses may include:
+
+- `algorithm_recommendations`: candidate algorithms selected from Proxy-visible plugin catalogs or explicit user input.
+- `property_requirements`: required or optional properties for the selected algorithms. Missing required properties keep the workflow in clarification instead of generating unsafe artifacts.
+- `resources_to_read` and `next_actions`: resource and tool navigation hints for continuing the workflow.
+- `distsql_artifacts`: reviewable rule DistSQL generated inside the current feature plugin boundary.
+
 ## Change Execution Choices
 
 | User wording                             | What users receive                                         | Focus                                                                                       |

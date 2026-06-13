@@ -72,6 +72,27 @@ class ReadwriteSplittingToolHandlerTest {
     }
     
     @Test
+    void assertHandlePlanRuleWithTopLevelLoadBalancerProperties() {
+        ReadwriteSplittingRuleWorkflowRequest actual = handlePlanRule(Map.of("database", "logic_db",
+                "load_balancer_properties", Map.of("read_ds_0", "2")));
+        assertThat(actual.getLoadBalancerProperties(), is(Map.of("read_ds_0", "2")));
+    }
+    
+    @Test
+    void assertHandlePlanRuleWithStructuredIntentLoadBalancerProperties() {
+        ReadwriteSplittingRuleWorkflowRequest actual = handlePlanRule(Map.of("database", "logic_db",
+                "structured_intent_evidence", Map.of("load_balancer_properties", Map.of("read_ds_0", "2"))));
+        assertThat(actual.getLoadBalancerProperties(), is(Map.of("read_ds_0", "2")));
+    }
+    
+    @Test
+    void assertHandlePlanRuleWithUserOverrideLoadBalancerProperties() {
+        ReadwriteSplittingRuleWorkflowRequest actual = handlePlanRule(Map.of("database", "logic_db",
+                "user_overrides", Map.of("load_balancer_properties", Map.of("read_ds_0", "2"))));
+        assertThat(actual.getLoadBalancerProperties(), is(Map.of("read_ds_0", "2")));
+    }
+    
+    @Test
     void assertHandlePlanRuleWithArtifacts() {
         ReadwriteSplittingRuleWorkflowPlanningService planningService = mock(ReadwriteSplittingRuleWorkflowPlanningService.class);
         when(planningService.plan(any(), any(), any(), any())).thenReturn(createRuleSnapshot());
@@ -80,7 +101,7 @@ class ReadwriteSplittingToolHandlerTest {
         Map<String, Object> actualPayload = actual.toPayload();
         assertFalse(actualPayload.containsKey("ddl_artifacts"));
         assertFalse(actualPayload.containsKey("index_plan"));
-        assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).get(0)).get("sql")).contains("CREATE READWRITE_SPLITTING RULE"));
+        assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("CREATE READWRITE_SPLITTING RULE"));
         assertTrue(extractResourceUris((List<?>) actualPayload.get("resources_to_read")).contains("shardingsphere://features/readwrite-splitting/databases/logic_db/rules"));
         assertThat(((Map<?, ?>) actualPayload.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
     }
@@ -109,6 +130,16 @@ class ReadwriteSplittingToolHandlerTest {
         result.getRuleArtifacts().add(new RuleArtifact("create",
                 "CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_STORAGE_UNIT=write_ds, READ_STORAGE_UNITS(read_ds_0), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')"));
         return result;
+    }
+    
+    private ReadwriteSplittingRuleWorkflowRequest handlePlanRule(final Map<String, Object> arguments) {
+        ReadwriteSplittingRuleWorkflowPlanningService planningService = mock(ReadwriteSplittingRuleWorkflowPlanningService.class);
+        when(planningService.plan(any(), any(), any(), any())).thenReturn(createRuleSnapshot());
+        WorkflowContextFixture fixture = createWorkflowContextFixture();
+        new PlanReadwriteSplittingRuleToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", arguments));
+        ArgumentCaptor<ReadwriteSplittingRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingRuleWorkflowRequest.class);
+        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+        return requestCaptor.getValue();
     }
     
     private WorkflowContextSnapshot createStatusSnapshot() {

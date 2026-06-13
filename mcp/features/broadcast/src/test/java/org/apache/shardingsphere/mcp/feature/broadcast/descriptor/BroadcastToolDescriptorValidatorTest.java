@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateLoader;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -98,6 +99,18 @@ class BroadcastToolDescriptorValidatorTest {
         String prompt = readResource("META-INF/shardingsphere-mcp/prompts/plan-broadcast-rule.md");
         assertTrue(prompt.contains("Do not generate physical table statements"));
         assertTrue(prompt.contains("storage unit mutation operations"));
+    }
+    
+    @Test
+    void assertPromptRendersPlanningContext() throws IOException {
+        String actual = MCPPromptTemplateLoader.render(readResource("META-INF/shardingsphere-mcp/prompts/plan-broadcast-rule.md"), Map.of(
+                "database", "logic_db", "table", "t_order", "tables", "t_order,t_order_item", "operation_type", "create", "plan_id", "plan-1"));
+        assertTrue(actual.contains("- database: logic_db"));
+        assertTrue(actual.contains("- table: t_order"));
+        assertTrue(actual.contains("- tables: t_order,t_order_item"));
+        assertTrue(actual.contains("- operation_type: create"));
+        assertTrue(actual.contains("- plan_id: plan-1"));
+        assertFalse(actual.contains("{{"));
     }
     
     @ParameterizedTest(name = "{0}")
