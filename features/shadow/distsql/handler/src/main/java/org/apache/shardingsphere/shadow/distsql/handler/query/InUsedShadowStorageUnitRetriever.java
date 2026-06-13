@@ -33,8 +33,8 @@ public final class InUsedShadowStorageUnitRetriever implements InUsedStorageUnit
     @Override
     public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final ShadowRule rule) {
         return rule.getConfiguration().getDataSources().stream()
-                .filter(each -> each.getShadowDataSourceName().equalsIgnoreCase(sqlStatement.getStorageUnitName())
-                        || each.getProductionDataSourceName().equalsIgnoreCase(sqlStatement.getStorageUnitName()))
+                .filter(each -> each.getShadowDataSourceName().equals(sqlStatement.getStorageUnitName())
+                        || each.getProductionDataSourceName().equals(sqlStatement.getStorageUnitName()))
                 .map(ShadowDataSourceConfiguration::getName).collect(Collectors.toList());
     }
     

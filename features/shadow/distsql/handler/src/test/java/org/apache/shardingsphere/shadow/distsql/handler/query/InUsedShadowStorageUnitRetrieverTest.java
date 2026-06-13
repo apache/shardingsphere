@@ -38,15 +38,21 @@ class InUsedShadowStorageUnitRetrieverTest {
     private final InUsedStorageUnitRetriever<ShadowRule> retriever = TypedSPILoader.getService(InUsedStorageUnitRetriever.class, ShadowRule.class);
     
     @Test
-    void assertGetInUsedResourcesWithShadowDataSource() {
+    void assertGetInUsedResourcesWithProductionDataSource() {
         ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("prod_ds", null);
         assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singletonList("foo_ds")));
     }
     
     @Test
-    void assertGetInUsedResourcesWithProductionDataSource() {
+    void assertGetInUsedResourcesWithShadowDataSource() {
         ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("shadow_ds", null);
         assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singletonList("foo_ds")));
+    }
+    
+    @Test
+    void assertGetInUsedResourcesWithDifferentCaseDataSource() {
+        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("PROD_DS", null);
+        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.emptyList()));
     }
     
     private ShadowRule mockRule() {
