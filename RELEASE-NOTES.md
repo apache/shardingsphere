@@ -27,6 +27,7 @@
 1. Pipeline: Fix escape MySQL JSON binlog control characters - [#38800](https://github.com/apache/shardingsphere/pull/38800)
 1. Sharding: Support ORDER BY MySQL VARBINARY column by wrapping byte[] values in a Comparable adapter - [#38699](https://github.com/apache/shardingsphere/pull/38699)
 1. Sharding: Fix AUTO_INTERVAL sharding failure under JVM default locales that use comma decimal separators - [#38806](https://github.com/apache/shardingsphere/pull/38806)
+1. DistSQL: Fix case-sensitive storage unit matching in `SHOW RULES USED STORAGE UNIT` - [#38848](https://github.com/apache/shardingsphere/pull/38848)
 
 ### Enhancements
 
