@@ -20,6 +20,8 @@ resources:
     title: Sharding Algorithm Plugins
     description: "List sharding algorithm plugins visible from the current ShardingSphere runtime."
     mimeType: application/json
+    meta:
+      org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
     shardingSphereMetadata:
       resourceKind: list
       feature: sharding
@@ -31,6 +33,8 @@ resources:
     title: Sharding Key Generate Algorithm Plugins
     description: "List key generate algorithm plugins visible from the current ShardingSphere runtime."
     mimeType: application/json
+    meta:
+      org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
     shardingSphereMetadata:
       resourceKind: list
       feature: sharding
@@ -336,6 +340,12 @@ prompts:
         - database_gateway_plan_sharding_table_rule
         - database_gateway_apply_workflow
         - database_gateway_validate_workflow
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/algorithm-plugins
+        - shardingsphere://features/sharding/key-generate-algorithm-plugins
+        - shardingsphere://features/sharding/databases/{database}/table-rules
+        - shardingsphere://features/sharding/databases/{database}/tables/{table}/table-rule
+        - shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_plan_sharding_table_rule returns a planned workflow with plan_id and reviewable artifacts."
         - "Stop after a clarifying response lists missing table, data nodes, storage units, strategy, algorithm, key generator, or auditor inputs."
@@ -361,6 +371,9 @@ prompts:
         - database_gateway_plan_sharding_table_reference_rule
         - database_gateway_apply_workflow
         - database_gateway_validate_workflow
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/databases/{database}/table-reference-rules
+        - shardingsphere://features/sharding/databases/{database}/table-reference-rules/{rule}
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_plan_sharding_table_reference_rule returns a planned workflow with plan_id and reviewable artifacts."
         - "Stop after a clarifying response lists missing rule name or reference table inputs."
@@ -390,6 +403,10 @@ prompts:
         - database_gateway_plan_sharding_default_strategy
         - database_gateway_apply_workflow
         - database_gateway_validate_workflow
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/algorithm-plugins
+        - shardingsphere://features/sharding/databases/{database}/default-strategy
+        - shardingsphere://features/sharding/databases/{database}/algorithms
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_plan_sharding_default_strategy returns a planned workflow with plan_id and reviewable artifacts."
         - "Stop after a clarifying response lists missing default strategy type, sharding column, or algorithm input."
@@ -419,6 +436,10 @@ prompts:
         - database_gateway_plan_sharding_key_generator
         - database_gateway_apply_workflow
         - database_gateway_validate_workflow
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/key-generate-algorithm-plugins
+        - shardingsphere://features/sharding/databases/{database}/key-generators
+        - shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_plan_sharding_key_generator returns a planned workflow with plan_id and reviewable artifacts."
         - "Stop after a clarifying response lists missing key generator name, type, or properties."
@@ -448,6 +469,11 @@ prompts:
         - database_gateway_plan_sharding_key_generate_strategy
         - database_gateway_apply_workflow
         - database_gateway_validate_workflow
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/key-generate-algorithm-plugins
+        - shardingsphere://features/sharding/databases/{database}/key-generators
+        - shardingsphere://features/sharding/databases/{database}/key-generate-strategies
+        - shardingsphere://features/sharding/databases/{database}/key-generate-strategies/{strategy}
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_plan_sharding_key_generate_strategy returns a planned workflow with plan_id and reviewable artifacts."
         - "Stop after a clarifying response lists missing table, column, sequence, or generator input."
@@ -465,6 +491,13 @@ prompts:
         - database_gateway_plan_sharding_rule_component_cleanup
         - database_gateway_apply_workflow
         - database_gateway_validate_workflow
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/databases/{database}/unused-algorithms
+        - shardingsphere://features/sharding/databases/{database}/unused-key-generators
+        - shardingsphere://features/sharding/databases/{database}/unused-auditors
+        - shardingsphere://features/sharding/databases/{database}/algorithms/{algorithm}/table-rules
+        - shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}/table-rules
+        - shardingsphere://features/sharding/databases/{database}/auditors/{auditor}/table-rules
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_plan_sharding_rule_component_cleanup returns a planned workflow with plan_id and reviewable artifacts."
         - "Stop after a clarifying response lists missing component type or component name."
@@ -492,76 +525,230 @@ completionTargets:
     arguments:
       - key_generator_type
     maxValues: 50
+resourceNavigation:
+  - from: shardingsphere://features/sharding/algorithm-plugins
+    to: database_gateway_plan_sharding_table_rule
+    requiredArguments: []
+    carriedArguments:
+      - algorithm_type
+    description: "Use visible sharding algorithms when planning table rules."
+  - from: shardingsphere://features/sharding/algorithm-plugins
+    to: database_gateway_plan_sharding_default_strategy
+    requiredArguments: []
+    carriedArguments:
+      - algorithm_type
+    description: "Use visible sharding algorithms when planning default strategies."
+  - from: shardingsphere://features/sharding/key-generate-algorithm-plugins
+    to: database_gateway_plan_sharding_key_generator
+    requiredArguments: []
+    carriedArguments:
+      - key_generator_type
+    description: "Use visible key generate algorithms when planning key generators."
+  - from: shardingsphere://features/sharding/key-generate-algorithm-plugins
+    to: database_gateway_plan_sharding_key_generate_strategy
+    requiredArguments: []
+    carriedArguments:
+      - key_generator_type
+    description: "Use visible key generate algorithms when planning key generate strategies."
+  - from: shardingsphere://features/sharding/databases/{database}/table-rules
+    to: database_gateway_plan_sharding_table_rule
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Inspect current sharding table rules before planning changes."
+  - from: shardingsphere://features/sharding/databases/{database}/tables/{table}/table-rule
+    to: database_gateway_plan_sharding_table_rule
+    requiredArguments:
+      - database
+      - table
+    carriedArguments:
+      - database
+      - table
+    description: "Use current table rule state before planning create, alter, or drop."
+  - from: shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes
+    to: database_gateway_plan_sharding_table_rule
+    requiredArguments:
+      - database
+      - table
+    carriedArguments:
+      - database
+      - table
+    description: "Use actual data nodes before planning sharding table rule changes."
+  - from: shardingsphere://features/sharding/databases/{database}/table-reference-rules
+    to: database_gateway_plan_sharding_table_reference_rule
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Inspect existing table reference rules before planning changes."
+  - from: shardingsphere://features/sharding/databases/{database}/table-reference-rules/{rule}
+    to: database_gateway_plan_sharding_table_reference_rule
+    requiredArguments:
+      - database
+      - rule
+    carriedArguments:
+      - database
+      - rule
+    description: "Use one table reference rule before planning alter or drop."
+  - from: shardingsphere://features/sharding/databases/{database}/default-strategy
+    to: database_gateway_plan_sharding_default_strategy
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Inspect default sharding strategy before planning changes."
+  - from: shardingsphere://features/sharding/databases/{database}/key-generators
+    to: database_gateway_plan_sharding_key_generator
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Inspect configured key generators before planning changes."
+  - from: shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}
+    to: database_gateway_plan_sharding_key_generator
+    requiredArguments:
+      - database
+      - keyGenerator
+    carriedArguments:
+      - database
+      - keyGenerator
+    description: "Use one key generator before planning alter or drop."
+  - from: shardingsphere://features/sharding/databases/{database}/key-generate-strategies
+    to: database_gateway_plan_sharding_key_generate_strategy
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Inspect key generate strategies before planning changes."
+  - from: shardingsphere://features/sharding/databases/{database}/key-generate-strategies/{strategy}
+    to: database_gateway_plan_sharding_key_generate_strategy
+    requiredArguments:
+      - database
+      - strategy
+    carriedArguments:
+      - database
+      - strategy
+    description: "Use one key generate strategy before planning alter or drop."
+  - from: shardingsphere://features/sharding/databases/{database}/unused-algorithms
+    to: database_gateway_plan_sharding_rule_component_cleanup
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Only clean up algorithms after confirming they are unused."
+  - from: shardingsphere://features/sharding/databases/{database}/unused-key-generators
+    to: database_gateway_plan_sharding_rule_component_cleanup
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Only clean up key generators after confirming they are unused."
+  - from: shardingsphere://features/sharding/databases/{database}/unused-auditors
+    to: database_gateway_plan_sharding_rule_component_cleanup
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Only clean up auditors after confirming they are unused."
+  - from: database_gateway_plan_sharding_table_rule
+    to: shardingsphere://workflows/{plan_id}
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Read the persisted workflow plan after planning sharding table rule changes."
+  - from: database_gateway_plan_sharding_table_reference_rule
+    to: shardingsphere://workflows/{plan_id}
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Read the persisted workflow plan after planning table reference rule changes."
+  - from: database_gateway_plan_sharding_default_strategy
+    to: shardingsphere://workflows/{plan_id}
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Read the persisted workflow plan after planning default sharding strategy changes."
+  - from: database_gateway_plan_sharding_key_generator
+    to: shardingsphere://workflows/{plan_id}
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Read the persisted workflow plan after planning key generator changes."
+  - from: database_gateway_plan_sharding_key_generate_strategy
+    to: shardingsphere://workflows/{plan_id}
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Read the persisted workflow plan after planning key generate strategy changes."
+  - from: database_gateway_plan_sharding_rule_component_cleanup
+    to: shardingsphere://workflows/{plan_id}
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Read the persisted workflow plan after planning sharding component cleanup."
 tools:
   - name: database_gateway_plan_sharding_table_rule
     title: Plan Sharding Table Rule
     description: "Plan reviewable sharding table rule DistSQL without executing it."
-    inputSchema: &shardingPlanInputSchema
+    inputSchema:
       type: object
       properties:
         plan_id: {type: string, description: "Optional workflow plan id."}
         database: {type: string, description: "Logical database."}
         table: {type: string, description: "Logical table."}
-        column: {type: string, description: "Standard sharding column, auto-table sharding column, or key generate column."}
-        rule: {type: string, description: "Rule name."}
+        column: {type: string, description: "Standard or auto-table sharding column."}
         operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
-        data_nodes: {type: string, description: "Explicit data nodes expression for sharding table rule."}
-        storage_units: {type: string, description: "Comma-separated storage units for auto table rule."}
+        data_nodes: {type: string, description: "Explicit data nodes expression for a sharding table rule."}
+        storage_units: {type: string, description: "Comma-separated storage units for an auto table rule."}
         strategy_type: {type: string, description: "Sharding strategy type.", enum: [standard, complex, hint, none]}
-        sharding_columns: {type: string, description: "Comma-separated sharding columns for complex sharding strategy."}
-        default_strategy_type: {type: string, description: "DATABASE or TABLE default strategy type."}
-        algorithm_type: {type: string, description: "Sharding or key generator algorithm type."}
-        algorithm_properties: {type: object, description: "Algorithm properties.", additionalProperties: {type: string}}
-        key_generate_column: {type: string, description: "Key generate column."}
+        sharding_columns: {type: string, description: "Comma-separated sharding columns for a complex strategy."}
+        algorithm_type: {type: string, description: "Sharding algorithm type."}
+        algorithm_properties: {type: object, description: "Sharding algorithm properties.", additionalProperties: {type: string}}
+        key_generate_column: {type: string, description: "Optional key generate column for this table rule."}
         key_generator: {type: string, description: "Existing or target key generator name."}
         key_generator_type: {type: string, description: "Key generator algorithm type."}
         key_generator_properties: {type: object, description: "Key generator properties.", additionalProperties: {type: string}}
-        key_generate_strategy: {type: string, description: "Key generate strategy name."}
-        sequence: {type: string, description: "Sequence name for sequence key generate strategy."}
-        reference_tables: {type: string, description: "Comma-separated reference table names."}
-        auditors: {type: string, description: "Comma-separated auditor algorithm types."}
+        auditors: {type: string, description: "Comma-separated auditor names."}
         allow_hint_disable: {type: string, description: "Whether audit strategy allows hint disable."}
-        component_type: {type: string, description: "algorithm, key-generator, or auditor."}
-        component_name: {type: string, description: "Component name to clean up."}
         natural_language_intent: {type: string, description: "Original user request."}
         structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
-        delivery_mode: {type: string, enum: [all-at-once, step-by-step]}
-        execution_mode: {type: string, enum: [review-then-execute, manual-only]}
+        delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
+        execution_mode: {type: string, description: "Preferred later apply mode.", enum: [review-then-execute, manual-only]}
         user_overrides: {type: object, description: "Explicit user overrides.", additionalProperties: true}
       required: []
       additionalProperties: false
     outputSchema: &workflowPlanOutputSchema
       type: object
       properties:
-        response_mode:
-          type: string
-          description: "Stable response mode marker for workflow planning, or terminal when planning cannot continue."
-          enum: [planning, terminal]
-        plan_id:
-          type: string
-          description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
-        workflow_kind:
-          type: string
-          description: "Workflow kind resolved by the planner."
-        status:
-          type: string
-          description: "Stable workflow status, such as clarifying, planned, or failed."
-        missing_required_inputs:
-          type: array
-          description: "Inputs still required before the plan can be completed."
-          items: {type: string}
-        clarification_questions:
-          type: array
-          description: "Structured questions for missing workflow inputs."
-          items: {type: object}
-        distsql_artifacts:
-          type: array
-          description: "Generated sharding DistSQL artifacts for review."
-          items: {type: object}
-        resources_to_read:
-          type: array
-          description: "Resources the model should read before retrying or validating the plan."
-          items: {type: object}
+        response_mode: {type: string, description: "Stable response mode marker for workflow planning, or terminal when planning cannot continue.", enum: [planning, terminal]}
+        plan_id: {type: string, description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."}
+        workflow_kind: {type: string, description: "Workflow kind resolved by the planner."}
+        status: {type: string, description: "Stable workflow status, such as clarifying, planned, or failed."}
+        missing_required_inputs: {type: array, description: "Inputs still required before the plan can be completed.", items: {type: string}}
+        clarification_questions: {type: array, description: "Structured questions for missing workflow inputs.", items: {type: object}}
+        elicitation_support: {type: object, description: "Evaluated MCP elicitation capability and the selected interaction path when automatic form continuation cannot be used."}
+        fallback_reason: {type: string, description: "Machine-readable reason explaining why the planner returned structured fallback instead of automatic form continuation."}
+        issues: {type: array, description: "Warnings, conflicts, and validation issues found during planning."}
+        global_steps: {type: array, description: "Workflow review and execution steps."}
+        current_step: {type: string, description: "Current workflow step."}
+        algorithm_recommendations: {type: array, description: "Recommended sharding algorithms and ranking reasons."}
+        property_requirements: {type: array, description: "Required and optional algorithm properties for selected sharding algorithms."}
+        validation_strategy: {type: object, description: "Validation strategy generated by the planner."}
+        delivery_mode: {type: string, description: "Planner delivery mode used for user interaction."}
+        execution_mode: {type: string, description: "Preferred later apply mode captured by the plan."}
+        intent_inference: {type: object, description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."}
+        argument_provenance: {type: object, description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."}
+        review_focus: {type: object, description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."}
+        proxy_topology_hint: {type: object, description: "Proxy metadata view expected by this workflow and safe recovery guidance when runtime metadata looks inconsistent."}
+        distsql_artifacts: {type: array, description: "Generated sharding DistSQL artifacts for review.", items: {type: object}}
+        resources_to_read: {type: array, description: "Resources the model should read before retrying or validating the plan.", items: {type: object}}
         next_actions:
           type: array
           description: "Ordered next actions for the model or user."
@@ -576,7 +763,7 @@ tools:
               arguments: {type: object, description: "Canonical arguments to provide to the target tool."}
               reason: {type: string, description: "Why the model should take this action."}
               required_inputs: {type: array, description: "User inputs needed before continuing."}
-      required: [response_mode, plan_id, workflow_kind, status, missing_required_inputs, resources_to_read, next_actions]
+      required: []
       additionalProperties: true
       examples:
         - response_mode: planning
@@ -591,33 +778,174 @@ tools:
       idempotentHint: false
       openWorldHint: false
       readOnlyHint: false
+    meta:
+      org.apache.shardingsphere/workflow-kind: sharding.table.rule
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/algorithm-plugins
+        - shardingsphere://features/sharding/key-generate-algorithm-plugins
+        - shardingsphere://features/sharding/databases/{database}/table-rules
+        - shardingsphere://features/sharding/databases/{database}/tables/{table}/table-rule
+        - shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
   - name: database_gateway_plan_sharding_table_reference_rule
     title: Plan Sharding Table Reference Rule
     description: "Plan reviewable sharding table reference rule DistSQL without executing it."
-    inputSchema: *shardingPlanInputSchema
+    inputSchema:
+      type: object
+      properties:
+        plan_id: {type: string, description: "Optional workflow plan id."}
+        database: {type: string, description: "Logical database."}
+        rule: {type: string, description: "Table reference rule name."}
+        operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
+        reference_tables: {type: string, description: "Comma-separated reference table names."}
+        natural_language_intent: {type: string, description: "Original user request."}
+        structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
+        delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
+        execution_mode: {type: string, description: "Preferred later apply mode.", enum: [review-then-execute, manual-only]}
+        user_overrides: {type: object, description: "Explicit user overrides.", additionalProperties: true}
+      required: []
+      additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
     annotations: *planningAnnotations
+    meta:
+      org.apache.shardingsphere/workflow-kind: sharding.table.reference
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/databases/{database}/table-reference-rules
+        - shardingsphere://features/sharding/databases/{database}/table-reference-rules/{rule}
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
   - name: database_gateway_plan_sharding_default_strategy
     title: Plan Sharding Default Strategy
     description: "Plan reviewable default sharding strategy DistSQL without executing it."
-    inputSchema: *shardingPlanInputSchema
+    inputSchema:
+      type: object
+      properties:
+        plan_id: {type: string, description: "Optional workflow plan id."}
+        database: {type: string, description: "Logical database."}
+        operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
+        default_strategy_type: {type: string, description: "DATABASE or TABLE default strategy type.", enum: [DATABASE, TABLE]}
+        strategy_type: {type: string, description: "Sharding strategy type.", enum: [standard, complex, hint, none]}
+        column: {type: string, description: "Default sharding column for standard strategies."}
+        sharding_columns: {type: string, description: "Comma-separated columns for complex strategies."}
+        algorithm_type: {type: string, description: "Default sharding algorithm type."}
+        algorithm_properties: {type: object, description: "Default sharding algorithm properties.", additionalProperties: {type: string}}
+        natural_language_intent: {type: string, description: "Original user request."}
+        structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
+        delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
+        execution_mode: {type: string, description: "Preferred later apply mode.", enum: [review-then-execute, manual-only]}
+        user_overrides: {type: object, description: "Explicit user overrides.", additionalProperties: true}
+      required: []
+      additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
     annotations: *planningAnnotations
+    meta:
+      org.apache.shardingsphere/workflow-kind: sharding.default.strategy
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/algorithm-plugins
+        - shardingsphere://features/sharding/databases/{database}/default-strategy
+        - shardingsphere://features/sharding/databases/{database}/algorithms
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
   - name: database_gateway_plan_sharding_key_generator
     title: Plan Sharding Key Generator
     description: "Plan reviewable sharding key generator DistSQL without executing it."
-    inputSchema: *shardingPlanInputSchema
+    inputSchema:
+      type: object
+      properties:
+        plan_id: {type: string, description: "Optional workflow plan id."}
+        database: {type: string, description: "Logical database."}
+        key_generator: {type: string, description: "Key generator name."}
+        operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
+        key_generator_type: {type: string, description: "Key generator algorithm type."}
+        algorithm_type: {type: string, description: "Alias for key_generator_type."}
+        key_generator_properties: {type: object, description: "Key generator properties.", additionalProperties: {type: string}}
+        natural_language_intent: {type: string, description: "Original user request."}
+        structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
+        delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
+        execution_mode: {type: string, description: "Preferred later apply mode.", enum: [review-then-execute, manual-only]}
+        user_overrides: {type: object, description: "Explicit user overrides.", additionalProperties: true}
+      required: []
+      additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
     annotations: *planningAnnotations
+    meta:
+      org.apache.shardingsphere/workflow-kind: sharding.key.generator
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/key-generate-algorithm-plugins
+        - shardingsphere://features/sharding/databases/{database}/key-generators
+        - shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
   - name: database_gateway_plan_sharding_key_generate_strategy
     title: Plan Sharding Key Generate Strategy
     description: "Plan reviewable sharding key generate strategy DistSQL without executing it."
-    inputSchema: *shardingPlanInputSchema
+    inputSchema:
+      type: object
+      properties:
+        plan_id: {type: string, description: "Optional workflow plan id."}
+        database: {type: string, description: "Logical database."}
+        key_generate_strategy: {type: string, description: "Key generate strategy name."}
+        operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
+        table: {type: string, description: "Logical table for a table-based key generate strategy."}
+        column: {type: string, description: "Key generate column for a table-based strategy."}
+        sequence: {type: string, description: "Sequence name for a sequence-based strategy."}
+        key_generator: {type: string, description: "Existing key generator name."}
+        key_generator_type: {type: string, description: "Key generator algorithm type when creating an inline generator."}
+        algorithm_type: {type: string, description: "Alias for key_generator_type."}
+        key_generator_properties: {type: object, description: "Key generator properties.", additionalProperties: {type: string}}
+        natural_language_intent: {type: string, description: "Original user request."}
+        structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
+        delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
+        execution_mode: {type: string, description: "Preferred later apply mode.", enum: [review-then-execute, manual-only]}
+        user_overrides: {type: object, description: "Explicit user overrides.", additionalProperties: true}
+      required: []
+      additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
     annotations: *planningAnnotations
+    meta:
+      org.apache.shardingsphere/workflow-kind: sharding.key.generate.strategy
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/key-generate-algorithm-plugins
+        - shardingsphere://features/sharding/databases/{database}/key-generators
+        - shardingsphere://features/sharding/databases/{database}/key-generate-strategies
+        - shardingsphere://features/sharding/databases/{database}/key-generate-strategies/{strategy}
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
   - name: database_gateway_plan_sharding_rule_component_cleanup
     title: Plan Sharding Rule Component Cleanup
     description: "Plan reviewable cleanup DistSQL only for unused sharding algorithms, key generators, or auditors."
-    inputSchema: *shardingPlanInputSchema
+    inputSchema:
+      type: object
+      properties:
+        plan_id: {type: string, description: "Optional workflow plan id."}
+        database: {type: string, description: "Logical database."}
+        operation_type: {type: string, description: "Cleanup is drop-only.", enum: [drop]}
+        component_type: {type: string, description: "algorithm, key-generator, or auditor.", enum: [algorithm, key-generator, auditor]}
+        component_name: {type: string, description: "Unused component name to clean up."}
+        natural_language_intent: {type: string, description: "Original user request."}
+        structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
+        delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
+        execution_mode: {type: string, description: "Preferred later apply mode.", enum: [review-then-execute, manual-only]}
+        user_overrides: {type: object, description: "Explicit user overrides.", additionalProperties: true}
+      required: []
+      additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
     annotations: *planningAnnotations
+    meta:
+      org.apache.shardingsphere/workflow-kind: sharding.component.cleanup
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/databases/{database}/unused-algorithms
+        - shardingsphere://features/sharding/databases/{database}/unused-key-generators
+        - shardingsphere://features/sharding/databases/{database}/unused-auditors
+        - shardingsphere://features/sharding/databases/{database}/algorithms/{algorithm}/table-rules
+        - shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}/table-rules
+        - shardingsphere://features/sharding/databases/{database}/auditors/{auditor}/table-rules
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow

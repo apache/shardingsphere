@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
@@ -33,9 +34,13 @@ public final class ReadwriteSplittingStatusDistSQLPlanningService {
      *
      * @param request status workflow request
      * @return rule artifact
+     * @throws MCPInvalidRequestException when status request fields resolve to conflicting operations
      */
     public RuleArtifact planStatus(final ReadwriteSplittingStatusWorkflowRequest request) {
         String operation = resolveStatusOperation(request);
+        if (operation.isEmpty()) {
+            throw new MCPInvalidRequestException("target_status and operation_type must resolve to the same readwrite-splitting status operation.");
+        }
         return new RuleArtifact(operation.toLowerCase(Locale.ENGLISH), String.format("ALTER READWRITE_SPLITTING RULE %s %s %s FROM %s",
                 WorkflowSQLUtils.formatDistSQLIdentifier(request.getRuleName()), operation,
                 WorkflowSQLUtils.formatDistSQLIdentifier(request.getStorageUnit()), WorkflowSQLUtils.formatDistSQLIdentifier(request.getDatabase())));
@@ -48,8 +53,16 @@ public final class ReadwriteSplittingStatusDistSQLPlanningService {
      * @return DistSQL status operation
      */
     public String resolveStatusOperation(final ReadwriteSplittingStatusWorkflowRequest request) {
-        String targetStatus = request.getTargetStatus().isEmpty() ? request.getOperationType() : request.getTargetStatus();
-        String actualStatus = targetStatus.trim().toLowerCase(Locale.ENGLISH);
+        String operationType = normalizeStatusOperation(request.getOperationType());
+        String targetStatus = normalizeStatusOperation(request.getTargetStatus());
+        if (!operationType.isEmpty() && !targetStatus.isEmpty() && !operationType.equals(targetStatus)) {
+            return "";
+        }
+        return !targetStatus.isEmpty() ? targetStatus : operationType;
+    }
+    
+    private String normalizeStatusOperation(final String status) {
+        String actualStatus = status.trim().toLowerCase(Locale.ENGLISH);
         if ("enable".equals(actualStatus) || "enabled".equals(actualStatus)) {
             return "ENABLE";
         }

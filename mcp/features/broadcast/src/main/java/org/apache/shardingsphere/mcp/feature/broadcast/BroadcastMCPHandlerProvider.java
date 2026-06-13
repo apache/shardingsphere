@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.broadcast.resource.handler.BroadcastRuleCountHandler;
 import org.apache.shardingsphere.mcp.feature.broadcast.resource.handler.BroadcastRulesHandler;
+import org.apache.shardingsphere.mcp.feature.broadcast.resource.handler.BroadcastTableRuleHandler;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.handler.PlanBroadcastRuleToolHandler;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastWorkflowValidationService;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowDefinitionProvider;
@@ -37,7 +38,7 @@ public final class BroadcastMCPHandlerProvider implements MCPHandlerProvider, MC
     
     @Override
     public Collection<MCPResourceHandler<?>> getResourceHandlers() {
-        return List.of(new BroadcastRulesHandler(), new BroadcastRuleCountHandler());
+        return List.of(new BroadcastRulesHandler(), new BroadcastTableRuleHandler(), new BroadcastRuleCountHandler());
     }
     
     @Override

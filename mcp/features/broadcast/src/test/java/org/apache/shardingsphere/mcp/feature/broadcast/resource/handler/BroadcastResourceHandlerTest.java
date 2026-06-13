@@ -43,11 +43,12 @@ class BroadcastResourceHandlerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertHandleArguments")
     void assertHandle(final String name, final MCPResourceHandler<MCPDatabaseHandlerContext> handler, final List<Map<String, Object>> rows,
-                      final String expectedSelfUri, final String expectedParentUri) {
+                      final Map<String, String> uriVariables, final String expectedSelfUri, final String expectedParentUri) {
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db")));
+        when(queryFacade.getDatabaseType("logic_db")).thenReturn("MySQL");
+        MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(uriVariables));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(rows.size()));
         assertThat(actual.toPayload().get("self_uri"), is(expectedSelfUri));
         if (!expectedParentUri.isEmpty()) {
@@ -56,16 +57,22 @@ class BroadcastResourceHandlerTest {
     }
     
     private static Stream<Arguments> assertHandleArguments() {
-        List<Map<String, Object>> rules = List.of(Map.of("broadcast_table", "t_order"));
+        List<Map<String, Object>> rules = List.of(Map.of("broadcast_table", "t_order"), Map.of("broadcast_table", "t_order_item"));
         List<Map<String, Object>> count = List.of(Map.of("rule_name", "broadcast_table", "count", 1));
         BroadcastRuleInspectionService rulesService = mock(BroadcastRuleInspectionService.class);
+        BroadcastRuleInspectionService tableRuleService = mock(BroadcastRuleInspectionService.class);
         BroadcastRuleInspectionService countService = mock(BroadcastRuleInspectionService.class);
         when(rulesService.queryBroadcastRules(any(), eq("logic_db"))).thenReturn(rules);
+        when(tableRuleService.queryBroadcastRules(any(), eq("logic_db"))).thenReturn(rules);
         when(countService.queryBroadcastRuleCount(any(), eq("logic_db"))).thenReturn(count);
         return Stream.of(
                 Arguments.of("broadcast rules", new BroadcastRulesHandler(rulesService), rules,
-                        "shardingsphere://features/broadcast/databases/logic_db/rules", ""),
+                        Map.of("database", "logic_db"), "shardingsphere://features/broadcast/databases/logic_db/rules", ""),
+                Arguments.of("broadcast table rule", new BroadcastTableRuleHandler(tableRuleService), List.of(Map.of("broadcast_table", "t_order")),
+                        Map.of("database", "logic_db", "table", "t_order"), "shardingsphere://features/broadcast/databases/logic_db/tables/t_order/rule",
+                        "shardingsphere://features/broadcast/databases/logic_db/rules"),
                 Arguments.of("broadcast rule count", new BroadcastRuleCountHandler(countService), count,
+                        Map.of("database", "logic_db"),
                         "shardingsphere://features/broadcast/databases/logic_db/rule-count",
                         "shardingsphere://features/broadcast/databases/logic_db/rules"));
     }

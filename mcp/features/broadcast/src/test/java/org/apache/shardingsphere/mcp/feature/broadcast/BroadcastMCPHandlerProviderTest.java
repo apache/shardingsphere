@@ -40,6 +40,7 @@ class BroadcastMCPHandlerProviderTest {
         Collection<MCPResourceHandler<?>> actual = new BroadcastMCPHandlerProvider().getResourceHandlers();
         assertThat(actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList(), is(List.of(
                 BroadcastFeatureDefinition.RULES_RESOURCE_URI,
+                BroadcastFeatureDefinition.TABLE_RULE_RESOURCE_URI,
                 BroadcastFeatureDefinition.RULE_COUNT_RESOURCE_URI)));
     }
     

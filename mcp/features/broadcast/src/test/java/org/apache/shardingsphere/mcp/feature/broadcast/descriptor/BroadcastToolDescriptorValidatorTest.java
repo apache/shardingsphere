@@ -23,6 +23,8 @@ import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinitio
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -69,8 +72,25 @@ class BroadcastToolDescriptorValidatorTest {
         String descriptorText = descriptor.getDescription() + descriptor.getInputSchema() + descriptor.getOutputSchema() + descriptor.getMeta();
         assertFalse(descriptorText.contains("ddl_artifacts"));
         assertFalse(descriptorText.contains("index_plan"));
+        assertFalse(descriptorText.contains("manual_artifact_package"));
         assertFalse(descriptorText.contains("storage unit"));
         assertTrue(descriptorText.contains("rule_distsql"));
+    }
+    
+    @Test
+    void assertDescriptorExposesSingleTablePresenceResource() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(BroadcastFeatureDefinition.PLAN_TOOL_NAME);
+        assertTrue(String.valueOf(descriptor.getMeta()).contains("shardingsphere://features/broadcast/databases/{database}/tables/{table}/rule"));
+        assertTrue(MCPDescriptorCatalogIndex.getResourceDescriptors().stream()
+                .anyMatch(each -> "shardingsphere://features/broadcast/databases/{database}/tables/{table}/rule".equals(each.getUriTemplate())));
+    }
+    
+    @Test
+    void assertToolDeclaresRequiredMetadata() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(BroadcastFeatureDefinition.PLAN_TOOL_NAME);
+        assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/workflow-kind"));
+        assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/related-resource-uris"));
+        assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/follow-up-tools"));
     }
     
     @Test
@@ -80,17 +100,40 @@ class BroadcastToolDescriptorValidatorTest {
         assertTrue(prompt.contains("storage unit mutation operations"));
     }
     
-    @Test
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("requiredOutputFields")
     @SuppressWarnings("unchecked")
-    void assertValidateRejectsMissingOutputField() {
+    void assertValidateRejectsMissingTemplateOutputField(final String fieldName) {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(BroadcastFeatureDefinition.PLAN_TOOL_NAME);
         Map<String, Object> outputSchema = new LinkedHashMap<>(descriptor.getOutputSchema());
         Map<String, Object> properties = new LinkedHashMap<>((Map<String, Object>) outputSchema.get("properties"));
-        properties.remove("resources_to_read");
+        properties.remove(fieldName);
         outputSchema.put("properties", properties);
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new BroadcastToolDescriptorValidator().validate(new MCPToolDescriptor(
                 descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), outputSchema, descriptor.getAnnotations(), descriptor.getMeta())));
-        assertThat(actual.getMessage(), is("Tool `database_gateway_plan_broadcast_rule` outputSchema must declare `resources_to_read`."));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_plan_broadcast_rule` outputSchema must declare `" + fieldName + "`."));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("requiredMetadataFields")
+    void assertValidateRejectsMissingMetadataField(final String fieldName) {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(BroadcastFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> meta = new LinkedHashMap<>(descriptor.getMeta());
+        meta.remove(fieldName);
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new BroadcastToolDescriptorValidator().validate(new MCPToolDescriptor(
+                descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), descriptor.getOutputSchema(), descriptor.getAnnotations(), meta)));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_plan_broadcast_rule` metadata must declare `" + fieldName + "`."));
+    }
+    
+    private static Stream<String> requiredOutputFields() {
+        return Stream.of(
+                "response_mode", "plan_id", "workflow_kind", "status", "missing_required_inputs", "clarification_questions", "elicitation_support", "fallback_reason",
+                "issues", "global_steps", "current_step", "algorithm_recommendations", "property_requirements", "validation_strategy", "delivery_mode", "execution_mode",
+                "intent_inference", "argument_provenance", "review_focus", "proxy_topology_hint", "distsql_artifacts", "resources_to_read", "next_actions");
+    }
+    
+    private static Stream<String> requiredMetadataFields() {
+        return Stream.of("org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
     }
     
     private MCPPromptDescriptor findPrompt(final String promptName) {
