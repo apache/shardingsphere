@@ -339,6 +339,7 @@ public final class WorkflowGuidancePayloadBuilder {
         WorkflowRequest request = snapshot.getRequest();
         if (!request.getDatabase().isEmpty()) {
             addRuleResources(result, snapshot, request);
+            addGovernanceMetadataResources(result, snapshot, request);
             if (WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot) && !request.getTable().isEmpty()) {
                 addFeatureTableRuleResources(result, snapshot, request);
             } else if (!request.getSchema().isEmpty() && !request.getTable().isEmpty()) {
@@ -363,6 +364,26 @@ public final class WorkflowGuidancePayloadBuilder {
             case SHARDING_KEY_GENERATOR_WORKFLOW_KIND, SHARDING_KEY_GENERATE_STRATEGY_WORKFLOW_KIND -> addResourceHint(resourcesToRead,
                     "shardingsphere://features/sharding/key-generate-algorithm-plugins", "algorithm", "read_first",
                     "Read key-generate algorithm plugin metadata before choosing generator arguments.");
+            default -> {
+            }
+        }
+    }
+    
+    private static void addGovernanceMetadataResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+        String workflowKind = resolveWorkflowKind(snapshot);
+        switch (workflowKind) {
+            case READWRITE_RULE_WORKFLOW_KIND, READWRITE_STATUS_WORKFLOW_KIND, SHADOW_RULE_WORKFLOW_KIND, SHARDING_TABLE_RULE_WORKFLOW_KIND -> addStorageUnitsResourceHint(resourcesToRead,
+                    request);
+            default -> {
+            }
+        }
+        switch (workflowKind) {
+            case SHADOW_RULE_WORKFLOW_KIND, SHARDING_TABLE_RULE_WORKFLOW_KIND -> {
+                addSingleTablesResourceHint(resourcesToRead, request);
+                if (!request.getTable().isEmpty()) {
+                    addSingleTableResourceHint(resourcesToRead, request);
+                }
+            }
             default -> {
             }
         }
@@ -426,6 +447,22 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static void addDatabaseResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request, final String uriTemplate, final String reason) {
         addResourceHint(resourcesToRead, String.format(uriTemplate, MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail", reason);
+    }
+    
+    private static void addStorageUnitsResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
+        addResourceHint(resourcesToRead, String.format("shardingsphere://databases/%s/storage-units", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())),
+                "storage-unit", "validate_scope", "Read storage units before planning DistSQL that references storage units.");
+    }
+    
+    private static void addSingleTablesResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
+        addResourceHint(resourcesToRead, String.format("shardingsphere://databases/%s/single-tables", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())),
+                "single-table", "validate_scope", "Read single table mappings before planning table-level DistSQL.");
+    }
+    
+    private static void addSingleTableResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
+        addResourceHint(resourcesToRead, String.format("shardingsphere://databases/%s/single-tables/%s", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
+                MCPUriPathSegmentUtils.encodePathSegment(request.getTable())), "single-table", "validate_scope",
+                "Read the target single table mapping before planning table-level DistSQL.");
     }
     
     private static void addTableResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request, final String uriTemplate, final String reason) {

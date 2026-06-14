@@ -47,7 +47,8 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     
     private static final Set<SupportedMCPMetadataObjectType> SUPPORTED_OBJECT_TYPES = Set.of(
             SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
-            SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX, SupportedMCPMetadataObjectType.SEQUENCE);
+            SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX,
+            SupportedMCPMetadataObjectType.STORAGE_UNIT, SupportedMCPMetadataObjectType.SEQUENCE);
     
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
@@ -66,7 +67,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         MetadataSearchRequest request = new MetadataSearchRequest(
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), query,
                 toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES, query.isEmpty() ? Set.of() : Set.of(query)));
-        MetadataSearchResult searchResult = new SearchMetadataToolService(databaseContext.getMetadataQueryFacade()).execute(request);
+        MetadataSearchResult searchResult = new SearchMetadataToolService(databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade()).execute(request);
         return new MCPItemsResponse(searchResult.getItems(), "", createSearchPayloadMetadata(request, searchResult), MCPResponseMode.SEARCH);
     }
     

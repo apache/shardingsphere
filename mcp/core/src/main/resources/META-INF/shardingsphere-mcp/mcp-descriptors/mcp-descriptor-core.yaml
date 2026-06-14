@@ -88,6 +88,109 @@ resourceTemplates:
       relatedTools:
         - database_gateway_execute_query
         - database_gateway_execute_update
+  - uriTemplate: shardingsphere://databases/{database}/storage-units
+    name: storage-units
+    title: Storage Units
+    description: "List Proxy-visible storage units in one ShardingSphere logical database. Use this before planning rules that require storage unit names."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database whose storage units should be inspected."
+          required: true
+          scope: logical-database
+      resourceKind: list
+      objectScope: storage_unit
+      relatedTools:
+        - database_gateway_search_metadata
+  - uriTemplate: shardingsphere://databases/{database}/storage-units/{storageUnit}
+    name: storage-unit-detail
+    title: Storage Unit Detail
+    description: "Read one Proxy-visible storage unit without exposing secret connection properties. Use this to confirm host, port, type, and pool settings."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database that owns the storage unit."
+          required: true
+          scope: logical-database
+        - name: storageUnit
+          title: Storage Unit
+          description: "Proxy storage unit name returned by SHOW STORAGE UNITS."
+          required: true
+          scope: storage_unit
+      resourceKind: detail
+      objectScope: storage_unit
+      relatedTools:
+        - database_gateway_search_metadata
+  - uriTemplate: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
+    name: storage-unit-used-by-rules
+    title: Storage Unit Used By Rules
+    description: "List rule type and rule name rows that currently reference one storage unit."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database that owns the storage unit."
+          required: true
+          scope: logical-database
+        - name: storageUnit
+          title: Storage Unit
+          description: "Proxy storage unit name whose rule usage should be inspected."
+          required: true
+          scope: storage_unit
+      resourceKind: list
+      objectScope: storage_unit
+  - uriTemplate: shardingsphere://databases/{database}/single-tables
+    name: single-tables
+    title: Single Tables
+    description: "List single table to storage unit mappings in one ShardingSphere logical database."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database whose single table mappings should be inspected."
+          required: true
+          scope: logical-database
+      resourceKind: list
+      objectScope: single_table
+  - uriTemplate: shardingsphere://databases/{database}/single-tables/{table}
+    name: single-table-detail
+    title: Single Table Detail
+    description: "Read the storage unit mapping for one single table."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database that owns the single table."
+          required: true
+          scope: logical-database
+        - name: table
+          title: Single Table
+          description: "Single table name returned by SHOW SINGLE TABLES."
+          required: true
+          scope: single_table
+      resourceKind: detail
+      objectScope: single_table
+  - uriTemplate: shardingsphere://databases/{database}/single-table/default-storage-unit
+    name: default-single-table-storage-unit
+    title: Default Single Table Storage Unit
+    description: "Read the default storage unit used for new single tables in one ShardingSphere logical database."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database whose default single table storage unit should be inspected."
+          required: true
+          scope: logical-database
+      resourceKind: detail
+      objectScope: single_table
   - uriTemplate: shardingsphere://databases/{database}/schemas
     name: schemas
     title: Schemas
@@ -435,6 +538,39 @@ completionTargets:
       - database
     maxValues: 50
   - referenceType: resource
+    reference: shardingsphere://databases/{database}/storage-units
+    arguments:
+      - database
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/storage-units/{storageUnit}
+    arguments:
+      - database
+      - storageUnit
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
+    arguments:
+      - database
+      - storageUnit
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/single-tables
+    arguments:
+      - database
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/single-tables/{table}
+    arguments:
+      - database
+      - table
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/single-table/default-storage-unit
+    arguments:
+      - database
+    maxValues: 50
+  - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}
     arguments:
       - database
@@ -519,6 +655,36 @@ resourceNavigation:
     carriedArguments:
       - database
     description: "List schemas after choosing a logical database."
+  - from: shardingsphere://databases/{database}
+    to: shardingsphere://databases/{database}/storage-units
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "List storage units after choosing a logical database."
+  - from: shardingsphere://databases/{database}
+    to: shardingsphere://databases/{database}/single-tables
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "List single table mappings after choosing a logical database."
+  - from: shardingsphere://databases/{database}
+    to: shardingsphere://databases/{database}/single-table/default-storage-unit
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Read the default single table storage unit after choosing a logical database."
+  - from: shardingsphere://databases/{database}/storage-units/{storageUnit}
+    to: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
+    requiredArguments:
+      - database
+      - storageUnit
+    carriedArguments:
+      - database
+      - storageUnit
+    description: "Read rule usage after choosing a storage unit."
   - from: shardingsphere://databases/{database}/schemas/{schema}
     to: shardingsphere://databases/{database}/schemas/{schema}/tables
     requiredArguments:
@@ -583,8 +749,8 @@ tools:
   - name: database_gateway_search_metadata
     title: Search Metadata
     description: >-
-      Search ShardingSphere logical metadata by name and object type. Use this to find databases, schemas, tables, columns, indexes, views,
-      or sequences before calling detail resources or planning tools.
+      Search ShardingSphere logical metadata and Proxy governance metadata by name and object type. Use this to find databases, schemas, tables,
+      columns, indexes, views, sequences, or storage units before calling detail resources or planning tools.
     inputSchema:
       type: object
       properties:
@@ -610,6 +776,7 @@ tools:
               - view
               - column
               - index
+              - storage_unit
               - sequence
       required: []
       additionalProperties: false
@@ -794,6 +961,7 @@ tools:
     meta:
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://databases
+        - "shardingsphere://databases/{database}/storage-units"
         - "shardingsphere://databases/{database}/schemas"
   - name: database_gateway_validate_proxy_connectivity
     title: Validate Proxy Connectivity

@@ -122,7 +122,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         result.put(MCPPayloadFieldNames.ITEMS, items);
         result.put("count", items.size());
         if (!items.isEmpty()) {
-            result.put("item", items.get(0));
+            result.put("item", items.getFirst());
         }
         result.putAll(navigationPayload);
         return result;
@@ -196,7 +196,8 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     }
     
     private String createRequestedToken(final MCPUriVariables uriVariables) {
-        return Stream.of("column", "index", "sequence", "view", "table", "schema", "database").filter(uriVariables::containsVariable).findFirst().map(uriVariables::getValue).orElse("");
+        return Stream.of("column", "index", "sequence", "view", "storageUnit", "table", "schema", "database")
+                .filter(uriVariables::containsVariable).findFirst().map(uriVariables::getValue).orElse("");
     }
     
     private void appendLargeResultGuidance(final Map<String, Object> payload, final ShardingSphereMCPResourceMetadata descriptor, final MCPUriVariables uriVariables, final int itemCount) {
@@ -279,6 +280,12 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         }
         if (uri.contains("/indexes")) {
             return "index";
+        }
+        if (uri.contains("/storage-units")) {
+            return "storage-unit";
+        }
+        if (uri.contains("/single-tables") || uri.contains("/single-table/default-storage-unit")) {
+            return "single-table";
         }
         if (uri.contains("/tables")) {
             return "logical-table";

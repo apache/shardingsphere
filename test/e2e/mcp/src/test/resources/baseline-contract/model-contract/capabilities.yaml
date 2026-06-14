@@ -50,7 +50,7 @@ model_first_summary:
         copied from preview_artifacts.approval_step}
     validate_tool: database_gateway_validate_workflow
   completion_rule: Use MCP completion for missing database, schema, table, column,
-    index, or sequence values before guessing identifiers.
+    index, sequence, or storage unit values before guessing identifiers.
   recovery_rule: Follow structured recovery.next_actions before inventing a replacement
     call.
 model_contract:
@@ -171,9 +171,9 @@ common_flows:
   referenced_resources: ['shardingsphere://capabilities']
 protocolAvailability: {resources: true, resourceTemplates: true, tools: true, toolAnnotations: true,
   toolOutputSchemas: true, prompts: true, completions: true, resourceNavigation: true}
-fingerprints: {algorithm: sha256, descriptorCatalog: 1aca15b3768ed51480afcead29551f416b9e2b436c2767f02882e9ee47ea6e56,
-  promptSet: d62c9b6141fc822c6b3dcfef2c9f18142c26cda1c461b4a29e6c788e4bcf2180, resourceNavigation: 1cede5d034541e4b0b3c0355360f6c41be7719bc0619e5bb2bd5cd342d5602c7,
-  modelFacingSchemas: a84507c66039d130043200e4728711803309a249d2da18e1698095f4c6c67a3e}
+fingerprints: {algorithm: sha256, descriptorCatalog: 49c71b6b45b4f8f737a080583f9480900d1153270d916f34dd0067091fbc0a3d,
+  promptSet: 3232cdab7c69f8e627da044e3d85f2dd72a0d08102541a42f6b9d75c89b2557e, resourceNavigation: 241f02eb306c284cbb2535ee38390f8d962e0288d7ee34c8cf0ed363a44ab741,
+  modelFacingSchemas: 2201b35e8c6a901c7be5c261a2efe6e383af16e83146995577154cbdd33c4be2}
 resources:
 - uri: shardingsphere://capabilities
   name: server-capability-catalog
@@ -255,6 +255,47 @@ resourceTemplates:
   _meta:
     org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/related-tools: [database_gateway_execute_query, database_gateway_execute_update]
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+- uriTemplate: shardingsphere://databases/{database}/storage-units
+  name: storage-units
+  _meta:
+    org.apache.shardingsphere/resource-kind: list
+    org.apache.shardingsphere/related-tools: [database_gateway_search_metadata]
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+- uriTemplate: shardingsphere://databases/{database}/storage-units/{storageUnit}
+  name: storage-unit-detail
+  _meta:
+    org.apache.shardingsphere/resource-kind: detail
+    org.apache.shardingsphere/related-tools: [database_gateway_search_metadata]
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+    - {name: storageUnit, required: true}
+- uriTemplate: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
+  name: storage-unit-used-by-rules
+  _meta:
+    org.apache.shardingsphere/resource-kind: list
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+    - {name: storageUnit, required: true}
+- uriTemplate: shardingsphere://databases/{database}/single-tables
+  name: single-tables
+  _meta:
+    org.apache.shardingsphere/resource-kind: list
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+- uriTemplate: shardingsphere://databases/{database}/single-tables/{table}
+  name: single-table-detail
+  _meta:
+    org.apache.shardingsphere/resource-kind: detail
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+    - {name: table, required: true}
+- uriTemplate: shardingsphere://databases/{database}/single-table/default-storage-unit
+  name: default-single-table-storage-unit
+  _meta:
+    org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas
@@ -869,6 +910,30 @@ completionTargets:
   maxValues: 50
 - referenceType: resource
   reference: shardingsphere://databases/{database}/schemas
+  arguments: [database]
+  maxValues: 50
+- referenceType: resource
+  reference: shardingsphere://databases/{database}/storage-units
+  arguments: [database]
+  maxValues: 50
+- referenceType: resource
+  reference: shardingsphere://databases/{database}/storage-units/{storageUnit}
+  arguments: [database, storageUnit]
+  maxValues: 50
+- referenceType: resource
+  reference: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
+  arguments: [database, storageUnit]
+  maxValues: 50
+- referenceType: resource
+  reference: shardingsphere://databases/{database}/single-tables
+  arguments: [database]
+  maxValues: 50
+- referenceType: resource
+  reference: shardingsphere://databases/{database}/single-tables/{table}
+  arguments: [database, table]
+  maxValues: 50
+- referenceType: resource
+  reference: shardingsphere://databases/{database}/single-table/default-storage-unit
   arguments: [database]
   maxValues: 50
 - referenceType: resource
