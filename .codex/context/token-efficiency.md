@@ -1,14 +1,16 @@
 # Token Efficiency Rules
 
-This file defines token-efficient handling rules for Apache ShardingSphere high-output build, test, service startup, E2E, database query, and IDE/MCP commands.
+This file defines token-efficient handling rules for Apache ShardingSphere high-output commands and large structured output.
 
-## Trigger
+## High-Output Command Constraints
+
+### Trigger
 
 Before running Maven, E2E, Proxy startup, database client, IDE/MCP run configuration, or any command that may output more than 100 lines, read or reuse this file.
 
 If this exact file from the current repository has already been read in this session and there is no evidence it changed, reuse the loaded content.
 
-## Mandatory Execution Contract
+### Mandatory Execution Contract
 
 Reading or reusing this file is not sufficient.
 
@@ -22,7 +24,7 @@ Before emitting any command, classify it first:
 - The visible output for `Must Wrap` commands must contain only a filtered summary, log path, and exit code.
 - IDE/MCP tool calls do not need shell redirection. For run or execution tools that support `fullOutputPath`, prefer a mode that returns it for potentially high-output runs.
 
-## Core Rules
+### Core Rules
 
 Do not print full high-output command logs directly into the conversation context.
 
@@ -30,11 +32,11 @@ Use a log file or the output file returned by a tool to hold command output. In 
 
 Before sharing a log summary, avoid exposing secrets, passwords, tokens, private addresses, or undisclosed vulnerability details.
 
-## Output Risk Classification
+### Output Risk Classification
 
 Use output risk as the primary classification. Command categories are hints, not absolute rules.
 
-### Must Wrap
+#### Must Wrap
 
 Use the Canonical Shell Wrapper when output is likely large, streaming, repeated, failure-prone, or more than 100 lines.
 
@@ -47,7 +49,7 @@ Typical `Must Wrap` commands include:
 - Log inspection commands that may return large or repeated matches.
 - Commands whose failure may print long stack traces or dependency/build logs.
 
-### May Run Raw
+#### May Run Raw
 
 Small and bounded commands may run without the wrapper.
 
@@ -58,11 +60,11 @@ Typical `May Run Raw` commands include:
 - Targeted searches expected to return only a few lines.
 - Commands that are intentionally limited by object name, row count, file path, or explicit filters.
 
-### Unsure
+#### Unsure
 
 If output size or failure output is unclear, use the Canonical Shell Wrapper.
 
-## Canonical Shell Wrapper
+### Canonical Shell Wrapper
 
 All `Must Wrap` shell commands MUST use this wrapper. Do not duplicate category-specific wrapper scripts elsewhere in this file.
 
@@ -86,7 +88,7 @@ printf 'log=%s exit=%s\n' "$log_file" "$rc"
 exit "$rc"
 ```
 
-## Maven
+### Maven
 
 Maven build, test, package, install, verification, and plugin goals are usually `Must Wrap`. Small and bounded version or help checks may run raw.
 
@@ -96,7 +98,7 @@ Maven build, test, package, install, verification, and plugin goals are usually 
 - On Maven success, extract one summary line such as `BUILD SUCCESS`, `Tests run:`, or the runner summary from the log.
 - On Maven failure, inspect `tail -n 30 "$log_file"` first, then use an available filtering tool to find `ERROR`, `FAILURE`, `Caused by`, or the failed test name.
 
-## IDE/MCP Tool Runs
+### IDE/MCP Tool Runs
 
 - IDE/MCP runs are tool-managed. Classify them by expected output and runtime behavior.
 - Do not force IDE/MCP tool calls through the Canonical Shell Wrapper solely because the tool does not provide a log path.
@@ -106,14 +108,14 @@ Maven build, test, package, install, verification, and plugin goals are usually 
 - Small and bounded tool outputs, or tools intentionally used to read content such as `read_file`, do not need a separate log path.
 - When a log path is available, use an available filtering tool to find startup markers, port readiness, `BUILD SUCCESS`, `Process finished`, `testFailed`, `Caused by`, or feature-specific keywords.
 
-## Proxy, E2E, and Service Startup
+### Proxy, E2E, and Service Startup
 
 - Treat Proxy startup, E2E, and debug logs as `Must Wrap` when launched from shell, especially when SQL show or debug logging is enabled.
 - Record the startup command or run configuration, exit code when available, `fullOutputPath` or log path, and a small filtered readiness or failure summary.
 - If behavior is verified through a running Proxy or service, first confirm the process uses the current branch code or artifacts rebuilt from this change before using the result as evidence.
 - Stop temporary long-running processes after verification to avoid occupying ports or debug sessions.
 
-## Database Queries
+### Database Queries
 
 - Database clients are not automatically `Must Wrap`; classify them by expected output.
 - Small and bounded version or help checks may run raw.
@@ -124,7 +126,7 @@ Maven build, test, package, install, verification, and plugin goals are usually 
 - Write query output to a file or intentionally keep terminal output very small.
 - If verification requires a write operation, explain the purpose, impact scope, and rollback plan, then wait for explicit user confirmation.
 
-## Final Report
+### Final Report
 
 For each high-output command, report only:
 
@@ -133,3 +135,28 @@ For each high-output command, report only:
 - Log path or `fullOutputPath`.
 - One success summary line or a focused failure snippet.
 - Skipped verification items and the exact command that can rerun them.
+
+## Structured Output Constraints
+
+### Trigger
+
+Before producing large analysis, review, implementation handoff, or repeated evidence output, use this section to keep the response compact and easy to inspect.
+
+### Core Rules
+
+1. Prefer structured formats for code changes when the tool supports them. Use JSON Patch, unified diff, or exact edit-tool replacements instead of free-form change descriptions.
+   Structured formats are usually shorter and easier to verify than natural-language descriptions of the same edit.
+2. Use tables or lists for analysis conclusions. For comparisons, option evaluation, triage results, or review evidence, prefer Markdown tables, numbered lists,
+   or short bullet lists instead of long prose paragraphs.
+3. Template repeated structures. When reporting the same kind of analysis for multiple modules, files, tests, or review findings, define the format once and fill only the data for each item.
+4. Avoid restating user input or already-loaded context. Output the conclusion, action, evidence, and remaining risk directly.
+
+### Boundaries
+
+- User-facing explanations do not need to be rigidly structured when readability would suffer.
+- Very short replies do not need artificial tables or lists.
+- This section optimizes output tokens. Input-token reduction still depends on scoped file reads, filtered searches, and the high-output command rules above.
+
+### Final Report
+
+For large structured output, report only the structure needed to preserve evidence, decision, and next action. Do not add a table or template when a short paragraph is clearer.
