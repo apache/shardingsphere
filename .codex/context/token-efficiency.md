@@ -1,6 +1,6 @@
-# High-Output Command Rules
+# Token Efficiency Rules
 
-This file defines high-output handling rules for Apache ShardingSphere build, test, service startup, E2E, database query, and IDE/MCP commands.
+This file defines token-efficient handling rules for Apache ShardingSphere high-output build, test, service startup, E2E, database query, and IDE/MCP commands.
 
 ## Trigger
 
