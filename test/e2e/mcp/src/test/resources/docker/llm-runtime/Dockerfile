@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1.6
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -38,8 +37,10 @@ LABEL org.apache.shardingsphere.mcp.llm.model-sha256="${MODEL_SHA256}"
 
 ENV LD_LIBRARY_PATH=/app
 
-ADD --checksum=sha256:${MODEL_SHA256} \
-    https://huggingface.co/${MODEL_REPOSITORY}/resolve/${MODEL_REVISION}/${MODEL_FILE_NAME} \
-    /models/${MODEL_FILE_NAME}
+RUN set -eux; \
+    mkdir -p /models; \
+    curl --fail --location --retry 3 --output "/models/${MODEL_FILE_NAME}" \
+        "https://huggingface.co/${MODEL_REPOSITORY}/resolve/${MODEL_REVISION}/${MODEL_FILE_NAME}"; \
+    printf '%s  %s\n' "${MODEL_SHA256}" "/models/${MODEL_FILE_NAME}" | sha256sum -c -
 
 EXPOSE 8080
