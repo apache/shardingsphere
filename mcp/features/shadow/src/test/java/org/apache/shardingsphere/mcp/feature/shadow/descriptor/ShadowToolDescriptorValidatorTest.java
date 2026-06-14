@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationDescriptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -96,6 +97,22 @@ class ShadowToolDescriptorValidatorTest {
         }
     }
     
+    @Test
+    void assertPlanToolsNavigateToWorkflowAndApply() {
+        for (String each : List.of(ShadowFeatureDefinition.PLAN_RULE_TOOL_NAME, ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_TOOL_NAME,
+                ShadowFeatureDefinition.PLAN_ALGORITHM_CLEANUP_TOOL_NAME)) {
+            assertPlanToolNavigation(each);
+        }
+    }
+    
+    @Test
+    void assertAlgorithmResourceNavigationCarriesAlgorithmType() {
+        assertThat(findNavigation(ShadowFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI,
+                ShadowFeatureDefinition.PLAN_RULE_TOOL_NAME).getCarriedArguments(), is(List.of(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD)));
+        assertThat(findNavigation(ShadowFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI,
+                ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_TOOL_NAME).getCarriedArguments(), is(List.of(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD)));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("requiredOutputFields")
     @SuppressWarnings("unchecked")
@@ -146,5 +163,21 @@ class ShadowToolDescriptorValidatorTest {
     private boolean hasCompletionTarget(final String referenceType, final String reference) {
         return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
                 .anyMatch(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference()));
+    }
+    
+    private void assertPlanToolNavigation(final String toolName) {
+        assertNavigation(toolName, "shardingsphere://workflows/{plan_id}");
+        assertNavigation(toolName, "database_gateway_apply_workflow");
+    }
+    
+    private void assertNavigation(final String from, final String to) {
+        MCPResourceNavigationDescriptor actual = findNavigation(from, to);
+        assertThat(actual.getRequiredArguments(), is(List.of("plan_id")));
+        assertThat(actual.getCarriedArguments(), is(List.of("plan_id")));
+    }
+    
+    private MCPResourceNavigationDescriptor findNavigation(final String from, final String to) {
+        return MCPDescriptorCatalogIndex.getResourceNavigationDescriptors(from).stream()
+                .filter(each -> to.equals(each.getTo())).findFirst().orElseThrow();
     }
 }

@@ -24,6 +24,19 @@ weight = 1
 | 执行变更 | 确认自动执行，或导出人工执行包后由运维执行。         | 有副作用的变更必须经过确认。  |
 | 校验结果 | 执行后按功能插件返回规则状态或 workflow 执行结果。 | 确认变更是否生效。       |
 
+## 计划响应字段
+
+规划工具会返回 `plan_id`，用于把已生成计划连接到 workflow resource、预览、执行和校验工具。
+执行前应先通过 workflow resource 审查已持久化的计划。
+当用户需要再次确认时，应先预览再执行。
+
+面向模型的规划响应可能包含：
+
+- `algorithm_recommendations`：根据 Proxy 可见插件目录或用户显式输入选择的候选算法。
+- `property_requirements`：所选算法的必填或可选属性；缺少必填属性时，workflow 会保持在澄清状态，而不是生成不安全产物。
+- `resources_to_read` 和 `next_actions`：继续 workflow 所需的资源和工具导航提示。
+- `distsql_artifacts`：在当前功能插件边界内生成的可审查规则 DistSQL。
+
 ## 变更执行选择
 
 | 用户说法         | 用户会得到什么           | 关注点                    |

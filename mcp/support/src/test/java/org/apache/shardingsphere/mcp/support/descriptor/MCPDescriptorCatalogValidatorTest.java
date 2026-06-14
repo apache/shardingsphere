@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
@@ -67,6 +69,40 @@ class MCPDescriptorCatalogValidatorTest {
                 "database_gateway_search_metadata", new MCPToolAnnotations("Search Metadata", true, false, true, true), createOutputSchema())))));
     }
     
+    @Test
+    void assertValidateRejectsUnsupportedModelFacingPromptPlaceholder() {
+        assertValidationError(createPromptCatalog(List.of(createPromptDescriptor("test_prompt", List.of(), Map.of())),
+                List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-single-brace-placeholder.md"))),
+                "Prompt template `META-INF/shardingsphere-mcp/prompts/fixture-single-brace-placeholder.md` contains unsupported model-facing placeholder `{database}`.");
+    }
+    
+    @Test
+    void assertValidatePreservesResourceUriTemplatesInPrompt() {
+        assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createPromptCatalog(List.of(createPromptDescriptor("test_prompt", List.of(), Map.of())),
+                List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-uri-template.md")))));
+    }
+    
+    @Test
+    void assertValidateRejectsModelFacingPromptPlaceholderNearResourceUriTemplate() {
+        assertValidationError(createPromptCatalog(List.of(createPromptDescriptor("test_prompt", List.of(), Map.of())),
+                List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-mixed-placeholder-and-uri-template.md"))),
+                "Prompt template `META-INF/shardingsphere-mcp/prompts/fixture-mixed-placeholder-and-uri-template.md` contains unsupported model-facing placeholder `{database}`.");
+    }
+    
+    @Test
+    void assertValidateRejectsUnrenderedPromptArgument() {
+        assertValidationError(createPromptCatalog(List.of(createPromptDescriptor("test_prompt", Map.of())),
+                List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-uri-template.md"))),
+                "Prompt `test_prompt` declares argument `database` but template `META-INF/shardingsphere-mcp/prompts/fixture-uri-template.md` does not render it.");
+    }
+    
+    @Test
+    void assertValidateAcceptsClientFormOnlyPromptArgument() {
+        assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createPromptCatalog(List.of(createPromptDescriptor("test_prompt",
+                Map.of("org.apache.shardingsphere/client-form-only-arguments", List.of("database")))),
+                List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-uri-template.md")))));
+    }
+    
     private void assertValidationError(final MCPDescriptorCatalog catalog, final String expectedMessage) {
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPDescriptorCatalogValidator.validate(catalog));
         assertThat(actual.getMessage(), is(expectedMessage));
@@ -81,9 +117,21 @@ class MCPDescriptorCatalogValidatorTest {
         return new MCPDescriptorCatalog(resourceDescriptors, resourceTemplateDescriptors, List.of(), toolDescriptors, List.of(), List.of(), List.of(), List.of(), List.of());
     }
     
+    private MCPDescriptorCatalog createPromptCatalog(final List<MCPPromptDescriptor> promptDescriptors, final List<MCPPromptTemplateBinding> promptTemplateBindings) {
+        return new MCPDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), promptDescriptors, promptTemplateBindings, List.of(), List.of(), List.of());
+    }
+    
     private MCPResourceDescriptor createResourceDescriptor(final MCPResourceAnnotations annotations) {
         return new MCPResourceDescriptor("shardingsphere://capabilities", "server-capability-catalog", "Server Capability Catalog",
                 "Read the model-facing capability catalog.", "application/json", annotations, Map.of());
+    }
+    
+    private MCPPromptDescriptor createPromptDescriptor(final String name, final Map<String, Object> meta) {
+        return createPromptDescriptor(name, List.of(new MCPPromptArgumentDescriptor("database", "Database", "Logical database.", false)), meta);
+    }
+    
+    private MCPPromptDescriptor createPromptDescriptor(final String name, final List<MCPPromptArgumentDescriptor> args, final Map<String, Object> meta) {
+        return new MCPPromptDescriptor(name, "Test Prompt", "Guide the model through a test prompt.", args, meta);
     }
     
     private MCPToolDescriptor createToolDescriptor(final MCPToolAnnotations annotations) {

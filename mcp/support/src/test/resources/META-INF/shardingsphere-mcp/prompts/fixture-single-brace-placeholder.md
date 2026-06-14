@@ -1,0 +1,1 @@
+Fixture prompt for {database}.

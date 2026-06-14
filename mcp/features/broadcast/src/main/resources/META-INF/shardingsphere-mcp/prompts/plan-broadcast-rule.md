@@ -2,6 +2,13 @@
 
 Use this prompt when the user wants to create or drop ShardingSphere broadcast table rules through DistSQL.
 
+Inputs:
+- database: {{database}}
+- table: {{table}}
+- tables: {{tables}}
+- operation_type: {{operation_type}}
+- plan_id: {{plan_id}}
+
 1. Read `shardingsphere://features/broadcast/databases/{database}/rules` before planning.
 2. Ask for `database` and `tables` when they are missing.
 3. Use `database_gateway_plan_broadcast_rule` with `operation_type=create` or `operation_type=drop`.

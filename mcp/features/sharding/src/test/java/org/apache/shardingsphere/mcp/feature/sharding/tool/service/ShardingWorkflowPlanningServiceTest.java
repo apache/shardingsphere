@@ -46,7 +46,25 @@ class ShardingWorkflowPlanningServiceTest {
                 .planTableRule(new TestWorkflowSessionContext(), queryFacade, "session-1", createTableRuleRequest());
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getWorkflowKind().getValue(), is("sharding.table.rule"));
+        assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmType(), is("INLINE"));
+        assertThat(actual.getPropertyRequirements().getFirst().getPropertyKey(), is("algorithm-expression"));
         assertTrue(actual.getRuleArtifacts().getFirst().getSql().startsWith("CREATE SHARDING TABLE RULE t_order"));
+    }
+    
+    @Test
+    void assertPlanTableRuleClarifiesMissingAlgorithmProperties() {
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setAlgorithmType("MOD");
+        request.getPrimaryAlgorithmProperties().clear();
+        when(inspectionService.queryTableRule(queryFacade, "logic_db", "t_order")).thenReturn(List.of());
+        WorkflowContextSnapshot actual = createPlanningService(inspectionService)
+                .planTableRule(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
+        assertThat(actual.getPropertyRequirements().getFirst().getPropertyKey(), is("sharding-count"));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
     }
     
     @Test
@@ -180,6 +198,8 @@ class ShardingWorkflowPlanningServiceTest {
         when(inspectionService.queryKeyGenerator(queryFacade, "logic_db", "snowflake_generator")).thenReturn(List.of());
         WorkflowContextSnapshot actual = createPlanningService(inspectionService)
                 .planKeyGenerator(new TestWorkflowSessionContext(), queryFacade, "session-1", createKeyGeneratorRequest());
+        assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmRole(), is("key_generator"));
+        assertThat(actual.getPropertyRequirements().getFirst().getPropertyKey(), is("worker-id"));
         assertTrue(actual.getRuleArtifacts().getFirst().getSql().startsWith("CREATE SHARDING KEY GENERATOR snowflake_generator"));
     }
     

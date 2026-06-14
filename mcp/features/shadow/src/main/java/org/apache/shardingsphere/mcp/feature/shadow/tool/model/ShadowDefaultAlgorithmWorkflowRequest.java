@@ -54,6 +54,11 @@ public final class ShadowDefaultAlgorithmWorkflowRequest extends WorkflowRequest
     }
     
     @Override
+    public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
+        return "primary".equals(algorithmRole) ? algorithmProperties : super.getAlgorithmProperties(algorithmRole);
+    }
+    
+    @Override
     public ShadowDefaultAlgorithmWorkflowRequest copy() {
         ShadowDefaultAlgorithmWorkflowRequest result = copyTo(new ShadowDefaultAlgorithmWorkflowRequest());
         result.setAlgorithmType(algorithmType);

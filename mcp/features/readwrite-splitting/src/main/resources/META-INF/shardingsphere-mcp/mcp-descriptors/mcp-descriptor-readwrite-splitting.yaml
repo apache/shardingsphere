@@ -158,6 +158,10 @@ prompts:
         title: Load Balancer Type
         description: "Optional load-balance algorithm type."
         required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue a readwrite-splitting rule plan."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_readwrite_splitting_rule
@@ -193,6 +197,10 @@ prompts:
       - name: target_status
         title: Target Status
         description: "Target status: enable or disable."
+        required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue a readwrite-splitting status plan."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -250,7 +258,8 @@ resourceNavigation:
   - from: shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins
     to: database_gateway_plan_readwrite_splitting_rule
     requiredArguments: []
-    carriedArguments: []
+    carriedArguments:
+      - load_balancer_type
     description: "Choose an available load-balance algorithm before planning create or alter."
   - from: database_gateway_plan_readwrite_splitting_rule
     to: shardingsphere://workflows/{plan_id}
@@ -259,6 +268,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning readwrite-splitting rule changes."
+  - from: database_gateway_plan_readwrite_splitting_rule
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed readwrite-splitting rule workflow after user approval."
   - from: database_gateway_plan_readwrite_splitting_status
     to: shardingsphere://workflows/{plan_id}
     requiredArguments:
@@ -266,6 +282,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning readwrite-splitting status changes."
+  - from: database_gateway_plan_readwrite_splitting_status
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed readwrite-splitting status workflow after user approval."
 tools:
   - name: database_gateway_plan_readwrite_splitting_rule
     title: Plan Readwrite-Splitting Rule
@@ -330,6 +353,11 @@ tools:
             load_balancer_type:
               type: string
               description: "Inferred load-balance algorithm type."
+            load_balancer_properties:
+              type: object
+              description: "Inferred load-balance algorithm properties."
+              additionalProperties:
+                type: string
           required: []
           additionalProperties: false
         delivery_mode:
@@ -363,6 +391,11 @@ tools:
             load_balancer_type:
               type: string
               description: "Load-balance algorithm type override."
+            load_balancer_properties:
+              type: object
+              description: "Load-balance algorithm properties override."
+              additionalProperties:
+                type: string
           required: []
           additionalProperties: false
       required: []

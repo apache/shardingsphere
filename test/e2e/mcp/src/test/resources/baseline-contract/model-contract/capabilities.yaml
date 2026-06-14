@@ -171,9 +171,9 @@ common_flows:
   referenced_resources: ['shardingsphere://capabilities']
 protocolAvailability: {resources: true, resourceTemplates: true, tools: true, toolAnnotations: true,
   toolOutputSchemas: true, prompts: true, completions: true, resourceNavigation: true}
-fingerprints: {algorithm: sha256, descriptorCatalog: 38af8134f114058ef606db39d3c2901e05efa50b45f1d90212f9c3298da12477,
-  promptSet: 61bd579b26477b5ac1e65c0325dae45aaa856ed240a9f0baaf27329fc0386c7f, resourceNavigation: d14e4f394dfb82f37109463f47222259bf9ae5631a4fa1f152e424ea123639e1,
-  modelFacingSchemas: 0f0d55d3301fb3b07d3fa7f63e32c3dd359b53b3b7a5cfba65f199d89c3a175a}
+fingerprints: {algorithm: sha256, descriptorCatalog: 1aca15b3768ed51480afcead29551f416b9e2b436c2767f02882e9ee47ea6e56,
+  promptSet: d62c9b6141fc822c6b3dcfef2c9f18142c26cda1c461b4a29e6c788e4bcf2180, resourceNavigation: 1cede5d034541e4b0b3c0355360f6c41be7719bc0619e5bb2bd5cd342d5602c7,
+  modelFacingSchemas: a84507c66039d130043200e4728711803309a249d2da18e1698095f4c6c67a3e}
 resources:
 - uri: shardingsphere://capabilities
   name: server-capability-catalog
@@ -754,6 +754,7 @@ prompts:
   - {name: database, required: false}
   - {name: operation_type, required: false}
   - {name: algorithm_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_encrypt_rule
   title: Plan Encrypt Rule
   arguments:
@@ -784,6 +785,7 @@ prompts:
   - {name: read_storage_units, required: false}
   - {name: transactional_read_query_strategy, required: false}
   - {name: load_balancer_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_readwrite_splitting_status
   title: Plan Readwrite-Splitting Status
   arguments:
@@ -791,11 +793,13 @@ prompts:
   - {name: rule, required: false}
   - {name: storage_unit, required: false}
   - {name: target_status, required: false}
+  - {name: plan_id, required: false}
 - name: plan_shadow_algorithm_cleanup
   title: Plan Shadow Algorithm Cleanup
   arguments:
   - {name: database, required: false}
   - {name: algorithm_name, required: false}
+  - {name: plan_id, required: false}
 - name: plan_shadow_rule
   title: Plan Shadow Rule
   arguments:
@@ -806,40 +810,47 @@ prompts:
   - {name: shadow_storage_unit, required: false}
   - {name: table, required: false}
   - {name: algorithm_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_sharding_default_strategy
   title: Plan Sharding Default Strategy
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
   - {name: algorithm_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_sharding_key_generate_strategy
   title: Plan Sharding Key Generate Strategy
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
   - {name: key_generator_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_sharding_key_generator
   title: Plan Sharding Key Generator
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
   - {name: key_generator_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_sharding_rule_component_cleanup
   title: Plan Sharding Rule Component Cleanup
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_sharding_table_reference_rule
   title: Plan Sharding Table Reference Rule
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_sharding_table_rule
   title: Plan Sharding Table Rule
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
   - {name: algorithm_type, required: false}
+  - {name: plan_id, required: false}
 - name: recover_workflow
   title: Recover Workflow
   arguments:

@@ -30,7 +30,10 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloa
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -82,6 +85,7 @@ public final class PlanReadwriteSplittingRuleToolHandler implements MCPToolHandl
         applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.READ_STORAGE_UNITS_FIELD, request::setReadStorageUnits);
         applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.TRANSACTIONAL_READ_QUERY_STRATEGY_FIELD, request::setTransactionalReadQueryStrategy);
         applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD, request::setLoadBalancerType);
+        applyMapField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_PROPERTIES_FIELD, request::putLoadBalancerProperties);
     }
     
     private void applyUserOverrides(final ReadwriteSplittingRuleWorkflowRequest request, final Map<String, Object> userOverrides) {
@@ -96,9 +100,27 @@ public final class PlanReadwriteSplittingRuleToolHandler implements MCPToolHandl
     }
     
     private void applyStringArgument(final WorkflowPlanningArguments workflowPlanningArguments, final String fieldName, final Consumer<String> consumer) {
-        final String value = workflowPlanningArguments.getStringArgument(fieldName);
+        String value = workflowPlanningArguments.getStringArgument(fieldName);
         if (!value.isEmpty()) {
             consumer.accept(value);
         }
+    }
+    
+    private void applyMapField(final Map<String, Object> values, final String fieldName, final Consumer<Map<String, String>> consumer) {
+        Object value = values.get(fieldName);
+        if (value instanceof Map) {
+            consumer.accept(createStringMap((Map<?, ?>) value));
+        }
+    }
+    
+    private Map<String, String> createStringMap(final Map<?, ?> values) {
+        Map<String, String> result = new LinkedHashMap<>(values.size(), 1F);
+        for (Entry<?, ?> entry : values.entrySet()) {
+            String key = Objects.toString(entry.getKey(), "").trim();
+            if (!key.isEmpty()) {
+                result.put(key, Objects.toString(entry.getValue(), "").trim());
+            }
+        }
+        return result;
     }
 }

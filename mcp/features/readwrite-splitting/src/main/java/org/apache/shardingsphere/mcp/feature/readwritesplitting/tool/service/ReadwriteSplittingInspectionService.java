@@ -103,7 +103,8 @@ public final class ReadwriteSplittingInspectionService {
     
     private List<Map<String, Object>> queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
         try {
-            return queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS");
+            List<Map<String, Object>> result = queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS");
+            return null == result ? List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN"), Map.of("type", "WEIGHT")) : result;
         } catch (final MCPQueryFailedException ex) {
             if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
                 return List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN"), Map.of("type", "WEIGHT"));

@@ -178,6 +178,11 @@ public final class ShardingWorkflowRequest extends WorkflowRequest {
         keyGeneratorProperties.putAll(props);
     }
     
+    @Override
+    public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
+        return "key_generator".equals(algorithmRole) ? keyGeneratorProperties : super.getAlgorithmProperties(algorithmRole);
+    }
+    
     private void overlayTo(final ShardingWorkflowRequest target) {
         super.overlayTo(target);
         target.setRuleName(resolveValue(target.getRuleName(), ruleName));
