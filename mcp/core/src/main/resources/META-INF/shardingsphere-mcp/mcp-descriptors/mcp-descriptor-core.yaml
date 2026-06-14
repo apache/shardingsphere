@@ -803,7 +803,7 @@ tools:
                 description: "Schema or namespace for schema-scoped metadata objects."
               objectType:
                 type: string
-                description: "Matched metadata object type: database, schema, table, view, column, index, or sequence."
+                description: "Matched metadata object type: database, schema, storage_unit, table, view, column, index, or sequence."
               table:
                 type: string
                 description: "Parent logical table for table, table column, and index hits."
