@@ -85,21 +85,39 @@ class ResourceDefinitionRegistryTest {
     @Test
     void assertGetSupportedResources() {
         Collection<String> actual = ResourceDefinitionRegistry.getSupportedResources();
-        assertThat(actual.size(), is(20));
-        assertTrue(actual.contains("shardingsphere://capabilities"));
-        assertTrue(actual.contains("shardingsphere://runtime"));
-        assertTrue(actual.contains("shardingsphere://workflows/{plan_id}"));
-        assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
-        assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}"));
-        assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns"));
-        assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}"));
+        assertThat(actual, is(List.of(
+                "shardingsphere://capabilities",
+                "shardingsphere://runtime",
+                "shardingsphere://workflows/{plan_id}",
+                "shardingsphere://databases/{database}/capabilities",
+                "shardingsphere://databases",
+                "shardingsphere://databases/{database}",
+                "shardingsphere://databases/{database}/storage-units",
+                "shardingsphere://databases/{database}/storage-units/{storageUnit}",
+                "shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules",
+                "shardingsphere://databases/{database}/single-tables",
+                "shardingsphere://databases/{database}/single-tables/{table}",
+                "shardingsphere://databases/{database}/single-table/default-storage-unit",
+                "shardingsphere://databases/{database}/schemas",
+                "shardingsphere://databases/{database}/schemas/{schema}",
+                "shardingsphere://databases/{database}/schemas/{schema}/sequences",
+                "shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
+                "shardingsphere://databases/{database}/schemas/{schema}/tables",
+                "shardingsphere://databases/{database}/schemas/{schema}/views",
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns",
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
+                "shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
+                "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
+                "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}")));
     }
     
     @Test
     void assertGetSupportedResourceDescriptors() {
-        Collection<MCPResourceDescriptor> actual = ResourceDefinitionRegistry.getSupportedResourceDescriptors();
-        assertThat(actual.size(), is(20));
-        assertTrue(actual.stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.getUriTemplate())));
+        Collection<String> actual = ResourceDefinitionRegistry.getSupportedResourceDescriptors().stream().map(MCPResourceDescriptor::getUriTemplate).toList();
+        assertThat(actual, is(ResourceDefinitionRegistry.getSupportedResources()));
     }
     
     private static Stream<Arguments> getSupportedResourcesFailureCases() {
