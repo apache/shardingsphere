@@ -1,13 +1,13 @@
 # ShardingSphere AI Development Guide
 
-## FIRST HIGH-OUTPUT COMMAND ACTION — READ OR REUSE .codex/context/high-output-commands.md
+## TOKEN EFFICIENCY ACTION — READ OR REUSE .codex/context/token-efficiency.md
 
-Before running Maven, E2E, Proxy startup, database clients, IDE/MCP run configurations, or any command likely to output more than 100 lines,
-I MUST ensure `.codex/context/high-output-commands.md` is available in the active context.
+Before running Maven, E2E, Proxy startup, database clients, IDE/MCP run configurations, any command likely to output more than 100 lines,
+or any task likely to produce large analysis or review output, I MUST ensure `.codex/context/token-efficiency.md` is available in the active context.
 If this exact file from this repository has already been read in the current session and there is no evidence it changed, reuse the loaded content.
-Otherwise, read it before running the high-output command.
+Otherwise, read it before running the high-output command or producing the large structured output.
 Execute the command according to the Mandatory Execution Contract in that file.
-This file is the repository-local source of truth for high-output command classification, log capture, filtered summaries, and final reporting.
+This file is the repository-local source of truth for token-efficient command classification, log capture, filtered summaries, final reporting, and structured output.
 Paths in this section are relative to the Apache ShardingSphere repository root.
 
 This guide is written **for AI coding agents only**. Follow it literally; improvise only when the rules explicitly authorize it.
