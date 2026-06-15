@@ -302,10 +302,10 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
         @SuppressWarnings("unchecked")
         Map<String, Object> actualPayload = (Map<String, Object>) actual.structuredContent();
         Map<?, ?> actualRecovery = (Map<?, ?>) actualPayload.get("recovery");
-        assertThat(actualPayload.get("message"), is("object_types[0] must be one of [database, schema, table, view, column, index, sequence]."));
+        assertThat(actualPayload.get("message"), is("object_types[0] must be one of [database, schema, table, view, column, index, storage_unit, sequence]."));
         assertThat(actualRecovery.get("category"), is("invalid_enum_value"));
         assertThat(actualRecovery.get("field"), is("object_types[0]"));
-        assertThat(actualRecovery.get("allowed_values"), is(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
+        assertThat(actualRecovery.get("allowed_values"), is(List.of("database", "schema", "table", "view", "column", "index", "storage_unit", "sequence")));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("query", "order")));
         assertTrue(actual.isError());
     }

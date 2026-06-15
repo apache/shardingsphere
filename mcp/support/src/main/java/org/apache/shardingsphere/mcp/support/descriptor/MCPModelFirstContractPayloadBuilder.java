@@ -57,7 +57,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("sql_tool_selection", createSqlToolSelection());
         result.put("side_effect_rule", "Preview side effects first; execute only when the requested side effect is still intended.");
         result.put("workflow_rule", createWorkflowRule());
-        result.put("completion_rule", "Use MCP completion for missing database, schema, table, column, index, or sequence values before guessing identifiers.");
+        result.put("completion_rule", "Use MCP completion for missing database, schema, table, column, index, sequence, or storage unit values before guessing identifiers.");
         result.put("recovery_rule", "Follow structured recovery.next_actions before inventing a replacement call.");
         return result;
     }

@@ -85,6 +85,19 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
     }
     
     @Test
+    void assertReadStorageUnitsThroughProxy() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            List<Map<String, Object>> actualStorageUnits = getPayloadItems(interactionClient.readResource(
+                    String.format("shardingsphere://databases/%s/storage-units", getLogicalDatabaseName())));
+            assertThat(actualStorageUnits.stream().map(each -> String.valueOf(each.get("name"))).toList(), hasItem("ds_0"));
+            List<Map<String, Object>> actualStorageUnitDetail = getPayloadItems(interactionClient.readResource(
+                    String.format("shardingsphere://databases/%s/storage-units/ds_0", getLogicalDatabaseName())));
+            assertThat(actualStorageUnitDetail.size(), is(1));
+            assertThat(String.valueOf(actualStorageUnitDetail.getFirst().get("name")), is("ds_0"));
+        }
+    }
+    
+    @Test
     void assertBroadcastWorkflowCanBeAppliedAndValidatedThroughProxy() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlanResponse = interactionClient.call(BROADCAST_PLAN_TOOL_NAME,

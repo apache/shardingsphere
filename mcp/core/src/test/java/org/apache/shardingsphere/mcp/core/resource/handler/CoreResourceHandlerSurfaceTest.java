@@ -125,6 +125,19 @@ class CoreResourceHandlerSurfaceTest {
         }
     }
     
+    @Test
+    void assertHandleWithUnsupportedStorageUnitResource() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
+            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
+                    "shardingsphere://databases/{database}/storage-units",
+                    (featureContext, uriVariables) -> {
+                        throw new MCPUnsupportedException("Storage unit resources are not supported for the current database.");
+                    }).handle(requestContext,
+                            parseUriVariables("shardingsphere://databases/{database}/storage-units", "shardingsphere://databases/logic_db/storage-units")));
+            assertThat(actual.getMessage(), is("Storage unit resources are not supported for the current database."));
+        }
+    }
+    
     private MCPUriVariables parseUriVariables(final String uriOrTemplate, final String resourceUri) {
         return new MCPUriPattern(uriOrTemplate).parse(resourceUri).orElseThrow();
     }
@@ -210,9 +223,23 @@ class CoreResourceHandlerSurfaceTest {
             }
             if (each instanceof MCPSequenceMetadata) {
                 result.add(((MCPSequenceMetadata) each).getSequence());
+                continue;
+            }
+            if (each instanceof Map) {
+                result.add(extractMetadataName((Map<?, ?>) each));
             }
         }
         return result;
+    }
+    
+    private String extractMetadataName(final Map<?, ?> metadata) {
+        if (metadata.containsKey("name")) {
+            return String.valueOf(metadata.get("name"));
+        }
+        if (metadata.containsKey("table_name")) {
+            return String.valueOf(metadata.get("table_name"));
+        }
+        return metadata.containsKey("storage_unit_name") ? String.valueOf(metadata.get("storage_unit_name")) : "";
     }
     
     @SuppressWarnings("unchecked")
@@ -232,6 +259,32 @@ class CoreResourceHandlerSurfaceTest {
                                 .map(CoreResourceHandlerSurfaceTest::createSingletonList).orElse(Collections.emptyList())),
                         "shardingsphere://databases/{database}",
                         "shardingsphere://databases/logic_db", HandlerResultType.METADATA, "", List.of("logic_db")),
+                new HandlerCase("database storage units", new MetadataResourceHandler("shardingsphere://databases/{database}/storage-units",
+                        (requestContext, uriVariables) -> List.of(Map.of("name", "write_ds"))),
+                        "shardingsphere://databases/{database}/storage-units",
+                        "shardingsphere://databases/logic_db/storage-units", HandlerResultType.METADATA, "", List.of("write_ds")),
+                new HandlerCase("database storage unit", new MetadataResourceHandler("shardingsphere://databases/{database}/storage-units/{storageUnit}",
+                        (requestContext, uriVariables) -> List.of(Map.of("name", uriVariables.getValue("storageUnit")))),
+                        "shardingsphere://databases/{database}/storage-units/{storageUnit}",
+                        "shardingsphere://databases/logic_db/storage-units/write_ds", HandlerResultType.METADATA, "", List.of("write_ds")),
+                new HandlerCase("database storage unit used by rules",
+                        new MetadataResourceHandler("shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules",
+                                (requestContext, uriVariables) -> List.of(Map.of("type", "readwrite_splitting", "name", "ms_group_0"))),
+                        "shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules",
+                        "shardingsphere://databases/logic_db/storage-units/write_ds/used-by-rules", HandlerResultType.METADATA, "", List.of("ms_group_0")),
+                new HandlerCase("database single tables", new MetadataResourceHandler("shardingsphere://databases/{database}/single-tables",
+                        (requestContext, uriVariables) -> List.of(Map.of("table_name", "t_user", "storage_unit_name", "ds_0"))),
+                        "shardingsphere://databases/{database}/single-tables",
+                        "shardingsphere://databases/logic_db/single-tables", HandlerResultType.METADATA, "", List.of("t_user")),
+                new HandlerCase("database single table", new MetadataResourceHandler("shardingsphere://databases/{database}/single-tables/{table}",
+                        (requestContext, uriVariables) -> List.of(Map.of("table_name", uriVariables.getValue("table"), "storage_unit_name", "ds_0"))),
+                        "shardingsphere://databases/{database}/single-tables/{table}",
+                        "shardingsphere://databases/logic_db/single-tables/t_user", HandlerResultType.METADATA, "", List.of("t_user")),
+                new HandlerCase("database default single table storage unit",
+                        new MetadataResourceHandler("shardingsphere://databases/{database}/single-table/default-storage-unit",
+                                (requestContext, uriVariables) -> List.of(Map.of("storage_unit_name", "ds_0"))),
+                        "shardingsphere://databases/{database}/single-table/default-storage-unit",
+                        "shardingsphere://databases/logic_db/single-table/default-storage-unit", HandlerResultType.METADATA, "", List.of("ds_0")),
                 new HandlerCase("database capabilities", new DatabaseCapabilitiesHandler(), "shardingsphere://databases/{database}/capabilities",
                         "shardingsphere://databases/logic_db/capabilities", HandlerResultType.DATABASE_CAPABILITY, "logic_db", List.of()),
                 new HandlerCase("database schemas", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas",

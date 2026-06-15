@@ -143,10 +143,10 @@ class ToolDefinitionRegistryTest {
     void assertDispatchWithInvalidEnumArgument() {
         MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
                 () -> dispatch("database_gateway_search_metadata", Map.of("query", "order", "object_types", List.of("TABLE"))));
-        assertThat(actual.getMessage(), is("object_types[0] must be one of [database, schema, table, view, column, index, sequence]."));
+        assertThat(actual.getMessage(), is("object_types[0] must be one of [database, schema, table, view, column, index, storage_unit, sequence]."));
         assertThat(actual.getArgumentPath(), is("object_types[0]"));
         assertThat(actual.getCategory(), is("invalid_enum_value"));
-        assertThat(actual.getAllowedValues(), is(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
+        assertThat(actual.getAllowedValues(), is(List.of("database", "schema", "table", "view", "column", "index", "storage_unit", "sequence")));
         assertThat(actual.getSuggestedArguments(), is(Map.of("query", "order")));
     }
     

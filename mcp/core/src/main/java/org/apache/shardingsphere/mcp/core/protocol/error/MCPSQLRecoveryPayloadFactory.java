@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospec
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -55,16 +56,62 @@ final class MCPSQLRecoveryPayloadFactory {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "metadata_introspection_sql", "Use logical metadata resources or database_gateway_search_metadata instead of console-style metadata SQL.");
         result.put("statement_type", cause.getStatementType());
-        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
-                "shardingsphere://databases", "logical-database", "Read logical databases before choosing a metadata scope."));
-        result.put("suggested_arguments", Map.of("object_types", List.of("database")));
-        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, MCPNextActionUtils.ordered(
-                MCPNextActionUtils.readResource("shardingsphere://databases", "Read logical databases before choosing a metadata scope."),
-                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_search_metadata",
-                        "Search metadata with an explicit database, schema, query, or object_types scope instead of executing metadata SQL.",
-                        Map.of("object_types", List.of("database"))), 1)));
+        List<Map<String, Object>> resourcesToRead = createMetadataIntrospectionResources(cause.getStatementType());
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, resourcesToRead);
+        Map<String, Object> suggestedArguments = createMetadataSearchArguments(cause.getStatementType());
+        result.put("suggested_arguments", suggestedArguments);
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createMetadataIntrospectionNextActions(resourcesToRead, suggestedArguments));
         result.put("ask_user_when_uncertain", false);
         return result;
+    }
+    
+    private static List<Map<String, Object>> createMetadataIntrospectionResources(final String statementType) {
+        switch (statementType) {
+            case "SHOW STORAGE UNITS":
+                return List.of(createResourceHint("shardingsphere://databases/{database}/storage-units", "storage-unit",
+                        "Read storage units from the target logical database instead of executing SHOW STORAGE UNITS."));
+            case "SHOW RULES USED STORAGE UNIT":
+                return List.of(
+                        createResourceHint("shardingsphere://databases/{database}/storage-units", "storage-unit",
+                                "Choose the storage unit from the target logical database."),
+                        createResourceHint("shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules", "storage-unit",
+                                "Read rules that use the chosen storage unit."));
+            case "SHOW SINGLE TABLES":
+            case "SHOW SINGLE TABLE":
+                return List.of(createResourceHint("shardingsphere://databases/{database}/single-tables", "single-table",
+                        "Read single table mappings from the target logical database instead of executing SHOW SINGLE TABLE."));
+            case "SHOW DEFAULT SINGLE TABLE STORAGE UNIT":
+                return List.of(createResourceHint("shardingsphere://databases/{database}/single-table/default-storage-unit", "single-table",
+                        "Read the default single table storage unit resource instead of executing SHOW DEFAULT SINGLE TABLE STORAGE UNIT."));
+            default:
+                return MCPRecoveryPayloadSupport.createResourceHintList(
+                        "shardingsphere://databases", "logical-database", "Read logical databases before choosing a metadata scope.");
+        }
+    }
+    
+    private static Map<String, Object> createMetadataSearchArguments(final String statementType) {
+        return statementType.startsWith("SHOW STORAGE") || statementType.startsWith("SHOW RULES USED STORAGE UNIT")
+                ? Map.of("object_types", List.of("storage_unit"))
+                : Map.of("object_types", List.of("database"));
+    }
+    
+    private static List<Map<String, Object>> createMetadataIntrospectionNextActions(final List<Map<String, Object>> resourcesToRead,
+                                                                                    final Map<String, Object> suggestedArguments) {
+        Map<String, Object> resource = resourcesToRead.getFirst();
+        Map<String, Object> readResource = MCPNextActionUtils.readResource(
+                String.valueOf(resource.get(MCPPayloadFieldNames.URI)), String.valueOf(resource.get(MCPPayloadFieldNames.REASON)));
+        if (List.of("storage_unit").equals(suggestedArguments.get("object_types"))) {
+            return MCPNextActionUtils.ordered(readResource,
+                    MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_search_metadata",
+                            "Search storage units with an explicit database or query scope instead of executing metadata SQL.", suggestedArguments), 1));
+        }
+        return MCPNextActionUtils.ordered(readResource,
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_search_metadata",
+                        "Search metadata with an explicit database, schema, query, or object_types scope instead of executing metadata SQL.", suggestedArguments), 1));
+    }
+    
+    private static Map<String, Object> createResourceHint(final String uri, final String resourceKind, final String reason) {
+        return MCPResourceHintUtils.create(uri, resourceKind, "read_first", reason, MCPPayloadFieldNames.RESOURCES_TO_READ);
     }
     
     static Map<String, Object> createMultipleStatementsRecovery() {
