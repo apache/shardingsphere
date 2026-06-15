@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -28,45 +27,67 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Firebird fetch statement command executor.
  */
-@RequiredArgsConstructor
-public final class FirebirdFetchStatementCommandExecutor implements CommandExecutor {
+public final class FirebirdFetchStatementCommandExecutor implements QueryCommandExecutor {
     
     private final FirebirdFetchStatementPacket packet;
     
     private final ConnectionSession connectionSession;
     
+    private final ProxyBackendHandler proxyBackendHandler;
+    
+    private int fetchCount;
+    
+    public FirebirdFetchStatementCommandExecutor(final FirebirdFetchStatementPacket packet, final ConnectionSession connectionSession) {
+        this.packet = packet;
+        this.connectionSession = connectionSession;
+        proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), packet.getStatementId());
+    }
+    
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        Collection<DatabasePacket> result = new LinkedList<>();
-        ProxyBackendHandler proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), packet.getStatementId());
-        if (null == proxyBackendHandler) {
-            result.add(FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket());
-            return result;
+        if (proxyBackendHandler == null) {
+            fetchCount = packet.getFetchSize() + 1;
+            return Collections.singletonList(FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket());
         }
-        for (int i = 0; i < packet.getFetchSize(); i++) {
+        return Collections.singletonList(getQueryRowPacket());
+    }
+    
+    @Override
+    public ResponseType getResponseType() {
+        return ResponseType.QUERY;
+    }
+    
+    @Override
+    public boolean next() throws SQLException {
+        return fetchCount <= packet.getFetchSize();
+    }
+    
+    @Override
+    public DatabasePacket getQueryRowPacket() throws SQLException {
+        fetchCount++;
+        if (fetchCount <= packet.getFetchSize()) {
             if (proxyBackendHandler.next()) {
-                QueryResponseRow queryResponseRow = proxyBackendHandler.getRowData();
-                BinaryRow row = createBinaryRow(queryResponseRow);
-                result.add(FirebirdFetchResponsePacket.getFetchRowPacket(row));
+                BinaryRow row = createBinaryRow(proxyBackendHandler.getRowData());
+                return FirebirdFetchResponsePacket.getFetchRowPacket(row);
             } else {
                 connectionSession.getDatabaseConnectionManager().unmarkResourceInUse(proxyBackendHandler);
-                result.add(FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket());
-                return result;
+                fetchCount = packet.getFetchSize() + 1;
+                return FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket();
             }
         }
-        result.add(FirebirdFetchResponsePacket.getFetchEndPacket());
-        return result;
+        return FirebirdFetchResponsePacket.getFetchEndPacket();
     }
     
     private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
