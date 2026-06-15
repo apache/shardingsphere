@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
@@ -50,10 +46,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -105,7 +105,7 @@ class PackagedDistributionE2ETest {
     
     @Test
     void assertLaunchPackagedDistributionOverHttp() throws IOException, InterruptedException, SQLException {
-        PreparedPackagedDistribution distribution = preparePackagedDistribution("http", RuntimeTransport.HTTP);
+        PreparedPackagedDistribution distribution = prepareReusableOfficialPackagedDistribution(RuntimeTransport.HTTP);
         try (
                 PackagedDistributionHttpRuntime runtime = new PackagedDistributionHttpRuntime(distribution);
                 MCPInteractionClient interactionClient = runtime.openInteractionClient()) {
@@ -117,7 +117,7 @@ class PackagedDistributionE2ETest {
     
     @Test
     void assertLaunchPackagedDistributionOverStdio() throws IOException, InterruptedException, SQLException {
-        PreparedPackagedDistribution distribution = preparePackagedDistribution("stdio", RuntimeTransport.STDIO);
+        PreparedPackagedDistribution distribution = prepareReusableOfficialPackagedDistribution(RuntimeTransport.STDIO);
         try (MCPInteractionClient interactionClient = new PackagedDistributionStdioInteractionClient(distribution.home(), distribution.configFile())) {
             interactionClient.open();
             assertOfficialRuntime(distribution.home(), RuntimeTransport.STDIO, interactionClient);
@@ -174,9 +174,15 @@ class PackagedDistributionE2ETest {
                 MySQLRuntimeTestSupport.createRuntimeDatabases(mysqlContainer, LOGICAL_DATABASE_NAME));
     }
     
+    private PreparedPackagedDistribution prepareReusableOfficialPackagedDistribution(final RuntimeTransport transport) throws IOException, SQLException {
+        prepareMySQLContainer();
+        return PackagedDistributionTestSupport.prepareReusable(tempDir.resolve("official-distribution-home-" + transport.name().toLowerCase(Locale.ENGLISH)), transport,
+                MySQLRuntimeTestSupport.createRuntimeDatabases(mysqlContainer, LOGICAL_DATABASE_NAME));
+    }
+    
     private Path createDockerConfigurationFile(final RuntimeTransport transport) throws IOException, SQLException {
         prepareMySQLContainer();
-        return PackagedDistributionTestSupport.createDockerConfigurationFile(tempDir.resolve("container-" + transport.name().toLowerCase() + ".yaml"), transport,
+        return PackagedDistributionTestSupport.createDockerConfigurationFile(tempDir.resolve("container-" + transport.name().toLowerCase(Locale.ENGLISH) + ".yaml"), transport,
                 MySQLRuntimeTestSupport.createDockerHostRuntimeDatabases(mysqlContainer, LOGICAL_DATABASE_NAME));
     }
     
@@ -307,8 +313,8 @@ class PackagedDistributionE2ETest {
     private void assertFixtureResource(final Map<String, Object> payload) {
         List<Map<String, Object>> actualItems = MCPInteractionPayloads.castToList(payload.get("items"));
         assertThat(actualItems.size(), is(1));
-        assertThat(actualItems.get(0).get("feature"), is("test-fixture"));
-        assertThat(actualItems.get(0).get("status"), is("ready"));
+        assertThat(actualItems.getFirst().get("feature"), is("test-fixture"));
+        assertThat(actualItems.getFirst().get("status"), is("ready"));
     }
     
     private void assertCapabilities(final Map<String, Object> payload) {

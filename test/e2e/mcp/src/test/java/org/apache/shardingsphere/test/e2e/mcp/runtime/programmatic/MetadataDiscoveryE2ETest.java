@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @EnabledIf("isEnabled")
-class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class MetadataDiscoveryE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static boolean isEnabled() {
         return MCPE2ECondition.isDockerEnabled();
@@ -61,7 +61,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
                         "shardingsphere://databases/logic_db/schemas/logic_db/tables/orders/indexes")));
         HttpResponse<String> tableResource = sendResourceReadRequest(httpClient, sessionId, String.valueOf(actualResource.get("uri")));
         assertThat(tableResource.statusCode(), is(200));
-        assertThat(String.valueOf(MCPInteractionPayloads.castToList(getFirstResourcePayload(tableResource.body()).get("items")).get(0).get("table")), is("orders"));
+        assertThat(String.valueOf(MCPInteractionPayloads.castToList(getFirstResourcePayload(tableResource.body()).get("items")).getFirst().get("table")), is("orders"));
     }
     
     @Test
@@ -96,8 +96,8 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(actual.statusCode(), is(200));
         List<Map<String, Object>> actualItems = MCPInteractionPayloads.castToList(getFirstResourcePayload(actual.body()).get("items"));
         assertThat(actualItems.size(), is(1));
-        assertThat(String.valueOf(actualItems.get(0).get("table")), is("facts"));
-        assertThat(String.valueOf(actualItems.get(0).get("index")), is("PRIMARY"));
+        assertThat(String.valueOf(actualItems.getFirst().get("table")), is("facts"));
+        assertThat(String.valueOf(actualItems.getFirst().get("index")), is("PRIMARY"));
     }
     
     @Test

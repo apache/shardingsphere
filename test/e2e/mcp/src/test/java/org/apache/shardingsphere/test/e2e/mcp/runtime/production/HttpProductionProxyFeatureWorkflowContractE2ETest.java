@@ -86,6 +86,7 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
     
     @Test
     void assertReadStorageUnitsThroughProxy() throws IOException, InterruptedException {
+        useSharedReadOnlyRuntimeFixture();
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> actualStorageUnits = getPayloadItems(interactionClient.readResource(
                     String.format("shardingsphere://databases/%s/storage-units", getLogicalDatabaseName())));

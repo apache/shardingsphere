@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
-class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final String RECOVERY_SECRET = "recovery-secret-value";
     
