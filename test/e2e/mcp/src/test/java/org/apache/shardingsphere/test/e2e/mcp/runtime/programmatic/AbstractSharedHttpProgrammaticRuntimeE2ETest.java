@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.TestInstance;
 
-abstract class AbstractTransportParameterizedProductionRuntimeE2ETest extends AbstractProductionRuntimeE2ETest {
-    
-    private RuntimeTransport transport;
-    
-    protected final void useTransport(final RuntimeTransport transport) {
-        this.transport = transport;
-    }
-    
-    @AfterEach
-    void clearTransport() {
-        transport = null;
-    }
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+abstract class AbstractSharedHttpProgrammaticRuntimeE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
     @Override
-    protected final RuntimeTransport getTransport() {
-        if (null == transport) {
-            throw new IllegalStateException("Runtime transport is not selected for current production E2E test.");
-        }
-        return transport;
+    protected boolean useSharedDatabaseBackedRuntime() {
+        return true;
+    }
+    
+    @AfterAll
+    void tearDownSharedDatabaseBackedRuntime() {
+        closeSharedDatabaseBackedRuntime();
     }
 }

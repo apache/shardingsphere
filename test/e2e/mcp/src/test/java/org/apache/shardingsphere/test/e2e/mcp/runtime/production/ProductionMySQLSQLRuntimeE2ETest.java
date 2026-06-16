@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETest {
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertExecuteSelectWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -57,7 +57,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertExecuteSelectWithTruncationWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -70,7 +70,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertExecuteExplainAnalyzeSelectWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -83,7 +83,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertExecuteQueryTimeoutWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -94,7 +94,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertRejectExecuteMultiStatementWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -105,7 +105,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertRejectExplainAnalyzeUpdateFromReadOnlyToolWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -119,7 +119,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertRejectLockingReadFromReadOnlyToolWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -130,7 +130,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertRejectLockingReadFromUpdateToolWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -141,7 +141,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("dualTransports")
     void assertElicitMaskPlanningWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException {
         useTransport(transport);
         List<McpSchema.ElicitRequest> actualElicitationRequests = new CopyOnWriteArrayList<>();
@@ -170,7 +170,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertExecuteUpdateWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -183,7 +183,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertExecuteUpdateWithoutApprovalArgumentWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -195,7 +195,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertRejectSequenceResourceWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -207,7 +207,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertExecuteRollbackWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -222,7 +222,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertRejectBlankSavepointNameWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -232,7 +232,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertExecuteSavepointFlowWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -252,7 +252,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertExecuteReleaseSavepointWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -267,7 +267,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertExecuteDdlRefreshesMetadataWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -281,7 +281,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertCloseRollsBackPendingTransactionWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -294,7 +294,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertAiNativeDeterministicInteractionLoopWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -313,7 +313,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertListDatabasesWithMultipleRuntimeDatabasesWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient(createPreparedProgrammaticRuntimeDatabases())) {
@@ -324,7 +324,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertRefreshMetadataVisibleForTargetDatabaseOnlyWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient firstInteractionClient = createOpenedInteractionClient(createPreparedProgrammaticRuntimeDatabases())) {
@@ -343,7 +343,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("semanticPrimaryTransport")
     void assertRejectCrossDatabaseTransactionSwitchWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient(createPreparedProgrammaticRuntimeDatabases())) {
@@ -355,7 +355,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
+    @MethodSource("dualTransports")
     void assertRejectMismatchedDatabaseTypeWithActualMySQLBackend(final String name, final RuntimeTransport transport) {
         useTransport(transport);
         if (RuntimeTransport.HTTP == transport) {

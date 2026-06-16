@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
-class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class HttpTransportContractE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final List<String> OFFICIAL_TOOL_NAMES = OfficialMCPToolNames.getAll();
     

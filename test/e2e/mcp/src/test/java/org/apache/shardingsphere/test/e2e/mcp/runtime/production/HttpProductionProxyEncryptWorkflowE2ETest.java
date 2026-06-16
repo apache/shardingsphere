@@ -63,6 +63,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     
     @Test
     void assertCompleteEncryptAlgorithmThroughProxy() throws IOException, InterruptedException {
+        useSharedReadOnlyRuntimeFixture();
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.complete(Map.of("type", "ref/prompt", "name", PLAN_PROMPT_NAME), "algorithm_type", "AE", Map.of());
             assertThat(getStringList(getMap(actual.get("completion")).get("values")), hasItem("AES"));

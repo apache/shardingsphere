@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @EnabledIf("isEnabled")
-class HttpTransportBaselineContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final String BASELINE_RESOURCE_PATH = "baseline-contract/model-contract/";
     

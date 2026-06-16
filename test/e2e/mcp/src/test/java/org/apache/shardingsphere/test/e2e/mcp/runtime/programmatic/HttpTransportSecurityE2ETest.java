@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
@@ -33,14 +31,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@EnabledIf("isEnabled")
-class HttpTransportSecurityE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class HttpTransportSecurityE2ETest extends AbstractHttpProtocolOnlyE2ETest {
     
     private boolean remoteBinding;
-    
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
-    }
     
     @Override
     protected HttpTransportConfiguration createHttpTransportConfiguration() {
