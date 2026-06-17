@@ -42,7 +42,8 @@ public final class WorkflowToolDescriptorValidator implements MCPToolDescriptorV
     public void validate(final MCPToolDescriptor toolDescriptor) {
         if (WorkflowToolDescriptors.APPLY_TOOL_NAME.equals(toolDescriptor.getName())) {
             MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor,
-                    List.of("response_mode", WorkflowFieldNames.PLAN_ID, "status", WorkflowFieldNames.EXECUTION_MODE, MCPPayloadFieldNames.NEXT_ACTIONS, "manual_artifact_summary"));
+                    List.of("response_mode", WorkflowFieldNames.PLAN_ID, "status", WorkflowFieldNames.EXECUTION_MODE, MCPPayloadFieldNames.NEXT_ACTIONS, "manual_artifact_summary",
+                            "category", "message", "secret_reference_summary"));
         } else {
             MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor,
                     List.of("response_mode", WorkflowFieldNames.PLAN_ID, "status", "overall_status", "issues", MCPPayloadFieldNames.NEXT_ACTIONS));

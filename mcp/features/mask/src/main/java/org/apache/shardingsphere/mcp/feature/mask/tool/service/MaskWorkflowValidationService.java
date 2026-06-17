@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSecretReferenceUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
@@ -98,9 +99,9 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
                 return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, List.of(), "Mask rule has been removed.");
             }
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", "no mask rule",
-                    String.valueOf(createMaskedRules(snapshot, List.of(actualRule.get())).get(0)),
+                    String.valueOf(createMaskedRules(snapshot, List.of(actualRule.get())).getFirst()),
                     "Mask rule still exists after drop.", "Drop the mask rule again or investigate the failure."));
-            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, List.of(actualRule.get())).get(0), "Mask rule still exists.");
+            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(), "Mask rule still exists.");
         }
         if (actualRule.isEmpty()) {
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getColumn(), "",
@@ -111,9 +112,9 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
         if (!snapshot.getRequest().getAlgorithmType().equalsIgnoreCase(actualAlgorithmType)) {
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getAlgorithmType(), actualAlgorithmType,
                     "Mask algorithm type does not match.", "Re-apply the intended mask rule."));
-            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, List.of(actualRule.get())).get(0), "Mask algorithm type does not match.");
+            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(), "Mask algorithm type does not match.");
         }
-        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, createMaskedRules(snapshot, List.of(actualRule.get())).get(0), "Mask rule matches the planned algorithm.");
+        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(), createPassedRuleMessage(snapshot));
     }
     
     private Optional<RuleWorkflowFeatureData> getRuleFeatureData(final WorkflowContextSnapshot snapshot) {
@@ -127,7 +128,19 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
             validationReport.getMismatches().addAll(mismatches);
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, actualRules), "Mask table rule state does not match the planned state.");
         }
-        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, createMaskedRules(snapshot, actualRules), "Mask table rule state matches the planned state.");
+        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, createMaskedRules(snapshot, actualRules), createPassedRuleStateMessage(snapshot));
+    }
+    
+    private String createPassedRuleMessage(final WorkflowContextSnapshot snapshot) {
+        return WorkflowSecretReferenceUtils.hasSecretReferences(snapshot.getRequest())
+                ? "Mask rule matches the planned non-sensitive algorithm state; sensitive properties are present and masked."
+                : "Mask rule matches the planned algorithm.";
+    }
+    
+    private String createPassedRuleStateMessage(final WorkflowContextSnapshot snapshot) {
+        return WorkflowSecretReferenceUtils.hasSecretReferences(snapshot.getRequest())
+                ? "Mask table rule state matches the planned non-sensitive state; sensitive properties are present and masked."
+                : "Mask table rule state matches the planned state.";
     }
     
     private List<Map<String, Object>> createExpectedRuleMismatches(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> expectedRules,
@@ -173,12 +186,12 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     private void addPropertyMismatch(final List<Map<String, Object>> mismatches, final WorkflowContextSnapshot snapshot, final Object expected, final Object actual) {
         Map<String, String> expectedProperties = WorkflowSQLUtils.createPropertyMap(expected);
         Map<String, String> actualProperties = WorkflowSQLUtils.createPropertyMap(actual);
-        if (expectedProperties.equals(actualProperties)) {
+        if (WorkflowSecretReferenceUtils.matchesManualPlaceholderProperties(expectedProperties, actualProperties, snapshot.getRequest(), "primary")) {
             return;
         }
         mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule",
-                formatFieldValue("algorithm_props", WorkflowArtifactMaskUtils.maskPropertyMap(expectedProperties, snapshot.getPropertyRequirements())),
-                formatFieldValue("algorithm_props", WorkflowArtifactMaskUtils.maskPropertyMap(actualProperties, snapshot.getPropertyRequirements())),
+                formatFieldValue("algorithm_props", WorkflowArtifactMaskUtils.maskPropertyMap(expectedProperties, snapshot.getPropertyRequirements(), snapshot.getRequest(), "primary")),
+                formatFieldValue("algorithm_props", WorkflowArtifactMaskUtils.maskPropertyMap(actualProperties, snapshot.getPropertyRequirements(), snapshot.getRequest(), "primary")),
                 "Mask algorithm properties do not match.", "Re-apply the intended mask rule."));
     }
     
@@ -186,7 +199,8 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : rules) {
             Map<String, Object> rule = new LinkedHashMap<>(each);
-            rule.put("algorithm_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("algorithm_props")), snapshot.getPropertyRequirements()));
+            rule.put("algorithm_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("algorithm_props")), snapshot.getPropertyRequirements(),
+                    snapshot.getRequest(), "primary"));
             result.add(rule);
         }
         return result;

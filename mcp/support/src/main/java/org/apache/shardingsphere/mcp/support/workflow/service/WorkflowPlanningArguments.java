@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -78,6 +80,27 @@ public final class WorkflowPlanningArguments {
             return createMapArgument((Collection<?>) rawValue);
         }
         return Collections.emptyMap();
+    }
+    
+    /**
+     * Get algorithm property map argument.
+     *
+     * @param name argument name
+     * @param algorithmRole algorithm role
+     * @return algorithm property map
+     */
+    public Map<String, String> getAlgorithmPropertyMapArgument(final String name, final String algorithmRole) {
+        return WorkflowSecretReferenceUtils.createAlgorithmProperties(arguments.get(name), algorithmRole);
+    }
+    
+    /**
+     * Get secret reference map argument.
+     *
+     * @param name argument name
+     * @return secret reference map
+     */
+    public Map<String, SecretReferenceValue> getSecretReferenceMapArgument(final String name) {
+        return WorkflowSecretReferenceUtils.createSecretReferences(arguments.get(name));
     }
     
     private Map<String, String> createMapArgument(final Map<?, ?> rawValue) {

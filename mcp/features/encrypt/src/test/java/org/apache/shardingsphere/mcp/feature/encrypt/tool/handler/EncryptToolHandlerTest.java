@@ -109,6 +109,30 @@ class EncryptToolHandlerTest {
     }
     
     @Test
+    void assertHandlePlanEncryptRuleWithSecretReferences() throws ReflectiveOperationException {
+        PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
+        EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);
+        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+        setField(handler, "planningService", planningService);
+        setField(handler, "propertyTemplateService", new EncryptAlgorithmPropertyTemplateService());
+        WorkflowContextFixture fixture = createWorkflowContextFixture();
+        handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                "database", "logic_db",
+                "primary_algorithm_properties", Map.of("aes-key-value", Map.of("secret_ref", "placeholder://secret-value-1")),
+                "assisted_query_algorithm_properties", Map.of("salt", Map.of("secret_ref", "placeholder://secret-value-2")),
+                "like_query_algorithm_properties", Map.of("token", Map.of("secret_ref", "placeholder://secret-value-3")))));
+        ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
+        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+        EncryptWorkflowRequest actualRequest = requestCaptor.getValue();
+        assertThat(actualRequest.getPrimaryAlgorithmProperties().get("aes-key-value"), is("secret_reference:primary.aes-key-value"));
+        assertFalse(actualRequest.getSecretReferences("primary").get("aes-key-value").isMalformed());
+        assertThat(actualRequest.getOptions().getAssistedQueryAlgorithmProperties().get("salt"), is("secret_reference:assisted_query.salt"));
+        assertFalse(actualRequest.getSecretReferences("assisted_query").get("salt").isMalformed());
+        assertThat(actualRequest.getOptions().getLikeQueryAlgorithmProperties().get("token"), is("secret_reference:like_query.token"));
+        assertFalse(actualRequest.getSecretReferences("like_query").get("token").isMalformed());
+    }
+    
+    @Test
     void assertHandlePlanEncryptRuleMasksPropertiesBeforeRequirementsCollected() throws ReflectiveOperationException {
         PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
         EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);

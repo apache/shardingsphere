@@ -228,7 +228,7 @@ tools:
           description: "Primary mask algorithm type override; equivalent to user_overrides.algorithm_type."
         primary_algorithm_properties:
           type: object
-          description: "Plugin-defined primary mask algorithm properties. Accepted keys depend on the selected algorithm descriptor returned in planning output."
+          description: "Plugin-defined primary mask algorithm properties. Values may be strings or protected placeholder objects with secret_ref and optional label; placeholders require manual execution outside MCP."
           additionalProperties: true
       required: []
       additionalProperties: false
@@ -319,6 +319,9 @@ tools:
         review_focus:
           type: object
           description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
+        secret_reference_summary:
+          type: object
+          description: "Safe summary of protected algorithm-property placeholders. It never contains raw secret_ref identifiers or real sensitive values."
         proxy_topology_hint:
           type: object
           description: "Proxy metadata view expected by this workflow and safe recovery guidance when runtime metadata looks inconsistent."

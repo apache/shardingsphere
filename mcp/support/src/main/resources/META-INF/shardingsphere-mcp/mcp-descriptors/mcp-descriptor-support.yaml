@@ -198,11 +198,12 @@ tools:
       properties:
         response_mode:
           type: string
-          description: "Stable response mode marker: preview, executed, manual_only, or terminal."
+          description: "Stable response mode marker: preview, executed, manual_only, recovery, or terminal."
           enum:
             - preview
             - executed
             - manual_only
+            - recovery
             - terminal
         plan_id:
           type: string
@@ -213,6 +214,16 @@ tools:
         status:
           type: string
           description: "Apply status such as preview, completed, failed, or awaiting-manual-execution."
+        category:
+          type: string
+          description: "Recovery category when response_mode=recovery, including manual execution required for sensitive placeholders."
+          enum:
+            - secret_reference_malformed
+            - secret_reference_missing
+            - secret_reference_manual_execution_required
+        message:
+          type: string
+          description: "Recovery or execution message. Secret-placeholder failures never include raw secret_ref identifiers or real sensitive values."
         issues:
           type: array
           description: "Workflow issues reported while checking or applying artifacts."
@@ -306,6 +317,9 @@ tools:
         manual_follow_up:
           type: object
           description: "Manual-only confirmation contract; database_gateway_validate_workflow is blocked until manual_artifacts_executed is confirmed, while independent query checks remain allowed."
+        secret_reference_summary:
+          type: object
+          description: "Safe summary returned for sensitive placeholders. It contains role/property labels, manual placeholders, and counts only, never raw secret_ref identifiers or real sensitive values."
         argument_provenance:
           type: object
           description: "Source of reusable apply arguments, such as server_generated or server_defaulted."

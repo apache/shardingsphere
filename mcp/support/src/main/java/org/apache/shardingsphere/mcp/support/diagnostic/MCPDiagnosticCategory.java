@@ -55,4 +55,10 @@ public final class MCPDiagnosticCategory {
     public static final String UNSUPPORTED_DATABASE_CAPABILITY = "unsupported_database_capability";
     
     public static final String QUERY_FAILED = "query_failed";
+    
+    public static final String SECRET_REFERENCE_MALFORMED = "secret_reference_malformed";
+    
+    public static final String SECRET_REFERENCE_MISSING = "secret_reference_missing";
+    
+    public static final String SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED = "secret_reference_manual_execution_required";
 }

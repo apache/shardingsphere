@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.DDLArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.IndexPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
@@ -123,6 +124,28 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(1)).get("field"), is("assisted_query_algorithm_properties.salt"));
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(2)).get("field"), is("like_query_algorithm_properties.token"));
         assertTrue((Boolean) ((Map<?, ?>) actualClarificationQuestions.getFirst()).get("secret"));
+    }
+    
+    @Test
+    void assertBuildIncludesSecretReferenceSummary() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
+        snapshot.setClarifiedIntent(new ClarifiedIntent());
+        WorkflowRequest request = new WorkflowRequest();
+        request.getPrimaryAlgorithmSecretReferences().put("aes-key-value", SecretReferenceValue.create());
+        snapshot.setRequest(request);
+        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Encrypt workflow plan.", List.of("review"), List.of("rules")));
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        Map<?, ?> actualSummary = (Map<?, ?>) actual.get("secret_reference_summary");
+        assertTrue((Boolean) actualSummary.get("required"));
+        assertThat(actualSummary.get("reference_count"), is(1));
+        assertThat(actualSummary.get("value_handling"), is("manual_execution"));
+        assertThat(((Map<?, ?>) ((List<?>) actualSummary.get("references")).getFirst()).get("label"), is("secret_placeholder:primary.aes-key-value"));
+        assertThat(((Map<?, ?>) ((List<?>) actualSummary.get("references")).getFirst()).get("manual_placeholder"), is("<SECRET_VALUE_PRIMARY_AES_KEY_VALUE>"));
+        assertFalse(String.valueOf(actualSummary).contains("placeholder://secret-value-1"));
+        assertFalse(String.valueOf(actualSummary).contains("user label"));
     }
     
     @Test

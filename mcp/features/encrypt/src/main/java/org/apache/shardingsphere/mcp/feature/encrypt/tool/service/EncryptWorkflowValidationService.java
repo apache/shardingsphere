@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSecretReferenceUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
@@ -133,7 +135,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
             validationReport.getMismatches().addAll(mismatches);
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(), "Encrypt rule configuration does not match.");
         }
-        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(), "Encrypt rule matches the planned columns and algorithms.");
+        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(), createPassedRuleMessage(snapshot));
     }
     
     private Optional<List<Map<String, Object>>> getExpectedRules(final WorkflowContextSnapshot snapshot) {
@@ -150,7 +152,19 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
             validationReport.getMismatches().addAll(mismatches);
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, actualRules), "Encrypt table rule state does not match the planned state.");
         }
-        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, createMaskedRules(snapshot, actualRules), "Encrypt table rule state matches the planned state.");
+        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, createMaskedRules(snapshot, actualRules), createPassedRuleStateMessage(snapshot));
+    }
+    
+    private String createPassedRuleMessage(final WorkflowContextSnapshot snapshot) {
+        return WorkflowSecretReferenceUtils.hasSecretReferences(snapshot.getRequest())
+                ? "Encrypt rule matches the planned non-sensitive columns and algorithms; sensitive properties are present and masked."
+                : "Encrypt rule matches the planned columns and algorithms.";
+    }
+    
+    private String createPassedRuleStateMessage(final WorkflowContextSnapshot snapshot) {
+        return WorkflowSecretReferenceUtils.hasSecretReferences(snapshot.getRequest())
+                ? "Encrypt table rule state matches the planned non-sensitive state; sensitive properties are present and masked."
+                : "Encrypt table rule state matches the planned state.";
     }
     
     private List<Map<String, Object>> createExpectedRuleMismatches(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> expectedRules,
@@ -215,12 +229,16 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
                                      final Object expected, final Object actual, final String impact) {
         Map<String, String> expectedProperties = WorkflowSQLUtils.createPropertyMap(expected);
         Map<String, String> actualProperties = WorkflowSQLUtils.createPropertyMap(actual);
-        if (expectedProperties.equals(actualProperties)) {
+        String algorithmRole = getAlgorithmRole(fieldName);
+        if (WorkflowSecretReferenceUtils.matchesManualPlaceholderProperties(expectedProperties, actualProperties, snapshot.getRequest(), algorithmRole)) {
             return;
         }
         mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule",
-                formatFieldValue(fieldName, WorkflowArtifactMaskUtils.maskPropertyMap(expectedProperties, snapshot.getPropertyRequirements())),
-                formatFieldValue(fieldName, WorkflowArtifactMaskUtils.maskPropertyMap(actualProperties, snapshot.getPropertyRequirements())), impact,
+                formatFieldValue(fieldName, WorkflowArtifactMaskUtils.maskPropertyMap(expectedProperties, snapshot.getPropertyRequirements(), snapshot.getRequest(),
+                        algorithmRole)),
+                formatFieldValue(fieldName, WorkflowArtifactMaskUtils.maskPropertyMap(actualProperties, snapshot.getPropertyRequirements(), snapshot.getRequest(),
+                        algorithmRole)),
+                impact,
                 "Re-apply the intended encrypt rule."));
     }
     
@@ -228,10 +246,13 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : rules) {
             Map<String, Object> rule = new LinkedHashMap<>(each);
-            rule.put("encryptor_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("encryptor_props")), snapshot.getPropertyRequirements()));
+            rule.put("encryptor_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("encryptor_props")), snapshot.getPropertyRequirements(),
+                    snapshot.getRequest(), EncryptFeatureDefinition.ALGORITHM_ROLE_PRIMARY));
             rule.put("assisted_query_props",
-                    WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("assisted_query_props")), snapshot.getPropertyRequirements()));
-            rule.put("like_query_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("like_query_props")), snapshot.getPropertyRequirements()));
+                    WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("assisted_query_props")), snapshot.getPropertyRequirements(),
+                            snapshot.getRequest(), EncryptFeatureDefinition.ALGORITHM_ROLE_ASSISTED_QUERY));
+            rule.put("like_query_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("like_query_props")), snapshot.getPropertyRequirements(),
+                    snapshot.getRequest(), EncryptFeatureDefinition.ALGORITHM_ROLE_LIKE_QUERY));
             result.add(rule);
         }
         return result;
@@ -260,6 +281,16 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     
     private boolean matchesValue(final String expected, final String actual) {
         return expected.equalsIgnoreCase(actual);
+    }
+    
+    private String getAlgorithmRole(final String fieldName) {
+        if ("assisted_query_props".equals(fieldName)) {
+            return EncryptFeatureDefinition.ALGORITHM_ROLE_ASSISTED_QUERY;
+        }
+        if ("like_query_props".equals(fieldName)) {
+            return EncryptFeatureDefinition.ALGORITHM_ROLE_LIKE_QUERY;
+        }
+        return EncryptFeatureDefinition.ALGORITHM_ROLE_PRIMARY;
     }
     
     private String formatFieldValue(final String fieldName, final Object value) {
