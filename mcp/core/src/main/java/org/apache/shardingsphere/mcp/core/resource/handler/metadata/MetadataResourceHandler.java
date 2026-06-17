@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescript
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
+import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
@@ -48,14 +49,6 @@ import java.util.stream.Stream;
 public final class MetadataResourceHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
     
     private static final int LARGE_RESULT_THRESHOLD = 100;
-    
-    private static final String CATEGORY_NO_RUNTIME_DATABASE = "no_runtime_database";
-    
-    private static final String CATEGORY_UNKNOWN_DATABASE = "unknown_database";
-    
-    private static final String CATEGORY_NOT_FOUND = "not_found";
-    
-    private static final String CATEGORY_EMPTY_SCOPE = "empty_scope";
     
     private final String uriTemplate;
     
@@ -133,7 +126,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         Map<String, Object> emptyState = new LinkedHashMap<>(4, 1F);
         String resourceKind = null == descriptor.getObjectScope() ? "metadata" : descriptor.getObjectScope();
         String recoveryCategory = resolveEmptyStateCategory(descriptor, databaseContext, uriVariables);
-        if (CATEGORY_NOT_FOUND.equals(recoveryCategory)) {
+        if (MCPDiagnosticCategory.NOT_FOUND.equals(recoveryCategory)) {
             emptyState.put("state", "not_found");
             emptyState.put("category", recoveryCategory);
         } else {
@@ -153,12 +146,32 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     
     private String resolveEmptyStateCategory(final ShardingSphereMCPResourceMetadata descriptor, final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         if ("shardingsphere://databases".equals(uriTemplate)) {
-            return CATEGORY_NO_RUNTIME_DATABASE;
+            return MCPDiagnosticCategory.NO_RUNTIME_DATABASE;
         }
         if (uriVariables.containsVariable("database") && !isKnownDatabase(databaseContext, uriVariables.getValue("database"))) {
-            return CATEGORY_UNKNOWN_DATABASE;
+            return MCPDiagnosticCategory.UNKNOWN_DATABASE;
         }
-        return isDetailResource(descriptor) ? CATEGORY_NOT_FOUND : CATEGORY_EMPTY_SCOPE;
+        if (isDetailResource(descriptor)) {
+            return resolveDetailEmptyStateCategory(descriptor, uriVariables);
+        }
+        return MCPDiagnosticCategory.EMPTY_SCOPE;
+    }
+    
+    private String resolveDetailEmptyStateCategory(final ShardingSphereMCPResourceMetadata descriptor, final MCPUriVariables uriVariables) {
+        if ("schema".equals(descriptor.getObjectScope()) && uriVariables.containsVariable("schema")) {
+            return MCPDiagnosticCategory.SCHEMA_NOT_VISIBLE;
+        }
+        if (containsObjectToken(uriVariables)) {
+            return MCPDiagnosticCategory.OBJECT_NOT_VISIBLE;
+        }
+        if ("logical-database".equals(descriptor.getObjectScope()) && uriVariables.containsVariable("database")) {
+            return MCPDiagnosticCategory.DATABASE_NOT_VISIBLE;
+        }
+        return MCPDiagnosticCategory.NOT_FOUND;
+    }
+    
+    private boolean containsObjectToken(final MCPUriVariables uriVariables) {
+        return Stream.of("column", "index", "sequence", "view", "storageUnit", "table").anyMatch(uriVariables::containsVariable);
     }
     
     private boolean isKnownDatabase(final MCPDatabaseHandlerContext databaseContext, final String databaseName) {
@@ -167,11 +180,17 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     
     private String createEmptyStateReason(final String category, final String resourceKind) {
         switch (category) {
-            case CATEGORY_NO_RUNTIME_DATABASE:
+            case MCPDiagnosticCategory.NO_RUNTIME_DATABASE:
                 return "No ShardingSphere-Proxy logical database is available to MCP. Configure runtimeDatabases before reading metadata.";
-            case CATEGORY_UNKNOWN_DATABASE:
+            case MCPDiagnosticCategory.UNKNOWN_DATABASE:
                 return "The requested logical database is not visible to MCP. Check runtimeDatabases and ShardingSphere-Proxy connectivity.";
-            case CATEGORY_NOT_FOUND:
+            case MCPDiagnosticCategory.DATABASE_NOT_VISIBLE:
+                return "The requested logical database is configured but not visible through the current runtime metadata scope.";
+            case MCPDiagnosticCategory.SCHEMA_NOT_VISIBLE:
+                return "The requested schema is not visible in the current metadata scope.";
+            case MCPDiagnosticCategory.OBJECT_NOT_VISIBLE:
+                return "The requested metadata object is not visible in the current metadata scope.";
+            case MCPDiagnosticCategory.NOT_FOUND:
                 return String.format("%s detail resource was not found for this URI.", resourceKind);
             default:
                 return "No metadata items are visible in this scope. Check metadata permissions if objects are expected.";

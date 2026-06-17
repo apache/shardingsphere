@@ -55,7 +55,7 @@ class ToolDefinitionRegistryTest {
     
     @Test
     void assertGetSupportedTools() {
-        assertThat(ToolDefinitionRegistry.getSupportedTools(), contains("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query",
+        assertThat(ToolDefinitionRegistry.getSupportedTools(), contains("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query",
                 "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow"));
     }
     
@@ -63,7 +63,7 @@ class ToolDefinitionRegistryTest {
     void assertGetSupportedToolDescriptors() {
         List<MCPToolDescriptor> actual = ToolDefinitionRegistry.getSupportedToolDescriptors();
         assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(),
-                is(List.of("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query", "database_gateway_execute_update",
+                is(List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query", "database_gateway_execute_update",
                         "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
         assertToolFields(actual.get(0), List.of("database", "schema", "query", "object_types"));
         assertToolFields(actual.get(1), List.of("database"));
@@ -87,6 +87,13 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
+    void assertGetToolDefinitionWithLegacyAlias() {
+        MCPToolDefinition actual = ToolDefinitionRegistry.getToolDefinition("database_gateway_validate_proxy_connectivity");
+        assertThat(actual.getDescriptor().getName(), is("database_gateway_validate_runtime_database"));
+        assertThat(actual.getHandler().getToolName(), is("database_gateway_validate_runtime_database"));
+    }
+    
+    @Test
     void assertDispatch() {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
         runtimeContext.getSessionManager().createSession("session-1");
@@ -95,6 +102,18 @@ class ToolDefinitionRegistryTest {
             MCPResponse actual = ToolDefinitionRegistry.dispatch(requestContext, toolDefinition, "session-1", Map.of("query", "order", "object_types", List.of("index")));
             assertThat(toolDefinition.getDescriptor().getName(), is("database_gateway_search_metadata"));
             assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
+        }
+    }
+    
+    @Test
+    void assertDispatchWithLegacyAlias() {
+        MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
+        runtimeContext.getSessionManager().createSession("session-1");
+        try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
+            MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition("database_gateway_validate_proxy_connectivity");
+            MCPResponse actual = ToolDefinitionRegistry.dispatch(requestContext, toolDefinition, "session-1", Map.of("database", "missing_db"));
+            assertThat(toolDefinition.getDescriptor().getName(), is("database_gateway_validate_runtime_database"));
+            assertThat(actual.toPayload().get("response_mode"), is("validation"));
         }
     }
     

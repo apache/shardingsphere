@@ -39,7 +39,7 @@ weight = 4
 - 查看 `<logic-database>` 中有哪些表。
 - 查询 `<table-name>` 的字段和索引。
 - 执行一条只读查询，并限制返回 100 行。
-- 调用 `database_gateway_validate_proxy_connectivity` 对已经配置的 runtime database 进行接入前校验。
+- 调用 `database_gateway_validate_runtime_database` 对已经配置的 runtime database 进行接入前校验。
 - 规划一个数据加密或数据脱敏规则，先预览不要执行。
 
 涉及 SQL 执行、规则变更或规则变更计划执行时，应先审查预览内容，再确认执行。自研集成或协议调试场景见[自研集成附录](../developer-appendix/)。

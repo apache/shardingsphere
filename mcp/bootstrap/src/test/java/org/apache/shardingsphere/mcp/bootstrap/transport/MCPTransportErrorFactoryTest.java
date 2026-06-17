@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.MCPTransportSecurityException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class MCPTransportErrorFactoryTest {
     
@@ -56,6 +58,21 @@ class MCPTransportErrorFactoryTest {
         @SuppressWarnings("unchecked")
         Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
         assertThat(actualData.get("message"), is("Unsupported tool `foo_tool`."));
+    }
+    
+    @Test
+    void assertCreateErrorWithTransportSecurityCategory() {
+        McpError actual = MCPTransportErrorFactory.createError(new MCPTransportSecurityException(403,
+                "Origin is not allowed by MCP HTTP transport policy.", MCPTransportSecurityException.CATEGORY_ORIGIN_NOT_ALLOWED));
+        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+        assertThat(actual.getJsonRpcError().message(), is("Origin is not allowed by MCP HTTP transport policy."));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> actualRecovery = (Map<String, Object>) actualData.get("recovery");
+        assertThat(actualRecovery.get("category"), is("origin_not_allowed"));
+        assertThat(actualRecovery.get("recovery_category"), is("transport_security"));
+        assertFalse(String.valueOf(actualData).contains("session-"));
     }
     
     @Test

@@ -177,11 +177,43 @@ class SearchMetadataToolHandlerTest {
             MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "query", "missing")));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((Map<?, ?>) actualPayload.get("empty_state")).get("state"), is("no_match"));
+            assertThat(((Map<?, ?>) actualPayload.get("empty_state")).get("category"), is("object_not_visible"));
             Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
             assertThat(actualNextAction.get("type"), is("tool_call"));
             assertThat(actualNextAction.get("tool_name"), is("database_gateway_search_metadata"));
             assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("query"), is("missing"));
             assertFalse(((Map<?, ?>) actualNextAction.get("arguments")).containsKey("database"));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataWithUnknownDatabase() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "missing_db", "query", "orders")));
+            Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+            assertThat(actualEmptyState.get("category"), is("unknown_database"));
+            assertThat(actualEmptyState.get("reason"), is("The requested logical database is not visible to MCP."));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataWithSchemaNotVisible() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
+                    Map.of("database", "logic_db", "schema", "missing_schema", "object_types", List.of("table"))));
+            Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+            assertThat(actualEmptyState.get("category"), is("schema_not_visible"));
+            assertThat(actualEmptyState.get("reason"), is("The requested schema is not visible in the current metadata scope."));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataWithoutRuntimeDatabase() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(List.of()))) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of()));
+            Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+            assertThat(actualEmptyState.get("category"), is("no_runtime_database"));
+            assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).getFirst()).get("type"), is("resource_read"));
         }
     }
     
