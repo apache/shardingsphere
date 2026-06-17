@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureData;
+import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
@@ -57,7 +58,7 @@ class MaskWorkflowValidationServiceTest {
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-2",
                         workflowSessionContext.getRequired("plan-1"));
         assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
     }
     
     @Test
@@ -154,7 +155,56 @@ class MaskWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(ruleInspectionService)
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).get(0)).get("expected"), is("algorithm_props={from-x=1}"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("algorithm_props={from-x=1}"));
+    }
+    
+    @Test
+    void assertValidateExpectedStateAcceptsResolvedReferencedProperty() throws ReflectiveOperationException {
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
+        snapshot.getRequest().getPrimaryAlgorithmProperties().put("replace-char", "secret_reference:primary.replace-char");
+        snapshot.getRequest().getPrimaryAlgorithmSecretReferences().put("replace-char", SecretReferenceValue.create());
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of(
+                "column", "phone",
+                "algorithm_type", "MASK_FROM_X_TO_Y",
+                "algorithm_props", Map.of("replace-char", "secret_reference:primary.replace-char")))));
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
+        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of(
+                "column", "phone",
+                "algorithm_type", "MASK_FROM_X_TO_Y",
+                "algorithm_props", Map.of("replace-char", "raw-actual-secret"))));
+        Map<String, Object> actual = createService(ruleInspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("validated"));
+        assertThat(actual.get("overall_status"), is("passed"));
+        assertThat(((List<?>) actual.get("mismatches")).size(), is(0));
+        assertFalse(String.valueOf(actual).contains("raw-actual-secret"));
+        assertFalse(String.valueOf(actual).contains("placeholder://secret-value-1"));
+    }
+    
+    @Test
+    void assertValidateExpectedStateDetectsUnresolvedReferencedProperty() throws ReflectiveOperationException {
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
+        snapshot.getRequest().getPrimaryAlgorithmProperties().put("replace-char", "secret_reference:primary.replace-char");
+        snapshot.getRequest().getPrimaryAlgorithmSecretReferences().put("replace-char", SecretReferenceValue.create());
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of(
+                "column", "phone",
+                "algorithm_type", "MASK_FROM_X_TO_Y",
+                "algorithm_props", Map.of("replace-char", "secret_reference:primary.replace-char")))));
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
+        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of(
+                "column", "phone",
+                "algorithm_type", "MASK_FROM_X_TO_Y",
+                "algorithm_props", Map.of("replace-char", "secret_reference:primary.replace-char"))));
+        Map<String, Object> actual = createService(ruleInspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("algorithm_props={replace-char=******}"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("actual"), is("algorithm_props={replace-char=******}"));
+        assertFalse(String.valueOf(actual).contains("placeholder://secret-value-1"));
     }
     
     @Test
@@ -170,7 +220,7 @@ class MaskWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(ruleInspectionService)
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).get(0)).get("expected"), is("column=email"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("column=email"));
     }
     
     private MaskWorkflowValidationService createService(final MaskRuleInspectionService ruleInspectionService) throws ReflectiveOperationException {

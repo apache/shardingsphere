@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
@@ -164,10 +165,20 @@ public final class WorkflowGuidancePayloadBuilder {
         if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status)) {
             nextActions.add(createUserAction("Confirm the manual artifacts were executed outside MCP before validation.", List.of("manual_artifacts_executed")));
         }
-        if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
+        if (WorkflowLifecycle.STATUS_FAILED.equals(status) && isSecretReferenceRecovery(payload)) {
+            nextActions.add(createUserAction("Review the manual artifacts, replace neutral secret placeholders outside MCP, and execute them through the normal operational channel.",
+                    List.of("manual_artifacts")));
+        } else if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
             nextActions.add(createUserAction("Inspect issues and retry database_gateway_apply_workflow only after the failed artifact is corrected.", List.of("issues")));
         }
         payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, addSequencing(nextActions));
+    }
+    
+    private static boolean isSecretReferenceRecovery(final Map<String, Object> payload) {
+        Object category = payload.get("category");
+        return MCPDiagnosticCategory.SECRET_REFERENCE_MALFORMED.equals(category)
+                || MCPDiagnosticCategory.SECRET_REFERENCE_MISSING.equals(category)
+                || MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED.equals(category);
     }
     
     /**

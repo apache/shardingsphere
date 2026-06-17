@@ -62,13 +62,25 @@ After a plan is generated, review:
 ## Sensitive parameter handling
 
 Encryption algorithms may require keys, salts, or other sensitive properties.
-Users should provide these values through protected channels and confirm the source and scope before execution.
+Users can provide these values through secret reference objects and confirm the source and scope before execution.
+
+Example:
+
+```json
+{
+  "primary_algorithm_properties": {
+    "aes-key-value": {
+      "secret_ref": "placeholder://secret-value-1"
+    }
+  }
+}
+```
 
 When ShardingSphere-MCP returns model-facing plans, workflow resources, previews, execution results, validation results, recovery data, and error messages, recognized sensitive properties are masked.
 Built-in algorithms and custom algorithm properties marked as secret in algorithm property templates can be recognized and masked consistently.
+The `secret_ref` in a placeholder object only marks a sensitive slot for manual replacement. Planning, preview, execution results, and validation output do not echo `secret_ref` or real sensitive values.
 Undeclared custom properties should not be written in plaintext in normal conversations, logs, or ticket descriptions.
-Execution still uses the original property values from the controlled context to generate rule change statements.
-Users should not put plaintext keys into conversation summaries, logs, or ticket descriptions.
+If a rule change still contains sensitive placeholders, automatic execution returns `secret_reference_manual_execution_required` before side effects. Operators should replace real values outside MCP and the AI application, then execute manually.
 
 ## Review Rule Column Names
 

@@ -29,7 +29,7 @@ Additional notes:
 - `runtimeDatabases` is required at startup and must contain at least one runtime database.
 - Queries return at most 100 rows by default. A single query can request at most 5000 rows, and the maximum requested query timeout is 300000 milliseconds.
 - Secret placeholders in manual packages should be replaced by operators in a controlled environment.
-- ShardingSphere-MCP does not read key management systems directly. If a rule change needs keys or credentials, pass them through the AI application, operations workflow, or protected execution environment.
+- ShardingSphere-MCP does not fetch real sensitive values; real sensitive values must stay outside the AI application. If a rule change needs keys or credentials, replace the neutral placeholders in the manual execution package outside MCP and the AI application in a controlled environment.
 - For protocol request debugging, see the [Custom Integration Appendix](../developer-appendix/).
 
 ## Connection Failure Categories
@@ -55,14 +55,6 @@ When a runtime database or ShardingSphere-Proxy connection fails, MCP responses 
 | Query timeout         | One query can request at most 300000 milliseconds as the timeout.                                              | After a timeout, narrow the query scope or adjust timeout within the supported range.           |
 | Tool-call quota       | When the current MCP session reaches the tool-call protection limit, MCP returns `tool_call_limit_exceeded`.   | Close the current session and create a new MCP session.                                         |
 | Side-effect execution | Data, schema, rule, privilege, or transaction-state changes require preview and confirmation before execution. | Review the preview before deciding whether to execute.                                          |
-
-## Future Code Improvements
-
-The following items are documented as known follow-up code improvements. Until the code changes are completed, users should rely on the current tool names, error categories, and runtime behavior.
-
-| Improvement                          | Reason                                                                                                                                                                                                        | Recommendation                                                                                                                                                                                                                               |
-|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Secret reference mechanism           | Rule changes may require keys or credentials, which are currently passed through external protected channels.                                                                                                 | If built-in support is required later, design a secret reference or resolver mechanism instead of exposing sensitive values through the MCP Server.                                                                                          |
 
 ## Information for Administrators or Troubleshooters
 

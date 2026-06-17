@@ -46,7 +46,7 @@ class MCPDescriptorCatalogLoaderTest {
         assertToolNames(actualToolNames);
         assertOutputProperties(actual, "database_gateway_apply_workflow", Set.of(
                 "response_mode", "plan_id", "execution_mode", "next_actions", "manual_artifact_package", "manual_artifact_summary", "manual_follow_up", "argument_provenance",
-                "review_summary", "review_focus"));
+                "review_summary", "review_focus", "category", "message", "secret_reference_summary"));
         assertOutputProperties(actual, "database_gateway_validate_workflow", Set.of("response_mode", "plan_id", "status", "recovery_guidance", "next_actions", "sections", "mismatches"));
         assertPublicToolAnnotations(actual);
         assertPlanningToolAnnotations(actual);

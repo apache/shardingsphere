@@ -48,6 +48,18 @@ class WorkflowPlanningArgumentsTest {
         assertThat(new WorkflowPlanningArguments(rawArguments).getMapArgument("props"), is(expectedValue));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getAlgorithmPropertyMapArgumentCases")
+    void assertGetAlgorithmPropertyMapArgument(final String name, final Map<String, Object> rawArguments, final Map<String, String> expectedValue) {
+        assertThat(new WorkflowPlanningArguments(rawArguments).getAlgorithmPropertyMapArgument("props", "primary"), is(expectedValue));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getSecretReferenceMapArgumentCases")
+    void assertGetSecretReferenceMapArgument(final String name, final Map<String, Object> rawArguments, final boolean expectedMalformed) {
+        assertThat(new WorkflowPlanningArguments(rawArguments).getSecretReferenceMapArgument("props").get("aes-key-value").isMalformed(), is(expectedMalformed));
+    }
+    
     private static Stream<Arguments> getStringArgumentCases() {
         return Stream.of(
                 Arguments.of("missing string", Map.of(), ""),
@@ -70,5 +82,19 @@ class WorkflowPlanningArgumentsTest {
                         Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")),
                 Arguments.of("entry list argument", Map.of("props", List.of(" aes-key-value = 123456 ", "digest-algorithm-name=SHA-1")),
                         Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")));
+    }
+    
+    private static Stream<Arguments> getAlgorithmPropertyMapArgumentCases() {
+        return Stream.of(
+                Arguments.of("secret reference object", Map.of("props", Map.of("aes-key-value", Map.of("secret_ref", "placeholder://secret-value-1"))),
+                        Map.of("aes-key-value", "secret_reference:primary.aes-key-value")),
+                Arguments.of("literal map argument", Map.of("props", Map.of("digest-algorithm-name", "SHA-256")), Map.of("digest-algorithm-name", "SHA-256")),
+                Arguments.of("entry list argument", Map.of("props", List.of("aes-key-value=123456")), Map.of("aes-key-value", "123456")));
+    }
+    
+    private static Stream<Arguments> getSecretReferenceMapArgumentCases() {
+        return Stream.of(
+                Arguments.of("valid secret reference", Map.of("props", Map.of("aes-key-value", Map.of("secret_ref", "placeholder://secret-value-1"))), false),
+                Arguments.of("malformed secret reference", Map.of("props", Map.of("aes-key-value", Map.of("label", "placeholder"))), true));
     }
 }

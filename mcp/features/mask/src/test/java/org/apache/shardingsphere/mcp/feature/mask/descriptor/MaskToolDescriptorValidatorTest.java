@@ -84,7 +84,8 @@ class MaskToolDescriptorValidatorTest {
         assertTrue(actual.keySet().containsAll(List.of(
                 "response_mode", "plan_id", "workflow_kind", "status", "issues", "global_steps", "current_step", "algorithm_recommendations",
                 "property_requirements", "validation_strategy", "delivery_mode", "execution_mode", "intent_inference", "argument_provenance", "review_focus",
-                "missing_required_inputs", "clarification_questions", "resources_to_read", "proxy_topology_hint", "next_actions", "distsql_artifacts", "masked_property_preview")));
+                "missing_required_inputs", "clarification_questions", "resources_to_read", "proxy_topology_hint", "next_actions", "distsql_artifacts", "masked_property_preview",
+                "secret_reference_summary")));
     }
     
     @Test
@@ -155,7 +156,15 @@ class MaskToolDescriptorValidatorTest {
                 "response_mode", "plan_id", "workflow_kind", "status", "missing_required_inputs", "clarification_questions", "elicitation_support", "fallback_reason",
                 "issues", "global_steps", "current_step", "algorithm_recommendations", "property_requirements", "validation_strategy", "delivery_mode", "execution_mode",
                 "intent_inference", "argument_provenance", "review_focus", "proxy_topology_hint", "distsql_artifacts", "masked_property_preview", "resources_to_read",
-                "next_actions");
+                "next_actions", "secret_reference_summary");
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertInputSchemaDeclaresSecretReferenceObjects() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(MaskFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> properties = (Map<String, Object>) descriptor.getInputSchema().get("properties");
+        assertTrue(String.valueOf(((Map<?, ?>) properties.get("primary_algorithm_properties")).get("description")).contains("protected placeholder objects"));
     }
     
     private static Stream<String> requiredMetadataFields() {

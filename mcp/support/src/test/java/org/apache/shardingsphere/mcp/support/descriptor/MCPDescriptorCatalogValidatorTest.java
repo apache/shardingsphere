@@ -23,8 +23,10 @@ import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotati
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -67,6 +69,19 @@ class MCPDescriptorCatalogValidatorTest {
     void assertValidateDoesNotHardcodeCoreToolDescriptor() {
         assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createCatalog(List.of(), List.of(createToolDescriptor(
                 "database_gateway_search_metadata", new MCPToolAnnotations("Search Metadata", true, false, true, true), createOutputSchema())))));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertValidateRejectsApplyDescriptorWithoutSecretReferenceSummary() {
+        MCPToolDescriptor descriptor = WorkflowToolDescriptors.createExecution();
+        Map<String, Object> outputSchema = new LinkedHashMap<>(descriptor.getOutputSchema());
+        Map<String, Object> properties = new LinkedHashMap<>((Map<String, Object>) outputSchema.get("properties"));
+        properties.remove("secret_reference_summary");
+        outputSchema.put("properties", properties);
+        assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
+                descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), outputSchema, descriptor.getAnnotations(), descriptor.getMeta()))),
+                "Tool `database_gateway_apply_workflow` outputSchema must declare `secret_reference_summary`.");
     }
     
     @Test

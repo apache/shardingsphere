@@ -50,6 +50,8 @@ public final class WorkflowIssueCode {
     
     public static final String SECRET_PROPERTY_REQUIRED = "WF-PROP-002";
     
+    public static final String SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED = "WF-PROP-003";
+    
     public static final String USER_OVERRIDE_NAME_UNSAFE = "WF-NAME-001";
     
     public static final String AUTO_RENAMED_DUE_TO_CONFLICT = "WF-NAME-002";

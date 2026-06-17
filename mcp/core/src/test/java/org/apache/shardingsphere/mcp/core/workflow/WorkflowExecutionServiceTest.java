@@ -22,12 +22,14 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFac
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.DDLArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.IndexPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
@@ -378,6 +380,26 @@ class WorkflowExecutionServiceTest {
     }
     
     @Test
+    void assertApplyRequiresManualExecutionForSecretReference() {
+        WorkflowContextSnapshot snapshot = createSecretReferenceSnapshot();
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        WorkflowExecutionService executionService = new WorkflowExecutionService();
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
+                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("rule_distsql"), "review-then-execute");
+        assertThat(actualResponse.get("status"), is("failed"));
+        assertThat(actualResponse.get("response_mode"), is("recovery"));
+        assertThat(actualResponse.get("category"), is(MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED));
+        assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED));
+        assertThat(((List<?>) actualResponse.get("step_results")).size(), is(0));
+        assertTrue(String.valueOf(actualResponse).contains("<SECRET_VALUE_PRIMARY_AES_KEY_VALUE>"));
+        assertFalse(String.valueOf(actualResponse).contains("placeholder://secret-value-1"));
+        assertFalse(String.valueOf(actualResponse).contains("secret_reference:primary.aes-key-value"));
+        verify(executionFacade, never()).execute(any());
+    }
+    
+    @Test
     void assertApplySkipsUnapprovedArtifacts() {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.setStatus("previewed");
@@ -497,6 +519,17 @@ class WorkflowExecutionServiceTest {
         request.setExecutionMode("review-then-execute");
         request.getPrimaryAlgorithmProperties().put("aes-key-value", "123456");
         result.setRequest(request);
+        return result;
+    }
+    
+    private WorkflowContextSnapshot createSecretReferenceSnapshot() {
+        WorkflowContextSnapshot result = createSnapshot();
+        result.setStatus("previewed");
+        result.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        result.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "AES key.", ""));
+        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='secret_reference:primary.aes-key-value'))"));
+        result.getRequest().getPrimaryAlgorithmProperties().put("aes-key-value", "secret_reference:primary.aes-key-value");
+        result.getRequest().getPrimaryAlgorithmSecretReferences().put("aes-key-value", SecretReferenceValue.create());
         return result;
     }
 }
