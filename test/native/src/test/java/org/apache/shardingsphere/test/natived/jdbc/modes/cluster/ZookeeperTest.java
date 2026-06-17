@@ -56,8 +56,20 @@ class ZookeeperTest {
     
     @AfterEach
     void afterEach() throws SQLException {
-        ResourceUtils.closeJdbcDataSource(logicDataSource);
-        System.clearProperty(systemPropKeyPrefix + "server-lists");
+        try {
+            closeLogicDataSource();
+        } finally {
+            System.clearProperty(systemPropKeyPrefix + "server-lists");
+        }
+    }
+    
+    private void closeLogicDataSource() throws SQLException {
+        if (null == logicDataSource) {
+            return;
+        }
+        DataSource dataSource = logicDataSource;
+        logicDataSource = null;
+        ResourceUtils.closeJdbcDataSource(dataSource);
     }
     
     @Test
@@ -69,6 +81,7 @@ class ZookeeperTest {
             initEnvironment();
             testShardingService.processSuccess();
             testShardingService.cleanEnvironment();
+            closeLogicDataSource();
         }
     }
     
