@@ -35,7 +35,7 @@ final class MCPModelFirstContractPayloadBuilder {
     
     private static final String PLANNING_TOOL_NAME_PREFIX = "database_gateway_plan_";
     
-    private static final String PREFLIGHT_TOOL_NAME = "database_gateway_validate_proxy_connectivity";
+    private static final String PREFLIGHT_TOOL_NAME = "database_gateway_validate_runtime_database";
     
     private static final String CATALOG_RESOURCE_URI = "shardingsphere://capabilities";
     
@@ -69,7 +69,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
         result.put("optional_catalog_resource", CATALOG_RESOURCE_URI);
         result.put("metadata_first_resource", "shardingsphere://databases");
-        result.put("preflight_rule", "Use database_gateway_validate_proxy_connectivity with a configured database name before onboarding or troubleshooting runtime connectivity.");
+        result.put("preflight_rule", "Use database_gateway_validate_runtime_database with a configured database name before onboarding or troubleshooting runtime connectivity.");
         result.put("sql_tool_selection", Map.of(
                 "read_only", "Use database_gateway_execute_query for one classifier-approved SELECT or EXPLAIN ANALYZE statement.",
                 "side_effecting", "Use database_gateway_execute_update with execution_mode=preview before execution."));
@@ -131,7 +131,7 @@ final class MCPModelFirstContractPayloadBuilder {
                         "call_tool database_gateway_search_metadata", "read_resource returned resource.uri"),
                         "Stop when the requested metadata detail resource is read.",
                         List.of("database_gateway_search_metadata"), List.of("shardingsphere://databases")),
-                createCommonFlow("validate_runtime_database", List.of("read_resource shardingsphere://databases", "call_tool database_gateway_validate_proxy_connectivity"),
+                createCommonFlow("validate_runtime_database", List.of("read_resource shardingsphere://databases", "call_tool database_gateway_validate_runtime_database"),
                         "Stop after the configured runtime database reports ready or returns structured recovery guidance.",
                         List.of(PREFLIGHT_TOOL_NAME), List.of("shardingsphere://databases")),
                 createCommonFlow("read_only_sql", List.of("read_resource shardingsphere://databases/{database}/capabilities", "call_tool database_gateway_execute_query"),

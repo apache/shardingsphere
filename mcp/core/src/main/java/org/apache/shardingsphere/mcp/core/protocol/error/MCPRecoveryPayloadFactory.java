@@ -101,6 +101,9 @@ final class MCPRecoveryPayloadFactory {
         if (cause instanceof MCPInvalidMetadataObjectTypesException) {
             return MCPBasicRecoveryPayloadFactory.createInvalidObjectTypesRecovery((MCPInvalidMetadataObjectTypesException) cause);
         }
+        if (MCPQueryRecoveryPayloadFactory.isQueryFailure(cause)) {
+            return MCPQueryRecoveryPayloadFactory.create(cause);
+        }
         return Map.of();
     }
 }

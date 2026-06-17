@@ -109,6 +109,29 @@ class MetadataResourceHandlerTest {
     }
     
     @Test
+    void assertHandleSchemaDetailResourceNotVisible() {
+        MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}", (requestContext, uriVariables) -> List.of());
+        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0"))),
+                new MCPUriVariables(Map.of("database", "logic_db", "schema", "missing_schema")));
+        Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+        assertThat(actualEmptyState.get("category"), is("schema_not_visible"));
+        assertThat(actualEmptyState.get("reason"), is("The requested schema is not visible in the current metadata scope."));
+        assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("requested_token"), is("missing_schema"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).getFirst()).get("type"), is("resource_read"));
+    }
+    
+    @Test
+    void assertHandleObjectDetailResourceNotVisible() {
+        MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}", (requestContext, uriVariables) -> List.of());
+        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0"))),
+                new MCPUriVariables(Map.of("database", "logic_db", "schema", "public", "table", "missing_table")));
+        Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+        assertThat(actualEmptyState.get("category"), is("object_not_visible"));
+        assertThat(actualEmptyState.get("reason"), is("The requested metadata object is not visible in the current metadata scope."));
+        assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("requested_token"), is("missing_table"));
+    }
+    
+    @Test
     void assertHandleDetailResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}",
                 (requestContext, uriVariables) -> List.of(Map.of("database", uriVariables.getValue("database"))));

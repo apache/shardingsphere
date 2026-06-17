@@ -71,7 +71,7 @@ class PackagedDistributionE2ETest {
             "shardingsphere-mcp-feature-broadcast", "shardingsphere-mcp-feature-readwrite-splitting", "shardingsphere-mcp-feature-shadow",
             "shardingsphere-mcp-feature-sharding");
     
-    private static final List<String> CORE_TOOL_NAMES = List.of("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity",
+    private static final List<String> CORE_TOOL_NAMES = List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database",
             "database_gateway_execute_query", "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow");
     
     private static final List<String> REMOVED_FEATURE_TOOL_NAMES = OfficialMCPToolNames.getAll().stream().filter(each -> !CORE_TOOL_NAMES.contains(each)).toList();
@@ -293,7 +293,7 @@ class PackagedDistributionE2ETest {
     
     private void assertDiscoveredTools(final List<Map<String, Object>> tools) {
         List<String> actualToolNames = tools.stream().map(each -> String.valueOf(each.get("name"))).toList();
-        assertThat(actualToolNames, hasItems("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query",
+        assertThat(actualToolNames, hasItems("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query",
                 "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow", "fixture_ping"));
         for (String each : REMOVED_FEATURE_TOOL_NAMES) {
             assertFalse(actualToolNames.contains(each));
@@ -319,7 +319,7 @@ class PackagedDistributionE2ETest {
     
     private void assertCapabilities(final Map<String, Object> payload) {
         List<String> actualSupportedTools = ((List<?>) payload.get("supportedTools")).stream().map(String::valueOf).toList();
-        assertThat(actualSupportedTools, hasItems("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query",
+        assertThat(actualSupportedTools, hasItems("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query",
                 "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow", "fixture_ping"));
         for (String each : REMOVED_FEATURE_TOOL_NAMES) {
             assertFalse(actualSupportedTools.contains(each));

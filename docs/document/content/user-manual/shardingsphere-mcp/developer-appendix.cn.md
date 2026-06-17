@@ -79,7 +79,7 @@ STDIO 示例：
 | 工具                                             | 用途                                         | 副作用                                          |
 |------------------------------------------------|--------------------------------------------|----------------------------------------------|
 | `database_gateway_search_metadata`             | 按名称片段和对象类型搜索运行时数据库元数据，并返回后续资源读取提示。         | 无。                                           |
-| `database_gateway_validate_proxy_connectivity` | 校验运行时数据库配置是否可用，用于接入失败时定位连接问题。              | 无。                                           |
+| `database_gateway_validate_runtime_database` | 校验运行时数据库配置是否可用，用于接入失败时定位连接问题。              | 无。                                           |
 | `database_gateway_execute_query`               | 执行一个已判定为查询类的 `SELECT` 或 `EXPLAIN ANALYZE`。 | 无；拒绝 DML、DDL、DCL、事务控制、savepoint 和其他有副作用 SQL。 |
 | `database_gateway_execute_update`              | 预览或执行一个可能修改数据、元数据、规则或事务状态的 SQL。            | 有；应先预览并确认。                                   |
 | `database_gateway_apply_workflow`              | 预览、执行或导出功能插件生成的治理变更计划。                     | 取决于执行方式；预览和人工执行包不修改运行时状态。                    |

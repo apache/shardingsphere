@@ -963,8 +963,8 @@ tools:
         - shardingsphere://databases
         - "shardingsphere://databases/{database}/storage-units"
         - "shardingsphere://databases/{database}/schemas"
-  - name: database_gateway_validate_proxy_connectivity
-    title: Validate Proxy Connectivity
+  - name: database_gateway_validate_runtime_database
+    title: Validate Runtime Database
     description: >-
       Validate one configured ShardingSphere-MCP runtime database before formal onboarding. Use this to preflight the configured database type,
       JDBC driver, JDBC connectivity, metadata readability, and database visibility without executing SQL tools.
@@ -982,7 +982,7 @@ tools:
       properties:
         response_mode:
           type: string
-          description: "Stable response mode marker for proxy preflight validation payloads."
+          description: "Stable response mode marker for runtime database validation payloads."
           enum:
             - validation
         status:
@@ -1051,7 +1051,7 @@ tools:
           category: ready
           recovery: {}
     annotations:
-      title: Validate Proxy Connectivity
+      title: Validate Runtime Database
       readOnlyHint: true
       destructiveHint: false
       idempotentHint: true

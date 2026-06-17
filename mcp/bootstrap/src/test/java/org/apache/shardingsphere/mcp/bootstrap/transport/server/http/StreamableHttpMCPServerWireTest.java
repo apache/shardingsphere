@@ -36,6 +36,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class StreamableHttpMCPServerWireTest {
     
@@ -53,17 +54,43 @@ class StreamableHttpMCPServerWireTest {
         }
     }
     
+    @Test
+    void assertInitializeRejectsRemoteOriginWithCategory() throws IOException, InterruptedException {
+        StreamableHttpMCPServer server = createServer();
+        server.start();
+        try {
+            HttpResponse<String> actual = HttpClient.newHttpClient().send(createInitializeRequest(server.getLocalPort(), "application/json", "http://example.com"),
+                    HttpResponse.BodyHandlers.ofString());
+            assertThat(actual.statusCode(), is(403));
+            Map<?, ?> actualPayload = OBJECT_MAPPER.readValue(actual.body(), Map.class);
+            assertFalse(actualPayload.containsKey("id"));
+            Map<?, ?> actualError = (Map<?, ?>) actualPayload.get("error");
+            Map<?, ?> actualData = (Map<?, ?>) actualError.get("data");
+            Map<?, ?> actualRecovery = (Map<?, ?>) actualData.get("recovery");
+            assertThat(actualRecovery.get("category"), is("origin_not_allowed"));
+        } finally {
+            server.stop();
+        }
+    }
+    
     private StreamableHttpMCPServer createServer() {
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), new MCPDatabaseCapabilityProvider(Collections.emptyMap()), "http");
         return new StreamableHttpMCPServer(new HttpTransportConfiguration("127.0.0.1", 0, "/mcp"), runtimeContext);
     }
     
     private HttpRequest createInitializeRequest(final int port, final String contentType) throws JsonProcessingException {
-        return HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/mcp"))
+        return createInitializeRequest(port, contentType, "");
+    }
+    
+    private HttpRequest createInitializeRequest(final int port, final String contentType, final String origin) throws JsonProcessingException {
+        HttpRequest.Builder result = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/mcp"))
                 .header("Content-Type", contentType)
                 .header("Accept", "application/json, text/event-stream")
-                .POST(HttpRequest.BodyPublishers.ofString(OBJECT_MAPPER.writeValueAsString(createInitializePayload())))
-                .build();
+                .POST(HttpRequest.BodyPublishers.ofString(OBJECT_MAPPER.writeValueAsString(createInitializePayload())));
+        if (!origin.isEmpty()) {
+            result.header("Origin", origin);
+        }
+        return result.build();
     }
     
     private Map<String, Object> createInitializePayload() {

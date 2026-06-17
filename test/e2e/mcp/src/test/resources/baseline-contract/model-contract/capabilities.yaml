@@ -27,7 +27,7 @@ model_first_summary:
   metadata_rule: {first_resource: 'shardingsphere://databases', search_tool: database_gateway_search_metadata,
     detail_rule: Read the returned resource.uri when the list or search response points
       to a detail resource.}
-  preflight_rule: {tool: database_gateway_validate_proxy_connectivity, input_rule: Pass
+  preflight_rule: {tool: database_gateway_validate_runtime_database, input_rule: Pass
       only a configured runtime database name., secret_rule: Connection details stay
       in administrator runtime configuration and are not tool arguments.}
   sql_tool_selection:
@@ -61,7 +61,7 @@ model_contract:
   argument_completion_method: completion/complete
   optional_catalog_resource: shardingsphere://capabilities
   metadata_first_resource: shardingsphere://databases
-  preflight_rule: Use database_gateway_validate_proxy_connectivity with a configured
+  preflight_rule: Use database_gateway_validate_runtime_database with a configured
     database name before onboarding or troubleshooting runtime connectivity.
   sql_tool_selection: {read_only: Use database_gateway_execute_query for one classifier-approved
       SELECT or EXPLAIN ANALYZE statement., side_effecting: Use database_gateway_execute_update
@@ -83,7 +83,7 @@ surface_summary:
   optional_catalog_resource: shardingsphere://capabilities
   metadata_resource: shardingsphere://databases
   metadata_search_tool: database_gateway_search_metadata
-  preflight_validation_tool: database_gateway_validate_proxy_connectivity
+  preflight_validation_tool: database_gateway_validate_runtime_database
   read_only_sql_tool: database_gateway_execute_query
   side_effect_sql_tool: database_gateway_execute_update
   workflow_tools: [database_gateway_apply_workflow, database_gateway_validate_workflow]
@@ -135,10 +135,10 @@ common_flows:
   referenced_tools: [database_gateway_search_metadata]
   referenced_resources: ['shardingsphere://databases']
 - flow_id: validate_runtime_database
-  steps: ['read_resource shardingsphere://databases', call_tool database_gateway_validate_proxy_connectivity]
+  steps: ['read_resource shardingsphere://databases', call_tool database_gateway_validate_runtime_database]
   stop_condition: Stop after the configured runtime database reports ready or returns
     structured recovery guidance.
-  referenced_tools: [database_gateway_validate_proxy_connectivity]
+  referenced_tools: [database_gateway_validate_runtime_database]
   referenced_resources: ['shardingsphere://databases']
 - flow_id: read_only_sql
   steps: ['read_resource shardingsphere://databases/{database}/capabilities', call_tool
@@ -171,9 +171,9 @@ common_flows:
   referenced_resources: ['shardingsphere://capabilities']
 protocolAvailability: {resources: true, resourceTemplates: true, tools: true, toolAnnotations: true,
   toolOutputSchemas: true, prompts: true, completions: true, resourceNavigation: true}
-fingerprints: {algorithm: sha256, descriptorCatalog: a132a7ea25954ae493663a2f5f27aac72845bd47e4d2d8901afed6e60ca5f4a2,
+fingerprints: {algorithm: sha256, descriptorCatalog: acce235532d4dd8ba2006cb16add2c44fedc31897e377b11883d7c794e31389a,
   promptSet: 3232cdab7c69f8e627da044e3d85f2dd72a0d08102541a42f6b9d75c89b2557e, resourceNavigation: 241f02eb306c284cbb2535ee38390f8d962e0288d7ee34c8cf0ed363a44ab741,
-  modelFacingSchemas: aa8bdc7c232a19ab614a62c2d6132d83045932f8e6853b62a6a7a00d9d2db5f0}
+  modelFacingSchemas: 5008a521f6caaddc297cb1ea473d9ad2c75200735f54d938914c76ca63651b2c}
 resources:
 - uri: shardingsphere://capabilities
   name: server-capability-catalog
@@ -720,8 +720,8 @@ tools:
 - name: database_gateway_search_metadata
   annotations: {title: Search Metadata, readOnlyHint: true, destructiveHint: false,
     idempotentHint: true, openWorldHint: true}
-- name: database_gateway_validate_proxy_connectivity
-  annotations: {title: Validate Proxy Connectivity, readOnlyHint: true, destructiveHint: false,
+- name: database_gateway_validate_runtime_database
+  annotations: {title: Validate Runtime Database, readOnlyHint: true, destructiveHint: false,
     idempotentHint: true, openWorldHint: true}
 - name: database_gateway_execute_query
   annotations: {title: Execute Query SQL, readOnlyHint: true, destructiveHint: false,

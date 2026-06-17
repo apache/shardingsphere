@@ -31,12 +31,14 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import java.util.Map;
 
 /**
- * Handler for proxy connectivity validation tool.
+ * Handler for runtime database validation tool.
  */
 @RequiredArgsConstructor
 public final class ValidateProxyConnectivityToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
     
-    public static final String TOOL_NAME = "database_gateway_validate_proxy_connectivity";
+    public static final String TOOL_NAME = "database_gateway_validate_runtime_database";
+    
+    public static final String LEGACY_TOOL_NAME = "database_gateway_validate_proxy_connectivity";
     
     private final ProxyPreflightValidationService validationService;
     

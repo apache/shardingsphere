@@ -203,7 +203,7 @@ After deployment, verify that ShardingSphere-MCP is truly usable instead of stop
 3. Runtime databases are ready
 
    - Read `shardingsphere://runtime` and confirm that the transport, runtime database summary, and readiness details are visible.
-   - Call `database_gateway_validate_proxy_connectivity`, or run a minimal task such as “Show tables in `<logic-database>`” from the AI application to confirm that the configured runtime database is usable.
+   - Call `database_gateway_validate_runtime_database`, or run a minimal task such as “Show tables in `<logic-database>`” from the AI application to confirm that the configured runtime database is usable.
    - A running MCP Server process alone does not mean that the target runtime database is ready. Connectivity failures, insufficient privileges, or invisible logical databases can still block tasks.
 
 ## Basic Observability Entrypoints

@@ -38,8 +38,8 @@ class CoreToolDescriptorValidatorTest {
     }
     
     @Test
-    void assertSupportsValidateProxyConnectivity() {
-        assertTrue(new CoreToolDescriptorValidator().supports(MCPDescriptorCatalogIndex.getRequiredToolDescriptor("database_gateway_validate_proxy_connectivity")));
+    void assertSupportsValidateRuntimeDatabase() {
+        assertTrue(new CoreToolDescriptorValidator().supports(MCPDescriptorCatalogIndex.getRequiredToolDescriptor("database_gateway_validate_runtime_database")));
     }
     
     @Test
@@ -84,25 +84,25 @@ class CoreToolDescriptorValidatorTest {
     
     @Test
     @SuppressWarnings("unchecked")
-    void assertValidateRejectsExposedProxyConnectivityJdbcUrl() {
-        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor("database_gateway_validate_proxy_connectivity");
+    void assertValidateRejectsExposedRuntimeDatabaseJdbcUrl() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor("database_gateway_validate_runtime_database");
         Map<String, Object> inputSchema = new LinkedHashMap<>(descriptor.getInputSchema());
         Map<String, Object> properties = new LinkedHashMap<>((Map<String, Object>) inputSchema.get("properties"));
         properties.put("jdbcUrl", Map.of("type", "string", "description", "JDBC URL."));
         inputSchema.put("properties", properties);
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new CoreToolDescriptorValidator().validate(new MCPToolDescriptor(
                 descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), inputSchema, descriptor.getOutputSchema(), descriptor.getAnnotations(), descriptor.getMeta())));
-        assertThat(actual.getMessage(), is("Tool `database_gateway_validate_proxy_connectivity` must not expose `jdbcUrl`."));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_validate_runtime_database` must not expose `jdbcUrl`."));
     }
     
     @Test
-    void assertValidateRejectsOptionalProxyConnectivityDatabase() {
-        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor("database_gateway_validate_proxy_connectivity");
+    void assertValidateRejectsOptionalRuntimeDatabase() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor("database_gateway_validate_runtime_database");
         Map<String, Object> inputSchema = new LinkedHashMap<>(descriptor.getInputSchema());
         inputSchema.put("required", List.of());
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new CoreToolDescriptorValidator().validate(new MCPToolDescriptor(
                 descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), inputSchema, descriptor.getOutputSchema(), descriptor.getAnnotations(), descriptor.getMeta())));
-        assertThat(actual.getMessage(), is("Tool `database_gateway_validate_proxy_connectivity` database must be required."));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_validate_runtime_database` database must be required."));
     }
     
     private Map<?, ?> getInputProperties(final MCPToolDescriptor toolDescriptor) {

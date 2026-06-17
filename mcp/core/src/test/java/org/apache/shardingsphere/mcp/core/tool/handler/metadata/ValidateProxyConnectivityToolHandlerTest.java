@@ -44,11 +44,11 @@ class ValidateProxyConnectivityToolHandlerTest {
     
     @Test
     void assertGetToolName() {
-        assertThat(new ValidateProxyConnectivityToolHandler().getToolName(), is("database_gateway_validate_proxy_connectivity"));
+        assertThat(new ValidateProxyConnectivityToolHandler().getToolName(), is("database_gateway_validate_runtime_database"));
     }
     
     @Test
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     void assertHandle() {
         ProxyPreflightValidationService validationService = mock(ProxyPreflightValidationService.class);
         when(validationService.validate(any(), any(), any()))

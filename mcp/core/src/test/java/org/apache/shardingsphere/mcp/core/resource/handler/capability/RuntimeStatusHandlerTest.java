@@ -95,10 +95,12 @@ class RuntimeStatusHandlerTest {
         assertTrue(actualSafeCategories.contains("invalid_configuration"));
         assertTrue(actualSafeCategories.contains("database_unavailable"));
         assertTrue(actualSafeCategories.contains("connection_failed"));
+        assertTrue(actualSafeCategories.contains("database_not_visible"));
         List<?> actualOperatorNextActions = (List<?>) actualDiagnostics.get("operator_next_actions");
-        assertThat(actualOperatorNextActions.size(), is(7));
+        assertThat(actualOperatorNextActions.size(), is(8));
         assertThat(((Map<?, ?>) actualOperatorNextActions.get(4)).get("category"), is("invalid_configuration"));
         assertTrue((Boolean) ((Map<?, ?>) actualOperatorNextActions.get(4)).get("secret_safe"));
+        assertThat(((Map<?, ?>) actualOperatorNextActions.get(7)).get("category"), is("database_not_visible"));
     }
     
     private void assertRuntimeProtection(final Map<String, Object> payload) {

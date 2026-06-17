@@ -106,7 +106,8 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
                 RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT,
                 RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION,
                 RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE,
-                RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED);
+                RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED,
+                RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE);
     }
     
     private List<Map<String, Object>> createDiagnosticOperatorActions() {
@@ -117,7 +118,8 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT, "Check database reachability and timeout settings."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION, "Fix runtimeDatabases databaseType, driver, or binding configuration."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE, "Check database service availability and network access."),
-                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED, "Inspect runtime database connection settings outside MCP."));
+                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED, "Inspect runtime database connection settings outside MCP."),
+                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE, "Check the configured logical database name and account visibility outside MCP."));
     }
     
     private Map<String, Object> createDiagnosticOperatorAction(final String category, final String operatorAction) {

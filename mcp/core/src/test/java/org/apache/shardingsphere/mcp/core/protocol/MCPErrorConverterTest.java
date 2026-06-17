@@ -55,6 +55,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
+import java.sql.SQLTransientConnectionException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -437,23 +438,55 @@ class MCPErrorConverterTest {
         assertTrue((Boolean) actualRecovery.get("ask_user_when_uncertain"));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertConvertQueryFailureWithRecoveryCases")
+    void assertConvertQueryFailureWithRecovery(final String name, final Throwable cause, final String expectedMessage, final String expectedCategory, final String expectedActionType) {
+        Map<String, Object> actual = MCPErrorConverter.convert(cause).toPayload();
+        assertThat(actual.get("message"), is(expectedMessage));
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is(expectedCategory));
+        assertTrue((Boolean) actualRecovery.get("secret_safe"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).getFirst()).get("type"), is(expectedActionType));
+        assertFalse(String.valueOf(actualRecovery).contains("SQLException"));
+    }
+    
+    @Test
+    void assertConvertQueryFailureRecoveryOmitsSensitiveFields() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPQueryFailedException("jdbc:mysql://127.0.0.1:3306/logic_db password=secret token=abc")).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actual.get("message"), is("MCP query failed."));
+        assertThat(actualRecovery.get("category"), is("query_failed"));
+        assertFalse(String.valueOf(actual).contains("jdbc:mysql"));
+        assertFalse(String.valueOf(actual).contains("password=secret"));
+        assertFalse(String.valueOf(actual).contains("token=abc"));
+    }
+    
     static Stream<Arguments> assertConvertCases() {
         return Stream.of(
                 Arguments.of("invalid request exception", new MCPInvalidRequestException("Invalid request."), "Invalid request."),
                 Arguments.of("not found exception", new DatabaseCapabilityNotFoundException(), "Database capability does not exist."),
                 Arguments.of("unsupported exception", new MCPUnsupportedException("Unsupported."), "Unsupported."),
-                Arguments.of("timeout exception", new MCPTimeoutException("Timed out.", new SQLTimeoutException("Timed out.")), "Timed out."),
                 Arguments.of("transaction state exception", new MCPTransactionStateException("Transaction already active.", new IllegalStateException()), "Transaction already active."),
-                Arguments.of("query failed exception", new MCPQueryFailedException("Query failed."), "Query failed."),
                 Arguments.of("unavailable exception", new MCPUnavailableException("Unavailable."), "Unavailable."),
-                Arguments.of("sql syntax exception", new SQLSyntaxErrorException("Bad SQL."), "Bad SQL."),
-                Arguments.of("sql timeout exception", new SQLTimeoutException("Timed out."), "Timed out."),
-                Arguments.of("sql unsupported feature exception", new SQLFeatureNotSupportedException("Unsupported feature."), "Unsupported feature."),
                 Arguments.of("unsupported operation exception", new UnsupportedOperationException("Unsupported operation."), "Unsupported operation."),
-                Arguments.of("sql exception", new SQLException("Query failed."), "Query failed."),
                 Arguments.of("illegal argument exception", new IllegalArgumentException("Illegal argument."), "Illegal argument."),
                 Arguments.of("illegal state exception", new IllegalStateException(" Transaction already active. "), "Transaction already active."),
                 Arguments.of("unknown exception", new RuntimeException(), "Service is temporarily unavailable."));
+    }
+    
+    static Stream<Arguments> assertConvertQueryFailureWithRecoveryCases() {
+        return Stream.of(
+                Arguments.of("sql syntax", new SQLSyntaxErrorException("Bad SQL.", "42601"), "Invalid request.", "sql_syntax_error", "ask_user"),
+                Arguments.of("object not visible", new MCPQueryFailedException("Query failed.", new SQLException("Missing table.", "42P01")), "MCP query failed.", "object_not_visible",
+                        "resource_read"),
+                Arguments.of("insufficient privileges", new SQLException("Permission denied.", "42501"), "MCP query failed.", "insufficient_privileges", "ask_user"),
+                Arguments.of("execution timeout", new MCPTimeoutException("Timed out.", new SQLTimeoutException("Timed out.")), "MCP operation timeout.", "execution_timeout",
+                        "resource_read"),
+                Arguments.of("connection interrupted", new MCPQueryFailedException("Query failed.", new SQLTransientConnectionException("Connection lost.", "08006")), "MCP query failed.",
+                        "connection_interrupted", "resource_read"),
+                Arguments.of("unsupported database capability", new SQLFeatureNotSupportedException("Unsupported feature."), "Unsupported MCP operation.",
+                        "unsupported_database_capability", "resource_read"),
+                Arguments.of("query failed", new MCPQueryFailedException("Query failed."), "MCP query failed.", "query_failed", "resource_read"));
     }
     
     private String getFirstResourceToReadUri(final Map<?, ?> recovery) {
