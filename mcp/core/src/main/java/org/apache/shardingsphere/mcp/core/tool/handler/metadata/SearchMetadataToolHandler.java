@@ -208,7 +208,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         if (!request.getDatabase().isEmpty() && !isKnownDatabase(databaseContext, request.getDatabase())) {
             return MCPDiagnosticCategory.UNKNOWN_DATABASE;
         }
-        if (!request.getSchema().isEmpty()) {
+        if (!request.getSchema().isEmpty() && !isKnownSchema(databaseContext, request.getDatabase(), request.getSchema())) {
             return MCPDiagnosticCategory.SCHEMA_NOT_VISIBLE;
         }
         return request.getQuery().isEmpty() ? MCPDiagnosticCategory.EMPTY_SCOPE : MCPDiagnosticCategory.OBJECT_NOT_VISIBLE;
@@ -216,6 +216,10 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     
     private boolean isKnownDatabase(final MCPDatabaseHandlerContext databaseContext, final String databaseName) {
         return Optional.ofNullable(databaseContext.getCapabilityFacade()).flatMap(capabilityFacade -> capabilityFacade.findDatabaseProfile(databaseName)).isPresent();
+    }
+    
+    private boolean isKnownSchema(final MCPDatabaseHandlerContext databaseContext, final String databaseName, final String schemaName) {
+        return databaseContext.getMetadataQueryFacade().querySchema(databaseName, schemaName).isPresent();
     }
     
     private boolean hasRuntimeDatabase(final MCPDatabaseHandlerContext databaseContext) {

@@ -187,6 +187,17 @@ class SearchMetadataToolHandlerTest {
     }
     
     @Test
+    void assertHandleSearchMetadataWithObjectNotVisibleInKnownSchema() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
+                    Map.of("database", "logic_db", "schema", "public", "query", "missing", "object_types", List.of("table"))));
+            Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+            assertThat(actualEmptyState.get("category"), is("object_not_visible"));
+            assertThat(actualEmptyState.get("reason"), is("No visible metadata object matched the query in the requested scope."));
+        }
+    }
+    
+    @Test
     void assertHandleSearchMetadataWithUnknownDatabase() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
             MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "missing_db", "query", "orders")));
