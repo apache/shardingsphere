@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.metadata.reviser.index;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.index.IndexReviser;
@@ -36,7 +37,8 @@ public final class EncryptIndexReviser implements IndexReviser<EncryptRule> {
     private final EncryptTable encryptTable;
     
     @Override
-    public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final EncryptRule rule) {
+    public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final Collection<TableMetaData> originalTableMetaDataList,
+                                          final EncryptRule rule) {
         if (originalMetaData.getColumns().isEmpty()) {
             return Optional.empty();
         }

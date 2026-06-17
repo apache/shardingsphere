@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.index;
 
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -34,8 +36,9 @@ public interface IndexReviser<T extends ShardingSphereRule> {
      *
      * @param tableName table name
      * @param originalMetaData original index meta data
+     * @param originalTableMetaDataList original table meta data list
      * @param rule rule
      * @return revised index meta data
      */
-    Optional<IndexMetaData> revise(String tableName, IndexMetaData originalMetaData, T rule);
+    Optional<IndexMetaData> revise(String tableName, IndexMetaData originalMetaData, Collection<TableMetaData> originalTableMetaDataList, T rule);
 }

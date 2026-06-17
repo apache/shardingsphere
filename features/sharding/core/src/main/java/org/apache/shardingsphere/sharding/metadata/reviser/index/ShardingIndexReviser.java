@@ -19,11 +19,16 @@ package org.apache.shardingsphere.sharding.metadata.reviser.index;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.index.IndexReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,22 +41,43 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
     private final ShardingTable shardingTable;
     
     @Override
-    public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final ShardingRule rule) {
+    public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final Collection<TableMetaData> originalTableMetaDataList,
+                                          final ShardingRule rule) {
         if (shardingTable.getActualDataNodes().isEmpty()) {
             return Optional.empty();
         }
         String actualTableName = tableName;
-        String logicIndexName = IndexMetaDataUtils.getGeneratedLogicIndexName(originalMetaData.getName(), actualTableName);
-        if (!IndexMetaDataUtils.isGeneratedActualIndexNameMatch(originalMetaData.getName(), logicIndexName, actualTableName)) {
-            String generatedAnonymousIndexName = getGeneratedAnonymousIndexName(originalMetaData);
-            if (IndexMetaDataUtils.isGeneratedActualIndexNameMatch(originalMetaData.getName(), generatedAnonymousIndexName, actualTableName)) {
-                logicIndexName = generatedAnonymousIndexName;
-            }
-        }
+        String logicIndexName = IndexMetaDataUtils.findGeneratedLogicIndexName(
+                originalMetaData.getName(), actualTableName, findCandidateLogicIndexNames(originalMetaData, originalTableMetaDataList)).orElse(originalMetaData.getName());
         IndexMetaData result = new IndexMetaData(
                 logicIndexName, originalMetaData.getColumns());
         result.setUnique(originalMetaData.isUnique());
         return Optional.of(result);
+    }
+    
+    private Collection<String> findCandidateLogicIndexNames(final IndexMetaData originalMetaData, final Collection<TableMetaData> originalTableMetaDataList) {
+        Collection<String> result = new LinkedHashSet<>();
+        result.add(getGeneratedAnonymousIndexName(originalMetaData));
+        for (TableMetaData eachTable : originalTableMetaDataList) {
+            if (isActualTable(eachTable.getName())) {
+                result.addAll(findCandidateLogicIndexNames(eachTable));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<String> findCandidateLogicIndexNames(final TableMetaData tableMetaData) {
+        Collection<String> result = new LinkedHashSet<>();
+        for (IndexMetaData each : tableMetaData.getIndexes()) {
+            IndexMetaDataUtils.findGeneratedLogicIndexName(each.getName(), tableMetaData.getName(), Collections.emptyList())
+                    .filter(optional -> !optional.equals(each.getName())).ifPresent(result::add);
+            result.add(getGeneratedAnonymousIndexName(each));
+        }
+        return result;
+    }
+    
+    private boolean isActualTable(final String tableName) {
+        return shardingTable.getActualDataNodes().stream().map(DataNode::getTableName).anyMatch(each -> each.equalsIgnoreCase(tableName));
     }
     
     private String getGeneratedAnonymousIndexName(final IndexMetaData originalMetaData) {

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.index;
 
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,9 +59,22 @@ class IndexReviseEngineTest {
     @Test
     void assertReviseWithIndexReviser() {
         IndexReviser reviser = mock(IndexReviser.class);
-        when(reviser.revise(eq("foo_tbl"), any(), any())).thenReturn(Optional.of(new IndexMetaData("foo_idx")));
+        when(reviser.revise(eq("foo_tbl"), any(), any(), any())).thenReturn(Optional.of(new IndexMetaData("foo_idx")));
         when(metaDataReviseEntry.getIndexReviser(any(), eq("foo_tbl"))).thenReturn(Optional.of(reviser));
         Collection<IndexMetaData> actual = indexReviseEngine.revise("foo_tbl", Arrays.asList(new IndexMetaData("idx_0"), new IndexMetaData("idx_1")));
+        assertThat(actual.size(), is(2));
+        assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));
+        assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));
+    }
+    
+    @Test
+    void assertReviseWithOriginalTableMetaDataList() {
+        IndexReviser reviser = mock(IndexReviser.class);
+        Collection<IndexMetaData> originalIndexes = Arrays.asList(new IndexMetaData("idx_0"), new IndexMetaData("idx_1"));
+        Collection<TableMetaData> originalTables = Collections.singleton(new TableMetaData("foo_tbl", Collections.emptyList(), originalIndexes, Collections.emptyList()));
+        when(reviser.revise(eq("foo_tbl"), any(), eq(originalTables), any())).thenReturn(Optional.of(new IndexMetaData("foo_idx")));
+        when(metaDataReviseEntry.getIndexReviser(any(), eq("foo_tbl"))).thenReturn(Optional.of(reviser));
+        Collection<IndexMetaData> actual = indexReviseEngine.revise("foo_tbl", originalIndexes, originalTables);
         assertThat(actual.size(), is(2));
         assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));
         assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));

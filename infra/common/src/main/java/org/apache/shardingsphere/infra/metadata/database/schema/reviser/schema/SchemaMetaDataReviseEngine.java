@@ -60,10 +60,11 @@ public final class SchemaMetaDataReviseEngine {
         TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<>(rule, reviseEntry);
         Optional<? extends SchemaTableAggregationReviser<T>> aggregationReviser = reviseEntry.getSchemaTableAggregationReviser(props);
         if (!aggregationReviser.isPresent()) {
-            return new SchemaMetaData(originalMetaData.getName(), originalMetaData.getTables().stream().map(tableMetaDataReviseEngine::revise).collect(Collectors.toList()));
+            return new SchemaMetaData(originalMetaData.getName(), originalMetaData.getTables().stream()
+                    .map(each -> tableMetaDataReviseEngine.revise(each, originalMetaData.getTables())).collect(Collectors.toList()));
         }
         for (TableMetaData each : originalMetaData.getTables()) {
-            aggregationReviser.get().add(tableMetaDataReviseEngine.revise(each));
+            aggregationReviser.get().add(tableMetaDataReviseEngine.revise(each, originalMetaData.getTables()));
         }
         return new SchemaMetaData(originalMetaData.getName(), aggregationReviser.get().aggregate(rule));
     }
