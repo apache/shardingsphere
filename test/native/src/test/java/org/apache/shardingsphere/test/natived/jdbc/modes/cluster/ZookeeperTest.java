@@ -75,13 +75,16 @@ class ZookeeperTest {
     @Test
     void assertShardingInLocalTransactions() throws Exception {
         try (TestingServer testingServer = new TestingServer()) {
-            String connectString = testingServer.getConnectString();
-            logicDataSource = createDataSource(connectString);
-            testShardingService = new TestShardingService(logicDataSource);
-            initEnvironment();
-            testShardingService.processSuccess();
-            testShardingService.cleanEnvironment();
-            closeLogicDataSource();
+            try {
+                String connectString = testingServer.getConnectString();
+                logicDataSource = createDataSource(connectString);
+                testShardingService = new TestShardingService(logicDataSource);
+                initEnvironment();
+                testShardingService.processSuccess();
+                testShardingService.cleanEnvironment();
+            } finally {
+                closeLogicDataSource();
+            }
         }
     }
     
