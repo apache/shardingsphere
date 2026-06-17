@@ -440,8 +440,9 @@ class MCPErrorConverterTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertConvertQueryFailureWithRecoveryCases")
-    void assertConvertQueryFailureWithRecovery(final String name, final Throwable cause, final String expectedCategory, final String expectedActionType) {
+    void assertConvertQueryFailureWithRecovery(final String name, final Throwable cause, final String expectedMessage, final String expectedCategory, final String expectedActionType) {
         Map<String, Object> actual = MCPErrorConverter.convert(cause).toPayload();
+        assertThat(actual.get("message"), is(expectedMessage));
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is(expectedCategory));
         assertTrue((Boolean) actualRecovery.get("secret_safe"));
@@ -453,10 +454,11 @@ class MCPErrorConverterTest {
     void assertConvertQueryFailureRecoveryOmitsSensitiveFields() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPQueryFailedException("jdbc:mysql://127.0.0.1:3306/logic_db password=secret token=abc")).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actual.get("message"), is("MCP query failed."));
         assertThat(actualRecovery.get("category"), is("query_failed"));
-        assertFalse(String.valueOf(actualRecovery).contains("jdbc:mysql"));
-        assertFalse(String.valueOf(actualRecovery).contains("password=secret"));
-        assertFalse(String.valueOf(actualRecovery).contains("token=abc"));
+        assertFalse(String.valueOf(actual).contains("jdbc:mysql"));
+        assertFalse(String.valueOf(actual).contains("password=secret"));
+        assertFalse(String.valueOf(actual).contains("token=abc"));
     }
     
     static Stream<Arguments> assertConvertCases() {
@@ -474,14 +476,17 @@ class MCPErrorConverterTest {
     
     static Stream<Arguments> assertConvertQueryFailureWithRecoveryCases() {
         return Stream.of(
-                Arguments.of("sql syntax", new SQLSyntaxErrorException("Bad SQL.", "42601"), "sql_syntax_error", "ask_user"),
-                Arguments.of("object not visible", new MCPQueryFailedException("Query failed.", new SQLException("Missing table.", "42P01")), "object_not_visible", "resource_read"),
-                Arguments.of("insufficient privileges", new SQLException("Permission denied.", "42501"), "insufficient_privileges", "ask_user"),
-                Arguments.of("execution timeout", new MCPTimeoutException("Timed out.", new SQLTimeoutException("Timed out.")), "execution_timeout", "resource_read"),
-                Arguments.of("connection interrupted", new MCPQueryFailedException("Query failed.", new SQLTransientConnectionException("Connection lost.", "08006")), "connection_interrupted",
+                Arguments.of("sql syntax", new SQLSyntaxErrorException("Bad SQL.", "42601"), "Invalid request.", "sql_syntax_error", "ask_user"),
+                Arguments.of("object not visible", new MCPQueryFailedException("Query failed.", new SQLException("Missing table.", "42P01")), "MCP query failed.", "object_not_visible",
                         "resource_read"),
-                Arguments.of("unsupported database capability", new SQLFeatureNotSupportedException("Unsupported feature."), "unsupported_database_capability", "resource_read"),
-                Arguments.of("query failed", new MCPQueryFailedException("Query failed."), "query_failed", "resource_read"));
+                Arguments.of("insufficient privileges", new SQLException("Permission denied.", "42501"), "MCP query failed.", "insufficient_privileges", "ask_user"),
+                Arguments.of("execution timeout", new MCPTimeoutException("Timed out.", new SQLTimeoutException("Timed out.")), "MCP operation timeout.", "execution_timeout",
+                        "resource_read"),
+                Arguments.of("connection interrupted", new MCPQueryFailedException("Query failed.", new SQLTransientConnectionException("Connection lost.", "08006")), "MCP query failed.",
+                        "connection_interrupted", "resource_read"),
+                Arguments.of("unsupported database capability", new SQLFeatureNotSupportedException("Unsupported feature."), "Unsupported MCP operation.",
+                        "unsupported_database_capability", "resource_read"),
+                Arguments.of("query failed", new MCPQueryFailedException("Query failed."), "MCP query failed.", "query_failed", "resource_read"));
     }
     
     private String getFirstResourceToReadUri(final Map<?, ?> recovery) {

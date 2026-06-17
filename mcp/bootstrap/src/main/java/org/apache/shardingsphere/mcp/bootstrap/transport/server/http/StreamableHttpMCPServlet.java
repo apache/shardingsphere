@@ -200,7 +200,8 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         }
         Map<String, List<String>> result = new LinkedHashMap<>();
         for (String each : Collections.list(headerNames)) {
-            result.put(each, Collections.list(request.getHeaders(each)));
+            Enumeration<String> headerValues = request.getHeaders(each);
+            result.put(each, null == headerValues ? List.of() : Collections.list(headerValues));
         }
         return result;
     }

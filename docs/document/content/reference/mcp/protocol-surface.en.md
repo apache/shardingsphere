@@ -42,7 +42,7 @@ ShardingSphere-MCP does not require roots and does not send `sampling/createMess
 - Narrows scope by `database`, `schema`, `query`, and `object_types`.
 - `object_types` supports `database`, `schema`, `table`, `view`, `column`, `index`, and `sequence`.
 
-`database_gateway_validate_proxy_connectivity`
+`database_gateway_validate_runtime_database`
 
 - Validates a configured runtime database before formal onboarding.
 - Required input is `database`.
