@@ -38,3 +38,4 @@ rdctl start --application.start-in-background --container-engine.name=moby --kub
 rdctl shutdown
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 ./test/native/src/test/resources/test-native/ps1/wait-for-rancher-desktop-backend.ps1
+./test/native/src/test/resources/test-native/ps1/wait-for-docker-daemon.ps1
