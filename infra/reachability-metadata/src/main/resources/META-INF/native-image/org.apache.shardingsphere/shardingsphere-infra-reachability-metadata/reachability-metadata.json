@@ -2,6 +2,45 @@
   "reflection": [
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.node.path.engine.generator.NodePathSegment"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath",
+      "fields": [
+        {
+          "name": "databaseName"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.node.path.engine.generator.NodePathSegment"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath",
+      "fields": [
+        {
+          "name": "database"
+        },
+        {
+          "name": "schemaName"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.node.path.engine.generator.NodePathSegment"
+      },
+      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath",
+      "fields": [
+        {
+          "name": "schema"
+        },
+        {
+          "name": "tableName"
+        }
+      ]
+    },
+    {
+      "condition": {
         "typeReached": "com.oracle.svm.core.jdk.management.SubstrateCompilationMXBean"
       },
       "type": "com.oracle.svm.core.jdk.management.SubstrateCompilationMXBean",

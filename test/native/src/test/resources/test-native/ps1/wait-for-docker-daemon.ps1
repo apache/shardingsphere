@@ -18,7 +18,8 @@
 #
 
 # This file is only used in the PowerShell 7 of ShardingSphere in GitHub Actions environment and should not be executed manually in a development environment.
-# Background information can be found at https://github.com/apache/shardingsphere/pull/35905 .
+# Background information for the Windows Server 2025 Rancher Desktop setup can be found at https://github.com/apache/shardingsphere/pull/35905 .
+# Docker daemon readiness instability on affected WSL2 versions may also relate to https://github.com/microsoft/WSL/pull/40519 .
 param (
     [int] $MaxAttempts = 2,
     [int] $TimeoutMinutes = 5
