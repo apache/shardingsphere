@@ -36,6 +36,13 @@ function Invoke-DockerCommand
     }
 }
 
+function Invoke-DockerContainerSmoke
+{
+    $containerName = "shardingsphere-docker-readiness"
+    docker rm -f $containerName 2>$null | Out-Null
+    Invoke-DockerCommand @("run", "--name", $containerName, "--rm", "hello-world")
+}
+
 function Wait-DockerDaemon
 {
     $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
@@ -49,7 +56,8 @@ function Wait-DockerDaemon
         {
             Invoke-DockerCommand @("version", "--format", "{{.Server.Version}}")
             Invoke-DockerCommand @("info", "--format", "{{.ServerVersion}}")
-            Write-Host "Docker daemon is ready."
+            Invoke-DockerContainerSmoke
+            Write-Host "Docker daemon accepted version, info, and container lifecycle commands."
             return $true
         }
         catch
