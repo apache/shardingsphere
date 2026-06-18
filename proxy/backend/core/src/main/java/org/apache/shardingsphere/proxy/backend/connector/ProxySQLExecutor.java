@@ -166,6 +166,7 @@ public final class ProxySQLExecutor {
         return databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction();
     }
     
+    // TODO should be removed after metadata refresh supported for all database.
     private boolean isDDLWithoutMetaDataChanged(final DDLStatement sqlStatement) {
         return isCursorStatement(sqlStatement) || sqlStatement instanceof TruncateStatement;
     }
@@ -217,6 +218,7 @@ public final class ProxySQLExecutor {
         } catch (final SQLException ex) {
             return getSaneExecuteResults(executionContext, ex);
         }
+        // TODO handle query header
         return rawExecutor.execute(executionGroupContext, executionContext.getQueryContext(), new RawSQLExecutorCallback());
     }
     
@@ -279,7 +281,6 @@ public final class ProxySQLExecutor {
             return false;
         }
         
-        // Unwrap safely here to satisfy the static analyzer
         GeneratedKeyContext generatedKeyContext = insertStatementContext.getGeneratedKeyContext().get();
         if (generatedKeyContext.isGenerated()) {
             return true;
@@ -316,13 +317,11 @@ public final class ProxySQLExecutor {
         if (expr instanceof ParameterMarkerExpressionSegment) {
             int markerIndex = ((ParameterMarkerExpressionSegment) expr).getParameterMarkerIndex();
             if (params.size() > markerIndex) {
-                // Delegate completely to the dialect contract directly via the unwrapped object
                 return generatedKeyOption.isGeneratedKeyTriggerValue(params.get(markerIndex));
             }
             return false;
         }
         if (expr instanceof LiteralExpressionSegment) {
-            // Delegate completely to the dialect contract directly via the unwrapped object
             return generatedKeyOption.isGeneratedKeyTriggerValue(((LiteralExpressionSegment) expr).getLiterals());
         }
         return false;
