@@ -59,10 +59,10 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -106,21 +106,21 @@ class KernelProcessorTest {
     
     @Test
     void assertGenerateExecutionContextWithTemporaryCreateTable() {
-        QueryContext queryContext = createQueryContext(createTemporaryCreateTableStatement(), false, createMySQLDatabaseType());
+        QueryContext queryContext = createQueryContext(createTemporaryCreateTableStatement(databaseType), false, databaseType);
         assertThrows(UnsupportedSQLOperationException.class,
                 () -> new KernelProcessor().generateExecutionContext(queryContext, new RuleMetaData(Arrays.asList(mockSQLTranslatorRule(), mockAggregatedDataSourceRule())), createProps(false)));
     }
     
     @Test
     void assertGenerateExecutionContextWithTemporaryDropTable() {
-        QueryContext queryContext = createQueryContext(createTemporaryDropTableStatement(), false, createMySQLDatabaseType());
+        QueryContext queryContext = createQueryContext(createTemporaryDropTableStatement(databaseType), false, databaseType);
         assertThrows(UnsupportedSQLOperationException.class,
                 () -> new KernelProcessor().generateExecutionContext(queryContext, new RuleMetaData(Arrays.asList(mockSQLTranslatorRule(), mockAggregatedDataSourceRule())), createProps(false)));
     }
     
     @Test
     void assertGenerateExecutionContextWithTemporaryCreateTableWhenSkipMetadataValidate() {
-        QueryContext queryContext = createQueryContext(createTemporaryCreateTableStatement(), true, createMySQLDatabaseType());
+        QueryContext queryContext = createQueryContext(createTemporaryCreateTableStatement(databaseType), true, databaseType);
         try (
                 MockedConstruction<SupportedSQLCheckEngine> mockedCheckEngines = mockConstruction(SupportedSQLCheckEngine.class);
                 MockedStatic<SQLLogger> mockedSQLLogger = mockStatic(SQLLogger.class)) {
@@ -172,22 +172,16 @@ class KernelProcessorTest {
         return new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.toString(sqlShow))));
     }
     
-    private CreateTableStatement createTemporaryCreateTableStatement() {
+    private CreateTableStatement createTemporaryCreateTableStatement(final DatabaseType databaseType) {
         return CreateTableStatement.builder()
-                .databaseType(createMySQLDatabaseType())
+                .databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
                 .temporary(true)
                 .build();
     }
     
-    private DropTableStatement createTemporaryDropTableStatement() {
-        return new DropTableStatement(createMySQLDatabaseType(),
+    private DropTableStatement createTemporaryDropTableStatement(final DatabaseType databaseType) {
+        return new DropTableStatement(databaseType,
                 Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))), false, true, false);
-    }
-    
-    private DatabaseType createMySQLDatabaseType() {
-        DatabaseType result = mock(DatabaseType.class);
-        when(result.getType()).thenReturn("MySQL");
-        return result;
     }
 }

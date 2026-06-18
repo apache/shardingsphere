@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.connection.kernel;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.checker.SupportedSQLCheckEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -70,10 +69,6 @@ public final class KernelProcessor {
     }
     
     private void checkUnsupportedTemporaryTableDDL(final QueryContext queryContext) {
-        ShardingSphereDatabase database = queryContext.getUsedDatabase();
-        if (!isMySQL(database.getProtocolType())) {
-            return;
-        }
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof CreateTableStatement && ((CreateTableStatement) sqlStatement).isTemporary()) {
             throw new UnsupportedSQLOperationException("CREATE TEMPORARY TABLE");
@@ -81,10 +76,6 @@ public final class KernelProcessor {
         if (sqlStatement instanceof DropTableStatement && ((DropTableStatement) sqlStatement).isTemporary()) {
             throw new UnsupportedSQLOperationException("DROP TEMPORARY TABLE");
         }
-    }
-    
-    private boolean isMySQL(final DatabaseType databaseType) {
-        return "MySQL".equalsIgnoreCase(databaseType.getType());
     }
     
     private RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ConfigurationProperties props) {

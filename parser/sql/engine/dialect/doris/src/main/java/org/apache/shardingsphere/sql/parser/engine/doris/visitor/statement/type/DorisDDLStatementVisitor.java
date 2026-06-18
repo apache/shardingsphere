@@ -634,6 +634,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.tableName()))
                 .ifNotExists(null != ctx.ifNotExists())
+                .temporary(null != ctx.TEMPORARY())
                 .likeTable(likeTable)
                 .createTableOption(createTableOption)
                 .selectStatement(selectStatement)
@@ -1244,7 +1245,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue(), null != ctx.ifExists(), false);
+        return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue(),
+                null != ctx.ifExists(), null != ctx.TEMPORARY(), false);
     }
     
     @Override
