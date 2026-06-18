@@ -61,26 +61,18 @@ public final class LLMMCPConversationRunner {
     
     private final String modelName;
     
-    private final boolean recordCapabilityFingerprints;
-    
     public LLMMCPConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient) {
-        this(maxTurns, llmChatClient, mcpInteractionClient, "unknown", "unknown", false);
+        this(maxTurns, llmChatClient, mcpInteractionClient, "unknown", "unknown");
     }
     
     public LLMMCPConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient,
                                     final String modelProvider, final String modelName) {
-        this(maxTurns, llmChatClient, mcpInteractionClient, modelProvider, modelName, true);
-    }
-    
-    private LLMMCPConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient,
-                                     final String modelProvider, final String modelName, final boolean recordCapabilityFingerprints) {
         this.maxTurns = maxTurns;
         this.llmChatClient = llmChatClient;
         this.mcpInteractionClient = mcpInteractionClient;
         actionExecutor = new LLMMCPActionExecutor(mcpInteractionClient);
         this.modelProvider = modelProvider;
         this.modelName = modelName;
-        this.recordCapabilityFingerprints = recordCapabilityFingerprints;
     }
     
     /**
@@ -95,7 +87,6 @@ public final class LLMMCPConversationRunner {
         try {
             llmChatClient.waitUntilReady();
             openInteractionClient();
-            artifacts.setCapabilityFingerprints(readCapabilityFingerprintsSafely());
             boolean finalAnswerRequested = false;
             int finalAnswerAttempts = 0;
             for (int turnIndex = 0; turnIndex < maxTurns; turnIndex++) {
@@ -209,12 +200,12 @@ public final class LLMMCPConversationRunner {
         if (hasSideEffectExecutionNextAction(interactionTrace)) {
             List<String> readOnlyToolNames = findMissingReadOnlyToolNames(scenario, interactionTrace);
             if (!readOnlyToolNames.isEmpty()) {
-                return List.of(readOnlyToolNames.get(0));
+                return List.of(readOnlyToolNames.getFirst());
             }
         }
         List<String> missingToolNames = findMissingAllowedToolNames(scenario, interactionTrace);
         if (!missingToolNames.isEmpty()) {
-            return List.of(missingToolNames.get(0));
+            return List.of(missingToolNames.getFirst());
         }
         return scenario.getAllowedToolNames();
     }
@@ -466,18 +457,6 @@ public final class LLMMCPConversationRunner {
         }
     }
     
-    private Map<String, Object> readCapabilityFingerprintsSafely() throws InterruptedException {
-        if (!recordCapabilityFingerprints) {
-            return Map.of();
-        }
-        try {
-            Map<String, Object> capabilities = mcpInteractionClient.readResource("shardingsphere://capabilities");
-            return null == capabilities || !capabilities.containsKey("fingerprints") ? Map.of() : LLMMCPJsonValues.castToMap(capabilities.get("fingerprints"));
-        } catch (final IOException | UnsupportedOperationException ex) {
-            return Map.of();
-        }
-    }
-    
     private void closeInteractionClient() {
         try {
             mcpInteractionClient.close();
@@ -542,7 +521,7 @@ public final class LLMMCPConversationRunner {
         if (rowObjects.isEmpty()) {
             return "";
         }
-        return Objects.toString(rowObjects.get(0).get("total_orders"), "").trim();
+        return Objects.toString(rowObjects.getFirst().get("total_orders"), "").trim();
     }
     
     private String findTotalOrdersInRows(final Map<String, Object> structuredContent) {
@@ -550,8 +529,8 @@ public final class LLMMCPConversationRunner {
         if (rows.isEmpty()) {
             return "";
         }
-        List<Object> row = LLMMCPJsonValues.castToList(rows.get(0));
-        return row.isEmpty() ? "" : Objects.toString(row.get(0), "").trim();
+        List<Object> row = LLMMCPJsonValues.castToList(rows.getFirst());
+        return row.isEmpty() ? "" : Objects.toString(row.getFirst(), "").trim();
     }
     
     private List<String> createComparableInteractionSequence(final List<MCPInteractionTraceRecord> interactionTrace) {

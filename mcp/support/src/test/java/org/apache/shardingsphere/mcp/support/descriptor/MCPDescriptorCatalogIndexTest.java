@@ -131,10 +131,6 @@ class MCPDescriptorCatalogIndexTest {
         assertThat(actual.get("supportedResources"), is(List.of("shardingsphere://workflows/{plan_id}")));
         assertThat(actual.get("supportedTools"), is(List.of("database_gateway_apply_workflow")));
         assertThat(actual.get("supportedStatementClasses"), is(List.of("SELECT")));
-    }
-    
-    @Test
-    void assertGetDescriptorCatalogFingerprint() {
-        assertFalse(MCPDescriptorCatalogIndex.getDescriptorCatalogFingerprint().isEmpty());
+        assertFalse(actual.containsKey("fingerprints"));
     }
 }

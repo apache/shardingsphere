@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
@@ -59,7 +58,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     public MCPResponse handle(final MCPDatabaseHandlerContext handlerContext, final MCPUriVariables uriVariables) {
         List<MCPDatabaseMetadata> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
         boolean hasConfiguredDatabase = !databases.isEmpty();
-        Map<String, Object> result = new LinkedHashMap<>(14, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(13, 1F);
         result.put("response_mode", MCPResponseMode.RUNTIME);
         result.put("server_status", hasConfiguredDatabase ? "ready" : "configuration_required");
         result.put("status", hasConfiguredDatabase ? "available" : "configuration_required");
@@ -71,7 +70,6 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("runtime_protection", MCPRuntimeProtectionPolicy.createRuntimeProtectionPayload());
         result.put("redaction_summary", Map.of("categories", List.of(), "redacted_count", 0, "marker", "******"));
         result.put("diagnostics", createDiagnostics(hasConfiguredDatabase));
-        result.put("capability_fingerprint", MCPDescriptorCatalogIndex.getDescriptorCatalogFingerprint());
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(hasConfiguredDatabase));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createNextActions(hasConfiguredDatabase));
         return new MCPMapResponse(result);

@@ -273,11 +273,11 @@ class LLMUsabilityMetricCalculatorTest {
     }
     
     private LLME2EArtifactBundle createArtifactBundle(final List<MCPInteractionTraceRecord> interactionTrace) {
-        return new LLME2EArtifactBundle("scenario", "", "", "", "", Map.of(), "", List.of(), interactionTrace, List.of(), LLME2EAssertionReport.isSuccess("ok"));
+        return new LLME2EArtifactBundle("scenario", "", "", "", "", "", List.of(), interactionTrace, List.of(), LLME2EAssertionReport.isSuccess("ok"));
     }
     
     private LLME2EArtifactBundle createFailedArtifactBundle(final List<MCPInteractionTraceRecord> interactionTrace) {
-        return new LLME2EArtifactBundle("scenario", "", "", "", "", Map.of(), "", List.of(), interactionTrace, List.of(), LLME2EAssertionReport.failure("failed", "failed"));
+        return new LLME2EArtifactBundle("scenario", "", "", "", "", "", List.of(), interactionTrace, List.of(), LLME2EAssertionReport.failure("failed", "failed"));
     }
     
     private LLMUsabilityScenario createScenario() {

@@ -69,11 +69,7 @@ class HttpTransportContractE2ETest extends AbstractSharedHttpProgrammaticRuntime
         assertTrue(((List<?>) actualCapabilities.get("prompts")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
         assertTrue(((List<?>) actualCapabilities.get("completionTargets")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
         assertTrue(((List<?>) actualCapabilities.get("resourceNavigation")).stream().map(String::valueOf).anyMatch(each -> each.contains("database_gateway_apply_workflow")));
-        Map<String, Object> actualFingerprints = castToMap(actualCapabilities.get("fingerprints"));
-        assertFalse(String.valueOf(actualFingerprints.get("descriptorCatalog")).isEmpty());
-        assertFalse(String.valueOf(actualFingerprints.get("promptSet")).isEmpty());
-        assertFalse(String.valueOf(actualFingerprints.get("resourceNavigation")).isEmpty());
-        assertFalse(String.valueOf(actualFingerprints.get("modelFacingSchemas")).isEmpty());
+        assertFalse(actualCapabilities.containsKey("fingerprints"));
         Map<String, Object> actualProtocolAvailability = castToMap(actualCapabilities.get("protocolAvailability"));
         assertTrue((Boolean) actualProtocolAvailability.get("prompts"));
         assertTrue((Boolean) actualProtocolAvailability.get("completions"));

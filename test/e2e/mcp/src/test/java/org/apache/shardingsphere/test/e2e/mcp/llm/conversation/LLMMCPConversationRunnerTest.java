@@ -25,9 +25,6 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMToolCal
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -38,6 +35,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
@@ -65,14 +65,14 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         
         assertTrue(actual.getAssertionReport().isSuccess());
         assertThat(actual.getInteractionTrace().size(), is(1));
-        assertThat(actual.getInteractionTrace().get(0).getActionOrigin(), is(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN));
+        assertThat(actual.getInteractionTrace().getFirst().getActionOrigin(), is(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN));
         assertThat(actual.getRawModelOutputs(), is(List.of("tool-call-response", "final-answer-response")));
         verify(getLLMChatClient()).complete(anyList(), actualTools.capture(), eq("required"), eq(false));
         verify(getMCPInteractionClient()).open();
         verify(getMCPInteractionClient()).call("database_gateway_execute_query", executeQueryArguments);
         verify(getMCPInteractionClient()).close();
-        assertThat(getToolName(actualTools.getValue().get(0)), is("database_gateway_execute_query"));
-        assertThat(getMap(getFunction(actualTools.getValue().get(0)).get("parameters")).get("required"), is(List.of("database", "sql")));
+        assertThat(getToolName(actualTools.getValue().getFirst()), is("database_gateway_execute_query"));
+        assertThat(getMap(getFunction(actualTools.getValue().getFirst()).get("parameters")).get("required"), is(List.of("database", "sql")));
     }
     
     @Test
@@ -90,8 +90,8 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertTrue(actual.getAssertionReport().isSuccess());
-        assertThat(actual.getInteractionTrace().get(0).getActionOrigin(), is(MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN));
-        assertThat(actual.getInteractionTrace().get(0).getArguments(), is(expectedQueryArguments));
+        assertThat(actual.getInteractionTrace().getFirst().getActionOrigin(), is(MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN));
+        assertThat(actual.getInteractionTrace().getFirst().getArguments(), is(expectedQueryArguments));
         verify(getMCPInteractionClient()).call("database_gateway_execute_query", expectedQueryArguments);
         verify(getLLMChatClient(), never()).complete(anyList(), anyList(), eq("auto"), eq(false));
     }
@@ -122,8 +122,8 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertTrue(actual.getAssertionReport().isSuccess());
-        assertThat(actual.getInteractionTrace().get(0).getActionOrigin(), is(MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN));
-        assertThat(actual.getInteractionTrace().get(0).getArguments(), is(expectedSearchArguments));
+        assertThat(actual.getInteractionTrace().getFirst().getActionOrigin(), is(MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN));
+        assertThat(actual.getInteractionTrace().getFirst().getArguments(), is(expectedSearchArguments));
         verify(getMCPInteractionClient()).call("database_gateway_search_metadata", expectedSearchArguments);
     }
     
@@ -143,7 +143,7 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertTrue(actual.getAssertionReport().isSuccess());
-        assertThat(actual.getInteractionTrace().get(0).getArguments(), is(expectedQueryArguments));
+        assertThat(actual.getInteractionTrace().getFirst().getArguments(), is(expectedQueryArguments));
         verify(getLLMChatClient(), never()).complete(anyList(), anyList(), eq("auto"), eq(false));
     }
     
@@ -201,8 +201,8 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         
         assertTrue(actual.getAssertionReport().isSuccess());
         assertThat(actual.getInteractionTrace().size(), is(3));
-        assertThat(actual.getInteractionTrace().get(0).getActionKind(), is(MCPInteractionActionNames.RESOURCE_LIST_KIND));
-        assertThat(actual.getInteractionTrace().get(0).getActionOrigin(), is(MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN));
+        assertThat(actual.getInteractionTrace().getFirst().getActionKind(), is(MCPInteractionActionNames.RESOURCE_LIST_KIND));
+        assertThat(actual.getInteractionTrace().getFirst().getActionOrigin(), is(MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN));
         assertThat(actual.getInteractionTrace().get(1).getActionKind(), is(MCPInteractionActionNames.RESOURCE_READ_KIND));
         assertThat(actual.getInteractionTrace().get(2).getTargetName(), is("database_gateway_execute_query"));
         assertThat(actual.getInteractionTrace().get(2).getActionOrigin(), is(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN));
@@ -235,7 +235,7 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         when(getMCPInteractionClient().readResource("shardingsphere://features/mask/algorithms")).thenReturn(Map.of("algorithms", List.of(Map.of("type", "MD5"))));
         when(getMCPInteractionClient().call("database_gateway_plan_mask_rule", planArguments))
                 .thenReturn(Map.of("plan_id", "plan-1", "resources_to_read", List.of(Map.of("uri", workflowResourceUri))));
-        when(getMCPInteractionClient().readResource("shardingsphere://runtime")).thenReturn(Map.of("status", "available", "capability_fingerprint", "abc"));
+        when(getMCPInteractionClient().readResource("shardingsphere://runtime")).thenReturn(Map.of("status", "available"));
         when(getMCPInteractionClient().readResource(workflowResourceUri)).thenReturn(Map.of("plan_id", "plan-1", "status", "planned"));
         when(getMCPInteractionClient().call("database_gateway_apply_workflow", applyArguments)).thenReturn(Map.of("status", "awaiting-manual-execution", "response_mode", "manual_only"));
         when(getMCPInteractionClient().call("database_gateway_validate_workflow", validateArguments)).thenReturn(Map.of("status", "passed", "overall_status", "passed"));
@@ -289,14 +289,14 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         
         assertTrue(actual.getAssertionReport().isSuccess());
         assertThat(actual.getInteractionTrace().size(), is(4));
-        assertThat(actual.getInteractionTrace().get(0).getActionKind(), is(MCPInteractionActionNames.PROMPT_LIST_KIND));
+        assertThat(actual.getInteractionTrace().getFirst().getActionKind(), is(MCPInteractionActionNames.PROMPT_LIST_KIND));
         assertThat(actual.getInteractionTrace().get(1).getActionKind(), is(MCPInteractionActionNames.PROMPT_GET_KIND));
         assertThat(actual.getInteractionTrace().get(2).getActionKind(), is(MCPInteractionActionNames.COMPLETION_KIND));
         verify(getLLMChatClient()).complete(anyList(), actualTools.capture(), eq("required"), eq(false));
         verify(getMCPInteractionClient()).listPrompts();
         verify(getMCPInteractionClient()).getPrompt(PROMPT_NAME, promptArguments);
         verify(getMCPInteractionClient()).complete(completionReference, "schema", "pub", completionContext);
-        assertThat(getToolName(actualTools.getValue().get(0)), is(MCPInteractionActionNames.LIST_PROMPTS));
+        assertThat(getToolName(actualTools.getValue().getFirst()), is(MCPInteractionActionNames.LIST_PROMPTS));
     }
     
     @Test
@@ -311,13 +311,13 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         
         assertThat(actual.getAssertionReport().getFailureType(), is("missing_required_tool_coverage"));
         verify(getLLMChatClient()).complete(anyList(), actualTools.capture(), eq("required"), eq(false));
-        assertThat(getToolName(actualTools.getValue().get(0)), is("database_gateway_search_metadata"));
-        assertThat(getRequiredFields(actualTools.getValue().get(0)), is(List.of()));
-        assertThat(getPropertyType(actualTools.getValue().get(0), "database"), is("string"));
-        assertThat(getPropertyType(actualTools.getValue().get(0), "schema"), is("string"));
-        assertThat(getPropertyType(actualTools.getValue().get(0), "query"), is("string"));
-        assertThat(getPropertyType(actualTools.getValue().get(0), "object_types"), is("array"));
-        assertThat(getNestedPropertyType(actualTools.getValue().get(0), "object_types", "items"), is("string"));
+        assertThat(getToolName(actualTools.getValue().getFirst()), is("database_gateway_search_metadata"));
+        assertThat(getRequiredFields(actualTools.getValue().getFirst()), is(List.of()));
+        assertThat(getPropertyType(actualTools.getValue().getFirst(), "database"), is("string"));
+        assertThat(getPropertyType(actualTools.getValue().getFirst(), "schema"), is("string"));
+        assertThat(getPropertyType(actualTools.getValue().getFirst(), "query"), is("string"));
+        assertThat(getPropertyType(actualTools.getValue().getFirst(), "object_types"), is("array"));
+        assertThat(getNestedPropertyType(actualTools.getValue().getFirst(), "object_types", "items"), is("string"));
     }
     
     @Test
@@ -343,7 +343,7 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         
         assertTrue(actual.getAssertionReport().isSuccess());
         verify(getLLMChatClient(), times(3)).complete(anyList(), actualTools.capture(), eq("required"), eq(false));
-        assertThat(getToolNames(actualTools.getAllValues().get(0)), is(List.of("database_gateway_search_metadata")));
+        assertThat(getToolNames(actualTools.getAllValues().getFirst()), is(List.of("database_gateway_search_metadata")));
         assertThat(getToolNames(actualTools.getAllValues().get(1)), is(List.of(MCPInteractionActionNames.READ_RESOURCE)));
         assertThat(getToolNames(actualTools.getAllValues().get(2)), is(List.of("database_gateway_execute_query")));
     }
