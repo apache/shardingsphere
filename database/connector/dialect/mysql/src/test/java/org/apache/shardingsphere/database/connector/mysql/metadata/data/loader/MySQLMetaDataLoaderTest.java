@@ -84,6 +84,17 @@ class MySQLMetaDataLoaderTest {
         assertTrue(actual.iterator().next().getTables().isEmpty());
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
+    @Test
+    void assertLoadWithNullCatalogAndNoRequestedTableNames() throws SQLException {
+        DataSource dataSource = mockDataSource();
+        when(dataSource.getConnection().getCatalog()).thenReturn(null);
+        DataTypeRegistry.load(dataSource, "MySQL");
+        Collection<SchemaMetaData> actual = dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "sharding_db"));
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.iterator().next().getTables().isEmpty());
+    }
+    
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadArguments")
