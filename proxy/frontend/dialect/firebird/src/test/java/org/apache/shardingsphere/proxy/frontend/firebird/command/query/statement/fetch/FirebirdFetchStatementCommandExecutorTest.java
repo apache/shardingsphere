@@ -39,7 +39,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -88,7 +87,10 @@ class FirebirdFetchStatementCommandExecutorTest {
     void assertExecuteWhenNoBackendHandler() throws SQLException {
         when(packet.getFetchSize()).thenReturn(Integer.MAX_VALUE);
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
-        assertNoMoreRowsResponse(executor.execute());
+        Collection<DatabasePacket> actualPackets = executor.execute();
+        assertThat(actualPackets.size(), is(1));
+        assertNoMoreRowsResponse((FirebirdFetchResponsePacket) actualPackets.iterator().next());
+        assertThat(executor.next(), is(false));
     }
     
     @Test
@@ -96,7 +98,10 @@ class FirebirdFetchStatementCommandExecutorTest {
         FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
-        assertNoMoreRowsResponse(executor.execute());
+        Collection<DatabasePacket> actualPackets = executor.execute();
+        assertThat(actualPackets.size(), is(1));
+        assertNoMoreRowsResponse((FirebirdFetchResponsePacket) actualPackets.iterator().next());
+        assertThat(executor.next(), is(false));
     }
     
     @Test
@@ -122,6 +127,7 @@ class FirebirdFetchStatementCommandExecutorTest {
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         executor.execute();
         assertTrue(executor.next());
+        FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
     }
     
     @Test
@@ -134,10 +140,13 @@ class FirebirdFetchStatementCommandExecutorTest {
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
-        FirebirdFetchResponsePacket actualPacket = (FirebirdFetchResponsePacket) actualPackets.iterator().next();
-        assertThat(actualPacket.getStatus(), is(ISCConstants.FETCH_OK));
-        assertThat(actualPacket.getCount(), is(1));
-        assertNotNull(actualPacket.getRow());
+        assertFetchRowResponse((FirebirdFetchResponsePacket) actualPackets.iterator().next());
+        assertThat(executor.next(), is(true));
+        assertFetchRowResponse((FirebirdFetchResponsePacket) executor.getQueryRowPacket());
+        assertThat(executor.next(), is(true));
+        assertFetchEndResponse((FirebirdFetchResponsePacket) executor.getQueryRowPacket());
+        assertThat(executor.next(), is(false));
+        FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
     }
     
     @Test
@@ -148,11 +157,10 @@ class FirebirdFetchStatementCommandExecutorTest {
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
-        FirebirdFetchResponsePacket actualPacket = (FirebirdFetchResponsePacket) actualPackets.iterator().next();
-        assertThat(actualPacket.getStatus(), is(ISCConstants.FETCH_NO_MORE_ROWS));
-        assertThat(actualPacket.getCount(), is(0));
-        assertNull(actualPacket.getRow());
+        assertNoMoreRowsResponse((FirebirdFetchResponsePacket) actualPackets.iterator().next());
         verify(databaseConnectionManager).unmarkResourceInUse(proxyBackendHandler);
+        assertThat(executor.next(), is(false));
+        FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
     }
     
     @Test
@@ -162,17 +170,25 @@ class FirebirdFetchStatementCommandExecutorTest {
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
-        FirebirdFetchResponsePacket actualPacket = (FirebirdFetchResponsePacket) actualPackets.iterator().next();
-        assertThat(actualPacket.getStatus(), is(ISCConstants.FETCH_OK));
+        assertFetchEndResponse((FirebirdFetchResponsePacket) actualPackets.iterator().next());
+        assertThat(executor.next(), is(false));
+        FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
+    }
+    
+    private void assertNoMoreRowsResponse(FirebirdFetchResponsePacket actualPacket) {
+        assertThat(actualPacket.getStatus(), is(ISCConstants.FETCH_NO_MORE_ROWS));
         assertThat(actualPacket.getCount(), is(0));
         assertNull(actualPacket.getRow());
     }
     
-    private void assertNoMoreRowsResponse(final Collection<DatabasePacket> actualPackets) {
-        Iterator<DatabasePacket> packetIterator = actualPackets.iterator();
-        FirebirdFetchResponsePacket actualPacket = (FirebirdFetchResponsePacket) packetIterator.next();
-        assertThat(actualPackets.size(), is(1));
-        assertThat(actualPacket.getStatus(), is(ISCConstants.FETCH_NO_MORE_ROWS));
+    private void assertFetchRowResponse(FirebirdFetchResponsePacket actualPacket) {
+        assertThat(actualPacket.getStatus(), is(ISCConstants.FETCH_OK));
+        assertThat(actualPacket.getCount(), is(1));
+        assertNotNull(actualPacket.getRow());
+    }
+    
+    private void assertFetchEndResponse(FirebirdFetchResponsePacket actualPacket) {
+        assertThat(actualPacket.getStatus(), is(ISCConstants.FETCH_OK));
         assertThat(actualPacket.getCount(), is(0));
         assertNull(actualPacket.getRow());
     }
