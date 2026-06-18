@@ -28,6 +28,7 @@
 1. Sharding: Support ORDER BY MySQL VARBINARY column by wrapping byte[] values in a Comparable adapter - [#38699](https://github.com/apache/shardingsphere/pull/38699)
 1. Sharding: Fix AUTO_INTERVAL sharding failure under JVM default locales that use comma decimal separators - [#38806](https://github.com/apache/shardingsphere/pull/38806)
 1. DistSQL: Fix case-sensitive storage unit matching in `SHOW RULES USED STORAGE UNIT` - [#38848](https://github.com/apache/shardingsphere/pull/38848)
+1. DistSQL: Fix uppercase table names incorrectly shown in `SHOW UNLOADED SINGLE TABLES` - [#38866](https://github.com/apache/shardingsphere/pull/38866)
 
 ### Enhancements
 
