@@ -235,13 +235,27 @@ class DDLE2EIT implements SQLE2EIT {
         if (dataNodes.isEmpty()) {
             return false;
         }
+        String actualTableName = getIdentifierValue(tableName);
+        String actualIndexName = getIdentifierValue(indexName);
         Awaitility.await().atMost(META_DATA_WAIT_TIMEOUT).pollInterval(META_DATA_POLL_INTERVAL)
-                .untilAsserted(() -> assertThat(String.format("Index `%s` existed state mismatch", indexName), containsIndex(dataNodes, getIdentifierValue(indexName)), is(exists)));
+                .untilAsserted(() -> assertThat(String.format("Index `%s` existed state mismatch", indexName), containsIndex(dataNodes, actualTableName, actualIndexName), is(exists)));
         return true;
     }
     
-    private boolean containsIndex(final Collection<DataNode> dataNodes, final String indexName) throws SQLException {
-        return getActualIndexes(dataNodes).stream().anyMatch(each -> indexName.equals(each.getName()));
+    private boolean containsIndex(final Collection<DataNode> dataNodes, final String tableName, final String indexName) throws SQLException {
+        return getActualIndexes(dataNodes).stream().anyMatch(each -> isSameIndex(each.getName(), tableName, indexName));
+    }
+    
+    private boolean isSameIndex(final String actualIndexName, final String tableName, final String indexName) {
+        if (null == actualIndexName) {
+            return false;
+        }
+        if (indexName.equalsIgnoreCase(actualIndexName)) {
+            return true;
+        }
+        String shardingIndexName = indexName + "_" + tableName;
+        return shardingIndexName.equalsIgnoreCase(actualIndexName) || actualIndexName.length() > shardingIndexName.length()
+                && '_' == actualIndexName.charAt(shardingIndexName.length()) && actualIndexName.regionMatches(true, 0, shardingIndexName, 0, shardingIndexName.length());
     }
     
     private Collection<DataNode> findDataNodes(final SQLE2EITContext context, final String tableName) {
