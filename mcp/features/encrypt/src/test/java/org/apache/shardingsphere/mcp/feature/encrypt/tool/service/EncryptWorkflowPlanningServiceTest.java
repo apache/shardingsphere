@@ -205,6 +205,25 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
+    void assertPlanEncryptRuleWithReservedColumnAndDefaultDigest() throws ReflectiveOperationException {
+        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
+        EncryptWorkflowRequest request = createRequest("create");
+        request.setTable("t_user");
+        request.setColumn("name");
+        request.getOptions().setCipherColumnName("name_cipher");
+        WorkflowContextSnapshot actual = createService(ruleInspectionService, createPrimaryCandidateRecommendation(), new EncryptAlgorithmPropertyTemplateService(),
+                new EncryptRuleDistSQLPlanningService()).plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        String actualSQL = actual.getRuleArtifacts().getFirst().getSql();
+        assertThat(actual.getStatus(), is("planned"));
+        assertTrue(actualSQL.startsWith("CREATE ENCRYPT RULE t_user"));
+        assertTrue(actualSQL.contains("NAME=`name`"));
+        assertTrue(actualSQL.contains("CIPHER=name_cipher"));
+        assertTrue(actualSQL.contains("TYPE(NAME='aes'"));
+        assertTrue(actualSQL.contains("'digest-algorithm-name'='SHA-1'"));
+    }
+    
+    @Test
     void assertPlanRejectsAddingColumnToExistingTableRule() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(

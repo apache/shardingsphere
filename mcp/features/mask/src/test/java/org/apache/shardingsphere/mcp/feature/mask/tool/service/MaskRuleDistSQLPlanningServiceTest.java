@@ -69,6 +69,16 @@ class MaskRuleDistSQLPlanningServiceTest {
     }
     
     @Test
+    void assertPlanMaskRuleFormatsReservedColumnIdentifier() {
+        WorkflowRequest request = createRequest("create");
+        request.setTable("table");
+        request.setColumn("from");
+        RuleArtifact actual = service.planMaskRule(request);
+        assertTrue(actual.getSql().startsWith("CREATE MASK RULE `table`"));
+        assertTrue(actual.getSql().contains("NAME=`from`"));
+    }
+    
+    @Test
     void assertPlanMaskRuleRejectsLineTerminatorColumn() {
         MCPInvalidRequestException actualException = assertThrows(MCPInvalidRequestException.class,
                 () -> service.planMaskRule(createRequestWithColumn("bad\ncolumn")));

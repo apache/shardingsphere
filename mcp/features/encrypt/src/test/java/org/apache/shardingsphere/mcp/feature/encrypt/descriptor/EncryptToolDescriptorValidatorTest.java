@@ -183,6 +183,28 @@ class EncryptToolDescriptorValidatorTest {
         assertTrue(String.valueOf(((Map<?, ?>) properties.get("like_query_algorithm_properties")).get("description")).contains("protected placeholder objects"));
     }
     
+    @Test
+    void assertValidateExecutableEncryptDistSQLExamples() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
+        new EncryptToolDescriptorValidator().validate(descriptor);
+    }
+    
+    @Test
+    void assertValidateRejectsUnquotedExecutableEncryptAlgorithmType() {
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new EncryptToolDescriptorValidator().validate(
+                createDescriptorWithExampleSQL("CREATE ENCRYPT RULE orders (COLUMNS((NAME=status, CIPHER=status_cipher, "
+                        + "ENCRYPT_ALGORITHM(TYPE(NAME=AES, PROPERTIES('aes-key-value'='******', 'digest-algorithm-name'='SHA-1'))))))")));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_plan_encrypt_rule` output example executable encrypt DistSQL must quote algorithm type as a string literal."));
+    }
+    
+    @Test
+    void assertValidateRejectsMissingExecutableAesDigest() {
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new EncryptToolDescriptorValidator().validate(
+                createDescriptorWithExampleSQL("CREATE ENCRYPT RULE orders (COLUMNS((NAME=status, CIPHER=status_cipher, "
+                        + "ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='******'))))))")));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_plan_encrypt_rule` output example executable AES DistSQL must include `digest-algorithm-name`."));
+    }
+    
     private MCPPromptDescriptor findPrompt(final String promptName) {
         return MCPDescriptorCatalogIndex.getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
     }
@@ -195,6 +217,14 @@ class EncryptToolDescriptorValidatorTest {
     private boolean hasCompletionTarget(final String referenceType, final String reference) {
         return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
                 .anyMatch(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference()));
+    }
+    
+    private MCPToolDescriptor createDescriptorWithExampleSQL(final String sql) {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> outputSchema = new LinkedHashMap<>(descriptor.getOutputSchema());
+        outputSchema.put("examples", List.of(Map.of("distsql_artifacts", List.of(Map.of("artifact_type", "rule_dist_sql", "sql", sql)))));
+        return new MCPToolDescriptor(descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), outputSchema,
+                descriptor.getAnnotations(), descriptor.getMeta());
     }
     
     private String readResource(final String resourceName) throws IOException {
