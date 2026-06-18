@@ -47,9 +47,11 @@ import java.sql.Types;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -61,7 +63,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseDQLE2EIT implements SQLE2EIT {
     
-    private static final Collection<String> FILLED_SUITES = new HashSet<>();
+    private static final Collection<String> FILLED_SUITES = ConcurrentHashMap.newKeySet();
+    
+    private static final Map<String, Object> FILL_DATA_LOCKS = new ConcurrentHashMap<>();
     
     private DataSource expectedDataSource;
     
@@ -92,16 +96,16 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
         if (FILLED_SUITES.contains(cacheKey)) {
             return;
         }
-        synchronized (FILLED_SUITES) {
+        synchronized (FILL_DATA_LOCKS.computeIfAbsent(cacheKey, unused -> new Object())) {
             if (FILLED_SUITES.contains(cacheKey)) {
                 return;
             }
             new DataSetEnvironmentManager(
                     new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(),
-                    testParam.getDatabaseType()).fillData();
+                    testParam.getDatabaseType()).fillData(Collections.emptyList());
             new DataSetEnvironmentManager(
                     new ScenarioDataPath(testParam.getScenario(), Type.EXPECTED).getDataSetFile(), getEnvironmentEngine().getExpectedDataSourceMap(),
-                    testParam.getDatabaseType()).fillData();
+                    testParam.getDatabaseType()).fillData(Collections.emptyList());
             FILLED_SUITES.add(cacheKey);
         }
     }
