@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen;
+package org.apache.shardingsphere.database.connector.mysql.metadata.database.option;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 
 /**
- * Dialect generated key option.
+ * Generated key option of MySQL.
  */
-@RequiredArgsConstructor
-@Getter
-public class DialectGeneratedKeyOption {
+public final class MySQLGeneratedKeyOption extends DialectGeneratedKeyOption {
     
-    private final String columnName;
+    public MySQLGeneratedKeyOption() {
+        super("GENERATED_KEY");
+    }
     
-    /**
-     * Check if the explicit value triggers an auto-increment key generation.
-     *
-     * @param value explicit insert value
-     * @return whether the value triggers generated key
-     */
+    @Override
     public boolean isGeneratedKeyTriggerValue(final Object value) {
-        return false;
+        if (null == value) {
+            return true;
+        }
+        if (value instanceof Number && 0L == ((Number) value).longValue()) {
+            return true;
+        }
+        String valueStr = value.toString();
+        return "0".equals(valueStr) || "NULL".equalsIgnoreCase(valueStr);
     }
 }

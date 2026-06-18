@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.connector;
 
 import com.google.common.collect.LinkedHashMultimap;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
@@ -50,6 +50,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.ProxyJDBCExecutor;
@@ -59,6 +60,8 @@ import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -302,6 +305,7 @@ class ProxySQLExecutorTest {
                 Arguments.of("execute-with-driver-and-explicit-keys-special-null", false, createInsertStatement(mysqlDatabaseType), true, true, true),
                 Arguments.of("execute-with-driver-param-marker-nonspecial", false, createInsertStatement(mysqlDatabaseType), true, true, false),
                 Arguments.of("execute-with-driver-param-marker-special-zero", false, createInsertStatement(mysqlDatabaseType), true, true, true),
+                Arguments.of("execute-with-driver-param-marker-special-null", false, createInsertStatement(mysqlDatabaseType), true, true, true),
                 Arguments.of("execute-with-driver-and-no-transaction", false, createInsertStatement(postgresqlDatabaseType), false, false, false));
     }
     
@@ -398,35 +402,49 @@ class ProxySQLExecutorTest {
         return result;
     }
     
-    @SuppressWarnings("rawtypes")
     private ExecutionContext createExecutionContext(final String name, final SQLStatement sqlStatement, final boolean isReturnGeneratedKeys) {
         SQLStatementContext sqlStatementContext;
+        List<Object> params = Collections.emptyList();
         if (sqlStatement instanceof InsertStatement) {
             InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
             if ("execute-with-driver-and-explicit-keys-nonspecial".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
                 when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
-                List<Object> expressions = Collections.singletonList(new LiteralExpressionSegment(-3));
-                when((List) insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(new StubInsertValueContext(expressions, Collections.emptyList())));
+                InsertValueContext insertValueContext = mock(InsertValueContext.class);
+                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new LiteralExpressionSegment(0, 0, -3)));
+                when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
             } else if ("execute-with-driver-and-explicit-keys-special-null".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
                 when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
-                List<Object> expressions = Collections.singletonList(new LiteralExpressionSegment(null));
-                when((List) insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(new StubInsertValueContext(expressions, Collections.emptyList())));
+                InsertValueContext insertValueContext = mock(InsertValueContext.class);
+                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new LiteralExpressionSegment(0, 0, null)));
+                when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
             } else if ("execute-with-driver-param-marker-nonspecial".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
                 when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
-                List<Object> expressions = Collections.singletonList(new ParameterMarkerExpressionSegment());
-                when((List) insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(new StubInsertValueContext(expressions, Collections.singletonList(-3))));
+                InsertValueContext insertValueContext = mock(InsertValueContext.class);
+                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)));
+                when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+                params = Collections.singletonList(-3);
             } else if ("execute-with-driver-param-marker-special-zero".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
                 when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
-                List<Object> expressions = Collections.singletonList(new ParameterMarkerExpressionSegment());
-                when((List) insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(new StubInsertValueContext(expressions, Collections.singletonList(0))));
+                InsertValueContext insertValueContext = mock(InsertValueContext.class);
+                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)));
+                when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+                params = Collections.singletonList(0);
+            } else if ("execute-with-driver-param-marker-special-null".equals(name)) {
+                GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
+                when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
+                InsertValueContext insertValueContext = mock(InsertValueContext.class);
+                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)));
+                when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+                params = Collections.singletonList(null);
             } else {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", isReturnGeneratedKeys);
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
@@ -438,6 +456,9 @@ class ProxySQLExecutorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ExecutionContext result = mock(ExecutionContext.class);
         when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getParameters()).thenReturn(params);
+        when(result.getQueryContext()).thenReturn(queryContext);
         return result;
     }
     
@@ -481,37 +502,5 @@ class ProxySQLExecutorTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setExecutorField(final ProxySQLExecutor target, final String fieldName, final Object value) {
         Plugins.getMemberAccessor().set(ProxySQLExecutor.class.getDeclaredField(fieldName), target, value);
-    }
-    
-    static class StubInsertValueContext {
-        
-        private final List<Object> expressions;
-        
-        @Getter
-        private final List<Object> parameters;
-        
-        StubInsertValueContext(final List<Object> expressions, final List<Object> parameters) {
-            this.expressions = expressions;
-            this.parameters = parameters;
-        }
-        
-        @SuppressWarnings("unused")
-        public List<Object> getValueExpressions() {
-            return expressions;
-        }
-        
-    }
-    
-    @Getter
-    static class LiteralExpressionSegment {
-        
-        private final Object literal;
-        
-        LiteralExpressionSegment(final Object literal) {
-            this.literal = literal;
-        }
-    }
-    
-    static class ParameterMarkerExpressionSegment {
     }
 }

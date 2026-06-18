@@ -20,11 +20,14 @@ package org.apache.shardingsphere.proxy.backend.connector;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.TableModifyInTransactionException;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
@@ -61,6 +64,9 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
@@ -72,7 +78,6 @@ import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -161,7 +166,6 @@ public final class ProxySQLExecutor {
         return databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction();
     }
     
-    // TODO should be removed after metadata refresh supported for all database.
     private boolean isDDLWithoutMetaDataChanged(final DDLStatement sqlStatement) {
         return isCursorStatement(sqlStatement) || sqlStatement instanceof TruncateStatement;
     }
@@ -187,7 +191,7 @@ public final class ProxySQLExecutor {
         int maxConnectionsSizePerQuery = ProxyContext.getInstance()
                 .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(executionContext.getSqlStatementContext().getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
-        boolean isReturnGeneratedKeys = isReturnGeneratedKeys(executionContext.getSqlStatementContext(), dialectDatabaseMetaData);
+        boolean isReturnGeneratedKeys = isReturnGeneratedKeys(executionContext.getSqlStatementContext(), dialectDatabaseMetaData, executionContext.getQueryContext().getParameters());
         return hasRawExecutionRule(rules)
                 ? rawExecute(executionContext, rules, maxConnectionsSizePerQuery)
                 : useDriverToExecute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
@@ -213,7 +217,6 @@ public final class ProxySQLExecutor {
         } catch (final SQLException ex) {
             return getSaneExecuteResults(executionContext, ex);
         }
-        // TODO handle query header
         return rawExecutor.execute(executionGroupContext, executionContext.getQueryContext(), new RawSQLExecutorCallback());
     }
     
@@ -264,9 +267,10 @@ public final class ProxySQLExecutor {
      *
      * @param sqlStatementContext SQL statement context
      * @param dialectDatabaseMetaData dialect database meta data
+     * @param params SQL parameters
      * @return whether to return generated keys
      */
-    public static boolean isReturnGeneratedKeys(final SQLStatementContext sqlStatementContext, final DialectDatabaseMetaData dialectDatabaseMetaData) {
+    public static boolean isReturnGeneratedKeys(final SQLStatementContext sqlStatementContext, final DialectDatabaseMetaData dialectDatabaseMetaData, final List<Object> params) {
         if (!(sqlStatementContext instanceof InsertStatementContext) || !dialectDatabaseMetaData.getGeneratedKeyOption().isPresent()) {
             return false;
         }
@@ -274,95 +278,53 @@ public final class ProxySQLExecutor {
         if (!insertStatementContext.getGeneratedKeyContext().isPresent()) {
             return false;
         }
-        if (insertStatementContext.getGeneratedKeyContext().get().isGenerated()) {
+        
+        // Unwrap safely here to satisfy the static analyzer
+        GeneratedKeyContext generatedKeyContext = insertStatementContext.getGeneratedKeyContext().get();
+        if (generatedKeyContext.isGenerated()) {
             return true;
         }
-        return isReturnGeneratedKeysForExplicit(insertStatementContext);
+        
+        DialectGeneratedKeyOption generatedKeyOption = dialectDatabaseMetaData.getGeneratedKeyOption().get();
+        return isReturnGeneratedKeysForExplicit(insertStatementContext, params, generatedKeyOption, generatedKeyContext.getColumnName());
     }
     
-    private static boolean isReturnGeneratedKeysForExplicit(final InsertStatementContext insertStatementContext) {
-        DatabaseType databaseType = insertStatementContext.getSqlStatement().getDatabaseType();
-        String type = null == databaseType ? "" : databaseType.getType();
-        if ("MySQL".equalsIgnoreCase(type) || "MariaDB".equalsIgnoreCase(type)) {
-            String columnName = insertStatementContext.getGeneratedKeyContext().get().getColumnName();
-            int columnIndex = insertStatementContext.getInsertColumnNames().indexOf(columnName);
-            if (-1 != columnIndex) {
-                return isReturnGeneratedKeysForExplicit(insertStatementContext, columnIndex);
-            }
-        }
-        return false;
-    }
-    
-    private static boolean isReturnGeneratedKeysForExplicit(final InsertStatementContext insertStatementContext, final int columnIndex) {
-        try {
-            List<?> valueContexts = insertStatementContext.getInsertValueContexts();
-            for (Object each : valueContexts) {
-                if (isReturnGeneratedKeysForExplicit(each, columnIndex)) {
+    private static boolean isReturnGeneratedKeysForExplicit(final InsertStatementContext insertStatementContext, final List<Object> params,
+                                                            final DialectGeneratedKeyOption generatedKeyOption, final String columnName) {
+        int columnIndex = insertStatementContext.getInsertColumnNames().indexOf(columnName);
+        if (-1 != columnIndex) {
+            for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
+                if (isReturnGeneratedKeysForExplicit(each, columnIndex, params, generatedKeyOption)) {
                     return true;
                 }
             }
-        } catch (final ReflectiveOperationException ex) {
+        }
+        return false;
+    }
+    
+    private static boolean isReturnGeneratedKeysForExplicit(final InsertValueContext insertValueContext, final int columnIndex, final List<Object> params,
+                                                            final DialectGeneratedKeyOption generatedKeyOption) {
+        List<ExpressionSegment> expressions = insertValueContext.getValueExpressions();
+        if (null != expressions && columnIndex < expressions.size()) {
+            ExpressionSegment expr = expressions.get(columnIndex);
+            return isReturnGeneratedKeysFromExpression(expr, params, generatedKeyOption);
+        }
+        return false;
+    }
+    
+    private static boolean isReturnGeneratedKeysFromExpression(final ExpressionSegment expr, final List<Object> params, final DialectGeneratedKeyOption generatedKeyOption) {
+        if (expr instanceof ParameterMarkerExpressionSegment) {
+            int markerIndex = ((ParameterMarkerExpressionSegment) expr).getParameterMarkerIndex();
+            if (params.size() > markerIndex) {
+                // Delegate completely to the dialect contract directly via the unwrapped object
+                return generatedKeyOption.isGeneratedKeyTriggerValue(params.get(markerIndex));
+            }
             return false;
         }
-        return false;
-    }
-    
-    private static boolean isReturnGeneratedKeysForExplicit(final Object valueContext, final int columnIndex) throws ReflectiveOperationException {
-        Method getExpressionsMethod = valueContext.getClass().getMethod("getValueExpressions");
-        List<?> expressions = (List<?>) getExpressionsMethod.invoke(valueContext);
-        if (null != expressions && columnIndex < expressions.size()) {
-            Object expr = expressions.get(columnIndex);
-            return null != expr && isReturnGeneratedKeysFromExpression(valueContext, expressions, expr, columnIndex);
+        if (expr instanceof LiteralExpressionSegment) {
+            // Delegate completely to the dialect contract directly via the unwrapped object
+            return generatedKeyOption.isGeneratedKeyTriggerValue(((LiteralExpressionSegment) expr).getLiterals());
         }
         return false;
-    }
-    
-    private static boolean isReturnGeneratedKeysFromExpression(final Object valueContext, final List<?> expressions, final Object expr, final int columnIndex) throws ReflectiveOperationException {
-        String className = expr.getClass().getSimpleName();
-        if ("ParameterMarkerExpressionSegment".equals(className)) {
-            return isReturnGeneratedKeysFromParameterMarker(valueContext, expressions, columnIndex);
-        }
-        if ("LiteralExpressionSegment".equals(className)) {
-            Method getLiteralMethod = expr.getClass().getMethod("getLiteral");
-            Object literal = getLiteralMethod.invoke(expr);
-            return isAutoGeneratedValue(literal);
-        }
-        try {
-            Method getTextMethod = expr.getClass().getMethod("getText");
-            Object text = getTextMethod.invoke(expr);
-            if (null != text && ("0".equals(text.toString()) || "NULL".equalsIgnoreCase(text.toString()))) {
-                return true;
-            }
-        } catch (final ReflectiveOperationException ex) {
-            // ignored, fallback to false
-        }
-        return false;
-    }
-    
-    private static boolean isReturnGeneratedKeysFromParameterMarker(final Object valueContext, final List<?> expressions, final int columnIndex) throws ReflectiveOperationException {
-        int paramOffset = 0;
-        for (int i = 0; i < columnIndex; i++) {
-            if ("ParameterMarkerExpressionSegment".equals(expressions.get(i).getClass().getSimpleName())) {
-                paramOffset++;
-            }
-        }
-        Method getParametersMethod = valueContext.getClass().getMethod("getParameters");
-        List<?> parameters = (List<?>) getParametersMethod.invoke(valueContext);
-        if (null != parameters && paramOffset < parameters.size()) {
-            Object paramValue = parameters.get(paramOffset);
-            return isAutoGeneratedValue(paramValue);
-        }
-        return false;
-    }
-    
-    private static boolean isAutoGeneratedValue(final Object value) {
-        if (null == value) {
-            return true;
-        }
-        if (value instanceof Number && 0L == ((Number) value).longValue()) {
-            return true;
-        }
-        String valueStr = value.toString();
-        return "0".equals(valueStr) || "NULL".equalsIgnoreCase(valueStr);
     }
 }
