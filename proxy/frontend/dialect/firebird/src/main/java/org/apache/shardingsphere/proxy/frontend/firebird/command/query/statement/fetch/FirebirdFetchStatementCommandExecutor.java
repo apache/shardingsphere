@@ -41,8 +41,6 @@ import java.util.List;
  */
 public final class FirebirdFetchStatementCommandExecutor implements QueryCommandExecutor {
     
-    private final FirebirdFetchStatementPacket packet;
-    
     private final ConnectionSession connectionSession;
     
     private final ProxyBackendHandler proxyBackendHandler;
@@ -50,15 +48,15 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
     private int fetchCount;
     
     public FirebirdFetchStatementCommandExecutor(final FirebirdFetchStatementPacket packet, final ConnectionSession connectionSession) {
-        this.packet = packet;
         this.connectionSession = connectionSession;
         proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), packet.getStatementId());
+        fetchCount = packet.getFetchSize();
     }
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         if (proxyBackendHandler == null) {
-            fetchCount = packet.getFetchSize() + 1;
+            fetchCount = -1;
             return Collections.singletonList(FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket());
         }
         return Collections.singletonList(getQueryRowPacket());
@@ -71,19 +69,19 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
     
     @Override
     public boolean next() throws SQLException {
-        return fetchCount <= packet.getFetchSize();
+        return 0 <= fetchCount;
     }
     
     @Override
     public DatabasePacket getQueryRowPacket() throws SQLException {
-        fetchCount++;
-        if (fetchCount <= packet.getFetchSize()) {
+        fetchCount--;
+        if (0 <= fetchCount) {
             if (proxyBackendHandler.next()) {
                 BinaryRow row = createBinaryRow(proxyBackendHandler.getRowData());
                 return FirebirdFetchResponsePacket.getFetchRowPacket(row);
             } else {
                 connectionSession.getDatabaseConnectionManager().unmarkResourceInUse(proxyBackendHandler);
-                fetchCount = packet.getFetchSize() + 1;
+                fetchCount = -1;
                 return FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket();
             }
         }
