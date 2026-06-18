@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowValidationHandler;
 import org.junit.jupiter.api.Test;
@@ -55,16 +56,17 @@ class WorkflowExecutionToolHandlerTest {
     @Test
     void assertHandleExecution() throws ReflectiveOperationException {
         WorkflowExecutionService executionService = mock(WorkflowExecutionService.class);
-        when(executionService.apply(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed"));
+        when(executionService.apply(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed"));
         WorkflowContextSnapshot snapshot = WorkflowHandlerTestFixture.createSnapshot();
         WorkflowHandlerTestFixture.Context fixture = WorkflowHandlerTestFixture.createContext(snapshot);
         MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler = mock(MCPWorkflowApplySynchronizationHandler.class);
+        MCPWorkflowApplyArtifactValidator workflowApplyArtifactValidator = mock(MCPWorkflowApplyArtifactValidator.class);
         WorkflowExecutionToolHandler handler = createExecutionToolHandler(executionService, new WorkflowRuntimeDefinitionRegistry(List.of(
-                WorkflowHandlerTestFixture.createDefinition("encrypt.rule", mock(MCPWorkflowValidationHandler.class), workflowApplySynchronizationHandler))));
+                WorkflowHandlerTestFixture.createDefinition("encrypt.rule", mock(MCPWorkflowValidationHandler.class), workflowApplySynchronizationHandler, workflowApplyArtifactValidator))));
         MCPResponse actual = handler.handle(fixture.workflowContext(), new MCPToolCall("session-1",
                 Map.of("plan_id", "plan-1", "approved_steps", List.of("ddl"), "execution_mode", "manual-only")));
         verify(executionService).apply(eq(fixture.workflowSessionContext()), eq(fixture.metadataQueryFacade()), eq(fixture.queryFacade()), eq(fixture.executionFacade()),
-                eq(workflowApplySynchronizationHandler), eq("session-1"), eq(snapshot), eq(List.of("ddl")), eq("manual-only"));
+                eq(workflowApplySynchronizationHandler), eq(workflowApplyArtifactValidator), eq("session-1"), eq(snapshot), eq(List.of("ddl")), eq("manual-only"));
         assertThat(actual.toPayload().get("status"), is("completed"));
     }
     

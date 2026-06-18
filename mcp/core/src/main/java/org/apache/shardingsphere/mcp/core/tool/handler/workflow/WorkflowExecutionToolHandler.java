@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDes
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
+import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,9 +75,10 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
         WorkflowContextSnapshot snapshot = WorkflowSessionSnapshotResolver.getRequired(workflowContext.getWorkflowSessionContext(), toolCall.getSessionId(),
                 toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
         WorkflowKind workflowKind = getRequiredWorkflowKind(snapshot);
+        WorkflowRuntimeDefinition workflowRuntimeDefinition = workflowRuntimeDefinitionRegistry.getRequired(workflowKind);
         return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(),
-                databaseContext.getExecutionFacade(), workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getApplySynchronizationHandler(), toolCall.getSessionId(), snapshot,
-                toolArguments.getStringCollectionArgument("approved_steps"), executionMode));
+                databaseContext.getExecutionFacade(), workflowRuntimeDefinition.getApplySynchronizationHandler(), workflowRuntimeDefinition.getApplyArtifactValidator(), toolCall.getSessionId(),
+                snapshot, toolArguments.getStringCollectionArgument("approved_steps"), executionMode));
     }
     
     private WorkflowKind getRequiredWorkflowKind(final WorkflowContextSnapshot snapshot) {

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
@@ -315,28 +316,29 @@ class WorkflowExecutionServiceTest {
     }
     
     @Test
-    void assertApplyPreviewBlocksInvalidGeneratedEncryptRuleArtifact() {
+    void assertApplyPreviewBlocksArtifactValidatorIssues() {
         WorkflowContextSnapshot snapshot = createSnapshot();
-        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
-        snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "AES key.", ""));
-        snapshot.getRuleArtifacts().add(new RuleArtifact("create",
-                "CREATE ENCRYPT RULE t_user (COLUMNS((NAME=name, CIPHER=name_cipher, ENCRYPT_ALGORITHM(TYPE(NAME=AES, PROPERTIES('aes-key-value'='123456'))))))"));
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("mask.rule"));
+        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
         workflowSessionContext.save(snapshot);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         Map<String, Object> actualResponse = new WorkflowExecutionService().apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "preview");
+                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP,
+                (workflowSnapshot, artifacts) -> List.of(new WorkflowIssue(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "error", "review",
+                        "Generated workflow artifact is invalid.", "Regenerate the workflow artifact before approval.", true,
+                        Map.of("sql", artifacts.iterator().next().displaySql())).toMap()),
+                "session-1", snapshot, List.of(), "preview");
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualResponse.get("response_mode"), is("preview"));
         assertFalse((Boolean) actualResponse.get("would_apply"));
         assertThat(((List<?>) actualResponse.get("preview_artifacts")).size(), is(0));
         assertThat(((List<?>) actualResponse.get("manual_artifacts")).size(), is(0));
         assertThat(actualResponse.get("manual_artifact_package"), is(Map.of()));
-        assertThat(((List<?>) actualResponse.get("issues")).size(), is(3));
+        assertThat(((List<?>) actualResponse.get("issues")).size(), is(1));
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
-        assertThat(actualIssue.get("message"), is("Generated encrypt DistSQL uses reserved logical column identifier `name` without DistSQL quoting."));
-        assertFalse(String.valueOf(actualResponse).contains("123456"));
+        assertThat(actualIssue.get("message"), is("Generated workflow artifact is invalid."));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("failed"));
         verify(executionFacade, never()).execute(any());
     }

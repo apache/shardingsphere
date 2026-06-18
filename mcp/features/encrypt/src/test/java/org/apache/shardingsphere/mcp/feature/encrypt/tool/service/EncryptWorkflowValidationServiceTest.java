@@ -31,6 +31,8 @@ import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureD
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.junit.jupiter.api.Test;
@@ -44,6 +46,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -84,6 +87,35 @@ class EncryptWorkflowValidationServiceTest {
         assertFalse(actual.containsKey("sql_executability_validation"));
         verifyNoInteractions(metadataQueryFacade);
         verifyNoInteractions(executionFacade);
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsRejectsInvalidGeneratedEncryptRuleArtifact() {
+        String sql = "CREATE ENCRYPT RULE t_user (COLUMNS((NAME=name, CIPHER=name_cipher, "
+                + "ENCRYPT_ALGORITHM(TYPE(NAME=AES, PROPERTIES('aes-key-value'='123456'))))))";
+        List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(new WorkflowContextSnapshot(),
+                List.of(createRuleDistSQLArtifact(sql, sql.replace("123456", "******"))));
+        assertThat(actual.size(), is(3));
+        assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
+        assertThat(actual.getFirst().get("message"), is("Generated encrypt DistSQL uses reserved logical column identifier `name` without DistSQL quoting."));
+        assertFalse(String.valueOf(actual).contains("123456"));
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsAllowsNamePrefixColumn() {
+        String sql = "CREATE ENCRYPT RULE t_user (COLUMNS((NAME=name_cipher, CIPHER=name_cipher_value, "
+                + "ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456', 'digest-algorithm-name'='SHA-1'))))))";
+        List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(new WorkflowContextSnapshot(),
+                List.of(createRuleDistSQLArtifact(sql, sql.replace("123456", "******"))));
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsIgnoresNonEncryptRuleArtifacts() {
+        String sql = "CREATE MASK RULE orders (COLUMNS((NAME=name, "
+                + "MASK_ALGORITHM(TYPE(NAME=AES, PROPERTIES('description'='CREATE ENCRYPT RULE', 'aes-key-value'='123456'))))))";
+        List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(new WorkflowContextSnapshot(), List.of(createRuleDistSQLArtifact(sql, sql)));
+        assertTrue(actual.isEmpty());
     }
     
     @Test
@@ -308,5 +340,9 @@ class EncryptWorkflowValidationServiceTest {
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES");
+    }
+    
+    private ExecutableWorkflowArtifact createRuleDistSQLArtifact(final String sql, final String displaySql) {
+        return new ExecutableWorkflowArtifact(WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL, WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, sql, displaySql, true);
     }
 }
