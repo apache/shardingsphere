@@ -71,7 +71,7 @@ public final class ShowUnloadedSingleTablesExecutor implements DistSQLQueryExecu
         for (Entry<String, Collection<DataNode>> entry : rule.getSingleTableDataNodes().entrySet()) {
             if (actualDataNodes.containsKey(entry.getKey())) {
                 if (entry.getValue().containsAll(actualDataNodes.get(entry.getKey()))) {
-                    actualDataNodes.remove(entry.getKey().toLowerCase());
+                    actualDataNodes.remove(entry.getKey());
                     continue;
                 }
                 Collection<DataNode> tableNodes = actualDataNodes.get(entry.getKey());
