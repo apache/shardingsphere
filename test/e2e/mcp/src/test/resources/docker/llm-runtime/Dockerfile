@@ -17,7 +17,6 @@
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
-ARG SERVER_RUNTIME
 ARG MODEL_REPOSITORY
 ARG MODEL_QUANTIZATION
 ARG MODEL_REFERENCE
@@ -28,7 +27,7 @@ ARG MODEL_SHA256
 LABEL org.opencontainers.image.title="Apache ShardingSphere MCP LLM E2E Runtime"
 LABEL org.opencontainers.image.description="Prepackaged model server for MCP LLM E2E score evidence"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
-LABEL org.apache.shardingsphere.mcp.llm.server-runtime="${SERVER_RUNTIME}"
+LABEL org.apache.shardingsphere.mcp.llm.runtime="llama.cpp"
 LABEL org.apache.shardingsphere.mcp.llm.model-repository="${MODEL_REPOSITORY}"
 LABEL org.apache.shardingsphere.mcp.llm.model-quantization="${MODEL_QUANTIZATION}"
 LABEL org.apache.shardingsphere.mcp.llm.model-reference="${MODEL_REFERENCE}"
