@@ -44,6 +44,19 @@ class ShardingAlgorithmPropertyTemplateServiceTest {
     }
     
     @Test
+    void assertFindAlgorithmRequirementsForHashMod() {
+        List<AlgorithmPropertyRequirement> actual = service.findAlgorithmRequirements("HASH_MOD");
+        assertThat(actual.getFirst().getPropertyKey(), is("sharding-count"));
+        assertTrue(actual.getFirst().isRequired());
+    }
+    
+    @Test
+    void assertFindAlgorithmRequirementsForInlineVariants() {
+        assertThat(service.findAlgorithmRequirements("COMPLEX_INLINE").getFirst().getPropertyKey(), is("algorithm-expression"));
+        assertThat(service.findAlgorithmRequirements("HINT_INLINE").getFirst().getPropertyKey(), is("algorithm-expression"));
+    }
+    
+    @Test
     void assertFindKeyGeneratorRequirementsForSnowflake() {
         List<AlgorithmPropertyRequirement> actual = service.findKeyGeneratorRequirements("SNOWFLAKE");
         assertThat(actual.getFirst().getAlgorithmRole(), is("key_generator"));

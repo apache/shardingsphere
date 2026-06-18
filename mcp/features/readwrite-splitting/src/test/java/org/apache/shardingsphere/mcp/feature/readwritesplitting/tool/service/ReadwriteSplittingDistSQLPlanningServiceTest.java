@@ -39,6 +39,19 @@ class ReadwriteSplittingDistSQLPlanningServiceTest {
     }
     
     @Test
+    void assertPlanCreateRuleFormatsReservedIdentifiers() {
+        ReadwriteSplittingRuleWorkflowRequest request = createRuleRequest();
+        request.setRuleName("type");
+        request.setWriteStorageUnit("from");
+        request.setReadStorageUnits("order,table");
+        request.getLoadBalancerProperties().clear();
+        request.putLoadBalancerProperties(Map.of("order", "2", "table", "1"));
+        assertThat(new ReadwriteSplittingRuleDistSQLPlanningService().planCreateRule(request).getSql(),
+                is("CREATE READWRITE_SPLITTING RULE `type` (WRITE_STORAGE_UNIT=`from`, READ_STORAGE_UNITS(`order`, `table`), "
+                        + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC', TYPE(NAME='weight', PROPERTIES('order'='2', 'table'='1')))"));
+    }
+    
+    @Test
     void assertPlanAlterRule() {
         assertThat(new ReadwriteSplittingRuleDistSQLPlanningService().planAlterRule(createRuleRequest()).getOperationType(), is("alter"));
     }

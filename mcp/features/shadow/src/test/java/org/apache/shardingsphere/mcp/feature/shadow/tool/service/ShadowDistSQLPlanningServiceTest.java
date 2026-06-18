@@ -40,6 +40,18 @@ class ShadowDistSQLPlanningServiceTest {
     }
     
     @Test
+    void assertPlanCreateRuleFormatsReservedIdentifiers() {
+        ShadowRuleWorkflowRequest request = createRuleRequest();
+        request.setRuleName("type");
+        request.setSourceStorageUnit("from");
+        request.setShadowStorageUnit("table");
+        request.setTableName("order");
+        RuleArtifact actual = new ShadowDistSQLPlanningService().planCreateRule(request);
+        assertThat(actual.getSql(), is("CREATE SHADOW RULE `type`(SOURCE=`from`, SHADOW=`table`, "
+                + "`order`(TYPE(NAME='value_match', PROPERTIES('column'='user_id', 'operation'='insert', 'value'='1'))))"));
+    }
+    
+    @Test
     void assertPlanAlterRule() {
         assertTrue(new ShadowDistSQLPlanningService().planAlterRule(createRuleRequest()).getSql().startsWith("ALTER SHADOW RULE shadow_rule"));
     }

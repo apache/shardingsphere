@@ -1293,7 +1293,7 @@ tools:
           description: "Execution mode used by the call; preview means the statement was not executed."
         preview_semantics:
           type: string
-          description: "Preview meaning. classification_only means the server classified SQL and side-effect scope without estimating affected rows."
+          description: "Preview meaning. classification_only means the server classified SQL and side-effect scope without parsing, rule validation, algorithm initialization, affected-row estimation, or runtime execution."
           enum:
             - classification_only
         status:
@@ -1399,6 +1399,7 @@ tools:
           status: PREVIEWED
           would_execute: false
           affected_rows_estimated: false
+          review_guidance: Review normalized_sql and side_effect_scope before execution. This preview is classification-only; it does not guarantee parsing, rule validation, algorithm initialization, affected rows, or runtime success.
           review_summary: Previewed UPDATE statement with side-effect scope physical-data. It has not been executed.
           suggested_arguments:
             execution_mode: execute
@@ -1409,7 +1410,7 @@ tools:
               tool_name: database_gateway_execute_update
               arguments:
                 execution_mode: execute
-              reason: Execute after reviewing normalized_sql and side_effect_scope.
+              reason: Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.
     annotations:
       title: Execute Update SQL
       readOnlyHint: false

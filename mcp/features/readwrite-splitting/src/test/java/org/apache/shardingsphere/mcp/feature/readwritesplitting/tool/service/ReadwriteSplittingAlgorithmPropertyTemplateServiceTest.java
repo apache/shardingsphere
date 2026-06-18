@@ -41,6 +41,16 @@ class ReadwriteSplittingAlgorithmPropertyTemplateServiceTest {
     }
     
     @Test
+    void assertFindRequirementsForWeightWithReservedStorageUnits() {
+        List<AlgorithmPropertyRequirement> actual = service.findRequirements("WEIGHT", List.of("order", "table", ""));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.getFirst().getPropertyKey(), is("order"));
+        assertTrue(actual.getFirst().isRequired());
+        assertThat(actual.get(1).getPropertyKey(), is("table"));
+        assertTrue(actual.get(1).isRequired());
+    }
+    
+    @Test
     void assertFindRequirementsForRandom() {
         assertTrue(service.findRequirements("RANDOM", List.of("read_ds_0")).isEmpty());
     }

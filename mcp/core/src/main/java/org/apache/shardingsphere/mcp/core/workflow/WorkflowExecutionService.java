@@ -42,6 +42,7 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowGuidancePa
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSecretReferenceUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 
 import java.util.Collection;
@@ -82,11 +83,38 @@ public final class WorkflowExecutionService {
     public Map<String, Object> apply(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
                                      final MCPFeatureExecutionFacade executionFacade, final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler,
                                      final String sessionId, final WorkflowContextSnapshot snapshot, final List<String> approvedSteps, final String executionMode) {
+        return apply(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, workflowApplySynchronizationHandler, MCPWorkflowApplyArtifactValidator.NO_OP,
+                sessionId, snapshot, approvedSteps, executionMode);
+    }
+    
+    /**
+     * Apply workflow artifacts.
+     *
+     * @param workflowSessionContext workflow session context
+     * @param metadataQueryFacade metadata query facade
+     * @param queryFacade query facade
+     * @param executionFacade execution facade
+     * @param workflowApplySynchronizationHandler workflow apply synchronization handler
+     * @param workflowApplyArtifactValidator workflow apply artifact validator
+     * @param sessionId session id
+     * @param snapshot workflow snapshot
+     * @param approvedSteps approved steps
+     * @param executionMode execution mode override
+     * @return apply payload
+     */
+    public Map<String, Object> apply(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
+                                     final MCPFeatureExecutionFacade executionFacade, final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler,
+                                     final MCPWorkflowApplyArtifactValidator workflowApplyArtifactValidator, final String sessionId, final WorkflowContextSnapshot snapshot,
+                                     final List<String> approvedSteps, final String executionMode) {
         String actualExecutionMode = requireExecutionMode(snapshot, executionMode);
         requireApprovedSteps(snapshot, approvedSteps);
         Map<String, Object> rejectedResponse = checkApplyPreconditions(sessionId, snapshot, actualExecutionMode, approvedSteps);
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
+        }
+        Map<String, Object> invalidArtifactResponse = validateApplyArtifacts(workflowSessionContext, snapshot, actualExecutionMode, workflowApplyArtifactValidator);
+        if (!invalidArtifactResponse.isEmpty()) {
+            return invalidArtifactResponse;
         }
         WorkflowApplyOutcome applyOutcome = new WorkflowApplyOutcome();
         if (EXECUTION_MODE_PREVIEW.equalsIgnoreCase(actualExecutionMode)) {
@@ -184,6 +212,24 @@ public final class WorkflowExecutionService {
     private boolean areApprovedStepsVisible(final WorkflowContextSnapshot snapshot, final List<String> approvedSteps) {
         List<String> visibleSteps = createExecutableArtifacts(snapshot).stream().map(WorkflowArtifactBundle.ExecutableWorkflowArtifact::approvalStep).distinct().toList();
         return visibleSteps.containsAll(approvedSteps);
+    }
+    
+    private Map<String, Object> validateApplyArtifacts(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot,
+                                                       final String executionMode, final MCPWorkflowApplyArtifactValidator workflowApplyArtifactValidator) {
+        List<Map<String, Object>> validationIssues = workflowApplyArtifactValidator.validate(snapshot, createExecutableArtifacts(snapshot));
+        if (!validationIssues.isEmpty()) {
+            persistSnapshot(workflowSessionContext, snapshot, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+            Map<String, Object> result = createResponse(snapshot, WorkflowLifecycle.STATUS_FAILED, executionMode, validationIssues,
+                    List.of(), List.of(), List.of(), List.of(), Map.of());
+            if (EXECUTION_MODE_PREVIEW.equalsIgnoreCase(executionMode)) {
+                result.put("would_apply", false);
+                result.put("preview_artifacts", List.of());
+            }
+            result.put("review_summary", "Workflow apply blocked invalid generated artifacts before approval.");
+            result.put(MCPPayloadFieldNames.NEXT_ACTIONS, MCPNextActionUtils.ordered(MCPNextActionUtils.stop("Fix generated workflow artifacts, then preview the workflow again.")));
+            return result;
+        }
+        return Map.of();
     }
     
     private Map<String, Object> previewApply(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot) {
