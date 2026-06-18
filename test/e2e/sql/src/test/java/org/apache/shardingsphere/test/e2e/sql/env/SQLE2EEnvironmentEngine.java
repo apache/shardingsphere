@@ -31,9 +31,9 @@ import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerCom
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * SQL E2E environment engine.
@@ -43,7 +43,7 @@ public final class SQLE2EEnvironmentEngine {
     
     private static final ContainerComposerRegistry CONTAINER_COMPOSER_REGISTRY = new ContainerComposerRegistry();
     
-    private static final Collection<String> INITIALIZED_SUITES = new HashSet<>();
+    private static final Collection<String> INITIALIZED_SUITES = ConcurrentHashMap.newKeySet();
     
     @Getter(AccessLevel.NONE)
     private final ContainerComposer containerComposer;
@@ -58,7 +58,7 @@ public final class SQLE2EEnvironmentEngine {
         containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(key, scenario, databaseType, mode, adapter);
         containerComposer.start();
         actualDataSourceMap = containerComposer.getActualDataSourceMap();
-        targetDataSource = containerComposer.getTargetDataSource();
+        targetDataSource = CONTAINER_COMPOSER_REGISTRY.getTargetDataSource(key);
         expectedDataSourceMap = containerComposer.getExpectedDataSourceMap();
         executeLogicDatabaseInitSQLFileOnlyOnce(key, scenario, databaseType);
     }

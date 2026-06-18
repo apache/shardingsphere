@@ -53,6 +53,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -67,12 +70,33 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
     
     private static final Map<String, Object> FILL_DATA_LOCKS = new ConcurrentHashMap<>();
     
+    private static final ReadWriteLock DQL_EXECUTION_LOCK = new ReentrantReadWriteLock(true);
+    
     private DataSource expectedDataSource;
     
     private boolean useXMLAsExpectedDataset;
     
     @Setter
     private SQLE2EEnvironmentEngine environmentEngine;
+    
+    /**
+     * Execute DQL with concurrent execution control.
+     *
+     * @param context SQL E2E IT context
+     * @param callback DQL execution callback
+     * @throws SQLException SQL exception
+     * @throws IOException IO exception
+     * @throws JAXBException JAXB exception
+     */
+    protected final void executeDQL(final SQLE2EITContext context, final DQLExecutionCallback callback) throws SQLException, IOException, JAXBException {
+        Lock lock = DQLLockingSelectDetector.containsLockingSelect(context.getSQL()) ? DQL_EXECUTION_LOCK.writeLock() : DQL_EXECUTION_LOCK.readLock();
+        lock.lock();
+        try {
+            callback.execute();
+        } finally {
+            lock.unlock();
+        }
+    }
     
     protected final void init(final AssertionTestParameter testParam, final SQLE2EITContext context) throws IOException, JAXBException {
         fillDataOnlyOnce(testParam);
@@ -232,5 +256,21 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
         assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
         assertThat(String.valueOf(actual.getObject(columnLabel)).trim(), is(expected));
+    }
+    
+    /**
+     * DQL execution callback.
+     */
+    @FunctionalInterface
+    protected interface DQLExecutionCallback {
+        
+        /**
+         * Execute DQL.
+         *
+         * @throws SQLException SQL exception
+         * @throws IOException IO exception
+         * @throws JAXBException JAXB exception
+         */
+        void execute() throws SQLException, IOException, JAXBException;
     }
 }
