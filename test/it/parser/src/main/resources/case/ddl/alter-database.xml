@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <alter-database sql-case-id="alter_database_mysql_simple" />
+    <alter-database sql-case-id="alter_database_enable_block_change_tracking" />
+    <alter-database sql-case-id="alter_database_add_logffile_group_size_m_blocksize_reuse" />
+    <alter-database sql-case-id="alter_database_add_logfile_group_size_k_reuse" />
+    <alter-database sql-case-id="alter_database_start_logical_standby_apply" />
+    <alter-database sql-case-id="alter_database_start_logical_standby_apply_nodelay" />
+    <alter-database sql-case-id="alter_database_start_logical_standby_apply_immediate_new_primary" />
+    <alter-database sql-case-id="alter_database_set_standby_to_maximize_performance" />
+    <alter-database sql-case-id="alter_database_register_physical_logfile" />
+    <alter-database sql-case-id="alter_database_register_logfile" />
+    <alter-database sql-case-id="alter_database_backup_controlfile_to_reuse" />
+    <alter-database sql-case-id="alter_database_stop_logical_standby_apply" />
+    <alter-database sql-case-id="alter_database_start_logical_standby_apply_immediate" />
+    <alter-database sql-case-id="alter_database_rename_file" />
+    <alter-database sql-case-id="alter_database_recover_to_logical_standby" />
+    <alter-database sql-case-id="alter_database_recover_managed_standby" />
+    <alter-database sql-case-id="alter_database_recover_managed_standby_database_finish" />
+    <alter-database sql-case-id="alter_database_enable_block_change_tracking_using_file_reuse" />
+    <alter-database sql-case-id="alter_database_recover_managed_standby_database_nodelay" />
+    <alter-database sql-case-id="alter_database_recover_managed_standby_database_disconnect" />
+    <alter-database sql-case-id="alter_database_recover_to_logical_standby_keep_identity" />
+    <alter-database sql-case-id="alter_database_backup_controlfile_to_trace" />
+    <alter-database sql-case-id="alter_database_flashback_off" />
+    <alter-database sql-case-id="alter_database_flashback_on" />
+    <alter-database sql-case-id="alter_database_disable_block_change_tracking" />
+    <alter-database sql-case-id="alter_database_recover_managed_standby_database_cancel" />
+    <alter-database sql-case-id="alter_database_prepare_to_switchover_to_primary" />
+    <alter-database sql-case-id="alter_database_recover_managed_standby_database_using_current_logfile_disconnect_from_session" />
+    <alter-database sql-case-id="alter_database_prepare_to_switchover_to_logical_standby" />
+    <alter-database sql-case-id="alter_database_prepare_to_switchover_cancel" />
+    <alter-database sql-case-id="alter_database_drop_logfile_group" />
+    <alter-database sql-case-id="alter_database_open" />
+    <alter-database sql-case-id="alter_database_create_standby_controlfile" />
+    <alter-database sql-case-id="alter_database_convert_to_physical_standby" />
+    <alter-database sql-case-id="alter_database_convert_to_snapshot_standby" />
+    <alter-database sql-case-id="alter_database_commit_to_switchover_to_primary" />
+    <alter-database sql-case-id="alter_database_commit_to_switchover_to_logical_standby" />
+    <alter-database sql-case-id="alter_database_commit_to_switchover_to_primary_with_session_shutdown" />
+    <alter-database sql-case-id="alter_database_clear_unarchived_logfile_group_unrecoverable_datafile" />
+    <alter-database sql-case-id="alter_database_archivelog" />
+    <alter-database sql-case-id="alter_database_clear_logfile_group" />
+    <alter-database sql-case-id="alter_database_clear_unarchived_logfile_group" />
+    <alter-database sql-case-id="alter_database_activate_logical_standby_database_finish_apply" />
+    <alter-database sql-case-id="alter_database_add_supplemental_log_data_primary_key_unique_index_columns" />
+    <alter-database sql-case-id="alter_database_clear_logfile" />
+    <alter-database sql-case-id="alter_database_activate_physical_standby_database" />
+    <alter-database sql-case-id="alter_database_add_standby_logfile_thread_size_m" />
+    <alter-database sql-case-id="alter_database_add_standby_logfile_size_m" />
+    <alter-database sql-case-id="alter_database_add_logfile_member_to_rdo_files_2" />
+    <alter-database sql-case-id="alter_database_add_logfile_member_to_group_2" />
+    <alter-database sql-case-id="alter_database_add_logfile_member_to_group_3" />
+    <alter-database sql-case-id="alter_database_add_logfile_group_size_m_block_size_reuse" />
+    <alter-database sql-case-id="alter_database_add_logfile_group_size_m_block_size" />
+    <alter-database sql-case-id="alter_database_add_logfile_thread_group" />
+    <alter-database sql-case-id="alter_database_add_logfile_with_size_m" />
+    <alter-database sql-case-id="alter_database_recover_automatic_until_time" />
+    <alter-database sql-case-id="alter_database_add_logfile_member_reuse_to_group" />
+    <alter-database sql-case-id="alter_database_add_logfile_group" />
+    <alter-database sql-case-id="alter_database_drop_logfile_member" />
+    <alter-database sql-case-id="alter_database_mount" />
+    <alter-database sql-case-id="alter_database_open_readonly" />
+    <alter-database sql-case-id="alter_database_recovery1" />
+    <alter-database sql-case-id="alter_database_recovery2" />
+    <alter-database sql-case-id="alter_database_rename" />
+    <alter-database sql-case-id="alter_database_create1" />
+    <alter-database sql-case-id="alter_database_create2" />
+    <alter-database sql-case-id="alter_database_create3" />
+    <alter-database sql-case-id="alter_database_modify_name" />
+    <alter-database sql-case-id="alter_database_set_options" />
+    <alter-database sql-case-id="alter_database_enable_block_change_tracking_using_file" />
+    <alter-database sql-case-id="alter_database_backup_controlfile_to" />
+    <alter-database sql-case-id="alter_database_set_dbproperties" />
+    <alter-database sql-case-id="alter_schema_set_dbproperties" />
+    <alter-database sql-case-id="alter_database_set_owner_user" />
+    <alter-database sql-case-id="alter_database_set_owner_role" />
+    <alter-database sql-case-id="alter_schema_set_owner_user" />
+    <alter-database sql-case-id="alter_schema_set_owner_role" />
+    <alter-database sql-case-id="alter_database_set_location" />
+    <alter-database sql-case-id="alter_schema_set_location" />
+    <alter-database sql-case-id="alter_database_set_managedlocation" />
+    <alter-database sql-case-id="alter_schema_set_managedlocation" />
+    <alter-database sql-case-id="alter_database_set_lc_messages" />
+    <alter-database sql-case-id="alter_database_set_data_quota" database-name="example_db" quota-type="DATA" quota-value="10995116277760" />
+    <alter-database sql-case-id="alter_database_set_replica_quota" database-name="test_db" quota-type="REPLICA" quota-value="1024" />
+    <alter-database sql-case-id="alter_database_set_transaction_quota" database-name="prod_db" quota-type="TRANSACTION" quota-value="1000" />
+    <alter-database sql-case-id="alter_database_rename_doris" database-name="old_db" rename-database-name="new_db" />
+    <alter-database sql-case-id="alter_database_set_properties" database-name="example_db">
+        <property start-index="42" stop-index="58" key="key1" value="value1" />
+        <property start-index="61" stop-index="77" key="key2" value="value2" />
+    </alter-database>
+</sql-parser-test-cases>

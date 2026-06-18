@@ -1,0 +1,104 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_aggregate
+columns:
+  aggfnoid:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aggfnoid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggtransfn:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aggtransfn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggcollectfn:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aggcollectfn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggfinalfn:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aggfinalfn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggsortop:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: aggsortop
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggtranstype:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: aggtranstype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  agginitval:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: agginitval
+    primaryKey: false
+    unsigned: false
+    visible: true
+  agginitcollect:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: agginitcollect
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggkind:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: aggkind
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggnumdirectargs:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: aggnumdirectargs
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_aggregate_fnoid_index:
+    name: pg_aggregate_fnoid_index
+  streaming_gather_agg_index:
+    name: streaming_gather_agg_index

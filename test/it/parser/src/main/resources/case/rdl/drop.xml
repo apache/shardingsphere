@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <unregister-storage-unit sql-case-id="unregister-storage-unit">
+        <data-source>ds_0</data-source>
+        <data-source>ds_1</data-source>
+        <ignore-single-tables>false</ignore-single-tables>
+    </unregister-storage-unit>
+    
+    <unregister-storage-unit sql-case-id="unregister-storage-unit-if-exists" if-exists="true">
+        <data-source>ds_0</data-source>
+        <data-source>ds_1</data-source>
+        <ignore-single-tables>false</ignore-single-tables>
+    </unregister-storage-unit>
+    
+    <unregister-storage-unit sql-case-id="unregister-storage-unit-ignore-single-tables">
+        <data-source>ds_0</data-source>
+        <data-source>ds_1</data-source>
+        <ignore-single-tables>true</ignore-single-tables>
+    </unregister-storage-unit>
+    
+    <drop-sharding-table-rule sql-case-id="drop-sharding-table-rule" >
+        <rule-name>t_order</rule-name>
+        <rule-name>t_order_item</rule-name>
+    </drop-sharding-table-rule>
+    
+    <drop-sharding-table-rule sql-case-id="drop-sharding-table-rule-if-exists" if-exists="true">
+        <rule-name>t_order</rule-name>
+        <rule-name>t_order_item</rule-name>
+    </drop-sharding-table-rule>
+    
+    <drop-sharding-table-reference-rule sql-case-id="drop-sharding-table-reference-rule">
+        <rule-name>reference_0</rule-name>
+    </drop-sharding-table-reference-rule>
+    
+    <drop-sharding-table-reference-rule sql-case-id="drop-sharding-table-reference-rule-if-exists" if-exists="true">
+        <rule-name>reference_1</rule-name>
+    </drop-sharding-table-reference-rule>
+    
+    <drop-broadcast-table-rule sql-case-id="drop-broadcast-table-rule" >
+        <table>t_1</table>
+    </drop-broadcast-table-rule>
+    
+    <drop-broadcast-table-rule sql-case-id="drop-multiple-broadcast-table-rules" >
+        <table>t_1</table>
+        <table>t_2</table>
+    </drop-broadcast-table-rule>
+    
+    <drop-broadcast-table-rule sql-case-id="drop-broadcast-table-rule-if-exists" if-exists="true">
+        <table>t_1</table>
+    </drop-broadcast-table-rule>
+    
+    <drop-readwrite-splitting-rule sql-case-id="drop-readwrite-splitting-rule">
+        <rule-name>ms_group_0</rule-name>
+        <rule-name>ms_group_1</rule-name>
+    </drop-readwrite-splitting-rule>
+
+    <drop-readwrite-splitting-rule sql-case-id="drop-readwrite-splitting-rule-if-exists" if-exists="true">
+        <rule-name>ms_group_0</rule-name>
+        <rule-name>ms_group_1</rule-name>
+    </drop-readwrite-splitting-rule>
+    
+    <drop-encrypt-rule sql-case-id="drop-encrypt-rule">
+        <rule-name>t_encrypt</rule-name>
+        <rule-name>t_encrypt_order</rule-name>
+    </drop-encrypt-rule>
+    
+    <drop-encrypt-rule sql-case-id="drop-encrypt-rule-if-exists" if-exists="true">
+        <rule-name>t_encrypt</rule-name>
+        <rule-name>t_encrypt_order</rule-name>
+    </drop-encrypt-rule>
+    
+    <drop-shadow-rule sql-case-id="drop-shadow-rule">
+        <rule-name>shadow_rule_1</rule-name>
+        <rule-name>shadow_rule_2</rule-name>
+    </drop-shadow-rule>
+    
+    <drop-shadow-rule sql-case-id="drop-shadow-rule-if-exists" if-exists="true">
+        <rule-name>shadow_rule_1</rule-name>
+        <rule-name>shadow_rule_2</rule-name>
+    </drop-shadow-rule>
+    
+    <drop-shadow-algorithm sql-case-id="drop-shadow-algorithm">
+        <name>shadow_algorithm_1</name>
+        <name>shadow_algorithm_2</name>
+    </drop-shadow-algorithm>
+    
+    <drop-shadow-algorithm sql-case-id="drop-shadow-algorithm-if-exists" if-exists="true">
+        <name>shadow_algorithm_1</name>
+        <name>shadow_algorithm_2</name>
+    </drop-shadow-algorithm>
+    
+    <drop-shadow-algorithm sql-case-id="drop-default-shadow-algorithm-if-exists" if-exists="true" />
+    
+    <drop-sharding-key-generator sql-case-id="drop-sharding-key-generator" >
+        <name>uuid_key_generator</name>
+    </drop-sharding-key-generator>
+    
+    <drop-sharding-key-generator sql-case-id="drop-sharding-key-generator-if-exists" if-exists="true">
+        <name>uuid_key_generator</name>
+    </drop-sharding-key-generator>
+    
+    <drop-sharding-auditor sql-case-id="drop-sharding-auditor" >
+        <name>sharding_key_required_auditor</name>
+    </drop-sharding-auditor>
+    
+    <drop-sharding-auditor sql-case-id="drop-sharding-auditor-if-exists" if-exists="true">
+        <name>sharding_key_required_auditor</name>
+    </drop-sharding-auditor>
+    
+    <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy" type="table" />
+    
+    <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy-if-exists" type="table" if-exists="true" />
+    
+    <drop-sharding-algorithm sql-case-id="drop-sharding-algorithm" if-exists="true">
+        <name>t_order_hash_mod</name>
+    </drop-sharding-algorithm>
+    
+    <drop-mask-rule sql-case-id="drop-mask-rule" if-exists="false">
+        <rule-name>t_mask</rule-name>
+        <rule-name>t_order</rule-name>
+    </drop-mask-rule>
+    
+    <drop-mask-rule sql-case-id="drop-mask-rule-if-exists" if-exists="true">
+        <rule-name>t_mask</rule-name>
+        <rule-name>t_order</rule-name>
+    </drop-mask-rule>
+</sql-parser-test-cases>

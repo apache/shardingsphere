@@ -1,0 +1,35 @@
+[Search-placeholder]
+other = "Buscar..."
+
+[Clear-History]
+other = "Borrar Historial"
+
+[Attachments-label]
+other = "Adjuntos"
+
+[title-404]
+other = "Error"
+
+[message-404]
+other = "Ups. Parece que la página no existe ¯\\_(ツ)_/¯."
+
+[Go-to-homepage]
+other = "Ir al inicio"
+
+[Edit-this-page]
+other = "Editar esta página"
+
+[Shortcuts-Title]
+other = "Más"
+
+[Expand-title]
+other = "Expandir..."
+
+[Byte-symbol]
+other = "B"
+
+[Kilobyte-symbol]
+other = "KB"
+
+[Megabyte-symbol]
+other = "MB"

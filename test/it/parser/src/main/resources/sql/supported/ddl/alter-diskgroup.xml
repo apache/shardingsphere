@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_diskgroup_add_disk" value="ALTER DISKGROUP dgroup_01 ADD DISK '/devices/disks/d100';" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_drop_disk" value="ALTER DISKGROUP dgroup_01 DROP DISK dgroup_01_0000;" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_undrop_disk" value="ALTER DISKGROUP dgroup_01 UNDROP DISKS;" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_resize" value="ALTER DISKGROUP dgroup_01 RESIZE ALL SIZE 36G;" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_rebalance" value="ALTER DISKGROUP dgroup_01 REBALANCE POWER 11 WAIT;" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_verify" value="ALTER DISKGROUP dgroup_01 CHECK ALL REPAIR;" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_add_template" value="ALTER DISKGROUP dgroup_01 ADD TEMPLATE template_01 ATTRIBUTE (UNPROTECTED COARSE);" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_change_template" value="ALTER DISKGROUP dgroup_01 MODIFY TEMPLATE template_01 ATTRIBUTE (FINE);" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_drop_template" value="ALTER DISKGROUP dgroup_01 DROP TEMPLATE template_01;" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_create_directory" value="ALTER DISKGROUP dgroup_01 ADD DIRECTORY '+dgroup_01/alias_dir';" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_create_alias" value="ALTER DISKGROUP dgroup_01 ADD ALIAS '+dgroup_01/alias_dir/datafile.dbf' FOR '+dgroup_01.261.1';" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_scrub" value="ALTER DISKGROUP dgroup_01 SCRUB REPAIR WAIT;" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_dismount" value="ALTER DISKGROUP dgroup_01 DISMOUNT FORCE;" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_mount" value="ALTER DISKGROUP dgroup_01 MOUNT;" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_offline_disk_drop_after_time_unit_m" value="ALTER DISKGROUP data OFFLINE DISK DATA_001 DROP AFTER 5m" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_attribute_time_h" value="ALTER DISKGROUP data SET ATTRIBUTE 'disk_repair_time' = '4.5h'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_attribute_time_m" value="ALTER DISKGROUP data SET ATTRIBUTE 'disk_repair_time' = '270m'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_attribute_1" value="ALTER DISKGROUP data1 SET ATTRIBUTE 'access_control.enabled' = 'true'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_attribute_2" value="ALTER DISKGROUP data1 SET ATTRIBUTE 'access_control.umask' = '026'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_attribute_3" value="ALTER DISKGROUP data3 SET ATTRIBUTE 'compatible.asm' = '11.2'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_permission_owner_group_other_for_file" value="ALTER DISKGROUP data SET PERMISSION OWNER=read write, GROUP=read only, OTHER=none FOR FILE '+data/controlfile.f'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_ownership_owner_group_for_file" value="ALTER DISKGROUP data SET OWNERSHIP OWNER='oracle1', GROUP='test_grp1' FOR FILE '+data/controlfile.f'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_add_template_attribute_hot_hirrorhot" value="ALTER DISKGROUP data ADD TEMPLATE datafile_hot ATTRIBUTE (HOT MIRRORHOT)" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_modify_drop_member" value="ALTER DISKGROUP data MODIFY USERGROUP 'test_grp2' DROP MEMBER 'oracle2'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_resize_disks_in_failgroup_size_g" value="ALTER DISKGROUP data1 RESIZE DISKS IN FAILGROUP failgrp1 SIZE 100G" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_add_template_attribute_unprotected_coarse" value="ALTER DISKGROUP dgroup_01 ADD TEMPLATE template_01 ATTRIBUTES (UNPROTECTED COARSE)" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_modify_template_attribute_fine" value="ALTER DISKGROUP dgroup_01 MODIFY TEMPLATE template_01 ATTRIBUTES (FINE)" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_modify_file_attribute_hot_mirrorhot" value="ALTER DISKGROUP data MODIFY FILE '+data/orcl/datafile/users.259.679156903' ATTRIBUTE (HOT MIRRORHOT)" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_modify_usergroup_add_member" value="ALTER DISKGROUP data MODIFY USERGROUP 'test_grp2' ADD MEMBER 'oracle2'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_add_volume_size_g" value="ALTER DISKGROUP data ADD VOLUME volume1 SIZE 10G" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_resize_volume_size_g" value="ALTER DISKGROUP data RESIZE VOLUME volume1 SIZE 15G" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_disable_volume" value="ALTER DISKGROUP data DISABLE VOLUME volume1" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_enable_volume" value="ALTER DISKGROUP data ENABLE VOLUME volume1" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_all_disable_volume_all" value="ALTER DISKGROUP ALL DISABLE VOLUME ALL" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_drop_volume" value="ALTER DISKGROUP data DROP VOLUME volume1" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_data_add_user" value="ALTER DISKGROUP DATA ADD USER 'oracle1'" db-types="Oracle" />
+</sql-cases>

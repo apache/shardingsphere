@@ -1,0 +1,170 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+dataSources:
+  encrypt_ds:
+    dataSourceClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource
+
+databaseName: encrypt
+
+rules:
+- !ENCRYPT
+  tables:
+    t_account:
+      columns:
+        certificate_number:
+          cipher: 
+            name: cipher_certificate_number
+            encryptorName: rewrite_normal_fixture
+          assistedQuery: 
+            name: assisted_query_certificate_number
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery: 
+            name: like_query_certificate_number
+            encryptorName: rewrite_like_query_fixture
+        password:
+          cipher: 
+            name: cipher_password
+            encryptorName: rewrite_normal_fixture
+          assistedQuery: 
+            name: assisted_query_password
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery: 
+            name: like_query_password
+            encryptorName: rewrite_like_query_fixture
+        amount:
+          cipher: 
+            name: cipher_amount
+            encryptorName: rewrite_normal_fixture
+    t_account_bak:
+      columns:
+        certificate_number:
+          cipher: 
+            name: cipher_certificate_number
+            encryptorName: rewrite_normal_fixture
+          assistedQuery: 
+            name: assisted_query_certificate_number
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery: 
+            name: like_query_certificate_number
+            encryptorName: rewrite_like_query_fixture
+        password:
+          cipher: 
+            name: cipher_password
+            encryptorName: rewrite_normal_fixture
+          assistedQuery: 
+            name: assisted_query_password
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery: 
+            name: like_query_password
+            encryptorName: rewrite_like_query_fixture
+        amount:
+          cipher: 
+            name: cipher_amount
+            encryptorName: rewrite_normal_fixture
+    t_account_bak_for_create:
+      columns:
+        certificate_number:
+          cipher:
+            name: cipher_certificate_number
+            encryptorName: rewrite_normal_fixture
+          assistedQuery:
+            name: assisted_query_certificate_number
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery:
+            name: like_query_certificate_number
+            encryptorName: rewrite_like_query_fixture
+        password:
+          cipher:
+            name: cipher_password
+            encryptorName: rewrite_normal_fixture
+          assistedQuery:
+            name: assisted_query_password
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery:
+            name: like_query_password
+            encryptorName: rewrite_like_query_fixture
+        amount:
+          cipher:
+            name: cipher_amount
+            encryptorName: rewrite_normal_fixture
+    t_account_detail:
+      columns:
+        certificate_number:
+          cipher: 
+            name: cipher_certificate_number
+            encryptorName: rewrite_normal_fixture
+          assistedQuery: 
+            name: assisted_query_certificate_number
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery: 
+            name: like_query_certificate_number
+            encryptorName: rewrite_like_query_fixture
+        password:
+          cipher: 
+            name: cipher_password
+            encryptorName: rewrite_normal_fixture
+          assistedQuery: 
+            name: assisted_query_password
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery: 
+            name: like_query_password
+            encryptorName: rewrite_like_query_fixture
+        amount:
+          cipher: 
+            name: cipher_amount
+            encryptorName: rewrite_normal_fixture
+    t_user:
+      columns:
+        user_name:
+          cipher:
+            name: user_name_cipher
+            encryptorName: rewrite_aes_encryptor_fixture
+          likeQuery:
+            name: user_name_like
+            encryptorName: rewrite_it_like_encryptor_fixture
+        password:
+          cipher:
+            name: password_cipher
+            encryptorName: rewrite_aes_encryptor_fixture
+        email:
+          cipher:
+            name: email_cipher
+            encryptorName: rewrite_aes_encryptor_fixture
+        telephone:
+          cipher:
+            name: user_telephone_cipher
+            encryptorName: rewrite_aes_encryptor_fixture
+          likeQuery:
+            name: user_telephone_like
+            encryptorName: rewrite_it_like_encryptor_fixture
+  encryptors:
+    rewrite_normal_fixture:
+      type: REWRITE.NORMAL.FIXTURE
+    rewrite_assisted_query_fixture:
+      type: REWRITE.ASSISTED_QUERY.FIXTURE
+    rewrite_like_query_fixture:
+      type: REWRITE.LIKE_QUERY.FIXTURE
+    rewrite_aes_encryptor_fixture:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+        digest-algorithm-name: SHA-1
+    rewrite_it_like_encryptor_fixture:
+      type: IT.ENCRYPT.LIKE.FIXTURE
+      props:
+        mask: 4093

@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_table_with_column_dec" value="create table test3(id int auto_increment, col1 dec default 0 not null, col2 DEC(6,2) default 0 not null, col3 FLOAT default 0 not null, col4 DECIMAL(8,3) default 0 not null, constraint test3_pk primary key (id))" db-types="MySQL, Doris" />
+    <sql-case id="create_table_with_backtick_engine_with_string" value="create table `t``1`(a int) engine='Innodb'" db-types="MySQL" />
+    <sql-case id="create_table_with_backtick_engine_innodb" value="create table `t``1`(a int) engine=INNODB" db-types="MySQL" />
+    <sql-case id="create_table_with_backtick_engine_myisam" value="create table `t``1`(a int) engine=myisam" db-types="MySQL" />
+    <sql-case id="create_table_with_backtick" value="CREATE TABLE ```t_order` (i int)" db-types="MySQL" />
+    <sql-case id="create_table_column_with_backtick" value="create table `````t_o``r``d``e``r``` (```i` int)" db-types="MySQL" />
+    <sql-case id="create_table_with_like" value="CREATE TABLE t_log LIKE t_old_log" db-types="MySQL,Doris" />
+    <sql-case id="create_table_like_with_rollup" value="CREATE TABLE test1.table2 LIKE test1.table1 WITH ROLLUP (r1,r2)" db-types="Doris" />
+    <sql-case id="create_table_like_with_single_rollup" value="CREATE TABLE t_new LIKE t_old WITH ROLLUP (r1)" db-types="Doris" />
+    <sql-case id="create_table" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10))" />
+    <sql-case id="create_table_with_engin_charset" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" db-types="MySQL,Doris" />
+    <sql-case id="create_table_with_keyword" value="CREATE TABLE t_log(id int PRIMARY KEY, status boolean)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_if_not_exists" value="CREATE TABLE IF NOT EXISTS t_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL,openGauss,Presto" />
+    <sql-case id="create_temporary_table_if_not_exists" value="CREATE TEMPORARY TABLE IF NOT EXISTS t_temp_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="create_global_temporary_table" value="CREATE GLOBAL TEMPORARY TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_private_temporary_table" value="CREATE PRIVATE TEMPORARY TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_shared_table" value="CREATE SHARDED TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_duplicated_table" value="CREATE DUPLICATED TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_sharing_metadata" value="CREATE TABLE t_log SHARING = METADATA (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_sharing_data" value="CREATE TABLE t_log SHARING = DATA (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_sharing_extended_data" value="CREATE TABLE t_log SHARING = EXTENDED DATA (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_sharing_none" value="CREATE TABLE t_log SHARING = NONE (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_optimize_read" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) MEMOPTIMIZE FOR READ" db-types="Oracle" />
+    <sql-case id="create_table_with_optimize_write" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) MEMOPTIMIZE FOR WRITE" db-types="Oracle" />
+    <sql-case id="create_table_without_optimize_read" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) NO MEMOPTIMIZE FOR READ" db-types="Oracle" />
+    <sql-case id="create_table_without_optimize_write" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) NO MEMOPTIMIZE FOR WRITE" db-types="Oracle" />
+    <sql-case id="create_table_with_parent" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) PARENT t_log_parent" db-types="Oracle" />
+    <sql-case id="create_object_table" value="CREATE TABLE t_log OF t_log_type" db-types="Oracle" />
+    <sql-case id="create_table_with_char_varing" value="CREATE TABLE t_log(id char varying (20))" db-types="Oracle" />
+    <sql-case id="create_table_with_any_type" value="CREATE TABLE t_log(a_anydata SYS.AnyData, a_anytype SYS.AnyType, a_anydataset SYS.AnyDataSet)" db-types="Oracle" />
+    <sql-case id="create_local_temp_table" value="CREATE LOCAL TEMP TABLE t_temp_log(id int, status varchar(10))" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_unlogged_table" value="CREATE UNLOGGED TABLE t_log(id int, status varchar(10))" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_space" value="    CREATE TABLE t_order_item (
+        item_id INT,
+        order_id INT,
+        user_id INT,
+        status VARCHAR(10),
+        column1 VARCHAR(10),
+        column2 VARCHAR(10),
+        column3 VARCHAR(10)
+    )" db-types="MySQL,Oracle,SQLServer,Presto" />
+    <sql-case id="create_table_with_back_quota" value="CREATE TABLE `t_order` (`order_id` INT, `user_id` INT, `status` VARCHAR(10), `column1` VARCHAR(10), `column2` VARCHAR(10), `column3` VARCHAR(10)) ENGINE=INNODB" db-types="MySQL" />
+    <sql-case id="create_temporary_table" value="CREATE TEMPORARY TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_column_not_null" value="CREATE TABLE t_order (order_id INT NOT NULL, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="create_table_with_column_default" value="CREATE TABLE t_order (order_id INT DEFAULT 0, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="create_table_with_column_increment" value="CREATE TABLE t_order (order_id INT AUTO_INCREMENT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_column_generated" value="CREATE TABLE t_order (order_id INT GENERATED ALWAYS AS (user_id * 2), user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_column_comment" value="CREATE TABLE t_order (order_id INT COMMENT 'order_id', user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_inline_primary_key" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_inline_unique_key" value="CREATE TABLE t_order (order_id INT UNIQUE, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_inline_foreign_key" value="CREATE TABLE t_order_item (item_id INT, order_id INT REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_inline_foreign_key_sql92" value="CREATE TABLE t_order_item (item_id INT, order_id INT REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQL92" />
+    <sql-case id="create_table_constraint_sql92" value="CREATE TABLE t_constraint (order_id INT PRIMARY KEY, status VARCHAR(10), CONSTRAINT ck_status CHECK (status IS NOT NULL))" db-types="SQL92" />
+    <sql-case id="create_table_decimal_scale_sql92" value="CREATE TABLE t_decimal (amount DECIMAL(10,2))" db-types="SQL92" />
+    <sql-case id="create_table_named_pk_sql92" value="CREATE TABLE t_pk (id INT, CONSTRAINT pk_t_pk PRIMARY KEY (id))" db-types="SQL92" />
+    <sql-case id="create_table_check_constraint_sql92" value="CREATE TABLE t_chk (status INT, CONSTRAINT ck_status CHECK (status &gt; 0))" db-types="SQL92" />
+    <sql-case id="create_table_with_inline_constraints" value="CREATE TABLE t_order (order_id INT PRIMARY KEY UNIQUE, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_out_of_line_primary_key" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CONSTRAINT pk_order_id PRIMARY KEY (order_id))" />
+    <sql-case id="create_table_with_out_of_line_composite_primary_key" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CONSTRAINT pk_order_id PRIMARY KEY (order_id, user_id, status))" />
+<!--    TODO support PostgreSQL,openGauss Oracle SQLServer-->
+    <sql-case id="create_table_with_out_of_line_unique_key" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CONSTRAINT uk_order_id UNIQUE KEY order_id_index (order_id))" db-types="MySQL" />
+<!--    TODO support PostgreSQL,openGauss Oracle SQLServer-->
+    <sql-case id="create_table_with_out_of_line_composite_unique_key" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CONSTRAINT uk_order_id UNIQUE (order_id, user_id, status))" db-types="MySQL" />
+    <sql-case id="create_table_with_out_of_line_foreign_key" value="CREATE TABLE t_order_item (item_id INT, order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE)" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="create_table_with_out_of_line_composite_foreign_key" value="CREATE TABLE t_order_item (item_id INT, order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CONSTRAINT fk_order_id FOREIGN KEY (order_id, user_id, status) REFERENCES t_order (order_id, user_id, status) ON UPDATE CASCADE ON DELETE CASCADE)" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="create_table_with_out_of_line_check" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CHECK (order_id > 0))" />
+<!--    TODO support PostgreSQL,openGauss SQLServer-->
+    <sql-case id="create_table_with_out_of_line_constraints" value="CREATE TABLE t_order_item (item_id INT, order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), PRIMARY KEY (item_id), UNIQUE (item_id), FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE, CHECK (item_id > 0))" db-types="MySQL" />
+    <sql-case id="create_table_with_out_of_line_index" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), INDEX order_index (order_id))" db-types="MySQL" />
+    <sql-case id="create_table_with_out_of_line_composite_index" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), INDEX order_index (order_id, user_id, status))" db-types="MySQL" />
+    <sql-case id="create_table_with_out_of_line_btree_index" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), INDEX order_index (order_id) USING BTREE)" db-types="MySQL" />
+    <sql-case id="create_table_with_comment" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) COMMENT 't_order'" db-types="MySQL" />
+    <sql-case id="create_table_with_partition" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) PARTITION BY HASH (order_id) PARTITIONS 2" db-types="MySQL" />
+    <sql-case id="create_table_with_quota" value="CREATE TABLE &quot;t_order&quot; (&quot;order_id&quot; NUMBER(10), &quot;user_id&quot; NUMBER(10), &quot;status&quot; VARCHAR2(10), &quot;column1&quot; VARCHAR2(10), &quot;column2&quot; VARCHAR2(10), &quot;column3&quot; VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_column_on_null_default" value="CREATE TABLE t_order (order_id NUMBER(10) DEFAULT ON NULL 0, user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_column_identity" value="CREATE TABLE t_order (order_id NUMBER(10) GENERATED BY DEFAULT AS IDENTITY START WITH 1 MAXVALUE 100, user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_column_encrypt" value="CREATE TABLE t_order (order_id NUMBER(10) ENCRYPT USING 'encrypt_algorithm' IDENTIFIED BY '123456', user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_inline_foreign_key_reference" value="CREATE TABLE t_order_item (item_id NUMBER(10), order_id NUMBER(10) CONSTRAINT fk_order_id REFERENCES t_order (order_id) ON DELETE CASCADE, user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_inline_check" value="CREATE TABLE t_order (order_id NUMBER(10) CONSTRAINT chk_order_id CHECK (order_id > 0), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_inline_constraints_cascade" value="CREATE TABLE t_order_item (item_id NUMBER(10) PRIMARY KEY UNIQUE NOT NULL CHECK (order_id > 0), order_id NUMBER(10) CONSTRAINT fk_order_id REFERENCES t_order (order_id) ON DELETE CASCADE, user_id NUMBER(10), status VARCHAR2(10) NULL, column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_out_of_line_foreign_key_oracle" value="CREATE TABLE t_order_item (item_id NUMBER(10), order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10), CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE)" db-types="Oracle" />
+    <sql-case id="create_table_with_out_of_line_composite_foreign_key_oracle" value="CREATE TABLE t_order_item (item_id NUMBER(10), order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10), CONSTRAINT fk_order_id FOREIGN KEY (order_id, user_id, status) REFERENCES t_order (order_id, user_id, status) ON DELETE CASCADE)" db-types="Oracle" />
+    <sql-case id="create_table_with_out_of_line_constraints_oracle" value="CREATE TABLE t_order_item (item_id NUMBER(10), order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10), PRIMARY KEY (item_id), UNIQUE (item_id), FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE)" db-types="Oracle" />
+    <sql-case id="create_table_with_exist_index" value="CREATE TABLE t_order (order_id NUMBER(10) PRIMARY KEY USING INDEX order_index, user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_create_index" value="CREATE TABLE t_order (order_id NUMBER(10) PRIMARY KEY USING INDEX (CREATE INDEX order_index ON t_order (order_id)), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_double_quota" value="CREATE TABLE &quot;t_order&quot; (&quot;order_id&quot; INTEGER, &quot;user_id&quot; INTEGER, &quot;status&quot; VARCHAR(10), &quot;column1&quot; VARCHAR(10), &quot;column2&quot; VARCHAR(10), &quot;column3&quot; VARCHAR(10))" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_local_temporary_table" value="CREATE LOCAL TEMPORARY TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_range_partition" value="CREATE TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) PARTITION BY RANGE (order_id)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_partition_oracle" value="CREATE TABLE t_order (order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10)) PARTITION BY HASH (order_id) PARTITIONS 2" db-types="Oracle" />
+    <sql-case id="create_table_with_xmltype_table_oracle" value="CREATE TABLE xwarehouses OF XMLTYPE XMLSCHEMA &quot;http://www.example.com/xwarehouses.xsd&quot; ELEMENT &quot;Warehouse&quot; ;" db-types="Oracle" />
+    <sql-case id="create_table_with_xmltype_column_oracle" value="CREATE TABLE xwarehouses (warehouse_id NUMBER, warehouse_spec XMLTYPE) XMLTYPE warehouse_spec STORE AS CLOB;" db-types="Oracle" />
+    <sql-case id="create_table_with_xmltype_column_clob_oracle" value="CREATE TABLE xwarehouses (warehouse_id NUMBER, warehouse_spec XMLTYPE) XMLTYPE warehouse_spec STORE AS SECUREFILE CLOB;" db-types="Oracle" />
+    <!--    TODO support create table with like and inherits on PostgreSQL,openGauss-->
+    <sql-case id="create_table_with_bracket" value="CREATE TABLE [t_order] ([order_id] INT, [user_id] INT, [status] VARCHAR(10), [column1] VARCHAR(10), [column2] VARCHAR(10), [column3] VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_identity" value="CREATE TABLE t_order (order_id INT IDENTITY, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_column_as" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column1 AS UPPER(status), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_column_encrypt_algorithm" value="CREATE TABLE t_order (order_id INT ENCRYPTED WITH (COLUMN_ENCRYPTION_KEY = key_name, ENCRYPTION_TYPE = RANDOMIZED, ALGORITHM = 'AEAD_AES_256_CBC_HMAC_SHA_256'), user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_inline_primary_key_sqlserver" value="CREATE TABLE t_order (order_id INT CONSTRAINT pk_order_id PRIMARY KEY, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_inline_unique_key_sqlserver" value="CREATE TABLE t_order (order_id INT CONSTRAINT uk_order_id UNIQUE, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_inline_foreign_key_sqlserver" value="CREATE TABLE t_order_item (item_id INT, order_id INT CONSTRAINT fk_order_id REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_inline_check_sqlserver" value="CREATE TABLE t_order (order_id INT CONSTRAINT chk_order_id CHECK (order_id > 0), user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_inline_constraints_sqlserver" value="CREATE TABLE t_order (order_id INT PRIMARY KEY UNIQUE CHECK (order_id > 0), user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_index" value="CREATE TABLE t_order (order_id INT INDEX order_index, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_range_partitioned_and_values" value="CREATE TABLE t_order PARTITION OF cities (CONSTRAINT city_id_nonzero CHECK (city_id != 0)) FOR VALUES IN ('a', 'b') PARTITION BY RANGE (population)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_partition_by_hash" value="CREATE TABLE t_order (order_id bigint not null,cust_id bigint not null,status text) PARTITION BY HASH (order_id)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_partition_by_list" value="CREATE TABLE t_order (city_id bigserial not null,name text not null,population bigint) PARTITION BY LIST (left(lower(name), 1))" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_of_type" value="CREATE TABLE t_order OF employee_type (PRIMARY KEY (name),salary WITH OPTIONS DEFAULT 1000)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_in_tablespace" value="CREATE TABLE t_order (id serial,name text,location text) TABLESPACE diskvol1" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_sign_column" value="CREATE TABLE t_order(id INT PRIMARY KEY, order_id BIGINT(20) SIGNED)" db-types="MySQL" />
+    <sql-case id="create_table_with_unsigned_column" value="CREATE TABLE t_order(id INT PRIMARY KEY, order_id BIGINT(20) UNSIGNED)" db-types="MySQL" />
+    <sql-case id="create_table_with_on_update_current_timestamp" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, create_time DATETIME DEFAULT CURRENT_TIMESTAMP, modify_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)" db-types="MySQL" />
+    <sql-case id="create_table_with_on_update_current_timestamp_and_fsp" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, create_time DATETIME DEFAULT CURRENT_TIMESTAMP, modify_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6))" db-types="MySQL" />
+    <sql-case id="create_table_with_on_other_vendor_data_type" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, num MIDDLEINT(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_enum_and_character_set" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, status ENUM('0', '1') CHARACTER SET UTF8)" db-types="MySQL,Doris" />
+    <sql-case id="create_table_with_storage_parameter" value="CREATE TABLE t_order (order_id INT DEFAULT 0, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) WITH (FILLFACTOR = 80, ORIENTATION=ROW)" db-types="openGauss" />
+    <sql-case id="create_table_as_select" value="CREATE TABLE t_order_new WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT * FROM t_order" db-types="SQLServer" />
+    <sql-case id="create_table_as_select_with_explicit_column_names" value="CREATE TABLE t_order_new (order_id_new, user_id_new) WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT order_id, user_id FROM t_order" db-types="SQLServer" />
+    <sql-case id="create_table_as_select_with_query_hint" value="CREATE TABLE dbo.t_order_new WITH (DISTRIBUTION = ROUND_ROBIN, CLUSTERED COLUMNSTORE INDEX) AS SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id OPTION ( HASH JOIN )" db-types="SQLServer" />
+    <sql-case id="create_remote_table_as_select" value="CREATE REMOTE TABLE t_order_new AT ('Data Source = ds_0, 3306; User ID = ROOT; Password = 123456;') AS SELECT i.* FROM t_order_item i JOIN t_order o ON i.order_id = o.order_id" db-types="SQLServer" />
+    <sql-case id="create_table_with_chinese_word" value="CREATE TABLE 测试表(id int PRIMARY KEY, status varchar(10))" />
+    <sql-case id="create_table_with_chinese_word_with_quote_mysql" value="CREATE TABLE `测试表`(id int PRIMARY KEY, status varchar(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_chinese_word_with_quote" value="CREATE TABLE &quot;测试表&quot;(id int PRIMARY KEY, status varchar(10))" db-types="Oracle,PostgreSQL,openGauss,SQLServer,SQL92" />
+    <sql-case id="create_bit_xor_table" value="create table BIT_XOR(a int)" db-types="MySQL" />
+    <sql-case id="create_bit_xor_table_with_space" value="create table BIT_XOR (a int)" db-types="MySQL" />
+    <sql-case id="create_table_path" value="CREATE TABLE files (path PATH);" db-types="PostgreSQL" />
+    <sql-case id="create_table_national" value="CREATE TABLE t_order (national int);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_visible" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10) VISIBLE) ENGINE=INNODB" db-types="MySQL" />
+    <sql-case id="create_table_with_invisible" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10) INVISIBLE) ENGINE=INNODB" db-types="MySQL" />
+    <sql-case id="create_table_with_varchar2_char_and_byte_type" value="CREATE TABLE t_order (SYS_ID VARCHAR2(32 CHAR) VISIBLE NOT NULL, ATTACHMENT_NAME VARCHAR2(1024 BYTE) VISIBLE DEFAULT '')" db-types="Oracle" />
+    <sql-case id="create_table_with_character_varying" value="CREATE TABLE t_order (order_id INT, user_id INT, status CHARACTER VARYING(50))" db-types="MySQL" />
+    <sql-case id="create_table_with_geomcollection" value="CREATE TABLE t1 (g GEOMCOLLECTION)" db-types="MySQL" />
+    <sql-case id="create_table_with_start_transaction" value="CREATE TABLE t_order (order_id INT) START TRANSACTION" db-types="MySQL" />
+    <sql-case id="create_table_with_cast_function" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS UNSIGNED ARRAY))))" db-types="MySQL" />
+    <sql-case id="create_table_with_long_char_varying" value="CREATE TABLE t_order (order_id INT, user_id INT, status LONG CHAR VARYING)" db-types="MySQL" />
+    <sql-case id="create_table_with_signed_int_cast_function" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS SIGNED INT ARRAY))))" db-types="MySQL" />
+    <sql-case id="create_table_with_signed_int" value="CREATE TABLE t_order (order_id INT, user_id INT, status SIGNED INT)" db-types="MySQL" />
+    <sql-case id="create_table_with_unsigned_int_cast_function" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS UNSIGNED INT ARRAY))))" db-types="MySQL" />
+    <sql-case id="create_table_with_unsigned_int" value="CREATE TABLE t_order (order_id INT, user_id INT, status UNSIGNED INT)" db-types="MySQL" />
+    <sql-case id="create_table_with_partition_less_than" value="CREATE TABLE t_sales (order_id INTEGER NOT NULL, goods_name CHAR(20) NOT NULL, sales_date DATE NOT NULL, sales_volume INTEGER, sales_store CHAR(20), PRIMARY KEY ( order_id )) PARTITION BY RANGE (sales_date) (PARTITION season1 VALUES LESS THAN('2023-04-01 00:00:00'),PARTITION season2 VALUES LESS THAN('2023-07-01 00:00:00'),PARTITION season3 VALUES LESS THAN('2023-10-01 00:00:00'),PARTITION season4 VALUES LESS THAN(MAXVALUE))" db-types="openGauss"/>
+    <sql-case id="create_table_with_negative_data_type" value="CREATE TABLE T(COL1 NUMBER, COL2 NUMBER(3), COL3 NUMBER(3,2), COL4 NUMBER(6,-2))" db-types="Oracle" />
+    <sql-case id="create_table_with_ref_data_type" value="CREATE TABLE location_table (location_number NUMBER, building REF warehouse_typ SCOPE IS warehouse_table);" db-types="Oracle" />
+    <sql-case id="create_table_with_nested_table_store_as" value="CREATE TABLE oe.people_reltab ( id NUMBER(4) CONSTRAINT pk_people_reltab PRIMARY KEY, first_name VARCHAR2(20), last_name VARCHAR2(20), phones_ntab oe.phone_ntabtyp) NESTED TABLE phones_ntab STORE AS phone_store_ntab ((PRIMARY KEY (NESTED_TABLE_ID, location)));" db-types="Oracle" />
+    <sql-case id="create_table_with_nested_table_mixed_column_properties_xmltype_first" value="CREATE TABLE t_nested_mix (doc XMLTYPE, phones_ntab phone_ntabtyp) XMLTYPE COLUMN doc STORE AS CLOB NESTED TABLE phones_ntab STORE AS phone_store_ntab;" db-types="Oracle" />
+    <sql-case id="create_table_with_nested_table_mixed_column_properties_nested_first" value="CREATE TABLE t_nested_mix2 (doc XMLTYPE, phones_ntab phone_ntabtyp) NESTED TABLE phones_ntab STORE AS phone_store_ntab XMLTYPE COLUMN doc STORE AS CLOB;" db-types="Oracle" />
+    <sql-case id="create_table_with_nested_table_mixed_column_properties_lob_first" value="CREATE TABLE t_nested_lob_mix (doc CLOB, phones_ntab phone_ntabtyp) LOB (doc) STORE AS doc_lob_seg NESTED TABLE phones_ntab STORE AS phone_store_ntab;" db-types="Oracle" />
+    <sql-case id="create_table_with_nested_table_mixed_column_properties_nested_first_lob" value="CREATE TABLE t_nested_lob_mix2 (doc CLOB, phones_ntab phone_ntabtyp) NESTED TABLE phones_ntab STORE AS phone_store_ntab LOB (doc) STORE AS doc_lob_seg;" db-types="Oracle" />
+    <sql-case id="create_table_with_select" value="CREATE TABLE t_order_new AS SELECT * FROM t_order" db-types="Doris"/>
+    <sql-case id="create_table_with_comment_doris" value="CREATE TABLE t_comment (id INT) ENGINE=olap COMMENT 'doris table comment'" db-types="Doris" />
+    <sql-case id="create_table_with_unique_constraint_doris" value="CREATE TABLE t_unique (id INT, UNIQUE (id))" db-types="Doris" />
+    <sql-case id="create_table_with_foreign_key_constraint_doris" value="CREATE TABLE t_fk (id INT, CONSTRAINT fk_order FOREIGN KEY (id) REFERENCES ref_table (id))" db-types="Doris" />
+    <sql-case id="create_table_with_inline_reference_doris" value="CREATE TABLE t_col_fk (id INT REFERENCES ref_table(id))" db-types="Doris" />
+    <sql-case id="create_table_with_select_without_query" value="CREATE TABLE t_order_new AS SELECT * FROM t_order" db-types="Oracle"/>
+    <sql-case id="create_table_as_select_with_pivot" value="CREATE TABLE pivot_table AS SELECT * FROM (SELECT EXTRACT(YEAR FROM order_date) year, order_mode, order_total FROM orders) PIVOT (SUM(order_total) FOR order_mode IN ('direct' AS Store, 'online' AS Internet));" db-types="Oracle"/>
+    <sql-case id="create_table_organization_index_parallel_with_select" value="CREATE TABLE admin_iot3(i PRIMARY KEY, j, k, l) ORGANIZATION INDEX PARALLEL AS SELECT * FROM hr.jobs" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range" value="CREATE TABLE costs_demo (prod_id NUMBER(6), time_id DATE, unit_cost NUMBER(10,2), unit_price NUMBER(10,2))
+    PARTITION BY RANGE (time_id) (PARTITION costs_old VALUES LESS THAN (TO_DATE('01-JAN-2003', 'DD-MON-YYYY')) COMPRESS,
+    PARTITION costs_q1_2003 VALUES LESS THAN (TO_DATE('01-APR-2003', 'DD-MON-YYYY')),
+    PARTITION costs_q2_2003 VALUES LESS THAN (TO_DATE('01-JUN-2003', 'DD-MON-YYYY')),
+    PARTITION costs_recent VALUES LESS THAN (MAXVALUE))" db-types="Oracle" />
+    <sql-case id="create_table_default_user" value="CREATE TABLE audit_trail (value1 NUMBER, value2 VARCHAR2(32), inserter VARCHAR2(30) DEFAULT USER)" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_list_subpartition_by_hash1" value="CREATE TABLE car_rentals
+    (id NUMBER NOT NULL,
+     customer_id  NUMBER NOT NULL,
+     confirmation_number  VARCHAR2(12) NOT NULL,
+     car_id   NUMBER,
+     car_type VARCHAR2(10),
+     requested_car_type   VARCHAR2(10) NOT NULL,
+     reservation_date DATE NOT NULL,
+     start_date   DATE NOT NULL,
+     end_date DATE,
+     country as (substr(confirmation_number,9,2))
+    ) PARTITION BY LIST (country)
+    SUBPARTITION BY HASH (customer_id)
+    SUBPARTITIONS 16
+    (PARTITION north_america VALUES ('US','CA','MX'),
+      PARTITION south_america VALUES ('BR','AR','PE'),
+      PARTITION europe VALUES ('GB','DE','NL','BE','FR','ES','IT','CH'),
+      PARTITION apac VALUES ('NZ','AU','IN','CN')
+    ) ENABLE ROW MOVEMENT" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_list_subpartition_by_hash2" value="CREATE TABLE credit_card_accounts
+    (account_number NUMBER(16) NOT NULL,
+    customer_id NUMBER NOT NULL,
+    customer_region VARCHAR2(2) NOT NULL,
+    is_active VARCHAR2(1) NOT NULL,
+    date_opened DATE NOT NULL)
+    PARTITION BY LIST (customer_region)
+    SUBPARTITION BY HASH (customer_id)
+    SUBPARTITIONS 16
+    (PARTITION emea VALUES ('EU','ME','AF'),
+    PARTITION amer VALUES ('NA','LA'),
+    PARTITION apac VALUES ('SA','AU','NZ','IN','CH')) PARALLEL" db-types="Oracle" />
+    <sql-case id="create_table_subpartition_by_range_subpartition_template" value="CREATE TABLE account_balance_history
+    (id NUMBER NOT NULL,
+     account_number NUMBER NOT NULL,
+     customer_id    NUMBER NOT NULL,
+     transaction_date   DATE NOT NULL,
+     amount_credited    NUMBER,
+     amount_debited NUMBER,
+     end_of_day_balance NUMBER NOT NULL
+    ) PARTITION BY RANGE(transaction_date)
+    INTERVAL (NUMTODSINTERVAL(7,'DAY'))
+    SUBPARTITION BY RANGE(end_of_day_balance)
+    SUBPARTITION TEMPLATE
+    (SUBPARTITION unacceptable VALUES LESS THAN (-1000),
+      SUBPARTITION credit VALUES LESS THAN (0),
+      SUBPARTITION low VALUES LESS THAN (500),
+      SUBPARTITION normal VALUES LESS THAN (5000),
+      SUBPARTITION high VALUES LESS THAN (20000),
+      SUBPARTITION extraordinary VALUES LESS THAN (MAXVALUE)
+    ) (PARTITION p0 VALUES LESS THAN (TO_DATE('01-JAN-2007','dd-MON-yyyy')))" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range_subpartition_by_list" value="CREATE TABLE call_detail_records
+    (id NUMBER,
+      from_number VARCHAR2(20),
+      to_number VARCHAR2(20),
+      date_of_call DATE,
+      distance VARCHAR2(1),
+      call_duration_in_s NUMBER(4)
+    ) PARTITION BY RANGE(date_of_call)
+    INTERVAL (NUMTODSINTERVAL(1,'DAY'))
+    SUBPARTITION BY LIST(distance)
+    SUBPARTITION TEMPLATE
+    (SUBPARTITION local VALUES('L') TABLESPACE tbs1,
+    SUBPARTITION medium_long VALUES ('M') TABLESPACE tbs2,
+    SUBPARTITION long_distance VALUES ('D') TABLESPACE tbs3,
+    SUBPARTITION international VALUES ('I') TABLESPACE tbs4)(PARTITION p0 VALUES LESS THAN (TO_DATE('01-JAN-2005','dd-MON-yyyy'))) PARALLEL" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range_subpartition_by_hash" value="CREATE TABLE composite_sales
+    ( prod_id NUMBER(6),
+      cust_id NUMBER,
+      time_id DATE,
+      channel_id CHAR(1),
+      promo_id NUMBER(6),
+      quantity_sold NUMBER(3),
+      amount_sold NUMBER(10,2)
+    )
+    PARTITION BY RANGE (time_id)
+    SUBPARTITION BY HASH (channel_id)
+    (PARTITION SALES_Q1_1998 VALUES LESS THAN (TO_DATE('01-APR-1998','DD-MON-YYYY')),
+    PARTITION SALES_Q2_1998 VALUES LESS THAN (TO_DATE('01-JUL-1998','DD-MON-YYYY')),
+    PARTITION SALES_Q3_1998 VALUES LESS THAN (TO_DATE('01-OCT-1998','DD-MON-YYYY')),
+    PARTITION SALES_Q4_1998 VALUES LESS THAN (TO_DATE('01-JAN-1999','DD-MON-YYYY')),
+    PARTITION SALES_Q1_1999 VALUES LESS THAN (TO_DATE('01-APR-1999','DD-MON-YYYY')),
+    PARTITION SALES_Q2_1999 VALUES LESS THAN (TO_DATE('01-JUL-1999','DD-MON-YYYY')),
+    PARTITION SALES_Q3_1999 VALUES LESS THAN (TO_DATE('01-OCT-1999','DD-MON-YYYY')),
+    PARTITION SALES_Q4_1999 VALUES LESS THAN (TO_DATE('01-JAN-2000','DD-MON-YYYY')),
+    PARTITION SALES_Q1_2000 VALUES LESS THAN (TO_DATE('01-APR-2000','DD-MON-YYYY')),
+    PARTITION SALES_Q2_2000 VALUES LESS THAN (TO_DATE('01-JUL-2000','DD-MON-YYYY')) SUBPARTITIONS 8,
+    PARTITION SALES_Q3_2000 VALUES LESS THAN (TO_DATE('01-OCT-2000','DD-MON-YYYY'))
+    (SUBPARTITION ch_c,
+    SUBPARTITION ch_i,
+    SUBPARTITION ch_p,
+    SUBPARTITION ch_s,
+    SUBPARTITION ch_t),
+    PARTITION SALES_Q4_2000 VALUES LESS THAN (MAXVALUE) SUBPARTITIONS 4)" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_list_subpartition_by_list" value="CREATE TABLE current_inventory
+    (warehouse_id NUMBER,
+    warehouse_region  VARCHAR2(2),
+    product_id NUMBER,
+    product_category VARCHAR2(12),
+    amount_in_stock NUMBER,
+    unit_of_shipping  VARCHAR2(20),
+    products_per_unit NUMBER,
+    last_updated DATE)
+    PARTITION BY LIST (warehouse_region)
+    SUBPARTITION BY LIST (product_category)
+    SUBPARTITION TEMPLATE (SUBPARTITION perishable VALUES ('DAIRY','PRODUCE','MEAT','BREAD'),
+    SUBPARTITION non_perishable VALUES ('CANNED','PACKAGED'),
+    SUBPARTITION durable VALUES ('TOYS','KITCHENWARE'))
+    (PARTITION p_northwest VALUES ('OR', 'WA'),
+    PARTITION p_southwest VALUES ('AZ', 'UT', 'NM'),
+    PARTITION p_northeast VALUES ('NY', 'VM', 'NJ'),
+    PARTITION p_southeast VALUES ('FL', 'GA'),
+    PARTITION p_northcentral VALUES ('SD', 'WI'),
+    PARTITION p_southcentral VALUES ('OK', 'TX'))" db-types="Oracle" />
+    <sql-case id="create_table_organization_index" value="CREATE TABLE admin_docindex
+    (token char(20),
+    doc_id NUMBER,
+    token_frequency NUMBER,
+    token_offsets VARCHAR2(2000),
+    CONSTRAINT pk_admin_docindex PRIMARY KEY (token, doc_id))
+    ORGANIZATION INDEX 
+    TABLESPACE admin_tbs
+    PCTTHRESHOLD 20
+    OVERFLOW TABLESPACE admin_tbs2" db-types="Oracle" />
+    <sql-case id="create_table_ref_type1" value="CREATE TABLE departments_t (d_no NUMBER, mgr_ref REF employees_typ SCOPE IS employees_obj_t)" db-types="Oracle" />
+    <sql-case id="create_table_ref_type2" value="CREATE TABLE departments_t (d_no NUMBER, mgr_ref REF employees_typ CONSTRAINT mgr_in_emp REFERENCES employees_obj_t)" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range_subpartitions" value="CREATE TABLE customers_part
+    (customer_id       NUMBER(6),
+    cust_first_name    VARCHAR2(20),
+    cust_last_name     VARCHAR2(20),
+    nls_territory      VARCHAR2(30),
+    credit_limit       NUMBER(9,2)) 
+    PARTITION BY RANGE (credit_limit)
+    SUBPARTITION BY LIST (nls_territory)
+    SUBPARTITION TEMPLATE (SUBPARTITION east  VALUES ('CHINA', 'JAPAN', 'INDIA', 'THAILAND'),
+    SUBPARTITION west VALUES ('AMERICA', 'GERMANY', 'ITALY', 'SWITZERLAND'),
+    SUBPARTITION other VALUES (DEFAULT))
+    (PARTITION p1 VALUES LESS THAN (1000),
+    PARTITION p2 VALUES LESS THAN (2500),
+    PARTITION p3 VALUES LESS THAN (MAXVALUE))" db-types="Oracle" />
+    <sql-case id="create_table_with_queue" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) USAGE QUEUE" db-types="Oracle" />
+    <sql-case id="create_table_with_relational_and_physical_properties" value="CREATE TABLE &quot;C##TPCC2&quot;.&quot;TEST_BASIC2&quot;
+    (&quot;BS_COL01&quot; NUMBER,
+    &quot;BS_COL02&quot; NUMBER,
+    PRIMARY KEY (&quot;BS_COL01&quot;)
+    USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS
+    STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+    PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+    BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+    TABLESPACE &quot;TPCCTAB&quot; ENABLE
+    ) SEGMENT CREATION IMMEDIATE
+    PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255
+    NOCOMPRESS LOGGING
+    STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+    PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+    BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+    TABLESPACE &quot;TPCCTAB&quot;" db-types="Oracle" />
+    <sql-case id="create_table_cluster_with_select1" value="CREATE TABLE dept_10 CLUSTER personnel (department_id) AS SELECT * FROM employees WHERE department_id = 10" db-types="Oracle" />
+    <sql-case id="create_table_cluster_with_select2" value="CREATE TABLE dept_20 CLUSTER personnel (department_id) AS SELECT * FROM employees WHERE department_id = 20" db-types="Oracle" />
+    <sql-case id="create_table_cluster_with_select3" value="CREATE TABLE customers_demo AS SELECT * FROM customers" db-types="Oracle" />
+    <sql-case id="create_table_with_ref_type_column_department_typ" value="CREATE TABLE employees_obj( e_name   VARCHAR2(100), e_number NUMBER, e_dept   REF department_typ SCOPE IS departments_obj_t );" db-types="Oracle"/>
+    <sql-case id="create_table_with_result_cache_annotations" value="CREATE TABLE foo (a NUMBER, b VARCHAR2(20)) RESULT_CACHE (MODE FORCE);" db-types="Oracle"/>
+    <sql-case id="create_table_with_as_sub_query" value="CREATE TABLE employees_temp AS SELECT * FROM EMPLOYEES;" db-types="Oracle"/>
+    <sql-case id="create_table_parallel_with_as_sub_query" value="CREATE TABLE hr.admin_emp_dept PARALLEL COMPRESS AS SELECT * FROM hr.employees WHERE department_id = 10;" db-types="Oracle"/>
+    <sql-case id="create_table_with_edge_constraint" value="CREATE TABLE bought ( PurchaseCount INT ,CONSTRAINT EC_BOUGHT CONNECTION (Customer TO Product) ON DELETE NO ACTION );" db-types="SQLServer"/>
+    <sql-case id="create_table_with_enclosed" value="CREATE TABLE emp_load(first_name CHAR(15), last_name CHAR(20), year_of_birth CHAR(4)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '(' and ')'LRTRIM LOCATION (info.dat));" db-types="Oracle"/>
+    <sql-case id="create_table_with_builtin_function" value="CREATE TABLE tab AS SELECT DBMS_LOB.GETLENGTH@dbs2(clob_col) len FROM tab@dbs2;" db-types="Oracle"/>
+    <sql-case id="create_table_with_autoextend_size" value="CREATE TABLE t1 (c1 INT) AUTOEXTEND_SIZE = 4M" db-types="MySQL"/>
+    <sql-case id="create_table_with_cast_function1" value="create table test_schema.tb_ods_bs_class_all as
+        select jw.id,
+               jw.product_level_code,
+               jw.product_type
+        from test_schema.tb_bs_class jw
+        where if(op_type is null,'0',op_type) != '1'
+        union all
+        select arc.id,
+               cast(arc.ClassScaleType as bigint),
+               jw.mother_class_id, -- mother_class_id&#x000A;
+               arc.product_type
+        from test_schema.tb_archive_bs_class arc
+                 left join (select mother_class_id from test_schema.tb_bs_class
+                 where if(op_type is null,'0',op_type) != '1') jw
+                           on arc.nSchoolId = jw.NSCHOOLID and arc.sCode = jw.SCODE
+        where  if(arc.op_type is null,'0',arc.op_type) != '1' and jw.NSCHOOLID is null;" db-types="Doris"/>
+    <sql-case id="create_table_with_split" value="create table test_schema.tmp_classcode_property_new as
+        select a.scode as classcode,
+               c.all_layer_value_name,
+               split(c.all_layer_value_name,',')[1] as f_dept_name_update,
+               split(c.all_layer_value_name,',')[4] as productlevelname_update,
+               c.memo,split(c.memo,',')[1] as f_dept_code_update,
+               split(c.memo,',')[4] as productlevelcode_update
+        from test_schema.tb_ods_bs_class_all a
+                 inner join (select * from test_schema.tb_product_course_product where if(op_type is null,'0',op_type) != '1') b on aa.course_code_target = b.code
+        where coalesce(a.f_dept_code,'') in ('05','16','31')
+          and date(a.dtbegindate) >= date('2018-06-01');" db-types="Doris"/>
+    <sql-case id="create_table_with_properties" value="CREATE TABLE `dim_ehr_all_dimension_dict1` (
+      `id` varchar(255) NULL COMMENT &quot;id&quot;,
+      `code` varchar(255) NULL COMMENT &quot;编码&quot;,
+      `px` int(11) NULL COMMENT &quot;排序&quot;
+        ) ENGINE=OLAP
+        DUPLICATE KEY(`id`)
+        DISTRIBUTED BY HASH(`id`) BUCKETS 3
+        PROPERTIES (
+        &quot;replication_num&quot; = &quot;3&quot;,
+        &quot;in_memory&quot; = &quot;false&quot;,
+        &quot;storage_format&quot; = &quot;DEFAULT&quot;,
+        &quot;enable_persistent_index&quot; = &quot;false&quot;,
+        &quot;compression&quot; = &quot;LZ4&quot;
+            );" db-types="Doris"/>
+    <sql-case id="create_table_with_column_default_system_user_function" value="CREATE TABLE t (c VARCHAR(288) DEFAULT (SYSTEM_USER()));" db-types="MySQL"/>
+    <sql-case id="create_table_with_storage_and_lob" value="CREATE TABLE TEST (&quot;ID&quot; NUMBER) SEGMENT CREATION IMMEDIATE
+    PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255
+    NOCOMPRESS LOGGING
+    STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+            PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+            BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+    TABLESPACE &quot;TABLESPACE1&quot;
+    LOB (&quot;LOB1&quot;) STORE AS BASICFILE (
+        TABLESPACE &quot;TABLESPACE1&quot; ENABLE STORAGE IN ROW CHUNK 8192 RETENTION
+     NOCACHE LOGGING
+     STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+     PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+     BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT))" db-types="Oracle"/>
+    <sql-case id="create_table_with_tinyint" value="create table test_tinyint (col TINYINT)" db-types="Hive" />
+    <sql-case id="create_table_with_smallint" value="create table test_smallint (col SMALLINT)" db-types="Hive" />
+    <sql-case id="create_table_with_int" value="create table test_int (col INT)" db-types="Hive" />
+    <sql-case id="create_table_with_bigint" value="create table test_bigint (col BIGINT)" db-types="Hive" />
+    <sql-case id="create_table_with_boolean" value="create table test_boolean (col BOOLEAN)" db-types="Hive" />
+    <sql-case id="create_table_with_float" value="create table test_float (col FLOAT)" db-types="Hive" />
+    <sql-case id="create_table_with_double" value="create table test_double (col DOUBLE)" db-types="Hive" />
+    <sql-case id="create_table_with_double_precision" value="create table test_double_precision (col DOUBLE PRECISION)" db-types="Hive" />
+    <sql-case id="create_table_with_string" value="create table test_string (col STRING)" db-types="Hive" />
+    <sql-case id="create_table_with_binary" value="create table test_binary (col BINARY)" db-types="Hive" />
+    <sql-case id="create_table_with_timestamp" value="create table test_timestamp (col TIMESTAMP)" db-types="Hive" />
+    <sql-case id="create_table_with_decimal" value="create table test_decimal (col DECIMAL)" db-types="Hive" />
+    <sql-case id="create_table_with_decimal_precision_scale" value="create table test_decimal_precision_scale (col DECIMAL(10,2))" db-types="Hive" />
+    <sql-case id="create_table_with_date" value="create table test_date (col DATE)" db-types="Hive" />
+    <sql-case id="create_table_with_varchar" value="create table test_varchar (col VARCHAR(50))" db-types="Hive" />
+    <sql-case id="create_table_with_char" value="create table test_char (col CHAR(10))" db-types="Hive" />
+    <sql-case id="create_table_with_array" value="create table test_array (col ARRAY &lt; INT &gt; )" db-types="Hive" />
+    <sql-case id="create_table_with_map" value="create table test_map (col MAP &lt; STRING, INT &gt; )" db-types="Hive" />
+    <sql-case id="create_table_with_struct" value="create table test_struct (col STRUCT &lt; id:INT, name:STRING>)" db-types="Hive" />
+    <sql-case id="create_table_with_uniontype" value="create table test_uniontype (col UNIONTYPE &lt; INT, STRING>)" db-types="Hive" />
+    <sql-case id="create_table_with_primary_key_constraint_rely" value="create table test_primary_key_rely (id INT, name STRING, PRIMARY KEY (id) DISABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_primary_key_constraint_norely" value="create table test_primary_key_norely (id INT, name STRING, PRIMARY KEY (id) DISABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_foreign_key_constraint" value="create table test_foreign_key (id INT, ref_id INT, CONSTRAINT fk_ref FOREIGN KEY (ref_id) REFERENCES test_primary_key(id) DISABLE NOVALIDATE)" db-types="Hive" />
+    <sql-case id="create_table_with_unique_constraint_rely" value="create table test_unique_rely (id INT, email STRING, CONSTRAINT uk_email UNIQUE (email) DISABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_unique_constraint_norely" value="create table test_unique_norely (id INT, email STRING, CONSTRAINT uk_email UNIQUE (email) DISABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_check_constraint_rely" value="create table test_check_rely (age INT, CONSTRAINT chk_age CHECK (age  &gt;  0) ENABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_check_constraint_norely" value="create table test_check_norely (age INT, CONSTRAINT chk_age CHECK (age  &gt;  0) ENABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_pk_disable_norely" value="create table test_col_pk1 (id INT PRIMARY KEY DISABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_pk_disable_rely" value="create table test_col_pk2 (id INT PRIMARY KEY DISABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_pk_enable_norely" value="create table test_col_pk3 (id INT PRIMARY KEY ENABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_pk_enable_rely" value="create table test_col_pk4 (id INT PRIMARY KEY ENABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_unique_disable_norely" value="create table test_col_unique1 (email STRING UNIQUE DISABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_unique_disable_rely" value="create table test_col_unique2 (email STRING UNIQUE DISABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_unique_enable_norely" value="create table test_col_unique3 (email STRING UNIQUE ENABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_unique_enable_rely" value="create table test_col_unique4 (email STRING UNIQUE ENABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_not_null_basic" value="create table test_col_not_null (name STRING NOT NULL)" db-types="Hive" />
+    <sql-case id="create_table_with_col_default_literal" value="create table test_col_default1 (status STRING DEFAULT 'active')" db-types="Hive" />
+    <sql-case id="create_table_with_col_default_current_user" value="create table test_col_default2 (creator STRING DEFAULT CURRENT_USER())" db-types="Hive" />
+    <sql-case id="create_table_with_col_default_current_date" value="create table test_col_default3 (create_day DATE DEFAULT CURRENT_DATE())" db-types="Hive" />
+    <sql-case id="create_table_with_col_default_current_timestamp" value="create table test_col_default4 (create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP())" db-types="Hive" />
+    <sql-case id="create_table_with_col_default_null" value="create table test_col_default5 (remark STRING DEFAULT NULL)" db-types="Hive" />
+    <sql-case id="create_table_with_col_check_disable_norely" value="create table test_col_check1 (age INT CHECK (age  &gt;  0) DISABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_check_disable_rely" value="create table test_col_check2 (age INT CHECK (age  &gt;  0 AND age &lt; 150) DISABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_check_enable_norely" value="create table test_col_check3 (score DOUBLE CHECK (score BETWEEN 0 AND 100) ENABLE NOVALIDATE NORELY)" db-types="Hive" />
+    <sql-case id="create_table_with_col_check_enable_rely" value="create table test_col_check4 (amount DECIMAL CHECK (amount  &gt;  0) ENABLE NOVALIDATE RELY)" db-types="Hive" />
+    <sql-case id="row_format_delimited_fields_terminated" value="create table test_row_delim_fields (id int, name string) row format delimited fields terminated by ','" db-types="Hive" />
+    <sql-case id="row_format_delim_fields_escaped" value="create table test_row_delim_escaped (id int, name string) row format delimited fields terminated by '|' escaped by '&#x27;" db-types="Hive" />
+    <sql-case id="row_format_delim_collection" value="create table test_row_delim_collection (hobbies array &lt; string &gt; ) row format delimited collection items terminated by ';'" db-types="Hive" />
+    <sql-case id="row_format_delim_map_keys" value="create table test_row_delim_map (scores map &lt; string, int &gt; ) row format delimited map keys terminated by ':'" db-types="Hive" />
+    <sql-case id="row_format_delim_lines" value="create table test_row_delim_lines (id int, name string) row format delimited lines terminated by '\n'" db-types="Hive" />
+    <sql-case id="row_format_delim_null" value="create table test_row_delim_null (id int, name string) row format delimited null defined as '\N'" db-types="Hive" />
+    <sql-case id="row_format_serde_basic" value="create table test_row_serde_basic (data string) row format serde 'org.apache.hadoop.hive.serde2.JsonSerDe'" db-types="Hive" />
+    <sql-case id="row_format_serde_with_props" value="create table test_row_serde_props (id int, name string) row format serde 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' with serdeproperties ('field.delim'='\t', 'serialization.format'='\t')" db-types="Hive" />
+    <sql-case id="file_format_sequencefile" value="create table test_file_seq (id int, name string) stored as sequencefile" db-types="Hive" />
+    <sql-case id="file_format_textfile" value="create table test_file_text (id int, name string) stored as textfile" db-types="Hive" />
+    <sql-case id="file_format_rcfile" value="create table test_file_rc (id int, name string) stored as rcfile" db-types="Hive" />
+    <sql-case id="file_format_orc" value="create table test_file_orc (id int, name string) stored as orc" db-types="Hive" />
+    <sql-case id="file_format_parquet" value="create table test_file_parquet (id int, name string) stored as parquet" db-types="Hive" />
+    <sql-case id="file_format_avro" value="create table test_file_avro (id int, name string) stored as avro" db-types="Hive" />
+    <sql-case id="file_format_jsonfile" value="create table test_file_json (id int, name string) stored as jsonfile" db-types="Hive" />
+    <sql-case id="file_format_custom_io" value="create table test_file_custom_io (id int, name string) stored as inputformat 'org.apache.hadoop.mapred.TextInputFormat' outputformat 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'" db-types="Hive" />
+    <sql-case id="create_table_basic" value="create table test_table (id int, name string)" db-types="Hive" />
+    <sql-case id="create_temporary_basic_table" value="create temporary table test_table (a int, b string)" db-types="Hive" />
+    <sql-case id="create_external_basic_table" value="create external table test_table (x double, y date)" db-types="Hive" />
+    <sql-case id="create_table_if_not_exists_hive" value="create table if not exists test_table (id int)" db-types="Hive" />
+    <sql-case id="create_table_with_db" value="create table db_test.test_table (name string, age int)" db-types="Hive" />
+    <sql-case id="create_table_with_col_comment" value="create table test_col_comment (id int comment 'unique identifier', name string comment 'user name')" db-types="Hive" />
+    <sql-case id="create_table_with_table_comment" value="create table test_table_comment (id int) comment 'test_table'" db-types="Hive" />
+    <sql-case id="create_table_only_partitioned" value="create table test_only_partitioned (name string) partitioned by (dt string)" db-types="Hive" />
+    <sql-case id="create_table_partitioned_with col_comment" value="create table test_partitioned_comment (name string) partitioned by (dt string comment 'user name')" db-types="Hive" />
+    <sql-case id="create_table_only_clustered" value="create table test_only_clustered (user_id int) clustered by (user_id) into 2 buckets" db-types="Hive" />
+    <sql-case id="create_table_clustered_sorted_asc" value="create table test_clustered_sorted (id int, score int) clustered by (id) sorted by (score asc) into 4 buckets" db-types="Hive" />
+    <sql-case id="create_table_clustered_sorted_desc" value="create table test_clustered_sorted (id int, score int) clustered by (id) sorted by (score desc) into 4 buckets" db-types="Hive" />
+    <sql-case id="create_table_only_skewed" value="create table test_only_skewed (key string, value int) skewed by (key) on ('x', 'y')" db-types="Hive" />
+    <sql-case id="create_table_skewed_dirs" value="create table test_skewed_dirs (a string, b int) skewed by (a) on (('p', 1), ('q', 2)) stored as directories" db-types="Hive" />
+    <sql-case id="create_table_stored_by_basic" value="create table test_stored_by_basic (id int, name string) stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'" db-types="Hive" />
+    <sql-case id="create_table_stored_by_with_props" value="create table test_stored_by_props (rowkey string, cf1 map &lt; string, string &gt; ) stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' with serdeproperties ('hbase.table.name'='hbase_test', 'hbase.columns.mapping'=':key,cf1:')" db-types="Hive" />
+    <sql-case id="create_table_with_location" value="create table test_with_location (data string) location '/user/hive/test_location'" db-types="Hive" />
+    <sql-case id="create_table_with_tblproperties" value="create table test_tblproperties (id int) tblproperties ('owner'='admin', 'version'='1.0')" db-types="Hive" />
+    <sql-case id="create_table_ctas_basic" value="create table test_ctas as select id, name from source_table where status = 'active'" db-types="Hive" />
+    <sql-case id="create_table_like_basic" value="create table test_like like source_table" db-types="Hive" />
+    <sql-case id="create_temp_table_like" value="create temporary table test_temp_like like source_table" db-types="Hive" />
+    <sql-case id="create_external_table_like" value="create external table test_ext_like like source_table" db-types="Hive" />
+    <sql-case id="create_table_like_if_not_exists" value="create table if not exists test_like_ine like source_table" db-types="Hive" />
+    <sql-case id="create_db_table_like" value="create table test_db.test_like_db like source_table" db-types="Hive" />
+    <sql-case id="create_table_like_location" value="create table test_like_loc like source_table location '/user/hive/warehouse/test_like_loc'" db-types="Hive" />
+    <sql-case id="combine_all_options" value="CREATE TEMPORARY EXTERNAL TABLE IF NOT EXISTS test_db.test_table
+          (
+            id INT PRIMARY KEY DISABLE NOVALIDATE,
+            name STRING NOT NULL COMMENT 'User name',
+            age INT CHECK (age &gt; 0 AND age &lt; 150) ENABLE NOVALIDATE RELY,
+            email STRING UNIQUE DISABLE NOVALIDATE NORELY,
+            score DOUBLE DEFAULT 0.0,
+            address STRUCT &lt; city:STRING, street:STRING &gt; ,
+            hobbies ARRAY &lt; STRING &gt; ,
+            metadata MAP &lt; STRING, STRING &gt; ,
+            info UNIONTYPE &lt; INT, STRING &gt;
+          )
+          COMMENT 'Test table with all Hive optional clauses'
+          PARTITIONED BY (dt STRING COMMENT 'Partition date', country STRING COMMENT 'Country')
+          CLUSTERED BY (id) SORTED BY (score DESC) INTO 4 BUCKETS
+          SKEWED BY (name) ON (('Alice', 'Bob'), ('Charlie', 'David')) STORED AS DIRECTORIES
+          ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'
+            WITH SERDEPROPERTIES ('field.delim'='\t', 'collection.delim'=',', 'mapkey.delim'=':')
+          STORED AS ORC
+          LOCATION '/user/hive/warehouse/test_db.db/test_table'
+          TBLPROPERTIES (
+            'owner'='admin',
+            'version'='1.0',
+            'orc.compress'='SNAPPY',
+            'transactional'='true'
+          )
+          AS SELECT
+            u.id,
+            u.name,
+            u.age,
+            u.email,
+            u.score,
+            named_struct('city', u.city, 'street', u.street) AS address,
+            split(u.hobbies, ',') AS hobbies,
+            str_to_map(u.metadata, ',', '=') AS metadata,
+            case when u.flag = 1 then create_union(0, u.id) else create_union(1, u.name) end AS info,
+            ds.dt,
+            u.country
+          FROM source_users u
+          JOIN dim_dates ds ON u.date_id = ds.date_id
+          WHERE u.status = 'active';" db-types="Hive" />
+    <sql-case id="create_table_like_all_options" value="CREATE TEMPORARY EXTERNAL TABLE IF NOT EXISTS test_db.target_table LIKE source_db.source_table LOCATION '/user/hive/warehouse/test_db.db/target_table';" db-types="Hive" />
+    <sql-case id="create_iceberg_table" value="CREATE EXTERNAL TABLE user_log (user_name STRING) STORED BY ICEBERG;" db-types="Hive" />
+    <sql-case id="create_iceberg_table_partition" value="CREATE TABLE user_log (user_name STRING) PARTITIONED BY (year int) STORED BY ICEBERG;" db-types="Hive" />
+    <sql-case id="create_iceberg_table_orc" value="CREATE TABLE user_log (user_name STRING) STORED BY ICEBERG STORED AS ORC;" db-types="Hive" />
+    <sql-case id="create_iceberg_table_as_select" value="CREATE TABLE target STORED BY ICEBERG AS SELECT * FROM source;" db-types="Hive" />
+    <sql-case id="create_iceberg_table_like_table" value="CREATE TABLE target LIKE source STORED BY ICEBERG;" db-types="Hive" />
+    <sql-case id="create_table_with_blob" value="CREATE TABLE t_blob (id INT, payload BLOB)" db-types="Firebird" />
+    <sql-case id="create_table_with_blob_subtype_numeric" value="CREATE TABLE t_blob_subtype_numeric (payload BLOB SUB_TYPE 1)" db-types="Firebird" />
+    <sql-case id="create_table_with_blob_subtype_text" value="CREATE TABLE t_blob_subtype_text (payload BLOB SUB_TYPE TEXT CHARACTER SET UTF8)" db-types="Firebird" />
+    <sql-case id="create_table_with_blob_segment_size" value="CREATE TABLE t_blob_segment (payload BLOB SUB_TYPE 0 SEGMENT SIZE 80)" db-types="Firebird" />
+    <sql-case id="create_table_firebird_len" value="CREATE TABLE t_firebird_len (id INT PRIMARY KEY, amount DECIMAL(10,2), code CHAR(5))" db-types="Firebird" />
+    <sql-case id="create_table_firebird_constraint" value="CREATE TABLE t_firebird_constraint (id INT, CONSTRAINT pk_t PRIMARY KEY (id), CONSTRAINT fk_t FOREIGN KEY (id) REFERENCES t_firebird_len(id))" db-types="Firebird" />
+    <sql-case id="create_table_with_ref_column_oracle" value="CREATE TABLE ref_table (ref_col REF person_t)" db-types="Oracle" />
+    <sql-case id="create_table_with_varchar2_char_length_oracle" value="CREATE TABLE dt_len (c VARCHAR2(10 CHAR))" db-types="Oracle" />
+</sql-cases>

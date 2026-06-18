@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="copy_table_from_stdin" value="COPY t_order FROM STDIN NULL 'null';" db-types="PostgreSQL,openGauss" />
+    <sql-case id="copy_table_from_stdin_with_null_as" value="COPY t_order FROM STDIN WITH NULL AS E&apos;\\0&apos;;" db-types="PostgreSQL" />
+    <sql-case id="copy_table_to_stdout_with_null_as" value="COPY t_order TO STDOUT WITH NULL AS E&apos;\\0&apos;;" db-types="PostgreSQL" />
+    <sql-case id="copy_table_from_stdin_with_delimiter_null_as" value="COPY t_order FROM STDIN WITH DELIMITER AS &apos;:&apos; NULL AS E&apos;\\X&apos;;" db-types="PostgreSQL" />
+    <sql-case id="copy_table_to_stdout_format_csv" value="COPY t_order TO STDOUT (FORMAT CSV, FORCE_QUOTE (col2), ESCAPE E&apos;\\&apos;);" db-types="PostgreSQL" />
+    <sql-case id="copy_table_to_stdout_with_csv_force_quote" value="COPY t_order TO STDOUT WITH CSV ESCAPE E'\\' FORCE QUOTE col2;" db-types="PostgreSQL" />
+    <sql-case id="copy_query_results_to_stdout" value="COPY (SELECT * FROM t_order) TO STDOUT;" db-types="PostgreSQL" />
+    <sql-case id="copy_query_results_from_stdin" value="COPY (SELECT * FROM t_order) FROM STDIN;" db-types="PostgreSQL" />
+    <sql-case id="copy_table_to_file" value="COPY t_order TO PROGRAM 'gzip > /usr1/proj/bray/sql/country_data.gz';" db-types="PostgreSQL" />
+    <sql-case id="copy_table_with_columns_to_file" value="COPY t_order(id, name) TO 'file.txt' DELIMITER ' ';" db-types="PostgreSQL" />
+</sql-cases>

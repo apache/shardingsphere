@@ -1,0 +1,55 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.zaxxer.hikari.HikariDataSource"
+      },
+      "type": "com.zaxxer.hikari.HikariConfig",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.zaxxer.hikari.HikariDataSource"
+      },
+      "type": "com.zaxxer.hikari.HikariDataSource",
+      "fields": [
+        {
+          "name": "dataSourceProperties"
+        },
+        {
+          "name": "jdbcUrl"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "isClosed",
+          "parameterTypes": []
+        },
+        {
+          "name": "isRunning",
+          "parameterTypes": []
+        },
+        {
+          "name": "getHikariPoolMXBean",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.zaxxer.hikari.pool.HikariPool"
+      },
+      "type": "com.zaxxer.hikari.pool.HikariPool",
+      "methods": [
+        {
+          "name": "getActiveConnections",
+          "parameterTypes": []
+        }
+      ]
+    }
+  ]
+}

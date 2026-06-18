@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <show-dist-variable sql-case-id="show-dist-variable" name="CACHED_CONNECTIONS" />
+    <show-dist-variables sql-case-id="show-dist-variables" />
+    <show-dist-variables sql-case-id="show-dist-variables-like" like-pattern="sql_%" />
+    
+    <show-status-from-readwrite-splitting-rules sql-case-id="show-status-from-readwrite-splitting-rules" />
+    
+    <show-table-metadata sql-case-id="show-table-metadata">
+        <table-name name="t_order" />
+        <database name="database_name" start-index="33" stop-index="45" />
+    </show-table-metadata>
+    <show-table-metadata sql-case-id="show-table-metadata-with-back-quoted-database-name">
+        <table-name name="t_order" />
+        <database name="database_name" start-index="33" stop-index="47" start-delimiter="`" end-delimiter="`" />
+    </show-table-metadata>
+    <show-table-metadata sql-case-id="show-table-metadata-with-back-quoted-table-name">
+        <table-name name="T_ORDER" start-delimiter="`" end-delimiter="`" />
+    </show-table-metadata>
+    <show-table-metadata sql-case-id="show-table-metadata-with-double-quoted-table-name">
+        <table-name name="T_ORDER" start-delimiter="&quot;" end-delimiter="&quot;" />
+    </show-table-metadata>
+    
+    <show-authority-rule sql-case-id="show-authority-rule" />
+    <show-transaction-rule sql-case-id="show-transaction-rule" />
+    <show-sql-parser-rule sql-case-id="show-sql-parser-rule" />
+    <show-sql-translator-rule sql-case-id="show-sql-translator-rule" />
+    <show-global-clock-rule sql-case-id="show-global-clock-rule" />
+
+    <show-compute-nodes sql-case-id="show-compute-nodes" />
+    <show-compute-node-info sql-case-id="show-compute-node-info" />
+    <show-compute-node-mode sql-case-id="show-compute-node-mode" />
+    
+    <export-database-config sql-case-id="export-database-config">
+        <database name="database_name" start-index="28" stop-index="40" />
+    </export-database-config>
+    <export-metadata sql-case-id="export-metadata" />
+    <export-metadata-to-file sql-case-id="export-metadata-to-file">
+        <file-path>/tmp/metadata.json</file-path>
+    </export-metadata-to-file>
+    <export-storage-nodes sql-case-id="export-storage-nodes" />
+    <convert-yaml-config sql-case-id="convert-yaml-config">
+        <file-path>/yaml/database-sharding.yaml</file-path>
+    </convert-yaml-config>
+</sql-parser-test-cases>

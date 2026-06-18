@@ -1,0 +1,156 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: data_lock_waits
+type: TABLE
+columns:
+  engine:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ENGINE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  requesting_engine_lock_id:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: REQUESTING_ENGINE_LOCK_ID
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  requesting_engine_transaction_id:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: REQUESTING_ENGINE_TRANSACTION_ID
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  requesting_thread_id:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: REQUESTING_THREAD_ID
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  requesting_event_id:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: REQUESTING_EVENT_ID
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  requesting_object_instance_begin:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: REQUESTING_OBJECT_INSTANCE_BEGIN
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  blocking_engine_lock_id:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: BLOCKING_ENGINE_LOCK_ID
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  blocking_engine_transaction_id:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: BLOCKING_ENGINE_TRANSACTION_ID
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  blocking_thread_id:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: BLOCKING_THREAD_ID
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  blocking_event_id:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: BLOCKING_EVENT_ID
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  blocking_object_instance_begin:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: BLOCKING_OBJECT_INSTANCE_BEGIN
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+indexes:
+  blocking_engine_lock_id:
+    name: BLOCKING_ENGINE_LOCK_ID
+    unique: false
+    columns:
+      - BLOCKING_ENGINE_LOCK_ID
+      - ENGINE
+  requesting_thread_id:
+    name: REQUESTING_THREAD_ID
+    unique: false
+    columns:
+      - REQUESTING_THREAD_ID
+      - REQUESTING_EVENT_ID
+  blocking_engine_transaction_id:
+    name: BLOCKING_ENGINE_TRANSACTION_ID
+    unique: false
+    columns:
+      - BLOCKING_ENGINE_TRANSACTION_ID
+      - ENGINE
+  blocking_thread_id:
+    name: BLOCKING_THREAD_ID
+    unique: false
+    columns:
+      - BLOCKING_THREAD_ID
+      - BLOCKING_EVENT_ID
+  requesting_engine_transaction_id:
+    name: REQUESTING_ENGINE_TRANSACTION_ID
+    unique: false
+    columns:
+      - REQUESTING_ENGINE_TRANSACTION_ID
+      - ENGINE
+  requesting_engine_lock_id:
+    name: REQUESTING_ENGINE_LOCK_ID
+    unique: false
+    columns:
+      - REQUESTING_ENGINE_LOCK_ID
+      - ENGINE

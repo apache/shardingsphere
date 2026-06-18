@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <backup sql-case-id="backup_snapshot_with_on_table_and_properties" snapshot-name="snapshot_label1">
+        <database name="example_db" start-index="16" stop-index="25" />
+        <repository-name name="example_repo" start-index="46" stop-index="57" />
+        <backup-table start-index="63" stop-index="73">
+            <table name="example_tbl" start-index="63" stop-index="73" />
+        </backup-table>
+        <property key="type" value="full" start-index="87" stop-index="99" />
+    </backup>
+
+    <backup sql-case-id="backup_snapshot_with_on_table_partition" snapshot-name="snapshot_label2">
+        <database name="example_db" start-index="16" stop-index="25" />
+        <repository-name name="example_repo" start-index="46" stop-index="57" />
+        <backup-table start-index="63" stop-index="91">
+            <table name="example_tbl" start-index="63" stop-index="73" />
+            <partition name="p1" start-index="86" stop-index="87" />
+            <partition name="p2" start-index="89" stop-index="90" />
+        </backup-table>
+        <backup-table start-index="94" stop-index="105">
+            <table name="example_tbl2" start-index="94" stop-index="105" />
+        </backup-table>
+    </backup>
+
+    <backup sql-case-id="backup_snapshot_with_exclude" snapshot-name="snapshot_label3" exclude-mode="true">
+        <database name="example_db" start-index="16" stop-index="25" />
+        <repository-name name="example_repo" start-index="46" stop-index="57" />
+        <backup-table start-index="68" stop-index="78">
+            <table name="example_tbl" start-index="68" stop-index="78" />
+        </backup-table>
+    </backup>
+
+    <backup sql-case-id="backup_snapshot_without_scope" snapshot-name="snapshot_label3">
+        <database name="example_db" start-index="16" stop-index="25" />
+        <repository-name name="example_repo" start-index="46" stop-index="57" />
+    </backup>
+
+    <backup sql-case-id="backup_global_snapshot" global="true" snapshot-name="snapshot_label5">
+        <repository-name name="example_repo" start-index="42" stop-index="53" />
+    </backup>
+
+    <backup sql-case-id="backup_global_snapshot_with_properties" global="true" snapshot-name="snapshot_label6">
+        <repository-name name="example_repo" start-index="42" stop-index="53" />
+        <property key="backup_privilege" value="true" start-index="66" stop-index="90" />
+        <property key="backup_catalog" value="true" start-index="92" stop-index="114" />
+    </backup>
+</sql-parser-test-cases>

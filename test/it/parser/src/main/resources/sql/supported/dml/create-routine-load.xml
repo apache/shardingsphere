@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_routine_load_simple" value="CREATE ROUTINE LOAD example_db.test1 PROPERTIES ('desired_concurrent_number'='3') FROM KAFKA ('kafka_broker_list' = 'broker1:9092')" db-types="Doris" />
+    <sql-case id="create_routine_load_with_table" value="CREATE ROUTINE LOAD example_db.test1 ON example_tbl PROPERTIES ('desired_concurrent_number'='3') FROM KAFKA ('kafka_broker_list' = 'broker1:9092', 'kafka_topic' = 'my_topic')" db-types="Doris" />
+    <sql-case id="create_routine_load_with_columns" value="CREATE ROUTINE LOAD example_db.test1 ON example_tbl COLUMNS TERMINATED BY ',', COLUMNS(k1, k2, k3) PROPERTIES ('desired_concurrent_number'='3') FROM KAFKA ('kafka_broker_list' = 'broker1:9092', 'kafka_topic' = 'my_topic')" db-types="Doris" />
+    <sql-case id="create_routine_load_with_where" value="CREATE ROUTINE LOAD example_db.test1 ON example_tbl COLUMNS(k1, k2, k3), WHERE k1 &gt; 100 and k2 LIKE '%doris%' PROPERTIES ('max_batch_interval' = '20') FROM KAFKA ('kafka_broker_list' = 'broker1:9092', 'kafka_topic' = 'my_topic')" db-types="Doris" />
+    <sql-case id="create_routine_load_with_merge" value="CREATE ROUTINE LOAD example_db.test1 ON example_tbl WITH MERGE COLUMNS(k1, k2, k3, v1, v2, v3), WHERE k1 &gt; 100 and k2 LIKE '%doris%', DELETE ON v3 &gt; 100 PROPERTIES ('max_batch_interval' = '20') FROM KAFKA ('kafka_broker_list' = 'broker1:9092', 'kafka_topic' = 'my_topic', 'kafka_partitions' = '0,1,2,3', 'kafka_offsets' = '101,0,0,200')" db-types="Doris" />
+    <sql-case id="create_routine_load_with_order_by" value="CREATE ROUTINE LOAD example_db.test_job ON example_tbl COLUMNS TERMINATED BY ',', COLUMNS(k1,k2,source_sequence,v1,v2), ORDER BY source_sequence PROPERTIES ('desired_concurrent_number'='3') FROM KAFKA ('kafka_broker_list' = 'broker1:9092', 'kafka_topic' = 'my_topic')" db-types="Doris" />
+    <sql-case id="create_routine_load_with_comment" value="CREATE ROUTINE LOAD example_db.test1 ON example_tbl PROPERTIES ('desired_concurrent_number'='3') FROM KAFKA ('kafka_broker_list' = 'broker1:9092', 'kafka_topic' = 'my_topic') COMMENT 'Test routine load job'" db-types="Doris" />
+    <sql-case id="create_routine_load_comprehensive" value="CREATE ROUTINE LOAD demo_db.name ON demo_tbl WITH MERGE COLUMNS TERMINATED BY ',', COLUMNS (id, name, score, create_time), WHERE create_time &gt;= '2026-01-01', PARTITION (p202601, p202602), DELETE ON score &gt; 100, ORDER BY create_time PROPERTIES ('desired_concurrent_number' = '5', 'max_batch_interval' = '30', 'max_batch_rows' = '500000') FROM KAFKA ('kafka_broker_list' = 'broker1:9092,broker2:9092,broker3:9092', 'kafka_topic' = 'demo_topic', 'kafka_partitions' = '0,1,2,3') COMMENT 'test'" db-types="Doris" />
+    <sql-case id="create_routine_load_with_preceding_filter" value="CREATE ROUTINE LOAD example_db.test1 ON example_tbl COLUMNS(k1, k2, k3), PRECEDING FILTER k1 = 1 PROPERTIES ('desired_concurrent_number'='3') FROM KAFKA ('kafka_broker_list' = 'broker1:9092', 'kafka_topic' = 'my_topic')" db-types="Doris" />
+    <sql-case id="create_routine_load_with_column_mapping" value="CREATE ROUTINE LOAD example_db.test1 ON example_tbl COLUMNS TERMINATED BY ',', COLUMNS(k1, k2, k3, v1, v2, v3 = k1 * 100, dt = from_unixtime(ts, '%Y%m%d')) PROPERTIES ('desired_concurrent_number'='3') FROM KAFKA ('kafka_broker_list' = 'broker1:9092', 'kafka_topic' = 'my_topic')" db-types="Doris" />
+</sql-cases>

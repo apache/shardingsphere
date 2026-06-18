@@ -1,0 +1,48 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset update-count="1">
+    <metadata data-nodes="tbl.t_product_${0..9}">
+        <column name="product_id" type="numeric" />
+        <column name="product_name" type="varchar" />
+        <column name="category_id" type="numeric" />
+        <column name="price" type="decimal" />
+        <column name="status" type="varchar" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
+    <row data-node="tbl.t_product_1" values="1, qq coins, 2, 200, off sale, 2017-08-08" />
+    <row data-node="tbl.t_product_2" values="2, haier washing machine, 4, 3121, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_3" values="3, huawei mobile phones, 6, 6666, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_4" values="4, alibaba cloud cards, 2, 500, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_5" values="5, lenovo mobile phones, 6, 3200, off sale, 2017-08-08" />
+    <row data-node="tbl.t_product_6" values="6, moutai liquor, 8, 3200, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_7" values="7, baidu cloud cards, 2, 700, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_8" values="8, xiaomi mobile phones, 6, 2799, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_9" values="9, vivo mobile phones, 6, 2899, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_0" values="10, oppo mobile phones, 6, 2299, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_1" values="11, google mobile phones, 6, 3399, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_2" values="12, walmart wine, 8, 1000, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_3" values="13, amazon cloud cards, 2, 1000, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_4" values="14, apple mobile phones, 6, 8200, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_5" values="15, microsoft x-box, 9, 5000, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_6" values="16, dell xps, 10, 9000, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_7" values="17, johnson shampoo, 12, 30, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_8" values="18, intel cpu, 10, 1600, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_9" values="19, hp computer, 10, 4600, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_0" values="20, tesla model 3, 14, 324600, on sale, 2017-08-08" />
+    <row data-node="tbl.t_product_1" values="21, macbook2022, 4, 13999, on sale, 2022-08-08" />
+</dataset>

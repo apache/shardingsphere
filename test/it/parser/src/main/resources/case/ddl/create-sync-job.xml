@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <create-sync-job sql-case-id="create_sync_job_simple" job-name="job1">
+        <owner name="test_db" start-index="12" stop-index="20" start-delimiter="`" end-delimiter="`" />
+        <channel-description start-index="30" stop-index="68">
+            <source-table name="tbl1" start-index="35" stop-index="52" start-delimiter="`" end-delimiter="`">
+                <owner name="mysql_db1" start-index="35" stop-index="45" start-delimiter="`" end-delimiter="`" />
+            </source-table>
+            <target-table name="test_tbl" start-index="59" stop-index="68" start-delimiter="`" end-delimiter="`" />
+        </channel-description>
+        <binlog-description start-index="71" stop-index="238">
+            <property key="type" value="canal" start-index="84" stop-index="99" />
+            <property key="canal.server.ip" value="127.0.0.1" start-index="101" stop-index="131" />
+            <property key="canal.server.port" value="11111" start-index="133" stop-index="161" />
+            <property key="canal.destination" value="example" start-index="163" stop-index="193" />
+            <property key="canal.username" value="" start-index="195" stop-index="215" />
+            <property key="canal.password" value="" start-index="217" stop-index="237" />
+        </binlog-description>
+    </create-sync-job>
+    
+    <create-sync-job sql-case-id="create_sync_job_multi_channels" job-name="job1">
+        <owner name="test_db" start-index="12" stop-index="20" start-delimiter="`" end-delimiter="`" />
+        <channel-description start-index="30" stop-index="75">
+            <source-table name="t1" start-index="35" stop-index="49" start-delimiter="`" end-delimiter="`">
+                <owner name="mysql_db" start-index="35" stop-index="44" start-delimiter="`" end-delimiter="`" />
+            </source-table>
+            <target-table name="test1" start-index="56" stop-index="62" start-delimiter="`" end-delimiter="`" />
+            <column-name>k1</column-name>
+            <column-name>k2</column-name>
+            <column-name>v1</column-name>
+        </channel-description>
+        <channel-description start-index="77" stop-index="122">
+            <source-table name="t2" start-index="82" stop-index="96" start-delimiter="`" end-delimiter="`">
+                <owner name="mysql_db" start-index="82" stop-index="91" start-delimiter="`" end-delimiter="`" />
+            </source-table>
+            <target-table name="test2" start-index="103" stop-index="109" start-delimiter="`" end-delimiter="`" />
+            <column-name>k3</column-name>
+            <column-name>k4</column-name>
+            <column-name>v2</column-name>
+        </channel-description>
+        <binlog-description start-index="125" stop-index="312">
+            <property key="type" value="canal" start-index="138" stop-index="153" />
+            <property key="canal.server.ip" value="xx.xxx.xxx.xx" start-index="155" stop-index="189" />
+            <property key="canal.server.port" value="12111" start-index="191" stop-index="219" />
+            <property key="canal.destination" value="example" start-index="221" stop-index="251" />
+            <property key="canal.username" value="username" start-index="253" stop-index="281" />
+            <property key="canal.password" value="password" start-index="283" stop-index="311" />
+        </binlog-description>
+    </create-sync-job>
+</sql-parser-test-cases>

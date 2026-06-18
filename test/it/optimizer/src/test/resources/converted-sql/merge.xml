@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-node-converter-test-cases>
+    <test-cases sql-case-id="merge_into_table_using_table" expected-sql="MERGE INTO &quot;people_target&quot; USING &quot;people_source&quot; ON &quot;people_target&quot;.&quot;person_id&quot; = &quot;people_source&quot;.&quot;person_id&quot;" db-types="Oracle" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="merge_into_table_using_subquery_alias" expected-sql="MERGE INTO &quot;bonuses&quot; &quot;D&quot; USING (SELECT &quot;employee_id&quot;, &quot;salary&quot;, &quot;department_id&quot; FROM &quot;employees&quot; WHERE &quot;department_id&quot; = 80) &quot;S&quot; ON &quot;D&quot;.&quot;employee_id&quot; = &quot;S&quot;.&quot;employee_id&quot;" db-types="Oracle" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="merge_update_table" expected-sql="MERGE INTO &quot;people_target&quot; &quot;pt&quot; USING &quot;people_source&quot; &quot;ps&quot; ON &quot;pt&quot;.&quot;person_id&quot; = &quot;ps&quot;.&quot;person_id&quot; WHEN MATCHED THEN UPDATE SET &quot;pt&quot;.&quot;first_name&quot; = &quot;ps&quot;.&quot;first_name&quot;, &quot;pt&quot;.&quot;last_name&quot; = &quot;ps&quot;.&quot;last_name&quot;, &quot;pt&quot;.&quot;title&quot; = &quot;ps&quot;.&quot;title&quot;" db-types="Oracle" />
+</sql-node-converter-test-cases>

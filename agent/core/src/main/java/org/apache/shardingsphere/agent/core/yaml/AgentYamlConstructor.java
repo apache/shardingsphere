@@ -1,0 +1,65 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.agent.core.yaml;
+
+import org.apache.shardingsphere.agent.core.preconditions.AgentPreconditions;
+import org.yaml.snakeyaml.LoaderOptions;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.nodes.Node;
+
+import java.util.Map;
+import java.util.stream.IntStream;
+
+/**
+ * Agent YAML constructor.
+ */
+public final class AgentYamlConstructor extends Constructor {
+    
+    private final Class<?> rootClass;
+    
+    public AgentYamlConstructor(final Class<?> rootClass, final LoaderOptions loadingConfig) {
+        super(rootClass, loadingConfig);
+        this.rootClass = rootClass;
+    }
+    
+    @Override
+    protected Object constructObject(final Node node) {
+        Object result = super.constructObject(node);
+        if (result instanceof Map) {
+            validateMapKeys((Map<?, ?>) result);
+        }
+        return result;
+    }
+    
+    private void validateMapKeys(final Map<?, ?> map) {
+        for (Object each : map.keySet()) {
+            AgentPreconditions.checkArgument(null != each, "YAML map key cannot be null.");
+            AgentPreconditions.checkArgument(!(each instanceof String) || !isBlank((String) each), "YAML map key cannot be blank.");
+        }
+    }
+    
+    private boolean isBlank(final String value) {
+        return IntStream.range(0, value.length()).allMatch(i -> Character.isWhitespace(value.charAt(i)));
+    }
+    
+    @Override
+    protected Class<?> getClassForName(final String className) throws ClassNotFoundException {
+        AgentPreconditions.checkState(className.equals(rootClass.getName()), String.format("Class `%s` is not accepted", className));
+        return super.getClassForName(className);
+    }
+}

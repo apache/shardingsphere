@@ -1,0 +1,308 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: INNODB_BUFFER_POOL_STATS
+type: TABLE
+columns:
+  pool_id:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: POOL_ID
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pool_size:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: POOL_SIZE
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  free_buffers:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: FREE_BUFFERS
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  database_pages:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: DATABASE_PAGES
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  old_database_pages:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: OLD_DATABASE_PAGES
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  modified_database_pages:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MODIFIED_DATABASE_PAGES
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pending_decompress:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: PENDING_DECOMPRESS
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pending_reads:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: PENDING_READS
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pending_flush_lru:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: PENDING_FLUSH_LRU
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pending_flush_list:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: PENDING_FLUSH_LIST
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pages_made_young:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: PAGES_MADE_YOUNG
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pages_not_made_young:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: PAGES_NOT_MADE_YOUNG
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pages_made_young_rate:
+    caseSensitive: false
+    dataType: 7
+    generated: false
+    name: PAGES_MADE_YOUNG_RATE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pages_made_not_young_rate:
+    caseSensitive: false
+    dataType: 7
+    generated: false
+    name: PAGES_MADE_NOT_YOUNG_RATE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  number_pages_read:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: NUMBER_PAGES_READ
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  number_pages_created:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: NUMBER_PAGES_CREATED
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  number_pages_written:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: NUMBER_PAGES_WRITTEN
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pages_read_rate:
+    caseSensitive: false
+    dataType: 7
+    generated: false
+    name: PAGES_READ_RATE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pages_create_rate:
+    caseSensitive: false
+    dataType: 7
+    generated: false
+    name: PAGES_CREATE_RATE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pages_written_rate:
+    caseSensitive: false
+    dataType: 7
+    generated: false
+    name: PAGES_WRITTEN_RATE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  number_pages_get:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: NUMBER_PAGES_GET
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  hit_rate:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: HIT_RATE
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  young_make_per_thousand_gets:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: YOUNG_MAKE_PER_THOUSAND_GETS
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  not_young_make_per_thousand_gets:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: NOT_YOUNG_MAKE_PER_THOUSAND_GETS
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  number_pages_read_ahead:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: NUMBER_PAGES_READ_AHEAD
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  number_read_ahead_evicted:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: NUMBER_READ_AHEAD_EVICTED
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  read_ahead_rate:
+    caseSensitive: false
+    dataType: 7
+    generated: false
+    name: READ_AHEAD_RATE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  read_ahead_evicted_rate:
+    caseSensitive: false
+    dataType: 7
+    generated: false
+    name: READ_AHEAD_EVICTED_RATE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lru_io_total:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: LRU_IO_TOTAL
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  lru_io_current:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: LRU_IO_CURRENT
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  uncompress_total:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: UNCOMPRESS_TOTAL
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  uncompress_current:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: UNCOMPRESS_CURRENT
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true

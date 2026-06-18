@@ -1,0 +1,287 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: events_statements_summary_global_by_event_name
+type: TABLE
+columns:
+  event_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_NAME
+    nullable: false
+    primaryKey: true
+    unsigned: false
+    visible: true
+  count_star:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: COUNT_STAR
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_wait:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_TIMER_WAIT
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_wait:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MIN_TIMER_WAIT
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_wait:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: AVG_TIMER_WAIT
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_wait:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MAX_TIMER_WAIT
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_lock_time:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_LOCK_TIME
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_errors:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_ERRORS
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_warnings:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_WARNINGS
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_rows_affected:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_ROWS_AFFECTED
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_rows_sent:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_ROWS_SENT
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_rows_examined:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_ROWS_EXAMINED
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_created_tmp_disk_tables:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_CREATED_TMP_DISK_TABLES
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_created_tmp_tables:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_CREATED_TMP_TABLES
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_select_full_join:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_SELECT_FULL_JOIN
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_select_full_range_join:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_SELECT_FULL_RANGE_JOIN
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_select_range:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_SELECT_RANGE
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_select_range_check:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_SELECT_RANGE_CHECK
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_select_scan:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_SELECT_SCAN
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_sort_merge_passes:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_SORT_MERGE_PASSES
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_sort_range:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_SORT_RANGE
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_sort_rows:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_SORT_ROWS
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_sort_scan:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_SORT_SCAN
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_no_index_used:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_NO_INDEX_USED
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_no_good_index_used:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_NO_GOOD_INDEX_USED
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_cpu_time:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_CPU_TIME
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_controlled_memory:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MAX_CONTROLLED_MEMORY
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_total_memory:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MAX_TOTAL_MEMORY
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_secondary:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: COUNT_SECONDARY
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - EVENT_NAME

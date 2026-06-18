@@ -1,0 +1,89 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: MON$STATEMENTS
+columns:
+  MON$STATEMENT_ID:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$STATEMENT_ID
+    primaryKey: false
+    visible: true
+  MON$ATTACHMENT_ID:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$ATTACHMENT_ID
+    primaryKey: false
+    visible: true
+  MON$TRANSACTION_ID:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$TRANSACTION_ID
+    primaryKey: false
+    visible: true
+  MON$STATE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$STATE
+    primaryKey: false
+    visible: true
+  MON$TIMESTAMP:
+    caseSensitive: false
+    dataType: 2014
+    generated: false
+    name: MON$TIMESTAMP
+    primaryKey: false
+    visible: true
+  MON$SQL_TEXT:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: MON$SQL_TEXT
+    primaryKey: false
+    visible: true
+  MON$STAT_ID:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$STAT_ID
+    primaryKey: false
+    visible: true
+  MON$EXPLAINED_PLAN:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: MON$EXPLAINED_PLAN
+    primaryKey: false
+    visible: true
+  MON$STATEMENT_TIMEOUT:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$STATEMENT_TIMEOUT
+    primaryKey: false
+    visible: true
+  MON$STATEMENT_TIMER:
+    caseSensitive: false
+    dataType: 2014
+    generated: false
+    name: MON$STATEMENT_TIMER
+    primaryKey: false
+    visible: true

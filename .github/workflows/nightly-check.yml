@@ -1,0 +1,189 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: Nightly - Check
+
+on:
+  schedule:
+    - cron: '0 23 * * 1-5' # Once a day between Monday and Friday. UTC time
+  workflow_dispatch:
+
+concurrency:
+  group: nightly-check-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
+
+jobs:
+  global-environment:
+    name: Import Global Environment
+    uses: ./.github/workflows/required-reusable.yml
+
+  check-spotbugs:
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
+    name: Check - SpotBugs
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+      - name: Run SpotBugs
+        run: ./mvnw clean install spotbugs:check -Pcheck -T1C
+  
+  check-dead-links:
+    if: github.repository == 'apache/shardingsphere'
+    name: Check - Dead Links
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - run: sudo npm install -g markdown-link-check@3.10.0
+      - name: Check dead link
+        run: |
+          IGNORED_PATH_LIST=("./docs/document/themes" "./docs/community/content/powered-by" "./docs/blog/content/material" "./docs/blog/themes" "./docs/community/themes")
+          ignore_current_file=false
+          
+          for file in $(find . -name "*.md"); do
+            for ignored_path in ${IGNORED_PATH_LIST[@]}
+              do
+                if [[ $file =~ $ignored_path ]]; then
+                  ignore_current_file=true
+                  break
+                fi
+              done
+          if [[ $ignore_current_file == true ]]; then
+            ignore_current_file=false
+            continue
+          fi
+          echo "Checking $file"
+          markdown-link-check -c .github/workflows/resources/linkcheck/markdown-link-check.json -q "$file"
+          done
+
+  check-codeql:
+    if: github.repository == 'apache/shardingsphere'
+    name: Check - CodeQL
+    needs: global-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+      - name: Install Project
+        run: |
+          ./mvnw clean install -DskipTests -B -ntp -T1C
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:java"
+
+  check-stale:
+    if: github.repository == 'apache/shardingsphere'
+    name: Check - Stale Issues
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          days-before-issue-stale: 7
+          days-before-pr-stale: -1
+          days-before-close: -1
+          stale-issue-label: "stale"
+          any-of-issue-labels: "status: need more info,type: question,type: duplicate,status: invalid"
+          operations-per-run: 100
+          remove-stale-when-updated: true
+          stale-issue-message: >
+            There hasn't been any activity on this issue recently, and in order to prioritize active issues, it will be
+            marked as stale.
+
+  check-dependency-convergence:
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
+    name: Check - Dependency Convergence
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+      - name: Run Dependency Convergence Check
+        run: |
+          sed -i '/<requireMavenVersion>/i \                                    <dependencyConvergence/>' pom.xml
+          ./mvnw clean install -DskipTests -T1C -Dmaven.enforcer.fail=true
+
+  check-owasp:
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
+    name: Check - OWASP
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+      - name: Run OWASP Check
+        # https://nvd.nist.gov/developers/request-an-api-key
+        run: ./mvnw clean dependency-check:aggregate -DnvdApiKey=${{ secrets.NIST_NVD_API_KEY }}
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: Upload OWASP Check Report
+          path: ${{ github.workspace }}/target/dependency-check-report.html
+          retention-days: 5
+
+  check-and-report-jacoco:
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
+    name: Check - Jacoco
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - name: Install Project
+        run: ./mvnw clean install -DskipTests -T1C
+      - name: Build with maven and execute jacoco aggregation script
+        run: |
+          ./mvnw -V -B -ntp verify -Djacoco.skip=false -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
+          chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh &&
+          ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
+      - uses: actions/upload-artifact@v6
+        with:
+          name: jacoco-report
+          path: ${{ github.workspace }}/target/mergeReport/jacoco

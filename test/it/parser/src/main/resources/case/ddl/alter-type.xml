@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <alter-type sql-case-id="alter_type_owner" />
+    <alter-type sql-case-id="alter_type_rename" />
+    <alter-type sql-case-id="alter_type_set_schema" />
+    <alter-type sql-case-id="alter_type_set_storage" />
+    <alter-type sql-case-id="alter_type_add_attribute" />
+    <alter-type sql-case-id="alter_type_add_value" />
+    <alter-type sql-case-id="alter_type_rename_value" />
+    <alter-type sql-case-id="alter_type_default" />
+    <alter-type sql-case-id="alter_type_schema_name" />
+    <alter-type sql-case-id="alter_type_compile" />
+    <alter-type sql-case-id="alter_type_debug" />
+    <alter-type sql-case-id="alter_type_spec" />
+    <alter-type sql-case-id="alter_type_body" />
+    <alter-type sql-case-id="alter_type_compile_bool" />
+    <alter-type sql-case-id="alter_type_compile_bool_false" />
+    <alter-type sql-case-id="alter_type_compile_string" />
+    <alter-type sql-case-id="alter_type_compile_integer" />
+    <alter-type sql-case-id="alter_type_compile_minus_integer" />
+    <alter-type sql-case-id="alter_type_compile_float" />
+    <alter-type sql-case-id="alter_type_compile_minus_float" />
+    <alter-type sql-case-id="alter_type_compile_hex" />
+    <alter-type sql-case-id="alter_type_replace_attribute" />
+    <alter-type sql-case-id="alter_type_replace_element_memeber_function" />
+    <alter-type sql-case-id="alter_type_replace_element_static_function" />
+    <alter-type sql-case-id="alter_type_replace_element_member_procedure" />
+    <alter-type sql-case-id="alter_type_replace_element_static_procedure" />
+    <alter-type sql-case-id="alter_type_replace_element_static_procedure_as_call" />
+    <alter-type sql-case-id="alter_type_replace_element_static_procedure_is_call" />
+    <alter-type sql-case-id="alter_type_replace_element_overriding_static_function" />
+    <alter-type sql-case-id="alter_type_replace_element_final_static_function" />
+    <alter-type sql-case-id="alter_type_replace_element_instantiable_static_function" />
+    <alter-type sql-case-id="alter_type_replace_element_not_instantiable_static_function" />
+    <alter-type sql-case-id="alter_type_replace_element_constructor_function_single_parameter" />
+    <alter-type sql-case-id="alter_type_replace_element_constructor_function_multi_parameter" />
+    <alter-type sql-case-id="alter_type_replace_element_constructor_final_function" />
+    <alter-type sql-case-id="alter_type_replace_element_constructor_instantiable_function" />
+    <alter-type sql-case-id="alter_type_replace_element_constructor_function_inout" />
+    <alter-type sql-case-id="alter_type_replace_element_constructor_function_as_call" />
+    <alter-type sql-case-id="alter_type_replace_element_constructor_function_is_call" />
+    <alter-type sql-case-id="alter_type_replace_element_map_function" />
+    <alter-type sql-case-id="alter_type_replace_element_order_function" />
+    <alter-type sql-case-id="alter_type_replace_element_restrict_rnds" />
+    <alter-type sql-case-id="alter_type_replace_element_restrict_wnds" />
+    <alter-type sql-case-id="alter_type_replace_element_restrict_rnps" />
+    <alter-type sql-case-id="alter_type_replace_element_restrict_wnps" />
+    <alter-type sql-case-id="alter_type_replace_element_restrict_trust" />
+    <alter-type sql-case-id="alter_type_reset" />
+    <alter-type sql-case-id="alter_type_add_member_function" />
+    <alter-type sql-case-id="alter_type_drop_member_function" />
+    <alter-type sql-case-id="alter_type_add_order_function" />
+    <alter-type sql-case-id="alter_type_drop_order_function" />
+    <alter-type sql-case-id="alter_type_add_order_function_as" />
+    <alter-type sql-case-id="alter_type_drop_order_function_is" />
+    <alter-type sql-case-id="alter_type_add_static_function" />
+    <alter-type sql-case-id="alter_type_add_static_procedure" />
+    <alter-type sql-case-id="alter_type_add_static_function_as" />
+    <alter-type sql-case-id="alter_type_add_static_procedure_is" />
+    <alter-type sql-case-id="alter_type_drop_static_function" />
+    <alter-type sql-case-id="alter_type_drop_static_procedure" />
+    <alter-type sql-case-id="alter_type_drop_static_function_as" />
+    <alter-type sql-case-id="alter_type_drop_static_procedure_is" />
+    <alter-type sql-case-id="alter_type_add_single_attribute" />
+    <alter-type sql-case-id="alter_type_add_multi_attribute" />
+    <alter-type sql-case-id="alter_type_modify_single_attribute" />
+    <alter-type sql-case-id="alter_type_modify_multi_attribute" />
+    <alter-type sql-case-id="alter_type_drop_single_attribute" />
+    <alter-type sql-case-id="alter_type_drop_multi_attribute" />
+    <alter-type sql-case-id="alter_type_modify_limit" />
+    <alter-type sql-case-id="alter_type_modify_element_type" />
+    <alter-type sql-case-id="alter_type_not_instantiable" />
+    <alter-type sql-case-id="alter_type_not_final" />
+    <alter-type sql-case-id="alter_type_not_final_invalidate" />
+    <alter-type sql-case-id="alter_type_not_final_cascade_not_data" />
+    <alter-type sql-case-id="alter_type_not_final_cascade_data" />
+    <alter-type sql-case-id="alter_type_not_final_cascade_convert_sub" />
+    <alter-type sql-case-id="alter_type_not_final_cascade_force_exception" />
+    <alter-type sql-case-id="alter_type_not_final_cascade_exception" />
+    <alter-type sql-case-id="alter_type_not_final_cascade_force_exception_schema" />
+</sql-parser-test-cases>

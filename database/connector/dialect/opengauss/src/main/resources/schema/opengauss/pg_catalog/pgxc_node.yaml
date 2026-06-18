@@ -1,0 +1,154 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pgxc_node
+columns:
+  node_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: node_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  node_type:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: node_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  node_port:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: node_port
+    primaryKey: false
+    unsigned: false
+    visible: true
+  node_host:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: node_host
+    primaryKey: false
+    unsigned: false
+    visible: true
+  node_port1:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: node_port1
+    primaryKey: false
+    unsigned: false
+    visible: true
+  node_host1:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: node_host1
+    primaryKey: false
+    unsigned: false
+    visible: true
+  hostis_primary:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: hostis_primary
+    primaryKey: false
+    unsigned: false
+    visible: true
+  nodeis_primary:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: nodeis_primary
+    primaryKey: false
+    unsigned: false
+    visible: true
+  nodeis_preferred:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: nodeis_preferred
+    primaryKey: false
+    unsigned: false
+    visible: true
+  node_id:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: node_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sctp_port:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: sctp_port
+    primaryKey: false
+    unsigned: false
+    visible: true
+  control_port:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: control_port
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sctp_port1:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: sctp_port1
+    primaryKey: false
+    unsigned: false
+    visible: true
+  control_port1:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: control_port1
+    primaryKey: false
+    unsigned: false
+    visible: true
+  nodeis_central:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: nodeis_central
+    primaryKey: false
+    unsigned: false
+    visible: true
+  nodeis_active:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: nodeis_active
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pgxc_node_oid_index:
+    name: pgxc_node_oid_index
+  pgxc_node_name_type_index:
+    name: pgxc_node_name_type_index
+  pgxc_node_id_index:
+    name: pgxc_node_id_index

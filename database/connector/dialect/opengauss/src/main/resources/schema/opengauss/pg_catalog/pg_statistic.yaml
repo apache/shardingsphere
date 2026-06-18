@@ -1,0 +1,254 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_statistic
+columns:
+  starelid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: starelid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  starelkind:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: starelkind
+    primaryKey: false
+    unsigned: false
+    visible: true
+  staattnum:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: staattnum
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stainherit:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: stainherit
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stanullfrac:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: stanullfrac
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stawidth:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: stawidth
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stadistinct:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: stadistinct
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stakind1:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: stakind1
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stakind2:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: stakind2
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stakind3:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: stakind3
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stakind4:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: stakind4
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stakind5:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: stakind5
+    primaryKey: false
+    unsigned: false
+    visible: true
+  staop1:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: staop1
+    primaryKey: false
+    unsigned: false
+    visible: true
+  staop2:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: staop2
+    primaryKey: false
+    unsigned: false
+    visible: true
+  staop3:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: staop3
+    primaryKey: false
+    unsigned: false
+    visible: true
+  staop4:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: staop4
+    primaryKey: false
+    unsigned: false
+    visible: true
+  staop5:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: staop5
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stanumbers1:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: stanumbers1
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stanumbers2:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: stanumbers2
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stanumbers3:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: stanumbers3
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stanumbers4:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: stanumbers4
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stanumbers5:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: stanumbers5
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stavalues1:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: stavalues1
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stavalues2:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: stavalues2
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stavalues3:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: stavalues3
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stavalues4:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: stavalues4
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stavalues5:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: stavalues5
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stadndistinct:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: stadndistinct
+    primaryKey: false
+    unsigned: false
+    visible: true
+  staextinfo:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: staextinfo
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_statistic_relid_kind_att_inh_index:
+    name: pg_statistic_relid_kind_att_inh_index

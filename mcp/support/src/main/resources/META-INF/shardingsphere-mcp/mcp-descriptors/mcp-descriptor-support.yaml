@@ -1,0 +1,540 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+resourceTemplates:
+  - uriTemplate: shardingsphere://workflows/{plan_id}
+    name: workflow-plan
+    title: Workflow Plan
+    description: "Read one current in-memory workflow plan by plan_id. Use after planning tools to review status, clarification questions, artifacts, and next actions."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: plan_id
+          title: Plan ID
+          description: "Workflow plan_id returned by a planning tool in the current MCP runtime."
+          required: true
+          scope: workflow-plan
+      resourceKind: detail
+      objectScope: workflow-plan
+      relatedTools:
+        - database_gateway_validate_workflow
+        - database_gateway_apply_workflow
+
+prompts:
+  - name: inspect_metadata
+    title: Inspect Metadata
+    description: "Guide the model to inspect ShardingSphere logical metadata by reading capability and metadata resources before choosing database_gateway_search_metadata or detail resources."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/inspect-metadata.md
+    arguments:
+      - name: database
+        title: Logical Database
+        description: "Optional ShardingSphere logical database name to inspect."
+        required: false
+      - name: schema
+        title: Schema
+        description: "Optional schema or namespace to inspect inside the logical database."
+        required: false
+      - name: query
+        title: Search Query
+        description: "Optional object name fragment, table name, column name, or user-provided metadata target."
+        required: false
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_search_metadata
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://capabilities
+        - shardingsphere://databases
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after returning resolved metadata paths or after identifying the exact resource/tool to call next."
+        - "Stop without SQL execution when the user only asked to inspect metadata."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask the user for the logical database when multiple databases match and no safe default is visible."
+        - "Ask the user to choose an object when search results remain ambiguous after metadata lookup."
+  - name: safe_sql_execution
+    title: Safe SQL Execution
+    description: "Guide the model to choose database_gateway_execute_query for classifier-approved query SQL and database_gateway_execute_update preview before side effects."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/safe-sql-execution.md
+    arguments:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that provides the SQL execution boundary."
+        required: true
+      - name: schema
+        title: Schema
+        description: "Optional schema or namespace for unqualified object names."
+        required: false
+      - name: sql_intent
+        title: SQL Intent
+        description: "User-facing intent or SQL draft to classify before choosing an execution tool."
+        required: true
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_execute_query
+        - database_gateway_execute_update
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://databases/{database}/capabilities
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after database_gateway_execute_query returns the requested query result."
+        - "Stop after database_gateway_execute_update preview unless execution is still intended."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask before database_gateway_execute_update execution when the previewed side effects are ambiguous."
+        - "Ask when the SQL intent cannot be classified as classifier-approved query SQL or side-effecting SQL."
+  - name: recover_workflow
+    title: Recover Workflow
+    description: "Guide the model to recover a failed or stale ShardingSphere workflow by checking the current-session plan_id and re-planning when the plan is unavailable."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/recover-workflow.md
+    arguments:
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Current-session workflow plan identifier returned by a planning tool."
+        required: false
+      - name: failure_summary
+        title: Failure Summary
+        description: "Optional error payload or user-provided symptom to use during recovery."
+        required: false
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
+        - database_gateway_plan_encrypt_rule
+        - database_gateway_plan_mask_rule
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after database_gateway_validate_workflow confirms the current plan or after a replacement plan is created."
+        - "Stop when the plan_id is unavailable and the matching planning tool needs fresh user inputs."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask which workflow kind to re-plan when the failure summary does not identify encrypt or mask."
+        - "Ask before applying recovered artifacts that would change runtime state."
+
+completionTargets:
+  - referenceType: prompt
+    reference: inspect_metadata
+    arguments:
+      - database
+      - schema
+    maxValues: 50
+  - referenceType: prompt
+    reference: safe_sql_execution
+    arguments:
+      - database
+      - schema
+    maxValues: 50
+  - referenceType: prompt
+    reference: recover_workflow
+    arguments:
+      - plan_id
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://workflows/{plan_id}
+    arguments:
+      - plan_id
+    maxValues: 50
+resourceNavigation:
+  - from: database_gateway_apply_workflow
+    to: database_gateway_validate_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Validate runtime state after previewing or applying workflow artifacts."
+  - from: recover_workflow
+    to: database_gateway_validate_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Validate a current-session workflow when recovery starts from an existing plan."
+
+tools:
+  - name: database_gateway_apply_workflow
+    title: Apply Workflow
+    description: >-
+      Preview or apply a previously planned ShardingSphere MCP workflow. Use execution_mode=preview before side effects;
+      automatic execution requires a previewed plan and explicit approved_steps.
+    inputSchema:
+      type: object
+      properties:
+        plan_id:
+          type: string
+          description: "Workflow plan identifier returned by a planning tool."
+        execution_mode:
+          type: string
+          description: "Required safety gate. Use preview to inspect generated side effects without applying artifacts, or use review-then-execute after review."
+          enum:
+            - preview
+            - review-then-execute
+            - manual-only
+        approved_steps:
+          type: array
+          description: "Required when execution_mode=review-then-execute. Pass only user-reviewed preview_artifacts.approval_step values; an empty or omitted list does not approve artifacts."
+          items:
+            type: string
+            description: "Allowed workflow artifact step: ddl, index_ddl, or rule_distsql."
+            enum:
+              - ddl
+              - index_ddl
+              - rule_distsql
+      required:
+        - plan_id
+        - execution_mode
+      additionalProperties: false
+    outputSchema:
+      type: object
+      properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker: preview, executed, manual_only, recovery, or terminal."
+          enum:
+            - preview
+            - executed
+            - manual_only
+            - recovery
+            - terminal
+        plan_id:
+          type: string
+          description: "Workflow plan identifier that was applied."
+        execution_mode:
+          type: string
+          description: "Execution mode used by the apply call."
+        status:
+          type: string
+          description: "Apply status such as preview, completed, failed, or awaiting-manual-execution."
+        category:
+          type: string
+          description: "Recovery category when response_mode=recovery, including manual execution required for sensitive placeholders."
+          enum:
+            - secret_reference_malformed
+            - secret_reference_missing
+            - secret_reference_manual_execution_required
+        message:
+          type: string
+          description: "Recovery or execution message. Secret-placeholder failures never include raw secret_ref identifiers or real sensitive values."
+        issues:
+          type: array
+          description: "Workflow issues reported while checking or applying artifacts."
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                description: "Stable workflow issue code."
+              severity:
+                type: string
+                description: "Issue severity."
+              stage:
+                type: string
+                description: "Workflow stage that reported the issue."
+              message:
+                type: string
+                description: "Human-readable issue message."
+              user_action:
+                type: string
+                description: "Suggested user action."
+              retryable:
+                type: boolean
+                description: "Whether the workflow can be retried after correction."
+              details:
+                type: object
+                description: "Issue-specific details."
+        step_results:
+          type: array
+          description: "Per-artifact execution, skipped, or failed results."
+          items:
+            type: object
+            properties:
+              artifact_type:
+                type: string
+                description: "Artifact type such as add-column, create-index, or rule-dist-sql."
+              status:
+                type: string
+                description: "Artifact execution status."
+              sql:
+                type: string
+                description: "Artifact SQL or DistSQL."
+        executed_ddl:
+          type: array
+          description: "DDL statements executed by the server."
+        executed_distsql:
+          type: array
+          description: "DistSQL statements executed by the server."
+        applied_artifacts:
+          type: array
+          description: "Artifacts or steps executed by the server."
+        preview_artifacts:
+          type: array
+          description: "Artifacts that would be applied when execution_mode=preview."
+          items:
+            type: object
+            properties:
+              approval_step:
+                type: string
+                description: "Step value that can be copied into approved_steps after review."
+              artifact_type:
+                type: string
+                description: "Artifact type that would be applied."
+              sql:
+                type: string
+                description: "Artifact SQL or DistSQL that would be applied."
+              side_effect_scope:
+                type: string
+                description: "Side-effect scope such as physical-structure or rule-metadata."
+        review_focus:
+          type: object
+          description: "Compact preview review focus: artifact categories, side-effect scope, and manual-only mode."
+        would_apply:
+          type: boolean
+          description: "False when execution_mode=preview, proving workflow artifacts were not applied."
+        review_summary:
+          type: string
+          description: "Preview-only natural-language summary that confirms workflow artifacts were not applied."
+        skipped_artifacts:
+          type: array
+          description: "Artifacts intentionally skipped by policy or approved_steps."
+        manual_artifacts:
+          type: array
+          description: "Artifacts returned for manual execution."
+        manual_artifact_package:
+          type: object
+          description: "Manual-only artifact package returned when execution_mode=manual-only; contains generated DDL, DistSQL, index plan, and algorithm properties needed for operator execution."
+        manual_artifact_summary:
+          type: object
+          description: "Manual-only compact artifact summary with counts, external execution requirement, confirmation gate, and validation arguments to use after manual execution."
+        manual_follow_up:
+          type: object
+          description: "Manual-only confirmation contract; database_gateway_validate_workflow is blocked until manual_artifacts_executed is confirmed, while independent query checks remain allowed."
+        secret_reference_summary:
+          type: object
+          description: "Safe summary returned for sensitive placeholders. It contains role/property labels, manual placeholders, and counts only, never raw secret_ref identifiers or real sensitive values."
+        argument_provenance:
+          type: object
+          description: "Source of reusable apply arguments, such as server_generated or server_defaulted."
+        next_actions:
+          type: array
+          description: "Ordered model-facing recommendations after applying or exporting workflow artifacts."
+          items:
+            type: object
+            properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              tool_name:
+                type: string
+                description: "Canonical tool name when type is tool_call."
+              arguments:
+                type: object
+                description: "Canonical arguments to provide to the target tool."
+              reason:
+                type: string
+                description: "Why the model should take the action."
+              required_inputs:
+                type: array
+                description: "User inputs required when type is ask_user."
+              depends_on:
+                type: array
+                description: "Action order values that must complete before this action."
+      examples:
+        - response_mode: preview
+          plan_id: encrypt-rule-20260505-001
+          execution_mode: preview
+          applied_artifacts: []
+          preview_artifacts: []
+          would_apply: false
+          skipped_artifacts: []
+          manual_artifacts: []
+          review_summary: Previewed 0 workflow artifacts. Nothing has been applied.
+          next_actions:
+            - order: 1
+              type: terminal
+              title: Stop
+              reason: Preview has no artifacts to approve.
+    annotations:
+      title: Apply Workflow
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: false
+      openWorldHint: true
+    runtime:
+      workflowRole: apply
+      sideEffectScope:
+        - rule-metadata
+        - physical-structure
+        - physical-data
+    meta:
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_validate_workflow
+  - name: database_gateway_validate_workflow
+    title: Validate Workflow
+    description: >-
+      Validate a planned or applied workflow against visible metadata and generated artifacts. Use after planning for review,
+      and after database_gateway_apply_workflow to confirm the runtime state.
+    inputSchema:
+      type: object
+      properties:
+        plan_id:
+          type: string
+          description: "Workflow plan identifier returned by a planning tool."
+      required:
+        - plan_id
+      additionalProperties: false
+    outputSchema:
+      type: object
+      properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker for validation responses."
+          enum:
+            - validation
+            - terminal
+        plan_id:
+          type: string
+          description: "Workflow plan identifier that was validated."
+        status:
+          type: string
+          description: "Validation status such as passed, warning, or failed."
+        overall_status:
+          type: string
+          description: "Overall validation report status copied from the validation report."
+        issues:
+          type: array
+          description: "Validation issues raised from mismatches."
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                description: "Stable validation issue code."
+              severity:
+                type: string
+                description: "Issue severity."
+              stage:
+                type: string
+                description: "Workflow stage that reported the issue."
+              message:
+                type: string
+                description: "Human-readable issue message."
+              user_action:
+                type: string
+                description: "Suggested user action."
+              retryable:
+                type: boolean
+                description: "Whether the workflow can be retried after correction."
+              details:
+                type: object
+                description: "Issue-specific details."
+        sections:
+          type: array
+          description: "Validation sections with findings and evidence."
+          items:
+            type: object
+            properties:
+              layer:
+                type: string
+                description: "Validation layer such as ddl, rule, logical_metadata, or sql_executability."
+              status:
+                type: string
+                description: "Validation section status."
+              evidence:
+                description: "Evidence used by the validation section."
+              details:
+                description: "Validation details or failure message."
+        mismatches:
+          type: array
+          description: "Differences between planned artifacts and runtime metadata."
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                description: "Stable mismatch code."
+              layer:
+                type: string
+                description: "Layer where the mismatch was detected."
+              expected:
+                type: string
+                description: "Expected planned value."
+              actual:
+                type: string
+                description: "Observed runtime value."
+              impact:
+                type: string
+                description: "Impact of the mismatch."
+              remediation:
+                type: string
+                description: "Specific remediation guidance for the mismatch."
+        recovery_guidance:
+          type: string
+          description: "Recovery guidance when validation fails."
+        next_actions:
+          type: array
+          description: "Ordered model-facing recommendations after validation."
+          items:
+            type: object
+            properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              tool_name:
+                type: string
+                description: "Canonical tool name when type is tool_call."
+              arguments:
+                type: object
+                description: "Canonical arguments to provide to the target tool."
+              reason:
+                type: string
+                description: "Why the model should take the action."
+              required_inputs:
+                type: array
+                description: "User inputs required when type is ask_user."
+              depends_on:
+                type: array
+                description: "Action order values that must complete before this action."
+      examples:
+        - response_mode: validation
+          plan_id: encrypt-rule-20260505-001
+          status: passed
+          sections: []
+          mismatches: []
+          recovery_guidance: ""
+          next_actions:
+            - order: 1
+              type: terminal
+              title: Stop
+              reason: Validation passed. Report the confirmed workflow result to the user.
+    annotations:
+      title: Validate Workflow
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: true
+    runtime:
+      workflowRole: validate
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_apply_workflow

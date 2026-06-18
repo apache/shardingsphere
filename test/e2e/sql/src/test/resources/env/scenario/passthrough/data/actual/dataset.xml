@@ -1,0 +1,66 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata data-nodes="passthrough.t_data_type_integer">
+        <column name="id" type="numeric" />
+        <column name="col_bigint" type="numeric" />
+        <column name="col_int" type="numeric" />
+        <column name="col_mediumint" type="numeric" />
+        <column name="col_smallint" type="numeric" />
+        <column name="col_tinyint" type="numeric" />
+    </metadata>
+    <metadata data-nodes="passthrough.t_data_type_integer_unsigned">
+        <column name="id" type="numeric" />
+        <column name="col_bigint_unsigned" type="decimal" />
+        <column name="col_int_unsigned" type="numeric" />
+        <column name="col_mediumint_unsigned" type="numeric" />
+        <column name="col_smallint_unsigned" type="numeric" />
+        <column name="col_tinyint_unsigned" type="numeric" />
+    </metadata>
+    <metadata data-nodes="passthrough.t_data_type_floating_point">
+        <column name="id" type="numeric" />
+        <column name="col_float" type="numeric" />
+        <column name="col_double" type="numeric" />
+    </metadata>
+    <metadata data-nodes="passthrough.t_with_generated_id">
+        <column name="id" type="numeric" />
+        <column name="val" type="varchar" />
+    </metadata>
+    <metadata data-nodes="passthrough.t_data_type_money">
+        <column name="id" type="numeric" />
+        <column name="val" type="cast#money" />
+    </metadata>
+    <metadata data-nodes="passthrough.t_data_type_bytea">
+        <column name="id" type="numeric" />
+        <column name="val" type="varchar" />
+    </metadata>
+    <metadata data-nodes="passthrough.t_data_type_uuid">
+        <column name="id" type="numeric" />
+        <column name="val" type="varchar" />
+    </metadata>
+    <metadata data-nodes="passthrough.t_data_type_date">
+        <column name="id" type="numeric" />
+        <column name="creation_date" type="Date" />
+        <column name="update_date" type="datetime" />
+    </metadata>
+    <row data-node="passthrough.t_data_type_integer_unsigned" values="1001, 18446744073709551615, 4294967295, 16777215, 65535, 255" />
+    <row data-node="passthrough.t_data_type_integer_unsigned" values="1002, 0, 0, 0, 0, 0" />
+    <row data-node="passthrough.t_data_type_money" values="1001, 123" />
+    <row data-node="passthrough.t_data_type_money" values="1002, 456" />
+    <row data-node="passthrough.t_data_type_date" values="1, 2017-08-08, 2017-08-08 00:00:00" />
+</dataset>

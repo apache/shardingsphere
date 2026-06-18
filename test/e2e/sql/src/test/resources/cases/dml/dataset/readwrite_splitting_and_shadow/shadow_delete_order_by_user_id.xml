@@ -1,0 +1,35 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset update-count="2">
+    <metadata data-nodes="write_db_shadow.t_shadow">
+        <column name="order_id" type="long" />
+        <column name="user_id" type="int" />
+        <column name="order_name" type="varchar" />
+        <column name="type_char" type="char" />
+        <column name="type_boolean" type="boolean" />
+        <column name="type_smallint" type="smallint" />
+        <column name="type_enum" type="enum#season" />
+        <column name="type_decimal" type="decimal" />
+        <column name="type_date" type="Date" />
+        <column name="type_time" type="time" />
+        <column name="type_timestamp" type="timestamp" />
+    </metadata>
+    <row data-node="write_db_shadow.t_shadow" values="1, 0, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="write_db_shadow.t_shadow" values="2, 0, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="write_db_shadow.t_shadow" values="3, 0, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+</dataset>

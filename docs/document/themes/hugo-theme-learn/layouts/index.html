@@ -1,0 +1,31 @@
+{{ partial "header.html" . }}
+<span id="sidebar-toggle-span">
+<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fas fa-bars"></i> navigation</a>
+</span>
+
+{{if .Site.Home.Content }} 
+{{.Site.Home.Content}}	
+{{else}}           
+	{{if eq .Site.Language.Lang "fr"}}
+		<h1>Personaliser la page d'accueil</h1>
+		<p>
+		  Le site fonctionne. Ne pas oublier de personaliser cette page avec votre propre contenu. 3 manières de faire :
+		</p>
+		<ul>
+			<li><b>1. </b> Créer un fichier _index.md dans le dossier <b>content</b> et le remplir de Markdown</li>
+			<li><b>2. </b> Créer un fichier index.html dans le dossier <b>static</b> et le remplir de code HTML</li>
+		  <li><b>3. </b> Configurer le serveur http pour rediriger automatiquement la homepage vers la page de votre choix dans le site</li>
+		</ul>
+	{{else}}
+		<h1>Customize your own home page</h1>
+		<p>
+		  The site is working. Don't forget to customize this homepage with your own. You typically have 3 choices :
+		</p>
+		<ul>
+			<li><b>1. </b> Create an _index.md document in <b>content</b> folder and fill it with Markdown content</li>
+			<li><b>2. </b> Create an <b>index.html</b> file in the <b>static</b> folder and fill the file with HTML content</li>
+		  <li><b>3. </b> Configure your server to automatically redirect home page to one your documentation page</li>
+		</ul>
+	{{end}}
+{{ end }}  
+{{ partial "footer.html" . }}

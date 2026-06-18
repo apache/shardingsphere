@@ -1,0 +1,184 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_index
+columns:
+  indexrelid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: indexrelid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indrelid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: indrelid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indnatts:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: indnatts
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indisunique:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: indisunique
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indisprimary:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: indisprimary
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indisexclusion:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: indisexclusion
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indimmediate:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: indimmediate
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indisclustered:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: indisclustered
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indisusable:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: indisusable
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indisvalid:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: indisvalid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indcheckxmin:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: indcheckxmin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indisready:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: indisready
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indkey:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: indkey
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indcollation:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: indcollation
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indclass:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: indclass
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indoption:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: indoption
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indexprs:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: indexprs
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indpred:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: indpred
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indisreplident:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: indisreplident
+    primaryKey: false
+    unsigned: false
+    visible: true
+  indnkeyatts:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: indnkeyatts
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_index_indrelid_index:
+    name: pg_index_indrelid_index
+  pg_index_indexrelid_index:
+    name: pg_index_indexrelid_index

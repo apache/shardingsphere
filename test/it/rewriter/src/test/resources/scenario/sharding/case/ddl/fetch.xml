@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<rewrite-assertions yaml-rule="scenario/sharding/config/sharding-rule.yaml">
+    <rewrite-assertion id="fetch_cursor" db-types="openGauss">
+        <input sql="FETCH t_account_cursor" />
+        <output sql="FETCH FORWARD 1 t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH &quot;t_account_cursor&quot;" />
+        <output sql="FETCH FORWARD 1 &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_next" db-types="openGauss">
+        <input sql="FETCH NEXT FROM t_account_cursor" />
+        <output sql="FETCH  FORWARD 1  FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_next_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH NEXT FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH  FORWARD 1  FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_prior" db-types="openGauss">
+        <input sql="FETCH PRIOR FROM t_account_cursor" />
+        <output sql="FETCH  BACKWARD 1  FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_prior_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH PRIOR FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH  BACKWARD 1  FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_first" db-types="openGauss">
+        <input sql="FETCH FIRST FROM t_account_cursor" />
+        <output sql="FETCH FIRST FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_first_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH FIRST FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH FIRST FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_last" db-types="openGauss">
+        <input sql="FETCH LAST FROM t_account_cursor" />
+        <output sql="FETCH LAST FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_last_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH LAST FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH LAST FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_absolute_count" db-types="openGauss">
+        <input sql="FETCH ABSOLUTE 10 FROM t_account_cursor" />
+        <output sql="FETCH  ABSOLUTE 10  FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_absolute_count_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH ABSOLUTE 10 FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH  ABSOLUTE 10  FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_relative_count" db-types="openGauss">
+        <input sql="FETCH RELATIVE 10 FROM t_account_cursor" />
+        <output sql="FETCH  RELATIVE 10  FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_relative_count_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH RELATIVE 10 FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH  RELATIVE 10  FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_count" db-types="openGauss">
+        <input sql="FETCH 10 FROM t_account_cursor" />
+        <output sql="FETCH  FORWARD 10  FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_count_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH 10 FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH  FORWARD 10  FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_all" db-types="openGauss">
+        <input sql="FETCH ALL FROM t_account_cursor" />
+        <output sql="FETCH ALL FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_all_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH ALL FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH ALL FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_forward" db-types="openGauss">
+        <input sql="FETCH FORWARD FROM t_account_cursor" />
+        <output sql="FETCH  FORWARD 1  FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_forward_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH FORWARD FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH  FORWARD 1  FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_forward_count" db-types="openGauss">
+        <input sql="FETCH FORWARD 1 FROM t_account_cursor" />
+        <output sql="FETCH  FORWARD 1  FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_forward_count_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH FORWARD 1 FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH  FORWARD 1  FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_forward_all" db-types="openGauss">
+        <input sql="FETCH FORWARD ALL FROM t_account_cursor" />
+        <output sql="FETCH FORWARD ALL FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_forward_all_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH FORWARD ALL FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH FORWARD ALL FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_backward" db-types="openGauss">
+        <input sql="FETCH BACKWARD FROM t_account_cursor" />
+        <output sql="FETCH  BACKWARD 1  FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_backward_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH BACKWARD FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH  BACKWARD 1  FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_backward_count" db-types="openGauss">
+        <input sql="FETCH BACKWARD 1 FROM t_account_cursor" />
+        <output sql="FETCH  BACKWARD 1  FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_backward_count_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH BACKWARD 1 FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH  BACKWARD 1  FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_backward_all" db-types="openGauss">
+        <input sql="FETCH BACKWARD ALL FROM t_account_cursor" />
+        <output sql="FETCH BACKWARD ALL FROM t_account_cursor_t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="fetch_cursor_with_backward_all_with_qualified_name" db-types="openGauss">
+        <input sql="FETCH BACKWARD ALL FROM &quot;t_account_cursor&quot;" />
+        <output sql="FETCH BACKWARD ALL FROM &quot;t_account_cursor_t_account_0&quot;" />
+    </rewrite-assertion>
+</rewrite-assertions>

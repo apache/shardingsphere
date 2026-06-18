@@ -1,0 +1,48 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.atomikos.logging.LoggerFactory"
+      },
+      "type": "com.atomikos.logging.Slf4JLoggerFactoryDelegate",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "com.atomikos.util.ClassLoadingHelper"
+      },
+      "glob": "com/atomikos/icatch/provider/imp/*.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.atomikos.util.ClassLoadingHelper"
+      },
+      "glob": "transactions-defaults.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.atomikos.util.ClassLoadingHelper"
+      },
+      "glob": "transactions.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.atomikos.util.ClassLoadingHelper"
+      },
+      "glob": "jta.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.atomikos.util.Atomikos"
+      },
+      "glob": "META-INF/maven/com.atomikos/atomikos-util/pom.properties"
+    }
+  ]
+}

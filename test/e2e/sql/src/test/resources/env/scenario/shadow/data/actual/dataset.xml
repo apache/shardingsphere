@@ -1,0 +1,90 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata data-nodes="db.t_shadow,shadow_db.t_shadow">
+        <column name="order_id" type="long" />
+        <column name="user_id" type="int" />
+        <column name="order_name" type="varchar" />
+        <column name="type_char" type="char" />
+        <column name="type_boolean" type="boolean" />
+        <column name="type_smallint" type="smallint" />
+        <column name="type_enum" type="enum#season" />
+        <column name="type_decimal" type="decimal" />
+        <column name="type_date" type="Date" />
+        <column name="type_time" type="time" />
+        <column name="type_timestamp" type="timestamp" />
+    </metadata>
+    <metadata data-nodes="db.t_merchant,shadow_db.t_merchant">
+        <column name="merchant_id" type="numeric" />
+        <column name="country_id" type="numeric" />
+        <column name="merchant_name" type="varchar" />
+        <column name="business_code" type="varchar" />
+        <column name="telephone" type="varchar" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
+    <row data-node="db.t_shadow" values="1, 1, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="db.t_shadow" values="2, 1, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="db.t_shadow" values="3, 1, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="db.t_shadow" values="4, 1, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="db.t_shadow" values="5, 1, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="shadow_db.t_shadow" values="1, 0, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="shadow_db.t_shadow" values="2, 0, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="shadow_db.t_shadow" values="3, 0, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="shadow_db.t_shadow" values="4, 0, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="shadow_db.t_shadow" values="5, 0, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="db.t_merchant" values="1, 86, tencent, 86000001, 86100000001, 2017-08-08" />
+    <row data-node="db.t_merchant" values="2, 86, haier, 86000002, 86100000002, 2017-08-08" />
+    <row data-node="db.t_merchant" values="3, 86, huawei, 86000003, 86100000003, 2017-08-08" />
+    <row data-node="db.t_merchant" values="4, 86, alibaba, 86000004, 86100000004, 2017-08-08" />
+    <row data-node="db.t_merchant" values="5, 86, lenovo, 86000005, 86100000005, 2017-08-08" />
+    <row data-node="db.t_merchant" values="6, 86, moutai, 86000006, 86100000006, 2017-08-08" />
+    <row data-node="db.t_merchant" values="7, 86, baidu, 86000007, 86100000007, 2017-08-08" />
+    <row data-node="db.t_merchant" values="8, 86, xiaomi, 86000008, 86100000008, 2017-08-08" />
+    <row data-node="db.t_merchant" values="9, 86, vivo, 86000009, 86100000009, 2017-08-08" />
+    <row data-node="db.t_merchant" values="10, 86, oppo, 86000010, 86100000010, 2017-08-08" />
+    <row data-node="db.t_merchant" values="11, 1, google, 01000011, 01100000011, 2017-08-08" />
+    <row data-node="db.t_merchant" values="12, 1, walmart, 01000012, 01100000012, 2017-08-08" />
+    <row data-node="db.t_merchant" values="13, 1, amazon, 01000013, 01100000013, 2017-08-08" />
+    <row data-node="db.t_merchant" values="14, 1, apple, 01000014, 01100000014, 2017-08-08" />
+    <row data-node="db.t_merchant" values="15, 1, microsoft, 01000015, 01100000015, 2017-08-08" />
+    <row data-node="db.t_merchant" values="16, 1, dell, 01000016, 01100000016, 2017-08-08" />
+    <row data-node="db.t_merchant" values="17, 1, johnson, 01000017, 01100000017, 2017-08-08" />
+    <row data-node="db.t_merchant" values="18, 1, intel, 01000018, 01100000018, 2017-08-08" />
+    <row data-node="db.t_merchant" values="19, 1, hp, 01000019, 01100000019, 2017-08-08" />
+    <row data-node="db.t_merchant" values="20, 1, tesla, 01000020, 01100000020, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="1, 86, shadow_tencent, 86000001, 86100000001, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="2, 86, shadow_haier, 86000002, 86100000002, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="3, 86, shadow_huawei, 86000003, 86100000003, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="4, 86, shadow_alibaba, 86000004, 86100000004, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="5, 86, shadow_lenovo, 86000005, 86100000005, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="6, 86, shadow_moutai, 86000006, 86100000006, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="7, 86, shadow_baidu, 86000007, 86100000007, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="8, 86, shadow_xiaomi, 86000008, 86100000008, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="9, 86, shadow_vivo, 86000009, 86100000009, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="10, 86, shadow_oppo, 86000010, 86100000010, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="11, 1, shadow_google, 01000011, 01100000011, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="12, 1, shadow_walmart, 01000012, 01100000012, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="13, 1, shadow_amazon, 01000013, 01100000013, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="14, 1, shadow_apple, 01000014, 01100000014, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="15, 1, shadow_microsoft, 01000015, 01100000015, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="16, 1, shadow_dell, 01000016, 01100000016, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="17, 1, shadow_johnson, 01000017, 01100000017, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="18, 1, shadow_intel, 01000018, 01100000018, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="19, 1, shadow_hp, 01000019, 01100000019, 2017-08-08" />
+    <row data-node="shadow_db.t_merchant" values="20, 1, shadow_tesla, 01000020, 01100000020, 2017-08-08" />
+</dataset>

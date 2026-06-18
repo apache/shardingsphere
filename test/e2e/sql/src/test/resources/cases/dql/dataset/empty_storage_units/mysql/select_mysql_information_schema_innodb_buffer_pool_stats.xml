@@ -1,0 +1,53 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="pool_id" />
+        <column name="pool_size" />
+        <column name="free_buffers" />
+        <column name="database_pages" />
+        <column name="old_database_pages" />
+        <column name="modified_database_pages" />
+        <column name="pending_decompress" />
+        <column name="pending_reads" />
+        <column name="pending_flush_lru" />
+        <column name="pending_flush_list" />
+        <column name="pages_made_young" />
+        <column name="pages_not_made_young" />
+        <column name="pages_made_young_rate" />
+        <column name="pages_made_not_young_rate" />
+        <column name="number_pages_read" />
+        <column name="number_pages_created" />
+        <column name="number_pages_written" />
+        <column name="pages_read_rate" />
+        <column name="pages_create_rate" />
+        <column name="pages_written_rate" />
+        <column name="number_pages_get" />
+        <column name="hit_rate" />
+        <column name="young_make_per_thousand_gets" />
+        <column name="not_young_make_per_thousand_gets" />
+        <column name="number_pages_read_ahead" />
+        <column name="number_read_ahead_evicted" />
+        <column name="read_ahead_rate" />
+        <column name="read_ahead_evicted_rate" />
+        <column name="lru_io_total" />
+        <column name="lru_io_current" />
+        <column name="uncompress_total" />
+        <column name="uncompress_current" />
+    </metadata>
+</dataset>

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <audit sql-case-id="audit_policy" />
+    <audit sql-case-id="audit_policy_by_users" />
+    <audit sql-case-id="audit_policy_except_user" />
+    <audit sql-case-id="audit_policy_by_users_with_roles" />
+    <audit sql-case-id="audit_context_namespace_attributes" />
+    <audit sql-case-id="audit_all_statements_in_session_current_by_access_whenever_not_successful" />
+    <audit sql-case-id="audit_alter_system" />
+    <audit sql-case-id="audit_create_cluster" />
+    <audit sql-case-id="audit_alter_cluster" />
+    <audit sql-case-id="audit_drop_cluster" />
+    <audit sql-case-id="audit_truncate_cluster" />
+    <audit sql-case-id="audit_context" />
+    <audit sql-case-id="audit_create_context" />
+    <audit sql-case-id="audit_drop_context" />
+    <audit sql-case-id="audit_database_link" />
+    <audit sql-case-id="audit_create_database_link" />
+    <audit sql-case-id="audit_alter_database_link" />
+    <audit sql-case-id="audit_drop_database_link" />
+    <audit sql-case-id="audit_dimension" />
+    <audit sql-case-id="audit_create_dimension" />
+    <audit sql-case-id="audit_alter_dimension" />
+    <audit sql-case-id="audit_drop_dimension" />
+    <audit sql-case-id="audit_directory" />
+    <audit sql-case-id="audit_create_directory" />
+    <audit sql-case-id="audit_drop_directory" />
+    <audit sql-case-id="audit_index" />
+    <audit sql-case-id="audit_create_index" />
+    <audit sql-case-id="audit_alter_index" />
+    <audit sql-case-id="audit_analyze_index" />
+    <audit sql-case-id="audit_drop_index" />
+    <audit sql-case-id="audit_materialized_view" />
+    <audit sql-case-id="audit_create_materialized_view" />
+    <audit sql-case-id="audit_alter_materialized_view" />
+    <audit sql-case-id="audit_drop_materialized_view" />
+    <audit sql-case-id="audit_not_exists" />
+    <audit sql-case-id="audit_outline" />
+    <audit sql-case-id="audit_create_outline" />
+    <audit sql-case-id="audit_alter_outline" />
+    <audit sql-case-id="audit_drop_outline" />
+    <audit sql-case-id="audit_pluggable_database" />
+    <audit sql-case-id="audit_create_pluggable_database" />
+    <audit sql-case-id="audit_alter_pluggable_database" />
+    <audit sql-case-id="audit_drop_pluggable_database" />
+    <audit sql-case-id="audit_procedure" />
+    <audit sql-case-id="audit_create_function" />
+    <audit sql-case-id="audit_create_library" />
+    <audit sql-case-id="audit_create_package" />
+    <audit sql-case-id="audit_create_package_body" />
+    <audit sql-case-id="audit_create_procedure" />
+    <audit sql-case-id="audit_drop_function" />
+    <audit sql-case-id="audit_drop_library" />
+    <audit sql-case-id="audit_drop_package" />
+    <audit sql-case-id="audit_drop_procedure" />
+    <audit sql-case-id="audit_profile" />
+    <audit sql-case-id="audit_create_profile" />
+    <audit sql-case-id="audit_alter_profile" />
+    <audit sql-case-id="audit_drop_profile" />
+    <audit sql-case-id="audit_public_database_link" />
+    <audit sql-case-id="audit_create_public_database_link" />
+    <audit sql-case-id="audit_alter_public_database_link" />
+    <audit sql-case-id="audit_drop_public_database_link" />
+    <audit sql-case-id="audit_public_synonym" />
+    <audit sql-case-id="audit_create_public_synonym" />
+    <audit sql-case-id="audit_drop_public_synonym" />
+    <audit sql-case-id="audit_role" />
+    <audit sql-case-id="audit_create_role" />
+    <audit sql-case-id="audit_alter_role" />
+    <audit sql-case-id="audit_drop_role" />
+    <audit sql-case-id="audit_set_role" />
+    <audit sql-case-id="audit_rollback_segment" />
+    <audit sql-case-id="audit_create_rollback_segment" />
+    <audit sql-case-id="audit_alter_rollback_segment" />
+    <audit sql-case-id="audit_drop_rollback_segment" />
+    <audit sql-case-id="audit_sequence" />
+    <audit sql-case-id="audit_create_sequence" />
+    <audit sql-case-id="audit_drop_sequence" />
+    <audit sql-case-id="audit_session" />
+    <audit sql-case-id="audit_synonym" />
+    <audit sql-case-id="audit_create_synonym" />
+    <audit sql-case-id="audit_drop_synonym" />
+    <audit sql-case-id="audit_system_audit" />
+    <audit sql-case-id="audit_system_grant" />
+    <audit sql-case-id="audit_table" />
+    <audit sql-case-id="audit_create_table" />
+    <audit sql-case-id="audit_drop_table" />
+    <audit sql-case-id="audit_truncate_table" />
+    <audit sql-case-id="audit_tablespace" />
+    <audit sql-case-id="audit_create_tablespace" />
+    <audit sql-case-id="audit_alter_tablespace" />
+    <audit sql-case-id="audit_drop_tablespace" />
+    <audit sql-case-id="audit_trigger" />
+    <audit sql-case-id="audit_create_trigger" />
+    <audit sql-case-id="audit_alter_trigger" />
+    <audit sql-case-id="audit_drop_trigger" />
+    <audit sql-case-id="audit_alter_table" />
+    <audit sql-case-id="audit_type" />
+    <audit sql-case-id="audit_create_type" />
+    <audit sql-case-id="audit_create_type_body" />
+    <audit sql-case-id="audit_alter_type" />
+    <audit sql-case-id="audit_drop_type" />
+    <audit sql-case-id="audit_drop_type_body" />
+    <audit sql-case-id="audit_user" />
+    <audit sql-case-id="audit_create_user" />
+    <audit sql-case-id="audit_alter_user" />
+    <audit sql-case-id="audit_drop_user" />
+    <audit sql-case-id="audit_view" />
+    <audit sql-case-id="audit_create_view" />
+    <audit sql-case-id="audit_drop_view" />
+    <audit sql-case-id="audit_alter_sequence" />
+    <audit sql-case-id="audit_comment_table" />
+    <audit sql-case-id="audit_delete_table" />
+    <audit sql-case-id="audit_execute_directory" />
+    <audit sql-case-id="audit_execute_procedure" />
+    <audit sql-case-id="audit_grant_directory" />
+    <audit sql-case-id="audit_grant_procedure" />
+    <audit sql-case-id="audit_grant_sequence" />
+    <audit sql-case-id="audit_grant_table" />
+    <audit sql-case-id="audit_grant_type" />
+    <audit sql-case-id="audit_insert_table" />
+    <audit sql-case-id="audit_lock_table" />
+    <audit sql-case-id="audit_read_directory" />
+    <audit sql-case-id="audit_select_sequence" />
+    <audit sql-case-id="audit_select_table" />
+    <audit sql-case-id="audit_update_table" />
+    <audit sql-case-id="audit_write_directory" />
+    <audit sql-case-id="audit_alter_on_default" />
+    <audit sql-case-id="audit_audit_on_default" />
+    <audit sql-case-id="audit_comment_on_default" />
+    <audit sql-case-id="audit_delete_on_default" />
+    <audit sql-case-id="audit_flashback_on_default" />
+    <audit sql-case-id="audit_grant_on_default" />
+    <audit sql-case-id="audit_index_on_default" />
+    <audit sql-case-id="audit_insert_on_default" />
+    <audit sql-case-id="audit_lock_on_default" />
+    <audit sql-case-id="audit_rename_on_default" />
+    <audit sql-case-id="audit_select_on_default" />
+    <audit sql-case-id="audit_update_on_default" />
+    <audit sql-case-id="audit_execute_on_default" />
+    <audit sql-case-id="audit_read_on_default" />
+    <audit sql-case-id="audit_all_by_by_access" />
+    <audit sql-case-id="audit_all_on_default_by_access" />
+    <audit sql-case-id="audit_all_statements_by_by_access_whenever_successful" />
+    <audit sql-case-id="audit_all_statements_in_session_current" />
+    <audit sql-case-id="audit_create_any_directory" />
+    <audit sql-case-id="audit_create_alter" />
+    <audit sql-case-id="audit_delete_any_table_by_access" />
+    <audit sql-case-id="audit_crete_table_by_access_whenever_not_successful" />
+    <audit sql-case-id="audit_select_table_by" />
+    <audit sql-case-id="audit_delete_any_table" />
+    <audit sql-case-id="audit_delete_on_by_access" />
+    <audit sql-case-id="audit_execute_on_by_access_whenever_successful" />
+    <audit sql-case-id="audit_insert_any_table_by_system_by_access" />
+    <audit sql-case-id="audit_insert_table_by_access" />
+    <audit sql-case-id="audit_role_whenever_not_successful" />
+    <audit sql-case-id="audit_role_whenever_success" />
+    <audit sql-case-id="audit_select_on_default_by_access_whenever_not_successful" />
+    <audit sql-case-id="audit_select_on_whenever_successful" />
+    <audit sql-case-id="audit_cluster" />
+    <audit sql-case-id="audit_alter_delete_on_default_by_access" />
+    <audit sql-case-id="audit_alter_index_rename_on_default" />
+    <audit sql-case-id="audit_session_by" />
+    <audit sql-case-id="audit_lock_table_by_access_whenever_successful" />
+    <audit sql-case-id="audit_delete_on_by_access_whenever_success" />
+    <audit sql-case-id="audit_select_on_by_access1" />
+    <audit sql-case-id="audit_select_on_by_access2" />
+    <audit sql-case-id="audit_select_on_by_access3" />
+    <audit sql-case-id="audit_select_whenever_not_successful" />
+    <audit sql-case-id="audit_select_table_by_access" />
+    <audit sql-case-id="audit_select_insert_delete_table_by_access_whenever_not_successful" />
+    <audit sql-case-id="audit_select_update_table" />
+    <audit sql-case-id="audit_select_update_table_by" />
+    <audit sql-case-id="audit_select_update_table_by_access" />
+    <audit sql-case-id="audit_session_by_access" />
+    <audit sql-case-id="audit_select_insert_delete_on_access_whenever_successful" />
+    <audit sql-case-id="audit_session_by_by_access" />
+</sql-parser-test-cases>

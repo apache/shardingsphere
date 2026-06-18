@@ -1,0 +1,78 @@
+# maven ignore
+target/
+*.class
+*.jar
+*.war
+*.zip
+*.tar
+*.tar.gz
+dependency-reduced-pom.xml
+.flattened-pom.xml
+pom.xml.versionsBackup
+
+# maven plugin ignore
+release.properties
+*.gpg
+
+# eclipse ignore
+.settings/
+.project
+.classpath
+.factorypath
+
+# idea ignore
+.idea/
+!/.idea/icon.png
+!/.idea/vcs.xml
+*.ipr
+*.iml
+*.iws
+
+# vscode ignore
+.vscode/
+
+# temp ignore
+logs/
+*.log
+*.tlog
+*.doc
+*.cache
+*.diff
+*.patch
+*.tmp
+
+# system ignore
+.DS_Store
+Thumbs.db
+
+# antlr ignore
+gen/
+*.tokens
+
+# profiler ignore
+.profiler/
+
+# hugo ignore
+blog/public/
+community/public/
+document/public/
+.hugo_build.lock
+*.html-e
+
+# codex ignore
+.agents/
+.codex/log/
+.codex/sessions/
+.codex/tmp/
+.codex/prompts/
+.codex/shell_snapshots/
+.codex/*.sqlite
+.codex/*.sqlite-shm
+.codex/*.sqlite-wal
+.codex/history.jsonl
+.codex/auth.json
+.codex/models_cache.json
+.codex/version.json
+.codex/.personality_migration
+
+.antlr_last_commit

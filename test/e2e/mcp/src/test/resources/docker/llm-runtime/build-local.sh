@@ -1,0 +1,154 @@
+#!/bin/sh
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+set -eu
+
+print_usage() {
+  echo "Usage: sh $0 [--dry-run|--print]"
+}
+
+if [ "$#" -gt 1 ]; then
+  echo "Only one argument is supported." >&2
+  print_usage >&2
+  exit 1
+fi
+
+MODE="${1:-build}"
+
+case "${MODE}" in
+  build | --dry-run | --print)
+    ;;
+  --help)
+    print_usage
+    exit 0
+    ;;
+  *)
+    echo "Unsupported argument: $1" >&2
+    print_usage >&2
+    exit 1
+    ;;
+esac
+
+SCRIPT_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd -P)"
+DOCKERFILE_PATH="${SCRIPT_DIR}/Dockerfile"
+ENV_FILE="${SCRIPT_DIR}/../../env/e2e-env.properties"
+
+if [ ! -f "${ENV_FILE}" ]; then
+  echo "MCP E2E environment properties file is required: ${ENV_FILE}" >&2
+  exit 1
+fi
+
+read_property() {
+  awk -F= -v key="$1" '$1 == key {sub(/^[^=]*=/, ""); print; found = 1; exit} END {if (!found) exit 1}' "${ENV_FILE}"
+}
+
+read_required_property() {
+  PROPERTY_VALUE="$(read_property "$1" || true)"
+  if [ -z "${PROPERTY_VALUE}" ]; then
+    echo "MCP E2E property is required: $1" >&2
+    exit 1
+  fi
+  echo "${PROPERTY_VALUE}"
+}
+
+read_optional_property() {
+  read_property "$1" || true
+}
+
+normalize_arch() {
+  case "$1" in
+    x86_64)
+      echo "amd64"
+      ;;
+    aarch64)
+      echo "arm64"
+      ;;
+    *)
+      echo "$1"
+      ;;
+  esac
+}
+
+detect_target_platform() {
+  DOCKER_PLATFORM="$(docker version --format '{{.Server.Os}}/{{.Server.Arch}}' 2>/dev/null || true)"
+  if [ -n "${DOCKER_PLATFORM}" ]; then
+    echo "${DOCKER_PLATFORM}"
+    return
+  fi
+  echo "$(uname -s | tr '[:upper:]' '[:lower:]')/$(normalize_arch "$(uname -m)")"
+}
+
+IMAGE_TAG="${MCP_LLM_SERVER_IMAGE:-$(read_required_property "mcp.llm.server-image")}"
+TARGET_PLATFORM="${MCP_LLM_TARGET_PLATFORM:-$(read_optional_property "mcp.llm.target-platform")}"
+if [ -z "${TARGET_PLATFORM}" ]; then
+  TARGET_PLATFORM="$(detect_target_platform)"
+fi
+BASE_IMAGE="${MCP_LLM_BASE_SERVER_IMAGE:-$(read_required_property "mcp.llm.base-server-image")}"
+BASE_DIGEST="${MCP_LLM_BASE_SERVER_IMAGE_DIGEST:-$(read_optional_property "mcp.llm.base-server-image-digest")}"
+SERVER_RUNTIME="${MCP_LLM_SERVER_RUNTIME:-$(read_required_property "mcp.llm.server-runtime")}"
+MODEL_REPOSITORY="${MCP_LLM_MODEL_REPOSITORY:-$(read_required_property "mcp.llm.model-repository")}"
+MODEL_QUANTIZATION="${MCP_LLM_MODEL_QUANTIZATION:-$(read_required_property "mcp.llm.model-quantization")}"
+MODEL_REFERENCE="${MCP_LLM_MODEL:-$(read_required_property "mcp.llm.model")}"
+MODEL_REVISION="${MCP_LLM_MODEL_REVISION:-$(read_required_property "mcp.llm.model-revision")}"
+MODEL_FILE_NAME="${MCP_LLM_MODEL_FILE_NAME:-$(read_required_property "mcp.llm.model-file-name")}"
+MODEL_SHA256="${MCP_LLM_MODEL_SHA256:-$(read_required_property "mcp.llm.model-sha256")}"
+
+case "${BASE_IMAGE}" in
+  *@sha256:*)
+    ;;
+  *)
+    if [ -n "${BASE_DIGEST}" ]; then
+      BASE_IMAGE="${BASE_IMAGE}@${BASE_DIGEST}"
+    fi
+    ;;
+esac
+
+if [ "--dry-run" = "${MODE}" ] || [ "--print" = "${MODE}" ]; then
+  echo "target_platform=${TARGET_PLATFORM}"
+  echo "base_image=${BASE_IMAGE}"
+  echo "server_runtime=${SERVER_RUNTIME}"
+  echo "model_repository=${MODEL_REPOSITORY}"
+  echo "model_quantization=${MODEL_QUANTIZATION}"
+  echo "model_reference=${MODEL_REFERENCE}"
+  echo "model_revision=${MODEL_REVISION}"
+  echo "model_file_name=${MODEL_FILE_NAME}"
+  echo "model_sha256=${MODEL_SHA256}"
+  echo "image_tag=${IMAGE_TAG}"
+  echo "dockerfile=${DOCKERFILE_PATH}"
+  echo "context=${SCRIPT_DIR}"
+  exit 0
+fi
+
+if ! command -v docker >/dev/null 2>&1; then
+  echo "Docker is required to build the MCP LLM runtime image." >&2
+  exit 1
+fi
+
+docker build \
+  --platform "${TARGET_PLATFORM}" \
+  --build-arg "BASE_IMAGE=${BASE_IMAGE}" \
+  --build-arg "SERVER_RUNTIME=${SERVER_RUNTIME}" \
+  --build-arg "MODEL_REPOSITORY=${MODEL_REPOSITORY}" \
+  --build-arg "MODEL_QUANTIZATION=${MODEL_QUANTIZATION}" \
+  --build-arg "MODEL_REFERENCE=${MODEL_REFERENCE}" \
+  --build-arg "MODEL_REVISION=${MODEL_REVISION}" \
+  --build-arg "MODEL_FILE_NAME=${MODEL_FILE_NAME}" \
+  --build-arg "MODEL_SHA256=${MODEL_SHA256}" \
+  -t "${IMAGE_TAG}" \
+  -f "${DOCKERFILE_PATH}" \
+  "${SCRIPT_DIR}"

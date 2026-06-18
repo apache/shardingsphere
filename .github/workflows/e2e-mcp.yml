@@ -1,0 +1,164 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: E2E - MCP
+
+on:
+  pull_request:
+    branches: [ master ]
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths:
+      - '.github/workflows/e2e-mcp.yml'
+      - 'pom.xml'
+      - 'mcp/**'
+      - 'test/e2e/pom.xml'
+      - 'test/e2e/mcp/**'
+  schedule:
+    - cron: '0 19 * * 1-5'
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-mcp-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
+  MCP_DISTRIBUTION_IMAGE: apache/shardingsphere-mcp-e2e:local
+
+jobs:
+  e2e-mcp-mysql-runtime:
+    name: E2E - MCP MySQL Runtime
+    if: github.repository == 'apache/shardingsphere'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          java-version: '21'
+          cache-suffix: 'e2e-mcp'
+          cache-save-enabled: 'false'
+          enable-docker-setup: 'true'
+      - name: Check Docker Environment
+        run: |
+          docker version
+          docker system df
+      - name: Load MCP E2E Properties
+        id: mcp-e2e-properties
+        shell: bash
+        run: |
+          set -euo pipefail
+          property_file="test/e2e/mcp/src/test/resources/env/e2e-env.properties"
+          load_property() {
+            local value
+            value="$(awk -F= -v key="$1" '$1 == key {sub(/^[^=]*=/, ""); print; found = 1; exit} END {if (!found) exit 1}' "${property_file}")"
+            if [[ -z "${value}" ]]; then
+              echo "MCP E2E property is required: $1" >&2
+              exit 1
+            fi
+            printf '%s' "${value}"
+          }
+          load_optional_property() {
+            awk -F= -v key="$1" '$1 == key {sub(/^[^=]*=/, ""); print; found = 1; exit} END {if (!found) exit 1}' "${property_file}" || true
+          }
+          normalize_arch() {
+            case "$1" in
+              x86_64)
+                echo "amd64"
+                ;;
+              aarch64)
+                echo "arm64"
+                ;;
+              *)
+                echo "$1"
+                ;;
+            esac
+          }
+          target_platform="$(load_optional_property 'mcp.llm.target-platform')"
+          if [[ -z "${target_platform}" ]]; then
+            target_platform="$(docker version --format '{{.Server.Os}}')/$(normalize_arch "$(docker version --format '{{.Server.Arch}}')")"
+          fi
+          base_server_image="$(load_property 'mcp.llm.base-server-image')"
+          base_server_image_digest="$(load_optional_property 'mcp.llm.base-server-image-digest')"
+          if [[ "${base_server_image}" != *@sha256:* && -n "${base_server_image_digest}" ]]; then
+            base_server_image="${base_server_image}@${base_server_image_digest}"
+          fi
+          {
+            echo "target_platform=${target_platform}"
+            echo "server_image=$(load_property 'mcp.llm.server-image')"
+            echo "base_server_image=${base_server_image}"
+            echo "server_runtime=$(load_property 'mcp.llm.server-runtime')"
+            echo "model_repository=$(load_property 'mcp.llm.model-repository')"
+            echo "model_quantization=$(load_property 'mcp.llm.model-quantization')"
+            echo "model_reference=$(load_property 'mcp.llm.model')"
+            echo "model_revision=$(load_property 'mcp.llm.model-revision')"
+            echo "model_file_name=$(load_property 'mcp.llm.model-file-name')"
+            echo "model_sha256=$(load_property 'mcp.llm.model-sha256')"
+          } >> "${GITHUB_OUTPUT}"
+      - name: Build MCP LLM Runtime Image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build \
+            --platform "${{ steps.mcp-e2e-properties.outputs.target_platform }}" \
+            -f test/e2e/mcp/src/test/resources/docker/llm-runtime/Dockerfile \
+            -t "${{ steps.mcp-e2e-properties.outputs.server_image }}" \
+            --build-arg "BASE_IMAGE=${{ steps.mcp-e2e-properties.outputs.base_server_image }}" \
+            --build-arg "SERVER_RUNTIME=${{ steps.mcp-e2e-properties.outputs.server_runtime }}" \
+            --build-arg "MODEL_REPOSITORY=${{ steps.mcp-e2e-properties.outputs.model_repository }}" \
+            --build-arg "MODEL_QUANTIZATION=${{ steps.mcp-e2e-properties.outputs.model_quantization }}" \
+            --build-arg "MODEL_REFERENCE=${{ steps.mcp-e2e-properties.outputs.model_reference }}" \
+            --build-arg "MODEL_REVISION=${{ steps.mcp-e2e-properties.outputs.model_revision }}" \
+            --build-arg "MODEL_FILE_NAME=${{ steps.mcp-e2e-properties.outputs.model_file_name }}" \
+            --build-arg "MODEL_SHA256=${{ steps.mcp-e2e-properties.outputs.model_sha256 }}" \
+            test/e2e/mcp/src/test/resources/docker/llm-runtime
+      - name: Build MCP E2E Test Dependencies
+        run: ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+      - name: Package MCP Distribution
+        run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
+      - name: Build MCP Distribution Image
+        run: docker build --platform "${{ steps.mcp-e2e-properties.outputs.target_platform }}" -f distribution/mcp/Dockerfile -t "${{ env.MCP_DISTRIBUTION_IMAGE }}" distribution/mcp/target
+      - name: Run MCP E2E
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
+            -Dtest='*E2ETest' \
+            -Dsurefire.failIfNoSpecifiedTests=true \
+            -De2e.run.type=DOCKER \
+            -Dmcp.e2e.container.image="${{ env.MCP_DISTRIBUTION_IMAGE }}" \
+            -Dmcp.llm.ready-timeout-seconds=900 \
+            -Dmcp.llm.request-timeout-seconds=300 \
+            -Dmcp.llm.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/llm-e2e" \
+            -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }} \
+            -B -ntp
+      - name: Upload MCP E2E Artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: e2e-mcp-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            test/e2e/mcp/target/llm-e2e
+            test/e2e/mcp/target/surefire-reports
+          if-no-files-found: warn

@@ -1,0 +1,182 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: Nightly - E2E Operation
+
+on:
+  schedule:
+    - cron: '0 19 * * 1-5' # Once a day between Monday and Friday. UTC time
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: 'operation'
+        required: true
+        default: '[ "transaction", "pipeline", "showprocesslist" ]'
+      docker-image:
+        description: 'docker-image'
+        required: false
+        default: ''
+
+concurrency:
+  group: nightly-e2e-operation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
+
+jobs:
+  global-environment:
+    name: Import Global Environment
+    uses: ./.github/workflows/required-reusable.yml
+
+  prepare-e2e-matrix:
+    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
+    name: Prepare E2E Matrix
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
+    timeout-minutes: 5
+    outputs:
+      images: ${{ steps.prepare.outputs.images }}
+    steps:
+      - id: prepare
+        env:
+          DOCKER_IMAGE: ${{ github.event.inputs['docker-image'] }}
+        run: |
+          if [ -n "$DOCKER_IMAGE" ]; then
+            echo "images=[\"$DOCKER_IMAGE\"]" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          {
+            echo 'images<<EOF'
+            echo '['
+            echo '  "mysql:5.7",'
+            echo '  "mysql:8.0",'
+            echo '  "mariadb:11",'
+            echo '  "postgres:11-alpine",'
+            echo '  "postgres:12-alpine",'
+            echo '  "postgres:13-alpine",'
+            echo '  "postgres:14-alpine",'
+            echo '  "opengauss/opengauss:3.1.0"'
+            echo ']'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+  prepare-e2e-artifacts:
+    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
+    name: Prepare E2E Artifacts
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - id: setup-build-environment
+        uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-suffix: 'e2e-operation'
+          cache-save-enabled: 'false'
+          enable-docker-setup: 'true'
+      - name: Maven Install
+        env:
+          PREFIX: "test/e2e/operation/"
+          MODULE_LIST: "transaction,pipeline,showprocesslist"
+        run: |
+          FORMATTED_PL=$(echo "$MODULE_LIST" | sed "s|,|,$PREFIX|g" | sed "s|^|$PREFIX|")
+          echo "Ready to build: $FORMATTED_PL"
+          ./mvnw -B clean install -am -pl "$FORMATTED_PL" -Pe2e.env.docker -DskipTests
+      - uses: ./.github/workflows/resources/actions/save-maven-cache
+        with:
+          cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
+          cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
+      - uses: ./.github/workflows/resources/actions/upload-source-snapshot
+      - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
+
+  e2e-operation-job:
+    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
+    name: E2E - ${{ matrix.operation }} on ${{ matrix.image }} with JDK ${{ matrix.java-version }}
+    needs: [ global-environment, prepare-e2e-matrix, prepare-e2e-artifacts ]
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
+    timeout-minutes: 150
+    strategy:
+      max-parallel: 15
+      fail-fast: false
+      matrix:
+        java-version: [ 21 ]
+        operation: ${{ fromJson(github.event.inputs.operation || '[ "transaction", "pipeline", "showprocesslist" ]') }}
+        image: ${{ fromJson(needs.prepare-e2e-matrix.outputs.images) }}
+        exclude:
+          - operation: transaction
+            image: "mariadb:11"
+          - operation: showprocesslist
+            image: "mariadb:11"
+          - operation: showprocesslist
+            image: "postgres:11-alpine"
+          - operation: showprocesslist
+            image: "postgres:12-alpine"
+          - operation: showprocesslist
+            image: "postgres:13-alpine"
+          - operation: showprocesslist
+            image: "postgres:14-alpine"
+          - operation: showprocesslist
+            image: "opengauss/opengauss:3.1.0"
+    steps:
+      - name: Logs
+        run: |
+          echo "runner.temp=${{ runner.temp }}"
+          echo "RUNNER_TEMP=$RUNNER_TEMP"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v8
+        with:
+          name: source-snapshot
+          path: ${{ runner.temp }}/source-snapshot
+      - name: Restore Source Snapshot
+        run: |
+          find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
+          tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          java-version: ${{ matrix.java-version }}
+          cache-suffix: 'e2e-operation'
+          cache-save-enabled: 'false'
+          enable-docker-setup: 'true'
+      - uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+      - name: Run ${{ matrix.operation }} on ${{ matrix.image }}
+        env:
+          DOCKER_IMAGE: ${{ matrix.image }}
+        run: |
+          case "$DOCKER_IMAGE" in
+            mysql:*)
+              DOCKER_IMAGE_PROPERTY="e2e.docker.database.mysql.images"
+              ;;
+            mariadb:*)
+              DOCKER_IMAGE_PROPERTY="e2e.docker.database.mariadb.images"
+              ;;
+            postgres:*)
+              DOCKER_IMAGE_PROPERTY="e2e.docker.database.postgresql.images"
+              ;;
+            opengauss/*)
+              DOCKER_IMAGE_PROPERTY="e2e.docker.database.opengauss.images"
+              ;;
+            *)
+              echo "Unsupported docker image: $DOCKER_IMAGE"
+              exit 1
+              ;;
+          esac
+          ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${DOCKER_IMAGE_PROPERTY}=${DOCKER_IMAGE}

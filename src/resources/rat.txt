@@ -1,0 +1,62 @@
+**/gen/**
+**/target/**
+**/logs/**
+**/*.log
+**/*.tokens
+
+# IDE files
+
+**/*.iml
+**/.idea/**
+**/*.classpath
+**/.project
+**/.settings/**
+**/dependency-reduced-pom.xml
+
+# git files
+
+**/.gitignore
+**/.gitmodules
+**/.git/**
+
+# CI files
+
+**/.codecov.yml
+**/.mvn/jvm.config
+**/.mvn/wrapper/maven-wrapper.properties
+
+# GitHub files
+
+**/.github/**
+
+# document files
+
+**/*.md
+**/*.MD
+**/*.txt
+**/docs/**
+
+# UI files
+
+**/.babelrc
+**/.editorconfig
+**/.eslintignore
+**/package.json
+**/assets/**
+**/dist/**
+**/etc/**
+**/node/**
+**/node_modules/**
+**/test/coverage/**
+**/package-lock.json
+
+# example files
+
+/examples/**
+
+# Helm files
+
+**/.helmignore
+**/_helpers.tpl
+
+# test files

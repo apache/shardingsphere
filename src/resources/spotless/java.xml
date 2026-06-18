@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<profiles version="13">
+    <profile kind="CodeFormatterProfile" name="'ShardingSphere Apache Current'" version="13">
+        <setting id="org.eclipse.jdt.core.compiler.source" value="1.8" />
+        <setting id="org.eclipse.jdt.core.compiler.compliance" value="1.8" />
+        <setting id="org.eclipse.jdt.core.compiler.codegen.targetPlatform" value="1.8" />
+        <setting id="org.eclipse.jdt.core.formatter.indent_empty_lines" value="true" />
+        <setting id="org.eclipse.jdt.core.formatter.tabulation.size" value="4" />
+        <setting id="org.eclipse.jdt.core.formatter.lineSplit" value="200" />
+        <setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="200" />
+        <setting id="org.eclipse.jdt.core.formatter.tabulation.char" value="space" />
+        <setting id="org.eclipse.jdt.core.formatter.indentation.size" value="1" />
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_first_class_body_declaration" value="1" />
+        <setting id="org.eclipse.jdt.core.formatter.comment.format_javadoc_comments" value="false" />
+        <setting id="org.eclipse.jdt.core.formatter.join_wrapped_lines" value="false" />
+        <setting id="org.eclipse.jdt.core.formatter.insert_space_before_colon_in_conditional" value="insert" />
+        <setting id="org.eclipse.jdt.core.formatter.insert_space_before_colon_in_default" value="do not insert" />
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_enum_constants" value="16" />
+        <setting id="org.eclipse.jdt.core.formatter.insert_space_before_colon_in_labeled_statement" value="do not insert" />
+        <setting id="org.eclipse.jdt.core.formatter.insert_space_before_colon_in_case" value="do not insert" />
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_conditional_expression" value="80" />
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_assignment" value="16" />
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_after_package" value="1" />
+        <setting id="org.eclipse.jdt.core.formatter.continuation_indentation_for_array_initializer" value="2" />
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_resources_in_try" value="160" />
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_method_declaration" value="10" />
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_parameters_in_method_declaration" value="106" />
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_parameters_in_constructor_declaration" value="106" />
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_constructor_declaration" value="106" />
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_explicit_constructor_call.count_dependent" value="16|5|80" />
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_annotation" value="16" />
+    </profile>
+</profiles>

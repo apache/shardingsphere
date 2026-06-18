@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="select_with_block_comment" value="SELECT * /* this is &#x000D;&#x000A; block comment */ FROM /* this is another &#x000A; block comment */ t_order where status='1'" db-types="MySQL,PostgreSQL,openGauss,Oracle,SQLServer,Firebird" />
+    <sql-case id="select_with_nested_block_comment" value="SELECT * /* this is &#x000D;&#x000A; /* this is another &#x000A; block comment */ block comment */ FROM t_order" db-types="PostgreSQL" />
+    <sql-case id="select_with_single_comment" value="SELECT * -- this is an line comment &#x000D;&#x000A; FROM -- this is another line comment &#x000A; t_order where status='1'" db-types="MySQL,PostgreSQL,openGauss,Firebird" />
+    <sql-case id="select_with_single_comment_without_whitespace" value="SELECT * --this is an line comment &#x000D;&#x000A; FROM --this is another line comment &#x000A; t_order where status='1'" db-types="PostgreSQL,openGauss,Oracle,Firebird" />
+</sql-cases>

@@ -1,0 +1,120 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_authid
+columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: true
+    unsigned: false
+    visible: true
+  rolname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: rolname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rolsuper:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rolsuper
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rolinherit:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rolinherit
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rolcreaterole:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rolcreaterole
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rolcreatedb:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rolcreatedb
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rolcanlogin:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rolcanlogin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rolreplication:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rolreplication
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rolbypassrls:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rolbypassrls
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rolconnlimit:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: rolconnlimit
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rolpassword:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: rolpassword
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rolvaliduntil:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: rolvaliduntil
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_authid_rolname_index:
+    name: pg_authid_rolname_index
+  pg_authid_oid_index:
+    name: pg_authid_oid_index

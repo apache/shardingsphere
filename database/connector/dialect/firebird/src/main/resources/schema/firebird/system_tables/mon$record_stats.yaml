@@ -1,0 +1,138 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS-IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: MON$RECORD_STATS
+columns:
+  MON$STAT_ID:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$STAT_ID
+    primaryKey: false
+    visible: true
+  MON$STAT_GROUP:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$STAT_GROUP
+    primaryKey: false
+    visible: true
+  MON$RECORD_SEQ_READS:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$RECORD_SEQ_READS
+    primaryKey: false
+    visible: true
+  MON$RECORD_IDX_READS:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$RECORD_IDX_READS
+    primaryKey: false
+    visible: true
+  MON$RECORD_INSERTS:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$RECORD_INSERTS
+    primaryKey: false
+    visible: true
+  MON$RECORD_UPDATES:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$RECORD_UPDATES
+    primaryKey: false
+    visible: true
+  MON$RECORD_DELETES:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$RECORD_DELETES
+    primaryKey: false
+    visible: true
+  MON$RECORD_BACKOUTS:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$RECORD_BACKOUTS
+    primaryKey: false
+    visible: true
+  MON$RECORD_PURGES:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$RECORD_PURGES
+    primaryKey: false
+    visible: true
+  MON$RECORD_EXPUNGES:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$RECORD_EXPUNGES
+    primaryKey: false
+    visible: true
+  MON$RECORD_LOCKS:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$RECORD_LOCKS
+    primaryKey: false
+    visible: true
+  MON$RECORD_WAITS:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$RECORD_WAITS
+    primaryKey: false
+    visible: true
+  MON$RECORD_CONFLICTS:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$RECORD_CONFLICTS
+    primaryKey: false
+    visible: true
+  MON$BACKVERSION_READS:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$BACKVERSION_READS
+    primaryKey: false
+    visible: true
+  MON$FRAGMENT_READS:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$FRAGMENT_READS
+    primaryKey: false
+    visible: true
+  MON$RECORD_RPT_READS:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$RECORD_RPT_READS
+    primaryKey: false
+    visible: true
+  MON$RECORD_IMGC:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$RECORD_IMGC
+    primaryKey: false
+    visible: true

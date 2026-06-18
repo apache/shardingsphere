@@ -1,0 +1,64 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_default_acl
+columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: true
+    unsigned: false
+    visible: true
+  defaclrole:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: defaclrole
+    primaryKey: false
+    unsigned: false
+    visible: true
+  defaclnamespace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: defaclnamespace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  defaclobjtype:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: defaclobjtype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  defaclacl:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: defaclacl
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_default_acl_role_nsp_obj_index:
+    name: pg_default_acl_role_nsp_obj_index
+  pg_default_acl_oid_index:
+    name: pg_default_acl_oid_index

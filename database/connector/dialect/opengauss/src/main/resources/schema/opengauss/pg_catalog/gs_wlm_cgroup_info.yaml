@@ -1,0 +1,91 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: gs_wlm_cgroup_info
+columns:
+  cgroup_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: cgroup_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  priority:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: priority
+    primaryKey: false
+    unsigned: false
+    visible: true
+  usage_percent:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: usage_percent
+    primaryKey: false
+    unsigned: false
+    visible: true
+  shares:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: shares
+    primaryKey: false
+    unsigned: false
+    visible: true
+  cpuacct:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: cpuacct
+    primaryKey: false
+    unsigned: false
+    visible: true
+  cpuset:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: cpuset
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relpath:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: relpath
+    primaryKey: false
+    unsigned: false
+    visible: true
+  valid:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: valid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  node_group:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: node_group
+    primaryKey: false
+    unsigned: false
+    visible: true

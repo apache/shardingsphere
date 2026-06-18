@@ -1,0 +1,88 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_rewrite
+columns:
+  rulename:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: rulename
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ev_class:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: ev_class
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ev_attr:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: ev_attr
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ev_type:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: ev_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ev_enabled:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: ev_enabled
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_instead:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: is_instead
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ev_qual:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: ev_qual
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ev_action:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: ev_action
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_rewrite_oid_index:
+    name: pg_rewrite_oid_index
+  pg_rewrite_rel_rulename_index:
+    name: pg_rewrite_rel_rulename_index

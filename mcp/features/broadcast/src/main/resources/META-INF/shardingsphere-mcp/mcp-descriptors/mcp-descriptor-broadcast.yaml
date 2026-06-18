@@ -1,0 +1,377 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+resourceTemplates:
+  - uriTemplate: shardingsphere://features/broadcast/databases/{database}/rules
+    name: broadcast-rules
+    title: Broadcast Rules
+    description: "List broadcast table rules for one ShardingSphere logical database. Read this before creating, dropping, or validating broadcast table rule configuration."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database whose broadcast rules should be inspected."
+          required: true
+          scope: logical-database
+      resourceKind: list
+      feature: broadcast
+      relatedTools:
+        - database_gateway_plan_broadcast_rule
+        - database_gateway_validate_workflow
+  - uriTemplate: shardingsphere://features/broadcast/databases/{database}/tables/{table}/rule
+    name: broadcast-table-rule
+    title: Broadcast Table Rule
+    description: "Read broadcast rule presence for one logical table so clients can validate create or drop lifecycle per table."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database whose broadcast table rule should be inspected."
+          required: true
+          scope: logical-database
+        - name: table
+          title: Logical Table
+          description: "Logical table whose broadcast rule presence should be inspected."
+          required: true
+          scope: logical-table
+      resourceKind: rule
+      feature: broadcast
+      relatedTools:
+        - database_gateway_plan_broadcast_rule
+        - database_gateway_validate_workflow
+  - uriTemplate: shardingsphere://features/broadcast/databases/{database}/rule-count
+    name: broadcast-rule-count
+    title: Broadcast Rule Count
+    description: "Count broadcast rules for one ShardingSphere logical database through DistSQL-visible rule state."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database whose broadcast rule count should be inspected."
+          required: true
+          scope: logical-database
+      resourceKind: list
+      feature: broadcast
+      relatedTools:
+        - database_gateway_plan_broadcast_rule
+        - database_gateway_validate_workflow
+prompts:
+  - name: plan_broadcast_rule
+    title: Plan Broadcast Rule
+    description: "Guide the model to plan a ShardingSphere broadcast table rule by reading existing broadcast rules before calling database_gateway_plan_broadcast_rule."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/plan-broadcast-rule.md
+    arguments:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the broadcast rule."
+        required: false
+      - name: table
+        title: Logical Table
+        description: "Single logical table that should be broadcast when tables is not provided."
+        required: false
+      - name: tables
+        title: Logical Tables
+        description: "Comma-separated logical table names that should be added to or removed from broadcast rules."
+        required: false
+      - name: operation_type
+        title: Operation Type
+        description: "Broadcast rule lifecycle operation: create or drop."
+        required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue a broadcast plan."
+        required: false
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_plan_broadcast_rule
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/broadcast/databases/{database}/rules
+        - shardingsphere://features/broadcast/databases/{database}/tables/{table}/rule
+        - shardingsphere://features/broadcast/databases/{database}/rule-count
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after database_gateway_plan_broadcast_rule returns a planned workflow with plan_id and reviewable artifacts."
+        - "Stop after a clarifying response lists missing inputs instead of guessing table names."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask when database or logical broadcast table names are unclear."
+        - "Ask before applying generated broadcast rule DistSQL that changes runtime state."
+
+resourceNavigation:
+  - from: shardingsphere://features/broadcast/databases/{database}/rules
+    to: database_gateway_plan_broadcast_rule
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Preserve existing broadcast rules when planning changes."
+  - from: shardingsphere://features/broadcast/databases/{database}/tables/{table}/rule
+    to: database_gateway_plan_broadcast_rule
+    requiredArguments:
+      - database
+      - table
+    carriedArguments:
+      - database
+      - table
+    description: "Use single-table broadcast rule presence before planning create or drop."
+  - from: shardingsphere://features/broadcast/databases/{database}/rule-count
+    to: shardingsphere://features/broadcast/databases/{database}/rules
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Inspect rule details after reading the count."
+  - from: database_gateway_plan_broadcast_rule
+    to: shardingsphere://workflows/{plan_id}
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Read the persisted workflow plan after planning broadcast rule changes."
+  - from: database_gateway_plan_broadcast_rule
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Preview or apply generated broadcast workflow artifacts after reviewing the plan."
+tools:
+  - name: database_gateway_plan_broadcast_rule
+    title: Plan Broadcast Rule
+    description: >-
+      Plan a ShardingSphere broadcast table rule workflow for logical tables. This tool creates reviewable rule DistSQL artifacts
+      but does not execute them; use database_gateway_apply_workflow only after user review.
+    inputSchema:
+      type: object
+      properties:
+        plan_id:
+          type: string
+          description: "Optional existing workflow plan identifier used to continue or revise a previous broadcast plan."
+        database:
+          type: string
+          description: "ShardingSphere logical database that owns the broadcast rule."
+        table:
+          type: string
+          description: "Single target logical table name when tables is not provided."
+        tables:
+          type: string
+          description: "Comma-separated target logical table names."
+        operation_type:
+          type: string
+          description: "Broadcast rule lifecycle operation requested by the user."
+          enum:
+            - create
+            - drop
+        natural_language_intent:
+          type: string
+          description: "User request in natural language, used to infer create or drop when operation_type is absent."
+        structured_intent_evidence:
+          type: object
+          description: "Broadcast-specific structured intent extracted from the user request."
+          properties:
+            tables:
+              type: string
+              description: "Comma-separated logical table names inferred from the request."
+          required: []
+          additionalProperties: false
+        delivery_mode:
+          type: string
+          description: "Whether the plan should return all artifacts at once or guide the user step by step."
+          enum:
+            - all-at-once
+            - step-by-step
+        execution_mode:
+          type: string
+          description: "Preferred final mode for later database_gateway_apply_workflow. Use manual-only when the user asks to export artifacts, run them manually, or keep runtime side effects out of MCP."
+          enum:
+            - review-then-execute
+            - manual-only
+        user_overrides:
+          type: object
+          description: "Optional user-selected broadcast rule fields."
+          properties:
+            table:
+              type: string
+              description: "Single logical table override."
+            tables:
+              type: string
+              description: "Comma-separated logical table overrides."
+          required: []
+          additionalProperties: false
+      required: []
+      additionalProperties: false
+    outputSchema:
+      type: object
+      properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker for workflow planning, or terminal when planning cannot continue."
+          enum:
+            - planning
+            - terminal
+        plan_id:
+          type: string
+          description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
+        workflow_kind:
+          type: string
+          description: "Workflow kind resolved by the planner."
+        status:
+          type: string
+          description: "Stable workflow status, such as clarifying, planned, or failed."
+        missing_required_inputs:
+          type: array
+          description: "Inputs still required before the plan can be completed."
+        clarification_questions:
+          type: array
+          description: "Structured questions for missing workflow inputs."
+        elicitation_support:
+          type: object
+          description: "Evaluated MCP elicitation capability and the selected interaction path when automatic form continuation cannot be used."
+        fallback_reason:
+          type: string
+          description: "Machine-readable reason explaining why the planner returned structured fallback instead of automatic form continuation."
+        issues:
+          type: array
+          description: "Warnings, conflicts, and validation issues found during planning."
+        global_steps:
+          type: array
+          description: "Workflow review and execution steps."
+        current_step:
+          type: string
+          description: "Current workflow step."
+        algorithm_recommendations:
+          type: array
+          description: "Algorithm recommendations for feature workflows; broadcast planning normally returns an empty list."
+        property_requirements:
+          type: array
+          description: "Algorithm property requirements for feature workflows; broadcast planning normally returns an empty list."
+        validation_strategy:
+          type: object
+          description: "Validation strategy generated by the planner."
+        delivery_mode:
+          type: string
+          description: "Planner delivery mode used for user interaction."
+        execution_mode:
+          type: string
+          description: "Preferred later apply mode captured by the plan."
+        intent_inference:
+          type: object
+          description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+        argument_provenance:
+          type: object
+          description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."
+        review_focus:
+          type: object
+          description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
+        proxy_topology_hint:
+          type: object
+          description: "Proxy metadata view expected by this workflow and safe recovery guidance when runtime metadata looks inconsistent."
+        resources_to_read:
+          type: array
+          description: "Resources the model should read before retrying or validating the plan."
+        next_actions:
+          type: array
+          description: "Ordered next actions for the model or user."
+          items:
+            type: object
+            properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              tool_name:
+                type: string
+                description: "Canonical tool name when type is tool_call."
+              resource_uri:
+                type: string
+                description: "Canonical resource URI when type is resource_read."
+              arguments:
+                type: object
+                description: "Canonical arguments to provide to the target tool."
+              reason:
+                type: string
+                description: "Why the model should take this action."
+              required_inputs:
+                type: array
+                description: "User inputs needed before continuing."
+        distsql_artifacts:
+          type: array
+          description: "Generated broadcast rule DistSQL artifacts for review."
+      required: []
+      additionalProperties: true
+      examples:
+        - response_mode: planning
+          plan_id: broadcast-rule-20260606-001
+          status: planned
+          workflow_kind: broadcast.rule
+          missing_required_inputs: []
+          clarification_questions: []
+          issues: []
+          global_steps: []
+          current_step: review
+          algorithm_recommendations: []
+          property_requirements: []
+          validation_strategy: {}
+          delivery_mode: all-at-once
+          execution_mode: review-then-execute
+          intent_inference: {}
+          resources_to_read:
+            - uri: shardingsphere://features/broadcast/databases/logic_db/rules
+              resource_kind: rule
+              purpose: inspect_detail
+              reason: Inspect current broadcast rules before planning changes.
+              source_field: resources_to_read
+          distsql_artifacts:
+            - operation_type: create
+              artifact_type: rule_distsql
+              sql: CREATE BROADCAST TABLE RULE t_order
+          next_actions:
+            - order: 1
+              type: tool_call
+              title: Call database_gateway_apply_workflow
+              tool_name: database_gateway_apply_workflow
+              arguments:
+                plan_id: broadcast-rule-20260606-001
+                execution_mode: preview
+              reason: Preview generated broadcast rule DistSQL artifacts.
+    annotations:
+      title: Plan Broadcast Rule
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+    meta:
+      org.apache.shardingsphere/workflow-kind: broadcast.rule
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/broadcast/databases/{database}/rules
+        - shardingsphere://features/broadcast/databases/{database}/tables/{table}/rule
+        - shardingsphere://features/broadcast/databases/{database}/rule-count
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow

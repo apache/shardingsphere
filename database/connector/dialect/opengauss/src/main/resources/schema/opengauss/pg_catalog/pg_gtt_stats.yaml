@@ -1,0 +1,131 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_gtt_stats
+columns:
+  schemaname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: schemaname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tablename:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tablename
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: attname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  inherited:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: inherited
+    primaryKey: false
+    unsigned: false
+    visible: true
+  null_frac:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: null_frac
+    primaryKey: false
+    unsigned: false
+    visible: true
+  avg_width:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: avg_width
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_distinct:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: n_distinct
+    primaryKey: false
+    unsigned: false
+    visible: true
+  most_common_vals:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: most_common_vals
+    primaryKey: false
+    unsigned: false
+    visible: true
+  most_common_freqs:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: most_common_freqs
+    primaryKey: false
+    unsigned: false
+    visible: true
+  histogram_bounds:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: histogram_bounds
+    primaryKey: false
+    unsigned: false
+    visible: true
+  correlation:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: correlation
+    primaryKey: false
+    unsigned: false
+    visible: true
+  most_common_elems:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: most_common_elems
+    primaryKey: false
+    unsigned: false
+    visible: true
+  most_common_elem_freqs:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: most_common_elem_freqs
+    primaryKey: false
+    unsigned: false
+    visible: true
+  elem_count_histogram:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: elem_count_histogram
+    primaryKey: false
+    unsigned: false
+    visible: true

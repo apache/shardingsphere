@@ -1,0 +1,62 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.mysql.type;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.plugin.MySQLInstallPluginStatement;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.plugin.MySQLInstallPluginStatementTestCase;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+/**
+ * Install plugin statement assert for MySQL.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MySQLInstallPluginStatementAssert {
+    
+    /**
+     * Assert install plugin statement is correct with expected install plugin statement test case.
+     *
+     * @param assertContext assert context
+     * @param actual actual install plugin statement
+     * @param expected expected install plugin statement test case
+     */
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLInstallPluginStatement actual, final MySQLInstallPluginStatementTestCase expected) {
+        if (null != expected.getPlugin()) {
+            if (null != expected.getPlugin().getName()) {
+                assertThat(assertContext.getText("Actual plugin name does not match: "), actual.getPluginName(), is(expected.getPlugin().getName()));
+            }
+            if (null != expected.getPlugin().getSource()) {
+                assertThat(assertContext.getText("Actual plugin source does not match: "), actual.getSource(), is(expected.getPlugin().getSource()));
+            }
+            if (!expected.getPlugin().getProperties().isEmpty()) {
+                assertNotNull(actual.getProperties(), assertContext.getText("Plugin properties should not be null"));
+                assertThat(assertContext.getText("Plugin properties size does not match: "), actual.getProperties().size(), is(expected.getPlugin().getProperties().size()));
+                expected.getPlugin().getProperties().forEach(property -> {
+                    String actualValue = actual.getProperties().get(property.getKey());
+                    assertNotNull(actualValue, assertContext.getText("Plugin property key '" + property.getKey() + "' should exist"));
+                    assertThat(assertContext.getText("Plugin property value for key '" + property.getKey() + "' does not match: "), actualValue, is(property.getValue()));
+                });
+            }
+        }
+    }
+}

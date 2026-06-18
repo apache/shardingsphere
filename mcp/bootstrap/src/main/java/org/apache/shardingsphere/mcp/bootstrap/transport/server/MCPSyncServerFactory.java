@@ -1,0 +1,91 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.bootstrap.transport.server;
+
+import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.server.McpServer;
+import io.modelcontextprotocol.server.McpSyncServer;
+import io.modelcontextprotocol.spec.McpSchema.ServerCapabilities;
+import io.modelcontextprotocol.spec.McpServerTransportProvider;
+import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
+import org.apache.shardingsphere.mcp.bootstrap.transport.capability.completion.MCPCompletionSpecificationFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.capability.prompt.MCPPromptSpecificationFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.capability.resource.MCPResourceSpecificationFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool.MCPToolSpecificationFactory;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.support.markdown.MCPMarkdownResourceLoader;
+
+import java.util.Optional;
+
+/**
+ * MCP sync server factory.
+ */
+public final class MCPSyncServerFactory {
+    
+    private final McpJsonMapper jsonMapper;
+    
+    private final MCPResourceSpecificationFactory resourceSpecificationFactory;
+    
+    private final MCPToolSpecificationFactory toolSpecificationFactory;
+    
+    private final MCPPromptSpecificationFactory promptSpecificationFactory;
+    
+    private final MCPCompletionSpecificationFactory completionSpecificationFactory;
+    
+    public MCPSyncServerFactory(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
+        this.jsonMapper = jsonMapper;
+        resourceSpecificationFactory = new MCPResourceSpecificationFactory(runtimeContext);
+        toolSpecificationFactory = new MCPToolSpecificationFactory(runtimeContext);
+        promptSpecificationFactory = new MCPPromptSpecificationFactory();
+        completionSpecificationFactory = new MCPCompletionSpecificationFactory(runtimeContext);
+    }
+    
+    /**
+     * Create one sync server for single-session transports.
+     *
+     * @param transportProvider MCP server transport provider
+     * @return sync server
+     */
+    public McpSyncServer create(final McpServerTransportProvider transportProvider) {
+        return create(McpServer.sync(transportProvider));
+    }
+    
+    /**
+     * Create one sync server for streamable transports.
+     *
+     * @param transportProvider MCP streamable transport provider
+     * @return sync server
+     */
+    public McpSyncServer create(final McpStreamableServerTransportProvider transportProvider) {
+        return create(McpServer.sync(transportProvider));
+    }
+    
+    private McpSyncServer create(final McpServer.SyncSpecification<?> specification) {
+        return specification.jsonMapper(jsonMapper)
+                .serverInfo(MCPTransportConstants.SERVER_NAME, Optional.ofNullable(MCPSyncServerFactory.class.getPackage().getImplementationVersion()).orElse("development"))
+                .instructions(MCPMarkdownResourceLoader.load(MCPTransportConstants.SERVER_INSTRUCTIONS_RESOURCE, "server instruction"))
+                .capabilities(ServerCapabilities.builder().resources(false, false).tools(false).prompts(false).completions().build())
+                .resources(resourceSpecificationFactory.createResourceSpecifications())
+                .resourceTemplates(resourceSpecificationFactory.createResourceTemplateSpecifications())
+                .tools(toolSpecificationFactory.createToolSpecifications())
+                .prompts(promptSpecificationFactory.createPromptSpecifications())
+                .completions(completionSpecificationFactory.createCompletionSpecifications())
+                .build();
+    }
+}

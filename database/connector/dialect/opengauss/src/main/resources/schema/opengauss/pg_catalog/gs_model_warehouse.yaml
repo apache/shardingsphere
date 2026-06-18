@@ -1,0 +1,200 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: gs_model_warehouse
+columns:
+  modelname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: modelname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  modelowner:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: modelowner
+    primaryKey: false
+    unsigned: false
+    visible: true
+  createtime:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: createtime
+    primaryKey: false
+    unsigned: false
+    visible: true
+  processedtuples:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: processedtuples
+    primaryKey: false
+    unsigned: false
+    visible: true
+  discardedtuples:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: discardedtuples
+    primaryKey: false
+    unsigned: false
+    visible: true
+  preprocesstime:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: preprocesstime
+    primaryKey: false
+    unsigned: false
+    visible: true
+  exectime:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: exectime
+    primaryKey: false
+    unsigned: false
+    visible: true
+  iterations:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: iterations
+    primaryKey: false
+    unsigned: false
+    visible: true
+  outputtype:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: outputtype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  modeltype:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: modeltype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  query:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: query
+    primaryKey: false
+    unsigned: false
+    visible: true
+  modeldata:
+    caseSensitive: true
+    dataType: -2
+    generated: false
+    name: modeldata
+    primaryKey: false
+    unsigned: false
+    visible: true
+  weight:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: weight
+    primaryKey: false
+    unsigned: false
+    visible: true
+  hyperparametersnames:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: hyperparametersnames
+    primaryKey: false
+    unsigned: false
+    visible: true
+  hyperparametersvalues:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: hyperparametersvalues
+    primaryKey: false
+    unsigned: false
+    visible: true
+  hyperparametersoids:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: hyperparametersoids
+    primaryKey: false
+    unsigned: false
+    visible: true
+  coefnames:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: coefnames
+    primaryKey: false
+    unsigned: false
+    visible: true
+  coefvalues:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: coefvalues
+    primaryKey: false
+    unsigned: false
+    visible: true
+  coefoids:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: coefoids
+    primaryKey: false
+    unsigned: false
+    visible: true
+  trainingscoresname:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: trainingscoresname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  trainingscoresvalue:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: trainingscoresvalue
+    primaryKey: false
+    unsigned: false
+    visible: true
+  modeldescribe:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: modeldescribe
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  gs_model_oid_index:
+    name: gs_model_oid_index
+  gs_model_name_index:
+    name: gs_model_name_index

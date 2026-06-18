@@ -1,0 +1,99 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_replication_slots
+columns:
+  slot_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: slot_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  plugin:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: plugin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  slot_type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: slot_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  datoid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: datoid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  database:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: database
+    primaryKey: false
+    unsigned: false
+    visible: true
+  active:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: active
+    primaryKey: false
+    unsigned: false
+    visible: true
+  xmin:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: xmin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  catalog_xmin:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: catalog_xmin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  restart_lsn:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: restart_lsn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  dummy_standby:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: dummy_standby
+    primaryKey: false
+    unsigned: false
+    visible: true

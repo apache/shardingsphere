@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_publication_rename" value="ALTER PUBLICATION old_publication RENAME TO new_publication;" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_owner" value="ALTER PUBLICATION new_publication OWNER TO CURRENT_ROLE;" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_set_table" value="ALTER PUBLICATION mypublication SET TABLE users, departments;" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_add_table" value="ALTER PUBLICATION mypublication ADD TABLE stores, cities;" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_drop_table" value="ALTER PUBLICATION mypublication DROP TABLE users;" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_set_definition" value="ALTER PUBLICATION noinsert SET (publish = 'update, delete');" db-types="PostgreSQL" />
+</sql-cases>

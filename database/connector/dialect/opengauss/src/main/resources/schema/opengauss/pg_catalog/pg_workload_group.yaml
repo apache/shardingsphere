@@ -1,0 +1,48 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_workload_group
+columns:
+  workload_gpname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: workload_gpname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  respool_oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: respool_oid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  act_statements:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: act_statements
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_workload_group_name_index:
+    name: pg_workload_group_name_index
+  pg_workload_group_oid_index:
+    name: pg_workload_group_oid_index

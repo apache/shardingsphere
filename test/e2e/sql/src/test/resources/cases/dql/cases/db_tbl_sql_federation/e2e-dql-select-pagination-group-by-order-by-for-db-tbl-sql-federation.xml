@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<e2e-test-cases>
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i USING(order_id) WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_order_item i WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <!-- TODO Connection acquisition timeout -->
+    <!-- <test-case sql="SELECT * FROM t_order o CROSS JOIN t_order_item i WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 10, 10" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>-->
+    
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? ORDER BY o.order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m USING(merchant_id) WHERE o.user_id = ? ORDER BY o.order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_merchant m WHERE o.user_id = ? ORDER BY o.order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <!-- TODO Connection acquisition timeout -->
+    <!--<test-case sql="SELECT * FROM t_order o CROSS JOIN t_merchant m WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 10, 10" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>-->
+    
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id > ? ORDER BY p.product_id DESC LIMIT 2, 5" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d USING(product_id) WHERE p.product_id > ? ORDER BY p.product_id DESC LIMIT 2, 5" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_product p NATURAL JOIN t_product_detail d WHERE p.product_id > ? ORDER BY p.product_id DESC LIMIT 2, 5" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_product p CROSS JOIN t_product_detail d WHERE p.product_id = ? ORDER BY d.product_id, 7 LIMIT 10, 10" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <!-- TODO open this comment when refresh metadata support view without push down execute -->
+    <!--<test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>-->
+    
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d USING(product_id) WHERE p.product_id > ? ORDER BY p.product_id DESC FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
+               scenario-comments="Test select inner join fetch statement when use sharding feature and federation executor engine.">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <!--<test-case sql="SELECT * FROM t_product p NATURAL JOIN t_product_detail d WHERE p.product_id > ? ORDER BY p.product_id FETCH NEXT 3 ROW ONLY" db-types="openGauss" scenario-types="db_tbl_sql_federation"
+               scenario-comments="Test select natural join fetch statement when use sharding feature and federation executor engine.">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>-->
+    
+    <test-case sql="SELECT * FROM t_product p CROSS JOIN t_product_detail d WHERE p.product_id = ? ORDER BY d.product_id, 7 FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
+               scenario-comments="Test select cross join fetch statement when use sharding feature and federation executor engine.">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <!-- TODO open this comment when refresh metadata support view without push down execute -->
+    <!--<test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
+               scenario-comments="Test select ... from subquery view fetch statement when use sharding feature and federation executor engine.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
+               scenario-comments="Test select ... from union view fetch statement when use sharding feature and federation executor engine.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>-->
+</e2e-test-cases>

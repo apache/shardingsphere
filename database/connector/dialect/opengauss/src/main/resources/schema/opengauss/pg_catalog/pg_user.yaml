@@ -1,0 +1,171 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_user
+columns:
+  usename:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: usename
+    primaryKey: false
+    unsigned: false
+    visible: true
+  usesysid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: usesysid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  usecreatedb:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: usecreatedb
+    primaryKey: false
+    unsigned: false
+    visible: true
+  usesuper:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: usesuper
+    primaryKey: false
+    unsigned: false
+    visible: true
+  usecatupd:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: usecatupd
+    primaryKey: false
+    unsigned: false
+    visible: true
+  userepl:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: userepl
+    primaryKey: false
+    unsigned: false
+    visible: true
+  passwd:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: passwd
+    primaryKey: false
+    unsigned: false
+    visible: true
+  valbegin:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: valbegin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  valuntil:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: valuntil
+    primaryKey: false
+    unsigned: false
+    visible: true
+  respool:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: respool
+    primaryKey: false
+    unsigned: false
+    visible: true
+  parent:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: parent
+    primaryKey: false
+    unsigned: false
+    visible: true
+  spacelimit:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: spacelimit
+    primaryKey: false
+    unsigned: false
+    visible: true
+  useconfig:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: useconfig
+    primaryKey: false
+    unsigned: false
+    visible: true
+  nodegroup:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: nodegroup
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tempspacelimit:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tempspacelimit
+    primaryKey: false
+    unsigned: false
+    visible: true
+  spillspacelimit:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: spillspacelimit
+    primaryKey: false
+    unsigned: false
+    visible: true
+  usemonitoradmin:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: usemonitoradmin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  useoperatoradmin:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: useoperatoradmin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  usepolicyadmin:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: usepolicyadmin
+    primaryKey: false
+    unsigned: false
+    visible: true

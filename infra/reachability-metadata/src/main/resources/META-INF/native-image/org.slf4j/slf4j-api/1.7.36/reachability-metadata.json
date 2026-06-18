@@ -1,0 +1,18 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "org.slf4j.event.Level"
+      },
+      "type": "org.slf4j.event.Level",
+      "methods": [
+        {
+          "name": "valueOf",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    }
+  ]
+}

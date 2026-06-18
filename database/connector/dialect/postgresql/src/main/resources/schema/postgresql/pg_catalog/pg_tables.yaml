@@ -1,0 +1,96 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_tables
+columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: false
+    visible: false
+  schemaname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: schemaname
+    primaryKey: false
+    visible: true
+  tablename:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tablename
+    primaryKey: false
+    visible: true
+  tableowner:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tableowner
+    primaryKey: false
+    visible: true
+  tablespace:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tablespace
+    primaryKey: false
+    visible: true
+  hasindexes:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: hasindexes
+    primaryKey: false
+    visible: true
+  hasrules:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: hasrules
+    primaryKey: false
+    visible: true
+  hastriggers:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: hastriggers
+    primaryKey: false
+    visible: true
+  tablecreator:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tablecreator
+    primaryKey: false
+    visible: true
+  created:
+    caseSensitive: true
+    dataType: 2014
+    generated: false
+    name: created
+    primaryKey: false
+    visible: true
+  last_ddl_time:
+    caseSensitive: true
+    dataType: 2014
+    generated: false
+    name: last_ddl_time
+    primaryKey: false
+    visible: true

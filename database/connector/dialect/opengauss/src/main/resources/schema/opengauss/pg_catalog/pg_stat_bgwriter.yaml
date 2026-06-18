@@ -1,0 +1,107 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_stat_bgwriter
+columns:
+  checkpoints_timed:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: checkpoints_timed
+    primaryKey: false
+    unsigned: false
+    visible: true
+  checkpoints_req:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: checkpoints_req
+    primaryKey: false
+    unsigned: false
+    visible: true
+  checkpoint_write_time:
+    caseSensitive: true
+    dataType: 8
+    generated: false
+    name: checkpoint_write_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  checkpoint_sync_time:
+    caseSensitive: true
+    dataType: 8
+    generated: false
+    name: checkpoint_sync_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  buffers_checkpoint:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: buffers_checkpoint
+    primaryKey: false
+    unsigned: false
+    visible: true
+  buffers_clean:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: buffers_clean
+    primaryKey: false
+    unsigned: false
+    visible: true
+  maxwritten_clean:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: maxwritten_clean
+    primaryKey: false
+    unsigned: false
+    visible: true
+  buffers_backend:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: buffers_backend
+    primaryKey: false
+    unsigned: false
+    visible: true
+  buffers_backend_fsync:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: buffers_backend_fsync
+    primaryKey: false
+    unsigned: false
+    visible: true
+  buffers_alloc:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: buffers_alloc
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stats_reset:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: stats_reset
+    primaryKey: false
+    unsigned: false
+    visible: true

@@ -1,0 +1,80 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_user_status
+columns:
+  roloid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: roloid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  failcount:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: failcount
+    primaryKey: false
+    unsigned: false
+    visible: true
+  locktime:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: locktime
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rolstatus:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: rolstatus
+    primaryKey: false
+    unsigned: false
+    visible: true
+  permspace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: permspace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tempspace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tempspace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  passwordexpired:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: passwordexpired
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_user_status_index:
+    name: pg_user_status_index
+  pg_user_status_oid_index:
+    name: pg_user_status_oid_index

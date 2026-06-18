@@ -1,0 +1,18 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.microsoft.sqlserver.jdbc.ConfigurableRetryLogic"
+      },
+      "type": "com.microsoft.sqlserver.jdbc.ConfigurableRetryLogic"
+    }
+  ],
+  "bundles": [
+    {
+      "condition": {
+        "typeReached": "com.microsoft.sqlserver.jdbc.SQLServerResource"
+      },
+      "name": "com.microsoft.sqlserver.jdbc.SQLServerResource"
+    }
+  ]
+}

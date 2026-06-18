@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <doris-show-functions sql-case-id="show_functions_basic_doris" />
+    
+    <doris-show-functions sql-case-id="show_full_functions_in_db_doris" full="true">
+        <from-database start-index="20" stop-index="28">
+            <database name="testDb" start-index="23" stop-index="28" />
+        </from-database>
+    </doris-show-functions>
+    
+    <doris-show-functions sql-case-id="show_builtin_functions_in_db_like_doris" builtin="true">
+        <from-database start-index="23" stop-index="31">
+            <database name="testDb" start-index="26" stop-index="31" />
+        </from-database>
+        <like pattern="year%" start-index="33" stop-index="44" />
+    </doris-show-functions>
+    
+    <doris-show-functions sql-case-id="show_global_full_functions_doris" global="true" full="true" />
+    
+    <doris-show-functions sql-case-id="show_global_functions_doris" global="true" />
+    
+    <doris-show-functions sql-case-id="show_global_functions_like_doris" global="true">
+        <like pattern="my_%" start-index="22" stop-index="32" />
+    </doris-show-functions>
+</sql-parser-test-cases>

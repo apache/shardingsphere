@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_user_identified_without_hostname" value="ALTER USER user_dev identified by passwd_dev" db-types="Oracle" />
+    <sql-case id="alter_user_identified_with_hostname" value="ALTER USER 'user_dev'@'localhost' identified by 'passwd_dev'" db-types="MySQL" />
+    <sql-case id="alter_user_account" value="ALTER USER user_dev account lock" db-types="Oracle" />
+    <sql-case id="alter_username_with_name" value="ALTER USER user_dev WITH NAME = user_dev_new" db-types="SQLServer" />
+    <sql-case id="alter_username_rename" value="ALTER USER user_dev RENAME TO user_dev_new" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_passwd_with_equality" value="ALTER USER user_dev WITH PASSWORD = 'passwd_dev'" db-types="SQLServer" />
+    <sql-case id="alter_user_passwd_without_equality" value="ALTER USER user_dev WITH PASSWORD 'passwd_dev'" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user" value="ALTER USER user1" db-types="MySQL" />
+    <sql-case id="alter_users" value="ALTER USER user1, user2" db-types="MySQL" />
+    <sql-case id="alter_user_if_exists" value="ALTER USER IF EXISTS user1" db-types="MySQL" />
+    <sql-case id="alter_local_user" value="ALTER USER 'user1'@'localhost'" db-types="MySQL" />
+    <sql-case id="alter_user_with_password" value="ALTER USER user1 IDENTIFIED BY 'password'" db-types="MySQL,Oracle" />
+    <sql-case id="alter_user_with_resource_option" value="ALTER USER user1 WITH MAX_QUERIES_PER_HOUR 1" db-types="MySQL" />
+    <sql-case id="alter_user_with_resource_options" value="ALTER USER user1 WITH MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1" db-types="MySQL" />
+    <sql-case id="alter_user_with_password_option" value="ALTER USER user1 PASSWORD EXPIRE DEFAULT" db-types="MySQL" />
+    <sql-case id="alter_user_with_password_options" value="ALTER USER user1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT" db-types="MySQL" />
+    <sql-case id="alter_user_with_lock_option" value="ALTER USER user1 ACCOUNT LOCK" db-types="MySQL" />
+    <sql-case id="alter_user_account_unlock_mysql" value="ALTER USER user_unlock ACCOUNT UNLOCK" db-types="MySQL" />
+    <sql-case id="alter_user_with_max_connections_per_hour_mysql" value="ALTER USER user_conn_limit WITH MAX_CONNECTIONS_PER_HOUR 10" db-types="MySQL" />
+    <sql-case id="alter_user_with_max_user_connections_mysql" value="ALTER USER user_user_conn_limit WITH MAX_USER_CONNECTIONS 5" db-types="MySQL" />
+    <sql-case id="alter_user_require_none_mysql" value="ALTER USER user_none REQUIRE NONE" db-types="MySQL" />
+    <sql-case id="alter_user_require_ssl_mysql" value="ALTER USER user_ssl REQUIRE SSL" db-types="MySQL" />
+    <sql-case id="alter_user_require_x509_mysql" value="ALTER USER user_x509 REQUIRE X509" db-types="MySQL" />
+    <sql-case id="alter_user_require_tls_specified_mysql" value="ALTER USER user_tls REQUIRE SUBJECT 'subj' ISSUER 'issuer' CIPHER 'cipher_name'" db-types="MySQL" />
+    <sql-case id="alter_user_password_expire_interval_mysql" value="ALTER USER user_expire_interval PASSWORD EXPIRE INTERVAL 30 DAY" db-types="MySQL" />
+    <sql-case id="alter_user_password_expire_never_mysql" value="ALTER USER user_expire_never PASSWORD EXPIRE NEVER" db-types="MySQL" />
+    <sql-case id="alter_user_password_history_mysql" value="ALTER USER user_history PASSWORD HISTORY 5" db-types="MySQL" />
+    <sql-case id="alter_user_password_reuse_interval_mysql" value="ALTER USER user_reuse PASSWORD REUSE INTERVAL 10 DAY" db-types="MySQL" />
+    <sql-case id="alter_user_password_require_optional_mysql" value="ALTER USER user_require_optional PASSWORD REQUIRE CURRENT OPTIONAL" db-types="MySQL" />
+    <sql-case id="alter_user_password_require_yes_mysql" value="ALTER USER user_require_yes PASSWORD REQUIRE CURRENT" db-types="MySQL" />
+    <sql-case id="alter_user_failed_login_and_lock_time_mysql" value="ALTER USER user_failed_lock PASSWORD EXPIRE DEFAULT FAILED_LOGIN_ATTEMPTS 5 PASSWORD_LOCK_TIME 7" db-types="MySQL" />
+    <sql-case id="alter_user_password_lock_time_unbounded_mysql" value="ALTER USER user_lock_unbounded PASSWORD EXPIRE DEFAULT PASSWORD_LOCK_TIME UNBOUNDED" db-types="MySQL" />
+    <sql-case id="alter_user_identified_with_plugin_mysql" value="ALTER USER user_plugin IDENTIFIED WITH 'ldap'" db-types="MySQL" />
+    <sql-case id="alter_user_identified_with_plugin_as_mysql" value="ALTER USER user_plugin_as IDENTIFIED WITH 'ldap' AS 'pwd'" db-types="MySQL" />
+    <sql-case id="alter_user_identified_with_plugin_by_mysql" value="ALTER USER user_plugin_by IDENTIFIED WITH 'ldap' BY 'pwd'" db-types="MySQL" />
+    <sql-case id="alter_user_identified_with_plugin_by_random_mysql" value="ALTER USER user_plugin_rand IDENTIFIED WITH 'ldap' BY RANDOM PASSWORD" db-types="MySQL" />
+    <sql-case id="alter_user_with_options" value="ALTER USER user1 WITH MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT ACCOUNT LOCK" db-types="MySQL" />
+    <sql-case id="alter_user_with_password_doris" value="ALTER USER user1 IDENTIFIED BY 'pwd_doris'" db-types="Doris" />
+    <sql-case id="alter_user_doris_password_policy" value="ALTER USER user_history PASSWORD EXPIRE DEFAULT PASSWORD HISTORY 5 PASSWORD REUSE INTERVAL 10 DAY" db-types="Doris" />
+    <sql-case id="alter_user_doris_account_lock_unlock" value="ALTER USER user_lock ACCOUNT LOCK PASSWORD EXPIRE" db-types="Doris" />
+    <sql-case id="alter_user_doris_require_ssl" value="ALTER USER user_ssl REQUIRE SSL" db-types="Doris" />
+    <sql-case id="alter_user_doris_resource_limits" value="ALTER USER user_limits WITH MAX_QUERIES_PER_HOUR 10 MAX_UPDATES_PER_HOUR 5" db-types="Doris" />
+    <sql-case id="alter_external_user" value="ALTER USER user1 IDENTIFIED EXTERNALLY" db-types="Oracle" />
+    <sql-case id="alter_global_user" value="ALTER USER user1 IDENTIFIED GLOBALLY AS 'CN=user1'" db-types="Oracle" />
+    <sql-case id="alter_user_with_tablespace_option" value="ALTER USER user1 DEFAULT TABLESPACE tablespace1" db-types="Oracle" />
+    <sql-case id="alter_user_with_container" value="ALTER USER user1 CONTAINER = ALL" db-types="Oracle" />
+    <sql-case id="alter_user_with_quota_option" value="ALTER USER user1 QUOTA 1M ON tablespace1" db-types="Oracle" />
+    <sql-case id="alter_user_password_with_lock_option" value="ALTER USER user1 IDENTIFIED BY password ACCOUNT LOCK" db-types="Oracle" />
+    <sql-case id="alter_user_expire_with_options" value="ALTER USER user1 PASSWORD EXPIRE ACCOUNT LOCK" db-types="Oracle" />
+    <sql-case id="alter_user_grant_proxy" value="ALTER USER user1 GRANT CONNECT THROUGH user2" db-types="Oracle" />
+    <sql-case id="alter_user_grant_proxy_with_option" value="ALTER USER user1 GRANT CONNECT THROUGH user2 WITH ROLE role1" db-types="Oracle" />
+    <sql-case id="alter_user_default_role" value="ALTER USER johndoe DEFAULT ROLE clerk_role" db-types="Oracle" />
+    <sql-case id="alter_user_revoke_proxy" value="ALTER USER user1 REVOKE CONNECT THROUGH user2" db-types="Oracle" />
+    <sql-case id="alter_user_proxys" value="ALTER USER user1 GRANT CONNECT THROUGH user2 REVOKE CONNECT THROUGH user3" db-types="Oracle" />
+    <sql-case id="alter_user_with_password_postgresql" value="ALTER USER user1 WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_current_user_with_password" value="ALTER USER CURRENT_USER WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_with_option" value="ALTER USER user1 WITH SUPERUSER" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_with_options_postgresql" value="ALTER USER user1 WITH CREATEDB CREATEROLE" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_set_config" value="ALTER USER user1 SET client_min_messages = DEBUG" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_all_users_set_config" value="ALTER USER ALL SET client_min_messages = DEBUG" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_set_config_in_database" value="ALTER USER user1 IN DATABASE ds_0 SET client_min_messages = DEBUG" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_set_config_from_current_user" value="ALTER USER user1 SET client_min_messages FROM CURRENT" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_reset_config" value="ALTER USER user1 RESET client_min_messages" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_all_users_reset_config" value="ALTER USER ALL RESET client_min_messages" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_reset_config_in_database" value="ALTER USER user1 IN DATABASE ds_0 RESET client_min_messages" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_reset_all_config" value="ALTER USER user1 RESET ALL" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_set_password" value="ALTER USER user1 WITH PASSWORD = 'password'" db-types="SQLServer" />
+    <sql-case id="alter_user_set_login" value="ALTER USER user1 WITH LOGIN = login1" db-types="SQLServer" />
+    <sql-case id="alter_user_set_default_schema" value="ALTER USER user1 WITH DEFAULT_SCHEMA = schema" db-types="SQLServer" />
+    <sql-case id="alter_user_rename" value="ALTER USER user1_bak WITH NAME = user1" db-types="SQLServer" />
+    <sql-case id="alter_user_in_database" value="ALTER USER user1 IN DATABASE ds SET arg1='val1'" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_set_schema_password_language" value="ALTER USER user1 WITH NAME = user1_new, DEFAULT_SCHEMA = Development, PASSWORD = 'W1r77TT98%ab@#' OLD_PASSWORD = 'New Devel0per', DEFAULT_LANGUAGE= French" db-types="SQLServer" />
+    <sql-case id="alter_azure_ad_user_with_login" value="ALTER USER [westus/joe] WITH LOGIN = joe@westus.com" db-types="SQLServer" />
+    <sql-case id="alter_azure_ad_user_without_login" value="ALTER USER [westus/joe] FROM EXTERNAL PROVIDER" db-types="SQLServer" />
+    <sql-case id="alter_user_alias_to_existing_azure_id" value="ALTER USER [westus/joe] WITH LOGIN = joe@westus.com, name= joe_alias" db-types="SQLServer" />
+    <sql-case id="alter_user_identified_with_single_quoted" value="ALTER USER tu1@localhost IDENTIFIED WITH 'sha256_password' REQUIRE CIPHER &quot;DHE-RSA-AES256-SHA&quot;" db-types="MySQL" />
+    <sql-case id="alter_user_with_factor" value="ALTER USER 'alice'@'localhost' MODIFY 2 FACTOR IDENTIFIED WITH authentication_fido" db-types="MySQL" />
+</sql-cases>

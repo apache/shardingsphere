@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <create-tablespace sql-case-id="create_tablespace_with_comment" />
+    <create-tablespace sql-case-id="create_tablespace_with_maxsize" />
+    <create-tablespace sql-case-id="create_tablespace_for_innodb" />
+    <create-tablespace sql-case-id="create_tablespace_for_myisam" />
+    <create-tablespace sql-case-id="create_undo_tablespace_for_innodb" />
+    <create-tablespace sql-case-id="create_undo_tablespace_for_myisam" />
+    <create-tablespace sql-case-id="create_permanent_tablespace_online" />
+    <create-tablespace sql-case-id="create_permanent_tablespace_offline" />
+    <create-tablespace sql-case-id="create_permanent_tablespace_bigfile" />
+    <create-tablespace sql-case-id="create_permanent_tablespace_smallfile" />
+    <create-tablespace sql-case-id="create_tablespace_with_multi_filespecification" />
+    <create-tablespace sql-case-id="create_tablespace_with_filespecification_next" />
+    <create-tablespace sql-case-id="create_tablespace_with_filespecification" />
+    <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_k" />
+    <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_m" />
+    <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_g" />
+    <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_t" />
+    <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_p" />
+    <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_e" />
+    <create-tablespace sql-case-id="create_tablespace_with_blocksize" />
+    <create-tablespace sql-case-id="create_tablespace_with_logging_clause" />
+    <create-tablespace sql-case-id="create_tablespace_with_nologging_clause" />
+    <create-tablespace sql-case-id="create_tablespace_with_filesystem_like_logging" />
+    <create-tablespace sql-case-id="create_tablespace_with_force_logging" />
+    <create-tablespace sql-case-id="create_tablespace_with_encrypt" />
+    <create-tablespace sql-case-id="create_tablespace_with_compress" />
+    <create-tablespace sql-case-id="create_tablespace_with_nocompress" />
+    <create-tablespace sql-case-id="create_tablespace_with_compress_basic" />
+    <create-tablespace sql-case-id="create_tablespace_with_query_low" />
+    <create-tablespace sql-case-id="create_tablespace_with_query_high" />
+    <create-tablespace sql-case-id="create_tablespace_with_query" />
+    <create-tablespace sql-case-id="create_tablespace_with_archive_high" />
+    <create-tablespace sql-case-id="create_tablespace_with_archive_low" />
+    <create-tablespace sql-case-id="create_tablespace_with_archive" />
+    <create-tablespace sql-case-id="create_tablespace_with_oltp" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_initial" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_next" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_minextents" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_maxextents" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_maxextents_unlimited" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_maxsize_unlimited" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_maxsize" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_pctincrease" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_freelists" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_freelist_group" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_optimal_integer" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_optimal" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_optimal_null" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_buffer_pool_keep" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_buffer_pool_recycle" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_buffer_pool_default" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_flashcache_keep" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_flashcache_none" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_flashcache_default" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_encrypt" />
+    <create-tablespace sql-case-id="create_tablespace_with_extent_management" />
+    <create-tablespace sql-case-id="create_tablespace_with_extent_management_autoallocate" />
+    <create-tablespace sql-case-id="create_tablespace_with_extent_management_uniform_size" />
+    <create-tablespace sql-case-id="create_tablespace_with_extent_management_uniform" />
+    <create-tablespace sql-case-id="create_tablespace_with_segment_auto" />
+    <create-tablespace sql-case-id="create_tablespace_with_segment_manual" />
+    <create-tablespace sql-case-id="create_tablespace_with_flashback_on" />
+    <create-tablespace sql-case-id="create_tablespace_with_flashback_off" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_spec" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_tablespace_group" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_extent" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_extent_autoallocate" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_extent_uniform_size" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_extent_uniform" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_tempfile_spec" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_tempfile_spec_group" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_tempfile_spec_extent_management" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_tempfile_spec_size_autoextend" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_tempfile_spec_size_autoextend_group" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_spec" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_extent" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_extent_autoallocate" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_extent_uniform" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_retention_guarantee" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_retention_noguarantee" />
+    <create-tablespace sql-case-id="create_tablespace_with_relative_location" />
+    <create-tablespace sql-case-id="create_tablespace_with_autoextend_size"/>
+    <create-tablespace sql-case-id="create_tablespace_with_engine_attribute"/>
+    <create-tablespace sql-case-id="create_tablespace_with_extent_size"/>
+</sql-parser-test-cases>

@@ -1,0 +1,35 @@
+[Search-placeholder]
+other = "Search..."
+
+[Clear-History]
+other = "Clear History"
+
+[Attachments-label]
+other = "Attachments"
+
+[title-404]
+other = "Error"
+
+[message-404]
+other = "Woops. Looks like this page doesn't exist ¯\\_(ツ)_/¯."
+
+[Go-to-homepage]
+other = "Go to homepage"
+
+[Edit-this-page]
+other = "Edit this page"
+
+[Shortcuts-Title]
+other = "More"
+
+[Expand-title]
+other = "Expand me..."
+
+[Byte-symbol]
+other = "B"
+
+[Kilobyte-symbol]
+other = "KB"
+
+[Megabyte-symbol]
+other = "MB"

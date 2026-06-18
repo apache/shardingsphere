@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode | default "en" }}">
+    <head>
+        <style>
+            a {
+                word-wrap: break-word;
+            }
+        </style>
+    </head>  
+    <body>
+        {{ partial "head.html" . }}
+        <div style="position: sticky; position: -webkit-sticky; top: 0px; background-color: rgba(255, 255, 255, 0.888);">{{ partial "header.html" . }}</div>
+        {{ block "main" . }}{{ end }}
+        {{ partial "footer.html" . }}
+    </body>
+</html>

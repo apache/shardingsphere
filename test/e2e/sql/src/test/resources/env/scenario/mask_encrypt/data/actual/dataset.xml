@@ -1,0 +1,47 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata data-nodes="mask_encrypt.t_user">
+        <column name="user_id" type="numeric" />
+        <column name="user_name_cipher" type="varchar" />
+        <column name="password_cipher" type="varchar" />
+        <column name="email_cipher" type="varchar" />
+        <column name="telephone_cipher" type="varchar" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
+    <row data-node="mask_encrypt.t_user" values="10, sVq8Lmm+j6bZE5EKSilJEQ==, aQol0b6th65d0aXe+zFPsQ==, WM0fHOH91JNWnHTkiqBdyNmzk4uJ7CCz4mB1va9Ya1M=, kLjLJIMnfyHT2nA+viaoaQ==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="11, fQ7IzBxKVuNHtUF6h6WSBg==, wuhmEKgdgrWQYt+Ev0hgGA==, svATu3uWv9KfiloWJeWx3A==, 0kDFxndQdzauFwL/wyCsNQ==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="12, AQRWSlufQPog/b64YRhu6Q==, x7A+2jq9B6DSOSFtSOibdA==, nHJv9e6NiClIuGHOjHLvCAq2ZLhWcqfQ8/EQnIqMx+g=, a/SzSJLapt5iBXvF2c9ycw==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="13, 5NqS4YvpT+mHBFqZOZ3QDA==, zi6b4xYRjjV+bBk2R4wB+w==, MLBZczLjriUXvg3aM5QPTxMJbLjNh8yeNrSNBek/VTw=, b6VVhG+F6ujG8IMUZJAIFg==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="14, qeIY9od3u1KwhjihzLQUTQ==, 51UmlLAC+tUvdOAj8CjWfQ==, JCmeNdPyrKO5BW5zvhAA+g==, f995xinpZdKMVU5J5/yv3w==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="15, VbNUtguwtpeGhHGnPJ3aXg==, +3/5CVbqoKhg3sqznKTFFQ==, T+X+e3Q3+ZNIXXmg/80uxg==, GETj+S6DrO042E7NuBXLBQ==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="16, U0/Ao/w1u7L5avR3fAH2Og==, jFfFMYxv02DjaFRuAoCDGw==, RNW/KRq5HeL2YTfAdXSyARMJbLjNh8yeNrSNBek/VTw=, +lbvjJwO7VO4HUKc0Mw0NA==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="17, zb1sgBigoMi7JPSoY4bAVw==, VFIjocgjujJCJc6waWXqJA==, 1vF/ET3nBxt7T7vVfAndZQ==, wFvs5BH6OikgveBeTEBwsQ==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="18, rJzNIrFEnx296kW+N1YmMw==, LaODSKGyR7vZ1IvmBOe9vA==, 5u4GIQkJsWRmnJHWaHNSjg==, uwqm2O1Lv2tNTraJX1ym7Q==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="19, qHwpQ9kteL8VX6iTUhNdbQ==, MyOShk4kjRnds7CZfU5NCw==, HmYCo7QBfJ2E0EvaGHBCOBMJbLjNh8yeNrSNBek/VTw=, YLNQuuUPMGA21nhKWPzzsg==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="20, qCCmvf7OWRxbVbtLb0az1g==, fzdTMkzpBvgNYmKSQAp8Fg==, gOoP4Mf0P4ISOJp6A4sRmg==, l4xa4HwOfs/jusoJon9Wzw==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="21, IYJ1COaRQ0gSjWMC/UAeMg==, 1uEDMeYh2jstbOf6kx/cqw==, tikMAFiQ37u2VgWqUT38Eg==, rGpr30UXfczXjCjdvPN+BA==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="22, 7wvZZ7NVHgk6m1vB/sTC1Q==, OirN3gvz9uBnrq88nfa1wQ==, T7K/Uz1O2m+3xvB0+c4nGQ==, 7+fCU+VbQZKgLJXZPTTegA==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="23, SbVQWl8JbnxflCfGJ7KZdA==, hWVVYdkdTUTgm08haeq+tw==, Uk3ju6GteCD1qEHns5ZhKA==, DpnV86FZefwBRmIAVBh2gg==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="24, fx7OfSAYqVpjNa7LoKhXvw==, N2W9ijAXNkBxhkvJiIwp0A==, lAAGItVLmb1H69++1MDrIA==, QrE62wAb8B+2cEPcs4Lm1Q==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="25, wH3/LdWShD9aCb8eCIm3Tg==, GDixtt6NzPOVv6H0dmov5g==, T1yfJSyVxumZUfkDnmUQxA==, iU+AsGczboCRfU+Zr7mcpw==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="26, GgJQTndbxyBZ2tECS8SmqQ==, gLgVFLFIyyKwdQCXaw78Ag==, O+JIn9XZ3yq6RnKElHuqlA==, kwYlbu9aF7ndvMTcj8QBSg==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="27, lv8w8g32kuTXNvSUUypOig==, 8i0YH2mn6kXSyvBjM5p+Yg==, gqRoJF5S66SvBalc2RCo1A==, 2ob/3UYqRsZA5VdScnaWxQ==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="28, P9YCbFvWCIhcS99KyKH2zA==, PRrI4z4FrWwLvcHPx9g4og==, y8q31Jj4PFSyZHiLVIxKEQq2ZLhWcqfQ8/EQnIqMx+g=, kDF2za26uOerlNYWYHRT2Q==, 2017-08-08" />
+    <row data-node="mask_encrypt.t_user" values="29, 5wu9XvlJAVtjKijhxt6SQQ==, O4pgkLgz34N+C4bIUOQVnA==, UH7ihg16J61Np/EYMQnXIA==, z2hbJQD4dRkVVITNxAac5Q==, 2017-08-08" />
+</dataset>

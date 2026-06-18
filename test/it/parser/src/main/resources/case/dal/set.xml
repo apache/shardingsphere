@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <set-parameter sql-case-id="set_user_variable">
+        <parameter-assign value="IF(@have_ndb=0,@drop_cmd,'SET @dummy = 0')">
+            <parameter name="@drop" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_number">
+        <parameter-assign value="3">
+            <parameter name="extra_float_digits" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_session_mysql">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" scope="SESSION" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_at_at_session_mysql">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" scope="SESSION" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_at_at_without_scope_mysql">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" scope="SESSION" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_at_at_global_mysql">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" scope="GLOBAL" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_to">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_for_session_scope">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" scope="SESSION" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_for_local_scope">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" scope="LOCAL" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_for_default_scope">
+        <parameter-assign value="DEFAULT">
+            <parameter name="configuration_parameter" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_timezone_with_zero_value" />
+    <set-parameter sql-case-id="set_timezone_with_positive_value" />
+    <set-parameter sql-case-id="set_timezone_with_negative_value" />
+    <set-parameter sql-case-id="set_timezone_with_double_value" />
+    <set-parameter sql-case-id="set_timezone_for_default_scope" />
+    <set-parameter sql-case-id="set_timezone_for_local_scope" />
+    <set-parameter sql-case-id="set_timezone_for_session_scope" />
+    <set-parameter sql-case-id="set_timezone_for_local_scope_with_double_value" />
+    <set-parameter sql-case-id="set_parameter_equal_boolean">
+        <parameter-assign value="true">
+            <parameter name="extra_float_digits" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_list">
+        <parameter-assign value="1,2,3">
+            <parameter name="extra_float_digits" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_number_with_signal">
+        <parameter-assign value="-10.5">
+            <parameter name="extra_float_digits" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_names">
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_client" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_connection" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_character_set_doris">
+        <parameter-assign value="utf8mb4">
+            <parameter name="character_set_client" />
+        </parameter-assign>
+    </set-parameter>
+    <set-resource-group sql-case-id="set_resource_group">
+        <group name="rg" />
+    </set-resource-group>
+    <set-parameter sql-case-id="set_charset_mysql">
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_client" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_connection" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_charset_postgresql">
+        <parameter-assign value="'UTF8'">
+            <parameter name="client_encoding" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_client_encoding">
+        <parameter-assign value="'UTF8'">
+            <parameter name="CLIENT_ENCODING" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_quoted_identifier_sqlserver">
+        <parameter-assign value="ON">
+            <parameter name="QUOTED_IDENTIFIER" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_textsize_sqlserver">
+        <parameter-assign value="2048">
+            <parameter name="TEXTSIZE" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_session_authorization" />
+    <set-parameter sql-case-id="set_persist_system_variable_doris">
+        <parameter-assign value="200">
+            <parameter name="max_connections" scope="PERSIST" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_persist_only_system_variable_doris">
+        <parameter-assign value="'+08:00'">
+            <parameter name="time_zone" scope="PERSIST_ONLY" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_mysql_version_comment">
+        <parameter-assign value="123">
+            <parameter name="max_connections" scope="GLOBAL" />
+        </parameter-assign>
+        <comment start-index="0" stop-index="36" text="/*! SET GLOBAL max_connections=123 */" />
+    </set-parameter>
+    <set-parameter sql-case-id="set_mysql_version_comment_with_version">
+        <parameter-assign value="456">
+            <parameter name="max_connections" scope="GLOBAL" />
+        </parameter-assign>
+        <comment start-index="0" stop-index="41" text="/*!80029 SET GLOBAL max_connections=456 */" />
+    </set-parameter>
+</sql-parser-test-cases>

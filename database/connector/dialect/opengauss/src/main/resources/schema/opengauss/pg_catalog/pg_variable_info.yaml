@@ -1,0 +1,107 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_variable_info
+columns:
+  node_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: node_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  next_oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: next_oid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  next_xid:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: next_xid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  oldest_xid:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: oldest_xid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  xid_vac_limit:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: xid_vac_limit
+    primaryKey: false
+    unsigned: false
+    visible: true
+  oldest_xid_db:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oldest_xid_db
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_extend_csn_logpage:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: last_extend_csn_logpage
+    primaryKey: false
+    unsigned: false
+    visible: true
+  start_extend_csn_logpage:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: start_extend_csn_logpage
+    primaryKey: false
+    unsigned: false
+    visible: true
+  next_commit_seqno:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: next_commit_seqno
+    primaryKey: false
+    unsigned: false
+    visible: true
+  latest_completed_xid:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: latest_completed_xid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  startup_max_xid:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: startup_max_xid
+    primaryKey: false
+    unsigned: false
+    visible: true

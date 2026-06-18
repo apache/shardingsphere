@@ -1,0 +1,26 @@
+/* background behind the logo*/
+#header {
+    background: black;
+    border-color: black;
+}
+
+#header-wrapper {
+    background: black;
+    border-color: black;
+}
+
+#chapter p {
+    text-align: left;
+}
+
+.copy-to-clipboard {
+    background-image: none;
+    display: none;
+}
+
+#body img, #body .video-container {
+    margin: auto;
+    text-align: left;
+    display: inherit;
+}
+ 

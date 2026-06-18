@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <create-job sql-case-id="create_job_every_minute">
+        <job-name name="my_job" start-index="11" stop-index="16" />
+        <schedule start-index="30" stop-index="43" every-schedule="true">
+            <interval start-index="36" stop-index="43" value="1" unit="MINUTE" />
+        </schedule>
+        <insert-table name="tbl1" start-index="60" stop-index="67">
+            <owner name="db1" start-index="60" stop-index="62" />
+        </insert-table>
+        <insert-select-table name="tbl2" start-index="83" stop-index="90">
+            <owner name="db2" start-index="83" stop-index="85" />
+        </insert-select-table>
+    </create-job>
+
+    <create-job sql-case-id="create_job_at_once">
+        <job-name name="my_job" start-index="11" stop-index="16" />
+        <schedule start-index="30" stop-index="53" every-schedule="false">
+            <at-timestamp start-index="33" stop-index="53" value="2020-01-01 00:00:00" />
+        </schedule>
+        <insert-table name="tbl1" start-index="70" stop-index="77">
+            <owner name="db1" start-index="70" stop-index="72" />
+        </insert-table>
+        <insert-select-table name="tbl2" start-index="93" stop-index="100">
+            <owner name="db2" start-index="93" stop-index="95" />
+        </insert-select-table>
+    </create-job>
+
+    <create-job sql-case-id="create_job_every_day_with_starts">
+        <job-name name="my_job" start-index="11" stop-index="16" />
+        <schedule start-index="30" stop-index="69" every-schedule="true">
+            <interval start-index="36" stop-index="40" value="1" unit="DAY" />
+            <starts-timestamp start-index="49" stop-index="69" value="2020-01-01 00:00:00" />
+        </schedule>
+        <insert-table name="tbl1" start-index="86" stop-index="93">
+            <owner name="db1" start-index="86" stop-index="88" />
+        </insert-table>
+        <insert-select-table name="tbl2" start-index="109" stop-index="116">
+            <owner name="db2" start-index="109" stop-index="111" />
+        </insert-select-table>
+        <insert-select-where start-index="118" stop-index="156">
+            <expr>
+                <binary-operation-expression start-index="124" stop-index="156">
+                    <left>
+                        <column name="create_time" start-index="124" stop-index="134" />
+                    </left>
+                    <operator>&gt;=</operator>
+                    <right>
+                        <function function-name="days_add" start-index="139" stop-index="156" text="days_add(now(),-1)">
+                            <parameter>
+                                <function function-name="now" start-index="148" stop-index="152" text="now()" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression start-index="154" stop-index="155" value="-1" />
+                            </parameter>
+                        </function>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </insert-select-where>
+    </create-job>
+
+    <create-job sql-case-id="create_job_every_day_with_starts_and_ends">
+        <job-name name="my_job" start-index="11" stop-index="16" />
+        <schedule start-index="30" stop-index="96" every-schedule="true">
+            <interval start-index="36" stop-index="40" value="1" unit="DAY" />
+            <starts-timestamp start-index="49" stop-index="69" value="2020-01-01 00:00:00" />
+            <ends-timestamp start-index="76" stop-index="96" value="2020-01-01 00:10:00" />
+        </schedule>
+        <insert-table name="tbl1" start-index="113" stop-index="120">
+            <owner name="db1" start-index="113" stop-index="115" />
+        </insert-table>
+        <insert-select-table name="tbl2" start-index="136" stop-index="143">
+            <owner name="db2" start-index="136" stop-index="138" />
+        </insert-select-table>
+        <insert-select-where start-index="145" stop-index="183">
+            <expr>
+                <binary-operation-expression start-index="151" stop-index="183">
+                    <left>
+                        <column name="create_time" start-index="151" stop-index="161" />
+                    </left>
+                    <operator>&gt;=</operator>
+                    <right>
+                        <function function-name="days_add" start-index="166" stop-index="183" text="days_add(now(),-1)">
+                            <parameter>
+                                <function function-name="now" start-index="175" stop-index="179" text="now()" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression start-index="181" stop-index="182" value="-1" />
+                            </parameter>
+                        </function>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </insert-select-where>
+    </create-job>
+
+    <create-job sql-case-id="create_job_every_minute_with_comment">
+        <job-name name="my_job" start-index="11" stop-index="16" />
+        <schedule start-index="30" stop-index="43" every-schedule="true">
+            <interval start-index="36" stop-index="43" value="1" unit="MINUTE" />
+        </schedule>
+        <job-comment start-index="45" stop-index="66" value="test comment" />
+        <insert-table name="tbl1" start-index="83" stop-index="90">
+            <owner name="db1" start-index="83" stop-index="85" />
+        </insert-table>
+        <insert-select-table name="tbl2" start-index="106" stop-index="113">
+            <owner name="db2" start-index="106" stop-index="108" />
+        </insert-select-table>
+    </create-job>
+</sql-parser-test-cases>

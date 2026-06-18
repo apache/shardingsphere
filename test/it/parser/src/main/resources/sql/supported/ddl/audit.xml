@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="audit_policy" value="AUDIT POLICY table_pol WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_policy_by_users" value="AUDIT POLICY dml_pol BY hr, sh WHENEVER NOT SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_policy_except_user" value="AUDIT POLICY read_dir_pol EXCEPT hr" db-types="Oracle" />
+    <sql-case id="audit_policy_by_users_with_roles" value="AUDIT POLICY read_dir_pol BY USERS WITH GRANTED ROLES hr_role" db-types="Oracle" />
+    <sql-case id="audit_context_namespace_attributes" value="AUDIT CONTEXT NAMESPACE userenv ATTRIBUTES current_user, db_name BY hr;" db-types="Oracle" />
+    <sql-case id="audit_all_statements_in_session_current_by_access_whenever_not_successful" value="AUDIT ALL STATEMENTS IN SESSION CURRENT BY ACCESS WHENEVER NOT SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_alter_system" value="AUDIT ALTER SYSTEM" db-types="Oracle" />
+    <sql-case id="audit_create_cluster" value="AUDIT CREATE CLUSTER" db-types="Oracle" />
+    <sql-case id="audit_alter_cluster" value="AUDIT ALTER CLUSTER" db-types="Oracle" />
+    <sql-case id="audit_drop_cluster" value="AUDIT DROP CLUSTER" db-types="Oracle" />
+    <sql-case id="audit_truncate_cluster" value="AUDIT TRUNCATE CLUSTER" db-types="Oracle" />
+    <sql-case id="audit_context" value="AUDIT CONTEXT" db-types="Oracle" />
+    <sql-case id="audit_create_context" value="AUDIT CREATE CONTEXT" db-types="Oracle" />
+    <sql-case id="audit_drop_context" value="AUDIT DROP CONTEXT" db-types="Oracle" />
+    <sql-case id="audit_database_link" value="AUDIT DATABASE LINK" db-types="Oracle" />
+    <sql-case id="audit_create_database_link" value="AUDIT CREATE DATABASE LINK" db-types="Oracle" />
+    <sql-case id="audit_alter_database_link" value="AUDIT ALTER DATABASE LINK" db-types="Oracle" />
+    <sql-case id="audit_drop_database_link" value="AUDIT DROP DATABASE LINK" db-types="Oracle" />
+    <sql-case id="audit_dimension" value="AUDIT DIMENSION" db-types="Oracle" />
+    <sql-case id="audit_create_dimension" value="AUDIT CREATE DIMENSION" db-types="Oracle" />
+    <sql-case id="audit_alter_dimension" value="AUDIT ALTER DIMENSION" db-types="Oracle" />
+    <sql-case id="audit_drop_dimension" value="AUDIT DROP DIMENSION" db-types="Oracle" />
+    <sql-case id="audit_directory" value="AUDIT DIRECTORY" db-types="Oracle" />
+    <sql-case id="audit_create_directory" value="AUDIT CREATE DIRECTORY" db-types="Oracle" />
+    <sql-case id="audit_drop_directory" value="AUDIT DROP DIRECTORY" db-types="Oracle" />
+    <sql-case id="audit_index" value="AUDIT INDEX" db-types="Oracle" />
+    <sql-case id="audit_create_index" value="AUDIT CREATE INDEX" db-types="Oracle" />
+    <sql-case id="audit_alter_index" value="AUDIT ALTER INDEX" db-types="Oracle" />
+    <sql-case id="audit_analyze_index" value="AUDIT ANALYZE INDEX" db-types="Oracle" />
+    <sql-case id="audit_drop_index" value="AUDIT DROP INDEX" db-types="Oracle" />
+    <sql-case id="audit_materialized_view" value="AUDIT MATERIALIZED VIEW" db-types="Oracle" />
+    <sql-case id="audit_create_materialized_view" value="AUDIT CREATE MATERIALIZED VIEW" db-types="Oracle" />
+    <sql-case id="audit_alter_materialized_view" value="AUDIT ALTER MATERIALIZED VIEW" db-types="Oracle" />
+    <sql-case id="audit_drop_materialized_view" value="AUDIT DROP MATERIALIZED VIEW" db-types="Oracle" />
+    <sql-case id="audit_not_exists" value="AUDIT NOT EXISTS" db-types="Oracle" />
+    <sql-case id="audit_outline" value="AUDIT OUTLINE" db-types="Oracle" />
+    <sql-case id="audit_create_outline" value="AUDIT CREATE OUTLINE" db-types="Oracle" />
+    <sql-case id="audit_alter_outline" value="AUDIT ALTER OUTLINE" db-types="Oracle" />
+    <sql-case id="audit_drop_outline" value="AUDIT DROP OUTLINE" db-types="Oracle" />
+    <sql-case id="audit_pluggable_database" value="AUDIT PLUGGABLE DATABASE" db-types="Oracle" />
+    <sql-case id="audit_create_pluggable_database" value="AUDIT CREATE PLUGGABLE DATABASE" db-types="Oracle" />
+    <sql-case id="audit_alter_pluggable_database" value="AUDIT ALTER PLUGGABLE DATABASE" db-types="Oracle" />
+    <sql-case id="audit_drop_pluggable_database" value="AUDIT DROP PLUGGABLE DATABASE" db-types="Oracle" />
+    <sql-case id="audit_procedure" value="AUDIT PROCEDURE" db-types="Oracle" />
+    <sql-case id="audit_create_function" value="AUDIT CREATE FUNCTION" db-types="Oracle" />
+    <sql-case id="audit_create_library" value="AUDIT CREATE LIBRARY" db-types="Oracle" />
+    <sql-case id="audit_create_package" value="AUDIT CREATE PACKAGE" db-types="Oracle" />
+    <sql-case id="audit_create_package_body" value="AUDIT CREATE PACKAGE BODY" db-types="Oracle" />
+    <sql-case id="audit_create_procedure" value="AUDIT CREATE PROCEDURE" db-types="Oracle" />
+    <sql-case id="audit_drop_function" value="AUDIT DROP FUNCTION" db-types="Oracle" />
+    <sql-case id="audit_drop_library" value="AUDIT DROP LIBRARY" db-types="Oracle" />
+    <sql-case id="audit_drop_package" value="AUDIT DROP PACKAGE" db-types="Oracle" />
+    <sql-case id="audit_drop_procedure" value="AUDIT DROP PROCEDURE" db-types="Oracle" />
+    <sql-case id="audit_profile" value="AUDIT PROFILE" db-types="Oracle" />
+    <sql-case id="audit_create_profile" value="AUDIT CREATE PROFILE" db-types="Oracle" />
+    <sql-case id="audit_alter_profile" value="AUDIT ALTER PROFILE" db-types="Oracle" />
+    <sql-case id="audit_drop_profile" value="AUDIT DROP PROFILE" db-types="Oracle" />
+    <sql-case id="audit_public_database_link" value="AUDIT PUBLIC DATABASE LINK" db-types="Oracle" />
+    <sql-case id="audit_create_public_database_link" value="AUDIT CREATE PUBLIC DATABASE LINK" db-types="Oracle" />
+    <sql-case id="audit_alter_public_database_link" value="AUDIT ALTER PUBLIC DATABASE LINK" db-types="Oracle" />
+    <sql-case id="audit_drop_public_database_link" value="AUDIT DROP PUBLIC DATABASE LINK" db-types="Oracle" />
+    <sql-case id="audit_public_synonym" value="AUDIT PUBLIC SYNONYM" db-types="Oracle" />
+    <sql-case id="audit_create_public_synonym" value="AUDIT CREATE PUBLIC SYNONYM" db-types="Oracle" />
+    <sql-case id="audit_drop_public_synonym" value="AUDIT DROP PUBLIC SYNONYM" db-types="Oracle" />
+    <sql-case id="audit_role" value="AUDIT ROLE" db-types="Oracle" />
+    <sql-case id="audit_create_role" value="AUDIT CREATE ROLE" db-types="Oracle" />
+    <sql-case id="audit_alter_role" value="AUDIT ALTER ROLE" db-types="Oracle" />
+    <sql-case id="audit_drop_role" value="AUDIT DROP ROLE" db-types="Oracle" />
+    <sql-case id="audit_set_role" value="AUDIT SET ROLE" db-types="Oracle" />
+    <sql-case id="audit_rollback_segment" value="AUDIT ROLLBACK SEGMENT" db-types="Oracle" />
+    <sql-case id="audit_create_rollback_segment" value="AUDIT CREATE ROLLBACK SEGMENT" db-types="Oracle" />
+    <sql-case id="audit_alter_rollback_segment" value="AUDIT ALTER ROLLBACK SEGMENT" db-types="Oracle" />
+    <sql-case id="audit_drop_rollback_segment" value="AUDIT DROP ROLLBACK SEGMENT" db-types="Oracle" />
+    <sql-case id="audit_sequence" value="AUDIT SEQUENCE" db-types="Oracle" />
+    <sql-case id="audit_create_sequence" value="AUDIT CREATE SEQUENCE" db-types="Oracle" />
+    <sql-case id="audit_drop_sequence" value="AUDIT DROP SEQUENCE" db-types="Oracle" />
+    <sql-case id="audit_session" value="AUDIT SESSION" db-types="Oracle" />
+    <sql-case id="audit_synonym" value="AUDIT SYNONYM" db-types="Oracle" />
+    <sql-case id="audit_create_synonym" value="AUDIT CREATE SYNONYM" db-types="Oracle" />
+    <sql-case id="audit_drop_synonym" value="AUDIT DROP SYNONYM" db-types="Oracle" />
+    <sql-case id="audit_system_audit" value="AUDIT SYSTEM AUDIT" db-types="Oracle" />
+    <sql-case id="audit_system_grant" value="AUDIT SYSTEM GRANT" db-types="Oracle" />
+    <sql-case id="audit_table" value="AUDIT TABLE" db-types="Oracle" />
+    <sql-case id="audit_create_table" value="AUDIT CREATE TABLE" db-types="Oracle" />
+    <sql-case id="audit_drop_table" value="AUDIT DROP TABLE" db-types="Oracle" />
+    <sql-case id="audit_truncate_table" value="AUDIT TRUNCATE TABLE" db-types="Oracle" />
+    <sql-case id="audit_tablespace" value="AUDIT TABLESPACE" db-types="Oracle" />
+    <sql-case id="audit_create_tablespace" value="AUDIT CREATE TABLESPACE" db-types="Oracle" />
+    <sql-case id="audit_alter_tablespace" value="AUDIT ALTER TABLESPACE" db-types="Oracle" />
+    <sql-case id="audit_drop_tablespace" value="AUDIT DROP TABLESPACE" db-types="Oracle" />
+    <sql-case id="audit_trigger" value="AUDIT TRIGGER" db-types="Oracle" />
+    <sql-case id="audit_create_trigger" value="AUDIT CREATE TRIGGER" db-types="Oracle" />
+    <sql-case id="audit_alter_trigger" value="AUDIT ALTER TRIGGER" db-types="Oracle" />
+    <sql-case id="audit_drop_trigger" value="AUDIT DROP TRIGGER" db-types="Oracle" />
+    <sql-case id="audit_alter_table" value="AUDIT ALTER TABLE" db-types="Oracle" />
+    <sql-case id="audit_type" value="AUDIT TYPE" db-types="Oracle" />
+    <sql-case id="audit_create_type" value="AUDIT CREATE TYPE" db-types="Oracle" />
+    <sql-case id="audit_create_type_body" value="AUDIT CREATE TYPE BODY" db-types="Oracle" />
+    <sql-case id="audit_alter_type" value="AUDIT ALTER TYPE" db-types="Oracle" />
+    <sql-case id="audit_drop_type" value="AUDIT DROP TYPE" db-types="Oracle" />
+    <sql-case id="audit_drop_type_body" value="AUDIT DROP TYPE BODY" db-types="Oracle" />
+    <sql-case id="audit_user" value="AUDIT USER" db-types="Oracle" />
+    <sql-case id="audit_create_user" value="AUDIT CREATE USER" db-types="Oracle" />
+    <sql-case id="audit_alter_user" value="AUDIT ALTER USER" db-types="Oracle" />
+    <sql-case id="audit_drop_user" value="AUDIT DROP USER" db-types="Oracle" />
+    <sql-case id="audit_view" value="AUDIT VIEW" db-types="Oracle" />
+    <sql-case id="audit_create_view" value="AUDIT CREATE VIEW" db-types="Oracle" />
+    <sql-case id="audit_drop_view" value="AUDIT DROP VIEW" db-types="Oracle" />
+    <sql-case id="audit_alter_sequence" value="AUDIT ALTER SEQUENCE" db-types="Oracle" />
+    <sql-case id="audit_comment_table" value="AUDIT COMMENT TABLE" db-types="Oracle" />
+    <sql-case id="audit_delete_table" value="AUDIT DELETE TABLE" db-types="Oracle" />
+    <sql-case id="audit_execute_directory" value="AUDIT EXECUTE DIRECTORY" db-types="Oracle" />
+    <sql-case id="audit_execute_procedure" value="AUDIT EXECUTE PROCEDURE" db-types="Oracle" />
+    <sql-case id="audit_grant_directory" value="AUDIT GRANT DIRECTORY" db-types="Oracle" />
+    <sql-case id="audit_grant_procedure" value="AUDIT GRANT PROCEDURE" db-types="Oracle" />
+    <sql-case id="audit_grant_sequence" value="AUDIT GRANT SEQUENCE" db-types="Oracle" />
+    <sql-case id="audit_grant_table" value="AUDIT GRANT TABLE" db-types="Oracle" />
+    <sql-case id="audit_grant_type" value="AUDIT GRANT TYPE " db-types="Oracle" />
+    <sql-case id="audit_insert_table" value="AUDIT INSERT TABLE" db-types="Oracle" />
+    <sql-case id="audit_lock_table" value="AUDIT LOCK TABLE" db-types="Oracle" />
+    <sql-case id="audit_read_directory" value="AUDIT READ DIRECTORY" db-types="Oracle" />
+    <sql-case id="audit_select_sequence" value="AUDIT SELECT SEQUENCE" db-types="Oracle" />
+    <sql-case id="audit_select_table" value="AUDIT SELECT TABLE" db-types="Oracle" />
+    <sql-case id="audit_update_table" value="AUDIT UPDATE TABLE" db-types="Oracle" />
+    <sql-case id="audit_write_directory" value="AUDIT WRITE DIRECTORY" db-types="Oracle" />
+    <sql-case id="audit_alter_on_default" value="AUDIT ALTER ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_audit_on_default" value="AUDIT AUDIT ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_comment_on_default" value="AUDIT COMMENT ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_delete_on_default" value="AUDIT DELETE ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_flashback_on_default" value="AUDIT FLASHBACK ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_grant_on_default" value="AUDIT GRANT ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_index_on_default" value="AUDIT INDEX ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_insert_on_default" value="AUDIT INSERT ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_lock_on_default" value="AUDIT LOCK ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_rename_on_default" value="AUDIT RENAME ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_select_on_default" value="AUDIT SELECT ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_update_on_default" value="AUDIT UPDATE ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_execute_on_default" value="AUDIT EXECUTE ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_read_on_default" value="AUDIT READ ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_all_by_by_access" value="AUDIT ALL BY jward BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_all_on_default_by_access" value="AUDIT ALL ON DEFAULT BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_all_statements_by_by_access_whenever_successful" value="AUDIT ALL STATEMENTS BY jward, jsmith BY ACCESS WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_all_statements_in_session_current" value="AUDIT ALL STATEMENTS IN SESSION CURRENT" db-types="Oracle" />
+    <sql-case id="audit_create_any_directory" value="AUDIT CREATE ANY DIRECTORY" db-types="Oracle" />
+    <sql-case id="audit_create_alter" value="AUDIT CREATE TABLE, CREATE SEQUENCE, CREATE SYNONYM, CREATE DATABASE LINK, CREATE CLUSTER, CREATE VIEW, ALTER SESSION" db-types="Oracle" />
+    <sql-case id="audit_delete_any_table_by_access" value="AUDIT DELETE ANY TABLE BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_crete_table_by_access_whenever_not_successful" value="AUDIT CREATE TABLE BY ACCESS WHENEVER NOT SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_select_table_by" value="AUDIT SELECT TABLE BY jackson" db-types="Oracle" />
+    <sql-case id="audit_delete_any_table" value="AUDIT DELETE ANY TABLE" db-types="Oracle" />
+    <sql-case id="audit_delete_on_by_access" value="AUDIT DELETE ON laurel.emp BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_execute_on_by_access_whenever_successful" value="AUDIT EXECUTE ON sales_data.check_work BY ACCESS WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_insert_any_table_by_system_by_access" value="AUDIT INSERT ANY TABLE BY SYSTEM BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_insert_table_by_access" value="AUDIT INSERT TABLE BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_role_whenever_not_successful" value="AUDIT ROLE WHENEVER NOT SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_role_whenever_success" value="AUDIT ROLE WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_select_on_default_by_access_whenever_not_successful" value="AUDIT SELECT ON DEFAULT BY ACCESS WHENEVER NOT SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_select_on_whenever_successful" value="AUDIT SELECT ON hr.employees WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_cluster" value="AUDIT CLUSTER" db-types="Oracle" />
+    <sql-case id="audit_alter_delete_on_default_by_access" value="AUDIT ALTER, DELETE ON DEFAULT BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_alter_index_rename_on_default" value="AUDIT ALTER, INDEX, RENAME ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_session_by" value="AUDIT SESSION BY jward, swilliams" db-types="Oracle" />
+    <sql-case id="audit_lock_table_by_access_whenever_successful" value="AUDIT LOCK TABLE BY ACCESS WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_delete_on_by_access_whenever_success" value="AUDIT DELETE ON laurel.emp BY ACCESS WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_select_on_by_access1" value="AUDIT SELECT ON employees_departments BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_select_on_by_access2" value="AUDIT SELECT ON SYS.AUD$ BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_select_on_by_access3" value="AUDIT SELECT ON SYS.FGA$ BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_select_whenever_not_successful" value="AUDIT SELECT ON hr.employees WHENEVER NOT SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_select_table_by_access" value="AUDIT SELECT TABLE BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_select_insert_delete_table_by_access_whenever_not_successful" value="AUDIT SELECT TABLE, INSERT TABLE, DELETE TABLE BY ACCESS WHENEVER NOT SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_select_update_table" value="AUDIT SELECT TABLE, UPDATE TABLE" db-types="Oracle" />
+    <sql-case id="audit_select_update_table_by" value="AUDIT SELECT TABLE, UPDATE TABLE BY hr, oe" db-types="Oracle" />
+    <sql-case id="audit_select_update_table_by_access" value="AUDIT SELECT TABLE, UPDATE TABLE BY scott, blake BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_session_by_access" value="AUDIT SESSION BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_select_insert_delete_on_access_whenever_successful" value="AUDIT SELECT, INSERT, DELETE ON jward.dept BY ACCESS WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_session_by_by_access" value="AUDIT SESSION BY jward, jsmith BY ACCESS" db-types="Oracle" />
+</sql-cases>

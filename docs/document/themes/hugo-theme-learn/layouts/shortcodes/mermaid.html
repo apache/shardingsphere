@@ -1,0 +1,2 @@
+{{ $_hugo_config := `{ "version": 1 }` }}
+<div class="mermaid" align="{{ if .Get "align" }}{{ .Get "align" }}{{ else }}center{{ end }}">{{ safeHTML .Inner }}</div>

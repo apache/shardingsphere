@@ -1,0 +1,509 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+resources:
+  - uri: shardingsphere://features/encrypt/algorithms
+    name: encrypt-algorithms
+    title: Encrypt Algorithms
+    description: >-
+      List encrypt algorithm plugins visible from the current ShardingSphere-Proxy runtime, including property templates and secret-property hints.
+      Read this before planning encryption when the user asks for algorithm choice or query behavior.
+    mimeType: application/json
+    meta:
+      org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
+    shardingSphereMetadata:
+      resourceKind: list
+      feature: encrypt
+      relatedTools:
+        - database_gateway_plan_encrypt_rule
+resourceTemplates:
+  - uriTemplate: shardingsphere://features/encrypt/databases/{database}/rules
+    name: encrypt-rules
+    title: Encrypt Rules
+    description: "List encrypt table rules for one ShardingSphere logical database. Read this before altering or validating encrypt configuration."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database whose encrypt rules should be inspected."
+          required: true
+          scope: logical-database
+      resourceKind: list
+      feature: encrypt
+      relatedTools:
+        - database_gateway_plan_encrypt_rule
+        - database_gateway_validate_workflow
+  - uriTemplate: shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules
+    name: encrypt-table-rule
+    title: Encrypt Table Rule
+    description: "Read encrypt rules for one logical table. Use this before planning column-level encryption so the model can preserve existing cipher and assisted-query columns."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database that owns the encrypt rule."
+          required: true
+          scope: logical-database
+        - name: table
+          title: Logical Table
+          description: "ShardingSphere logical table name, not a physical table shard."
+          required: true
+          scope: logical-table
+      resourceKind: list
+      feature: encrypt
+      relatedTools:
+        - database_gateway_plan_encrypt_rule
+        - database_gateway_validate_workflow
+prompts:
+  - name: plan_encrypt_rule
+    title: Plan Encrypt Rule
+    description: "Guide the model to plan a ShardingSphere encrypt rule by reading encrypt algorithms and existing encrypt rules before calling database_gateway_plan_encrypt_rule."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/plan-encrypt-rule.md
+    arguments:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the table."
+        required: false
+      - name: schema
+        title: Schema
+        description: "Optional schema or namespace that contains the table."
+        required: false
+      - name: table
+        title: Logical Table
+        description: "Logical table whose column should be encrypted."
+        required: false
+      - name: column
+        title: Column
+        description: "Logical column that should receive encrypt rule planning."
+        required: false
+      - name: algorithm_type
+        title: Encrypt Algorithm
+        description: "Optional primary encrypt algorithm type visible from ShardingSphere-Proxy."
+        required: false
+      - name: assisted_query_algorithm_type
+        title: Assisted Query Algorithm
+        description: "Optional assisted query encrypt algorithm type visible from ShardingSphere-Proxy."
+        required: false
+      - name: like_query_algorithm_type
+        title: LIKE Query Algorithm
+        description: "Optional LIKE query encrypt algorithm type visible from ShardingSphere-Proxy."
+        required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue an encrypt plan."
+        required: false
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_plan_encrypt_rule
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/encrypt/algorithms
+        - shardingsphere://features/encrypt/databases/{database}/rules
+        - shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after database_gateway_plan_encrypt_rule returns a planned workflow with plan_id and reviewable artifacts."
+        - "Stop after a clarifying response lists missing inputs instead of guessing algorithm or column choices."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask when decrypt, equality, LIKE, or sensitive-field semantics are unclear."
+        - "Ask before applying generated encrypt rule DistSQL that changes runtime state."
+
+completionTargets:
+  - referenceType: prompt
+    reference: plan_encrypt_rule
+    arguments:
+      - algorithm_type
+      - assisted_query_algorithm_type
+      - like_query_algorithm_type
+    maxValues: 50
+resourceNavigation:
+  - from: shardingsphere://features/encrypt/algorithms
+    to: database_gateway_plan_encrypt_rule
+    requiredArguments: []
+    carriedArguments:
+      - algorithm_type
+    description: "Use visible encrypt algorithms when planning an encrypt rule."
+  - from: shardingsphere://features/encrypt/databases/{database}/rules
+    to: database_gateway_plan_encrypt_rule
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Preserve existing database-level encrypt rules when planning changes."
+  - from: shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules
+    to: database_gateway_plan_encrypt_rule
+    requiredArguments:
+      - database
+      - table
+    carriedArguments:
+      - database
+      - table
+    description: "Preserve existing table-level encrypt rule columns and algorithms."
+  - from: database_gateway_plan_encrypt_rule
+    to: shardingsphere://workflows/{plan_id}
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Read the persisted workflow plan after planning encryption rule changes."
+  - from: database_gateway_plan_encrypt_rule
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Preview or apply generated encrypt rule DistSQL after reviewing the plan."
+tools:
+  - name: database_gateway_plan_encrypt_rule
+    title: Plan Encrypt Rule
+    description: >-
+      Plan a ShardingSphere encrypt rule workflow for a logical table column. This tool creates reviewable rule DistSQL
+      artifacts but does not execute them; use database_gateway_apply_workflow only after user review.
+    inputSchema:
+      type: object
+      properties:
+        plan_id:
+          type: string
+          description: "Optional existing workflow plan identifier used to continue or revise a previous encrypt plan."
+        database:
+          type: string
+          description: "ShardingSphere logical database that owns the target table."
+        schema:
+          type: string
+          description: "Optional schema or namespace that owns the target logical table."
+        table:
+          type: string
+          description: "Target ShardingSphere logical table name."
+        column:
+          type: string
+          description: "Target logical column name to encrypt."
+        operation_type:
+          type: string
+          description: "Encrypt rule lifecycle operation requested by the user."
+          enum:
+            - create
+            - alter
+            - drop
+        natural_language_intent:
+          type: string
+          description: "User request in natural language, used together with structured_intent_evidence to clarify encryption behavior."
+        structured_intent_evidence:
+          type: object
+          description: "Structured intent extracted from the user request. Use these fields when the user mentions decrypt, equality filtering, LIKE queries, or domain semantics."
+          properties:
+            requires_decrypt:
+              type: boolean
+              description: "Whether applications must read plaintext through ShardingSphere decryption."
+            requires_equality_filter:
+              type: boolean
+              description: "Whether equality predicates on this column must remain usable."
+            requires_like_query:
+              type: boolean
+              description: "Whether LIKE predicates on this column must remain usable."
+            field_semantics:
+              type: string
+              description: "Domain meaning such as phone number, email, ID card, or other sensitive field category."
+          required: []
+          additionalProperties: false
+        delivery_mode:
+          type: string
+          description: "Whether the plan should return all artifacts at once or guide the user step by step."
+          enum:
+            - all-at-once
+            - step-by-step
+        execution_mode:
+          type: string
+          description: "Preferred final mode for later database_gateway_apply_workflow. Use manual-only when the user asks to export artifacts, run them manually, or keep runtime side effects out of MCP."
+          enum:
+            - review-then-execute
+            - manual-only
+        user_overrides:
+          type: object
+          description: "Optional user-selected encrypt algorithms and explicit rule column names."
+          properties:
+            algorithm_type:
+              type: string
+              description: "Primary encrypt algorithm type override."
+            assisted_query_algorithm_type:
+              type: string
+              description: "Assisted-query encrypt algorithm type override."
+            like_query_algorithm_type:
+              type: string
+              description: "LIKE-query encrypt algorithm type override."
+            cipher_column_name:
+              type: string
+              description: "Cipher column name to put into CREATE or ALTER ENCRYPT RULE."
+            assisted_query_column_name:
+              type: string
+              description: "Assisted-query column name to put into CREATE or ALTER ENCRYPT RULE when equality filtering is required."
+            like_query_column_name:
+              type: string
+              description: "LIKE-query column name to put into CREATE or ALTER ENCRYPT RULE when LIKE query support is required."
+          required: []
+          additionalProperties: false
+        algorithm_type:
+          type: string
+          description: "Primary encrypt algorithm type override; equivalent to user_overrides.algorithm_type."
+        assisted_query_algorithm_type:
+          type: string
+          description: "Assisted-query algorithm type override used for equality filtering."
+        like_query_algorithm_type:
+          type: string
+          description: "LIKE-query algorithm type override used when LIKE predicates must remain usable."
+        cipher_column_name:
+          type: string
+          description: "Cipher column name to put into CREATE or ALTER ENCRYPT RULE."
+        assisted_query_column_name:
+          type: string
+          description: "Assisted-query column name to put into CREATE or ALTER ENCRYPT RULE when equality filtering is required."
+        like_query_column_name:
+          type: string
+          description: "LIKE-query column name to put into CREATE or ALTER ENCRYPT RULE when LIKE query support is required."
+        primary_algorithm_properties:
+          type: object
+          description: "Plugin-defined primary encrypt algorithm properties. Values may be strings or protected placeholder objects with secret_ref and optional label; placeholders require manual execution outside MCP."
+          additionalProperties: true
+        assisted_query_algorithm_properties:
+          type: object
+          description: "Plugin-defined assisted-query algorithm properties. Values may be strings or protected placeholder objects with secret_ref and optional label; placeholders require manual execution outside MCP."
+          additionalProperties: true
+        like_query_algorithm_properties:
+          type: object
+          description: "Plugin-defined LIKE-query algorithm properties. Values may be strings or protected placeholder objects with secret_ref and optional label; placeholders require manual execution outside MCP."
+          additionalProperties: true
+      required: []
+      additionalProperties: false
+    outputSchema:
+      type: object
+      properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker for workflow planning, or terminal when planning cannot continue."
+          enum:
+            - planning
+            - terminal
+        plan_id:
+          type: string
+          description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
+        workflow_kind:
+          type: string
+          description: "Workflow kind resolved by the planner."
+        status:
+          type: string
+          description: "Stable workflow status, such as clarifying, planned, or failed."
+        missing_required_inputs:
+          type: array
+          description: "Inputs still required before the plan can be completed."
+        clarification_questions:
+          type: array
+          description: "Structured questions for missing workflow inputs. Secret-marked questions require out-of-band client or operator handling instead of MCP form elicitation."
+        elicitation_support:
+          type: object
+          description: "Evaluated MCP elicitation capability and the selected interaction path when automatic form continuation cannot be used."
+          properties:
+            form_mode:
+              type: boolean
+              description: "Whether the client advertised MCP form elicitation support."
+            url_mode:
+              type: boolean
+              description: "Whether the client advertised MCP URL elicitation support."
+            selected_interaction:
+              type: string
+              description: "Fallback interaction selected by the server."
+              enum:
+                - structured_fallback
+                - url_fallback
+        fallback_reason:
+          type: string
+          description: "Machine-readable reason explaining why the planner returned structured fallback instead of automatic form continuation."
+          enum:
+            - client_unsupported
+            - remote_identity_required
+            - missing_plan_id
+            - sensitive_form_blocked
+            - url_mode_not_implemented
+            - ambiguous_field_binding
+            - elicitation_failed
+            - malformed_elicitation_result
+            - invalid_elicited_content
+            - stale_elicitation
+        issues:
+          type: array
+          description: "Warnings, conflicts, and validation issues found during planning."
+        global_steps:
+          type: array
+          description: "Workflow review and execution steps."
+        current_step:
+          type: string
+          description: "Current workflow step."
+        algorithm_recommendations:
+          type: array
+          description: "Recommended encrypt algorithms and ranking reasons."
+        property_requirements:
+          type: array
+          description: "Required and optional algorithm properties for selected encrypt algorithms."
+        validation_strategy:
+          type: object
+          description: "Validation strategy generated by the planner."
+        delivery_mode:
+          type: string
+          description: "Planner delivery mode used for user interaction."
+        execution_mode:
+          type: string
+          description: "Preferred later apply mode captured by the plan."
+        intent_inference:
+          type: object
+          description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+        argument_provenance:
+          type: object
+          description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."
+        review_focus:
+          type: object
+          description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
+        secret_reference_summary:
+          type: object
+          description: "Safe summary of protected algorithm-property placeholders. It never contains raw secret_ref identifiers or real sensitive values."
+        proxy_topology_hint:
+          type: object
+          description: "Proxy metadata view expected by this workflow and safe recovery guidance when runtime metadata looks inconsistent."
+        distsql_artifacts:
+          type: array
+          description: "Masked rule DistSQL artifacts generated for review before applying the workflow."
+          items:
+            type: object
+        masked_property_preview:
+          type: object
+          description: "Encrypt-specific preview of algorithm properties with secret values masked before returning them to MCP clients."
+          properties:
+            primary:
+              type: object
+              description: "Masked primary encrypt algorithm properties."
+            assisted_query:
+              type: object
+              description: "Masked assisted-query algorithm properties."
+            like_query:
+              type: object
+              description: "Masked LIKE-query algorithm properties."
+        next_actions:
+          type: array
+          description: "Ordered model-facing recommendations for the next call or user question."
+          items:
+            type: object
+            properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              tool_name:
+                type: string
+                description: "Canonical tool name when type is tool_call."
+              resource_uri:
+                type: string
+                description: "Canonical resource URI when type is resource_read."
+              arguments:
+                type: object
+                description: "Canonical arguments to provide to the target tool."
+              reason:
+                type: string
+                description: "Why the model should take this action."
+              required_inputs:
+                type: array
+                description: "User inputs needed before continuing."
+        resources_to_read:
+          type: array
+          description: "Typed resources the model should read when more rule or algorithm context is useful."
+      examples:
+        - response_mode: planning
+          plan_id: encrypt-rule-20260505-001
+          status: planned
+          workflow_kind: encrypt.rule
+          missing_required_inputs: []
+          clarification_questions: []
+          issues: []
+          global_steps: []
+          current_step: review
+          algorithm_recommendations: []
+          property_requirements:
+            - role: primary
+              property_key: aes-key-value
+              required: true
+              secret: true
+          validation_strategy: {}
+          delivery_mode: all-at-once
+          execution_mode: review-then-execute
+          intent_inference: {}
+          argument_provenance:
+            database: user
+            table: user
+            column: user
+            algorithm_type: resource
+          review_focus:
+            artifact_categories:
+              - rule_dist_sql
+            side_effect_scope: runtime_encrypt_rule
+            next_review_action: preview_before_apply
+          proxy_topology_hint:
+            metadata_source: ShardingSphere-Proxy
+            recovery_hint: Read encrypt algorithm and rule resources again if runtime metadata looks stale.
+          distsql_artifacts:
+            - artifact_id: create-encrypt-rule
+              artifact_type: rule_dist_sql
+              sql: >-
+                CREATE ENCRYPT RULE orders (COLUMNS((NAME=status, CIPHER=status_cipher,
+                ENCRYPT_ALGORITHM(TYPE(NAME=AES, PROPERTIES('aes-key-value'='******'))))))
+          masked_property_preview:
+            primary:
+              aes-key-value: "******"
+            assisted_query: {}
+            like_query: {}
+          resources_to_read:
+            - uri: shardingsphere://features/encrypt/algorithms
+              resource_kind: algorithm
+              purpose: read_first
+              reason: Read encrypt algorithm metadata before choosing algorithm arguments.
+              source_field: resources_to_read
+          next_actions:
+            - order: 1
+              type: tool_call
+              title: Call database_gateway_apply_workflow
+              tool_name: database_gateway_apply_workflow
+              arguments: {}
+              reason: Preview generated encrypt rule DistSQL artifacts.
+    annotations:
+      title: Plan Encrypt Rule
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: true
+    runtime:
+      workflowRole: plan
+    meta:
+      org.apache.shardingsphere/workflow-kind: encrypt.rule
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/encrypt/algorithms
+        - "shardingsphere://features/encrypt/databases/{database}/rules"
+        - "shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules"
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow

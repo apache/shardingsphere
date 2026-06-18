@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <resume-sync-job sql-case-id="resume_sync_job_with_identifier" job-name="job_name" />
+    <resume-sync-job sql-case-id="resume_sync_job_with_schema" job-name="job_name">
+        <owner name="testdb" start-index="16" stop-index="21" />
+    </resume-sync-job>
+    <resume-sync-job sql-case-id="resume_sync_job_simple" job-name="my_sync_job" />
+    <resume-sync-job sql-case-id="resume_sync_job_with_backticks" job-name="sync_job_123" />
+    <resume-sync-job sql-case-id="resume_sync_job_with_schema_backticks" job-name="my_job">
+        <owner name="my_db" start-index="16" stop-index="22" start-delimiter="`" end-delimiter="`" />
+    </resume-sync-job>
+</sql-parser-test-cases>

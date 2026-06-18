@@ -1,0 +1,1100 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.CreateContainerCmd"
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.CreateContainerResponse",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setId",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setWarnings",
+          "parameterTypes": [
+            "java.lang.String[]"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.DockerCmd"
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.GraphData",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.GraphDriver",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.HealthState",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.HealthStateLog",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.InspectContainerResponse",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.InspectContainerResponse$ContainerState",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.github.dockerjava.api.command.InspectContainerResponse"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.InspectContainerResponse$Mount",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.InspectContainerResponse$Node",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.InspectImageResponse",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.RootFS",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.command.SyncDockerCmd"
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.AccessMode",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.AuthConfig",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Bind",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.BindOptions",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.BindPropagation",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Binds",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "fromPrimitive",
+          "parameterTypes": [
+            "java.lang.String[]"
+          ]
+        },
+        {
+          "name": "toPrimitive",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.BlkioRateDevice",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.BlkioWeightDevice",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Capability",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.ClusterInfo",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.ContainerConfig",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.ContainerNetwork",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.ContainerNetwork$Ipam",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Device",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.DeviceRequest",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.DockerObject",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "getRawValues",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Driver",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.ExposedPort",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.ExposedPorts",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "fromPrimitive",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        },
+        {
+          "name": "toPrimitive",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.ExternalCA",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.ExternalCAProtocol",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.HealthCheck",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.HostConfig",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getAnnotations",
+          "parameterTypes": []
+        },
+        {
+          "name": "getAutoRemove",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBlkioDeviceReadBps",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBlkioDeviceReadIOps",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBlkioDeviceWriteBps",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBlkioDeviceWriteIOps",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBlkioWeight",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBlkioWeightDevice",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCapAdd",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCapDrop",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCgroup",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCgroupParent",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCgroupnsMode",
+          "parameterTypes": []
+        },
+        {
+          "name": "getConsoleSize",
+          "parameterTypes": []
+        },
+        {
+          "name": "getContainerIDFile",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCpuCount",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCpuPercent",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCpuPeriod",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCpuQuota",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCpuRealtimePeriod",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCpuRealtimeRuntime",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCpuShares",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCpusetCpus",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCpusetMems",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDeviceCgroupRules",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDeviceRequests",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDevices",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDiskQuota",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDns",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDnsOptions",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDnsSearch",
+          "parameterTypes": []
+        },
+        {
+          "name": "getExtraHosts",
+          "parameterTypes": []
+        },
+        {
+          "name": "getGroupAdd",
+          "parameterTypes": []
+        },
+        {
+          "name": "getInit",
+          "parameterTypes": []
+        },
+        {
+          "name": "getIoMaximumBandwidth",
+          "parameterTypes": []
+        },
+        {
+          "name": "getIoMaximumIOps",
+          "parameterTypes": []
+        },
+        {
+          "name": "getIpcMode",
+          "parameterTypes": []
+        },
+        {
+          "name": "getIsolation",
+          "parameterTypes": []
+        },
+        {
+          "name": "getKernelMemory",
+          "parameterTypes": []
+        },
+        {
+          "name": "getLxcConf",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMemory",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMemoryReservation",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMemorySwap",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMemorySwappiness",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMounts",
+          "parameterTypes": []
+        },
+        {
+          "name": "getNanoCPUs",
+          "parameterTypes": []
+        },
+        {
+          "name": "getNetworkMode",
+          "parameterTypes": []
+        },
+        {
+          "name": "getOomKillDisable",
+          "parameterTypes": []
+        },
+        {
+          "name": "getOomScoreAdj",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPidMode",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPidsLimit",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPortBindings",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPrivileged",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPublishAllPorts",
+          "parameterTypes": []
+        },
+        {
+          "name": "getReadonlyRootfs",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRestartPolicy",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRuntime",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSecurityOpts",
+          "parameterTypes": []
+        },
+        {
+          "name": "getShmSize",
+          "parameterTypes": []
+        },
+        {
+          "name": "getStorageOpt",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSysctls",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTmpFs",
+          "parameterTypes": []
+        },
+        {
+          "name": "getUlimits",
+          "parameterTypes": []
+        },
+        {
+          "name": "getUsernsMode",
+          "parameterTypes": []
+        },
+        {
+          "name": "getUtSMode",
+          "parameterTypes": []
+        },
+        {
+          "name": "getVolumeDriver",
+          "parameterTypes": []
+        },
+        {
+          "name": "getVolumesFrom",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Image",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.ImageOptions",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Info",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.InfoRegistryConfig",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.InfoRegistryConfig$IndexConfig",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.InternetProtocol",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Isolation",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Link",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Links",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "toPrimitive",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.LocalNodeState",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "forValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.LogConfig",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setType",
+          "parameterTypes": [
+            "com.github.dockerjava.api.model.LogConfig$LoggingType"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.LogConfig$LoggingType",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.LxcConf",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Mount",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.MountType",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.NetworkSettings",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.PeerNode",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Ports",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "fromPrimitive",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        },
+        {
+          "name": "toPrimitive",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Ports$Binding",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.PropagationMode",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.ResourceVersion",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.RestartPolicy",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.RuntimeInfo",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setPath",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.SELContext",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.SwarmCAConfig",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.SwarmDispatcherConfig",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.SwarmInfo",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.SwarmOrchestration",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.SwarmRaftConfig",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.SwarmSpec",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.TaskDefaults",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.TmpfsOptions",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Ulimit",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Version",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.VersionComponent",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.VersionPlatform",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Volume",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.VolumeBind",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.VolumeBinds",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.VolumeOptions",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.VolumeRW",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.Volumes",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "toPrimitive",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.VolumesFrom",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "type": "com.github.dockerjava.api.model.VolumesRW",
+      "allDeclaredFields": true
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.util.VersionInfo"
+      },
+      "glob": "com/github/dockerjava/zerodep/shaded/org/apache/hc/client5/version.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.api.DockerClientDelegate"
+      },
+      "glob": "docker-java.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.psl.PublicSuffixMatcherLoader"
+      },
+      "glob": "org/publicsuffix/list/effective_tld_names.dat"
+    }
+  ]
+}

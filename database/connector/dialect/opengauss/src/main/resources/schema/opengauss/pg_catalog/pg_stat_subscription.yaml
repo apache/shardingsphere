@@ -1,0 +1,83 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_stat_subscription
+columns:
+  subid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: subid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  subname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: subname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pid:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: pid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  received_lsn:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: received_lsn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_msg_send_time:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: last_msg_send_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_msg_receipt_time:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: last_msg_receipt_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  latest_end_lsn:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: latest_end_lsn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  latest_end_time:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: latest_end_time
+    primaryKey: false
+    unsigned: false
+    visible: true

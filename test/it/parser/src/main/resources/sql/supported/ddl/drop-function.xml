@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="drop_function" value="DROP FUNCTION sqrt(integer)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_functions" value="DROP FUNCTION sqrt(integer), sqrt(bigint)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_function_without_argument_list" value="DROP FUNCTION update_employee_salaries" db-types="PostgreSQL,openGauss, SQLServer" />
+    <sql-case id="drop_function_with_schema" value="DROP FUNCTION oe.SecondMax" db-types="Oracle" />
+    <sql-case id="drop_temporary_function_basic" value="DROP TEMPORARY FUNCTION parse_json;" db-types="Hive" />
+    <sql-case id="drop_temporary_function_with_if_exists" value="DROP TEMPORARY FUNCTION IF EXISTS parse_json;" db-types="Hive" />
+    <sql-case id="drop_function_basic" value="DROP FUNCTION calculate_score;" db-types="Hive" />
+    <sql-case id="drop_function_with_if_exists" value="DROP FUNCTION IF EXISTS db1.calculate_score;" db-types="Hive" />
+    <sql-case id="drop_function_mysql" value="DROP FUNCTION func1" db-types="MySQL" />
+    <sql-case id="drop_global_function_doris" value="DROP GLOBAL FUNCTION my_add(INT, INT)" db-types="Doris" />
+    <sql-case id="drop_function_with_params_doris" value="DROP FUNCTION my_add(INT, INT)" db-types="Doris" />
+</sql-cases>

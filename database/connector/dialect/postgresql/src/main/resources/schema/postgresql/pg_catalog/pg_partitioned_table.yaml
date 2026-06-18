@@ -1,0 +1,86 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_partitioned_table
+columns:
+  partrelid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: partrelid
+    primaryKey: true
+    unsigned: false
+    visible: true
+  partstrat:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: partstrat
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partnatts:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: partnatts
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partdefid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: partdefid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partattrs:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: partattrs
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partclass:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: partclass
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partcollation:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: partcollation
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partexprs:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: partexprs
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_partitioned_table_partrelid_index:
+    name: pg_partitioned_table_partrelid_index

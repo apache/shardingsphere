@@ -1,0 +1,88 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_language
+columns:
+  lanname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: lanname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lanowner:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lanowner
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lanispl:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: lanispl
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lanpltrusted:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: lanpltrusted
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lanplcallfoid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lanplcallfoid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  laninline:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: laninline
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lanvalidator:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lanvalidator
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lanacl:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: lanacl
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_language_name_index:
+    name: pg_language_name_index
+  pg_language_oid_index:
+    name: pg_language_oid_index

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_diskgroup_with_external_redundancy" value="CREATE DISKGROUP dgroup_01
+                                                                           EXTERNAL REDUNDANCY
+                                                                           DISK '/devices/disks/c*';" db-types="Oracle" />
+    <sql-case id="create_diskgroup_with_single_attribute" value="CREATE DISKGROUP data1 DISK '/dev/sd*'
+                                                                        ATTRIBUTE 'compatible.asm' = '11.2';" db-types="Oracle" />
+    <sql-case id="create_diskgroup_with_multi_attribute" value="CREATE DISKGROUP data2 DISK '/dev/sd*'
+                                                                       ATTRIBUTE 'compatible.asm' = '11.2', 'compatible.rdbms' = '11.2',
+                                                                                 'compatible.advm' = '11.2';" db-types="Oracle" />
+    <sql-case id="create_diskgroup_with_multi_failgroup" value="CREATE DISKGROUP data NORMAL REDUNDANCY
+                                                                FAILGROUP controller1 DISK
+                                                                '/devices/diska1',
+                                                                '/devices/diska2',
+                                                                '/devices/diska3',
+                                                                '/devices/diska4'
+                                                                FAILGROUP controller2 DISK
+                                                                '/devices/diskb1',
+                                                                '/devices/diskb2',
+                                                                '/devices/diskb3',
+                                                                '/devices/diskb4'
+                                                                ATTRIBUTE 'compatible.asm' = '11.2', 'compatible.rdbms' = '11.2',
+                                                                          'sector_size'='4096';" db-types="Oracle" />
+    <sql-case id="create_diskgroup_with_single_failgroup" value="CREATE DISKGROUP ocr_data NORMAL REDUNDANCY
+                                                                 FAILGROUP fg1 DISK '/devices/diskg1'
+                                                                 FAILGROUP fg2 DISK '/devices/diskg2'
+                                                                 QUORUM FAILGROUP fg3 DISK '/devices/diskg3'
+                                                                 ATTRIBUTE 'compatible.asm' = '11.2.0.0.0';" db-types="Oracle" />
+</sql-cases>

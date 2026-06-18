@@ -1,0 +1,123 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata data-nodes="expected_dataset.t_order">
+        <column name="order_id" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="status" type="varchar" />
+        <column name="merchant_id" type="numeric" />
+        <column name="remark" type="varchar" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
+    <metadata data-nodes="expected_dataset.t_order_item">
+        <column name="item_id" type="numeric" />
+        <column name="order_id" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="product_id" type="numeric" />
+        <column name="quantity" type="numeric" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
+    <metadata data-nodes="expected_dataset.t_product">
+        <column name="product_id" type="numeric" />
+        <column name="product_name" type="varchar" />
+        <column name="category_id" type="numeric" />
+        <column name="price" type="decimal" />
+        <column name="status" type="varchar" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
+    <row data-node="expected_dataset.t_order" values="1000, 10, init, 1, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1001, 10, init, 2, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1002, 10, init, 3, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1003, 10, init, 4, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1004, 10, init, 5, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1005, 10, init, 6, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1006, 10, init, 7, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1007, 10, init, 8, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1008, 10, init, 9, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1009, 10, init, 10, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1100, 11, init, 11, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1101, 11, init, 12, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1102, 11, init, 13, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1103, 11, init, 14, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1104, 11, init, 15, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1105, 11, init, 16, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1106, 11, init, 17, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1107, 11, init, 18, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1108, 11, init, 19, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order" values="1109, 11, init, 20, test, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100000, 1000, 10, 1, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100001, 1000, 10, 2, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100100, 1001, 10, 3, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100101, 1001, 10, 4, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100200, 1002, 10, 5, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100201, 1002, 10, 6, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100300, 1003, 10, 7, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100301, 1003, 10, 8, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100400, 1004, 10, 9, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100401, 1004, 10, 10, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100500, 1005, 10, 1, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100501, 1005, 10, 2, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100600, 1006, 10, 3, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100601, 1006, 10, 4, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100700, 1007, 10, 5, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100701, 1007, 10, 6, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100800, 1008, 10, 7, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100801, 1008, 10, 8, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100900, 1009, 10, 9, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="100901, 1009, 10, 10, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110000, 1100, 11, 1, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110001, 1100, 11, 2, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110100, 1101, 11, 3, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110101, 1101, 11, 4, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110200, 1102, 11, 5, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110201, 1102, 11, 6, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110300, 1103, 11, 7, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110301, 1103, 11, 8, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110400, 1104, 11, 9, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110401, 1104, 11, 10, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110500, 1105, 11, 1, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110501, 1105, 11, 2, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110600, 1106, 11, 3, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110601, 1106, 11, 4, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110700, 1107, 11, 5, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110701, 1107, 11, 6, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110800, 1108, 11, 7, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110801, 1108, 11, 8, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110900, 1109, 11, 9, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_order_item" values="110901, 1109, 11, 10, 1, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="1, qq coins, 2, 200, off sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="2, haier washing machine, 4, 3121, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="3, huawei mobile phones, 6, 6666, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="4, alibaba cloud cards, 2, 500, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="5, lenovo mobile phones, 6, 3200, off sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="6, moutai liquor, 8, 3200, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="7, baidu cloud cards, 2, 700, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="8, xiaomi mobile phones, 6, 2799, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="9, vivo mobile phones, 6, 2899, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="10, oppo mobile phones, 6, 2299, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="11, google mobile phones, 6, 3399, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="12, walmart wine, 8, 1000, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="13, amazon cloud cards, 2, 1000, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="14, apple mobile phones, 6, 8200, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="15, microsoft x-box, 9, 5000, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="16, dell xps, 10, 9000, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="17, johnson shampoo, 12, 30, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="18, intel cpu, 10, 1600, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="19, hp computer, 10, 4600, on sale, 2017-08-08" />
+    <row data-node="expected_dataset.t_product" values="20, tesla model 3, 14, 324600, on sale, 2017-08-08" />
+</dataset>

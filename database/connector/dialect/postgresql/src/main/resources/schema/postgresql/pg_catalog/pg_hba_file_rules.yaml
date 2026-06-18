@@ -1,0 +1,91 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_hba_file_rules
+columns:
+  line_number:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: line_number
+    primaryKey: false
+    unsigned: false
+    visible: true
+  type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  database:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: database
+    primaryKey: false
+    unsigned: false
+    visible: true
+  user_name:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: user_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  address:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: address
+    primaryKey: false
+    unsigned: false
+    visible: true
+  netmask:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: netmask
+    primaryKey: false
+    unsigned: false
+    visible: true
+  auth_method:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: auth_method
+    primaryKey: false
+    unsigned: false
+    visible: true
+  options:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: options
+    primaryKey: false
+    unsigned: false
+    visible: true
+  error:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: error
+    primaryKey: false
+    unsigned: false
+    visible: true

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="analyze_table_validate_ref_update" value="ANALYZE TABLE customers VALIDATE REF UPDATE" db-types="Oracle" />
+    <sql-case id="analyze_table_validate_structure" value="ANALYZE TABLE employees VALIDATE STRUCTURE CASCADE FAST" db-types="Oracle" />
+    <sql-case id="analyze_table_delete_statistics" value="ANALYZE TABLE orders DELETE STATISTICS" db-types="Oracle" />
+    <sql-case id="analyze_table_partition_extension_oracle" value="ANALYZE TABLE orders PARTITION (list_p_order) VALIDATE REF UPDATE SET DANGLING TO NULL" db-types="Oracle" />
+    <sql-case id="analyze_table_partition_extension_for_keys" value="ANALYZE TABLE orders PARTITION FOR (1, 2) VALIDATE STRUCTURE CASCADE COMPLETE OFFLINE" db-types="Oracle" />
+    <sql-case id="analyze_table_subpartition_extension" value="ANALYZE TABLE orders SUBPARTITION (list_p_order) VALIDATE STRUCTURE CASCADE COMPLETE ONLINE" db-types="Oracle" />
+    <sql-case id="analyze_table_subpartition_extension_for_keys" value="ANALYZE TABLE orders SUBPARTITION FOR (2, 5) DELETE SYSTEM STATISTICS" db-types="Oracle" />
+    <sql-case id="analyze_table_list_chained_rows_into" value="ANALYZE TABLE orders LIST CHAINED ROWS INTO chained_rows" db-types="Oracle" />
+    <sql-case id="analyze_index" value="ANALYZE INDEX order_index VALIDATE STRUCTURE; " db-types="Oracle" />
+    <sql-case id="analyze_cluster" value="ANALYZE CLUSTER personnel VALIDATE STRUCTURE" db-types="Oracle" />
+    <sql-case id="analyze_table_update_histogram_using_data" value="ANALYZE TABLE tbl_datetime UPDATE HISTOGRAM ON col1 USING DATA '{&quot;buckets&quot;: [[20170216162223, 0.125], [&quot;2017-02-10 08:15:18.000000&quot;, 0.375], [&quot;2018-02-12 07:04:18.000000&quot;, 0.5], [&quot;2018-03-21 21:12:42.000000&quot;, 0.75]], &quot;data-type&quot;: &quot;datetime&quot;, &quot;null-values&quot;: 0.25, &quot;collation-id&quot;: 8, &quot;sampling-rate&quot;: 1.0, &quot;histogram-type&quot;: &quot;singleton&quot;, &quot;number-of-buckets-specified&quot;: 4}';" db-types="MySQL" />
+    <sql-case id="analyze_table_validate_structure_cascade1" value="ANALYZE TABLE emp VALIDATE STRUCTURE CASCADE ONLINE" db-types="Oracle" />
+    <sql-case id="analyze_table_validate_structure_cascade2" value="ANALYZE TABLE emp VALIDATE STRUCTURE CASCADE" db-types="Oracle" />
+    <sql-case id="analyze_table_validate_structure_cascade3" value="ANALYZE TABLE employees VALIDATE STRUCTURE CASCADE" db-types="Oracle" />
+</sql-cases>

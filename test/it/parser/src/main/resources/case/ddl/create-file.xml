@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <create-file sql-case-id="create_file_basic" file-name="my_file">
+        <properties start-index="20" stop-index="106">
+            <property key="url" value="https://test.bj.bcebos.com/kafka-key/ca.pem" start-index="32" stop-index="84" />
+            <property key="catalog" value="kafka" start-index="87" stop-index="105" />
+        </properties>
+    </create-file>
+
+    <create-file sql-case-id="create_file_quoted" file-name="ca.pem">
+        <properties start-index="21" stop-index="107">
+            <property key="url" value="https://test.bj.bcebos.com/kafka-key/ca.pem" start-index="33" stop-index="85" />
+            <property key="catalog" value="kafka" start-index="88" stop-index="106" />
+        </properties>
+    </create-file>
+
+    <create-file sql-case-id="create_file_single_quoted" file-name="ca.pem">
+        <properties start-index="21" stop-index="107">
+            <property key="url" value="https://test.bj.bcebos.com/kafka-key/ca.pem" start-index="33" stop-index="85" />
+            <property key="catalog" value="kafka" start-index="88" stop-index="106" />
+        </properties>
+    </create-file>
+
+    <create-file sql-case-id="create_file_in_database" file-name="ca.pem" database-name="my_database">
+        <properties start-index="36" stop-index="166">
+            <property key="url" value="https://test.bj.bcebos.com/kafka-key/ca.pem" start-index="48" stop-index="100" />
+            <property key="catalog" value="kafka" start-index="103" stop-index="121" />
+            <property key="md5" value="b5bb901bf10f99205b39a46ac3557dd9" start-index="124" stop-index="165" />
+        </properties>
+    </create-file>
+
+    <create-file sql-case-id="create_file_from_database" file-name="my_file" database-name="test_db">
+        <properties start-index="33" stop-index="119">
+            <property key="url" value="https://test.bj.bcebos.com/kafka-key/ca.pem" start-index="45" stop-index="97" />
+            <property key="catalog" value="kafka" start-index="100" stop-index="118" />
+        </properties>
+    </create-file>
+</sql-parser-test-cases>

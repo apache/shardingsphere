@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <show-streaming-rule sql-case-id="show-streaming-rule" />
+
+    <alter-streaming-rule sql-case-id="alter-streaming-rule">
+        <job-type-name>STREAMING</job-type-name>
+        <rule>
+            <read>
+                <worker-thread>20</worker-thread>
+                <batch-size>1000</batch-size>
+                <sharding-size>10000000</sharding-size>
+                <rate-limiter algorithm-name="QPS">
+                    <properties>
+                        <property key="qps" value="500" />
+                    </properties>
+                </rate-limiter>
+            </read>
+            <write>
+                <worker-thread>20</worker-thread>
+                <batch-size>2000</batch-size>
+                <rate-limiter algorithm-name="TPS">
+                    <property key="tps" value="2000" />
+                </rate-limiter>
+            </write>
+            <stream-channel algorithm-name="MEMORY">
+                <property key="block-queue-size" value="100" />
+            </stream-channel>
+        </rule>
+    </alter-streaming-rule>
+
+    <alter-streaming-rule sql-case-id="alter-streaming-rule-read-lite">
+        <job-type-name>STREAMING</job-type-name>
+        <rule>
+            <read>
+                <rate-limiter algorithm-name="QPS" />
+            </read>
+        </rule>
+    </alter-streaming-rule>
+
+    <alter-streaming-rule sql-case-id="alter-streaming-rule-read-without-rate-limiter">
+        <job-type-name>STREAMING</job-type-name>
+        <rule>
+            <read>
+                <worker-thread>20</worker-thread>
+                <batch-size>1000</batch-size>
+                <sharding-size>10000000</sharding-size>
+            </read>
+        </rule>
+    </alter-streaming-rule>
+
+    <alter-streaming-rule sql-case-id="alter-streaming-rule-write-lite">
+        <job-type-name>STREAMING</job-type-name>
+        <rule>
+            <write>
+                <rate-limiter algorithm-name="TPS" />
+            </write>
+        </rule>
+    </alter-streaming-rule>
+
+    <show-streaming-list sql-case-id="show-streaming-list" />
+    
+    <show-streaming-status sql-case-id="show-streaming-status">
+        <job-id>123</job-id>
+    </show-streaming-status>
+    
+    <drop-streaming sql-case-id="drop-streaming">
+        <job-id>123</job-id>
+    </drop-streaming>
+</sql-parser-test-cases>

@@ -1,0 +1,259 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: E2E - SQL
+
+on:
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - '**/*.md'
+  workflow_dispatch:
+    inputs:
+      full_matrix_algorithm:
+        description: Full matrix generation algorithm
+        required: false
+        default: auto
+        type: choice
+        options:
+          - auto
+          - cartesian
+          - pairwise
+
+concurrency:
+  group: e2e-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
+  SEGMENT_DOWNLOAD_TIMEOUT_MINS: 1
+
+jobs:
+  global-environment:
+    name: Import Global Environment
+    uses: ./.github/workflows/required-reusable.yml
+
+  detect-and-generate-matrix:
+    name: Detect Changes and Generate Matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      smoke-matrix: ${{ steps.generate-matrix.outputs.smoke-matrix }}
+      full-matrix: ${{ steps.generate-matrix.outputs.full-matrix }}
+      matrix: ${{ steps.generate-matrix.outputs.matrix }}
+      has-jobs: ${{ steps.generate-matrix.outputs.has-jobs }}
+      full-matrix-algorithm: ${{ steps.generate-matrix.outputs.full-matrix-algorithm }}
+      full-smoke-overlap-count: ${{ steps.generate-matrix.outputs.full-smoke-overlap-count }}
+      estimated-stage2-jobs: ${{ steps.generate-matrix.outputs.estimated-stage2-jobs }}
+      total-two-stage-jobs: ${{ steps.generate-matrix.outputs.total-two-stage-jobs }}
+      effective-reduction-ratio: ${{ steps.generate-matrix.outputs.effective-reduction-ratio }}
+      filter-json: ${{ steps.generate-matrix.outputs.filter-json }}
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - id: filter
+        uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d
+        with:
+          filters: .github/workflows/resources/filter/e2e-sql-filters.yml
+      - id: generate-matrix
+        env:
+          FILTER_ADAPTER_PROXY: ${{ steps.filter.outputs.adapter_proxy }}
+          FILTER_ADAPTER_JDBC: ${{ steps.filter.outputs.adapter_jdbc }}
+          FILTER_MODE_STANDALONE: ${{ steps.filter.outputs.mode_standalone }}
+          FILTER_MODE_CLUSTER: ${{ steps.filter.outputs.mode_cluster }}
+          FILTER_MODE_CORE: ${{ steps.filter.outputs.mode_core }}
+          FILTER_DATABASE_MYSQL: ${{ steps.filter.outputs.database_mysql }}
+          FILTER_DATABASE_POSTGRESQL: ${{ steps.filter.outputs.database_postgresql }}
+          FILTER_FEATURE_SHARDING: ${{ steps.filter.outputs.feature_sharding }}
+          FILTER_FEATURE_ENCRYPT: ${{ steps.filter.outputs.feature_encrypt }}
+          FILTER_FEATURE_READWRITE_SPLITTING: ${{ steps.filter.outputs.feature_readwrite_splitting }}
+          FILTER_FEATURE_SHADOW: ${{ steps.filter.outputs.feature_shadow }}
+          FILTER_FEATURE_MASK: ${{ steps.filter.outputs.feature_mask }}
+          FILTER_FEATURE_BROADCAST: ${{ steps.filter.outputs.feature_broadcast }}
+          FILTER_FEATURE_DISTSQL: ${{ steps.filter.outputs.feature_distsql }}
+          FILTER_FEATURE_SQL_FEDERATION: ${{ steps.filter.outputs.feature_sql_federation }}
+          FILTER_CORE_INFRA: ${{ steps.filter.outputs.core_infra }}
+          FILTER_TEST_FRAMEWORK: ${{ steps.filter.outputs.test_framework }}
+          FILTER_POM_CHANGES: ${{ steps.filter.outputs.pom_changes }}
+          FULL_MATRIX_ALGORITHM_INPUT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.full_matrix_algorithm || 'auto' }}
+        run: |
+          filters=$(jq -cn \
+            --arg adapter_proxy          "$FILTER_ADAPTER_PROXY" \
+            --arg adapter_jdbc           "$FILTER_ADAPTER_JDBC" \
+            --arg mode_standalone        "$FILTER_MODE_STANDALONE" \
+            --arg mode_cluster           "$FILTER_MODE_CLUSTER" \
+            --arg mode_core              "$FILTER_MODE_CORE" \
+            --arg database_mysql         "$FILTER_DATABASE_MYSQL" \
+            --arg database_postgresql    "$FILTER_DATABASE_POSTGRESQL" \
+            --arg feature_sharding       "$FILTER_FEATURE_SHARDING" \
+            --arg feature_encrypt        "$FILTER_FEATURE_ENCRYPT" \
+            --arg feature_readwrite_splitting "$FILTER_FEATURE_READWRITE_SPLITTING" \
+            --arg feature_shadow         "$FILTER_FEATURE_SHADOW" \
+            --arg feature_mask           "$FILTER_FEATURE_MASK" \
+            --arg feature_broadcast      "$FILTER_FEATURE_BROADCAST" \
+            --arg feature_distsql        "$FILTER_FEATURE_DISTSQL" \
+            --arg feature_sql_federation "$FILTER_FEATURE_SQL_FEDERATION" \
+            --arg core_infra             "$FILTER_CORE_INFRA" \
+            --arg test_framework         "$FILTER_TEST_FRAMEWORK" \
+            --arg pom_changes            "$FILTER_POM_CHANGES" \
+            '$ARGS.named')
+          bash .github/workflows/resources/scripts/e2e-sql/generate-e2e-sql-matrix.sh "$filters"
+          echo "filter-json=$filters" >> "$GITHUB_OUTPUT"
+      - name: Logs
+        run: |
+          echo "smoke-matrix=${{ steps.generate-matrix.outputs.smoke-matrix }}"
+          echo "has-jobs=${{ steps.generate-matrix.outputs.has-jobs }}"
+          echo "full-matrix-algorithm=${{ steps.generate-matrix.outputs.full-matrix-algorithm }}"
+          echo "full-smoke-overlap-count=${{ steps.generate-matrix.outputs.full-smoke-overlap-count }}"
+          echo "estimated-stage2-jobs=${{ steps.generate-matrix.outputs.estimated-stage2-jobs }}"
+          echo "total-two-stage-jobs=${{ steps.generate-matrix.outputs.total-two-stage-jobs }}"
+          echo "effective-reduction-ratio=${{ steps.generate-matrix.outputs.effective-reduction-ratio }}"
+          echo "filter-json=${{ steps.generate-matrix.outputs.filter-json }}"
+
+  prepare-e2e-artifacts:
+    name: Prepare E2E Artifacts
+    if: github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true'
+    needs: [ global-environment, detect-and-generate-matrix ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - id: setup-build-environment
+        uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-suffix: 'e2e-sql'
+          cache-save-enabled: 'false'
+          enable-docker-setup: 'true'
+      - name: Build E2E Image
+        run: ./mvnw -B clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests -Dspotless.apply.skip=true
+      - uses: ./.github/workflows/resources/actions/save-maven-cache
+        with:
+          cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
+          cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
+      - uses: ./.github/workflows/resources/actions/upload-source-snapshot
+      - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
+
+  e2e-sql-smoke:
+    name: E2E - SQL (Smoke)
+    needs: [ detect-and-generate-matrix, prepare-e2e-artifacts, global-environment ]
+    if: always() && github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true' && needs.detect-and-generate-matrix.result == 'success' && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      max-parallel: 15
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.detect-and-generate-matrix.outputs.smoke-matrix) }}
+    steps:
+      - name: Logs
+        run: |
+          echo "runner.temp=${{ runner.temp }}"
+          echo "RUNNER_TEMP=$RUNNER_TEMP"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v8
+        with:
+          name: source-snapshot
+          path: ${{ runner.temp }}/source-snapshot
+      - name: Restore Source Snapshot
+        run: |
+          find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
+          tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-suffix: 'e2e-sql'
+          cache-save-enabled: 'false'
+          enable-docker-setup: 'true'
+      - uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+        with:
+          load-docker-image: ${{ matrix.adapter == 'proxy' }}
+      - name: Run E2E Test
+        run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -De2e.run.type=DOCKER -De2e.artifact.modes=${{ matrix.mode }} -De2e.artifact.adapters=${{ matrix.adapter }} -De2e.run.additional.cases=false -De2e.scenarios=${{ matrix.scenario }} -De2e.artifact.databases=${{ matrix.database }} ${{ matrix.additional-options }}
+
+  detect-remaining-matrix:
+    name: Detect Remaining Matrix
+    needs: [ detect-and-generate-matrix, e2e-sql-smoke ]
+    if: >-
+      always()
+      && needs.detect-and-generate-matrix.outputs.has-jobs == 'true'
+      && needs.e2e-sql-smoke.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.generate.outputs.matrix }}
+      has-remaining-jobs: ${{ steps.generate.outputs.has-remaining-jobs }}
+    steps:
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v8
+        with:
+          name: source-snapshot
+          path: ${{ runner.temp }}/source-snapshot
+      - name: Restore Source Snapshot
+        run: |
+          find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
+          tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
+      - name: Detect Remaining Matrix
+        id: generate
+        env:
+          FILTER_JSON: ${{ needs.detect-and-generate-matrix.outputs.filter-json }}
+          FULL_MATRIX: ${{ needs.detect-and-generate-matrix.outputs.full-matrix }}
+          SMOKE_MATRIX: ${{ needs.detect-and-generate-matrix.outputs.smoke-matrix }}
+        run: |
+          bash .github/workflows/resources/scripts/e2e-sql/generate-remaining-matrix.sh \
+            "$FILTER_JSON" \
+            "$FULL_MATRIX" \
+            "$SMOKE_MATRIX"
+      - name: Logs
+        run: |
+          echo "matrix=${{ steps.generate.outputs.matrix }}"
+          echo "has-remaining-jobs=${{ steps.generate.outputs.has-remaining-jobs }}"
+
+  e2e-sql-stage2:
+    name: E2E - SQL (Stage 2)
+    needs: [ detect-remaining-matrix, prepare-e2e-artifacts, global-environment ]
+    if: >-
+      always()
+      && github.repository == 'apache/shardingsphere'
+      && needs.detect-remaining-matrix.outputs.has-remaining-jobs == 'true'
+      && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      max-parallel: 15
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.detect-remaining-matrix.outputs.matrix) }}
+    steps:
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v8
+        with:
+          name: source-snapshot
+          path: ${{ runner.temp }}/source-snapshot
+      - name: Restore Source Snapshot
+        run: |
+          find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
+          tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-suffix: 'e2e-sql'
+          cache-save-enabled: 'false'
+          enable-docker-setup: 'true'
+      - uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+        with:
+          load-docker-image: ${{ matrix.adapter == 'proxy' }}
+      - name: Run E2E Test
+        run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -De2e.run.type=DOCKER -De2e.artifact.modes=${{ matrix.mode }} -De2e.artifact.adapters=${{ matrix.adapter }} -De2e.run.additional.cases=false -De2e.scenarios=${{ matrix.scenario }} -De2e.artifact.databases=${{ matrix.database }} ${{ matrix.additional-options }}

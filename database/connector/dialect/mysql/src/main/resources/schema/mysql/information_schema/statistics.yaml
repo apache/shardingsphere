@@ -1,0 +1,182 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: STATISTICS
+type: TABLE
+columns:
+  table_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: TABLE_CATALOG
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  table_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: TABLE_SCHEMA
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  table_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: TABLE_NAME
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  non_unique:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: NON_UNIQUE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  index_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: INDEX_SCHEMA
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  index_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: INDEX_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  seq_in_index:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SEQ_IN_INDEX
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  column_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COLUMN_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collation:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COLLATION
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  cardinality:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: CARDINALITY
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sub_part:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUB_PART
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  packed:
+    caseSensitive: false
+    dataType: -2
+    generated: false
+    name: PACKED
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  nullable:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: NULLABLE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  index_type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: INDEX_TYPE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  comment:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COMMENT
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  index_comment:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: INDEX_COMMENT
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_visible:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: IS_VISIBLE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  expression:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: EXPRESSION
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true

@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_table_drop_partition_for_to_date_function" value="ALTER TABLE sales DROP PARTITION FOR(TO_DATE('01-SEP-2007','dd-MON-yyyy'))" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_unique_disable_validate" value="ALTER TABLE sales ADD CONSTRAINT sales_uk UNIQUE (prod_id, cust_id, promo_id, channel_id, time_id) DISABLE VALIDATE" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_foreign_key_references_rely_disable_novalidate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) RELY DISABLE NOVALIDATE" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_foreign_key_references_enable_novalidate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) ENABLE NOVALIDATE" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_foreign_key_references_enable_validate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) ENABLE VALIDATE" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_shrink_space" value="ALTER TABLE employees MODIFY LOB (perf_review) (SHRINK SPACE)" db-types="Oracle" />
+    <sql-case id="alter_table_set_unused1" value="ALTER TABLE hr.admin_emp SET UNUSED (hiredate, mgr)" db-types="Oracle" />
+    <sql-case id="alter_table_set_unused2" value="ALTER TABLE table_name SET UNUSED (M_ROW$$)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_cache" value="ALTER TABLE employees MODIFY LOB (resume) (CACHE)" db-types="Oracle" />
+    <sql-case id="alter_table_move_storage_tablespace" value="ALTER TABLE hr.admin_emp MOVE STORAGE (INITIAL 20K NEXT 40K MINEXTENTS 2 MAXEXTENTS 20 PCTINCREASE 0) TABLESPACE hr_tbs" db-types="Oracle" />
+    <sql-case id="alter_table_modify1" value="ALTER TABLE employee MODIFY (first_name DECRYPT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify2" value="ALTER TABLE employee MODIFY (first_name ENCRYPT SALT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify3" value="ALTER TABLE employee MODIFY (first_name ENCRYPT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify4" value="ALTER TABLE employee MODIFY (first_name ENCRYPT NO SALT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify5" value="ALTER TABLE employee MODIFY (first_name ENCRYPT 'NOMAC')" db-types="Oracle" />
+    <sql-case id="alter_table_modify6" value="ALTER TABLE employees MODIFY (emp_ssn ENCRYPT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify7" value="ALTER TABLE locations MODIFY PRIMARY KEY DISABLE CASCADE" db-types="Oracle" />
+    <sql-case id="alter_table_modify8" value="ALTER TABLE employees MODIFY (salary ENCRYPT USING 'AES256' 'NOMAC')" db-types="Oracle" />
+    <sql-case id="alter_table_modify9" value="ALTER TABLE sales MODIFY CONSTRAINT time_view_fk RELY" db-types="Oracle" />
+    <sql-case id="alter_table_modify10" value="ALTER TABLE locations_demo MODIFY (country_id CONSTRAINT country_nn NOT NULL)" db-types="Oracle" />
+    <sql-case id="alter_table_modify11" value="ALTER TABLE product_information MODIFY (min_price DEFAULT NULL)" db-types="Oracle" />
+    <sql-case id="alter_table_modify12" value="ALTER TABLE product_information MODIFY (min_price DEFAULT 10)" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint" value="ALTER TABLE employees ADD (CONSTRAINT emp_emp_id_pk PRIMARY KEY (employee_id), CONSTRAINT emp_dept_fk FOREIGN KEY (department_id) REFERENCES departments, CONSTRAINT emp_job_fk FOREIGN KEY (job_id) REFERENCES jobs (job_id), CONSTRAINT emp_manager_fk FOREIGN KEY (manager_id) REFERENCES employees)" db-types="Oracle" />
+    <sql-case id="alter_table_no_flashback_archive" value="ALTER TABLE employee NO FLASHBACK ARCHIVE" db-types="Oracle" />
+    <sql-case id="alter_table_move_tablespace_overflow_tablespace" value="ALTER TABLE admin_docindex MOVE TABLESPACE admin_tbs2 OVERFLOW TABLESPACE admin_tbs3" db-types="Oracle" />
+    <sql-case id="alter_table_move_nocompress" value="ALTER TABLE admin_iot5 MOVE NOCOMPRESS" db-types="Oracle" />
+    <sql-case id="alter_table_enable_row_movement1" value="ALTER TABLE SYSTEM.AUD$ ENABLE ROW MOVEMENT" db-types="Oracle" />
+    <sql-case id="alter_table_enable_row_movement2" value="ALTER TABLE employees_test ENABLE ROW MOVEMENT" db-types="Oracle" />
+    <sql-case id="alter_table_shrink_space_cascade" value="ALTER TABLE SYSTEM.AUD$ SHRINK SPACE CASCADE" db-types="Oracle" />
+    <sql-case id="alter_table" value="ALTER TABLE t_log ADD name varchar(10)" db-types="MySQL, PostgreSQL,openGauss" />
+    <sql-case id="alter_table_oracle" value="ALTER TABLE t_log ADD (name varchar(10))" db-types="Oracle" />
+    <sql-case id="alter_table_not_null" value="alter table t1 add c2 real  not null" db-types="MySQL" />
+    <sql-case id="alter_table_not_null_first" value="alter table t1 add c2 real  not null first" db-types="MySQL" />
+    <sql-case id="alter_table_not_null_after" value="alter table t1 add c4 real  not null after c2" db-types="MySQL" />
+    <sql-case id="alter_table_change_unsigned_not_null" value="alter table t1 change c1 c2 real unsigned not null" db-types="MySQL" />
+    <sql-case id="alter_table_modify_unsigned_not_null" value="alter table t1 modify c1 real unsigned not null" db-types="MySQL" />
+    <sql-case id="alter_table_modify_unsigned_zerofill_not_null" value="alter table t1 modify c1 real unsigned zerofill not null" db-types="MySQL" />
+    <sql-case id="alter_table_change_unsigned_zerofill_not_null" value="alter table t1 change c1 c2 real unsigned zerofill not null" db-types="MySQL" />
+    <sql-case id="alter_table_add_partition" value="alter table t1 add partition partitions 10" db-types="MySQL" />
+    <sql-case id="alter_table_add_partition_nested_table_col_properties" value="ALTER TABLE print_media_part ADD PARTITION p4 VALUES LESS THAN (400) LOB(ad_photo, ad_composite) STORE AS (TABLESPACE omf_ts1) LOB(ad_sourcetext, ad_finaltext) STORE AS (TABLESPACE omf_ts1) NESTED TABLE ad_textdocs_ntab STORE AS nt_p3" db-types="Oracle" />
+    <sql-case id="alter_table_partition" value="alter table t1 partition by key(c1) partitions 5" db-types="MySQL" />
+    <sql-case id="alter_table_if_exists_only" value="ALTER TABLE IF EXISTS ONLY t_log ADD name varchar" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_with_force" value="ALTER TABLE t_order FORCE" db-types="MySQL" />
+    <sql-case id="alter_table_with_single_rename_column" value="alter table t_order rename column new_col to renamed_col" db-types="MySQL" />
+    <sql-case id="alter_table_with_multiple_rename_column" value="ALTER TABLE t_order RENAME COLUMN first_name TO full_name,RENAME COLUMN last_name TO surname" db-types="MySQL" />
+    <sql-case id="alter_table_with_space" value="    ALTER TABLE
+        t_order" db-types="MySQL,Oracle" />
+    <sql-case id="alter_table_with_back_quota" value="ALTER TABLE `t_order` FORCE" db-types="MySQL" />
+    <sql-case id="alter_table_add_column" value="ALTER TABLE t_order ADD column4 VARCHAR(10)" db-types="MySQL, PostgreSQL,openGauss,Doris" />
+    <sql-case id="alter_table_add_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10)" db-types="MySQL,PostgreSQL,openGauss,Doris" />
+    <sql-case id="alter_table_add_columns_integer_type_mysql" value="ALTER TABLE t_order ADD column4 INTEGER, ADD column5 TINYINT, ADD column6 MEDIUMINT" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns_integer_type_oracle" value="ALTER TABLE t_order ADD (column4 INTEGER, column5 INT, column6 SMALLINT)" db-types="Oracle" />
+    <sql-case id="alter_table_add_columns_fixed_point_type" value="ALTER TABLE t_order ADD column4 decimal(10,2), ADD column5 NUMERIC" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_columns_float_point_type_mysql" value="ALTER TABLE t_order ADD column4 FLOAT(10,2), ADD column5 DOUBLE(10,2)" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns_float_point_type_oracle" value="ALTER TABLE t_order ADD (column4 FLOAT(10), column5 double precision)" db-types="Oracle" />
+    <sql-case id="alter_table_add_columns_bit_type" value="ALTER TABLE t_order ADD column4 bit" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="alter_table_add_columns_date_type_mysql" value="ALTER TABLE t_order ADD column4 YEAR" db-types="MySQL,PostgreSQL" />
+    <sql-case id="alter_table_add_columns_date_type_oracle" value="ALTER TABLE t_order ADD (column4 DATE, column5 DATETIME, column6 TIMESTAMP, column7 TIMESTAMP WITH TIME ZONE)" db-types="Oracle" />
+    <sql-case id="alter_table_add_columns_date_type" value="ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, ADD column6 TIMESTAMP, ADD column7 TIME" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_columns_string_type" value="ALTER TABLE t_order ADD column4 CHAR, ADD column5 VARCHAR(32), ADD column6 TEXT" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="alter_table_add_columns_string_type_mysql" value="ALTER TABLE t_order ADD column4 BINARY, ADD column5 VARBINARY(10), ADD column6 TINYBLOB, ADD column7 TINYTEXT, ADD column8 BLOB, ADD column9 MEDIUMBLOB, ADD column10 MEDIUMTEXT, ADD column11 LONGBLOB, ADD column12 LONGTEXT, ADD column13 ENUM('1','2'), ADD column14 SET('1')" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns_integer_type" value="ALTER TABLE t_order ADD column4 INT, ADD column5 SMALLINT, ADD column6 BIGINT" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="alter_table_add_columns_float_point_type_postgresql" value="ALTER TABLE t_order ADD column4 FLOAT, ADD column5 double precision, ADD column6 REAL, ADD column7 SMALLSERIAL, ADD column8 SERIAL, ADD column9 BIGSERIAL, ADD column10 float4" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_columns_string_type_postgresql" value="ALTER TABLE t_order ADD column4 CHARACTER, ADD column5 NAME" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_column_with_first" value="ALTER TABLE t_order ADD column3 VARCHAR(10) FIRST" db-types="MySQL" />
+    <sql-case id="alter_table_add_column_with_after" value="ALTER TABLE t_order ADD column4 VARCHAR(10) AFTER order_id" db-types="MySQL" />
+    <sql-case id="alter_table_add_column_with_first_after" value="ALTER TABLE t_order ADD column5 VARCHAR(10) FIRST, ADD column6 VARCHAR(10) FIRST, ADD column7 VARCHAR(10) AFTER column5, ADD column8 VARCHAR(10) AFTER column6" db-types="MySQL" />
+    <sql-case id="alter_table_add_column_first_doris" value="ALTER TABLE t_order ADD column9 INT FIRST" db-types="Doris" />
+    <sql-case id="alter_table_add_column_after_doris" value="ALTER TABLE t_order ADD column10 INT AFTER order_id" db-types="Doris" />
+    <sql-case id="alter_table_modify_column" value="ALTER TABLE t_order MODIFY column4 VARCHAR(20)" db-types="MySQL,Oracle" />
+    <sql-case id="alter_table_modify_columns" value="ALTER TABLE t_order MODIFY column4 VARCHAR(20), MODIFY column5 VARCHAR(20), MODIFY column6 VARCHAR(20)" db-types="MySQL" />
+    <sql-case id="alter_table_modify_column_with_first" value="ALTER TABLE t_order MODIFY status VARCHAR(20) FIRST" db-types="MySQL" />
+    <sql-case id="alter_table_modify_column_with_after" value="ALTER TABLE t_order MODIFY status VARCHAR(20) AFTER order_id" db-types="MySQL" />
+    <sql-case id="alter_table_modify_column_with_first_after" value="ALTER TABLE t_order MODIFY status VARCHAR(20) FIRST, MODIFY user_id INT AFTER status" db-types="MySQL" />
+    <sql-case id="alter_table_drop_column" value="ALTER TABLE t_order DROP COLUMN user_id" db-types="PostgreSQL" />
+    <sql-case id="alter_table_drop_columns" value="ALTER TABLE t_order DROP user_id, DROP column5" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="alter_table_change_column" value="ALTER TABLE t_order CHANGE user_id column4 VARCHAR(10)" db-types="MySQL,Doris" />
+    <sql-case id="alter_table_add_primary_key" value="ALTER TABLE t_order ADD CONSTRAINT pk_user_id PRIMARY KEY (user_id)" />
+    <sql-case id="alter_table_add_composite_primary_key" value="ALTER TABLE t_order ADD status int,ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" db-types="MySQL,PostgreSQL,openGauss" />
+<!--    TODO support PostgreSQL,openGauss-->
+    <sql-case id="alter_table_add_unique_key" value="ALTER TABLE t_order ADD CONSTRAINT uk_order_id UNIQUE (order_id)" db-types="MySQL,Oracle,SQLServer" />
+    <sql-case id="alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE" db-types="MySQL,Oracle,SQLServer,PostgreSQL,openGauss" />
+<!--    TODO support PostgreSQL,openGauss-->
+    <sql-case id="alter_table_add_constraints" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id),ADD UNIQUE (order_id), ADD FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" db-types="MySQL" />
+    <sql-case id="alter_table_drop_primary_key" value="ALTER TABLE t_order DROP PRIMARY KEY" db-types="MySQL,Oracle" />
+    <sql-case id="alter_table_drop_foreign_key" value="ALTER TABLE t_order DROP FOREIGN KEY fk_order_id" db-types="MySQL" />
+    <sql-case id="alter_table_drop_constraints" value="ALTER TABLE t_order DROP PRIMARY KEY, DROP FOREIGN KEY fk_order_id" db-types="MySQL" />
+    <sql-case id="alter_table_add_index" value="ALTER TABLE t_order ADD INDEX order_index (order_id)" db-types="MySQL" />
+    <sql-case id="alter_table_add_fulltext_index" value="ALTER TABLE t_order ADD FULLTEXT INDEX idx_column1 (column1)" db-types="MySQL" />
+    <sql-case id="alter_table_add_composite_index" value="ALTER TABLE t_order ADD INDEX order_index (order_id, user_id, status)" db-types="MySQL" />
+    <sql-case id="alter_table_add_indexes" value="ALTER TABLE t_order ADD INDEX idx_column1 (column1), ADD INDEX idx_column2 (column2), ADD INDEX idx_column3 (column3)" db-types="MySQL" />
+    <sql-case id="alter_table_drop_index" value="ALTER TABLE t_order DROP INDEX order_index" db-types="MySQL" />
+    <sql-case id="alter_table_drop_indexes" value="ALTER TABLE t_order DROP INDEX idx_column1, DROP INDEX idx_column2, DROP INDEX idx_column3" db-types="MySQL" />
+    <sql-case id="alter_table_rename_index" value="ALTER TABLE t_order RENAME INDEX idx_column1_bak TO idx_column1" db-types="MySQL" />
+    <sql-case id="alter_table_composite_operate_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10),MODIFY user_id bigint, drop column status" db-types="MySQL,Doris" />
+    <sql-case id="alter_table_with_quota" value="ALTER TABLE &quot;t_order&quot; PARALLEL" db-types="Oracle" />
+<!--    TODO support PostgreSQL,openGauss-->
+    <sql-case id="alter_table_add_check" value="ALTER TABLE t_order ADD CONSTRAINT chk_order_id CHECK (order_id > 0)" db-types="Oracle,SQLServer" />
+    <sql-case id="alter_table_add_columns_oracle" value="ALTER TABLE t_order ADD (column4 VARCHAR2(10), column5 VARCHAR2(10), column6 VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="alter_table_modify_columns_oracle" value="ALTER TABLE t_order MODIFY column4 VARCHAR2(20) MODIFY column5 VARCHAR2(20) MODIFY column6 VARCHAR2(20)" db-types="Oracle" />
+    <sql-case id="alter_table_drop_columns_oracle" value="ALTER TABLE t_order DROP COLUMN user_id DROP COLUMN column5" db-types="Oracle" />
+    <sql-case id="alter_table_add_primary_foreign_key" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id) UNIQUE (order_id) CHECK (order_id > 0) FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE CHECK (order_id > 0)" db-types="Oracle" />
+    <sql-case id="alter_table_add_composite_primary_key_oracle" value="ALTER TABLE t_order ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" db-types="Oracle" />
+    <sql-case id="alter_table_drop_unique_key" value="ALTER TABLE t_order DROP UNIQUE (order_id)" db-types="Oracle" />
+    <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_order DROP CONSTRAINT order_index" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="alter_table_drop_primary_key_unique_key" value="ALTER TABLE t_order DROP PRIMARY KEY DROP UNIQUE (order_id) DROP CONSTRAINT order_index" db-types="Oracle" />
+    <sql-case id="alter_table_rename_constraint" value="ALTER TABLE t_order RENAME CONSTRAINT order_index_bak TO order_index" db-types="Oracle" />
+    <sql-case id="alter_table_with_row_level" value="ALTER TABLE t_order FORCE ROW LEVEL SECURITY" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_with_double_quota" value="ALTER TABLE &quot;t_order&quot; FORCE ROW LEVEL SECURITY" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_alter_columns" value="ALTER TABLE t_order ALTER column4 TYPE VARCHAR(20), ALTER column5 TYPE VARCHAR(20), ALTER column6 TYPE VARCHAR(20)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_foreign_key_with_cascade" value="ALTER TABLE t_order_item ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_drop_constraints_postgresql" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, DROP CONSTRAINT uk_order_id, DROP CONSTRAINT order_index" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_rename_constraints" value="ALTER TABLE t_order RENAME CONSTRAINT order_index_bak TO order_index" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_rename_table" value="ALTER TABLE t_order RENAME TO t_order1" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="alter_table_rename_column" value="ALTER TABLE t_order RENAME COLUMN user_id to user_id1" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_with_exist_index" value="ALTER TABLE t_order ADD PRIMARY KEY USING INDEX order_index" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_with_bracket" value="ALTER TABLE [t_order] REBUILD" db-types="SQLServer" />
+    <sql-case id="alter_table_add_columns_sqlserver" value="ALTER TABLE t_order ADD column4 VARCHAR(10), column5 VARCHAR(10), column6 VARCHAR(10)" db-types="SQLServer" />
+    <sql-case id="alter_table_drop_columns_sqlserver" value="ALTER TABLE t_order DROP COLUMN user_id, column5" db-types="SQLServer" />
+    <sql-case id="alter_table_add_composite_primary_key_sqlserver" value="ALTER TABLE t_order ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" db-types="SQLServer" />
+    <sql-case id="alter_table_add_constraints_sqlserver" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id), UNIQUE (order_id), CHECK (order_id > 0), FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" db-types="SQLServer" />
+    <sql-case id="alter_table_drop_constraints_sqlserver" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, uk_order_id, order_index" db-types="SQLServer" />
+    <sql-case id="alter_table_alter_column_for_postgresql" value="ALTER TABLE t_order ALTER column4 TYPE VARCHAR(20)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_alter_column_for_sqlserver" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20)" db-types="SQLServer" />
+    <sql-case id="alter_table_set_schema" value="ALTER TABLE t_order SET SCHEMA yourschema" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_attach_partition" value="ALTER TABLE t_order ATTACH PARTITION measurement_y2016m07 FOR VALUES FROM ('2016-07-01') TO ('2016-08-01')" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_detach_partition" value="ALTER TABLE t_order DETACH PARTITION measurement_y2016m07" db-types="PostgreSQL" />
+    <sql-case id="alter_table_in_hash_partitioned_table" value="ALTER TABLE t_order ATTACH PARTITION orders_p4 FOR VALUES WITH (MODULUS 4, REMAINDER 3)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_with_optimize_memory_read" value="ALTER TABLE t_log MEMOPTIMIZE FOR READ ADD (name VARCHAR(10))" db-types="Oracle" />
+    <sql-case id="alter_table_with_no_optimize_memory_write" value="ALTER TABLE t_log NO MEMOPTIMIZE FOR WRITE ADD (name VARCHAR(10))" db-types="Oracle" />
+    <sql-case id="alter_table_with_enable_validate" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE VALIDATE PRIMARY KEY" db-types="Oracle" />
+    <sql-case id="alter_table_with_primary_key" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE PRIMARY KEY" db-types="Oracle" />
+    <sql-case id="alter_table_with_index_clause" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE PRIMARY KEY USING INDEX t_log" db-types="Oracle" />
+    <sql-case id="alter_table_with_exception_clause" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE PRIMARY KEY EXCEPTIONS INTO t_log" db-types="Oracle" />
+    <sql-case id="alter_table_with_cascade" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE PRIMARY KEY CASCADE" db-types="Oracle" />
+    <sql-case id="alter_table_with_keep_index" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE PRIMARY KEY KEEP INDEX" db-types="Oracle" />
+    <sql-case id="alter_table_with_enable_table_lock" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE TABLE LOCK" db-types="Oracle" />
+    <sql-case id="alter_table_with_enable_all_triggers" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE ALL TRIGGERS" db-types="Oracle" />
+    <sql-case id="alter_table_with_disable_container_map" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE CONTAINER_MAP" db-types="Oracle" />
+    <sql-case id="alter_table_with_disable_containers_default" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE CONTAINERS_DEFAULT" db-types="Oracle" />
+    <sql-case id="alter_table_add_range_partition" value="ALTER TABLE t_order ADD PARTITION range_p_order VALUES LESS THAN(100)" db-types="Oracle" />
+    <sql-case id="alter_table_add_list_partition" value="ALTER TABLE t_order ADD PARTITION list_p_order VALUES(100, 200, 300)" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition" value="ALTER TABLE t_order DROP PARTITION list_p_order" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_global_index" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE GLOBAL INDEXES" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_all_index" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_all_index_partition" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES (order_index (PARTITION))" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_all_index_subpartition" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES (order_index (SUBPARTITION))" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_global_index_parallel" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE GLOBAL INDEXES PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_all_index_noparallel" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES NOPARALLEL" db-types="Oracle" />
+    <sql-case id="alter_table_add_hash_partition1" value="ALTER TABLE t_order ADD PARTITION hash_partition TABLESPACE spaceName" db-types="Oracle" />
+    <sql-case id="alter_table_add_hash_partition2" value="ALTER TABLE t_order ADD PARTITION hash_partition OVERFLOW TABLESPACE spaceName" db-types="Oracle" />
+    <sql-case id="alter_table_modify_hash_partition" value="ALTER TABLE t_order MODIFY PARTITION hash_partition READ ONLY" db-types="Oracle" />
+    <sql-case id="alter_table_modify_list_partition" value="ALTER TABLE t_order MODIFY PARTITION hash_partition INDEXING ON" db-types="Oracle" />
+    <sql-case id="alter_table_modify_range_partition" value="ALTER TABLE t_order MODIFY PARTITION hash_partition ADD SUBPARTITION P1 VALUES('COMPLETE');" db-types="Oracle" />
+    <sql-case id="alter_table_move_partition" value="ALTER TABLE t_order MOVE PARTITION p0 TABLESPACE space0" db-types="Oracle" />
+    <sql-case id="alter_table_coalesce_partition" value="ALTER TABLE t_order COALESCE PARTITION" db-types="Oracle" />
+    <sql-case id="alter_table_convert" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT" db-types="MySQL,Doris" />
+    <sql-case id="alter_table_convert_collate" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT COLLATE cp1251_bin;" db-types="MySQL,Doris" />
+    <sql-case id="alter_table_add_column_with_visible" value="ALTER TABLE t_order ADD COLUMN status VARCHAR(10) VISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_add_column_with_invisible" value="ALTER TABLE t_order ADD COLUMN status VARCHAR(10) INVISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_modify_column_with_visible" value="ALTER TABLE t_order MODIFY COLUMN status VARCHAR(10) VISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_modify_column_with_invisible" value="ALTER TABLE t_order MODIFY COLUMN status VARCHAR(10) INVISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_alter_column_set_visible" value="ALTER TABLE t_order ALTER COLUMN status SET VISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_alter_column_set_invisible" value="ALTER TABLE t_order ALTER COLUMN status SET INVISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_set_statistics" value="ALTER TABLE t_order ALTER COLUMN status SET STATISTICS -1" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set_compression" value="ALTER TABLE t_order ALTER COLUMN f1 SET COMPRESSION lz4;" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set" value="ALTER TABLE t_order SET (fillfactor = 10)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_reset" value="ALTER TABLE t_order RESET (fillfactor = 12)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set_access_method" value="ALTER TABLE t_order SET ACCESS METHOD heap, SET ACCESS METHOD heap2" db-types="PostgreSQL" />
+    <sql-case id="alter_table_drop_expression" value="ALTER TABLE t_order ALTER COLUMN a DROP EXPRESSION;" db-types="PostgreSQL" />
+    <sql-case id="alter_table_modify_column_precision_with_decimal" value="ALTER TABLE t_order MODIFY COLUMN a VARCHAR(10.000000000001)" db-types="MySQL" />
+    <sql-case id="alter_table_order_by" value="ALTER TABLE t_order ORDER BY t_order.id, t_order.status desc" db-types="MySQL" />
+    <sql-case id="alter_table_add_supplemental_log_group1" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG GROUP emp_fulltime (EMPLOYEE_ID, LAST_NAME, DEPARTMENT_ID)" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_group2" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG GROUP emp_parttime (EMPLOYEE_ID, LAST_NAME, DEPARTMENT_ID) ALWAYS" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_group3" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG GROUP emp_parttime(DEPARTMENT_ID NO LOG, EMPLOYEE_ID)" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_data1" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG DATA (PRIMARY KEY) COLUMNS" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_data2" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG DATA (UNIQUE) COLUMNS" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_data3" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS" db-types="Oracle" />
+    <sql-case id="alter_table_move" value="ALTER TABLE admin_docindex MOVE" db-types="Oracle" />
+    <sql-case id="alter_table_move_online" value="ALTER TABLE admin_docindex MOVE ONLINE" db-types="Oracle" />
+    <sql-case id="alter_table_modify" value="ALTER TABLE customers MODIFY (online_acct_pw DECRYPT)" db-types="Oracle" />
+    <sql-case id="alter_table_add_overflow_tablespace" value="ALTER TABLE admin_iot3 ADD OVERFLOW TABLESPACE admin_tbs2" db-types="Oracle" />
+    <sql-case id="alter_table_add_overflow" value="ALTER TABLE countries_demo ADD OVERFLOW" db-types="Oracle" />
+    <sql-case id="alter_table_enable_novalidate_constraint" value="ALTER TABLE dept ENABLE NOVALIDATE CONSTRAINT dname_ukey" db-types="Oracle" />
+    <sql-case id="alter_table_add_encrypt_no_salt" value="ALTER TABLE mytable ADD (online_acct_pw VARCHAR2(8) ENCRYPT NO SALT 'NOMAC')" db-types="Oracle" />
+    <sql-case id="alter_table_enable_novalidate_primary_key_enable_novalidate_constraint" value="ALTER TABLE mytable ENABLE NOVALIDATE PRIMARY KEY ENABLE NOVALIDATE CONSTRAINT emp_last_name_nn" db-types="Oracle" />
+    <sql-case id="alter_table_modify_partition_coalesce_subpartition" value="ALTER TABLE mytable MODIFY PARTITION us_locations COALESCE SUBPARTITION" db-types="Oracle" />
+    <sql-case id="alter_table_set_subpartition_template1" value="ALTER TABLE mytable SET SUBPARTITION TEMPLATE (SUBPARTITION e TABLESPACE ts1, SUBPARTITION f TABLESPACE ts2, SUBPARTITION g TABLESPACE ts3, SUBPARTITION h TABLESPACE ts4)" db-types="Oracle" />
+    <sql-case id="alter_table_set_subpartition_template2" value="ALTER TABLE emp_sub_template SET SUBPARTITION TEMPLATE()" db-types="Oracle" />
+    <sql-case id="alter_table_modify_default_attributes_for_partition_tablespace" value="ALTER TABLE emp MODIFY DEFAULT ATTRIBUTES FOR PARTITION p1 TABLESPACE ts1" db-types="Oracle" />
+    <sql-case id="alter_table_ref_with_rowid" value="ALTER TABLE emp ADD (REF(column_value) WITH ROWID)" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_foreign_key_references_disable_novalidate" value="ALTER TABLE sales ADD (CONSTRAINT time_view_fk FOREIGN KEY (time_id) REFERENCES time_view(time_id) DISABLE NOVALIDATE)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_nocache" value="ALTER TABLE employees MODIFY LOB (resume) (NOCACHE)" db-types="Oracle" />
+    <sql-case id="alter_table_move_tablespace1" value="ALTER TABLE people_tab MOVE TABLESPACE system" db-types="Oracle" />
+    <sql-case id="alter_table_move_tablespace2" value="ALTER TABLE people_column_nt MOVE TABLESPACE example" db-types="Oracle" />
+    <sql-case id="alter_table_modify_subpartition_rebuild_unusable_local_indexes" value="ALTER TABLE emp MODIFY SUBPARTITION p3_s1 REBUILD UNUSABLE LOCAL INDEXES" db-types="Oracle" />
+    <sql-case id="alter_table_modify_subpartition_add_values" value="ALTER TABLE quarterly_regional_sales MODIFY SUBPARTITION q1_1999_southeast ADD VALUES ('KS')" db-types="Oracle" />
+    <sql-case id="alter_table_add_partition_values_less_than1" value="ALTER TABLE quarterly_regional_sales ADD PARTITION q1_2000 VALUES LESS THAN (TO_DATE('1-APR-2000','DD-MON-YYYY')) STORAGE (INITIAL 20K NEXT 20K) TABLESPACE ts3 NOLOGGING(SUBPARTITION q1_2000_northwest VALUES ('OR', 'WA'), SUBPARTITION q1_2000_southwest VALUES ('AZ', 'UT', 'NM'), SUBPARTITION q1_2000_northeast VALUES ('NY', 'VM', 'NJ'), SUBPARTITION q1_2000_southeast VALUES ('FL', 'GA'), SUBPARTITION q1_2000_northcentral VALUES ('SD', 'WI'), SUBPARTITION q1_2000_southcentral VALUES ('OK', 'TX'))" db-types="Oracle" />
+    <sql-case id="alter_table_add_partition_values_less_than2" value="ALTER TABLE sales ADD PARTITION jan99 VALUES LESS THAN ('01-FEB-1999') TABLESPACE tsx" db-types="Oracle" />
+    <sql-case id="alter_table_add_partition_values_less_than3" value="ALTER TABLE sales ADD PARTITION sales_01_2001  VALUES LESS THAN (TO_DATE('01-FEB-2001', 'DD-MON-YYYY'))" db-types="Oracle" />
+    <sql-case id="alter_table_add_partition_values_less_than4" value="ALTER TABLE shipments ADD PARTITION p_2007_jan VALUES LESS THAN (TO_DATE('01-FEB-2007','dd-MON-yyyy')) COMPRESS (SUBPARTITION p07_jan_e VALUES LESS THAN (TO_DATE('15-FEB-2007','dd-MON-yyyy')), SUBPARTITION p07_jan_a VALUES LESS THAN (TO_DATE('01-MAR-2007','dd-MON-yyyy')), SUBPARTITION p07_jan_l VALUES LESS THAN (TO_DATE('01-APR-2007','dd-MON-yyyy')))" db-types="Oracle" />
+    <sql-case id="alter_table_modify_subpartition_drop_values" value="ALTER TABLE quarterly_regional_sales MODIFY SUBPARTITION q1_1999_southeast DROP VALUES ('KS')" db-types="Oracle" />
+    <sql-case id="alter_table_modify_nested_table_return_as_value" value="ALTER TABLE print_media MODIFY NESTED TABLE ad_textdocs_ntab RETURN AS VALUE" db-types="Oracle" />
+    <sql-case id="alter_table_modify_nested_owner_table_return_as_value" value="ALTER TABLE print_media MODIFY NESTED TABLE mytable.ad_textdocs_ntab RETURN AS VALUE" db-types="Oracle" />
+    <sql-case id="alter_table_modify_partition_storage" value="ALTER TABLE sales MODIFY PARTITION sales_q1 STORAGE (MAXEXTENTS 10)" db-types="Oracle" />
+    <sql-case id="alter_table_rename_partition1" value="ALTER TABLE sales RENAME PARTITION sales_q4_2003 TO sales_currentq" db-types="Oracle" />
+    <sql-case id="alter_table_rename_partition2" value="ALTER TABLE scubagear RENAME PARTITION sys_p636 TO tanks" db-types="Oracle" />
+    <sql-case id="alter_table_set_interval_expr" value="ALTER TABLE sales SET INTERVAL (NUMTOYMINTERVAL(1,'MONTH'))" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_primary_key_disable_validate" value="ALTER TABLE sales_01_2001 ADD CONSTRAINT sales_pk_jan01 PRIMARY KEY (sales_transaction_id) DISABLE VALIDATE" db-types="Oracle" />
+    <sql-case id="alter_table_move_subpartition_tablespace_parallel" value="ALTER TABLE scuba_gear MOVE SUBPARTITION bcd_types TABLESPACE tbs23 PARALLEL (DEGREE 2)" db-types="Oracle" />
+    <sql-case id="alter_table_add_ref_with_rowid" value="ALTER TABLE staff  ADD (REF(dept) WITH ROWID)" db-types="Oracle" />
+    <sql-case id="alter_table_add_scope_for_is" value="ALTER TABLE staff ADD (SCOPE FOR (dept) IS offices)" db-types="Oracle" />
+    <sql-case id="alter_table_add_column_no_parentheses" value="ALTER TABLE T_MASK ADD new_column VARCHAR2(100)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_keep_duplicates" value="ALTER TABLE t1 MODIFY LOB(a) (KEEP_DUPLICATES)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_compress_low" value="ALTER TABLE t1 MODIFY LOB(a) (COMPRESS LOW)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_compress_high" value="ALTER TABLE t1 MODIFY LOB(a) (COMPRESS HIGH)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_deduplicate" value="ALTER TABLE t1 MODIFY LOB(a) (DEDUPLICATE)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_nocompress" value="ALTER TABLE t1 MODIFY LOB(a) (NOCOMPRESS)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_encrypt_using" value="ALTER TABLE t1 MODIFY LOB(a) (ENCRYPT USING '3DES168')" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_storage_maxsize_cache" value="ALTER TABLE xml_lob_tab MODIFY LOB (XMLDATA) (STORAGE (MAXSIZE 2G) CACHE)" db-types="Oracle" />
+    <sql-case id="alter_table_move_compress_for_oltp" value="ALTER TABLE table_name MOVE COMPRESS FOR OLTP" db-types="Oracle" />
+    <sql-case id="alter_table_modify_encrypt_identified_by_password" value="ALTER TABLE t1 MODIFY ( a CLOB ENCRYPT IDENTIFIED BY foo)" db-types="Oracle" />
+    <sql-case id="alter_table_move_nocompress_parallel" value="ALTER TABLE table_name MOVE NOCOMPRESS PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_table_modify_constraint_rely1" value="ALTER TABLE time MODIFY CONSTRAINT pk_time RELY" db-types="Oracle" />
+    <sql-case id="alter_table_modify_constraint_rely2" value="ALTER TABLE times MODIFY CONSTRAINT time_pk RELY" db-types="Oracle" />
+    <sql-case id="alter_table_modify_constraint_rely3" value="ALTER TABLE sales MODIFY CONSTRAINT sales_time_fk RELY" db-types="Oracle" />
+    <sql-case id="alter_table_modify_primary_key_rely" value="ALTER TABLE sales MODIFY PRIMARY KEY RELY" db-types="Oracle" />
+    <sql-case id="alter_table_modify_collection_retrieval_locator" value="ALTER TABLE nested_table_parent MODIFY NESTED TABLE child_tbl RETURN AS LOCATOR" db-types="Oracle" />
+    <sql-case id="alter_table_enable_row_movement" value="ALTER TABLE table ENABLE ROW MOVEMENT" db-types="Oracle" />
+    <sql-case id="alter_table_set_interval" value="ALTER TABLE transactions SET INTERVAL()" db-types="Oracle" />
+    <sql-case id="alter_table_add_primary_key_xmldata" value="ALTER TABLE xwarehouses ADD (PRIMARY KEY(XMLDATA.&quot;WarehouseId&quot;))" db-types="Oracle" />
+    <sql-case id="alter_table_add_unique" value="ALTER TABLE xwarehouses ADD (UNIQUE(XMLDATA.&quot;WarehouseId&quot;))" db-types="Oracle" />
+    <sql-case id="alter_table_add_edge_constraints" value="ALTER TABLE bought ADD CONSTRAINT EC_BOUGHT1 CONNECTION (Customer TO Product, Supplier TO Product);" db-types="SQLServer"/>
+    <sql-case id="alter_table_drop_edge_constraints" value="ALTER TABLE bought DROP CONSTRAINT EC_BOUGHT;" db-types="SQLServer"/>
+    <sql-case id="alter_table_rename_to" value="ALTER TABLE stu RENAME TO stu1;" db-types="Hive" />
+    <sql-case id="alter_table_set_tblproperties_comment" value="ALTER TABLE sales SET TBLPROPERTIES ('comment'='Sales data with partition by date')" db-types="Hive" />
+    <sql-case id="alter_table_set_serde_basic" value="ALTER TABLE test_table SET SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'" db-types="Hive" />
+    <sql-case id="alter_table_set_serde_with_partition_basic" value="ALTER TABLE test_table PARTITION (dt='2025-01-01') SET SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'" db-types="Hive" />
+    <sql-case id="alter_table_set_serde_with_basic_properties" value="ALTER TABLE test_table SET SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' WITH SERDEPROPERTIES ('field.delim'='\t', 'collection.delim'=',')" db-types="Hive" />
+    <sql-case id="alter_table_set_serde_with_all_options" value="ALTER TABLE sales PARTITION (dt='2025-07-01') SET SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' WITH SERDEPROPERTIES ('field.delim'='|', 'collection.delim'=',')" db-types="Hive" />
+    <sql-case id="alter_table_set_serdeproperties_field_delim" value="ALTER TABLE sales SET SERDEPROPERTIES ('field.delim' = ',')" db-types="Hive" />
+    <sql-case id="alter_table_set_serdeproperties_with_partition" value="ALTER TABLE sales PARTITION (dt='2025-07-01') SET SERDEPROPERTIES ('field.delim' = ',')" db-types="Hive" />
+    <sql-case id="alter_table_unset_serdeproperties" value="ALTER TABLE sales UNSET SERDEPROPERTIES ('field.delim');" db-types="Hive" />
+    <sql-case id="alter_table_unset_serdeproperties_with_partition" value="ALTER TABLE sales PARTITION (dt='2025-07-01') UNSET SERDEPROPERTIES ('field.delim');" db-types="Hive" />
+    <sql-case id="alter_table_clustered_by_basic" value="ALTER TABLE sales CLUSTERED BY (id, region) INTO 8 BUCKETS" db-types="Hive" />
+    <sql-case id="alter_table_clustered_with_sorted_by" value="ALTER TABLE sales CLUSTERED BY (id, region) SORTED BY (id ASC) INTO 8 BUCKETS" db-types="Hive" />
+    <sql-case id="alter_table_skewed_by_basic" value="ALTER TABLE user_logs SKEWED BY (region, status) ON (('Beijing', 'active'), ('Shanghai', 'inactive'))" db-types="Hive" />
+    <sql-case id="alter_table_skewed_by_with_directories" value="ALTER TABLE user_logs SKEWED BY (region, status) ON (('Beijing', 'active'), ('Shanghai', 'inactive')) STORED AS DIRECTORIES" db-types="Hive" />
+    <sql-case id="alter_table_not_skewed_basic" value="ALTER TABLE user_logs NOT SKEWED" db-types="Hive" />
+    <sql-case id="alter_table_not_stored_as_directories_basic" value="ALTER TABLE user_logs NOT STORED AS DIRECTORIES" db-types="Hive" />
+    <sql-case id="alter_table_set_skewed_location_basic" value="ALTER TABLE user_logs SET SKEWED LOCATION (region='/user/hive/skewed/region')" db-types="Hive" />
+    <sql-case id="alter_table_add_primary_key_hive" value="ALTER TABLE employees ADD CONSTRAINT emp_pk PRIMARY KEY (emp_id) DISABLE NOVALIDATE" db-types="Hive" />
+    <sql-case id="alter_table_add_foreign_key_hive" value="ALTER TABLE orders ADD CONSTRAINT orders_emp_fk FOREIGN KEY (emp_id) REFERENCES employees(emp_id) DISABLE NOVALIDATE RELY" db-types="Hive" />
+    <sql-case id="alter_table_add_unique_hive" value="ALTER TABLE users ADD CONSTRAINT users_email_unique UNIQUE (email) DISABLE NOVALIDATE" db-types="Hive" />
+    <sql-case id="alter_table_change_column_not_null" value="ALTER TABLE products CHANGE COLUMN prod_id prod_id INT CONSTRAINT prod_id_not_null NOT NULL ENABLE" db-types="Hive" />
+    <sql-case id="alter_table_change_column_default" value="ALTER TABLE products CHANGE COLUMN status status STRING CONSTRAINT status_default DEFAULT 'active' ENABLE" db-types="Hive" />
+    <sql-case id="alter_table_change_column_check" value="ALTER TABLE orders CHANGE COLUMN amount amount DECIMAL(10,2) CONSTRAINT amount_check CHECK (amount &gt; 0) ENABLE" db-types="Hive" />
+    <sql-case id="alter_table_drop_constraint_hive" value="ALTER TABLE employees DROP CONSTRAINT emp_pk" db-types="Hive" />
+    <sql-case id="alter_table_set_fileformat_basic_textfile" value="ALTER TABLE user_logs SET FILEFORMAT TEXTFILE" db-types="Hive" />
+    <sql-case id="alter_table_set_fileformat_with_partition_orc" value="ALTER TABLE user_logs PARTITION (dt='2025-07-01') SET FILEFORMAT ORC" db-types="Hive" />
+    <sql-case id="alter_table_set_location_basic" value="ALTER TABLE logs SET LOCATION '/user/hive/warehouse/new_logs'" db-types="Hive" />
+    <sql-case id="alter_table_set_location_with_partition" value="ALTER TABLE logs PARTITION (dt='2025-07-01') SET LOCATION '/user/hive/warehouse/logs/dt=2025-07-01_new'" db-types="Hive" />
+    <sql-case id="alter_table_touch_basic" value="ALTER TABLE sales TOUCH" db-types="Hive" />
+    <sql-case id="alter_table_touch_with_partition" value="ALTER TABLE sales TOUCH PARTITION (region='asia')" db-types="Hive" />
+    <sql-case id="alter_table_compact_basic" value="ALTER TABLE transaction_logs COMPACT 'MINOR'" db-types="Hive" />
+    <sql-case id="alter_table_compact_with_partition" value="ALTER TABLE transaction_logs PARTITION (dt='2025-07-01') COMPACT 'MAJOR'" db-types="Hive" />
+    <sql-case id="alter_table_compact_and_wait" value="ALTER TABLE user_actions COMPACT 'REBALANCE' AND WAIT" db-types="Hive" />
+    <sql-case id="alter_table_compact_with_pool" value="ALTER TABLE order_details COMPACT 'MAJOR' POOL 'high_priority_pool'" db-types="Hive" />
+    <sql-case id="alter_table_compact_rebalance" value="ALTER TABLE product_data COMPACT 'REBALANCE' CLUSTERED INTO 16 BUCKETS" db-types="Hive" />
+    <sql-case id="alter_table_compact_with_pool_partition" value="ALTER TABLE order_records PARTITION (region='asia') COMPACT 'MINOR' POOL 'high_priority_pool'" db-types="Hive" />
+    <sql-case id="alter_table_compact_with_tblproperties" value="ALTER TABLE product_data COMPACT 'MAJOR' WITH OVERWRITE TBLPROPERTIES ('mapreduce.job.queuename'='compaction_queue')" db-types="Hive" />
+    <sql-case id="alter_table_compact_rebalance_clustered" value="ALTER TABLE customer_logs COMPACT 'REBALANCE' CLUSTERED INTO 10 BUCKETS" db-types="Hive" />
+    <sql-case id="alter_table_compact_rebalance_orderby" value="ALTER TABLE customer_logs COMPACT 'REBALANCE' ORDER BY user_id" db-types="Hive" />
+    <sql-case id="alter_table_compact_rebalance_clustered_order" value="ALTER TABLE customer_logs COMPACT 'REBALANCE' CLUSTERED INTO 10 BUCKETS ORDER BY user_id" db-types="Hive" />
+    <sql-case id="alter_table_compact_rebalance_combined" value="ALTER TABLE sales_data PARTITION (month='2025-07') COMPACT 'REBALANCE' AND WAIT CLUSTERED INTO 5 BUCKETS ORDER BY amount" db-types="Hive" />
+    <sql-case id="alter_table_compact_multi_options" value="ALTER TABLE log_data PARTITION (service='payment') COMPACT 'MAJOR' AND WAIT POOL 'medium_pool' WITH OVERWRITE TBLPROPERTIES ('hive.compaction.major.threshold'='10')" db-types="Hive" />
+    <sql-case id="alter_table_concatenate_basic" value="ALTER TABLE sales_rcfile CONCATENATE" db-types="Hive" />
+    <sql-case id="alter_table_partition_concatenate" value="ALTER TABLE sales_orc PARTITION (region='asia', dt='2025-07-23') CONCATENATE" db-types="Hive" />
+    <sql-case id="alter_table_update_columns_basic" value="ALTER TABLE avro_user_data UPDATE COLUMNS" db-types="Hive" />
+    <sql-case id="alter_table_partition_update_columns" value="ALTER TABLE parquet_event_log PARTITION (event_type='click') UPDATE COLUMNS" db-types="Hive" />
+    <sql-case id="alter_table_add_partition_basic" value="ALTER TABLE test_table ADD PARTITION (part_col='part_value')" db-types="Hive" />
+    <sql-case id="alter_table_add_more_partition" value="ALTER TABLE test_table ADD PARTITION (dt='2008-08-08', country='us')" db-types="Hive" />
+    <sql-case id="alter_table_add_partition_with_if_not_exists" value="ALTER TABLE test_table ADD IF NOT EXISTS PARTITION (part_col='part_value')" db-types="Hive" />
+    <sql-case id="alter_table_add_partition_with_location" value="ALTER TABLE test_table ADD PARTITION (part_col='part_value') LOCATION '/user/hive/warehouse/test_table/part_value'" db-types="Hive" />
+    <sql-case id="alter_table_add_partition_with_both_options" value="ALTER TABLE test_table ADD IF NOT EXISTS PARTITION (part_col='part_value') LOCATION '/user/hive/warehouse/test_partition'" db-types="Hive" />
+    <sql-case id="alter_table_rename_partition_basic" value="ALTER TABLE sales PARTITION (dt='2025-07-01') RENAME TO PARTITION (dt='20250701')" db-types="Hive" />
+    <sql-case id="alter_table_exchange_partition_basic" value="ALTER TABLE target_table EXCHANGE PARTITION (dt='2025-07-25') WITH TABLE source_table" db-types="Hive" />
+    <sql-case id="alter_table_exchange_partition_multiple" value="ALTER TABLE target_table EXCHANGE PARTITION (dt='2025-07-25', region='asia') WITH TABLE source_table" db-types="Hive" />
+    <sql-case id="alter_table_set_partition_retention_basic" value="ALTER TABLE log_data SET TBLPROPERTIES ('partition.retention.period'='30d')" db-types="Hive" />
+    <sql-case id="alter_table_set_partition_retention_with_discover" value="ALTER TABLE log_data SET TBLPROPERTIES ('partition.retention.period'='7d', 'discover.partitions'='true')" db-types="Hive" />
+    <sql-case id="msck_check_table" value="MSCK TABLE sales" db-types="Hive" />
+    <sql-case id="msck_repair_table_basic" value="MSCK REPAIR TABLE sales" db-types="Hive" />
+    <sql-case id="msck_check_table_add" value="MSCK TABLE sales ADD PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_check_table_drop" value="MSCK TABLE sales DROP PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_check_table_sync" value="MSCK TABLE sales SYNC PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_repair_table_add" value="MSCK REPAIR TABLE sales ADD PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_repair_table_drop" value="MSCK REPAIR TABLE sales DROP PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_repair_table_sync" value="MSCK REPAIR TABLE sales SYNC PARTITIONS" db-types="Hive" />
+    <sql-case id="alter_table_recover_partitions_emr" value="ALTER TABLE sales RECOVER PARTITIONS" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_basic" value="ALTER TABLE page_view DROP PARTITION (dt='2008-08-08', country='us')" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_if_exists" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us')" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_purge" value="ALTER TABLE page_view DROP PARTITION (dt='2008-08-08', country='us') PURGE" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_ignore_protection" value="ALTER TABLE page_view DROP PARTITION (dt='2008-08-08', country='us') IGNORE PROTECTION" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_if_exists_purge" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us') PURGE" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_if_exists_ignore_protection" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us') IGNORE PROTECTION" db-types="Hive" />
+    <sql-case id="alter_table_drop_multiple_partitions_if_exists_purge" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us'), PARTITION (dt='2008-08-09', country='cn') PURGE" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_all_options" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us') IGNORE PROTECTION PURGE" db-types="Hive" />
+    <sql-case id="alter_table_drop_multiple_partitions_all_options" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us'), PARTITION (dt='2008-08-09', country='cn') IGNORE PROTECTION PURGE" db-types="Hive" />
+    <sql-case id="alter_table_archive_partition_basic" value="ALTER TABLE log_table ARCHIVE PARTITION (dt='2025-07-25')" db-types="Hive" />
+    <sql-case id="alter_table_unarchive_partition_basic" value="ALTER TABLE log_table UNARCHIVE PARTITION (dt='2025-07-25')" db-types="Hive" />
+    <sql-case id="alter_table_change_column_basic" value="ALTER TABLE test_change CHANGE a a1 INT" db-types="Hive" />
+    <sql-case id="alter_table_change_with_partition_column_comment_first_cascade" value="ALTER TABLE sales PARTITION (dt='2025-07') CHANGE COLUMN dt sale_date STRING COMMENT 'move to first with comment' FIRST CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_change_with_partition_column_comment_first_restrict" value="ALTER TABLE logs PARTITION (level='warn') CHANGE COLUMN msg warning_msg STRING COMMENT 'set as first column' FIRST RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_change_with_partition_column_comment_after_cascade" value="ALTER TABLE sales PARTITION (dt='2025-07') CHANGE COLUMN dt sale_date STRING COMMENT 'move after region with comment' AFTER region CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_change_with_partition_column_comment_after_restrict" value="ALTER TABLE logs PARTITION (level='info') CHANGE COLUMN msg log_msg STRING COMMENT 'position after timestamp' AFTER timestamp RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_change_with_quoted_column1" value="ALTER TABLE sales CHANGE COLUMN `order.date` `order_date` STRING COMMENT 'rename column with dot' FIRST CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_change_with_quoted_column2" value="ALTER TABLE logs PARTITION (level='error') CHANGE COLUMN `msg:content` `message_content` STRING COMMENT 'rename column with colon' AFTER timestamp RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_basic" value="ALTER TABLE sales ADD COLUMNS (gender STRING)" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_basic" value="ALTER TABLE users REPLACE COLUMNS (id INT, name STRING)" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_partition" value="ALTER TABLE sales PARTITION (dt='2025-07') ADD COLUMNS (gender STRING)" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_partition" value="ALTER TABLE logs PARTITION (level='info') REPLACE COLUMNS (timestamp STRING, message STRING)" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_comment" value="ALTER TABLE products ADD COLUMNS (gender STRING COMMENT 'This is a comment')" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_comment" value="ALTER TABLE orders REPLACE COLUMNS (order_id INT COMMENT 'unique order identifier', total DECIMAL(10,2))" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_cascade" value="ALTER TABLE sales ADD COLUMNS (tax_rate FLOAT) CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_restrict" value="ALTER TABLE sales ADD COLUMNS (tax_rate FLOAT) RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_cascade" value="ALTER TABLE users REPLACE COLUMNS (user_id INT, email STRING) CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_restrict" value="ALTER TABLE users REPLACE COLUMNS (user_id INT, email STRING) RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_partition_and_comment" value="ALTER TABLE sales PARTITION (dt='2025-07') ADD COLUMNS (shipping_fee DECIMAL(8,2) COMMENT 'delivery cost for the order')" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_partition_cascade1" value="ALTER TABLE sales PARTITION (dt='2025-08') ADD COLUMNS (refund_amt DECIMAL(10,2)) CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_partition_restrict1" value="ALTER TABLE users PARTITION (region='asia') ADD COLUMNS (login_count INT) RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_comment_cascade" value="ALTER TABLE sales ADD COLUMNS (discountverseas_fee DECIMAL(8,2) COMMENT 'international shipping fee') CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_comment_restrict" value="ALTER TABLE products ADD COLUMNS (material STRING COMMENT 'product material composition') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_partition_and_comment" value="ALTER TABLE sales PARTITION (dt='2025-07') REPLACE COLUMNS (order_id INT, shipping_fee DECIMAL(8,2) COMMENT 'delivery cost for the order')" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_partition_cascade1" value="ALTER TABLE sales PARTITION (dt='2025-08') REPLACE COLUMNS (product_id INT, refund_amt DECIMAL(10,2)) CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_partition_restrict1" value="ALTER TABLE users PARTITION (region='asia') REPLACE COLUMNS (username STRING, login_count INT) RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_comment_cascade" value="ALTER TABLE sales REPLACE COLUMNS (overseas_fee DECIMAL(8,2) COMMENT 'international shipping fee', service_charge DECIMAL(6,2) COMMENT 'platform service fee') CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_comment_restrict" value="ALTER TABLE products REPLACE COLUMNS (material STRING COMMENT 'product material composition', origin STRING COMMENT 'production place') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_full_combination1" value="ALTER TABLE sales PARTITION (dt='2025-09') ADD COLUMNS (insurance_fee DECIMAL(6,2) COMMENT 'order insurance cost') CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_full_combination2" value="ALTER TABLE users PARTITION (region='europe') ADD COLUMNS (last_login TIMESTAMP COMMENT 'latest login time') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_replace_columns_partition_comment_cascade1" value="ALTER TABLE sales PARTITION (dt='2025-10') REPLACE COLUMNS (order_id INT COMMENT 'unique order identifier', final_amount DECIMAL(10,2) COMMENT 'total amount after discounts') CASCADE" db-types="Hive" />
+    <sql-case id="alter_replace_columns_partition_comment_restrict1" value="ALTER TABLE users PARTITION (region='africa') REPLACE COLUMNS (user_name STRING COMMENT 'user full name', signup_date DATE COMMENT 'account creation date') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_replace_columns_quoted1" value="ALTER TABLE sales PARTITION (dt='2025-11') REPLACE COLUMNS (`order id` INT COMMENT 'unique order number', `final amount` DECIMAL(10,2) COMMENT 'total after tax') CASCADE" db-types="Hive" />
+    <sql-case id="alter_replace_columns_quoted2" value="ALTER TABLE users PARTITION (region='south_america') REPLACE COLUMNS (`user name` STRING COMMENT 'full name of user', `login count` INT COMMENT 'number of logins') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_replace_columns_quoted3" value="ALTER TABLE products PARTITION (cat='clothing') REPLACE COLUMNS (`size info` STRING COMMENT 'size specification', `color code` INT COMMENT 'RGB color value') CASCADE" db-types="Hive" />
+    <sql-case id="alter_replace_columns_quoted4" value="ALTER TABLE orders PARTITION (status='shipped') REPLACE COLUMNS (`ship date` DATE COMMENT 'actual shipping date', `tracking id` STRING COMMENT 'logistics tracking number') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_create_branch_default" value="ALTER TABLE test CREATE BRANCH branch1;" db-types="Hive" />
+    <sql-case id="alter_create_branch_snapshot_id" value="ALTER TABLE test CREATE BRANCH branch1 FOR SYSTEM_VERSION AS OF 3369973735913135680;" db-types="Hive" />
+    <sql-case id="alter_create_branch_system_time" value="ALTER TABLE test CREATE BRANCH branch1 FOR SYSTEM_TIME AS OF '2023-09-16 09:46:38.939 Etc/UTC';" db-types="Hive" />
+    <sql-case id="alter_create_branch_snapshot_retention" value="ALTER TABLE test CREATE BRANCH branch1 FOR SYSTEM_VERSION AS OF 3369973735913135680 WITH SNAPSHOT RETENTION 5 SNAPSHOTS;" db-types="Hive" />
+    <sql-case id="alter_create_branch_tag" value="ALTER TABLE test CREATE BRANCH branch1 FOR TAG AS OF tag1;" db-types="Hive" />
+    <sql-case id="alter_create_tag_default" value="ALTER TABLE test CREATE TAG tag1;" db-types="Hive" />
+    <sql-case id="alter_create_tag_snapshot_id" value="ALTER TABLE test CREATE TAG tag1 FOR SYSTEM_VERSION AS OF 3369973735913135680;" db-types="Hive" />
+    <sql-case id="alter_create_tag_system_time" value="ALTER TABLE test CREATE TAG tag1 FOR SYSTEM_TIME AS OF '2023-09-16 09:46:38.939 Etc/UTC';" db-types="Hive" />
+    <sql-case id="alter_drop_branch_basic" value="ALTER TABLE test DROP BRANCH branch1;" db-types="Hive" />
+    <sql-case id="alter_drop_branch_if_exists" value="ALTER TABLE test DROP BRANCH IF EXISTS branch1;" db-types="Hive" />
+    <sql-case id="alter_drop_tag_basic" value="ALTER TABLE test DROP TAG tag1;" db-types="Hive" />
+    <sql-case id="alter_drop_tag_if_exists" value="ALTER TABLE test DROP TAG IF EXISTS tag1;" db-types="Hive" />
+    <sql-case id="alter_delete_orphan_files" value="ALTER TABLE test EXECUTE DELETE ORPHAN-FILES;" db-types="Hive" />
+    <sql-case id="alter_delete_orphan_files_with_date" value="ALTER TABLE test EXECUTE DELETE ORPHAN-FILES OLDER THAN ('2021-12-09 05:39:18.689000000');" db-types="Hive" />
+    <sql-case id="alter_with_older_table" value="ALTER TABLE older EXECUTE DELETE ORPHAN-FILES;" db-types="Hive" />
+    <sql-case id="alter_table_rename_table_doris" value="ALTER TABLE table1 RENAME table2" db-types="Doris" />
+    <sql-case id="alter_table_without_actions_doris" value="ALTER TABLE t_order" db-types="Doris" />
+    <sql-case id="alter_table_rename_column_doris" value="ALTER TABLE example_table RENAME COLUMN c1 c2" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_simple" value="ALTER TABLE example_db.my_table ADD ROLLUP example_rollup_index(k1, k3, v1, v2)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_from_index" value="ALTER TABLE example_db.my_table ADD ROLLUP example_rollup_index2 (k1, v1) FROM example_rollup_index" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_with_properties" value="ALTER TABLE example_db.my_table ADD ROLLUP example_rollup_index(k1, k3, v1) PROPERTIES(&quot;timeout&quot; = &quot;3600&quot;, &quot;in_memory&quot; = &quot;true&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_from_index_with_properties" value="ALTER TABLE example_db.my_table ADD ROLLUP example_rollup_index3 (k1, k2, v1) FROM example_rollup_index PROPERTIES(&quot;timeout&quot; = &quot;1200&quot;, &quot;replication_num&quot; = &quot;3&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_batch_simple" value="ALTER TABLE example_db.my_table ADD ROLLUP rollup_index1(k1, k2), rollup_index2(k1, k3)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_batch_from" value="ALTER TABLE example_db.my_table ADD ROLLUP rollup_index1(k1, v1) FROM base_index, rollup_index2(k2, v2) FROM base_index" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_batch_properties" value="ALTER TABLE example_db.my_table ADD ROLLUP rollup_index1(k1, k2) PROPERTIES(&quot;timeout&quot; = &quot;600&quot;), rollup_index2(k1, k3) PROPERTIES(&quot;timeout&quot; = &quot;900&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_batch_all" value="ALTER TABLE example_db.my_table ADD ROLLUP rollup_index1(k1, v1) FROM base_index PROPERTIES(&quot;timeout&quot; = &quot;800&quot;), rollup_index2(k2, v2) FROM base_index PROPERTIES(&quot;timeout&quot; = &quot;1000&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_batch_mixed_from" value="ALTER TABLE example_db.my_table ADD ROLLUP rollup_index1(k1, v1) FROM base_index, rollup_index2(k2, v2)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_batch_mixed_properties" value="ALTER TABLE example_db.my_table ADD ROLLUP rollup_index1(k1, k2) PROPERTIES(&quot;timeout&quot; = &quot;500&quot;), rollup_index2(k1, k3)" db-types="Doris" />
+    <sql-case id="alter_table_drop_rollup_simple" value="ALTER TABLE example_db.my_table DROP ROLLUP example_rollup_index2" db-types="Doris" />
+    <sql-case id="alter_table_drop_rollup_batch" value="ALTER TABLE example_db.my_table DROP ROLLUP example_rollup_index2,example_rollup_index3" db-types="Doris" />
+    <sql-case id="alter_table_drop_rollup_with_properties" value="ALTER TABLE example_db.my_table DROP ROLLUP example_rollup_index PROPERTIES(&quot;timeout&quot; = &quot;1800&quot;, &quot;force&quot; = &quot;false&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_drop_rollup_batch_properties" value="ALTER TABLE example_db.my_table DROP ROLLUP rollup_index1 PROPERTIES(&quot;timeout&quot; = &quot;600&quot;), rollup_index2 PROPERTIES(&quot;timeout&quot; = &quot;900&quot;, &quot;force&quot; = &quot;true&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_drop_rollup_batch_mixed" value="ALTER TABLE example_db.my_table DROP ROLLUP rollup_index1 PROPERTIES(&quot;timeout&quot; = &quot;1200&quot;), rollup_index2" db-types="Doris" />
+    <sql-case id="alter_table_rename_rollup" value="ALTER TABLE example_table RENAME ROLLUP rollup1 rollup2" db-types="Doris" />
+    <sql-case id="alter_table_rename_partition" value="ALTER TABLE example_table RENAME PARTITION partition1 partition2" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_lock_doris" value="ALTER TABLE t_order ADD COLUMN col_alg INT, ALGORITHM=INSTANT, LOCK=NONE" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_lock_mysql" value="ALTER TABLE t_order ADD COLUMN col_alg INT, ALGORITHM=INPLACE, LOCK=EXCLUSIVE" db-types="MySQL" />
+    <sql-case id="alter_table_drop_column_doris" value="ALTER TABLE t_order DROP COLUMN old_col" db-types="Doris" />
+    <sql-case id="alter_table_drop_index_doris" value="ALTER TABLE t_order DROP INDEX idx_old" db-types="Doris" />
+    <sql-case id="alter_table_convert_charset_collate_doris" value="ALTER TABLE t_order CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin" db-types="Doris" />
+    <sql-case id="alter_table_add_check_constraint_doris" value="ALTER TABLE t_order ADD CONSTRAINT ck_order CHECK (order_id &gt; 0)" db-types="Doris" />
+    <sql-case id="alter_table_drop_constraint_doris" value="ALTER TABLE t_order DROP CONSTRAINT ck_order" db-types="Doris" />
+    <sql-case id="alter_table_rename_index_doris" value="ALTER TABLE t_order RENAME INDEX idx_old TO idx_new" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_default_doris" value="ALTER TABLE t_order ADD COLUMN col_alg_def INT, ALGORITHM=DEFAULT" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_inplace_doris" value="ALTER TABLE t_order ADD COLUMN col_alg_inplace INT, ALGORITHM=INPLACE" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_copy_doris" value="ALTER TABLE t_order ADD COLUMN col_alg_copy INT, ALGORITHM=COPY" db-types="Doris" />
+    <sql-case id="alter_table_with_lock_default_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_default INT, LOCK=DEFAULT" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_default_mysql" value="ALTER TABLE t_order ADD COLUMN col_alg_def INT, ALGORITHM=DEFAULT" db-types="MySQL" />
+    <sql-case id="alter_table_with_algorithm_instant_mysql" value="ALTER TABLE t_order ADD COLUMN col_alg_instant INT, ALGORITHM=INSTANT" db-types="MySQL" />
+    <sql-case id="alter_table_with_lock_none_mysql" value="ALTER TABLE t_order ADD COLUMN col_lock_none INT, LOCK=NONE" db-types="MySQL" />
+    <sql-case id="alter_table_with_lock_default_mysql" value="ALTER TABLE t_order ADD COLUMN col_lock_default INT, LOCK=DEFAULT" db-types="MySQL" />
+    <sql-case id="alter_table_with_lock_shared_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_shared INT, LOCK=SHARED" db-types="Doris" />
+    <sql-case id="alter_table_with_lock_exclusive_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_exclusive INT, LOCK=EXCLUSIVE" db-types="Doris" />
+    <sql-case id="alter_table_replace_with_table_swap_true" value="ALTER TABLE tbl1 REPLACE WITH TABLE tbl2 PROPERTIES('swap' = 'true')" db-types="Doris" />
+    <sql-case id="alter_table_replace_with_table_swap_false" value="ALTER TABLE tbl1 REPLACE WITH TABLE tbl2 PROPERTIES('swap' = 'false')" db-types="Doris" />
+    <sql-case id="alter_table_replace_with_table_default" value="ALTER TABLE tbl1 REPLACE WITH TABLE tbl2" db-types="Doris" />
+    <sql-case id="alter_table_replace_with_table_with_database" value="ALTER TABLE db1.tbl1 REPLACE WITH TABLE db2.tbl2 PROPERTIES('swap' = 'true')" db-types="Doris" />
+    <sql-case id="alter_table_add_partition_values_less_than_doris" value="ALTER TABLE example_db.my_table ADD PARTITION p1 VALUES LESS THAN (&quot;2015-01-01&quot;) DISTRIBUTED BY HASH(k1) BUCKETS 20" db-types="Doris" />
+    <sql-case id="alter_table_add_partition_with_properties_doris" value="ALTER TABLE example_db.my_table ADD PARTITION p1 VALUES LESS THAN (&quot;2015-01-01&quot;, &quot;2015-01-02&quot;) (&quot;replication_num&quot;=&quot;1&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_partition_values_range_doris" value="ALTER TABLE example_db.my_table ADD PARTITION p1 VALUES [(&quot;2014-01-01&quot;), (&quot;2014-02-01&quot;))" db-types="Doris" />
+    <sql-case id="alter_table_add_partition_maxvalue_doris" value="ALTER TABLE example_db.my_table ADD PARTITION p_max VALUES LESS THAN (MAXVALUE)" db-types="Doris" />
+    <sql-case id="alter_table_modify_partition_single_doris" value="ALTER TABLE example_db.my_table MODIFY PARTITION p1 SET(&quot;replication_num&quot;=&quot;1&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_modify_partition_multiple_doris" value="ALTER TABLE example_db.my_table MODIFY PARTITION (p1, p2, p4) SET(&quot;replication_num&quot;=&quot;1&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_modify_partition_storage_medium_doris" value="ALTER TABLE example_db.my_table MODIFY PARTITION (*) SET(&quot;storage_medium&quot;=&quot;HDD&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_partitions_from_to_interval_number_doris" value="ALTER TABLE example_db.my_table ADD PARTITIONS FROM (1) TO (100) INTERVAL 10" db-types="Doris" />
+    <sql-case id="alter_table_add_partitions_from_to_interval_year_doris" value="ALTER TABLE example_db.my_table ADD PARTITIONS FROM (&quot;2023-01-01&quot;) TO (&quot;2025-01-01&quot;) INTERVAL 1 YEAR" db-types="Doris" />
+    <sql-case id="alter_table_add_partitions_from_to_interval_month_doris" value="ALTER TABLE example_db.my_table ADD PARTITIONS FROM (&quot;2023-01-01&quot;) TO (&quot;2025-01-01&quot;) INTERVAL 1 MONTH" db-types="Doris" />
+    <sql-case id="alter_table_add_partitions_from_to_interval_week_doris" value="ALTER TABLE example_db.my_table ADD PARTITIONS FROM (&quot;2023-01-01&quot;) TO (&quot;2025-01-01&quot;) INTERVAL 1 WEEK" db-types="Doris" />
+    <sql-case id="alter_table_add_partitions_from_to_interval_day_doris" value="ALTER TABLE example_db.my_table ADD PARTITIONS FROM (&quot;2023-01-01&quot;) TO (&quot;2025-01-01&quot;) INTERVAL 1 DAY" db-types="Doris" />
+    <sql-case id="alter_table_set_bloom_filter_columns_doris" value="ALTER TABLE example_db.my_table SET (&quot;bloom_filter_columns&quot;=&quot;k1,k2,k3&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_set_colocate_with_doris" value="ALTER TABLE example_db.my_table SET (&quot;colocate_with&quot; = &quot;t1&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_drop_column_simple_doris" value="ALTER TABLE example_db.my_table DROP COLUMN col1" db-types="Doris" />
+    <sql-case id="alter_table_drop_column_from_rollup_doris" value="ALTER TABLE example_db.my_table DROP COLUMN col1 FROM rollup_1" db-types="Doris" />
+    <sql-case id="alter_table_drop_column_with_properties_doris" value="ALTER TABLE example_db.my_table DROP COLUMN col2 PROPERTIES (&quot;bloom_filter_columns&quot;=&quot;k1,k2,k3&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_enable_feature_batch_delete_doris" value="ALTER TABLE example_db.my_table ENABLE FEATURE &quot;BATCH_DELETE&quot;" db-types="Doris" />
+    <sql-case id="alter_table_enable_feature_sequence_load_doris" value="ALTER TABLE example_db.my_table ENABLE FEATURE &quot;SEQUENCE_LOAD&quot; WITH PROPERTIES (&quot;function_column.sequence_type&quot; = &quot;Date&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_modify_distribution_doris" value="ALTER TABLE example_db.my_table MODIFY DISTRIBUTION DISTRIBUTED BY HASH(k1) BUCKETS 50" db-types="Doris" />
+    <sql-case id="alter_table_modify_distribution_hash_auto_doris" value="ALTER TABLE example_db.my_table MODIFY DISTRIBUTION DISTRIBUTED BY HASH(k1) BUCKETS AUTO" db-types="Doris" />
+    <sql-case id="alter_table_modify_distribution_hash_multi_columns_doris" value="ALTER TABLE example_db.my_table MODIFY DISTRIBUTION DISTRIBUTED BY HASH(k1, k2) BUCKETS 50" db-types="Doris" />
+    <sql-case id="alter_table_modify_distribution_hash_multi_columns_auto_doris" value="ALTER TABLE example_db.my_table MODIFY DISTRIBUTION DISTRIBUTED BY HASH(k1, k2, k3) BUCKETS AUTO" db-types="Doris" />
+    <sql-case id="alter_table_modify_distribution_random_number_doris" value="ALTER TABLE example_db.my_random_table MODIFY DISTRIBUTION DISTRIBUTED BY RANDOM BUCKETS 12" db-types="Doris" />
+    <sql-case id="alter_table_modify_distribution_random_auto_doris" value="ALTER TABLE example_db.my_random_table MODIFY DISTRIBUTION DISTRIBUTED BY RANDOM BUCKETS AUTO" db-types="Doris" />
+    <sql-case id="alter_table_modify_table_comment_doris" value="ALTER TABLE example_db.my_table MODIFY COMMENT &quot;new comment&quot;" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_comment_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k1 COMMENT &quot;k1&quot;" db-types="Doris" />
+    <sql-case id="alter_table_modify_multiple_column_comments_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k1 COMMENT &quot;k1&quot;, MODIFY COLUMN k2 COMMENT &quot;k2&quot;" db-types="Doris" />
+    <sql-case id="alter_table_modify_engine_doris" value="ALTER TABLE example_db.mysql_table MODIFY ENGINE TO odbc PROPERTIES(&quot;driver&quot; = &quot;MySQL&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_order_by_doris" value="ALTER TABLE example_db.my_table ORDER BY (k_2,k_1,v_3,v_2,v_1)" db-types="Doris" />
+    <sql-case id="alter_table_order_by_with_rollup_doris" value="ALTER TABLE example_db.my_table ORDER BY (k_2,k_1,v_3,v_2,v_1) FROM rollup_1" db-types="Doris" />
+    <sql-case id="alter_table_order_by_with_properties_doris" value="ALTER TABLE example_db.my_table ORDER BY (k_2,k_1,v_3,v_2,v_1) PROPERTIES(&quot;timeout&quot; = &quot;100&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_order_by_with_rollup_and_properties_doris" value="ALTER TABLE example_db.my_table ORDER BY (k_2,k_1,v_3,v_2,v_1) FROM rollup_1 PROPERTIES(&quot;timeout&quot; = &quot;100&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_column_with_agg_type_doris" value="ALTER TABLE example_db.my_table ADD COLUMN new_col INT SUM DEFAULT &quot;0&quot; AFTER value_1" db-types="Doris" />
+    <sql-case id="alter_table_add_column_with_agg_type_and_rollup_doris" value="ALTER TABLE example_db.my_table ADD COLUMN new_col INT SUM DEFAULT &quot;0&quot; AFTER value_1 TO rollup_1" db-types="Doris" />
+    <sql-case id="alter_table_add_column_with_agg_type_rollup_and_properties_doris" value="ALTER TABLE example_db.my_table ADD COLUMN new_col INT SUM DEFAULT &quot;0&quot; AFTER value_1 TO rollup_1 PROPERTIES(&quot;timeout&quot; = &quot;100&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_column_with_key_doris" value="ALTER TABLE example_db.my_table ADD COLUMN new_col INT KEY DEFAULT &quot;0&quot; AFTER value_1" db-types="Doris" />
+    <sql-case id="alter_table_add_column_with_agg_type_first_doris" value="ALTER TABLE example_db.my_table ADD COLUMN new_col INT SUM DEFAULT &quot;0&quot; FIRST" db-types="Doris" />
+    <sql-case id="alter_table_add_column_with_agg_type_first_and_rollup_doris" value="ALTER TABLE example_db.my_table ADD COLUMN new_col INT SUM DEFAULT &quot;0&quot; FIRST TO rollup_1" db-types="Doris" />
+    <sql-case id="alter_table_add_columns_with_agg_type_doris" value="ALTER TABLE example_db.my_table ADD COLUMN (new_col1 INT SUM DEFAULT &quot;0&quot;, new_col2 INT SUM DEFAULT &quot;0&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_columns_with_agg_type_and_rollup_doris" value="ALTER TABLE example_db.my_table ADD COLUMN (new_col1 INT SUM DEFAULT &quot;0&quot;, new_col2 INT SUM DEFAULT &quot;0&quot;) TO rollup_1" db-types="Doris" />
+    <sql-case id="alter_table_add_columns_with_agg_type_and_properties_doris" value="ALTER TABLE example_db.my_table ADD COLUMN (new_col1 INT SUM DEFAULT &quot;0&quot;, new_col2 INT SUM DEFAULT &quot;0&quot;) PROPERTIES(&quot;timeout&quot; = &quot;100&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_columns_with_different_agg_types_doris" value="ALTER TABLE example_db.my_table ADD COLUMN (c1 INT SUM DEFAULT &quot;0&quot;, c2 INT MAX DEFAULT &quot;0&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_columns_with_key_doris" value="ALTER TABLE example_db.my_table ADD COLUMN (new_col1 INT KEY DEFAULT &quot;0&quot;, new_col2 INT DEFAULT &quot;0&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_agg_type_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN val1 VARCHAR(64) REPLACE DEFAULT &quot;abc&quot;" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_agg_type_after_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN val1 VARCHAR(64) REPLACE DEFAULT &quot;abc&quot; AFTER k1" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_agg_type_first_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN val1 VARCHAR(64) REPLACE DEFAULT &quot;abc&quot; FIRST" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_agg_type_from_rollup_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN val1 VARCHAR(64) REPLACE DEFAULT &quot;abc&quot; FROM rollup_1" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_agg_type_rollup_and_properties_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN val1 VARCHAR(64) REPLACE DEFAULT &quot;abc&quot; AFTER k1 FROM rollup_1 PROPERTIES(&quot;timeout&quot; = &quot;100&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_key_after_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN col1 BIGINT KEY DEFAULT &quot;1&quot; AFTER col2;" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_key_null_comment_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k3 VARCHAR(50) KEY NULL COMMENT 'to 50'" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_key_not_null_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k3 VARCHAR(50) KEY NOT NULL COMMENT 'not null'" db-types="Doris" />
+</sql-cases>

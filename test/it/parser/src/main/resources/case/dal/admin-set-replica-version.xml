@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <admin-set-replica-version sql-case-id="admin_set_replica_version_with_last_failed_version">
+        <property key="tablet_id" value="10003" start-index="37" stop-index="57" />
+        <property key="backend_id" value="10001" start-index="60" stop-index="81" />
+        <property key="last_failed_version" value="-1" start-index="84" stop-index="111" />
+    </admin-set-replica-version>
+
+    <admin-set-replica-version sql-case-id="admin_set_replica_version_with_version">
+        <property key="tablet_id" value="10003" start-index="37" stop-index="57" />
+        <property key="backend_id" value="10001" start-index="60" stop-index="81" />
+        <property key="version" value="100" start-index="84" stop-index="100" />
+    </admin-set-replica-version>
+</sql-parser-test-cases>

@@ -1,0 +1,198 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_aggregate
+columns:
+  aggfnoid:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aggfnoid
+    primaryKey: true
+    unsigned: false
+    visible: true
+  aggkind:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: aggkind
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggnumdirectargs:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: aggnumdirectargs
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggtransfn:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aggtransfn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggfinalfn:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aggfinalfn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggcombinefn:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aggcombinefn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggserialfn:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aggserialfn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggdeserialfn:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aggdeserialfn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggmtransfn:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aggmtransfn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggminvtransfn:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aggminvtransfn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggmfinalfn:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aggmfinalfn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggfinalextra:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: aggfinalextra
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggmfinalextra:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: aggmfinalextra
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggfinalmodify:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: aggfinalmodify
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggmfinalmodify:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: aggmfinalmodify
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggsortop:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: aggsortop
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggtranstype:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: aggtranstype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggtransspace:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: aggtransspace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggmtranstype:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: aggmtranstype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggmtransspace:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: aggmtransspace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  agginitval:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: agginitval
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aggminitval:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: aggminitval
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_aggregate_fnoid_index:
+    name: pg_aggregate_fnoid_index

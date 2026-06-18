@@ -1,0 +1,76 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+CREATE DATABASE mix_db;
+USE mix_db;
+
+REGISTER STORAGE UNIT ds_0 (
+URL='jdbc:mysql://127.0.0.1:3306/demo_ds_0?useSSL=false',
+USER='root',
+PASSWORD='12345678',
+PROPERTIES('minPoolSize'='1','connectionTimeoutMilliseconds'='30000','maxLifetimeMilliseconds'='1800000','idleTimeoutMilliseconds'='60000','maxPoolSize'='50')
+), ds_1 (
+URL='jdbc:mysql://127.0.0.1:3306/demo_ds_1?useSSL=false',
+USER='root',
+PASSWORD='12345678',
+PROPERTIES('minPoolSize'='1','connectionTimeoutMilliseconds'='30000','maxLifetimeMilliseconds'='1800000','idleTimeoutMilliseconds'='60000','maxPoolSize'='50')
+), ds_2 (
+URL='jdbc:mysql://127.0.0.1:3306/demo_ds_2?useSSL=false',
+USER='root',
+PASSWORD='12345678',
+PROPERTIES('minPoolSize'='1','connectionTimeoutMilliseconds'='30000','maxLifetimeMilliseconds'='1800000','idleTimeoutMilliseconds'='60000','maxPoolSize'='50')
+), ds_3 (
+URL='jdbc:mysql://127.0.0.1:3306/demo_ds_3?useSSL=false',
+USER='root',
+PASSWORD='12345678',
+PROPERTIES('minPoolSize'='1','connectionTimeoutMilliseconds'='30000','maxLifetimeMilliseconds'='1800000','idleTimeoutMilliseconds'='60000','maxPoolSize'='50')
+), ds_4 (
+URL='jdbc:mysql://127.0.0.1:3306/demo_ds_4?useSSL=false',
+USER='root',
+PASSWORD='12345678',
+PROPERTIES('minPoolSize'='1','connectionTimeoutMilliseconds'='30000','maxLifetimeMilliseconds'='1800000','idleTimeoutMilliseconds'='60000','maxPoolSize'='50')
+), ds_5 (
+URL='jdbc:mysql://127.0.0.1:3306/demo_ds_5?useSSL=false',
+USER='root',
+PASSWORD='12345678',
+PROPERTIES('minPoolSize'='1','connectionTimeoutMilliseconds'='30000','maxLifetimeMilliseconds'='1800000','idleTimeoutMilliseconds'='60000','maxPoolSize'='50')
+);
+
+CREATE READWRITE_SPLITTING RULE readwrite_ds_0 (
+WRITE_STORAGE_UNIT=ds_0,
+READ_STORAGE_UNITS(ds_1,ds_2),
+TRANSACTIONAL_READ_QUERY_STRATEGY='PRIMARY',
+TYPE(NAME='random')
+), readwrite_ds_1 (
+WRITE_STORAGE_UNIT=ds_3,
+READ_STORAGE_UNITS(ds_4,ds_5),
+TRANSACTIONAL_READ_QUERY_STRATEGY='PRIMARY',
+TYPE(NAME='random')
+);
+
+CREATE ENCRYPT RULE t_encrypt (
+COLUMNS(
+(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))), ASSISTED_QUERY_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1')))),
+(NAME=order_id, CIPHER=order_cipher, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))))
+));
+
+CREATE SHARDING TABLE RULE t_order (
+DATANODES('replica_ds_${0..1}.t_order_${0..1}'),
+TABLE_STRATEGY(TYPE='standard', SHARDING_COLUMN=order_id, SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))),
+KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake'))
+);
+
+CREATE DEFAULT SHARDING DATABASE STRATEGY(TYPE='standard', SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='replica_ds_${user_id % 2}'))));

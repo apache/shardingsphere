@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<e2e-test-cases>
+    <!-- TODO Fix https://github.com/apache/shardingsphere/issues/23499 -->
+    <!-- <test-case sql="SELECT ?::money" db-types="PostgreSQL,openGauss" scenario-types="passthrough"-->
+    <!--            scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: type cast to money">-->
+    <!--     <assertion parameters="-92233720368547758.08:String" expected-data-source-name="expected_dataset" />-->
+    <!--     <assertion parameters="92233720368547758.07:String" expected-data-source-name="expected_dataset" />-->
+    <!-- </test-case>-->
+    
+    <test-case sql="SELECT ?::money::varchar" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: type cast money to varchar">
+        <assertion parameters="-92233720368547758.08:String" expected-data-source-name="expected_dataset" />
+        <assertion parameters="-$92233720368547758.08:String" expected-data-source-name="expected_dataset" />
+        <assertion parameters="92233720368547758.07:String" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$92233720368547758.07:String" expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <test-case sql="INSERT INTO t_with_generated_id (val) values (?) RETURNING *, id, val aliased_val, t_with_generated_id" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss insert returning clause">
+        <assertion parameters="foo:String" expected-data-source-name="expected_dataset" />
+    </test-case>
+</e2e-test-cases>

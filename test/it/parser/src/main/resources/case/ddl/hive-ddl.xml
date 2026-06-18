@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <!-- Database -->
+    <create-database sql-case-id="hive_create_database">
+        <database-name name="test_db" start-index="29" stop-index="35" />
+        <if-not-exists start-index="16" stop-index="28" />
+    </create-database>
+
+    <drop-database sql-case-id="hive_drop_database">
+        <database-name name="test_db" start-index="24" stop-index="30" />
+        <if-exists start-index="14" stop-index="22" />
+    </drop-database>
+
+    <!-- Table -->
+    <create-table sql-case-id="hive_create_table_simple">
+        <table name="t_order" start-index="27" stop-index="33" />
+        <column-definition type="INT" start-index="36" stop-index="41">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="STRING" start-index="44" stop-index="54">
+            <column name="name" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="hive_create_table_partitioned">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="INT" start-index="20" stop-index="25">
+             <column name="id" />
+        </column-definition>
+    </create-table>
+
+    <drop-table sql-case-id="hive_drop_table">
+        <table name="t_order" start-index="21" stop-index="27" />
+        <if-exists start-index="11" stop-index="19" />
+    </drop-table>
+
+    <truncate sql-case-id="hive_truncate_table">
+        <table name="t_order" start-index="15" stop-index="21" />
+    </truncate>
+
+    <alter-table sql-case-id="hive_msck_repair">
+        <table name="t_order" start-index="18" stop-index="24" />
+    </alter-table>
+
+    <!-- View -->
+    <create-view sql-case-id="hive_create_view" view-definition="CREATE VIEW v_order AS SELECT * FROM t_order">
+        <view name="v_order" start-index="12" stop-index="18" />
+        <select>
+             <projections start-index="30" stop-index="30">
+                <shorthand-projection start-index="30" stop-index="30" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="37" stop-index="43" />
+            </from>
+        </select>
+    </create-view>
+
+    <drop-view sql-case-id="hive_drop_view">
+        <view name="v_order" start-index="20" stop-index="26" />
+        <if-exists start-index="10" stop-index="18" />
+    </drop-view>
+
+</sql-parser-test-cases>

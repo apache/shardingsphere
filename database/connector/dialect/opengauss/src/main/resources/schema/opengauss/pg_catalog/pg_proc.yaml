@@ -1,0 +1,340 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_proc
+columns:
+  proname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: proname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pronamespace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: pronamespace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proowner:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: proowner
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prolang:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: prolang
+    primaryKey: false
+    unsigned: false
+    visible: true
+  procost:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: procost
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prorows:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: prorows
+    primaryKey: false
+    unsigned: false
+    visible: true
+  provariadic:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: provariadic
+    primaryKey: false
+    unsigned: false
+    visible: true
+  protransform:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: protransform
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proisagg:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: proisagg
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proiswindow:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: proiswindow
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prosecdef:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: prosecdef
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proleakproof:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: proleakproof
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proisstrict:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: proisstrict
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proretset:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: proretset
+    primaryKey: false
+    unsigned: false
+    visible: true
+  provolatile:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: provolatile
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pronargs:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: pronargs
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pronargdefaults:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: pronargdefaults
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prorettype:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: prorettype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proargtypes:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: proargtypes
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proallargtypes:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: proallargtypes
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proargmodes:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: proargmodes
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proargnames:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: proargnames
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proargdefaults:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: proargdefaults
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prosrc:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: prosrc
+    primaryKey: false
+    unsigned: false
+    visible: true
+  probin:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: probin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proconfig:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: proconfig
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proacl:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: proacl
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prodefaultargpos:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: prodefaultargpos
+    primaryKey: false
+    unsigned: false
+    visible: true
+  fencedmode:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: fencedmode
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proshippable:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: proshippable
+    primaryKey: false
+    unsigned: false
+    visible: true
+  propackage:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: propackage
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prokind:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: prokind
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proargsrc:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: proargsrc
+    primaryKey: false
+    unsigned: false
+    visible: true
+  propackageid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: propackageid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proisprivate:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: proisprivate
+    primaryKey: false
+    unsigned: false
+    visible: true
+  proargtypesext:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: proargtypesext
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prodefaultargposext:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: prodefaultargposext
+    primaryKey: false
+    unsigned: false
+    visible: true
+  allargtypes:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: allargtypes
+    primaryKey: false
+    unsigned: false
+    visible: true
+  allargtypesext:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: allargtypesext
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_proc_oid_index:
+    name: pg_proc_oid_index
+  pg_proc_proname_args_nsp_index:
+    name: pg_proc_proname_args_nsp_index
+  pg_proc_proname_all_args_nsp_index:
+    name: pg_proc_proname_all_args_nsp_index
+  pg_proc_proname_args_nsp_new_index:
+    name: pg_proc_proname_args_nsp_new_index

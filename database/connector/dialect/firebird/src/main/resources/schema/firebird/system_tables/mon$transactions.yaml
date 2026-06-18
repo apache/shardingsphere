@@ -1,0 +1,110 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: MON$TRANSACTIONS
+columns:
+  MON$TRANSACTION_ID:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$TRANSACTION_ID
+    primaryKey: false
+    visible: true
+  MON$ATTACHMENT_ID:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$ATTACHMENT_ID
+    primaryKey: false
+    visible: true
+  MON$STATE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$STATE
+    primaryKey: false
+    visible: true
+  MON$TIMESTAMP:
+    caseSensitive: false
+    dataType: 2014
+    generated: false
+    name: MON$TIMESTAMP
+    primaryKey: false
+    visible: true
+  MON$TOP_TRANSACTION:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$TOP_TRANSACTION
+    primaryKey: false
+    visible: true
+  MON$OLDEST_TRANSACTION:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$OLDEST_TRANSACTION
+    primaryKey: false
+    visible: true
+  MON$OLDEST_ACTIVE:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$OLDEST_ACTIVE
+    primaryKey: false
+    visible: true
+  MON$ISOLATION_MODE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$ISOLATION_MODE
+    primaryKey: false
+    visible: true
+  MON$LOCK_TIMEOUT:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$LOCK_TIMEOUT
+    primaryKey: false
+    visible: true
+  MON$READ_ONLY:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$READ_ONLY
+    primaryKey: false
+    visible: true
+  MON$AUTO_COMMIT:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$AUTO_COMMIT
+    primaryKey: false
+    visible: true
+  MON$AUTO_UNDO:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$AUTO_UNDO
+    primaryKey: false
+    visible: true
+  MON$STAT_ID:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$STAT_ID
+    primaryKey: false
+    visible: true
