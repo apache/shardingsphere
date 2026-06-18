@@ -86,6 +86,6 @@ class LLMUsabilitySuiteRunnerTest {
     
     private LLME2EConfiguration createConfiguration() {
         return new LLME2EConfiguration("http://127.0.0.1:8080/v1", "provider", "model", "api-key", 1, 1, 1, tempDir, "run-id", RuntimeMode.EXTERNAL_DEBUG,
-                "runtime", "server-image", "base-image", "", new LLME2EConfiguration.ModelMetadata("repository", "model.gguf", "Q4", "revision", "sha256"));
+                "server-image", "base-image", "", new LLME2EConfiguration.ModelMetadata("repository", "model.gguf", "Q4", "revision", "sha256"));
     }
 }
