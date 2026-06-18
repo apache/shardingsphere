@@ -54,7 +54,7 @@ class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammati
     }
     
     private Map<String, Object> createCapabilitiesContract(final Map<String, Object> payload) {
-        Map<String, Object> result = new LinkedHashMap<>(13, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(12, 1F);
         result.put("response_mode", payload.get("response_mode"));
         result.put("model_first_summary", payload.get("model_first_summary"));
         result.put("model_contract", payload.get("model_contract"));
@@ -63,7 +63,6 @@ class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammati
         result.put("next_action_contract", payload.get("next_action_contract"));
         result.put("common_flows", payload.get("common_flows"));
         result.put("protocolAvailability", payload.get("protocolAvailability"));
-        result.put("fingerprints", payload.get("fingerprints"));
         result.put("resources", summarizeCapabilityResourceIdentities(castToMapList(payload.get("resources"))));
         result.put("resourceTemplates", summarizeCapabilityResourceTemplateIdentities(castToMapList(payload.get("resourceTemplates"))));
         result.put("tools", summarizeCapabilityTools(castToMapList(payload.get("tools"))));

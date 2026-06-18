@@ -89,7 +89,7 @@ class CoreResourceHandlerSurfaceTest {
                 assertTrue(((List<?>) actualPayload.get("prompts")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
                 assertTrue(((List<?>) actualPayload.get("completionTargets")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
                 assertTrue(((List<?>) actualPayload.get("resourceNavigation")).stream().map(String::valueOf).anyMatch(each -> each.contains("database_gateway_apply_workflow")));
-                assertTrue(((Map<?, ?>) actualPayload.get("fingerprints")).containsKey("descriptorCatalog"));
+                assertFalse(actualPayload.containsKey("fingerprints"));
                 assertTrue((Boolean) ((Map<?, ?>) actualPayload.get("protocolAvailability")).get("resourceNavigation"));
                 return;
             }

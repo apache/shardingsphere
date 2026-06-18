@@ -292,8 +292,7 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         assertTrue(capabilities.containsKey("next_action_contract"));
         assertTrue(capabilities.containsKey("common_flows"));
         assertTrue(capabilities.containsKey("security_hints"));
-        assertTrue(capabilities.containsKey("fingerprints"));
-        assertFalse(getMap(capabilities.get("fingerprints")).isEmpty());
+        assertFalse(capabilities.containsKey("fingerprints"));
         assertFalse(((List<?>) capabilities.get("common_flows")).isEmpty());
         Map<String, Object> modelFirstSummary = getMap(capabilities.get("model_first_summary"));
         assertThat(getMap(modelFirstSummary.get("official_discovery_methods")).get("tools"), is("tools/list"));

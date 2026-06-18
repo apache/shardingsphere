@@ -65,7 +65,7 @@ class LLMUsabilitySuiteRunnerTest {
         List<MCPInteractionTraceRecord> trace = List.of(new MCPInteractionTraceRecord(1, "tool_call", MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
                 "database_gateway_execute_query", Map.of(), Map.of("result_kind", "result_set"), true, 0L));
         LLME2EArtifactBundle artifactBundle = new LLME2EArtifactBundle(scenario.getScenarioId(), scenario.getSystemPrompt(), scenario.getUserPrompt(), "provider", "model",
-                Map.of(), "{}", List.of("raw-output"), trace, List.of("runtime-log"), LLME2EAssertionReport.isSuccess("ok"));
+                "{}", List.of("raw-output"), trace, List.of("runtime-log"), LLME2EAssertionReport.isSuccess("ok"));
         return new LLMConversationExecutor.ConversationResult(artifactBundle, artifactDirectory);
     }
     
