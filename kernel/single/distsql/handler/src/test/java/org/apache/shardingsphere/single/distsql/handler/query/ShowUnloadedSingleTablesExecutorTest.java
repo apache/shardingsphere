@@ -260,6 +260,18 @@ class ShowUnloadedSingleTablesExecutorTest {
                 Collections.singletonMap("t_order", new LinkedList<>(Arrays.asList(new DataNode("ds_1", "public", "t_order"), new DataNode("ds_0", "public", "t_order")))));
         Map<String, Collection<DataNode>> unorderedSchemaActualDataNodes = new HashMap<>(
                 Collections.singletonMap("t_order", new LinkedList<>(Arrays.asList(new DataNode("ds_0", "schema_b", "t_order"), new DataNode("ds_0", "schema_a", "t_order")))));
+        Map<String, Collection<DataNode>> allLoadedUppercaseActualDataNodes = new HashMap<>(
+                Collections.singletonMap("T_ORDER", Collections.singleton(new DataNode("ds_0", (String) null, "T_ORDER"))));
+        Map<String, Collection<DataNode>> allLoadedUppercaseRuleDataNodes = new HashMap<>(
+                Collections.singletonMap("T_ORDER", Collections.singleton(new DataNode("ds_0", (String) null, "T_ORDER"))));
+        Map<String, Collection<DataNode>> allLoadedMixedCaseActualDataNodes = new HashMap<>(
+                Collections.singletonMap("T_Order", Collections.singleton(new DataNode("ds_0", (String) null, "T_Order"))));
+        Map<String, Collection<DataNode>> allLoadedMixedCaseRuleDataNodes = new HashMap<>(
+                Collections.singletonMap("T_Order", Collections.singleton(new DataNode("ds_0", (String) null, "T_Order"))));
+        Map<String, Collection<DataNode>> partiallyLoadedUppercaseActualDataNodes = new HashMap<>(
+                Collections.singletonMap("T_ORDER", new LinkedList<>(Arrays.asList(new DataNode("ds_0", "public", "T_ORDER"), new DataNode("ds_1", "public", "T_ORDER")))));
+        Map<String, Collection<DataNode>> partiallyLoadedUppercaseRuleDataNodes = new HashMap<>(
+                Collections.singletonMap("T_ORDER", Collections.singleton(new DataNode("ds_0", "public", "T_ORDER"))));
         return Stream.of(
                 Arguments.of("all loaded tables are excluded", false, allLoadedActualDataNodes, allLoadedRuleDataNodes, Collections.<List<String>>emptyList()),
                 Arguments.of("remaining tables are sorted by table name",
@@ -271,6 +283,12 @@ class ShowUnloadedSingleTablesExecutorTest {
                 Arguments.of("same table and storage unit nodes are sorted by schema name",
                         true, unorderedSchemaActualDataNodes, Collections.emptyMap(), Arrays.asList(Arrays.asList("t_order", "ds_0", "schema_a"), Arrays.asList("t_order", "ds_0", "schema_b"))),
                 Arguments.of("unmatched rule key keeps actual table nodes",
-                        false, unmatchedActualDataNodes, unmatchedRuleDataNodes, Collections.singletonList(Arrays.asList("t_order_item", "ds_2"))));
+                        false, unmatchedActualDataNodes, unmatchedRuleDataNodes, Collections.singletonList(Arrays.asList("t_order_item", "ds_2"))),
+                Arguments.of("uppercase table fully loaded is excluded",
+                        false, allLoadedUppercaseActualDataNodes, allLoadedUppercaseRuleDataNodes, Collections.<List<String>>emptyList()),
+                Arguments.of("mixed case table fully loaded is excluded",
+                        false, allLoadedMixedCaseActualDataNodes, allLoadedMixedCaseRuleDataNodes, Collections.<List<String>>emptyList()),
+                Arguments.of("uppercase table partially loaded keeps remaining nodes",
+                        true, partiallyLoadedUppercaseActualDataNodes, partiallyLoadedUppercaseRuleDataNodes, Collections.singletonList(Arrays.asList("T_ORDER", "ds_1", "public"))));
     }
 }
