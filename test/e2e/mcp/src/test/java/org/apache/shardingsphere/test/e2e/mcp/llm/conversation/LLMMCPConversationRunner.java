@@ -37,6 +37,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * LLM MCP conversation runner.
@@ -204,20 +205,12 @@ public final class LLMMCPConversationRunner {
             }
         }
         List<String> missingToolNames = findMissingAllowedToolNames(scenario, interactionTrace);
-        if (!missingToolNames.isEmpty()) {
-            return List.of(missingToolNames.getFirst());
-        }
-        return scenario.getAllowedToolNames();
+        return missingToolNames.isEmpty() ? scenario.getAllowedToolNames() : List.of(missingToolNames.getFirst());
     }
     
     private List<String> findMissingAllowedToolNames(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace) {
-        List<String> result = new LinkedList<>();
-        for (String each : LLMMCPInteractionCoverage.findMissingRequiredInteractionNames(scenario.getRequiredToolNames(), interactionTrace)) {
-            if (scenario.getAllowedToolNames().contains(each)) {
-                result.add(each);
-            }
-        }
-        return result;
+        return LLMMCPInteractionCoverage.findMissingRequiredInteractionNames(
+                scenario.getRequiredToolNames(), interactionTrace).stream().filter(each -> scenario.getAllowedToolNames().contains(each)).collect(Collectors.toList());
     }
     
     private List<String> findMissingReadOnlyToolNames(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace) {
