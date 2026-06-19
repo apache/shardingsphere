@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +41,11 @@ public final class FirebirdSQLInfoExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdSQLInfoReturnPacket(packet.getInfoItems())));
+        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getHandle());
+        if (null == preparedStatement) {
+            return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdSQLInfoReturnPacket(packet.getInfoItems(), null, 0)));
+        }
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(
+                new FirebirdSQLInfoReturnPacket(packet.getInfoItems(), preparedStatement.getStatementType(), preparedStatement.getRecordCount())));
     }
 }

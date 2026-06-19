@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdSQLResponsePacket;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -127,9 +129,9 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(new ShardingSphereMetaData(Collections.emptyList(),
                 new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties())));
         when(selectContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(DATABASE_TYPE).build());
-        registry.addPreparedStatement(1, new FirebirdServerPreparedStatement("SELECT * FROM tbl", selectContext, new HintValueContext()));
+        registry.addPreparedStatement(1, new FirebirdServerPreparedStatement("SELECT * FROM tbl", selectContext, new HintValueContext(), FirebirdSQLInfoReturnValue.SELECT));
         when(updateContext.getSqlStatement()).thenReturn(UpdateStatement.builder().databaseType(DATABASE_TYPE).build());
-        registry.addPreparedStatement(2, new FirebirdServerPreparedStatement("UPDATE tbl SET col=1", updateContext, new HintValueContext()));
+        registry.addPreparedStatement(2, new FirebirdServerPreparedStatement("UPDATE tbl SET col=1", updateContext, new HintValueContext(), FirebirdSQLInfoReturnValue.UPDATE));
     }
     
     @AfterEach
@@ -168,11 +170,13 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(packet.getParameterTypes()).thenReturn(Collections.emptyList());
         when(packet.getParameterValues()).thenReturn(Collections.emptyList());
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build()));
+        when(proxyBackendHandler.execute()).thenReturn(
+                new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build(), Collections.singleton(new UpdateResult(3, 0L))));
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(executor.getResponseType(), is(ResponseType.UPDATE));
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
+        assertThat(connectionSession.getServerPreparedStatementRegistry().<FirebirdServerPreparedStatement>getPreparedStatement(2).getRecordCount(), is(3));
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
         verify(connectionSession).beginPreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(2));
         verify(connectionSession).finishPreparedStatementCache();

@@ -81,6 +81,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
                 connectionSession.getDatabaseConnectionManager().markResourceInUse(proxyBackendHandler);
             } else {
                 responseType = ResponseType.UPDATE;
+                preparedStatement.setRecordCount((int) ((UpdateResponseHeader) responseHeader).getUpdateCount());
             }
             Collection<DatabasePacket> result = new LinkedList<>();
             if (packet.isStoredProcedure() && proxyBackendHandler.next()) {

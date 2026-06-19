@@ -119,17 +119,18 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         if (packet.isValidStatementHandle()) {
             FirebirdStatementResourceCleaner.clean(connectionSession, statementId, true);
         }
-        FirebirdServerPreparedStatement serverPreparedStatement = new FirebirdServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext());
+        FirebirdSQLInfoReturnValue statementType = getFirebirdStatementType(sqlStatementContext.getSqlStatement());
+        FirebirdServerPreparedStatement serverPreparedStatement = new FirebirdServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext(), statementType);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
-        return createResponse(sqlStatementContext, metaDataContexts);
+        return createResponse(sqlStatementContext, metaDataContexts, statementType);
     }
     
     private int getStatementId() {
         return packet.isValidStatementHandle() ? packet.getStatementId() : FirebirdStatementIdGenerator.getInstance().getStatementId(connectionSession.getConnectionId());
     }
     
-    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts) {
-        FirebirdSQLInfoReturnValue statementType = getFirebirdStatementType(sqlStatementContext.getSqlStatement());
+    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts,
+                                                      final FirebirdSQLInfoReturnValue statementType) {
         FirebirdPrepareStatementReturnPacket returnPacket = new FirebirdPrepareStatementReturnPacket();
         while (packet.nextItem()) {
             switch (packet.getCurrentItem()) {

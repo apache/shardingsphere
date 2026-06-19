@@ -37,8 +37,9 @@ class FirebirdSQLInfoReturnPacketTest {
     private FirebirdPacketPayload payload;
     
     @Test
-    void assertWriteRecords() {
-        FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Arrays.asList(FirebirdSQLInfoPacketType.RECORDS, FirebirdCommonInfoPacketType.END));
+    void assertWriteDeleteRecords() {
+        FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(
+                Arrays.asList(FirebirdSQLInfoPacketType.RECORDS, FirebirdCommonInfoPacketType.END), FirebirdSQLInfoReturnValue.DELETE, 3);
         packet.write(payload);
         org.mockito.InOrder io = org.mockito.Mockito.inOrder(payload);
         io.verify(payload).writeInt1(FirebirdSQLInfoPacketType.RECORDS.getCode());
@@ -54,13 +55,13 @@ class FirebirdSQLInfoReturnPacketTest {
         io.verify(payload).writeInt4LE(0);
         io.verify(payload).writeInt1(FirebirdSQLInfoReturnValue.DELETE.getCode());
         io.verify(payload).writeInt2LE(4);
-        io.verify(payload).writeInt4LE(0);
+        io.verify(payload).writeInt4LE(3);
         io.verify(payload).writeInt1(FirebirdCommonInfoPacketType.END.getCode());
     }
     
     @Test
     void assertParseSQLInfoWithUnknownType() {
-        FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Collections.singletonList(FirebirdSQLInfoPacketType.STMT_TYPE));
+        FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Collections.singletonList(FirebirdSQLInfoPacketType.STMT_TYPE), FirebirdSQLInfoReturnValue.SELECT, 0);
         assertThrows(FirebirdProtocolException.class, () -> packet.write(payload));
     }
 }

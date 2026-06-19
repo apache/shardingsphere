@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -110,7 +111,7 @@ class FirebirdBatchedStatementsExecutorTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         FirebirdServerPreparedStatement firebirdPreparedStatement = new FirebirdServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)",
-                mockInsertStatementContext(), new HintValueContext());
+                mockInsertStatementContext(), new HintValueContext(), FirebirdSQLInfoReturnValue.INSERT);
         List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, "foo_1"), Arrays.asList(2, "foo_2"));
         int[] actual = new FirebirdBatchedStatementsExecutor(mockConnectionSession(), firebirdPreparedStatement, parameterSets).executeBatch();
         assertArrayEquals(new int[]{1, 2}, actual);
@@ -140,7 +141,7 @@ class FirebirdBatchedStatementsExecutorTest {
         ContextManager contextManager = mockContextManager("ds_0", "ds_1");
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         FirebirdServerPreparedStatement firebirdPreparedStatement = new FirebirdServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)",
-                mockInsertStatementContext(), new HintValueContext());
+                mockInsertStatementContext(), new HintValueContext(), FirebirdSQLInfoReturnValue.INSERT);
         List<Object> params = Arrays.asList(1, "foo_1");
         ExecutionUnit firstExecutionUnit = new ExecutionUnit("ds_0", new SQLUnit(firebirdPreparedStatement.getSql(), params));
         ExecutionUnit secondExecutionUnit = new ExecutionUnit("ds_1", new SQLUnit(firebirdPreparedStatement.getSql(), params));
