@@ -45,8 +45,11 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
         if (null == batchStatement) {
             throw new FirebirdProtocolException("Batch statement not found for connectionId: %d, statement handle: %d", connectionSession.getConnectionId(), packet.getStatementHandle());
         }
-        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(batchStatement.getStatementHandle());
-        int[] updateCounts = new FirebirdBatchedStatementsExecutor(connectionSession, preparedStatement, batchStatement.getParameterValues()).executeBatch();
+        int[] updateCounts = new int[0];
+        if (!batchStatement.getParameterValues().isEmpty()) {
+            FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(batchStatement.getStatementHandle());
+            updateCounts = new FirebirdBatchedStatementsExecutor(connectionSession, preparedStatement, batchStatement.getParameterValues()).executeBatch();
+        }
         batchStatement.reset();
         return Collections.singleton(new FirebirdBatchCompletionStateResponse()
                 .setHandle(packet.getStatementHandle())

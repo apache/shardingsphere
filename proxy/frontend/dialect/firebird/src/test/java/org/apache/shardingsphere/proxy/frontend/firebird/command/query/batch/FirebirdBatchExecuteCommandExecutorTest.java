@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
@@ -33,6 +36,7 @@ import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.firebirdsql.gds.BlrConstants;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -44,6 +48,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -62,6 +67,9 @@ class FirebirdBatchExecuteCommandExecutorTest {
     
     @Mock
     private FirebirdBatchExecuteCommandPacket packet;
+    
+    @Mock
+    private FirebirdBatchCreateCommandPacket createPacket;
     
     @Mock
     private FirebirdBatchRegistry batchRegistry;
@@ -119,6 +127,28 @@ class FirebirdBatchExecuteCommandExecutorTest {
     }
     
     @Test
+    void assertExecuteEmptyBatch() throws ReflectiveOperationException, SQLException {
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(createPacket.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(createPacket.getBatchBlr()).thenReturn(createBatchBlr());
+        when(createPacket.getBatchMessageLength()).thenReturn(6L);
+        when(createPacket.getBatchParametersBuffer()).thenReturn(Unpooled.EMPTY_BUFFER);
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
+        FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
+        try {
+            new FirebirdBatchCreateCommandExecutor(createPacket, connectionSession).execute();
+            clearInvocations(connectionSession.getServerPreparedStatementRegistry());
+            FirebirdBatchCompletionStateResponse actual = (FirebirdBatchCompletionStateResponse) new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute().iterator().next();
+            assertThat(getRecordsCount(actual), is(0L));
+            assertArrayEquals(new int[0], getUpdateCounts(actual));
+            verify(connectionSession.getServerPreparedStatementRegistry(), never()).getPreparedStatement(anyInt());
+        } finally {
+            FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
+        }
+    }
+    
+    @Test
     void assertExecuteWithNoBatchStatement() throws SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
@@ -138,5 +168,11 @@ class FirebirdBatchExecuteCommandExecutorTest {
     
     private int[] getUpdateCounts(final FirebirdBatchCompletionStateResponse response) throws ReflectiveOperationException {
         return (int[]) Plugins.getMemberAccessor().get(FirebirdBatchCompletionStateResponse.class.getDeclaredField("updateCounts"), response);
+    }
+    
+    private ByteBuf createBatchBlr() {
+        return Unpooled.wrappedBuffer(new byte[]{
+                (byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0,
+                2, 0, (byte) BlrConstants.blr_long, 0, (byte) BlrConstants.blr_short, 0, (byte) BlrConstants.blr_end, (byte) BlrConstants.blr_eoc});
     }
 }
