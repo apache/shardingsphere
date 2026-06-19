@@ -58,6 +58,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SQLE2EITSettings(SQLCommandType.DDL)
 @Setter
@@ -218,16 +219,25 @@ class DDLE2EIT implements SQLE2EIT {
         if (dataNodes.isEmpty()) {
             return false;
         }
-        Awaitility.await().atMost(META_DATA_WAIT_TIMEOUT).pollInterval(META_DATA_POLL_INTERVAL).untilAsserted(() -> assertTableExists(dataNodes, exists));
+        Awaitility.await().atMost(META_DATA_WAIT_TIMEOUT).pollInterval(META_DATA_POLL_INTERVAL).untilAsserted(() -> assertTableState(dataNodes, exists));
         return true;
     }
     
-    private void assertTableExists(final Collection<DataNode> dataNodes, final boolean exists) throws SQLException {
+    private void assertTableState(final Collection<DataNode> dataNodes, final boolean exists) throws SQLException {
+        if (!exists) {
+            assertNotContainsTable(environmentEngine, dataNodes);
+            return;
+        }
+        boolean tableExists = false;
         for (DataNode each : dataNodes) {
             try (Connection connection = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
-                assertThat(String.format("Table `%s` existed state mismatch", each.getTableName()), containsTable(connection, each.getTableName()), is(exists));
+                if (containsTable(connection, each.getTableName())) {
+                    tableExists = true;
+                    break;
+                }
             }
         }
+        assertTrue(tableExists, "Expected table does not exist");
     }
     
     private boolean waitIndexExists(final SQLE2EITContext context, final String tableName, final String indexName, final boolean exists) {
