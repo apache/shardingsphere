@@ -43,6 +43,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
@@ -69,8 +70,6 @@ class FirebirdBatchCreateCommandExecutorTest {
     private static final int TAG_BLOB_POLICY = 4;
     
     private static final int BLOB_NONE = 0;
-    
-    private static final int BLOB_STREAM = 3;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
@@ -152,12 +151,23 @@ class FirebirdBatchCreateCommandExecutorTest {
     }
     
     @Test
+    void assertExecuteWhenBatchBlrContainsBlob() {
+        FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
+        when(packet.getBatchBlr()).thenReturn(createBlobBatchBlr());
+        FirebirdProtocolException actual = assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+        assertThat(actual.getMessage(), is("BLOB fields are not supported in Firebird batch operations"));
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
+    }
+    
+    @Test
     void assertParseBatchParametersWithEmptyBuffer() {
         FirebirdBatchCreateCommandExecutor.BatchParameters actual = FirebirdBatchCreateCommandExecutor.BatchParameters.parse(Unpooled.EMPTY_BUFFER);
         assertThat(actual.getVersion(), is(BATCH_VERSION_1));
         assertThat(actual.getBufferSize(), is(DEFAULT_BUFFER_SIZE));
         assertFalse(actual.isRecordCounts());
-        assertThat(actual.getBlobPolicy(), is(BLOB_STREAM));
     }
     
     @Test
@@ -186,8 +196,9 @@ class FirebirdBatchCreateCommandExecutorTest {
     
     @Test
     void assertParseBatchParametersWithBlobPolicy() {
-        FirebirdBatchCreateCommandExecutor.BatchParameters actual = FirebirdBatchCreateCommandExecutor.BatchParameters.parse(createBatchParametersBuffer(TAG_BLOB_POLICY, BLOB_NONE));
-        assertThat(actual.getBlobPolicy(), is(BLOB_STREAM));
+        FirebirdProtocolException actual = assertThrows(FirebirdProtocolException.class,
+                () -> FirebirdBatchCreateCommandExecutor.BatchParameters.parse(createBatchParametersBuffer(TAG_BLOB_POLICY, BLOB_NONE)));
+        assertThat(actual.getMessage(), is("BLOB policy is not supported in Firebird batch operations"));
     }
     
     @Test
@@ -219,7 +230,6 @@ class FirebirdBatchCreateCommandExecutorTest {
         assertThat(actual.getVersion(), is(BATCH_VERSION_1));
         assertThat(actual.getBufferSize(), is(DEFAULT_BUFFER_SIZE));
         assertFalse(actual.isRecordCounts());
-        assertThat(actual.getBlobPolicy(), is(BLOB_STREAM));
     }
     
     private ByteBuf createBatchBlr() {
@@ -231,6 +241,12 @@ class FirebirdBatchCreateCommandExecutorTest {
     private ByteBuf createEmptyBatchBlr() {
         return Unpooled.wrappedBuffer(new byte[]{
                 (byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0, 0, 0, (byte) BlrConstants.blr_end, (byte) BlrConstants.blr_eoc});
+    }
+    
+    private ByteBuf createBlobBatchBlr() {
+        return Unpooled.wrappedBuffer(new byte[]{
+                (byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0,
+                2, 0, (byte) BlrConstants.blr_blob2, 0, 0, 0, 0, (byte) BlrConstants.blr_short, 0, (byte) BlrConstants.blr_end, (byte) BlrConstants.blr_eoc});
     }
     
     private ByteBuf createBatchParametersBuffer(final int tag, final int value) {

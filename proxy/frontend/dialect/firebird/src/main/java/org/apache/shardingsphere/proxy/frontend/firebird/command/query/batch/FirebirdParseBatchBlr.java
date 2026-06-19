@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.firebirdsql.gds.BlrConstants;
 
@@ -109,6 +110,10 @@ public final class FirebirdParseBatchBlr {
     }
     
     private static FirebirdBlrFieldDescriptor readDescriptor(final ByteBuf buffer, final int blrType) {
+        if (BlrConstants.blr_blob2 == blrType) {
+            // TODO Implement BATCH_REGBLOB, BATCH_BLOB_STREAM and BATCH_SET_BPB before accepting BLOB fields.
+            throw new FirebirdProtocolException("BLOB fields are not supported in Firebird batch operations");
+        }
         FirebirdBinaryColumnType type = FirebirdBinaryColumnType.valueOfBLRType(blrType);
         if (BlrConstants.blr_text == blrType || BlrConstants.blr_varying == blrType) {
             int length = buffer.readUnsignedByte();
@@ -127,10 +132,10 @@ public final class FirebirdParseBatchBlr {
             int scale = buffer.readByte();
             return new FirebirdBlrFieldDescriptor(type, fixedLengthOf(blrType), scale, 0);
         }
-        if (BlrConstants.blr_blob2 == blrType) {
-            buffer.skipBytes(HEADER_LENGTH);
-            return new FirebirdBlrFieldDescriptor(type, Integer.BYTES * 2, 0, 0);
-        }
+        // if (BlrConstants.blr_blob2 == blrType) {
+        // buffer.skipBytes(HEADER_LENGTH);
+        // return new FirebirdBlrFieldDescriptor(type, Integer.BYTES * 2, 0, 0);
+        // }
         return new FirebirdBlrFieldDescriptor(type, fixedLengthOf(blrType), 0, 0);
     }
     

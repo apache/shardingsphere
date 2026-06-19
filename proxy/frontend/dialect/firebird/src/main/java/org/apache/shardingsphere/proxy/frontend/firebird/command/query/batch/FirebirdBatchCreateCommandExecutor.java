@@ -54,7 +54,7 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
     
     private static final int TAG_BLOB_POLICY = 4;
     
-    private static final int BLOB_STREAM = 3;
+    // private static final int BLOB_STREAM = 3;
     
     private static final int WIDE_CLUMPLET_LENGTH_SIZE = 4;
     
@@ -108,11 +108,12 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         
         private final boolean recordCounts;
         
-        private final int blobPolicy;
+        // private final int blobPolicy;
         
         static BatchParameters parse(final ByteBuf batchParametersBuffer) {
             if (null == batchParametersBuffer || !batchParametersBuffer.isReadable()) {
-                return new BatchParameters(BATCH_VERSION_1, DEFAULT_BUFFER_SIZE, false, BLOB_STREAM);
+                // return new BatchParameters(BATCH_VERSION_1, DEFAULT_BUFFER_SIZE, false, BLOB_STREAM);
+                return new BatchParameters(BATCH_VERSION_1, DEFAULT_BUFFER_SIZE, false);
             }
             ByteBuf reader = batchParametersBuffer.duplicate();
             int version = reader.readUnsignedByte();
@@ -121,7 +122,7 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
             }
             long bufferSize = DEFAULT_BUFFER_SIZE;
             boolean recordCounts = false;
-            int blobPolicy = BLOB_STREAM;
+            // int blobPolicy = BLOB_STREAM;
             while (reader.isReadable()) {
                 ensureClumpletHeaderReadable(reader);
                 int tag = reader.readUnsignedByte();
@@ -132,13 +133,16 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
                 } else if (TAG_BUFFER_BYTES_SIZE == tag) {
                     bufferSize = getBufferSize(readIntegerValue(reader, tag, valueLength));
                 } else if (TAG_BLOB_POLICY == tag) {
-                    int requestedBlobPolicy = readIntegerValue(reader, tag, valueLength);
-                    blobPolicy = BLOB_STREAM == requestedBlobPolicy ? requestedBlobPolicy : BLOB_STREAM;
+                    // int requestedBlobPolicy = readIntegerValue(reader, tag, valueLength);
+                    // blobPolicy = BLOB_STREAM == requestedBlobPolicy ? requestedBlobPolicy : BLOB_STREAM;
+                    // TODO Support BLOB policy after implementing the Firebird batch BLOB subprotocol.
+                    throw new FirebirdProtocolException("BLOB policy is not supported in Firebird batch operations");
                 } else {
                     reader.skipBytes(valueLength);
                 }
             }
-            return new BatchParameters(version, bufferSize, recordCounts, blobPolicy);
+            // return new BatchParameters(version, bufferSize, recordCounts, blobPolicy);
+            return new BatchParameters(version, bufferSize, recordCounts);
         }
         
         private static long getBufferSize(final int requestedBufferSize) {
