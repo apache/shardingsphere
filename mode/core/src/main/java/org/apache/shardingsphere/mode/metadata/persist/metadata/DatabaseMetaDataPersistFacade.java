@@ -30,11 +30,9 @@ import org.apache.shardingsphere.mode.exception.LoadTableMetaDataFailedException
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.SchemaMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistDisabledService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistEnabledService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
-import org.apache.shardingsphere.mode.persist.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.sql.SQLException;
@@ -57,13 +55,9 @@ public final class DatabaseMetaDataPersistFacade {
     
     private final ViewMetaDataPersistService view;
     
-    public DatabaseMetaDataPersistFacade(final PersistRepository repository, final VersionPersistService versionPersistService, final boolean persistSchemasEnabled) {
+    public DatabaseMetaDataPersistFacade(final PersistRepository repository, final VersionPersistService versionPersistService) {
         database = new DatabaseMetaDataPersistService(repository);
-        if (persistSchemasEnabled) {
-            table = new TableMetaDataPersistEnabledService(repository, versionPersistService);
-        } else {
-            table = new TableMetaDataPersistDisabledService(repository);
-        }
+        table = new TableMetaDataPersistService(repository, versionPersistService);
         view = new ViewMetaDataPersistService(repository, versionPersistService);
         schema = new SchemaMetaDataPersistService(repository, table, view);
     }
@@ -78,8 +72,8 @@ public final class DatabaseMetaDataPersistFacade {
     public void persistReloadDatabase(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
         Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesAdded = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
-        toBeAlteredSchemasWithTablesAdded.forEach(each -> table.persist(databaseName, each.getName().toLowerCase(), each.getAllTables()));
-        toBeAlteredSchemasWithTablesDropped.forEach(each -> table.drop(databaseName, each.getName().toLowerCase(), each.getAllTables()));
+        toBeAlteredSchemasWithTablesAdded.forEach(each -> table.persist(databaseName, each.getName(), each.getAllTables()));
+        toBeAlteredSchemasWithTablesDropped.forEach(each -> table.drop(databaseName, each.getName(), each.getAllTables()));
     }
     
     /**
@@ -112,7 +106,7 @@ public final class DatabaseMetaDataPersistFacade {
         ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
                 database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(), new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName),
-                database.getAllSchemas());
+                database.getIdentifierContext(), database.getAllSchemas());
         try {
             Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(database.getProtocolType(), material);
             for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
@@ -136,7 +130,7 @@ public final class DatabaseMetaDataPersistFacade {
         ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
                 database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(),
-                new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName), database.getAllSchemas());
+                new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName), database.getIdentifierContext(), database.getAllSchemas());
         try {
             Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(needReloadTables, database.getProtocolType(), material);
             Map<String, Collection<ShardingSphereTable>> result = new HashMap<>(schemas.size(), 1F);
@@ -164,5 +158,17 @@ public final class DatabaseMetaDataPersistFacade {
                 table.persist(database.getName(), each.getName(), each.getAllTables());
             }
         });
+    }
+    
+    /**
+     * Persist reload database by unload single table.
+     *
+     * @param databaseName database name
+     * @param reloadDatabase reload database
+     * @param currentDatabase current database
+     */
+    public void persistReloadDatabaseByUnloadSingleTable(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
+        toBeAlteredSchemasWithTablesDropped.forEach(each -> table.drop(databaseName, each.getName(), each.getAllTables()));
     }
 }

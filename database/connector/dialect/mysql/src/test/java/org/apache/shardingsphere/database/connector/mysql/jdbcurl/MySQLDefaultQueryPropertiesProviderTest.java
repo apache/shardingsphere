@@ -40,10 +40,6 @@ class MySQLDefaultQueryPropertiesProviderTest {
     void assertGetDefaultQueryProperties() {
         Properties actual = provider.getDefaultQueryProperties();
         Properties expected = PropertiesBuilder.build(
-                new Property("useServerPrepStmts", Boolean.TRUE.toString()),
-                new Property("cachePrepStmts", Boolean.TRUE.toString()),
-                new Property("prepStmtCacheSize", "8192"),
-                new Property("prepStmtCacheSqlLimit", "2048"),
                 new Property("useLocalSessionState", Boolean.TRUE.toString()),
                 new Property("rewriteBatchedStatements", Boolean.TRUE.toString()),
                 new Property("cacheResultSetMetadata", Boolean.FALSE.toString()),

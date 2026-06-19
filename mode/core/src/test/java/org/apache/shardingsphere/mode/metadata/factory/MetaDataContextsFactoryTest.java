@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactor
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -44,8 +43,6 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
@@ -66,20 +63,18 @@ import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyCollection;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyMap;
@@ -104,25 +99,31 @@ class MetaDataContextsFactoryTest {
     @BeforeEach
     void setUp() throws SQLException {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
-                databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+                databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         when(ShardingSphereDatabasesFactory.create(anyMap(), anyMap(), any(), any(), any())).thenReturn(Collections.singleton(database));
         when(ShardingSphereDatabasesFactory.create(anyMap(), any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class),
                 any(DatabaseType.class))).thenReturn(Collections.singleton(database));
         when(ShardingSphereDatabaseFactory.create(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class), any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class)))
                 .thenAnswer(invocation -> createDatabaseFromConfiguration(invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), Collections.emptyList()));
-        when(ShardingSphereDatabaseFactory.create(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class), any(ConfigurationProperties.class),
-                any(ComputeNodeInstanceContext.class), anyCollection()))
+        when(ShardingSphereDatabaseFactory.create(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class),
+                any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class), anyCollection()))
+                .thenAnswer(invocation -> createDatabaseFromConfiguration(invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(5)));
+        when(ShardingSphereDatabaseFactory.createWithSchemaMetaDataRevisionCandidates(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class),
+                any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class), anyCollection()))
                 .thenAnswer(invocation -> createDatabaseFromConfiguration(invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(5)));
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));
         when(DatabaseTypeEngine.getProtocolType(any(DatabaseConfiguration.class), any(ConfigurationProperties.class))).thenReturn(databaseType);
         when(DatabaseTypeFactory.get(anyString())).thenReturn(databaseType);
         when(metaDataPersistFacade.getRepository()).thenReturn(repository);
+        when(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().load(anyString(), any(DatabaseType.class))).thenReturn(Collections.emptyList());
     }
     
     private ShardingSphereDatabase createDatabaseFromConfiguration(final String databaseName, final DatabaseType protocolType,
                                                                    final DatabaseConfiguration databaseConfiguration, final Collection<ShardingSphereSchema> schemas) {
         return new ShardingSphereDatabase(databaseName, protocolType,
-                new ResourceMetaData(databaseConfiguration.getDataSources(), databaseConfiguration.getStorageUnits()), new RuleMetaData(Collections.emptyList()), schemas);
+                new ResourceMetaData(databaseConfiguration.getDataSources(), databaseConfiguration.getStorageUnits()), new RuleMetaData(Collections.emptyList()), schemas,
+                new ConfigurationProperties(new Properties()));
     }
     
     @Test
@@ -160,14 +161,15 @@ class MetaDataContextsFactoryTest {
         currentStorageUnits.put("stale_ds", createStorageUnit("stale_ds"));
         currentStorageUnits.put("active_ds", createStorageUnit("active_ds"));
         ResourceMetaData resourceMetaData = new ResourceMetaData(currentStorageNodes, currentStorageUnits);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database),
                 new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
         Map<StorageNode, DataSource> newDataSources = Collections.singletonMap(new StorageNode("new_ds"), new MockedDataSource());
         SwitchingResource switchingResource = new SwitchingResource(newDataSources, Collections.singletonMap(staleNode, new MockedDataSource()),
                 Collections.singleton("stale_ds"), createDataSourcePoolPropertiesMap("active_ds", "new_ds"));
-        MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistFacade, mock()).createBySwitchResource("foo_db", false, switchingResource, originalMetaDataContexts);
+        MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistFacade, mock()).createBySwitchResource("foo_db", switchingResource, originalMetaDataContexts);
         ResourceMetaData actualResourceMetaData = actual.getMetaData().getDatabase("foo_db").getResourceMetaData();
         assertFalse(actualResourceMetaData.getDataSources().containsKey(staleNode));
         assertTrue(actualResourceMetaData.getDataSources().containsKey(activeNode));
@@ -180,49 +182,30 @@ class MetaDataContextsFactoryTest {
     @Test
     void assertCreateBySwitchResourceKeepsExistingNodesWhenNoNewDataSources() throws SQLException {
         ResourceMetaData resourceMetaData = createResourceMetaDataWithSingleUnit();
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database),
                 new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
         SwitchingResource switchingResource = new SwitchingResource(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), createDataSourcePoolPropertiesMap("foo_ds"));
-        MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistFacade, mock()).createBySwitchResource("foo_db", false, switchingResource, originalMetaDataContexts);
+        MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistFacade, mock()).createBySwitchResource("foo_db", switchingResource, originalMetaDataContexts);
         ResourceMetaData actualResourceMetaData = actual.getMetaData().getDatabase("foo_db").getResourceMetaData();
         assertTrue(actualResourceMetaData.getDataSources().containsKey(new StorageNode("foo_ds")));
         assertTrue(actualResourceMetaData.getStorageUnits().containsKey("foo_ds"));
     }
     
     @Test
-    void assertCreateByAlterRuleLoadsSchemasFromRepositoryWhenPersistenceDisabled() throws SQLException {
-        Collection<ShardingSphereSchema> loadedSchemas = Arrays.asList(createSchemaWithTable("foo_schema", "persisted_table"), createSchemaWithTable("new_schema", "new_table"));
-        when(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().load(eq("foo_db"), any())).thenReturn(loadedSchemas);
-        ShardingSphereSchema originSchema = createSchemaWithTable("foo_schema", "origin_table");
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, createResourceMetaDataWithSingleUnit(),
-                new RuleMetaData(Collections.emptyList()), Collections.singleton(originSchema));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                Collections.singleton(database), new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
-                new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.FALSE.toString()))));
-        MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
-        MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistFacade, mock())
-                .createByAlterRule("foo_db", true, Collections.singleton(new MockedRuleConfiguration("alter_rule")), originalMetaDataContexts);
-        ShardingSphereSchema mergedSchema = loadedSchemas.stream().filter(each -> "foo_schema".equals(each.getName())).findFirst().orElseThrow(IllegalStateException::new);
-        assertThat(mergedSchema.getAllTables().size(), is(2));
-        ShardingSphereSchema untouchedSchema = loadedSchemas.stream().filter(each -> "new_schema".equals(each.getName())).findFirst().orElseThrow(IllegalStateException::new);
-        assertThat(untouchedSchema.getAllTables().size(), is(1));
-        assertTrue(actual.getMetaData().containsDatabase("foo_db"));
-    }
-    
-    @Test
     void assertCreateByAlterRuleKeepsPersistedSchemasWhenEnabled() throws SQLException {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, createResourceMetaDataWithSingleUnit(), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+                "foo_db", databaseType, createResourceMetaDataWithSingleUnit(), new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(database), new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
-                new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.TRUE.toString()))));
+                new ConfigurationProperties(new Properties()));
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
         Collection<ShardingSphereSchema> loadedSchemas = Collections.singleton(createSchemaWithTable("persisted_schema", "persisted_table"));
-        when(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().load("foo_db", mock(DatabaseType.class))).thenReturn(loadedSchemas);
+        when(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().load("foo_db", databaseType)).thenReturn(loadedSchemas);
         MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistFacade, mock())
-                .createByAlterRule("foo_db", true, Collections.singleton(new MockedRuleConfiguration("persist_rule")), originalMetaDataContexts);
+                .createByAlterRule("foo_db", Collections.singleton(new MockedRuleConfiguration("persist_rule")), originalMetaDataContexts);
         ShardingSphereSchema persistedSchema = loadedSchemas.iterator().next();
         assertThat(persistedSchema.getAllTables().size(), is(1));
         assertTrue(actual.getMetaData().containsDatabase("foo_db"));
@@ -232,14 +215,14 @@ class MetaDataContextsFactoryTest {
     void assertCreateByAlterRuleWithReloadedSchemasPassesCurrentSchemasAsRevisionCandidates() throws SQLException {
         ShardingSphereSchema currentSchema = createSchemaWithTable("foo_schema", "current_table");
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, createResourceMetaDataWithSingleUnit(), new RuleMetaData(Collections.emptyList()), Collections.singleton(currentSchema));
+                "foo_db", databaseType, createResourceMetaDataWithSingleUnit(), new RuleMetaData(Collections.emptyList()), Collections.singleton(currentSchema),
+                new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(database), new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
                 new ConfigurationProperties(new Properties()));
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
-        MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistFacade, mock())
-                .createByAlterRule("foo_db", false, Collections.singleton(new MockedRuleConfiguration("alter_rule")), originalMetaDataContexts);
-        ShardingSphereDatabase actualDatabase = actual.getMetaData().getDatabase("foo_db");
+        ShardingSphereDatabase actualDatabase = new MetaDataContextsFactory(metaDataPersistFacade, mock())
+                .createChangedDatabaseByRebuild("foo_db", null, Collections.singleton(new MockedRuleConfiguration("alter_rule")), originalMetaDataContexts);
         assertTrue(actualDatabase.containsSchema("foo_schema"));
         assertTrue(actualDatabase.getSchema("foo_schema").containsTable("current_table"));
     }

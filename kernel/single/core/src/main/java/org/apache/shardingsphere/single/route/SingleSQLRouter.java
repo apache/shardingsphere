@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.single.route;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -29,11 +28,13 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.lifecycle.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.route.lifecycle.EntranceSQLRouter;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.route.engine.SingleRouteEngine;
 import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.single.rule.attribute.SingleDataNodeRuleAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 
 import java.util.Collection;
@@ -55,9 +56,18 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
         RouteContext routeContext = new RouteContext();
         Collection<QualifiedTable> singleTables = getSingleTables(database, rule, sqlStatementContext);
         if (singleTables.isEmpty()) {
-            return routeContext;
+            return isAllowedToRouteWithSingleLogicalDataSource(database, rule) ? createSingleLogicalDataSourceRouteContext(rule, queryContext) : routeContext;
         }
-        return new SingleRouteEngine(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).route(routeContext, rule);
+        return new SingleRouteEngine(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).route(routeContext, rule, database);
+    }
+    
+    private boolean isAllowedToRouteWithSingleLogicalDataSource(final ShardingSphereDatabase database, final SingleRule rule) {
+        return 1 == rule.getDataSourceNames().size() && isOnlySingleDataNodeRuleAttribute(database);
+    }
+    
+    private boolean isOnlySingleDataNodeRuleAttribute(final ShardingSphereDatabase database) {
+        Collection<DataNodeRuleAttribute> dataNodeRuleAttributes = database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class);
+        return 1 == dataNodeRuleAttributes.size() && dataNodeRuleAttributes.iterator().next() instanceof SingleDataNodeRuleAttribute;
     }
     
     @Override
@@ -68,7 +78,7 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
         if (singleTables.isEmpty()) {
             return;
         }
-        new SingleRouteEngine(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).route(routeContext, rule);
+        new SingleRouteEngine(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).route(routeContext, rule, database);
     }
     
     private RouteContext createSingleDataSourceRouteContext(final SingleRule rule, final ShardingSphereDatabase database, final QueryContext queryContext) {
@@ -77,6 +87,14 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
         RouteContext result = new RouteContext();
         Collection<String> tableNames = queryContext.getSqlStatementContext().getTablesContext().getTableNames();
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), createTableMappers(tableNames)));
+        return result;
+    }
+    
+    private RouteContext createSingleLogicalDataSourceRouteContext(final SingleRule rule, final QueryContext queryContext) {
+        String logicDataSource = rule.getDataSourceNames().iterator().next();
+        RouteContext result = new RouteContext();
+        Collection<String> tableNames = queryContext.getSqlStatementContext().getTablesContext().getTableNames();
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, logicDataSource), createTableMappers(tableNames)));
         return result;
     }
     
@@ -89,23 +107,24 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
     }
     
     private Collection<QualifiedTable> getSingleTables(final ShardingSphereDatabase database, final SingleRule rule, final SQLStatementContext sqlStatementContext) {
-        Collection<QualifiedTable> qualifiedTables = rule.getQualifiedTables(sqlStatementContext, database);
-        Collection<String> distributedTableNames = getDistributedTableNames(database);
         Collection<QualifiedTable> result = new LinkedList<>();
-        for (QualifiedTable each : qualifiedTables) {
-            if (!distributedTableNames.contains(each.getTableName())) {
+        Collection<TableMapperRuleAttribute> tableMapperRuleAttributes = database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class);
+        for (QualifiedTable each : rule.getQualifiedTables(sqlStatementContext, database)) {
+            if (!isDistributedTable(tableMapperRuleAttributes, each.getTableName())) {
                 result.add(each);
             }
         }
-        return sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? result : rule.getSingleTables(result);
+        return sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? result : rule.getSingleTables(result, database);
     }
     
-    private Collection<String> getDistributedTableNames(final ShardingSphereDatabase database) {
-        Collection<String> result = new CaseInsensitiveSet<>();
-        for (TableMapperRuleAttribute each : database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)) {
-            result.addAll(each.getDistributedTableNames());
+    private boolean isDistributedTable(final Collection<TableMapperRuleAttribute> tableMapperRuleAttributes, final String tableName) {
+        for (TableMapperRuleAttribute each : tableMapperRuleAttributes) {
+            Collection<String> distributedTableNames = each.getDistributedTableNames();
+            if (!distributedTableNames.isEmpty() && distributedTableNames.contains(tableName)) {
+                return true;
+            }
         }
-        return result;
+        return false;
     }
     
     @Override

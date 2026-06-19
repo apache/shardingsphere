@@ -50,7 +50,7 @@ public final class PostgreSQLShowVariableExecutor implements DatabaseAdminQueryE
     
     static {
         VARIABLE_ROW_DATA_GENERATORS.put("application_name", connectionSession -> new String[]{"application_name", "PostgreSQL", "Sets the application name to be reported in statistics and logs."});
-        VARIABLE_ROW_DATA_GENERATORS.put("client_encoding", connectionSession -> new String[]{"client_encoding", "UTF8", "Sets the client's character set encoding."});
+        VARIABLE_ROW_DATA_GENERATORS.put("client_encoding", connectionSession -> new String[]{"client_encoding", "UTF8", "Proxy policy fixes the backend client encoding to UTF8."});
         VARIABLE_ROW_DATA_GENERATORS.put("integer_datetimes", connectionSession -> new String[]{"integer_datetimes", "on", "Shows whether datetimes are integer based."});
         VARIABLE_ROW_DATA_GENERATORS.put("timezone", connectionSession -> new String[]{"TimeZone", "Etc/UTC", "Sets the time zone for displaying and interpreting time stamps."});
         VARIABLE_ROW_DATA_GENERATORS.put("transaction_isolation", connectionSession -> {

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
@@ -79,7 +78,7 @@ public final class InsertStatementBaseContext implements SQLStatementContext {
         schema = getSchema(metaData, currentDatabaseName);
         columnNames = containsInsertColumns()
                 ? insertColumnNames
-                : sqlStatement.getTable().map(optional -> schema.getVisibleColumnNames(optional.getTableName().getIdentifier().getValue())).orElseGet(Collections::emptyList);
+                : sqlStatement.getTable().map(optional -> schema.getVisibleColumnNames(optional.getTableName().getIdentifier())).orElseGet(Collections::emptyList);
         insertColumnNamesAndIndexes = createInsertColumnNamesAndIndexes(insertColumnNames);
     }
     
@@ -100,8 +99,7 @@ public final class InsertStatementBaseContext implements SQLStatementContext {
         ShardingSpherePreconditions.checkNotNull(databaseName, NoDatabaseSelectedException::new);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
-        String defaultSchema = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDefaultSchemaName(databaseName);
-        return tablesContext.getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchema));
+        return tablesContext.getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(database.getDefaultSchemaName()));
     }
     
     private Collection<TableSegment> getAllSimpleTableSegments() {

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowUnloadedSingleTablesStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,10 +49,14 @@ import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -58,18 +64,26 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({SingleTableDataNodeLoader.class, SingleTableLoadUtils.class, PhysicalDataSourceAggregator.class})
+@StaticMockSettings({SingleTableDataNodeLoader.class, SingleTableLoadUtils.class, PhysicalDataSourceAggregator.class, DatabaseTypeEngine.class})
 class ShowUnloadedSingleTablesExecutorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final DatabaseType protocolDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
+    private final DatabaseType storageDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     private final ShowUnloadedSingleTablesExecutor executor = (ShowUnloadedSingleTablesExecutor) TypedSPILoader.getService(DistSQLQueryExecutor.class, ShowUnloadedSingleTablesStatement.class);
     
@@ -125,6 +139,30 @@ class ShowUnloadedSingleTablesExecutorTest {
         assertRows(expectedRows);
     }
     
+    @Test
+    void assertGetRowsWithDifferentProtocolAndStorageTypes() throws SQLException {
+        Map<String, DataSource> actualDataSourceMap = Collections.singletonMap("foo_ds",
+                mockDataSource("foo_ds", null, "jdbc:mock://127.0.0.1/foo_ds", Collections.singletonList("foo_tbl1")));
+        when(DatabaseTypeEngine.getStorageType(any(DataSource.class))).thenReturn(storageDatabaseType);
+        when(SingleTableLoadUtils.getFeatureRequiredSingleTables(anyCollection())).thenCallRealMethod();
+        when(SingleTableLoadUtils.getExcludedTables(anyCollection())).thenCallRealMethod();
+        when(SingleTableLoadUtils.splitTableLines(anyCollection())).thenCallRealMethod();
+        when(SingleTableDataNodeLoader.load(eq("foo_db"), eq(protocolDatabaseType), anyMap(), anyCollection(), anyCollection())).thenCallRealMethod();
+        when(SingleTableDataNodeLoader.load(eq("foo_db"), anyMap(), anyCollection(), anyCollection(), anyMap())).thenCallRealMethod();
+        Map<String, Collection<DataNode>> loadedDataNodes = SingleTableDataNodeLoader.load(
+                "foo_db", protocolDatabaseType, actualDataSourceMap, Collections.emptyList(), Collections.singleton("foo_ds.foo_tbl1"));
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getProtocolType()).thenReturn(protocolDatabaseType);
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(ruleMetaData.getRules()).thenReturn(Collections.emptyList());
+        when(rule.getSingleTableDataNodes()).thenReturn(loadedDataNodes);
+        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
+        when(storageUnit.getDataSource()).thenReturn(actualDataSourceMap.get("foo_ds"));
+        when(PhysicalDataSourceAggregator.getAggregatedDataSources(any(), any())).thenReturn(actualDataSourceMap);
+        assertTrue(executor.getRows(new ShowUnloadedSingleTablesStatement(null, null, null), mock(ContextManager.class)).isEmpty());
+    }
+    
     private void mockRowsDependencies(final Map<String, Collection<DataNode>> actualDataNodes, final Map<String, Collection<DataNode>> loadedDataNodes) {
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(databaseType);
@@ -136,7 +174,8 @@ class ShowUnloadedSingleTablesExecutorTest {
         when(storageUnit.getDataSource()).thenReturn(dataSource);
         when(PhysicalDataSourceAggregator.getAggregatedDataSources(any(), any())).thenReturn(Collections.singletonMap("ds_0", dataSource));
         when(SingleTableLoadUtils.getExcludedTables(Collections.emptyList())).thenReturn(Collections.emptySet());
-        when(SingleTableDataNodeLoader.load(eq("foo_db"), any(), any())).thenReturn(actualDataNodes);
+        when(DatabaseTypeEngine.getStorageType(dataSource)).thenReturn(databaseType);
+        when(SingleTableDataNodeLoader.load(eq("foo_db"), any(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
     }
     
     private void assertRows(final List<List<String>> expectedRows) {
@@ -158,6 +197,44 @@ class ShowUnloadedSingleTablesExecutorTest {
         return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
     }
     
+    private DataSource mockDataSource(final String dataSourceName, final String schemaName, final String url, final List<String> tableNames) throws SQLException {
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        lenient().when(connection.getCatalog()).thenReturn(dataSourceName);
+        lenient().when(connection.getMetaData().getURL()).thenReturn(url);
+        ResultSet tableResultSet = mockTableResultSet(tableNames);
+        if (null == schemaName) {
+            when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{"TABLE", "PARTITIONED TABLE", "VIEW", "SYSTEM TABLE", "SYSTEM VIEW"}))
+                    .thenReturn(tableResultSet);
+        } else {
+            ResultSet schemaResultSet = mockSchemaResultSet(schemaName);
+            when(connection.getMetaData().getSchemas()).thenReturn(schemaResultSet);
+            when(connection.getMetaData().getTables(dataSourceName, schemaName, null, new String[]{"TABLE", "PARTITIONED TABLE", "VIEW", "SYSTEM TABLE", "SYSTEM VIEW"}))
+                    .thenReturn(tableResultSet);
+        }
+        return new MockedDataSource(connection);
+    }
+    
+    private ResultSet mockSchemaResultSet(final String schemaName) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TABLE_SCHEM")).thenReturn(schemaName);
+        return result;
+    }
+    
+    private ResultSet mockTableResultSet(final List<String> tableNames) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        Collection<String> remainTableNames = tableNames.subList(1, tableNames.size());
+        Collection<Boolean> remainNextResults = new LinkedList<>();
+        for (int i = 0; i < remainTableNames.size(); i++) {
+            remainNextResults.add(true);
+        }
+        remainNextResults.add(false);
+        String firstTableName = tableNames.get(0);
+        lenient().when(result.next()).thenReturn(true, remainNextResults.toArray(new Boolean[tableNames.size()]));
+        lenient().when(result.getString("TABLE_NAME")).thenReturn(firstTableName, remainTableNames.toArray(new String[tableNames.size() - 1]));
+        return result;
+    }
+    
     @Test
     void assertGetRuleClass() {
         assertThat(executor.getRuleClass(), is(SingleRule.class));
@@ -168,6 +245,10 @@ class ShowUnloadedSingleTablesExecutorTest {
                 Collections.singletonMap("t_order", Collections.singleton(new DataNode("ds_0", (String) null, "t_order"))));
         Map<String, Collection<DataNode>> allLoadedRuleDataNodes = new HashMap<>(
                 Collections.singletonMap("t_order", Collections.singleton(new DataNode("ds_0", (String) null, "t_order"))));
+        Map<String, Collection<DataNode>> allLoadedUpperCaseActualDataNodes = new HashMap<>(
+                Collections.singletonMap("T_ORDER", Collections.singleton(new DataNode("ds_0", (String) null, "T_ORDER"))));
+        Map<String, Collection<DataNode>> allLoadedUpperCaseRuleDataNodes = new HashMap<>(
+                Collections.singletonMap("T_ORDER", Collections.singleton(new DataNode("ds_0", (String) null, "T_ORDER"))));
         Map<String, Collection<DataNode>> partiallyLoadedActualDataNodes = new HashMap<>(
                 Collections.singletonMap("t_order", new LinkedList<>(Arrays.asList(new DataNode("ds_0", "public", "t_order"), new DataNode("ds_1", "public", "t_order")))));
         Map<String, Collection<DataNode>> partiallyLoadedRuleDataNodes = new HashMap<>(
@@ -176,10 +257,24 @@ class ShowUnloadedSingleTablesExecutorTest {
                 Collections.singletonMap("t_order_item", Collections.singleton(new DataNode("ds_2", (String) null, "t_order_item"))));
         Map<String, Collection<DataNode>> unmatchedRuleDataNodes = new HashMap<>(
                 Collections.singletonMap("t_order", Collections.singleton(new DataNode("ds_0", (String) null, "t_order"))));
+        Map<String, Collection<DataNode>> unorderedActualDataNodes = new LinkedHashMap<>(2, 1F);
+        unorderedActualDataNodes.put("t_order_item", Collections.singleton(new DataNode("ds_1", (String) null, "t_order_item")));
+        unorderedActualDataNodes.put("t_order", Collections.singleton(new DataNode("ds_0", (String) null, "t_order")));
+        Map<String, Collection<DataNode>> unorderedStorageUnitActualDataNodes = new HashMap<>(
+                Collections.singletonMap("t_order", new LinkedList<>(Arrays.asList(new DataNode("ds_1", "public", "t_order"), new DataNode("ds_0", "public", "t_order")))));
+        Map<String, Collection<DataNode>> unorderedSchemaActualDataNodes = new HashMap<>(
+                Collections.singletonMap("t_order", new LinkedList<>(Arrays.asList(new DataNode("ds_0", "schema_b", "t_order"), new DataNode("ds_0", "schema_a", "t_order")))));
         return Stream.of(
                 Arguments.of("all loaded tables are excluded", false, allLoadedActualDataNodes, allLoadedRuleDataNodes, Collections.<List<String>>emptyList()),
+                Arguments.of("all loaded uppercase tables are excluded", false, allLoadedUpperCaseActualDataNodes, allLoadedUpperCaseRuleDataNodes, Collections.<List<String>>emptyList()),
+                Arguments.of("remaining tables are sorted by table name",
+                        false, unorderedActualDataNodes, Collections.emptyMap(), Arrays.asList(Arrays.asList("t_order", "ds_0"), Arrays.asList("t_order_item", "ds_1"))),
                 Arguments.of("partially loaded table keeps remaining nodes",
                         true, partiallyLoadedActualDataNodes, partiallyLoadedRuleDataNodes, Collections.singletonList(Arrays.asList("t_order", "ds_1", "public"))),
+                Arguments.of("same table nodes are sorted by storage unit name",
+                        true, unorderedStorageUnitActualDataNodes, Collections.emptyMap(), Arrays.asList(Arrays.asList("t_order", "ds_0", "public"), Arrays.asList("t_order", "ds_1", "public"))),
+                Arguments.of("same table and storage unit nodes are sorted by schema name",
+                        true, unorderedSchemaActualDataNodes, Collections.emptyMap(), Arrays.asList(Arrays.asList("t_order", "ds_0", "schema_a"), Arrays.asList("t_order", "ds_0", "schema_b"))),
                 Arguments.of("unmatched rule key keeps actual table nodes",
                         false, unmatchedActualDataNodes, unmatchedRuleDataNodes, Collections.singletonList(Arrays.asList("t_order_item", "ds_2"))));
     }

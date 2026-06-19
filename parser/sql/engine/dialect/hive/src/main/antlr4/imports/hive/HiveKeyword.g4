@@ -3573,3 +3573,15 @@ AUTOCOMMIT
 VALIDATE
     : V A L I D A T E
     ;
+
+ORPHAN_FILES
+    : O R P H A N '-' F I L E S
+    ;
+
+OLDER
+    : O L D E R
+    ;
+
+CHERRY_PICK
+    : C H E R R Y '-' P I C K
+    ;

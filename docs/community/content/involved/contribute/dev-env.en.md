@@ -23,7 +23,7 @@ git config --global core.longpaths true
 
 ## JDK Installation
 
-Use JDK 17 or higher.
+Use JDK 21 or higher.
 
 You could download JDK from [OpenJDK Downloads]( https://adoptium.net/temurin/releases ).
 

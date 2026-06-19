@@ -158,6 +158,10 @@ showDatabases
     : SHOW (DATABASES | SCHEMAS) (FROM catalogName)? showFilter?
     ;
 
+showDatabase
+    : SHOW DATABASE NUMBER_
+    ;
+
 showEngine
     : SHOW ENGINE engineRef (STATUS | MUTEX)
     ;
@@ -265,6 +269,10 @@ showStatus
 
 showTableStatus
     : SHOW TABLE STATUS fromDatabase? showFilter?
+    ;
+
+showTable
+    : SHOW TABLE NUMBER_
     ;
 
 showTables
@@ -434,6 +442,16 @@ adminCleanTrash
     : ADMIN CLEAN TRASH (ON LP_ string_ (COMMA_ string_)* RP_)?
     ;
 
+// DORIS ADDED BEGIN
+cleanAllProfile
+    : CLEAN ALL PROFILE
+    ;
+
+planReplayerPlay
+    : PLAN REPLAYER PLAY DOUBLE_QUOTED_TEXT
+    ;
+// DORIS ADDED END
+
 dorisAlterSystem
     : ALTER SYSTEM dorisAlterSystemAction
     ;
@@ -469,8 +487,40 @@ dropSqlBlockRule
     : DROP SQL_BLOCK_RULE ruleNames
     ;
 
+// DORIS ADDED BEGIN
+showResources
+    : SHOW RESOURCES (showResourcesWhereClause | showLike)? orderByClause? limitClause?
+    ;
+
+showResourcesWhereClause
+    : WHERE showResourcesWhereCondition
+    ;
+
+showResourcesWhereCondition
+    : showResourcesNameWhereCondition showResourcesResourceTypeWhereCondition?
+    | showResourcesResourceTypeWhereCondition
+    ;
+
+showResourcesNameWhereCondition
+    : NAME (EQ_ | LIKE) string_
+    ;
+
+showResourcesResourceTypeWhereCondition
+    : RESOURCETYPE EQ_ string_
+    ;
+// DORIS ADDED END
+
 showSqlBlockRule
     : SHOW SQL_BLOCK_RULE (FOR ruleName)?
+    ;
+
+showLoadWarnings
+    : SHOW LOAD WARNINGS (FROM databaseName)? (WHERE showLoadWarningsWhereCondition)?
+    ;
+
+showLoadWarningsWhereCondition
+    : LABEL EQ_ string_
+    | LOAD_JOB_ID EQ_ string_
     ;
 
 showLoad
@@ -846,10 +896,22 @@ cancelBackup
     : CANCEL GLOBAL? BACKUP (FROM databaseName)?
     ;
 
+cancelLoadStatement
+    : CANCEL LOAD (FROM databaseName)? (WHERE cancelLoadWhereCondition)?
+    ;
+
+cancelLoadWhereCondition
+    : LABEL EQ_ string_
+    | LABEL LIKE string_
+    | STATE EQ_ string_
+    ;
+
 show
     : showDatabases
+    | showDatabase
     | showTables
     | showTableStatus
+    | showTable
     | showBinaryLogs
     | showColumns
     | showIndex
@@ -864,6 +926,7 @@ show
     | showCreateFunction
     | showCreateProcedure
     | showCreateRoutineLoad
+    | showLoadWarnings
     | showLoad
     | showStreamLoad
     | showCreateLoad
@@ -908,4 +971,7 @@ show
     | showFile
     | showEncryptKeys
     | showTrash
+    // DORIS ADDED BEGIN
+    | showResources
+    // DORIS ADDED END
     ;

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,7 +39,10 @@ public final class SQLValue {
     
     private final int index;
     
+    private final String literalValue;
+    
     public SQLValue(final String value, final String type, final int index) {
+        literalValue = value;
         this.value = null == type ? value : getValue(value, type.toLowerCase());
         this.index = index;
     }
@@ -99,35 +101,10 @@ public final class SQLValue {
             case "date":
                 return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getDateFormatter()));
             case "datetime":
-                if (26 == value.length()) {
-                    return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getFullMillisDatetimeFormatter()));
-                }
-                if (10 == value.length()) {
-                    return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getDateFormatter()));
-                }
-                return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getDatetimeFormatter()));
-            case "time":
-                if (value.length() > 8) {
-                    return Time.valueOf(LocalTime.parse(value, DateTimeFormatterFactory.getFullTimeFormatter()));
-                }
-                return Time.valueOf(LocalTime.parse(value, DateTimeFormatterFactory.getTimeFormatter()));
             case "timestamp":
-                if (26 == value.length()) {
-                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getFullMillisDatetimeFormatter()));
-                }
-                if (19 == value.length()) {
-                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getDatetimeFormatter()));
-                }
-                if (21 == value.length()) {
-                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getShortMillisDatetimeFormatter()));
-                }
-                if (22 == value.length()) {
-                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getDoubleMillisDatetimeFormatter()));
-                }
-                if (23 == value.length()) {
-                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getLongMillisDatetimeFormatter()));
-                }
-                return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getDatetimeFormatter()));
+                return getDatetimeValue(value);
+            case "time":
+                return LocalTime.parse(value);
             case "tinyblob":
             case "blob":
             case "longblob":
@@ -144,6 +121,25 @@ public final class SQLValue {
         }
     }
     
+    private Timestamp getDatetimeValue(final String value) {
+        if (10 == value.length()) {
+            return Timestamp.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getDateFormatter()).atStartOfDay());
+        }
+        if (21 == value.length()) {
+            return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getShortMillisDatetimeFormatter()));
+        }
+        if (22 == value.length()) {
+            return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getDoubleMillisDatetimeFormatter()));
+        }
+        if (23 == value.length()) {
+            return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getLongMillisDatetimeFormatter()));
+        }
+        if (26 == value.length()) {
+            return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getFullMillisDatetimeFormatter()));
+        }
+        return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getDatetimeFormatter()));
+    }
+    
     @Override
     public String toString() {
         if (null == value) {
@@ -155,8 +151,8 @@ public final class SQLValue {
         if (value instanceof Date) {
             return formatString(DateTimeFormatterFactory.getDateFormatter().format(((Date) value).toLocalDate()));
         }
-        if (value instanceof Time) {
-            return formatString(DateTimeFormatterFactory.getTimeFormatter().format(((Time) value).toLocalTime()));
+        if (value instanceof LocalTime) {
+            return formatString(literalValue);
         }
         if (value instanceof Timestamp) {
             return formatString(DateTimeFormatterFactory.getLongMillisDatetimeFormatter().format(((Timestamp) value).toLocalDateTime()));

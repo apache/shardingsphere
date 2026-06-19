@@ -43,7 +43,7 @@
                                                                                     <owner name="i" start-index="46" stop-index="46" />
                                                                                     <column-bound>
                                                                                         <original-database name="foo_db_1" />
-                                                                                        <original-schema name="foo_db_1" />
+                                                                                        <original-schema name="FOO_DB_1" />
                                                                                         <original-table name="t_order_item" />
                                                                                         <original-column name="item_id" start-delimiter="&quot;" end-delimiter="&quot;" />
                                                                                         <table-source-type name="PHYSICAL_TABLE"/>
@@ -54,7 +54,7 @@
                                                                                 <simple-table name="t_order_item" alias="i" start-index="61" stop-index="74">
                                                                                     <table-bound>
                                                                                         <original-database name="foo_db_1" />
-                                                                                        <original-schema name="foo_db_1" />
+                                                                                        <original-schema name="FOO_DB_1" />
                                                                                     </table-bound>
                                                                                 </simple-table>
                                                                             </from>
@@ -66,7 +66,7 @@
                                                                                                 <owner name="i" start-index="82" stop-index="82" />
                                                                                                 <column-bound>
                                                                                                     <original-database name="foo_db_1" />
-                                                                                                    <original-schema name="foo_db_1" />
+                                                                                                    <original-schema name="FOO_DB_1" />
                                                                                                     <original-table name="t_order_item" />
                                                                                                     <original-column name="item_id" start-delimiter="&quot;" end-delimiter="&quot;" />
                                                                                                     <table-source-type name="PHYSICAL_TABLE"/>
@@ -117,7 +117,7 @@
             <simple-table name="DUAL" start-index="151" stop-index="154">
                 <table-bound>
                     <original-database name="foo_db_1" />
-                    <original-schema name="foo_db_1" />
+                    <original-schema name="FOO_DB_1" />
                 </table-bound>
             </simple-table>
         </from>

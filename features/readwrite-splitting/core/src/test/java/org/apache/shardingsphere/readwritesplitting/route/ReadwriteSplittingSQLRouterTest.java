@@ -82,7 +82,8 @@ class ReadwriteSplittingSQLRouterTest {
         RouteContext routeContext = mockRouteContext();
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(staticRule));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", mock(), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyList(), new ConfigurationProperties(new Properties()));
         sqlRouter.decorateRouteContext(routeContext, queryContext, database, staticRule, Collections.emptyList(), new ConfigurationProperties(new Properties()));
         List<String> routedDataSourceNames = new ArrayList<>(routeContext.getActualDataSourceNames());
         assertThat(routedDataSourceNames.get(0), is("noneReadwriteSplittingDataSource"));
@@ -98,7 +99,8 @@ class ReadwriteSplittingSQLRouterTest {
         when(connectionContext.getTransactionContext()).thenReturn(mock(TransactionConnectionContext.class));
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), connectionContext, mock(ShardingSphereMetaData.class));
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(staticRule));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", mock(), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyList(), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = mockRouteContext();
         sqlRouter.decorateRouteContext(routeContext, queryContext, database, staticRule, Collections.emptyList(), new ConfigurationProperties(new Properties()));
         assertThat(routeContext.getActualDataSourceNames(), is(new HashSet<>(Arrays.asList("noneReadwriteSplittingDataSource", "read"))));
@@ -112,7 +114,8 @@ class ReadwriteSplittingSQLRouterTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(staticRule));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", mock(), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyList(), new ConfigurationProperties(new Properties()));
         sqlRouter.decorateRouteContext(routeContext, queryContext, database, staticRule, Collections.emptyList(), new ConfigurationProperties(new Properties()));
         List<String> routedDataSourceNames = new ArrayList<>(routeContext.getActualDataSourceNames());
         assertThat(routedDataSourceNames.get(0), is("noneReadwriteSplittingDataSource"));

@@ -22,12 +22,17 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterDefaultShardingStrategyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingKeyGeneratorContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingKeyGenerateStrategyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingTableReferenceRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AuditDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AutoShardingColumnDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ColumnKeyGenerateStrategyDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CountShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateDefaultShardingStrategyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingKeyGeneratorContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingKeyGenerateStrategyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingTableReferenceRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DataNodesContext;
@@ -35,12 +40,15 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropDefaultShardingStrategyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingAuditorContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingKeyGenerateStrategyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingKeyGeneratorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingTableReferenceRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingTableRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.KeyGenerateAlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.KeyGenerateDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.PropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.SequenceKeyGenerateStrategyDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingAutoTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingColumnDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingStrategyContext;
@@ -50,6 +58,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingAlgorithmPluginsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingAuditorsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingKeyGenerateStrategiesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingKeyGeneratorsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingTableNodesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingTableReferenceRulesContext;
@@ -68,7 +77,9 @@ import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.AuditStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.ColumnKeyGenerateStrategyDefinitionSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.KeyGenerateStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.SequenceKeyGenerateStrategyDefinitionSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingAuditorSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.segment.table.AbstractTableRuleSegment;
@@ -76,20 +87,26 @@ import org.apache.shardingsphere.sharding.distsql.segment.table.AutoTableRuleSeg
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableReferenceRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.statement.AlterDefaultShardingStrategyStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingKeyGeneratorStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingKeyGenerateStrategyStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingTableReferenceRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateDefaultShardingStrategyStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingKeyGeneratorStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingKeyGenerateStrategyStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableReferenceRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.DropDefaultShardingStrategyStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingAlgorithmStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingAuditorStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.DropShardingKeyGenerateStrategyStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingTableReferenceRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowDefaultShardingStrategyStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAlgorithmsStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAuditorsStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGenerateStrategiesStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableNodesStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableReferenceRulesStatement;
@@ -131,6 +148,46 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitCreateShardingTableReferenceRule(final CreateShardingTableReferenceRuleContext ctx) {
         return new CreateShardingTableReferenceRuleStatement(null != ctx.ifNotExists(), getTableReferenceRuleSegments(ctx.tableReferenceRuleDefinition()));
+    }
+    
+    @Override
+    public ASTNode visitCreateShardingKeyGenerateStrategy(final CreateShardingKeyGenerateStrategyContext ctx) {
+        String name = IdentifierValueUtils.getValue(ctx.keyGenerateStrategyName());
+        if (null != ctx.keyGenerateStrategyDefinition().columnKeyGenerateStrategyDefinition()) {
+            ColumnKeyGenerateStrategyDefinitionContext definition = ctx.keyGenerateStrategyDefinition().columnKeyGenerateStrategyDefinition();
+            return new CreateShardingKeyGenerateStrategyStatement(null != ctx.ifNotExists(), name,
+                    new ColumnKeyGenerateStrategyDefinitionSegment(IdentifierValueUtils.getValue(definition.tableName()), IdentifierValueUtils.getValue(definition.columnName()),
+                            getKeyGeneratorName(definition.keyGenerateAlgorithmDefinition()), getAlgorithmSegment(definition.keyGenerateAlgorithmDefinition())));
+        }
+        SequenceKeyGenerateStrategyDefinitionContext definition = ctx.keyGenerateStrategyDefinition().sequenceKeyGenerateStrategyDefinition();
+        return new CreateShardingKeyGenerateStrategyStatement(null != ctx.ifNotExists(), name,
+                new SequenceKeyGenerateStrategyDefinitionSegment(new IdentifierValue(definition.sequenceName().getText()).getValue(),
+                        getKeyGeneratorName(definition.keyGenerateAlgorithmDefinition()), getAlgorithmSegment(definition.keyGenerateAlgorithmDefinition())));
+    }
+    
+    @Override
+    public ASTNode visitCreateShardingKeyGenerator(final CreateShardingKeyGeneratorContext ctx) {
+        return new CreateShardingKeyGeneratorStatement(null != ctx.ifNotExists(), IdentifierValueUtils.getValue(ctx.keyGeneratorName()), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
+    }
+    
+    @Override
+    public ASTNode visitAlterShardingKeyGenerateStrategy(final AlterShardingKeyGenerateStrategyContext ctx) {
+        String name = IdentifierValueUtils.getValue(ctx.keyGenerateStrategyName());
+        if (null != ctx.keyGenerateStrategyDefinition().columnKeyGenerateStrategyDefinition()) {
+            ColumnKeyGenerateStrategyDefinitionContext definition = ctx.keyGenerateStrategyDefinition().columnKeyGenerateStrategyDefinition();
+            return new AlterShardingKeyGenerateStrategyStatement(name,
+                    new ColumnKeyGenerateStrategyDefinitionSegment(IdentifierValueUtils.getValue(definition.tableName()), IdentifierValueUtils.getValue(definition.columnName()),
+                            getKeyGeneratorName(definition.keyGenerateAlgorithmDefinition()), getAlgorithmSegment(definition.keyGenerateAlgorithmDefinition())));
+        }
+        SequenceKeyGenerateStrategyDefinitionContext definition = ctx.keyGenerateStrategyDefinition().sequenceKeyGenerateStrategyDefinition();
+        return new AlterShardingKeyGenerateStrategyStatement(name,
+                new SequenceKeyGenerateStrategyDefinitionSegment(new IdentifierValue(definition.sequenceName().getText()).getValue(),
+                        getKeyGeneratorName(definition.keyGenerateAlgorithmDefinition()), getAlgorithmSegment(definition.keyGenerateAlgorithmDefinition())));
+    }
+    
+    @Override
+    public ASTNode visitAlterShardingKeyGenerator(final AlterShardingKeyGeneratorContext ctx) {
+        return new AlterShardingKeyGeneratorStatement(IdentifierValueUtils.getValue(ctx.keyGeneratorName()), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
     }
     
     private Collection<TableReferenceRuleSegment> getTableReferenceRuleSegments(final List<TableReferenceRuleDefinitionContext> ctx) {
@@ -205,6 +262,12 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     @Override
+    public ASTNode visitDropShardingKeyGenerateStrategy(final DropShardingKeyGenerateStrategyContext ctx) {
+        return new DropShardingKeyGenerateStrategyStatement(null != ctx.ifExists(),
+                ctx.keyGenerateStrategyName().stream().map(IdentifierValueUtils::getValue).collect(Collectors.toList()));
+    }
+    
+    @Override
     public ASTNode visitShowShardingTableRules(final ShowShardingTableRulesContext ctx) {
         return new ShowShardingTableRulesStatement(null == ctx.tableRule() ? null : IdentifierValueUtils.getValue(ctx.tableRule().tableName()),
                 null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
@@ -213,6 +276,12 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitShowShardingAlgorithms(final ShowShardingAlgorithmsContext ctx) {
         return new ShowShardingAlgorithmsStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
+    }
+    
+    @Override
+    public ASTNode visitShowShardingKeyGenerateStrategies(final ShowShardingKeyGenerateStrategiesContext ctx) {
+        return new ShowShardingKeyGenerateStrategiesStatement(null == ctx.keyGenerateStrategyName() ? null : IdentifierValueUtils.getValue(ctx.keyGenerateStrategyName()),
+                null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
@@ -270,7 +339,10 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitKeyGenerateDefinition(final KeyGenerateDefinitionContext ctx) {
-        return null == ctx ? null : new KeyGenerateStrategySegment(IdentifierValueUtils.getValue(ctx.columnName()), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
+        return null == ctx
+                ? null
+                : new KeyGenerateStrategySegment(IdentifierValueUtils.getValue(ctx.columnName()),
+                        getAlgorithmSegment(ctx.keyGenerateAlgorithmDefinition()), getKeyGeneratorName(ctx.keyGenerateAlgorithmDefinition()));
     }
     
     @Override
@@ -295,6 +367,14 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
         return new AlgorithmSegment(IdentifierValueUtils.getValue(ctx.algorithmTypeName()), getProperties(ctx.propertiesDefinition()));
+    }
+    
+    private String getKeyGeneratorName(final KeyGenerateAlgorithmDefinitionContext ctx) {
+        return null == ctx.keyGeneratorName() ? null : IdentifierValueUtils.getValue(ctx.keyGeneratorName());
+    }
+    
+    private AlgorithmSegment getAlgorithmSegment(final KeyGenerateAlgorithmDefinitionContext ctx) {
+        return null == ctx.algorithmDefinition() ? null : (AlgorithmSegment) visit(ctx.algorithmDefinition());
     }
     
     private String getIdentifierValueForDataNodes(final ParseTree context) {
@@ -334,7 +414,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitShowShardingKeyGenerators(final ShowShardingKeyGeneratorsContext ctx) {
-        return new ShowShardingKeyGeneratorsStatement(
+        return new ShowShardingKeyGeneratorsStatement(null == ctx.keyGeneratorName() ? null : IdentifierValueUtils.getValue(ctx.keyGeneratorName()),
                 null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     

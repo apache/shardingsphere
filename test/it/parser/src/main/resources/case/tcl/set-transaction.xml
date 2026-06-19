@@ -17,24 +17,29 @@
   -->
 
 <sql-parser-test-cases>
-    <set-transaction sql-case-id="set_transaction" />
-    <set-transaction sql-case-id="set_global_transaction" />
-    <set-transaction sql-case-id="set_session_transaction" />
-    <set-transaction sql-case-id="set_session_transaction_read_only_mysql" />
-    <set-transaction sql-case-id="set_session_transaction_read_write_mysql" />
-    <set-transaction sql-case-id="set_transaction_read_only" />
-    <set-transaction sql-case-id="set_transaction_read_write" />
+    <set-transaction sql-case-id="set_transaction" isolation-level="REPEATABLE_READ" />
+    <set-transaction sql-case-id="set_transaction_opengauss" />
+    <set-transaction sql-case-id="set_transaction_firebird" />
+    <set-transaction sql-case-id="set_global_transaction" scope="GLOBAL" isolation-level="REPEATABLE_READ" />
+    <set-transaction sql-case-id="set_session_transaction" scope="SESSION" isolation-level="READ_COMMITTED" />
+    <set-transaction sql-case-id="set_session_transaction_read_only_mysql" scope="SESSION" access-mode="READ_ONLY" />
+    <set-transaction sql-case-id="set_session_transaction_read_write_mysql" scope="SESSION" access-mode="READ_WRITE" />
+    <set-transaction sql-case-id="set_transaction_read_only" access-mode="READ_ONLY" />
+    <set-transaction sql-case-id="set_transaction_read_only_oracle" />
+    <set-transaction sql-case-id="set_transaction_read_write" access-mode="READ_WRITE" />
     <set-transaction sql-case-id="set_transaction_read_write_with_name" />
-    <set-transaction sql-case-id="set_transaction_isolation_level_serializable" />
-    <set-transaction sql-case-id="set_transaction_isolation_level_read_committed" />
-    <set-transaction sql-case-id="set_transaction_isolation_level_read_uncommitted" />
-    <set-transaction sql-case-id="set_transaction_isolation_level_snapshot" />
+    <set-transaction sql-case-id="set_transaction_isolation_level_serializable" isolation-level="SERIALIZABLE" />
+    <set-transaction sql-case-id="set_transaction_isolation_level_serializable_oracle" />
+    <set-transaction sql-case-id="set_transaction_isolation_level_read_committed" isolation-level="READ_COMMITTED" />
+    <set-transaction sql-case-id="set_transaction_isolation_level_read_committed_oracle" />
+    <set-transaction sql-case-id="set_transaction_isolation_level_read_uncommitted" isolation-level="READ_UNCOMMITTED" />
+    <set-transaction sql-case-id="set_transaction_isolation_level_snapshot" isolation-level="SNAPSHOT" />
     <set-transaction sql-case-id="set_transaction_use_rollback_segment" />
     <set-transaction sql-case-id="set_transaction_with_name" />
     <set-transaction sql-case-id="set_transaction_snapshot" />
-    <set-transaction sql-case-id="set_session_transaction_doris" />
-    <set-transaction sql-case-id="set_session_transaction_read_only_doris" />
-    <set-transaction sql-case-id="set_global_transaction_read_only_doris" />
+    <set-transaction sql-case-id="set_session_transaction_doris" scope="SESSION" isolation-level="READ_COMMITTED" />
+    <set-transaction sql-case-id="set_session_transaction_read_only_doris" scope="SESSION" access-mode="READ_ONLY" />
+    <set-transaction sql-case-id="set_global_transaction_read_only_doris" scope="GLOBAL" access-mode="READ_ONLY" />
     <set-transaction sql-case-id="set_transaction_sql92" />
     <xa sql-case-id="xa_recover" />
     <xa sql-case-id="xa_start" />

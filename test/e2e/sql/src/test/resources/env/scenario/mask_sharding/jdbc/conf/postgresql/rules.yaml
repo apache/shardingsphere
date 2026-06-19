@@ -20,6 +20,7 @@ databaseName: mask_sharding
 dataSources:
   mask_ds_0:
     url: jdbc:postgresql://postgresql.mask_sharding.host:5432/mask_ds_0?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -30,6 +31,7 @@ dataSources:
     minPoolSize: 2
   mask_ds_1:
     url: jdbc:postgresql://postgresql.mask_sharding.host:5432/mask_ds_1?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -40,6 +42,7 @@ dataSources:
     minPoolSize: 2
   mask_ds_2:
     url: jdbc:postgresql://postgresql.mask_sharding.host:5432/mask_ds_2?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -50,6 +53,7 @@ dataSources:
     minPoolSize: 2
   mask_ds_3:
     url: jdbc:postgresql://postgresql.mask_sharding.host:5432/mask_ds_3?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -60,6 +64,7 @@ dataSources:
     minPoolSize: 2
   mask_ds_4:
     url: jdbc:postgresql://postgresql.mask_sharding.host:5432/mask_ds_4?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -70,6 +75,7 @@ dataSources:
     minPoolSize: 2
   mask_ds_5:
     url: jdbc:postgresql://postgresql.mask_sharding.host:5432/mask_ds_5?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -80,6 +86,7 @@ dataSources:
     minPoolSize: 2
   mask_ds_6:
     url: jdbc:postgresql://postgresql.mask_sharding.host:5432/mask_ds_6?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -90,6 +97,7 @@ dataSources:
     minPoolSize: 2
   mask_ds_7:
     url: jdbc:postgresql://postgresql.mask_sharding.host:5432/mask_ds_7?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -100,6 +108,7 @@ dataSources:
     minPoolSize: 2
   mask_ds_8:
     url: jdbc:postgresql://postgresql.mask_sharding.host:5432/mask_ds_8?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -110,6 +119,7 @@ dataSources:
     minPoolSize: 2
   mask_ds_9:
     url: jdbc:postgresql://postgresql.mask_sharding.host:5432/mask_ds_9?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876

@@ -20,6 +20,8 @@ package org.apache.shardingsphere.database.connector.core.metadata.database.meta
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 /**
  * Dialect alter table option.
  */
@@ -30,4 +32,17 @@ public final class DialectAlterTableOption {
     private final boolean isSupportMergeDropColumns;
     
     private final boolean containsParenthesesOnMergeDropColumns;
+    
+    private final boolean containsParenthesesOnColumnsClause;
+    
+    private final DialectAddColumnOption addColumnOption;
+    
+    /**
+     * Get add column option.
+     *
+     * @return add column option
+     */
+    public Optional<DialectAddColumnOption> getAddColumnOption() {
+        return Optional.ofNullable(addColumnOption);
+    }
 }

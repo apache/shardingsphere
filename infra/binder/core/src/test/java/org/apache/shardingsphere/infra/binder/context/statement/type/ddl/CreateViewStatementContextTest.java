@@ -59,6 +59,7 @@ class CreateViewStatementContextTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(metaData.getDatabase("foo_db")).thenReturn(database);
+        when(metaData.getDatabase(new IdentifierValue("foo_db"))).thenReturn(database);
         CreateViewStatementContext actual = new CreateViewStatementContext(metaData, createViewStatement, "foo_db");
         assertThat(actual.getSqlStatement(), is(createViewStatement));
     }

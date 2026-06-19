@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
-import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import lombok.Getter;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Data node.
@@ -73,16 +71,19 @@ public final class DataNode {
      */
     public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
         ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER), () -> new InvalidDataNodeFormatException(dataNode));
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        DatabaseTypeRegistry registry = new DatabaseTypeRegistry(databaseType);
+        DialectDatabaseMetaData dialectDatabaseMetaData = registry.getDialectDatabaseMetaData();
         boolean containsSchema = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() && isValidDataNode(dataNode, 3);
+        String defaultSchemaName = registry.getDefaultSchemaName(databaseName);
         List<String> segments = Splitter.on(DELIMITER).limit(containsSchema ? 3 : 2).splitToList(dataNode);
         dataSourceName = segments.get(0);
-        schemaName = getSchemaName(databaseName, dialectDatabaseMetaData, containsSchema, segments);
-        tableName = containsSchema ? segments.get(2).toLowerCase() : segments.get(1).toLowerCase();
+        schemaName = getSchemaName(dialectDatabaseMetaData, containsSchema, segments, defaultSchemaName);
+        tableName = containsSchema ? segments.get(2) : segments.get(1);
     }
     
-    private String getSchemaName(final String databaseName, final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean containsSchema, final List<String> segments) {
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().map(optional -> containsSchema ? segments.get(1) : ASTERISK).orElse(databaseName);
+    private String getSchemaName(final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean containsSchema, final List<String> segments,
+                                 final String defaultSchemaName) {
+        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().map(optional -> containsSchema ? segments.get(1) : ASTERISK).orElse(defaultSchemaName);
     }
     
     private boolean isValidDataNode(final String dataNodeStr, final int tier) {
@@ -163,14 +164,11 @@ public final class DataNode {
             return false;
         }
         DataNode dataNode = (DataNode) object;
-        return Objects.equal(Optional.ofNullable(dataSourceName).map(CaseInsensitiveString::of).orElse(null), Optional.ofNullable(dataNode.dataSourceName).map(CaseInsensitiveString::of).orElse(null))
-                && Objects.equal(Optional.ofNullable(tableName).map(CaseInsensitiveString::of).orElse(null), Optional.ofNullable(dataNode.tableName).map(CaseInsensitiveString::of).orElse(null))
-                && Objects.equal(Optional.ofNullable(schemaName).map(CaseInsensitiveString::of).orElse(null), Optional.ofNullable(dataNode.schemaName).map(CaseInsensitiveString::of).orElse(null));
+        return Objects.equal(dataSourceName, dataNode.dataSourceName) && Objects.equal(tableName, dataNode.tableName) && Objects.equal(schemaName, dataNode.schemaName);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(Optional.ofNullable(dataSourceName).map(CaseInsensitiveString::of).orElse(null), Optional.ofNullable(tableName).map(CaseInsensitiveString::of).orElse(null),
-                Optional.ofNullable(schemaName).map(CaseInsensitiveString::of).orElse(null));
+        return Objects.hashCode(dataSourceName, tableName, schemaName);
     }
 }

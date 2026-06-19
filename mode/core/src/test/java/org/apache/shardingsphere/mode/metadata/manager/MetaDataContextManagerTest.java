@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.metadata.manager;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -126,10 +125,10 @@ class MetaDataContextManagerTest {
     
     private MetaDataContexts createMetaDataContexts() {
         Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), "true");
         ConfigurationProperties configurationProps = new ConfigurationProperties(props);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "test_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+                "test_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(database), new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), configurationProps);
         return new MetaDataContexts(metaData, new ShardingSphereStatistics());

@@ -62,9 +62,6 @@ public interface XATransactionManagerProvider extends TypedSPI, AutoCloseable {
      */
     TransactionManager getTransactionManager();
     
-    /**
-     * Close XA transaction manager provider.
-     */
     @Override
     void close();
 }

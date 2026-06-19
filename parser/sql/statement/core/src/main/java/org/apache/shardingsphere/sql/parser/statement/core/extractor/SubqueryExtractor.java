@@ -187,8 +187,8 @@ public final class SubqueryExtractor {
         extractSubquerySegmentsFromExpression(result, expressionSegment, SubqueryType.PREDICATE, needRecursive);
     }
     
-    private static void extractSubquerySegmentsFromExpression(final List<SubquerySegment> result, final ExpressionSegment expressionSegment, final SubqueryType subqueryType,
-                                                              final boolean needRecursive) {
+    private static void extractSubquerySegmentsFromExpression(final List<SubquerySegment> result, final ExpressionSegment expressionSegment,
+                                                              final SubqueryType subqueryType, final boolean needRecursive) {
         if (expressionSegment instanceof SubqueryExpressionSegment) {
             SubquerySegment subquery = ((SubqueryExpressionSegment) expressionSegment).getSubquery();
             subquery.setSelect(subquery.getSelect().withSubqueryType(subqueryType));

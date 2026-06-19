@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM eclipse-temurin:11-jdk
+FROM eclipse-temurin:21-jdk
 
 ARG APP_NAME
 ENV IS_DOCKER true

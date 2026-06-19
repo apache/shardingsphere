@@ -168,8 +168,12 @@ execute
     | createJob
     | createStreamingJob
     | cancelTask
+    | cancelMaterializedViewTask
     | backup
     | cancelBackup
+    | cancelLoadStatement
+    | cleanAllProfile
+    | planReplayerPlay
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

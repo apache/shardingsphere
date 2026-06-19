@@ -18,18 +18,52 @@
 package org.apache.shardingsphere.sharding.distsql.segment.strategy;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
+
+import java.util.Optional;
 
 /**
  * Key generate strategy segment.
  */
-@RequiredArgsConstructor
 @Getter
 public final class KeyGenerateStrategySegment implements DistSQLSegment {
     
     private final String keyGenerateColumn;
     
     private final AlgorithmSegment keyGenerateAlgorithmSegment;
+    
+    private final String keyGeneratorName;
+    
+    public KeyGenerateStrategySegment(final String keyGenerateColumn, final AlgorithmSegment keyGenerateAlgorithmSegment) {
+        this(keyGenerateColumn, keyGenerateAlgorithmSegment, null);
+    }
+    
+    public KeyGenerateStrategySegment(final String keyGenerateColumn, final String keyGeneratorName) {
+        this(keyGenerateColumn, null, keyGeneratorName);
+    }
+    
+    public KeyGenerateStrategySegment(final String keyGenerateColumn, final AlgorithmSegment keyGenerateAlgorithmSegment, final String keyGeneratorName) {
+        this.keyGenerateColumn = keyGenerateColumn;
+        this.keyGenerateAlgorithmSegment = keyGenerateAlgorithmSegment;
+        this.keyGeneratorName = keyGeneratorName;
+    }
+    
+    /**
+     * Get algorithm segment.
+     *
+     * @return algorithm segment
+     */
+    public Optional<AlgorithmSegment> getAlgorithmSegment() {
+        return Optional.ofNullable(keyGenerateAlgorithmSegment);
+    }
+    
+    /**
+     * Get key generator name.
+     *
+     * @return key generator name
+     */
+    public Optional<String> getKeyGeneratorName() {
+        return Optional.ofNullable(keyGeneratorName);
+    }
 }

@@ -98,7 +98,6 @@ core_infra:
   - 'kernel/sql-parser/**/src/main/**'
   - 'kernel/sql-translator/**/src/main/**'
   - 'kernel/transaction/**/src/main/**'
-  - 'parser/distsql/**/src/main/**'
   - 'parser/sql/engine/core/src/main/**'
   - 'parser/sql/spi/src/main/**'
   - 'parser/sql/statement/core/src/main/**'
@@ -107,8 +106,8 @@ core_infra:
 test_framework:
   - '.github/workflows/e2e-sql.yml'
   - '.github/workflows/resources/filter/e2e-sql-filters.yml'
-  - '.github/workflows/resources/scripts/generate-e2e-sql-matrix.sh'
-  - '.github/workflows/resources/scripts/generate-remaining-matrix.sh'
+  - '.github/workflows/resources/scripts/e2e-sql/generate-e2e-sql-matrix.sh'
+  - '.github/workflows/resources/scripts/e2e-sql/generate-remaining-matrix.sh'
   - 'test/pom.xml'
   - 'test/e2e/fixture/**'
   - 'test/e2e/env/**'
@@ -116,4 +115,14 @@ test_framework:
 
 # ---- POM changes (full fallback triggers) ----
 pom_changes:
-  - '**/pom.xml'
+  - 'database/**/pom.xml'
+  - 'features/**/pom.xml'
+  - 'infra/**/pom.xml'
+  - 'jdbc/**/pom.xml'
+  - 'jdbc-dialect/**/pom.xml'
+  - 'kernel/**/pom.xml'
+  - 'mode/**/pom.xml'
+  - 'parser/**/pom.xml'
+  - 'proxy/**/pom.xml'
+  - 'test/**/pom.xml'
+  - 'pom.xml'

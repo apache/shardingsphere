@@ -24,12 +24,14 @@ on:
       - '.github/workflows/e2e-agent.yml'
       - '**/pom.xml'
       - '**/src/main/**'
+      - '!mcp/**'
       - '!test/**'
       - 'test/pom.xml'
       - 'test/e2e/agent/**'
       - '!distribution/**'
       - 'distribution/proxy/**'
       - 'distribution/jdbc/**'
+      - '!distribution/**/src/main/release-docs/**'
       - '!examples/**'
       - '!*.md'
   workflow_dispatch:
@@ -134,7 +136,7 @@ jobs:
           enable-docker-setup: 'true'
       - name: Download Proxy E2E Image
         if: matrix.adapter == 'proxy'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: proxy-e2e-image
           path: /tmp/
@@ -143,7 +145,7 @@ jobs:
         run: docker load -i /tmp/apache-shardingsphere-proxy-agent-test.tar
       - name: Download JDBC E2E Image
         if: matrix.adapter == 'jdbc'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: jdbc-e2e-image
           path: /tmp/

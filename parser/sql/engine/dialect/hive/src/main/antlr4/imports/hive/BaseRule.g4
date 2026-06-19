@@ -334,6 +334,7 @@ identifierKeywordsUnambiguous
     | OFFSET
     | OJ
     | OLD
+    | OLDER
     | ONE
     | ONLY
     | OPEN

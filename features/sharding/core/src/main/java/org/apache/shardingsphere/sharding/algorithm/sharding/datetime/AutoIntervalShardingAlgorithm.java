@@ -31,12 +31,14 @@ import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatEx
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParsePosition;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -99,7 +101,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     }
     
     private int doSharding(final long shardingValue) {
-        String position = new DecimalFormat("0.00").format((double) shardingValue / shardingSeconds);
+        String position = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.ROOT)).format((double) shardingValue / shardingSeconds);
         return Math.min(Math.max(0, (int) Math.ceil(Double.parseDouble(position))), autoTablesAmount - 1);
     }
     

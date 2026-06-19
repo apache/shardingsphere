@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -66,8 +67,9 @@ public final class DatabaseAdminQueryProxyBackendHandler implements ProxyBackend
         ShardingSphereDatabase database = null == connectionSession.getUsedDatabaseName() ? null : contextManager.getDatabase(connectionSession.getUsedDatabaseName());
         DatabaseType databaseType = null == database ? connectionSession.getProtocolType() : database.getProtocolType();
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(databaseType);
+        ShardingSphereResultSetMetaData resultSetMetaData = new ShardingSphereResultSetMetaData(queryResultMetaData.getResultSetMetaData(), database, null);
         for (int columnIndex = 1; columnIndex <= queryResultMetaData.getColumnCount(); columnIndex++) {
-            result.add(queryHeaderBuilderEngine.build(queryResultMetaData, database, columnIndex));
+            result.add(queryHeaderBuilderEngine.build(resultSetMetaData, database, columnIndex));
         }
         return result;
     }

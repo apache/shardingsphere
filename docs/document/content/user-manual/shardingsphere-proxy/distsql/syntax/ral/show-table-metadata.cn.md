@@ -16,10 +16,16 @@ ShowTableMetadata ::=
   'SHOW' 'TABLE' 'METADATA' tableName (',' tableName)* ('FROM' databaseName)?
 
 tableName ::=
-  identifier
+  distSQLIdentifier
 
 databaseName ::=
-  identifier
+  distSQLIdentifier
+
+distSQLIdentifier ::=
+  identifier | quotedIdentifier
+
+quotedIdentifier ::=
+  '`' identifier '`' | '"' identifier '"'
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -40,12 +46,14 @@ databaseName ::=
 
 - 未指定 `databaseName` 时，默认是当前使用的 `DATABASE。` 如果也未使用 `DATABASE` 则会提示 `No database selected`。
 
+- `tableName` 和 `databaseName` 可以写成不带引号的标识符、反引号包裹的标识符或双引号包裹的标识符。
+
 ### 示例
 
 - 查询指定逻辑库中多个表的元数据
 
 ```sql
-SHOW TABLE METADATA t_order, t_order_1 FROM sharding_db;
+SHOW TABLE METADATA t_order, `t_order_1` FROM "sharding_db";
 ```
 
 ```sql
@@ -68,7 +76,7 @@ mysql> SHOW TABLE METADATA t_order, t_order_1 FROM sharding_db;
 - 查询指定逻辑库中单个表的元数据
 
 ```sql
-SHOW TABLE METADATA t_order FROM sharding_db;
+SHOW TABLE METADATA "t_order" FROM `sharding_db`;
 ```
 
 ```sql
@@ -87,7 +95,7 @@ mysql> SHOW TABLE METADATA t_order FROM sharding_db;
 - 查询当前逻辑库中多个表的元数据
 
 ```sql
-SHOW TABLE METADATA t_order, t_order_1;
+SHOW TABLE METADATA `t_order`, "t_order_1";
 ```
 
 ```sql
@@ -110,7 +118,7 @@ mysql> SHOW TABLE METADATA t_order, t_order_1;
 - 查询当前逻辑库中单个表的元数据
 
 ```sql
-SHOW TABLE METADATA t_order;
+SHOW TABLE METADATA "t_order";
 ```
 
 ```sql

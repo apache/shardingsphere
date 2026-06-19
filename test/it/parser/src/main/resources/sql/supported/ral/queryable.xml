@@ -24,6 +24,9 @@
     <sql-case id="show-status-from-readwrite-splitting-rules" value="SHOW STATUS FROM READWRITE_SPLITTING RULES" db-types="ShardingSphere" />
     
     <sql-case id="show-table-metadata" value="SHOW TABLE METADATA t_order FROM database_name" db-types="ShardingSphere" />
+    <sql-case id="show-table-metadata-with-back-quoted-database-name" value="SHOW TABLE METADATA t_order FROM `database_name`" db-types="ShardingSphere" />
+    <sql-case id="show-table-metadata-with-back-quoted-table-name" value="SHOW TABLE METADATA `T_ORDER`" db-types="ShardingSphere" />
+    <sql-case id="show-table-metadata-with-double-quoted-table-name" value="SHOW TABLE METADATA &quot;T_ORDER&quot;" db-types="ShardingSphere" />
     
     <sql-case id="show-authority-rule" value="SHOW AUTHORITY RULE" db-types="ShardingSphere" />
     <sql-case id="show-transaction-rule" value="SHOW TRANSACTION RULE" db-types="ShardingSphere" />

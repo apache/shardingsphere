@@ -41,6 +41,15 @@ public final class ExpectedModelClause extends AbstractExpectedSQLSegment {
     @XmlElement(name = "order-by")
     private final List<ExpectedOrderByClause> orderBySegments = new LinkedList<>();
     
+    @XmlElement(name = "partition-column")
+    private final List<ExpectedColumn> partitionColumns = new LinkedList<>();
+    
+    @XmlElement(name = "dimension-column")
+    private final List<ExpectedColumn> dimensionColumns = new LinkedList<>();
+    
+    @XmlElement(name = "measure-column")
+    private final List<ExpectedColumn> measureColumns = new LinkedList<>();
+    
     @XmlElement(name = "cell-assignment-column")
     private final List<ExpectedColumn> cellAssignmentColumns = new LinkedList<>();
     

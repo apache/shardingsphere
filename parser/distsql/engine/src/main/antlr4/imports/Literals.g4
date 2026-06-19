@@ -24,9 +24,12 @@ IDENTIFIER_
     | BQ_ ~'`'+ BQ_
     ;
 
-STRING_
-    : (DQ_ ('\\'. | '""' | ~('"' | '\\'))* DQ_)
-    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
+DOUBLE_QUOTED_TEXT
+    : DQ_ ('\\'. | '""' | ~('"' | '\\'))* DQ_
+    ;
+
+SINGLE_QUOTED_TEXT
+    : SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_
     ;
 
 INT_

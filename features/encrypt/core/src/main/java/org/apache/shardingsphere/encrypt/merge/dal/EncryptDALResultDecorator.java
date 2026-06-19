@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.merge.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ViewInResultSetSQLStatementAttribute;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowCreateTableMergedResult;
@@ -33,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ColumnInResultSetSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableInResultSetSQLStatementAttribute;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ViewInResultSetSQLStatementAttribute;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -55,7 +54,7 @@ public final class EncryptDALResultDecorator implements ResultDecorator {
             return mergedResult;
         }
         ShardingSphereDatabase shardingSphereDatabase = simpleTables.iterator().next().getTableName().getTableBoundInfo().map(TableSegmentBoundInfo::getOriginalDatabase)
-                .map(IdentifierValue::getValue).map(metaData::getDatabase).orElse(database);
+                .map(metaData::getDatabase).orElse(database);
         Optional<EncryptRule> encryptRule = shardingSphereDatabase.getRuleMetaData().findSingleRule(EncryptRule.class);
         if (!encryptRule.isPresent()) {
             return mergedResult;

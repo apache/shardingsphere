@@ -20,6 +20,7 @@ databaseName: encrypt
 dataSources:
   encrypt:
     url: jdbc:mysql://mysql.encrypt.host:3306/encrypt?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000

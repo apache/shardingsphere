@@ -21,6 +21,7 @@ import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.enums.EncryptColumnItemType;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.MismatchedEncryptAlgorithmTypeException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
@@ -40,8 +41,8 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -86,15 +87,15 @@ class EncryptRuleTest {
     }
     
     @Test
-    void assertFindQueryEncryptor() {
+    void assertFindEncryptor() {
         EncryptRule encryptRule = new EncryptRule("foo_db", createEncryptRuleConfiguration());
-        assertThat(encryptRule.findQueryEncryptor("t_encrypt", "credit_card"),
+        assertThat(encryptRule.findEncryptor("t_encrypt", "credit_card", EncryptColumnItemType.CIPHER),
                 is(Optional.of(encryptRule.getEncryptTable("t_encrypt").getEncryptColumn("credit_card").getCipher().getEncryptor())));
     }
     
     @Test
-    void assertNotFindQueryEncryptor() {
-        assertFalse(new EncryptRule("foo_db", createEncryptRuleConfiguration()).findQueryEncryptor("t_encrypt", "invalid_col").isPresent());
+    void assertNotFindEncryptor() {
+        assertFalse(new EncryptRule("foo_db", createEncryptRuleConfiguration()).findEncryptor("t_encrypt", "invalid_col", EncryptColumnItemType.CIPHER).isPresent());
     }
     
     @SuppressWarnings("unused")

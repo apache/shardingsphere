@@ -32,7 +32,7 @@
             <column-item name="user_id" start-index="83" stop-index="89" />
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_group_by_with_sum_where">
         <from>
             <join-table join-type="COMMA">
@@ -73,7 +73,7 @@
             </column-item>
         </group-by>
     </select>
-    
+
     <select sql-case-id="select_group_by_with_count">
         <from>
             <simple-table name="t_order" start-index="53" stop-index="59" />
@@ -137,7 +137,7 @@
             <column-item name="user_id" start-index="83" stop-index="89" />
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_group_by_with_column_avg">
         <projections start-index="7" stop-index="57">
             <column-projection name="prod_subcategory" start-index="7" stop-index="24">
@@ -667,14 +667,14 @@
                 <in-expression start-index="90" stop-index="219">
                     <not>false</not>
                     <left>
-                        <list-expression start-index="90" stop-index="116" literal-start-index="90" literal-stop-index="116">
+                        <row-expression text="(department_id, manager_id)" start-index="90" stop-index="116" literal-start-index="90" literal-stop-index="116">
                             <items>
                                 <column name="department_id" start-index="91" stop-index="103" literal-start-index="91" literal-stop-index="103" />
                             </items>
                             <items>
                                 <column name="manager_id" start-index="106" stop-index="115" literal-start-index="106" literal-stop-index="115" />
                             </items>
-                        </list-expression>
+                        </row-expression>
                     </left>
                     <right>
                         <subquery start-index="121" stop-index="219">
@@ -826,7 +826,7 @@
             </column-item>
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_with_datepart_group_by_with_order_by">
         <projections start-index="7" stop-index="81">
             <expression-projection text="DATEPART(yyyy,OrderDate)" alias="Year" start-index="7" stop-index="41">
@@ -859,7 +859,7 @@
             <expression-item expression="DATEPART(yyyy,OrderDate)" order-direction="ASC" start-index="154" stop-index="177" />
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_with_datepart_group_by_with_having_order_by">
         <projections start-index="7" stop-index="81">
             <expression-projection text="DATEPART(yyyy,OrderDate)" alias="Year" start-index="7" stop-index="41">
@@ -926,7 +926,7 @@
             <column-item name="tumblingwindow" order-direction="ASC" start-index="60" stop-index="73"/>
         </group-by>
     </select>
-    
+
     <select sql-case-id="select_group_by_top_column_value">
         <projections start-index="7" stop-index="34">
             <top-projection start-index="7" stop-index="12">
@@ -961,7 +961,7 @@
             <expression-item expression="MAX(max_elapsed_time_microsec)" order-direction="DESC" start-index="145" stop-index="174" />
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_group_by_count_with_tumblingwindow_function">
         <projections start-index="7" stop-index="14">
             <aggregation-projection expression="count(*)" type="COUNT" start-index="7" stop-index="14" />

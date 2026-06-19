@@ -30,5 +30,7 @@ import java.util.Collection;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptConstants {
     
+    public static final Collection<String> LIKE_OPERATORS = new CaseInsensitiveSet<>(Arrays.asList("LIKE", "NOT LIKE"));
+    
     public static final Collection<String> SUPPORTED_BINARY_OPERATORS = new CaseInsensitiveSet<>(Arrays.asList("=", "<>", "!=", ">", "<", ">=", "<=", "IS", "LIKE", "NOT LIKE"));
 }

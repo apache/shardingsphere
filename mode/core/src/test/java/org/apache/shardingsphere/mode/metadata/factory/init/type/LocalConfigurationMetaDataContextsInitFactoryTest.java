@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.metadata.factory.init.type;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
@@ -28,15 +27,12 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -55,18 +51,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
@@ -91,11 +83,10 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
                 .thenReturn(Collections.singletonList(database));
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.emptyList());
         when(ShardingSphereStatisticsFactory.create(any(), any())).thenReturn(statistics);
-        Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.TRUE.toString()));
         try (
                 MockedConstruction<MetaDataPersistFacade> persistFacadeMocked = mockConstruction(MetaDataPersistFacade.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),
                         (mock, context) -> when(mock.getStatisticsService().load(any())).thenReturn(new ShardingSphereStatistics()))) {
-            LocalConfigurationMetaDataContextsInitFactory factory = new LocalConfigurationMetaDataContextsInitFactory(repository, instanceContext, props);
+            LocalConfigurationMetaDataContextsInitFactory factory = new LocalConfigurationMetaDataContextsInitFactory(repository, instanceContext);
             assertNotNull(factory.create(createContextManagerBuilderParameter(databaseConfigs, new Properties())));
             MetaDataPersistFacade persistFacade = persistFacadeMocked.constructed().get(0);
             verify(persistFacade).persistGlobalRuleConfiguration(Collections.emptyList(), new Properties());
@@ -107,36 +98,10 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
         }
     }
     
-    @Test
-    void assertCreateWithPersistSchemasDisabled() throws SQLException {
-        Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap("foo_db", mock(DatabaseConfiguration.class));
-        ShardingSphereSchema schema = new ShardingSphereSchema("non_empty_schema", mock(DatabaseType.class),
-                Collections.singleton(new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
-        ShardingSphereDatabase database = createDatabase("foo_db", Collections.singleton(schema), Collections.emptyMap(), Collections.emptyList());
-        ComputeNodeInstanceContext instanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
-        when(ShardingSphereDatabasesFactory.create(eq(databaseConfigs), any(ConfigurationProperties.class), eq(instanceContext), any(DatabaseType.class)))
-                .thenReturn(Collections.singletonList(database));
-        when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.emptyList());
-        when(ShardingSphereStatisticsFactory.create(any(), any())).thenReturn(new ShardingSphereStatistics());
-        Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.FALSE.toString()));
-        try (
-                MockedConstruction<MetaDataPersistFacade> persistFacadeMocked = mockConstruction(MetaDataPersistFacade.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),
-                        (mock, context) -> when(mock.getStatisticsService().load(any())).thenReturn(new ShardingSphereStatistics()))) {
-            LocalConfigurationMetaDataContextsInitFactory factory = new LocalConfigurationMetaDataContextsInitFactory(repository, instanceContext, props);
-            factory.create(createContextManagerBuilderParameter(databaseConfigs, new Properties()));
-            MetaDataPersistFacade persistFacade = persistFacadeMocked.constructed().get(0);
-            verify(persistFacade).persistGlobalRuleConfiguration(Collections.emptyList(), new Properties());
-            verify(persistFacade).persistConfigurations(eq("foo_db"), eq(databaseConfigs.get("foo_db")), anyMap(), anyCollection());
-            verify(persistFacade.getDatabaseMetaDataFacade().getSchema(), never()).add(anyString(), anyString());
-            verify(persistFacade.getDatabaseMetaDataFacade().getTable(), never()).persist(anyString(), anyString(), anyCollection());
-            verify(persistFacade.getStatisticsService(), never()).persist(any(), anyString(), any());
-            assertFalse(schema.isEmpty());
-        }
-    }
-    
     private ShardingSphereDatabase createDatabase(final String databaseName, final Collection<ShardingSphereSchema> schemas,
                                                   final Map<String, StorageUnit> storageUnits, final Collection<ShardingSphereRule> rules) {
-        return new ShardingSphereDatabase(databaseName, mock(DatabaseType.class), new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(rules), schemas);
+        return new ShardingSphereDatabase(databaseName, mock(DatabaseType.class), new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(rules), schemas,
+                new ConfigurationProperties(new Properties()));
     }
     
     private ShardingSphereStatistics createStatistics(final String databaseName, final String schemaName) {

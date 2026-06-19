@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 
 /**
@@ -37,8 +36,6 @@ public final class ShardingAutoTableRuleConfiguration {
     private final String actualDataSources;
     
     private ShardingStrategyConfiguration shardingStrategy;
-    
-    private KeyGenerateStrategyConfiguration keyGenerateStrategy;
     
     private ShardingAuditStrategyConfiguration auditStrategy;
 }

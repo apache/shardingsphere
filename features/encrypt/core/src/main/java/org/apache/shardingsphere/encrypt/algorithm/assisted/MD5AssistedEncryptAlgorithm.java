@@ -50,7 +50,7 @@ public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     }
     
     @Override
-    public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
+    public Object encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
         return digestAlgorithm.digest(plainValue);
     }
     

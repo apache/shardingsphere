@@ -619,8 +619,16 @@ timeStampDiffFunction
     ;
 
 groupConcatFunction
-    : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
+    // MARIADB CHANGED BEGIN
+    : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? groupConcatLimitClause? RP_
+    // MARIADB CHANGED END
     ;
+
+// MARIADB ADDED BEGIN
+groupConcatLimitClause
+    : LIMIT numberLiterals ((OFFSET numberLiterals) | (COMMA_ numberLiterals))?
+    ;
+// MARIADB ADDED END
 
 windowFunction
     : funcName = (ROW_NUMBER | RANK | DENSE_RANK | CUME_DIST | PERCENT_RANK) LP_ RP_ windowingClause
@@ -628,6 +636,9 @@ windowFunction
     | funcName = (LEAD | LAG) LP_ expr leadLagInfo? RP_ nullTreatment? windowingClause
     | funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? windowingClause
     | funcName = NTH_VALUE LP_ expr COMMA_ simpleExpr RP_ (FROM (FIRST | LAST))? nullTreatment? windowingClause
+    // MARIADB ADDED BEGIN
+    | funcName = MEDIAN LP_ expr RP_ windowingClause
+    // MARIADB ADDED END
     ;
 
 windowingClause

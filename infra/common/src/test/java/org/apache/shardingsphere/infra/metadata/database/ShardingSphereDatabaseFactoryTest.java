@@ -120,7 +120,7 @@ class ShardingSphereDatabaseFactoryTest {
                     argThat(material -> material.getSchemaMetaDataRevisionCandidateSchemas().contains(candidateSchema))))
                     .thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", protocolType)));
             mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build("foo_db", protocolType, props)).thenReturn(Collections.emptyMap());
-            ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create(
+            ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.createWithSchemaMetaDataRevisionCandidates(
                     "foo_db", protocolType, databaseConfig, props, computeNodeInstanceContext, Collections.singleton(candidateSchema));
             assertTrue(actual.containsSchema("foo_schema"));
         }
@@ -141,6 +141,7 @@ class ShardingSphereDatabaseFactoryTest {
         return Stream.of(
                 Arguments.of("fixture database adds default schema", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), "system_db", "system_db", 1),
                 Arguments.of("mysql system database keeps existing default schema", TypedSPILoader.getService(DatabaseType.class, "MySQL"), "mysql", "mysql", 1),
-                Arguments.of("mysql database adds default schema", TypedSPILoader.getService(DatabaseType.class, "MySQL"), "foo_db", "foo_db", 1));
+                Arguments.of("mysql database adds default schema", TypedSPILoader.getService(DatabaseType.class, "MySQL"), "foo_db", "foo_db", 1),
+                Arguments.of("oracle database formats default schema to upper case", TypedSPILoader.getService(DatabaseType.class, "Oracle"), "foo_db", "FOO_DB", 1));
     }
 }

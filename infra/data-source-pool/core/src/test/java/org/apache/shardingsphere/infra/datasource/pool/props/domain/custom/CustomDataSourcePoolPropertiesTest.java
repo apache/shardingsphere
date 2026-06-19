@@ -17,43 +17,64 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.props.domain.custom;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class CustomDataSourcePoolPropertiesTest {
     
-    @Test
-    void assertGetProperties() {
-        Map<String, Object> actual = new CustomDataSourcePoolProperties(
-                createProperties(), Arrays.asList("username", "password", "closed"), Collections.singletonList("closed"), Collections.singletonMap("username", "user")).getProperties();
-        assertThat(actual.size(), is(3));
-        assertThat(actual.get("foo"), is("bar"));
-        assertThat(((Properties) actual.get("fooProperties")).size(), is(2));
-        assertThat(((Properties) actual.get("fooProperties")).getProperty("foo1"), is("fooValue1"));
-        assertThat(((Properties) actual.get("fooProperties")).getProperty("foo2"), is("fooValue2"));
-        assertThat(((Properties) actual.get("barProperties")).size(), is(2));
-        assertThat(((Properties) actual.get("barProperties")).getProperty("bar1"), is("barValue1"));
-        assertThat(((Properties) actual.get("barProperties")).getProperty("bar2"), is("barValue2"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getPropertiesArguments")
+    void assertGetProperties(final String name, final Map<String, Object> props, final Collection<String> standardPropertyKeys,
+                             final Collection<String> transientFieldNames, final Map<String, String> propertySynonyms, final Map<String, Object> expected) {
+        assertThat(new CustomDataSourcePoolProperties(props, standardPropertyKeys, transientFieldNames, propertySynonyms).getProperties(), is(expected));
     }
     
-    private Map<String, Object> createProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+    private static Stream<Arguments> getPropertiesArguments() {
+        return Stream.of(
+                Arguments.of("filtered simple properties", createSimpleProperties(), Arrays.asList("username", "password", "closed"),
+                        Collections.singletonList("closed"), Collections.singletonMap("username", "user"), Collections.singletonMap("foo", "bar")),
+                Arguments.of("new complex property group", createSingleComplexProperty(), Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyMap(), Collections.singletonMap("fooProperties", PropertiesBuilder.build(new Property("foo1", "foo_value_1")))),
+                Arguments.of("existing complex property group", createRepeatedComplexProperties(), Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyMap(), Collections.singletonMap("fooProperties", PropertiesBuilder.build(new Property("foo1", "foo_value_1"), new Property("foo2", "foo_value_2")))),
+                Arguments.of("nested complex key", createNestedComplexProperty(), Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyMap(), Collections.singletonMap("fooProperties.foo1.bar", "foo_value_1")));
+    }
+    
+    private static Map<String, Object> createSimpleProperties() {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("user", "root");
         result.put("password", "root");
         result.put("closed", false);
         result.put("foo", "bar");
-        result.put("fooProperties.foo1", "fooValue1");
-        result.put("fooProperties.foo2", "fooValue2");
-        result.put("barProperties.bar1", "barValue1");
-        result.put("barProperties.bar2", "barValue2");
         return result;
+    }
+    
+    private static Map<String, Object> createSingleComplexProperty() {
+        return Collections.singletonMap("fooProperties.foo1", "foo_value_1");
+    }
+    
+    private static Map<String, Object> createRepeatedComplexProperties() {
+        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
+        result.put("fooProperties.foo1", "foo_value_1");
+        result.put("fooProperties.foo2", "foo_value_2");
+        return result;
+    }
+    
+    private static Map<String, Object> createNestedComplexProperty() {
+        return Collections.singletonMap("fooProperties.foo1.bar", "foo_value_1");
     }
 }

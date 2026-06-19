@@ -19,6 +19,7 @@ databaseName: encrypt_db
 
 dataSources:
   ds_0:
+    driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/encrypt_ds
     username: root
     password:

@@ -488,6 +488,45 @@
         </values>
     </insert>
 
+    <insert sql-case-id="replace_with_batch_and_row_constructor" parameters="1000, 10, 'init', 1100, 11, 'init'">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <columns start-index="21" stop-index="47">
+            <column name="order_id" start-index="22" stop-index="29" />
+            <column name="user_id" start-index="32" stop-index="38" />
+            <column name="status" start-index="41" stop-index="46" />
+        </columns>
+        <values>
+            <value start-index="55" stop-index="66" literal-stop-index="75">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="59" stop-index="59" />
+                    <literal-expression value="1000" start-index="59" stop-index="62" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="62" stop-index="62" />
+                    <literal-expression value="10" start-index="65" stop-index="66" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="2" start-index="65" stop-index="65" />
+                    <literal-expression value="init" start-index="69" stop-index="74" />
+                </assignment-value>
+            </value>
+            <value start-index="69" stop-index="80" literal-start-index="78" literal-stop-index="98">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="3" start-index="73" stop-index="73" />
+                    <literal-expression value="1100" start-index="82" stop-index="85" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="4" start-index="76" stop-index="76" />
+                    <literal-expression value="11" start-index="88" stop-index="89" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="5" start-index="79" stop-index="79" />
+                    <literal-expression value="init" start-index="92" stop-index="97" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
     <insert sql-case-id="replace_with_batch_and_irregular_parameters" parameters="1, 2, 2, 'init'">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="21" stop-index="47">

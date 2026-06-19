@@ -5,6 +5,7 @@
     {"excludeClasses": "android.app.**"},
     {"excludeClasses": "com.**"},
     {"excludeClasses": "ch.qos.logback.**"},
+    {"excludeClasses": "dm.jdbc.driver.DmdbTimestamp"},
     {"excludeClasses": "groovy.**"},
     {"excludeClasses": "io.**"},
     {"excludeClasses": "javax.**"},
@@ -18,7 +19,6 @@
     {"includeClasses": "com.oracle.svm.core.**"},
     {"includeClasses": "com.sun.management.**"},
     {"includeClasses": "org.apache.shardingsphere.**"},
-    {"includeClasses": "sun.nio.ch.SelectorImpl"},
     {"includeClasses": "sun.security.provider.SecureRandom"},
 
     {"excludeClasses": "org.apache.shardingsphere.test.natived.**"}

@@ -296,6 +296,7 @@ identifierKeywordsUnambiguous
     | KEYS
     | KEY_BLOCK_SIZE
     | LABEL
+    | LOAD_JOB_ID
     | LAST
     | LEAVES
     | LESS
@@ -403,6 +404,9 @@ identifierKeywordsUnambiguous
     | PATH
     | PAUSE
     | PHASE
+    // DORIS ADDED BEGIN
+    | PLAN
+    // DORIS ADDED END
     | PLUGINS
     | PLUGIN_DIR
     | PLUGIN
@@ -441,6 +445,9 @@ identifierKeywordsUnambiguous
     | REORGANIZE
     | REPEATABLE
     | REPLACE_IF_NOT_NULL
+    // DORIS ADDED BEGIN
+    | REPLAYER
+    // DORIS ADDED END
     | REPLICATE_DO_DB
     | REPLICATE_DO_TABLE
     | REPLICATE_IGNORE_DB
@@ -452,6 +459,10 @@ identifierKeywordsUnambiguous
     | REQUIRE_ROW_FORMAT
 //    | REQUIRE_TABLE_PRIMARY_KEY_CHECK
     | USER_RESOURCES
+    // DORIS ADDED BEGIN
+    | RESOURCES
+    | RESOURCETYPE
+    // DORIS ADDED END
     | RESPECT
     | RESTORE
     | RESUME
@@ -502,6 +513,7 @@ identifierKeywordsUnambiguous
     | STATS_AUTO_RECALC
     | STATS_PERSISTENT
     | STATS_SAMPLE_PAGES
+    | STATE
     | STATUS
     | STORAGE
     | STREAM

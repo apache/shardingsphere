@@ -755,6 +755,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitQueryExpression(final QueryExpressionContext ctx) {
+        WithSegment with = null == ctx.withClause() ? null : (WithSegment) visit(ctx.withClause());
         SelectStatement result;
         if (null != ctx.queryExpressionBody()) {
             result = (SelectStatement) visit(ctx.queryExpressionBody());
@@ -762,14 +763,14 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             result = (SelectStatement) visit(ctx.queryExpressionParens());
         }
         SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result);
+        if (null != with) {
+            selectStatementBuilder.with(with);
+        }
         if (null != ctx.orderByClause()) {
             selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.limitClause()) {
             selectStatementBuilder.limit((LimitSegment) visit(ctx.limitClause()));
-        }
-        if (null != ctx.withClause()) {
-            selectStatementBuilder.with((WithSegment) visit(ctx.withClause()));
         }
         return selectStatementBuilder.build();
     }
@@ -1604,7 +1605,10 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         } else {
             insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
+        return InsertStatement.builder().databaseType(databaseType)
+                .insertColumns(insertColumns)
+                .values(null == ctx.rowConstructorList() ? createInsertValuesSegments(ctx.assignmentValues()) : createRowConstructorList(ctx.rowConstructorList()))
+                .build();
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
@@ -1684,7 +1688,10 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         } else {
             insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
+        return InsertStatement.builder().databaseType(databaseType)
+                .insertColumns(insertColumns)
+                .values(null == ctx.rowConstructorList() ? createInsertValuesSegments(ctx.assignmentValues()) : createRowConstructorList(ctx.rowConstructorList()))
+                .build();
     }
     
     private List<ColumnSegment> createInsertColumns(final FieldsContext fields) {

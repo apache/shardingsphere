@@ -46,7 +46,7 @@ class PostgreSQLCharsetVariableProviderTest {
     @Test
     void assertParseDefaultCharset() {
         Charset actual = provider.parseCharset("default");
-        assertThat(actual, is(Charset.defaultCharset()));
+        assertThat(actual, is(StandardCharsets.UTF_8));
     }
     
     @Test
@@ -57,6 +57,6 @@ class PostgreSQLCharsetVariableProviderTest {
     
     @Test
     void assertParseInvalidCharset() {
-        assertThrows(InvalidParameterValueException.class, () -> provider.parseCharset("invalid_charset"));
+        assertThrows(InvalidParameterValueException.class, () -> provider.parseCharset("latin1"));
     }
 }

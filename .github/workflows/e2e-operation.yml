@@ -46,7 +46,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d
         id: filter
         with:
           token: ${{ github.token }}
@@ -80,6 +80,7 @@ jobs:
         with:
           cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
           cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
+      - uses: ./.github/workflows/resources/actions/upload-source-snapshot
       - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
 
   e2e-operation:
@@ -109,8 +110,20 @@ jobs:
           - operation: showprocesslist
             image: { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
     steps:
-      - name: Checkout Project
-        uses: actions/checkout@v6.0.1
+      - name: Logs
+        run: |
+          echo "runner.temp=${{ runner.temp }}"
+          echo "RUNNER_TEMP=$RUNNER_TEMP"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v8
+        with:
+          name: source-snapshot
+          path: ${{ runner.temp }}/source-snapshot
+      - name: Restore Source Snapshot
+        run: |
+          find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
+          tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-operation'

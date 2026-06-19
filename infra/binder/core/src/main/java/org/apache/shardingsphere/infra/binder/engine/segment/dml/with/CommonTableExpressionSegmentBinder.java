@@ -36,8 +36,10 @@ import org.apache.shardingsphere.infra.exception.kernel.syntax.DuplicateCommonTa
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -83,34 +85,61 @@ public final class CommonTableExpressionSegmentBinder {
         CommonTableExpressionSegment result = new CommonTableExpressionSegment(
                 segment.getStartIndex(), segment.getStopIndex(), boundSubquerySegment.getAliasSegment().orElse(null), boundSubquerySegment.getSubquery());
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts =
-                createCurrentTableBinderContexts(segment.getColumns(), binderContext, boundSubquerySegment.getSubquery().getSelect());
-        segment.getColumns()
-                .forEach(each -> result.getColumns().add(ColumnSegmentBinder.bind(each, SegmentType.DEFINITION_COLUMNS, binderContext, currentTableBinderContexts, LinkedHashMultimap.create())));
-        putTableBinderContext(segment, tableBinderContexts, recursive, currentTableBinderContexts);
+                createCurrentTableBinderContexts(segment.getColumns(), binderContext, boundSubquerySegment.getSubquery());
+        segment.getColumns().forEach(each -> result.getColumns().add(ColumnSegmentBinder.bind(each,
+                SegmentType.DEFINITION_COLUMNS, binderContext, currentTableBinderContexts, LinkedHashMultimap.create())));
+        segment.getSearchColumns().forEach(each -> result.getSearchColumns().add(ColumnSegmentBinder.bind(
+                each, SegmentType.DEFINITION_COLUMNS, binderContext, currentTableBinderContexts, LinkedHashMultimap.create())));
+        segment.getCycleColumns().forEach(each -> result.getCycleColumns().add(ColumnSegmentBinder.bind(
+                each, SegmentType.DEFINITION_COLUMNS, binderContext, currentTableBinderContexts, LinkedHashMultimap.create())));
+        putTableBinderContext(segment, tableBinderContexts, recursive);
         putExternalTableBinderContext(segment, binderContext, recursive, currentTableBinderContexts);
         return result;
     }
     
-    private static Multimap<CaseInsensitiveString, TableSegmentBinderContext> createCurrentTableBinderContexts(final Collection<ColumnSegment> definitionColumns,
-                                                                                                               final SQLStatementBinderContext binderContext, final SelectStatement selectStatement) {
+    private static Multimap<CaseInsensitiveString, TableSegmentBinderContext> createCurrentTableBinderContexts(final Collection<ColumnSegment> columns,
+                                                                                                               final SQLStatementBinderContext binderContext, final SubquerySegment subquerySegment) {
         Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
-                selectStatement.getProjections().getProjections(), new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
+                getSubqueryProjections(subquerySegment).getProjections(), new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
-        Collection<ProjectionSegment> boundDefinitionColumns = createBoundDefinitionColumns(definitionColumns, subqueryProjections);
-        Collection<ProjectionSegment> boundProjectionSegments = definitionColumns.isEmpty() ? subqueryProjections : new LinkedList<>(boundDefinitionColumns);
+        Collection<ColumnSegment> definitionColumnSegments = getDefinitionColumns(columns, subquerySegment);
+        Collection<ProjectionSegment> boundDefinitionColumns = createBoundDefinitionColumns(definitionColumnSegments, subqueryProjections);
+        Collection<ProjectionSegment> boundProjectionSegments = definitionColumnSegments.isEmpty() ? new LinkedList<>(subqueryProjections) : new LinkedList<>(boundDefinitionColumns);
+        getGeneratedColumns(columns, subquerySegment).forEach(each -> boundProjectionSegments.add(createGeneratedColumnProjection(each)));
         SimpleTableSegmentBinderContext tableSegmentBinderContext = new SimpleTableSegmentBinderContext(boundProjectionSegments, TableSourceType.TEMPORARY_TABLE);
         tableSegmentBinderContext.setFromWithSegment(true);
         result.put(CaseInsensitiveString.of(""), tableSegmentBinderContext);
         return result;
     }
     
+    private static ProjectionsSegment getSubqueryProjections(final SubquerySegment subquerySegment) {
+        return subquerySegment.getSelect().getCombine().map(optional -> optional.getLeft().getSelect().getProjections()).orElse(subquerySegment.getSelect().getProjections());
+    }
+    
+    private static Collection<ColumnSegment> getDefinitionColumns(final Collection<ColumnSegment> columns, final SubquerySegment subquerySegment) {
+        return columns.stream().filter(each -> each.getStartIndex() <= subquerySegment.getStopIndex()).collect(Collectors.toList());
+    }
+    
+    private static Collection<ColumnSegment> getGeneratedColumns(final Collection<ColumnSegment> columns, final SubquerySegment subquerySegment) {
+        return columns.stream().filter(each -> each.getStartIndex() > subquerySegment.getStopIndex()).collect(Collectors.toList());
+    }
+    
+    private static ProjectionSegment createGeneratedColumnProjection(final ColumnSegment columnSegment) {
+        ColumnSegment result = copy(columnSegment);
+        result.setColumnBoundInfo(ColumnSegmentBinder.createColumnSegmentBoundInfo(columnSegment, null, TableSourceType.TEMPORARY_TABLE));
+        return new ColumnProjectionSegment(result);
+    }
+    
     private static Collection<ProjectionSegment> createRecursiveWithProjections(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext) {
-        if (!segment.getColumns().isEmpty()) {
-            return segment.getColumns().stream().map(ColumnProjectionSegment::new).collect(Collectors.toList());
+        Collection<ColumnSegment> definitionColumns = getDefinitionColumns(segment.getColumns(), segment.getSubquery());
+        if (!definitionColumns.isEmpty()) {
+            SelectStatement boundAnchorSelect = bindAnchorSelect(segment, binderContext);
+            Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
+                    boundAnchorSelect.getProjections().getProjections(), new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
+            return createBoundDefinitionColumns(definitionColumns, subqueryProjections);
         }
         Collection<ProjectionSegment> result = new LinkedList<>();
-        SelectStatement boundAnchorSelect = new SelectStatementBinder().bind(segment.getSubquery().getSelect().getCombine()
-                .map(optional -> optional.getLeft().getSelect()).orElse(segment.getSubquery().getSelect()), binderContext);
+        SelectStatement boundAnchorSelect = bindAnchorSelect(segment, binderContext);
         for (ProjectionSegment each : boundAnchorSelect.getProjections().getProjections()) {
             if (each instanceof ColumnProjectionSegment) {
                 result.add(new ColumnProjectionSegment(((ColumnProjectionSegment) each).getColumn()));
@@ -119,6 +148,11 @@ public final class CommonTableExpressionSegmentBinder {
             }
         }
         return result;
+    }
+    
+    private static SelectStatement bindAnchorSelect(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext) {
+        return new SelectStatementBinder().bind(segment.getSubquery().getSelect().getCombine()
+                .map(optional -> optional.getLeft().getSelect()).orElse(segment.getSubquery().getSelect()), binderContext);
     }
     
     private static Collection<ProjectionSegment> createBoundDefinitionColumns(final Collection<ColumnSegment> definitionColumns, final Collection<ProjectionSegment> projectionSegments) {
@@ -157,14 +191,13 @@ public final class CommonTableExpressionSegmentBinder {
     }
     
     private static void putTableBinderContext(final CommonTableExpressionSegment segment, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
-                                              final boolean recursive, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts) {
+                                              final boolean recursive) {
         if (!segment.getAliasName().isPresent()) {
             return;
         }
-        if (recursive && segment.getAliasName().isPresent()) {
+        if (recursive) {
             tableBinderContexts.removeAll(CaseInsensitiveString.of(segment.getAliasName().get()));
         }
-        tableBinderContexts.putAll(CaseInsensitiveString.of(segment.getAliasName().get()), currentTableBinderContexts.values());
     }
     
     private static void putExternalTableBinderContext(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext,

@@ -107,6 +107,17 @@ class ShardingSphereMetaDataTest {
     
     @SuppressWarnings("resource")
     @Test
+    void assertGetAllDatabases() {
+        ShardingSphereRule globalRule = mock(ShardingSphereRule.class);
+        ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new MockedDataSource(), globalRule);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database),
+                mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalRule)), new ConfigurationProperties(new Properties()));
+        assertThat(metaData.getAllDatabases().size(), is(1));
+        assertTrue(metaData.getAllDatabases().contains(database));
+    }
+    
+    @SuppressWarnings("resource")
+    @Test
     void assertNotContainsDatabase() {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()),
                 new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));

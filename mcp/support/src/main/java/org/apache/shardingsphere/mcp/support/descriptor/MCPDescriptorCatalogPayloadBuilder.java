@@ -1,0 +1,266 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.support.descriptor;
+
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+final class MCPDescriptorCatalogPayloadBuilder {
+    
+    private final MCPDescriptorCatalog catalog;
+    
+    private final MCPModelFirstContractPayloadBuilder modelFirstContractPayloadBuilder;
+    
+    private MCPDescriptorCatalogPayloadBuilder(final MCPDescriptorCatalog catalog) {
+        this.catalog = catalog;
+        modelFirstContractPayloadBuilder = new MCPModelFirstContractPayloadBuilder(catalog);
+    }
+    
+    static Map<String, Object> build(final MCPDescriptorCatalog catalog, final Collection<String> supportedResources, final Collection<String> supportedTools,
+                                     final Collection<?> supportedStatements) {
+        return new MCPDescriptorCatalogPayloadBuilder(catalog).build(supportedResources, supportedTools, supportedStatements);
+    }
+    
+    private Map<String, Object> build(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
+        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+        List<Map<String, Object>> resources = catalog.getResourceDescriptors().stream().map(this::toResourcePayload).toList();
+        List<Map<String, Object>> resourceTemplates = catalog.getResourceTemplateDescriptors().stream().map(this::toResourceTemplatePayload).toList();
+        List<Map<String, Object>> tools = catalog.getToolDescriptors().stream().map(this::toToolPayload).toList();
+        List<Map<String, Object>> prompts = catalog.getPromptDescriptors().stream().map(this::toPromptPayload).toList();
+        List<Map<String, Object>> completionTargets = catalog.getCompletionTargetDescriptors().stream().map(this::toCompletionTargetPayload).toList();
+        List<Map<String, Object>> resourceNavigation = catalog.getResourceNavigationDescriptors().stream().map(this::toResourceNavigationPayload).toList();
+        result.put("response_mode", MCPResponseMode.CATALOG);
+        result.put("model_first_summary", modelFirstContractPayloadBuilder.createModelFirstSummary());
+        result.put("supportedResources", supportedResources);
+        result.put("supportedTools", supportedTools);
+        result.put("supportedStatementClasses", supportedStatements);
+        result.put("model_contract", modelFirstContractPayloadBuilder.createModelContract());
+        result.put("surface_summary", modelFirstContractPayloadBuilder.createSurfaceSummary());
+        result.put("field_naming_contract", modelFirstContractPayloadBuilder.createFieldNamingContract());
+        result.put("next_action_contract", modelFirstContractPayloadBuilder.createNextActionContract());
+        result.put("common_flows", modelFirstContractPayloadBuilder.createCommonFlows());
+        result.put("security_hints", modelFirstContractPayloadBuilder.createSecurityHints());
+        result.put("resources", resources);
+        result.put("resourceTemplates", resourceTemplates);
+        result.put("tools", tools);
+        result.put("prompts", prompts);
+        result.put("completionTargets", completionTargets);
+        result.put("resourceNavigation", resourceNavigation);
+        result.put("protocolAvailability", createProtocolAvailability(!resourceNavigation.isEmpty()));
+        return result;
+    }
+    
+    private Map<String, Object> toResourcePayload(final MCPResourceDescriptor descriptor) {
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+        result.put(MCPPayloadFieldNames.URI, descriptor.getUriTemplate());
+        result.put("name", descriptor.getName());
+        result.put("title", descriptor.getTitle());
+        result.put("description", descriptor.getDescription());
+        result.put("mimeType", descriptor.getMimeType());
+        if (!descriptor.getAnnotations().isEmpty()) {
+            result.put("annotations", toResourceAnnotationsPayload(descriptor.getAnnotations()));
+        }
+        if (!descriptor.getMeta().isEmpty()) {
+            result.put("_meta", descriptor.getMeta());
+        }
+        return result;
+    }
+    
+    private Map<String, Object> toResourceTemplatePayload(final MCPResourceDescriptor descriptor) {
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+        result.put("uriTemplate", descriptor.getUriTemplate());
+        result.put("name", descriptor.getName());
+        result.put("title", descriptor.getTitle());
+        result.put("description", descriptor.getDescription());
+        result.put("mimeType", descriptor.getMimeType());
+        if (!descriptor.getAnnotations().isEmpty()) {
+            result.put("annotations", toResourceAnnotationsPayload(descriptor.getAnnotations()));
+        }
+        if (!descriptor.getMeta().isEmpty()) {
+            result.put("_meta", descriptor.getMeta());
+        }
+        return result;
+    }
+    
+    private Map<String, Object> toToolPayload(final MCPToolDescriptor descriptor) {
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+        result.put("name", descriptor.getName());
+        result.put("title", descriptor.getTitle());
+        result.put("description", descriptor.getDescription());
+        result.put("inputSchema", descriptor.getInputSchema());
+        result.put("outputSchema", descriptor.getOutputSchema());
+        result.put("annotations", toToolAnnotationsPayload(descriptor.getAnnotations()));
+        if (!descriptor.getMeta().isEmpty()) {
+            result.put("meta", descriptor.getMeta());
+        }
+        return result;
+    }
+    
+    private Map<String, Object> toPromptPayload(final MCPPromptDescriptor descriptor) {
+        Map<String, Object> result = new LinkedHashMap<>(7, 1F);
+        result.put("name", descriptor.getName());
+        result.put("title", descriptor.getTitle());
+        result.put("description", descriptor.getDescription());
+        result.put("arguments", descriptor.getArguments().stream().map(this::toPromptArgumentPayload).toList());
+        if (!descriptor.getMeta().isEmpty()) {
+            result.put("meta", descriptor.getMeta());
+        }
+        return result;
+    }
+    
+    private Map<String, Object> toPromptArgumentPayload(final MCPPromptArgumentDescriptor descriptor) {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("name", descriptor.getName());
+        result.put("title", descriptor.getTitle());
+        result.put("description", descriptor.getDescription());
+        result.put("required", descriptor.isRequired());
+        Map<String, Object> completionHint = createCompletionHint(descriptor.getName());
+        if (!completionHint.isEmpty()) {
+            result.put("completion", completionHint);
+        }
+        return result;
+    }
+    
+    private Map<String, Object> toCompletionTargetPayload(final MCPCompletionTargetDescriptor descriptor) {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("referenceType", descriptor.getReferenceType());
+        result.put("reference", descriptor.getReference());
+        result.put("arguments", descriptor.getArguments());
+        result.put("maxValues", descriptor.getMaxValues());
+        if (!descriptor.getMeta().isEmpty()) {
+            result.put("meta", descriptor.getMeta());
+        }
+        return result;
+    }
+    
+    private Map<String, Object> toResourceNavigationPayload(final MCPResourceNavigationDescriptor descriptor) {
+        Map<String, Object> result = new LinkedHashMap<>(7, 1F);
+        result.put("from", descriptor.getFrom());
+        result.put("from_type", resolveReferenceType(descriptor.getFrom()));
+        result.put("to", descriptor.getTo());
+        result.put("to_type", resolveReferenceType(descriptor.getTo()));
+        result.put("requiredArguments", descriptor.getRequiredArguments());
+        result.put("carriedArguments", descriptor.getCarriedArguments());
+        result.put("description", descriptor.getDescription());
+        return result;
+    }
+    
+    private Map<String, Object> createCompletionHint(final String argumentName) {
+        List<Map<String, Object>> references = catalog.getCompletionTargetDescriptors().stream()
+                .filter(each -> each.getArguments().contains(argumentName)).map(this::createCompletionReferenceHint).toList();
+        if (references.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("available", true);
+        result.put("references", references);
+        List<String> requiredContextArguments = createCompletionRequiredContextArguments(argumentName);
+        if (!requiredContextArguments.isEmpty()) {
+            result.put("required_context_arguments", requiredContextArguments);
+        }
+        return result;
+    }
+    
+    private Map<String, Object> createCompletionReferenceHint(final MCPCompletionTargetDescriptor descriptor) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("referenceType", descriptor.getReferenceType());
+        result.put("reference", descriptor.getReference());
+        result.put("maxValues", descriptor.getMaxValues());
+        return result;
+    }
+    
+    private List<String> createCompletionRequiredContextArguments(final String argumentName) {
+        if ("schema".equals(argumentName)) {
+            return List.of("database");
+        }
+        if ("table".equals(argumentName) || "sequence".equals(argumentName)) {
+            return List.of("database", "schema");
+        }
+        if ("column".equals(argumentName) || "index".equals(argumentName)) {
+            return List.of("database", "schema", "table");
+        }
+        return List.of();
+    }
+    
+    private String resolveReferenceType(final String reference) {
+        if (catalog.getAllResourceDescriptors().stream().anyMatch(each -> each.getUriTemplate().equals(reference))) {
+            return reference.contains("{") ? "resource_template" : "resource";
+        }
+        if (catalog.getToolDescriptors().stream().anyMatch(each -> each.getName().equals(reference))) {
+            return "tool";
+        }
+        if (catalog.getPromptDescriptors().stream().anyMatch(each -> each.getName().equals(reference))) {
+            return "prompt";
+        }
+        return "unknown";
+    }
+    
+    private Map<String, Object> toResourceAnnotationsPayload(final MCPResourceAnnotations annotations) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        if (!annotations.getAudience().isEmpty()) {
+            result.put("audience", annotations.getAudience());
+        }
+        if (null != annotations.getPriority()) {
+            result.put("priority", annotations.getPriority());
+        }
+        if (null != annotations.getLastModified() && !annotations.getLastModified().isBlank()) {
+            result.put("lastModified", annotations.getLastModified());
+        }
+        return result;
+    }
+    
+    private Map<String, Object> toToolAnnotationsPayload(final MCPToolAnnotations annotations) {
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        putIfPresent(result, "title", annotations.getTitle());
+        result.put("readOnlyHint", annotations.isReadOnlyHint());
+        result.put("destructiveHint", annotations.isDestructiveHint());
+        result.put("idempotentHint", annotations.isIdempotentHint());
+        result.put("openWorldHint", annotations.isOpenWorldHint());
+        return result;
+    }
+    
+    private void putIfPresent(final Map<String, Object> target, final String key, final Object value) {
+        if (null != value) {
+            target.put(key, value);
+        }
+    }
+    
+    private Map<String, Object> createProtocolAvailability(final boolean hasResourceNavigation) {
+        Map<String, Object> result = new LinkedHashMap<>(12, 1F);
+        result.put("resources", true);
+        result.put("resourceTemplates", true);
+        result.put("tools", true);
+        result.put("toolAnnotations", true);
+        result.put("toolOutputSchemas", true);
+        result.put("prompts", !catalog.getPromptDescriptors().isEmpty());
+        result.put("completions", !catalog.getCompletionTargetDescriptors().isEmpty());
+        result.put("resourceNavigation", hasResourceNavigation);
+        return result;
+    }
+}

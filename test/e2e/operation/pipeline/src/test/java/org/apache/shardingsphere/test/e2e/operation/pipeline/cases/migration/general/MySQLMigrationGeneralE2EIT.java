@@ -84,7 +84,10 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             containerComposer.startIncrementTask(
                     new E2EIncrementalTask(containerComposer.getSourceDataSource(), SOURCE_TABLE_NAME, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 30));
             TimeUnit.SECONDS.timedJoin(containerComposer.getIncreaseTaskThread(), 30L);
-            orderDAO.insert(10000L, 1, "OK");
+            containerComposer.sourceExecuteWithLog(String.format("""
+                    INSERT INTO %s (order_id, user_id, status, t_json) VALUES
+                    (10000, 1, 'OK', '{"backspace":"a\\\\bb","form_feed":"a\\\\fb","newline":"a\\\\nb","carriage_return":"a\\\\rb","tab":"a\\\\tb","unicode":"a\\\\u0001b","tab\\\\tkey":"value"}')
+                    """, SOURCE_TABLE_NAME));
             orderItemDAO.insert(10000L, 10000L, 1, "OK");
             distSQLFacade.pauseJob(orderJobId);
             distSQLFacade.resumeJob(orderJobId);

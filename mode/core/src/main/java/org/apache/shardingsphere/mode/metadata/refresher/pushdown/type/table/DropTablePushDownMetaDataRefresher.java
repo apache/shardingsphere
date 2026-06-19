@@ -21,7 +21,10 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils;
+import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
 
 import java.util.Collection;
@@ -35,8 +38,10 @@ public final class DropTablePushDownMetaDataRefresher implements PushDownMetaDat
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final DropTableStatement sqlStatement, final ConfigurationProperties props) {
-        Collection<String> tableNames = sqlStatement.getTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
-        metaDataManagerPersistService.dropTables(database, schemaName, tableNames);
+        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
+        Collection<String> tableNames = TableRefreshUtils.getActualTableNames(database, actualSchemaName,
+                sqlStatement.getTables().stream().map(each -> each.getTableName().getIdentifier()).collect(Collectors.toList()), props);
+        metaDataManagerPersistService.dropTables(database, actualSchemaName, tableNames);
     }
     
     @Override

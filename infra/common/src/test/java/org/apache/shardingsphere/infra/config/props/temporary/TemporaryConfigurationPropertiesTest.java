@@ -50,6 +50,6 @@ class TemporaryConfigurationPropertiesTest {
         TemporaryConfigurationProperties actual = new TemporaryConfigurationProperties(new Properties());
         assertFalse((Boolean) actual.getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED));
         assertTrue((Boolean) actual.getValue(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED));
-        assertThat(actual.getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON), is("0 0/1 * * * ?"));
+        assertThat(actual.getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON), is("0 0 2 * * ?"));
     }
 }

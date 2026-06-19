@@ -32,10 +32,10 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.ColumnKeyGenerateStrategiesRuleConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategiesConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.SequenceKeyGenerateStrategiesRuleConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.SequenceKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -45,10 +45,10 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
@@ -83,14 +83,12 @@ public final class ShardingRuleConfigurationChecker implements DatabaseRuleConfi
                              final Collection<String> keyGenerators, final Collection<String> auditors, final Collection<String> shardingAlgorithms) {
         for (ShardingTableRuleConfiguration each : tables) {
             checkLogicTable(databaseName, each.getLogicTable());
-            checkKeyGenerateStrategy(databaseName, each.getKeyGenerateStrategy(), keyGenerators);
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);
             checkShardingStrategy(databaseName, each.getDatabaseShardingStrategy(), shardingAlgorithms);
             checkShardingStrategy(databaseName, each.getTableShardingStrategy(), shardingAlgorithms);
         }
         for (ShardingAutoTableRuleConfiguration each : autoTables) {
             checkLogicTable(databaseName, each.getLogicTable());
-            checkKeyGenerateStrategy(databaseName, each.getKeyGenerateStrategy(), keyGenerators);
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);
             checkShardingStrategy(databaseName, each.getShardingStrategy(), shardingAlgorithms);
         }

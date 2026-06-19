@@ -34,6 +34,13 @@ dataSources:
 
 rules:
   - !SHARDING
+    keyGenerateStrategies:
+      t_order_order_id:
+        keyGenerateType: column
+        keyGeneratorName: snowflake
+        logicTable: t_order
+        keyGenerateColumn: order_id
+
     defaultDatabaseStrategy:
       standard:
         shardingAlgorithmName: default_db_inline
@@ -41,9 +48,6 @@ rules:
     tables:
       t_order:
         actualDataNodes: ds_$->{1..2}.t_order_$->{0..1}
-        keyGenerateStrategy:
-          column: order_id
-          keyGeneratorName: snowflake
         tableStrategy:
           standard:
             shardingAlgorithmName: t_order_tbl_inline

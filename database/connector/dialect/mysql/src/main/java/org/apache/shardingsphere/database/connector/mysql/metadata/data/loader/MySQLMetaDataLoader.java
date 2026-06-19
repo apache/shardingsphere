@@ -77,8 +77,9 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
             Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
             Collection<ConstraintMetaData> constraintMetaDataList = constraintMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
-            tableMetaDataList.add(
-                    new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, constraintMetaDataList, viewNames.contains(entry.getKey()) ? TableType.VIEW : TableType.TABLE));
+            TableMetaData tableMetaData = new TableMetaData(
+                    entry.getKey(), entry.getValue(), indexMetaDataList, constraintMetaDataList, viewNames.contains(entry.getKey()) ? TableType.VIEW : TableType.TABLE);
+            tableMetaDataList.add(tableMetaData);
         }
         return Collections.singletonList(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaDataList));
     }

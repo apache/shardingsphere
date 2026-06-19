@@ -83,7 +83,6 @@ class PushDownMetaDataRefreshEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertRefreshUsesStorageUnitTypeAndLogicDataSource() throws SQLException {
-        when(SchemaRefreshUtils.getSchemaName(database, sqlStatementContext)).thenReturn("foo_schema");
         SQLStatement sqlStatement = UpdateStatement.builder().databaseType(databaseType).build();
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         StorageUnit storageUnit = mock(StorageUnit.class);
@@ -93,6 +92,7 @@ class PushDownMetaDataRefreshEngineTest {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("actual_ds", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        when(SchemaRefreshUtils.getActualSchemaName(database, sqlStatementContext, props)).thenReturn("foo_schema");
         PushDownMetaDataRefresher<SQLStatement> refresher = mock(PushDownMetaDataRefresher.class);
         when(TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatement.getClass())).thenReturn(Optional.of(refresher));
         new PushDownMetaDataRefreshEngine(sqlStatementContext).refresh(
@@ -103,10 +103,10 @@ class PushDownMetaDataRefreshEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertRefreshUsesStatementDatabaseTypeWhenRouteUnitsAbsent() throws SQLException {
-        when(SchemaRefreshUtils.getSchemaName(database, sqlStatementContext)).thenReturn("foo_schema");
         SQLStatement sqlStatement = UpdateStatement.builder().databaseType(databaseType).build();
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        when(SchemaRefreshUtils.getActualSchemaName(database, sqlStatementContext, props)).thenReturn("foo_schema");
         PushDownMetaDataRefresher<SQLStatement> refresher = mock(PushDownMetaDataRefresher.class);
         when(TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatement.getClass())).thenReturn(Optional.of(refresher));
         new PushDownMetaDataRefreshEngine(sqlStatementContext).refresh(metaDataManagerPersistService, database, props, Collections.emptyList());

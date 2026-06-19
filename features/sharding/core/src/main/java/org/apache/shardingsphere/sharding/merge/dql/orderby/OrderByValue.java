@@ -25,10 +25,12 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
+import org.apache.shardingsphere.sharding.merge.dql.ComparableByteArray;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -70,11 +72,11 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     
     private boolean getOrderValuesCaseSensitiveFromTables(final ShardingSphereSchema schema, final OrderByItem eachOrderByItem) throws SQLException {
         for (SimpleTableSegment each : selectStatementContext.getTablesContext().getSimpleTables()) {
-            String tableName = each.getTableName().getIdentifier().getValue();
+            IdentifierValue tableName = each.getTableName().getIdentifier();
             ShardingSphereTable table = schema.getTable(tableName);
             OrderByItemSegment orderByItemSegment = eachOrderByItem.getSegment();
             if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
-                String columnName = ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue();
+                IdentifierValue columnName = ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier();
                 if (table.containsColumn(columnName)) {
                     return table.getColumn(columnName).isCaseSensitive();
                 }
@@ -107,10 +109,20 @@ public final class OrderByValue implements Comparable<OrderByValue> {
         List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
         for (OrderByItem each : orderByItems) {
             Object value = queryResult.getValue(each.getIndex(), Object.class);
-            ShardingSpherePreconditions.checkState(null == value || value instanceof Comparable, () -> new NotImplementComparableValueException("Order by", value));
-            result.add((Comparable<?>) value);
+            result.add(toComparable(value));
         }
         return result;
+    }
+    
+    private static Comparable<?> toComparable(final Object value) {
+        if (null == value) {
+            return null;
+        }
+        if (value instanceof byte[]) {
+            return new ComparableByteArray((byte[]) value);
+        }
+        ShardingSpherePreconditions.checkState(value instanceof Comparable, () -> new NotImplementComparableValueException("Order by", value));
+        return (Comparable<?>) value;
     }
     
     @Override

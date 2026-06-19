@@ -25,7 +25,11 @@ strategyDefinition ::=
   'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' | 'SHARDING_COLUMNS') '=' columnName ',' algorithmDefinition
 
 keyGenerateStrategyDefinition ::= 
-  'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ',' algorithmDefinition ')' 
+  'COLUMN' '=' columnName ',' keyGenerateAlgorithmDefinition
+
+keyGenerateAlgorithmDefinition ::=
+  algorithmDefinition
+  | 'GENERATOR' '=' keyGeneratorName
 
 auditStrategyDefinition ::= 
   'AUDIT_STRATEGY' '(' algorithmDefinition (',' algorithmDefinition)* ')'
@@ -52,6 +56,9 @@ storageUnitName ::=
   identifier
 
 columnName ::=
+  identifier
+
+keyGeneratorName ::=
   identifier
 
 strategyType ::=
@@ -83,6 +90,9 @@ algorithmType ::=
 - 自动生成的主键策略命名规则为 `tableName` _ `strategyType`；
 - `KEY_GENERATE_STRATEGY`
   用于指定主键生成策略，为可选项，关于主键生成策略可参考[分布式主键](/cn/user-manual/common-config/builtin-algorithm/keygen/)。
+- `KEY_GENERATE_STRATEGY` 支持两种主键生成器定义方式：
+    - 使用 `TYPE(NAME=..., PROPERTIES(...))` 内联定义主键生成算法；
+    - 使用 `GENERATOR=keyGeneratorName` 引用已经存在的独立 `SHARDING KEY GENERATOR`；
 - `AUDIT_STRATEGY`
   用于指定分配审计生成策略，为可选项，关于分片审计生成策略可参考[分片审计](/cn/user-manual/common-config/builtin-algorithm/audit/)。
 
@@ -111,9 +121,20 @@ AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 );
 ```
 
+#### 3.引用已存在的主键生成器
+
+```sql
+ALTER SHARDING TABLE RULE t_order (
+STORAGE_UNITS(ds_0,ds_1),
+SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,GENERATOR=snowflake_generator),
+AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
+);
+```
+
 ### 保留字
 
-`ALTER`、`SHARDING`、`TABLE`、`RULE`、`DATANODES`、`DATABASE_STRATEGY`、`TABLE_STRATEGY`、`KEY_GENERATE_STRATEGY`、`STORAGE_UNITS`、`SHARDING_COLUMN`、`TYPE`、`SHARDING_COLUMN`、`KEY_GENERATOR`、`SHARDING_ALGORITHM`、`COLUMN`、`NAME`、`PROPERTIES`、`AUDIT_STRATEGY`、`AUDITORS`、`ALLOW_HINT_DISABLE`
+`ALTER`、`SHARDING`、`TABLE`、`RULE`、`DATANODES`、`DATABASE_STRATEGY`、`TABLE_STRATEGY`、`KEY_GENERATE_STRATEGY`、`STORAGE_UNITS`、`SHARDING_COLUMN`、`TYPE`、`SHARDING_COLUMN`、`GENERATOR`、`SHARDING_ALGORITHM`、`COLUMN`、`NAME`、`PROPERTIES`、`AUDIT_STRATEGY`、`AUDITORS`、`ALLOW_HINT_DISABLE`
 
 ### 相关链接
 

@@ -27,7 +27,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <seata.version>2.5.0</seata.version>
+        <seata.version>2.6.0</seata.version>
     </properties>
     
     <dependencies>
@@ -118,10 +118,6 @@
                 <exclusion>
                     <groupId>com.fasterxml.woodstox</groupId>
                     <artifactId>woodstox-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-text</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

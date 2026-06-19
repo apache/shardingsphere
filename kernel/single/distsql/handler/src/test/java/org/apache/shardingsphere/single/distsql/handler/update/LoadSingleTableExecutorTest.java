@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
@@ -73,7 +74,7 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({SingleTableDataNodeLoader.class, PhysicalDataSourceAggregator.class})
+@StaticMockSettings({DatabaseTypeEngine.class, SingleTableDataNodeLoader.class, PhysicalDataSourceAggregator.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class LoadSingleTableExecutorTest {
     
@@ -88,6 +89,8 @@ class LoadSingleTableExecutorTest {
     void setUp() {
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(databaseType);
+        when(database.getDefaultSchemaName()).thenReturn("foo_db");
+        when(DatabaseTypeEngine.getStorageType(any(DataSource.class))).thenReturn(databaseType);
         executor.setDatabase(database);
     }
     
@@ -97,6 +100,9 @@ class LoadSingleTableExecutorTest {
                                                          final boolean tableExists, final Class<? extends RuntimeException> expectedException) {
         prepareStorageUnits();
         prepareSchema(tableExists, schemaSupported ? "foo_schema" : "foo_db");
+        if (schemaSupported) {
+            when(database.getDefaultSchemaName()).thenReturn("foo_schema");
+        }
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(tableSegment));
         if (schemaSupported) {
             try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaSupportedDatabaseTypeRegistry()) {
@@ -127,8 +133,18 @@ class LoadSingleTableExecutorTest {
         prepareActualTableValidationScenario(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singletonMap("foo_schema", Collections.singleton("foo_tbl")));
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Arrays.asList(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl"), new SingleTableSegment("*", "*")));
         try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaSupportedDatabaseTypeRegistry()) {
+            when(database.getDefaultSchemaName()).thenReturn("foo_schema");
             prepareSchema(false, "foo_schema");
             assertDoesNotThrow(() -> executor.checkBeforeUpdate(sqlStatement));
+        }
+    }
+    
+    @Test
+    void assertCheckBeforeUpdateWithDifferentProtocolAndStorageTypes() {
+        when(DatabaseTypeEngine.getStorageType(any(DataSource.class))).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        prepareActualTableValidationScenario(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singletonMap("FOO_DB", Collections.singleton("foo_tbl")));
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockStorageDatabaseTypeRegistry()) {
+            assertDoesNotThrow(() -> executor.checkBeforeUpdate(new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("foo_ds", "foo_tbl")))));
         }
     }
     
@@ -177,7 +193,7 @@ class LoadSingleTableExecutorTest {
         prepareSchema(false, "foo_db");
         when(PhysicalDataSourceAggregator.getAggregatedDataSources(any(), any())).thenReturn(aggregatedDataSources);
         if (aggregatedDataSources.containsKey("foo_ds")) {
-            when(SingleTableDataNodeLoader.loadSchemaTableNames(eq("foo_db"), any(), any(), eq("foo_ds"), eq(Collections.emptyList()))).thenReturn(schemaTableNames);
+            when(SingleTableDataNodeLoader.loadSchemaTableNames(eq("foo_db"), any(), any(), eq("foo_ds"), eq(Collections.emptySet()), eq(Collections.emptySet()))).thenReturn(schemaTableNames);
         }
     }
     
@@ -186,6 +202,15 @@ class LoadSingleTableExecutorTest {
         when(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("foo_schema"));
         return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
             when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_schema");
+            when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
+        });
+    }
+    
+    private MockedConstruction<DatabaseTypeRegistry> mockStorageDatabaseTypeRegistry() {
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
+            when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_db");
+            when(mock.formatIdentifierPattern("foo_db")).thenReturn("FOO_DB");
             when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
         });
     }

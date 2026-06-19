@@ -35,9 +35,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.AmbiguousColumnException;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -61,6 +60,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColumnSegmentBinder {
     
+    private static final String EXCLUDED_TABLE_NAME = "excluded";
+    
     private static final Map<SegmentType, String> SEGMENT_TYPE_MESSAGES = Maps.of(SegmentType.PROJECTION, "field list", SegmentType.JOIN_ON, "on clause", SegmentType.JOIN_USING, "from clause",
             SegmentType.PREDICATE, "where clause", SegmentType.HAVING, "having clause", SegmentType.ORDER_BY, "order clause", SegmentType.GROUP_BY, "group statement", SegmentType.INSERT_COLUMNS,
             "field list");
@@ -80,6 +81,9 @@ public final class ColumnSegmentBinder {
     public static ColumnSegment bind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        if (isExcludedColumn(segment, parentSegmentType)) {
+            return segment;
+        }
         if (isUnparenthesizedFunction(segment, binderContext)) {
             return segment;
         }
@@ -91,6 +95,10 @@ public final class ColumnSegmentBinder {
         segment.getOwner().ifPresent(optional -> result.setOwner(bindOwnerTableContext(optional, inputColumnSegment.orElse(null))));
         result.setColumnBoundInfo(createColumnSegmentBoundInfo(segment, inputColumnSegment.orElse(null), columnSegmentInfo.getTableSourceType()));
         return result;
+    }
+    
+    private static boolean isExcludedColumn(final ColumnSegment segment, final SegmentType parentSegmentType) {
+        return SegmentType.SET_ASSIGNMENT == parentSegmentType && segment.getOwner().isPresent() && EXCLUDED_TABLE_NAME.equalsIgnoreCase(segment.getOwner().get().getIdentifier().getValue());
     }
     
     private static ColumnSegment copy(final ColumnSegment segment) {
@@ -157,7 +165,9 @@ public final class ColumnSegmentBinder {
     private static ColumnSegmentInfo getColumnSegmentInfo(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts,
                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
                                                           final SQLStatementBinderContext binderContext) {
-        ColumnSegmentInfo result = getInputInfoFromTableBinderContexts(tableBinderContexts, segment, parentSegmentType);
+        ColumnSegmentInfo result = isModelProjectionColumn(segment, parentSegmentType, binderContext.getModelColumnNames())
+                ? new ColumnSegmentInfo(findInputColumnSegmentByModelColumns(segment, binderContext.getModelColumnNames()).orElse(null), TableSourceType.TEMPORARY_TABLE)
+                : getInputInfoFromTableBinderContexts(tableBinderContexts, segment, parentSegmentType);
         if (isNotFoundInputColumn(result, segment)) {
             ColumnSegment inputColumnSegment = findInputColumnSegmentFromOuterTable(segment, outerTableBinderContexts).orElse(null);
             result = new ColumnSegmentInfo(inputColumnSegment, null == inputColumnSegment ? TableSourceType.TEMPORARY_TABLE : inputColumnSegment.getColumnBoundInfo().getTableSourceType());
@@ -172,9 +182,16 @@ public final class ColumnSegmentBinder {
         if (isNotFoundInputColumn(result, segment)) {
             result = new ColumnSegmentInfo(findInputColumnSegmentByPivotColumns(segment, binderContext.getPivotColumnNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
+        if (isNotFoundInputColumn(result, segment)) {
+            result = new ColumnSegmentInfo(findInputColumnSegmentByModelColumns(segment, binderContext.getModelColumnNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
+        }
         ShardingSpherePreconditions.checkState(result.getInputColumnSegment().isPresent() || isSkipColumnBind(tableBinderContexts, outerTableBinderContexts.values()),
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         return result;
+    }
+    
+    private static boolean isModelProjectionColumn(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<String> modelColumnNames) {
+        return SegmentType.PROJECTION == parentSegmentType && !segment.getOwner().isPresent() && modelColumnNames.contains(segment.getIdentifier().getValue());
     }
     
     private static boolean isNotFoundInputColumn(final ColumnSegmentInfo segmentInfo, final ColumnSegment segment) {
@@ -211,11 +228,10 @@ public final class ColumnSegmentBinder {
         if (projectionSegment instanceof ColumnProjectionSegment) {
             return ((ColumnProjectionSegment) projectionSegment).getColumn();
         }
-        if (projectionSegment instanceof ExpressionProjectionSegment
-                && ((ExpressionProjectionSegment) projectionSegment).getExpr() instanceof FunctionSegment) {
-            Optional<ColumnSegment> columnSegment = getFirstColumnParameter(((FunctionSegment) ((ExpressionProjectionSegment) projectionSegment).getExpr()).getParameters());
-            if (columnSegment.isPresent()) {
-                return columnSegment.get();
+        if (projectionSegment instanceof ExpressionProjectionSegment) {
+            Collection<ColumnSegment> returnedColumns = ColumnExtractor.extractReturnedColumns(((ExpressionProjectionSegment) projectionSegment).getExpr());
+            if (1 == returnedColumns.size()) {
+                return returnedColumns.iterator().next();
             }
         }
         if (projectionSegment instanceof SubqueryProjectionSegment && 1 == ((SubqueryProjectionSegment) projectionSegment).getSubquery().getSelect().getProjections().getProjections().size()) {
@@ -224,25 +240,12 @@ public final class ColumnSegmentBinder {
         return new ColumnSegment(0, 0, new IdentifierValue(projectionSegment.getColumnLabel()));
     }
     
-    private static Optional<ColumnSegment> getFirstColumnParameter(final Collection<ExpressionSegment> parameters) {
-        int count = 0;
-        ColumnSegment columnSegment = null;
-        // TODO consider how to bind multi parameters
-        for (ExpressionSegment each : parameters) {
-            if (each instanceof ColumnSegment) {
-                count++;
-                columnSegment = (ColumnSegment) each;
-            }
-        }
-        if (1 == count) {
-            return Optional.of(columnSegment);
-        } else {
-            return Optional.empty();
-        }
-    }
-    
     private static Optional<ColumnSegment> findInputColumnSegmentByPivotColumns(final ColumnSegment segment, final Collection<String> pivotColumnNames) {
         return pivotColumnNames.isEmpty() || !pivotColumnNames.contains(segment.getIdentifier().getValue()) ? Optional.empty() : Optional.of(new ColumnSegment(0, 0, segment.getIdentifier()));
+    }
+    
+    private static Optional<ColumnSegment> findInputColumnSegmentByModelColumns(final ColumnSegment segment, final Collection<String> modelColumnNames) {
+        return modelColumnNames.isEmpty() || !modelColumnNames.contains(segment.getIdentifier().getValue()) ? Optional.empty() : Optional.of(new ColumnSegment(0, 0, segment.getIdentifier()));
     }
     
     private static Optional<ColumnSegment> findInputColumnSegmentFromOuterTable(final ColumnSegment segment,

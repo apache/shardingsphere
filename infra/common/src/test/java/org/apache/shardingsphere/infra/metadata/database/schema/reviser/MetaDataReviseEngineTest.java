@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -59,6 +60,7 @@ class MetaDataReviseEngineTest {
     }
     
     private GenericSchemaBuilderMaterial createBuilderMaterial() {
-        return new GenericSchemaBuilderMaterial(Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()), "default_schema");
+        return new GenericSchemaBuilderMaterial(Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()), "default_schema",
+                DatabaseIdentifierContextFactory.createDefault());
     }
 }

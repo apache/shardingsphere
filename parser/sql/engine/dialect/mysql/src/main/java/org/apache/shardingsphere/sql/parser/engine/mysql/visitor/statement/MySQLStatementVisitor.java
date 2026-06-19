@@ -25,7 +25,6 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
@@ -756,6 +755,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitQueryExpression(final QueryExpressionContext ctx) {
+        WithSegment with = null == ctx.withClause() ? null : (WithSegment) visit(ctx.withClause());
         SelectStatement result;
         if (null != ctx.queryExpressionBody()) {
             result = (SelectStatement) visit(ctx.queryExpressionBody());
@@ -763,8 +763,8 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result = (SelectStatement) visit(ctx.queryExpressionParens());
         }
         SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result);
-        if (null != ctx.withClause()) {
-            selectStatementBuilder.with((WithSegment) visit(ctx.withClause()));
+        if (null != with) {
+            selectStatementBuilder.with(with);
         }
         if (null != ctx.orderByClause()) {
             selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.orderByClause()));
@@ -888,12 +888,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     private Collection<InsertValuesSegment> createRowConstructorList(final RowConstructorListContext ctx) {
         Collection<InsertValuesSegment> result = new LinkedList<>();
-        for (int index = 0; index < ctx.getChildCount(); index++) {
-            if (!(ctx.getChild(index) instanceof AssignmentValuesContext)) {
-                continue;
-            }
-            InsertValuesSegment valuesSegment = (InsertValuesSegment) visit(ctx.getChild(index));
-            result.add(new InsertValuesSegment(((TerminalNodeImpl) ctx.getChild(index - 1)).symbol.getStartIndex(), valuesSegment.getStopIndex(), valuesSegment.getValues()));
+        for (int index = 0; index < ctx.assignmentValues().size(); index++) {
+            AssignmentValuesContext each = ctx.assignmentValues(index);
+            InsertValuesSegment insertValuesSegment = (InsertValuesSegment) visit(each);
+            result.add(new InsertValuesSegment(ctx.ROW(index).getSymbol().getStartIndex(), insertValuesSegment.getStopIndex(), insertValuesSegment.getValues()));
         }
         return result;
     }
@@ -1687,7 +1685,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         } else {
             insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
+        Collection<InsertValuesSegment> insertValuesSegments =
+                null == ctx.rowConstructorList() ? createInsertValuesSegments(ctx.assignmentValues()) : createRowConstructorList(ctx.rowConstructorList());
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).values(insertValuesSegments).build();
     }
     
     private InsertStatement.InsertStatementBuilder createInsertStatementBuilder(final InsertStatement insertStatement) {
@@ -1719,11 +1719,12 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder().databaseType(databaseType);
+        if (null != ctx.withClause()) {
+            result.with((WithSegment) visit(ctx.withClause()));
+        }
         TableSegment tableSegment = (TableSegment) visit(ctx.tableReferences());
-        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder()
-                .databaseType(databaseType)
-                .table(tableSegment)
-                .setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        result.table(tableSegment).setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.where((WhereSegment) visit(ctx.whereClause()));
         }
@@ -1732,9 +1733,6 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (null != ctx.limitClause()) {
             result.limit((LimitSegment) visit(ctx.limitClause()));
-        }
-        if (null != ctx.withClause()) {
-            result.with((WithSegment) visit(ctx.withClause()));
         }
         UpdateStatement updateStatement = result.build();
         updateStatement.addParameterMarkers(getParameterMarkerSegments());
@@ -1785,6 +1783,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(databaseType);
+        if (null != ctx.withClause()) {
+            result.with((WithSegment) visit(ctx.withClause()));
+        }
         if (null != ctx.multipleTablesClause()) {
             result.table((TableSegment) visit(ctx.multipleTablesClause()));
         } else {
@@ -1801,9 +1802,6 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (null != ctx.returningClause()) {
             result.returning((ReturningSegment) visit(ctx.returningClause()));
-        }
-        if (null != ctx.withClause()) {
-            result.with((WithSegment) visit(ctx.withClause()));
         }
         DeleteStatement deleteStatement = result.build();
         deleteStatement.addParameterMarkers(getParameterMarkerSegments());

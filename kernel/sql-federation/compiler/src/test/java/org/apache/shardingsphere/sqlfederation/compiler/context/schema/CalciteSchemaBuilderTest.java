@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.context.schema;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -35,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -54,7 +57,7 @@ class CalciteSchemaBuilderTest {
     void assertBuildWithoutSchemas() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         ShardingSphereDatabase databaseWithoutSchemas = new ShardingSphereDatabase(
-                "empty_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+                "empty_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         CalciteSchemaBuilder.build(Collections.emptyList());
         CalciteSchema actual = CalciteSchemaBuilder.build(Collections.singleton(databaseWithoutSchemas));
         assertFalse(actual.getSubSchemaMap().containsKey("empty_db"));
@@ -65,7 +68,8 @@ class CalciteSchemaBuilderTest {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         Collection<ShardingSphereSchema> schemas = Arrays.asList(new ShardingSphereSchema("public", mock(DatabaseType.class)),
                 new ShardingSphereSchema("other", mock(DatabaseType.class)));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("pg_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), schemas);
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("pg_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), schemas, new ConfigurationProperties(new Properties()));
         DialectSQLFederationFunctionRegister functionRegister = mock(DialectSQLFederationFunctionRegister.class);
         try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSQLFederationFunctionRegister.class, databaseType))
@@ -85,7 +89,7 @@ class CalciteSchemaBuilderTest {
     void assertBuildWithoutDefaultSchemaRegistersFunctions() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         ShardingSphereDatabase database = new ShardingSphereDatabase("mysql_db", databaseType, mock(ResourceMetaData.class),
-                new RuleMetaData(Collections.emptyList()), Collections.singletonList(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
+                new RuleMetaData(Collections.emptyList()), Collections.singletonList(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))), new ConfigurationProperties(new Properties()));
         try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
             DialectSQLFederationFunctionRegister functionRegister = mock(DialectSQLFederationFunctionRegister.class);
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSQLFederationFunctionRegister.class, databaseType))

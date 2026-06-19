@@ -30,9 +30,6 @@ rules:
         standard:
           shardingColumn: account_id
           shardingAlgorithmName: t_account_inline
-      keyGenerateStrategy:
-        column: account_id
-        keyGeneratorName: rewrite_keygen_fixture
     t_account_detail:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
@@ -80,6 +77,12 @@ rules:
     - t_order, t_order_new, t_order_item
     - t_user, t_user_extend
     - T_ROLE, T_ROLE_ADMIN
+  keyGenerateStrategies:
+    t_account_account_id:
+      keyGenerateType: column
+      keyGeneratorName: rewrite_keygen_fixture
+      logicTable: t_account
+      keyGenerateColumn: account_id
   shardingAlgorithms:
     t_account_inline:
       type: INLINE

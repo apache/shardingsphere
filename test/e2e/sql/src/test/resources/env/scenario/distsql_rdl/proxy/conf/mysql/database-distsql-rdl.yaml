@@ -20,6 +20,7 @@ databaseName: distsql_rdl
 dataSources:
   ds_0:
     url: jdbc:mysql://mysql.distsql_rdl.host:3306/rdl_ds_0?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -29,6 +30,7 @@ dataSources:
     minPoolSize: 2
   ds_1:
     url: jdbc:mysql://mysql.distsql_rdl.host:3306/rdl_ds_1?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -38,6 +40,7 @@ dataSources:
     minPoolSize: 2
   ds_2:
     url: jdbc:mysql://mysql.distsql_rdl.host:3306/rdl_ds_2?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -230,7 +229,7 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
         for (ShardingConditionValue each : shardingCondition.getValues()) {
             Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each.getTableName());
             if ((logicTableName.equalsIgnoreCase(each.getTableName()) || bindingTableRule.isPresent() && bindingTableRule.get().hasLogicTable(logicTableName))
-                    && new CaseInsensitiveSet<>(shardingColumns).contains(each.getColumnName())) {
+                    && shardingColumns.contains(each.getColumnName())) {
                 result.add(each);
             }
         }
@@ -243,7 +242,7 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
         Collection<String> routedDataSources = routeDataSources(shardingTable, databaseShardingStrategy, databaseShardingValues);
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedDataSources) {
-            result.addAll(routeTables(shardingTable, each, tableShardingStrategy, tableShardingValues));
+            routeTables(shardingTable, each, tableShardingStrategy, tableShardingValues, result);
         }
         return result;
     }
@@ -259,17 +258,15 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
         return result;
     }
     
-    private Collection<DataNode> routeTables(final ShardingTable shardingTable, final String routedDataSource,
-                                             final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> tableShardingValues) {
+    private void routeTables(final ShardingTable shardingTable, final String routedDataSource,
+                             final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> tableShardingValues, final Collection<DataNode> result) {
         Collection<String> availableTargetTables = shardingTable.getActualTableNames(routedDataSource);
         Collection<String> routedTables = tableShardingValues.isEmpty()
                 ? availableTargetTables
                 : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, shardingTable.getTableDataNode(), props);
-        Collection<DataNode> result = new LinkedList<>();
         for (String each : routedTables) {
             result.add(new DataNode(routedDataSource, (String) null, each));
         }
-        return result;
     }
     
     private ShardingStrategy createShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfig, final Map<String, ShardingAlgorithm> shardingAlgorithms,

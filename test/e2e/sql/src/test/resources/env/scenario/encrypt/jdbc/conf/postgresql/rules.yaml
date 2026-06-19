@@ -20,6 +20,7 @@ databaseName: encrypt
 dataSources:
   encrypt:
     url: jdbc:postgresql://postgresql.encrypt.host:5432/encrypt?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876

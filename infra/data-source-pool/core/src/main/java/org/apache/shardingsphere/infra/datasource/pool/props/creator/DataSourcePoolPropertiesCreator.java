@@ -72,6 +72,9 @@ public final class DataSourcePoolPropertiesCreator {
         result.put("url", config.getConnection().getUrl());
         result.put("username", config.getConnection().getUsername());
         result.put("password", config.getConnection().getPassword());
+        if (null != config.getConnection().getDriverClassName()) {
+            result.put("driverClassName", config.getConnection().getDriverClassName());
+        }
         result.put("connectionTimeoutMilliseconds", config.getPool().getConnectionTimeoutMilliseconds());
         result.put("idleTimeoutMilliseconds", config.getPool().getIdleTimeoutMilliseconds());
         result.put("maxLifetimeMilliseconds", config.getPool().getMaxLifetimeMilliseconds());
@@ -115,7 +118,8 @@ public final class DataSourcePoolPropertiesCreator {
     private static ConnectionConfiguration getConnectionConfiguration(final ConnectionPropertySynonyms connectionPropSynonyms) {
         Map<String, Object> standardProps = connectionPropSynonyms.getStandardProperties();
         return new ConnectionConfiguration(
-                (String) standardProps.get("dataSourceClassName"), (String) standardProps.get("url"), (String) standardProps.get("username"), (String) standardProps.get("password"));
+                (String) standardProps.get("dataSourceClassName"), (String) standardProps.get("driverClassName"), (String) standardProps.get("url"),
+                (String) standardProps.get("username"), (String) standardProps.get("password"));
     }
     
     private static PoolConfiguration getPoolConfiguration(final PoolPropertySynonyms poolPropSynonyms, final CustomDataSourcePoolProperties customProps) {

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
@@ -70,7 +71,8 @@ class GenericSchemaBuilderTest {
         StorageUnit storageUnit = mock(StorageUnit.class);
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
-        material = new GenericSchemaBuilderMaterial(Collections.singletonMap("foo_schema", storageUnit), Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_schema");
+        material = new GenericSchemaBuilderMaterial(Collections.singletonMap("foo_schema", storageUnit), Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_schema",
+                DatabaseIdentifierContextFactory.createDefault());
     }
     
     @Test
@@ -112,7 +114,8 @@ class GenericSchemaBuilderTest {
         when(rule.getAttributes()).thenReturn(new RuleAttributes(tableMapperRuleAttribute));
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(Arrays.asList("foo_tbl", "bar_tbl"), material));
         GenericSchemaBuilderMaterial newMaterial = new GenericSchemaBuilderMaterial(
-                Collections.singletonMap("foo_schema", material.getStorageUnits().get("foo_schema")), Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_schema");
+                Collections.singletonMap("foo_schema", material.getStorageUnits().get("foo_schema")), Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_schema",
+                DatabaseIdentifierContextFactory.createDefault());
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(databaseType, newMaterial);
         assertThat(actual.size(), is(1));
         assertTables(new ShardingSphereSchema("foo_schema", databaseType, actual.values().iterator().next().getAllTables(), Collections.emptyList()));
@@ -129,7 +132,8 @@ class GenericSchemaBuilderTest {
         Map<String, StorageUnit> storageUnits = Collections.singletonMap("foo_schema", storageUnit);
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mock(TableMapperRuleAttribute.class)));
-        GenericSchemaBuilderMaterial newMaterial = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_schema");
+        GenericSchemaBuilderMaterial newMaterial = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_schema",
+                DatabaseIdentifierContextFactory.createDefault());
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, databaseType, newMaterial);
         assertThat(actual.size(), is(1));
         ShardingSphereSchema actualSchema = actual.values().iterator().next();

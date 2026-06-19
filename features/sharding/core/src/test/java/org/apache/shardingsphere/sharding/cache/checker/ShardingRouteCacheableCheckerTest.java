@@ -147,7 +147,8 @@ class ShardingRouteCacheableCheckerTest {
                 new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         return new ShardingSphereDatabase(DATABASE_NAME, databaseType,
-                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Arrays.asList(shardingRule, timestampServiceRule)), Collections.singleton(schema));
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Arrays.asList(shardingRule, timestampServiceRule)), Collections.singleton(schema),
+                new ConfigurationProperties(new Properties()));
     }
     
     private QueryContext createQueryContext(final ShardingSphereDatabase database, final String sql, final List<Object> params) {

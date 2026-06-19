@@ -1407,6 +1407,10 @@ LOAD
     : L O A D
     ;
 
+LOAD_JOB_ID
+    : L O A D UL_ J O B UL_ I D
+    ;
+
 LOCAL
     : L O C A L
     ;
@@ -2022,6 +2026,16 @@ PHASE
     : P H A S E
     ;
 
+// DORIS ADDED BEGIN
+PLAN
+    : P L A N
+    ;
+
+PLAY
+    : P L A Y
+    ;
+// DORIS ADDED END
+
 PLUGIN
     : P L U G I N
     ;
@@ -2272,6 +2286,12 @@ REPLACE
     : R E P L A C E
     ;
 
+// DORIS ADDED BEGIN
+REPLAYER
+    : R E P L A Y E R
+    ;
+// DORIS ADDED END
+
 REPLICA
     : R E P L I C A
     ;
@@ -2343,6 +2363,16 @@ RESIGNAL
 RESOURCE
     : R E S O U R C E
     ;
+
+// DORIS ADDED BEGIN
+RESOURCES
+    : R E S O U R C E S
+    ;
+
+RESOURCETYPE
+    : R E S O U R C E T Y P E
+    ;
+// DORIS ADDED END
 
 RESPECT
     : R E S P E C T
@@ -2742,6 +2772,10 @@ STATS_PERSISTENT
 
 STATS_SAMPLE_PAGES
     : S T A T S UL_ S A M P L E UL_ P A G E S
+    ;
+
+STATE
+    : S T A T E
     ;
 
 STATUS

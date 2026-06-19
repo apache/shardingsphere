@@ -51,6 +51,11 @@ if [ "$int_version" = '1' ] ; then
 fi
 echo "we find java version: java${int_version}, full_version=${total_version}, full_path=$JAVA"
 
+if [ "${int_version}" -lt 21 ] 2>/dev/null; then
+    echo "Error: ShardingSphere-Proxy requires Java 21 or higher. Current version: Java ${int_version}" 1>&2
+    exit 1
+fi
+
 case "$OSTYPE" in
 *solaris*)
   GREP=/usr/xpg4/bin/grep
@@ -60,26 +65,13 @@ case "$OSTYPE" in
   ;;
 esac
 
-VERSION_OPTS=""
-if [ "$int_version" = '8' ] ; then
-    VERSION_OPTS="-XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
-elif [ "$int_version" = '11' ] ; then
-    VERSION_OPTS="-XX:+SegmentedCodeCache -XX:+AggressiveHeap"
-    if $is_openjdk; then
-      VERSION_OPTS="$VERSION_OPTS -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler"
-    fi
-elif [ "$int_version" = '17' ] ; then
-    VERSION_OPTS="-XX:+SegmentedCodeCache -XX:+AggressiveHeap"
-else
-    echo "unadapted java version, please notice..."
-fi
+# UseG1GC: balances throughput and latency, suitable for proxy workloads
+# MaxGCPauseMillis=200: target max GC pause time to reduce latency impact on proxied queries
+# UseStringDeduplication: G1 deduplicates equal String objects in heap, reducing memory for repeated DB values
+# SegmentedCodeCache: separates JIT code cache by type, improving compilation and eviction efficiency
+VERSION_OPTS="-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication -XX:+SegmentedCodeCache"
 
-DEFAULT_CGROUP_MEM_OPTS=""
-if [ "$int_version" = '8' ] ; then
-	DEFAULT_CGROUP_MEM_OPTS=" -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:InitialRAMPercentage=80.0 -XX:MinRAMPercentage=80.0 -XX:MaxRAMPercentage=80.0 "
-else
-	DEFAULT_CGROUP_MEM_OPTS=" -XX:InitialRAMPercentage=80.0 -XX:MinRAMPercentage=80.0 -XX:MaxRAMPercentage=80.0 "
-fi
+DEFAULT_CGROUP_MEM_OPTS=" -XX:InitialRAMPercentage=80.0 -XX:MinRAMPercentage=80.0 -XX:MaxRAMPercentage=80.0 "
 
 CGROUP_MEM_OPTS="${CGROUP_MEM_OPTS:-${DEFAULT_CGROUP_MEM_OPTS}}"
 
@@ -87,7 +79,7 @@ JAVA_OPTS=" -Djava.awt.headless=true "
 if [ -n "${JVM_OPTS}" ]; then
     JAVA_OPTS="${JAVA_OPTS} ${JVM_OPTS}"
 fi
-DEFAULT_JAVA_MEM_COMMON_OPTS=" -Xmx2g -Xms2g -Xmn1g "
+DEFAULT_JAVA_MEM_COMMON_OPTS=" -Xmx2g -Xms2g "
 if [ -n "${IS_DOCKER}" ]; then
 	JAVA_MEM_COMMON_OPTS="${CGROUP_MEM_OPTS}"
 else

@@ -30,15 +30,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OracleDataTypeOptionTest {
     
+    private static final int BINARY_DOUBLE = 101;
+    
     private final DialectDataTypeOption dataTypeOption = new OracleDataTypeOption();
     
     @Test
     void assertGetExtraDataTypes() {
         Map<String, Integer> extraDataTypes = dataTypeOption.getExtraDataTypes();
-        assertThat(extraDataTypes.size(), is(11));
-        assertThat(extraDataTypes.get("SMALLINT"), is(Types.SMALLINT));
+        assertThat(extraDataTypes.size(), is(13));
+        assertThat(extraDataTypes.get("SMALLINT"), is(Types.NUMERIC));
         assertThat(extraDataTypes.get("TEXT"), is(Types.LONGVARCHAR));
-        assertThat(extraDataTypes.get("BINARY_DOUBLE"), is(Types.DOUBLE));
+        assertThat(extraDataTypes.get("BINARY_DOUBLE"), is(BINARY_DOUBLE));
     }
     
     @Test
@@ -54,10 +56,28 @@ class OracleDataTypeOptionTest {
     @Test
     void assertIsStringDataType() {
         assertTrue(dataTypeOption.isStringDataType(Types.VARCHAR));
+        assertTrue(dataTypeOption.isStringDataType(Types.CLOB));
     }
     
     @Test
     void assertIsBinaryDataType() {
-        assertTrue(dataTypeOption.isBinaryDataType(Types.BINARY));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.BINARY, null));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "RAW"));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "raw"));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "LONG RAW"));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "long raw"));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "BFILE"));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "bfile"));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "BLOB"));
+        assertFalse(dataTypeOption.isBinaryDataType(Types.OTHER, "VARCHAR2"));
+    }
+    
+    @Test
+    void assertIsTextType() {
+        assertTrue(dataTypeOption.isTextType("CLOB"));
+        assertTrue(dataTypeOption.isTextType("NCLOB"));
+        assertFalse(dataTypeOption.isTextType("VARCHAR2"));
+        assertFalse(dataTypeOption.isTextType("NVARCHAR2"));
+        assertFalse(dataTypeOption.isTextType("RAW"));
     }
 }

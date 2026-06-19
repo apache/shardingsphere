@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.single.rule;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.StandardIdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -29,14 +32,17 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,6 +62,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -141,7 +148,7 @@ class SingleRuleTest {
     void assertIsAllTablesInSameComputeNode(final String name, final Collection<DataNode> dataNodes, final Collection<QualifiedTable> singleTables, final boolean expectedMatched) {
         ShardingSphereRule builtRule = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
         SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule));
-        assertThat(singleRule.isAllTablesInSameComputeNode(dataNodes, singleTables), is(expectedMatched));
+        assertThat(singleRule.isAllTablesInSameComputeNode(dataNodes, singleTables, mockDatabase()), is(expectedMatched));
     }
     
     @Test
@@ -165,7 +172,7 @@ class SingleRuleTest {
     void assertGetSingleTables(final String name, final QualifiedTable inputTable, final boolean expectedPresent, final String expectedSchemaName, final String expectedTableName) {
         ShardingSphereRule builtRule = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
         SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule));
-        Collection<QualifiedTable> actualTables = singleRule.getSingleTables(Collections.singleton(inputTable));
+        Collection<QualifiedTable> actualTables = singleRule.getSingleTables(Collections.singleton(inputTable), mockDatabase());
         if (expectedPresent) {
             QualifiedTable actualTable = actualTables.iterator().next();
             assertThat(actualTable.getSchemaName(), is(expectedSchemaName));
@@ -173,6 +180,30 @@ class SingleRuleTest {
         } else {
             assertTrue(actualTables.isEmpty());
         }
+    }
+    
+    @Test
+    void assertFindSingleLogicalDataSource() {
+        ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
+        DataSourceMapperRuleAttribute mapperRuleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(mapperRuleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logical_ds", Arrays.asList("foo_ds", "bar_ds")));
+        when(builtRule.getAttributes()).thenReturn(new RuleAttributes(mapperRuleAttribute));
+        SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule));
+        assertThat(singleRule.getDataSourceNames().size(), is(1));
+        assertThat(singleRule.getDataSourceNames().iterator().next(), is("logical_ds"));
+    }
+    
+    @Test
+    void assertFindSingleLogicalDataSourceWhenMultipleLogicalDataSources() {
+        DataSourceMapperRuleAttribute mapperRuleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        Map<String, Collection<String>> dataSourceMapper = new LinkedHashMap<>();
+        dataSourceMapper.put("logic_ds_0", Collections.singleton("foo_ds"));
+        dataSourceMapper.put("logic_ds_1", Collections.singleton("bar_ds"));
+        when(mapperRuleAttribute.getDataSourceMapper()).thenReturn(dataSourceMapper);
+        ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
+        when(builtRule.getAttributes()).thenReturn(new RuleAttributes(mapperRuleAttribute));
+        SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule));
+        assertThat(singleRule.getDataSourceNames().size(), is(2));
     }
     
     @Test
@@ -184,7 +215,7 @@ class SingleRuleTest {
         Collection<QualifiedTable> tableNames = new LinkedList<>();
         tableNames.add(new QualifiedTable("foo_db", "teacher"));
         singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put(dataSourceName, "foo_db", tableName);
-        Collection<QualifiedTable> actualTables = singleRule.getSingleTables(tableNames);
+        Collection<QualifiedTable> actualTables = singleRule.getSingleTables(tableNames, mockDatabase());
         QualifiedTable actualTable = actualTables.iterator().next();
         assertThat(actualTable.getSchemaName(), is("foo_db"));
         assertThat(actualTable.getTableName(), is("teacher"));
@@ -203,7 +234,7 @@ class SingleRuleTest {
         String tableName = "employee";
         Collection<QualifiedTable> tableNames = Collections.singleton(new QualifiedTable("foo_db", "employee"));
         singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).remove("foo_db", tableName);
-        assertTrue(singleRule.getSingleTables(tableNames).isEmpty());
+        assertTrue(singleRule.getSingleTables(tableNames, mockDatabase()).isEmpty());
         Collection<String> actualLogicTableNames = singleRule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableNames();
         assertTrue(actualLogicTableNames.contains("student"));
         assertTrue(actualLogicTableNames.contains("t_order_0"));
@@ -272,9 +303,8 @@ class SingleRuleTest {
         ShardingSphereRule builtRule = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
         SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getName()).thenReturn("foo_db");
-        String defaultSchemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName("foo_db");
+        ShardingSphereDatabase database = mockDatabase();
+        String defaultSchemaName = database.getName();
         if (useSimpleTableSegments) {
             Collection<SimpleTableSegment> simpleTableSegments = createSimpleTableSegments();
             when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(simpleTableSegments);
@@ -287,13 +317,13 @@ class SingleRuleTest {
         Collection<QualifiedTable> actual = singleRule.getQualifiedTables(sqlStatementContext, database);
         if (useSimpleTableSegments) {
             assertThat(actual.size(), is(2));
-            assertTrue(actual.contains(new QualifiedTable(defaultSchemaName, "employee")));
-            assertTrue(actual.contains(new QualifiedTable("custom_schema", "student")));
+            assertTrue(actual.stream().anyMatch(each -> "employee".equalsIgnoreCase(each.getTableName())));
+            assertTrue(actual.stream().anyMatch(each -> "student".equalsIgnoreCase(each.getTableName()) && "custom_schema".equalsIgnoreCase(each.getSchemaName())));
             return;
         }
         if (useIndexAttribute) {
             assertThat(actual.size(), is(1));
-            assertTrue(actual.contains(new QualifiedTable(defaultSchemaName, "employee")));
+            assertTrue(actual.stream().anyMatch(each -> "employee".equalsIgnoreCase(each.getTableName()) && defaultSchemaName.equalsIgnoreCase(each.getSchemaName())));
             return;
         }
         assertTrue(actual.isEmpty());
@@ -320,16 +350,15 @@ class SingleRuleTest {
     }
     
     private static IndexSQLStatementAttribute createIndexAttribute(final ShardingSphereDatabase database, final String schemaName) {
-        IndexSegment indexSegment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
-        when(indexSegment.getOwner()).thenReturn(Optional.empty());
-        when(indexSegment.getIndexName().getIdentifier().getValue()).thenReturn("idx_employee");
+        IdentifierValue identifierValue = new IdentifierValue("idx_employee");
+        IndexSegment indexSegment = new IndexSegment(1, 3, new IndexNameSegment(1, 3, identifierValue));
         IndexSQLStatementAttribute result = mock(IndexSQLStatementAttribute.class);
         when(result.getIndexes()).thenReturn(Collections.singleton(indexSegment));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema(schemaName)).thenReturn(schema);
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
-        when(table.containsIndex("idx_employee")).thenReturn(true);
+        when(table.containsIndex(identifierValue)).thenReturn(true);
         when(table.getName()).thenReturn("employee");
         return result;
     }
@@ -365,6 +394,7 @@ class SingleRuleTest {
     private static Stream<Arguments> getSingleTablesArguments() {
         return Stream.of(
                 Arguments.of("table exists in same schema", new QualifiedTable("foo_db", "employee"), true, "foo_db", "employee"),
+                Arguments.of("table exists in schema with different case", new QualifiedTable("FOO_DB", "employee"), true, "FOO_DB", "employee"),
                 Arguments.of("table exists in different schema", new QualifiedTable("bar_db", "employee"), false, null, null),
                 Arguments.of("table does not exist", new QualifiedTable("foo_db", "missing_table"), false, null, null));
     }
@@ -374,5 +404,13 @@ class SingleRuleTest {
                 Arguments.of("qualified tables from simple table segments", true, false),
                 Arguments.of("qualified tables from index attribute", false, true),
                 Arguments.of("empty qualified tables when no tables and no index", false, false));
+    }
+    
+    private ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        IdentifierCaseRule identifierCaseRule = new StandardIdentifierCaseRule(LookupMode.NORMALIZED, LookupMode.NORMALIZED, each -> each.toLowerCase(Locale.ENGLISH), each -> true);
+        when(result.getIdentifierCaseRule(IdentifierScope.SCHEMA)).thenReturn(identifierCaseRule);
+        when(result.getName()).thenReturn("foo_db");
+        return result;
     }
 }

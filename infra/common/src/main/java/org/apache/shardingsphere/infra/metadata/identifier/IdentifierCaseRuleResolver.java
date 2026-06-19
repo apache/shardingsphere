@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 
 import javax.sql.DataSource;
-import java.util.Objects;
 
 /**
  * Resolver of identifier case rules.
@@ -44,7 +43,9 @@ public final class IdentifierCaseRuleResolver {
      * @return identifier case rules
      */
     public IdentifierCaseRuleSet resolve(final DatabaseType databaseType, final ConfigurationProperties props, final DataSource dataSource) {
-        Objects.requireNonNull(databaseType, "databaseType cannot be null.");
+        if (null == databaseType || null == databaseType.getType()) {
+            return IdentifierCaseRuleSets.newInsensitiveRuleSet();
+        }
         MetadataIdentifierCaseSensitivity configuredCaseSensitivity = props.getValue(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
         if (MetadataIdentifierCaseSensitivity.SENSITIVE == configuredCaseSensitivity) {
             return IdentifierCaseRuleSets.newSensitiveRuleSet();
@@ -53,6 +54,8 @@ public final class IdentifierCaseRuleResolver {
             return IdentifierCaseRuleSets.newInsensitiveRuleSet();
         }
         IdentifierCaseRuleProviderContext context = new IdentifierCaseRuleProviderContext(databaseType, dataSource);
-        return DatabaseTypedSPILoader.getService(IdentifierCaseRuleProvider.class, databaseType).provide(context).orElseGet(IdentifierCaseRuleSets::newInsensitiveRuleSet);
+        return DatabaseTypedSPILoader.findService(IdentifierCaseRuleProvider.class, databaseType)
+                .flatMap(each -> each.provide(context))
+                .orElseGet(IdentifierCaseRuleSets::newInsensitiveRuleSet);
     }
 }

@@ -4,7 +4,8 @@ description: >-
   Used to review whether an Apache ShardingSphere PR truly fixes the root cause,
   assess side effects and regression risks, and determine whether it can be safely merged.
   If not mergeable, produce committer-tone change request suggestions.
-  Supports targeted comparison across multiple review rounds.
+  Supports targeted comparison across GitHub-visible review rounds when prior PR comments or review threads exist.
+  Before final output, internally self-iterate the review until no new actionable findings are discovered.
 ---
 
 # Review PR
@@ -13,7 +14,7 @@ description: >-
 
 - Make merge decisions for ShardingSphere PRs with a "root-cause-first, evidence-first" approach.
 - Output a single merge decision:
-  - `Merge Verdict`: `Mergeable` / `Not Mergeable`
+  - `Merge Decision`: `Mergeable` / `Not Mergeable`
 
 ## Trigger Scenarios
 
@@ -23,19 +24,184 @@ description: >-
 
 ## Mandatory Constraints
 
+Before applying the numbered review gates, enforce the public evidence boundary:
+
+- Treat every GitHub-facing review body as community-visible output that may be copied directly to a public Apache PR or issue.
+- Base community-visible output only on public PR / issue facts, public commits, public diff, public review threads, public documentation, repository code, and sanitized local verification summaries.
+- Do not include non-public downstream project names, private or internal repository names, customer-specific or vendor-specific context, private chats,
+  intermediate discussion results, prompt process, internal self-review notes, local-only archive details, or private migration background in community-visible output.
+- Do not use non-public context as review evidence. If such context helps orient the reviewer privately, convert it into a public-evidence question
+  and verify it against public artifacts before output.
+
 1. Verify root-cause repair first, then fallback logic; do not accept "fallback only" as a substitute for root-cause repair.
 2. You must scan side effects and risks:
    - Design consistency
    - Performance (complexity, hot paths, memory, and I/O)
    - Compatibility (behavior, config, API-SPI, SQL dialect)
    - Functional degradation and regression surface
-3. You must provide exactly one `Merge Verdict`.
-4. If evidence is insufficient, risk is unclear, or validation is incomplete, always set `Merge Verdict: Not Mergeable`,
+3. You must provide exactly one `Merge Decision`.
+4. If evidence is insufficient, risk is unclear, or validation is incomplete, always set `Merge Decision: Not Mergeable`,
    and list the minimum additional information required.
 5. Change request replies must be gentle in tone and contain no emojis.
-6. If unrelated changes exist, you must explicitly ask for rollback; if none exist, do not output that section.
-7. Any "fallback-only without root-cause repair" or "unresolved risk" must not receive `Merge Verdict: Mergeable`.
+6. If substantive unrelated changes or substantive scope expansion exist, you must explicitly ask for rollback or scope narrowing; if none exist, do not output that section.
+   Non-behavioral import-only, whitespace-only, formatter-only, or IDE cleanup changes do not count as substantive unrelated changes by default.
+   `import-only` includes normal imports, static imports, import ordering, import grouping, and unused-import cleanup when there is no behavior change.
+   These changes must not affect `Merge Decision` unless they cause repository-declared formatting/style gate failures, hide behavior changes, touch broad unrelated areas, or violate an explicit user/repo scope rule.
+7. Any "fallback-only without root-cause repair" or "unresolved risk" must not receive `Merge Decision: Mergeable`.
 8. Review only the PR's latest code version; do not reuse conclusions from older versions.
+9. If a patch changes name resolution, default schema, fallback binding, routing precedence, or identifier interpretation,
+   you must perform an explicit semantic-compatibility review against the documented behavior of the target database or framework
+   before considering `Mergeable`.
+10. For any change that alters lookup order or fallback targets, you must validate at least one counterexample scenario,
+    for example: same-name object, shadowing, disabled-flag path, or adjacent valid input.
+    If no such validation exists, bias to `Not Mergeable`.
+11. Closing previous-round blockers and passing happy-path tests is not sufficient for `Mergeable`; you must still run a fresh-pass risk scan on the latest head.
+12. If a PR touches any shared execution path, reusable SPI, metadata assembly path, or other code that can affect multiple dialects or features,
+    treat it as a blast-radius review.
+    Trigger signals (examples only, not a whitelist): `infra/common`, `infra/binder/core`, shared kernel entrypoints, common SPI, reusable metadata loaders,
+    shared name-resolution logic, or shared default-schema / fallback logic.
+    You must explicitly enumerate the non-target dialects or features that also execute that path, and review at least one concrete counterexample outside the PR's stated target.
+    Do not interpret the trigger signals above as a complete list. If this blast-radius scan is missing, bias to `Not Mergeable`.
+13. If local verification is used to support mergeability and the command is module-scoped, include `-am` by default unless you can prove all dependent modules were built from the same latest PR head.
+    Do not treat a scoped run without dependent modules as conclusive evidence for `Mergeable`.
+14. Before any final output, complete the `Self-Iteration Gate` and stop only after the latest internal review pass finds no new actionable issues.
+    Do not expose intermediate review rounds; output one consolidated review with exactly one `Merge Decision`.
+15. During the self-iteration loop, include at least one explicit adversarial pass that assumes the PR is unsafe and actively searches for:
+    - one cross-dialect or adjacent-feature regression path,
+    - one config-disabled or feature-flag-off path,
+    - one original symptom path that is only partially covered by tests.
+    If any of these remain unresolved, set `Merge Decision: Not Mergeable`.
+16. If a PR changes SQL parser behavior, grammar, visitor logic, supported SQL cases, or parser tests for a dialect,
+    you must complete both syntax-validity review and dialect-family impact review before concluding:
+    - Every SQL syntax added, changed, accepted, rejected, or suggested in the review must be backed by the target database's official documentation for the exact database family and relevant version.
+    - This applies both to the PR's changed SQL syntax and to any SQL syntax examples or recommendations you propose in review comments.
+    - Follow the SQL parsing maintenance relationships defined by the repo conventions, for example `MySQL -> MariaDB, Doris`.
+    - If the PR changes a trunk dialect parser, inspect whether each branch dialect that reuses or copies that parser logic has the same root cause, regression risk, or missing validation.
+    - If the PR changes a branch dialect parser, inspect whether the same root cause also exists in the corresponding trunk dialect or sibling branch dialects because of shared or copied grammar / visitor logic.
+    - For each related dialect, classify it as: `same issue confirmed`, `not applicable with evidence`, or `unresolved`.
+    - If official documentation support is missing, ambiguous, or contradicts the PR behavior, bias to `Merge Decision: Not Mergeable`.
+    - If any related dialect remains unresolved, or the review skips the family scan, bias to `Merge Decision: Not Mergeable`.
+    - Do not recommend unsupported or undocumented SQL syntax in review feedback.
+17. If a method reachable from the Proxy or JDBC DML/DQL high-frequency SQL execution path uses `ConcurrentHashMap#computeIfAbsent`,
+    require a preceding `get` lookup and call `computeIfAbsent` only when the value is missing, to avoid the JDK 8 implementation bottleneck.
+    If this pattern is absent and the path is high-frequency, bias to `Merge Decision: Not Mergeable`.
+18. Do not use GitHub Actions, CI status, or check-run completion as part of the merge decision unless explicitly requested by the user.
+19. Use repository-declared formatting/style gates as the formatting authority; do not introduce extra formatting blockers outside those gates by default.
+20. Treat GitHub PR metadata and `/pulls/{number}/files` as the authoritative scope boundary.
+    Before reporting unrelated changes or making any scope-based finding, verify that the local diff file list matches GitHub's file list.
+    If the lists differ, stop the review, refresh the PR refs, and resolve the diff-boundary mismatch before drawing conclusions.
+21. If a target-dialect or target-feature fix touches shared modules, run a shared-layer ownership gate before considering `Mergeable`.
+    Classify every shared change as one of: required generic hook, target-specific semantic leakage, or unrelated/substantive scope expansion.
+    If shared code contains target dialect names, target protocol state, target-specific method names, hard-coded target database type strings, or target lifecycle concepts,
+    bias to `Merge Decision: Not Mergeable` unless the PR proves this is an intentional generic contract for all affected dialects/features.
+22. For new or changed constructors, public/shared methods, return values, fields, cache keys, and session/executor state, run an implicit-state review.
+    Look for ordinary values used as hidden business states, mode switches, lifecycle markers, or feature flags, including but not limited to:
+    `null`, magic numbers, empty strings, overloaded booleans, special enum values, empty collections, no-op objects, type-name string checks,
+    partially initialized objects, begin/finish temporal side effects, and context/global side channels.
+    If such implicit state controls behavior across shared modules or public APIs, require an explicit model such as a non-null key/token,
+    a dedicated state object, a clear enum with one meaning per value, or an explicit absence-return contract where repository rules allow it.
+    If the implicit state leaks target-specific semantics into shared code, bias to `Merge Decision: Not Mergeable`.
+23. If a PR claims to fix, close, or resolve one or more issues, run a linked-issue completeness gate before considering `Mergeable`.
+    Read the linked issue body and relevant issue comments, decompose the issue into required symptoms, expected behaviors, affected topologies, inputs, and edge cases,
+    and map each required issue behavior to concrete PR code changes and validation evidence.
+    If the issue cannot be read, the issue scope is ambiguous, any required issue behavior is only partially fixed, or the PR over-claims the fix scope,
+    bias to `Merge Decision: Not Mergeable` and list the minimum missing implementation or evidence.
+24. Before considering `Mergeable`, run the `Mergeable Hard Gates`.
+    If any required gate is unresolved, unsupported by evidence, or failed, set `Merge Decision: Not Mergeable`.
+
+## Mergeable Hard Gates
+
+Apply these gates before considering `Merge Decision: Mergeable`.
+If a gate is not applicable to the PR, state the reason briefly in the review evidence or details.
+Do not turn speculative risks, personal style preferences, or out-of-scope polish into merge blockers.
+
+1. Root Cause Gate:
+   - The PR must repair the true trigger point or required propagation path, not only the final error point.
+   - Fallbacks, defaults, null checks, try-catch blocks, or swallowed errors cannot substitute for root-cause repair.
+   - If the root-cause chain cannot be proven fixed, set `Merge Decision: Not Mergeable`.
+2. Linked Issue Completeness Gate:
+   - Keep and apply the existing linked-issue completeness rules whenever the PR claims to fix, close, resolve, or address an issue.
+3. Scope & Ownership Gate:
+   - Substantive unrelated changes, substantive scope expansion, and broad cleanup outside the PR goal block mergeability.
+   - For pluggable features, dialects, rules, registry centers, or protocol modules, the fix should stay in the owning module by default.
+   - Shared modules may be changed only for generic contracts or hooks that make sense for all affected owners.
+   - Target-specific names, lifecycle concepts, protocol state, database strings, or comments in shared code are blockers unless proven to be an intentional generic contract.
+4. Regression & Side Effect Gate:
+   - The PR must not leave unresolved functional degradation, compatibility, performance, config, API/SPI, SQL dialect, feature-disabled path, or adjacent-feature risks.
+   - "No side effects" means no identified but unresolved or unvalidated side-effect risk in the reviewed scope; do not require impossible exhaustive proof.
+5. Test Adequacy Gate:
+   - New or changed production code or behavior needs corresponding test evidence.
+   - Bug fixes should have regression tests for the reported symptom or root-cause path.
+   - New features should cover the main success path and important boundary, disabled, or error paths.
+   - Existing tests may satisfy this gate only when they clearly exercise the changed behavior.
+   - Judge tests by behavior and root-cause coverage, not by coverage-rate or environment breadth alone.
+   - High-cost environment, native-image, distributed-system, or end-to-end validation blocks mergeability only when lower-level public-path tests and code evidence cannot prove the root-cause repair,
+     or when the current PR itself owns that environment integration behavior.
+   - For narrow split PRs whose code path can be proven locally, environment validation may be delegated to the umbrella PR or integration test scope; state that boundary in `Review Details` instead of turning it into a blocker.
+   - Do not require coverage-rate proof, and do not block mergeability solely because a coverage report was not produced.
+6. Code Quality Gate:
+   - Block only concrete maintainability problems, such as unclear responsibility, duplicated logic, dead code, over-complex control flow, hidden state, magic values, or hard-to-read temporary design.
+   - Do not turn ordinary naming/style preferences or optional nits into blockers unless they violate repository rules or create real maintenance risk.
+7. Architecture Gate:
+   - Trigger a deeper architecture review when the PR touches shared modules, public/shared APIs, SPI contracts, metadata, rule owners, dialect owners, session/executor state, or lifecycle state.
+   - The PR must preserve module ownership, explicit contracts, SPI/metadata boundaries, and clear state models.
+   - Broken layering, bypassed owner modules, target-specific semantics in shared code, or implicit lifecycle states block mergeability.
+8. Release Note Gate:
+   - Required when the PR introduces or changes user-visible behavior that users, DBAs, operators, or application developers need to know for upgrade, troubleshooting, configuration,
+     migration, rollback, compatibility assessment, or meaningful release awareness.
+   - Usually not required for test-only changes, pure refactoring with no behavior change, formatter/import/typo/comment-only changes,
+     internal bug fixes that restore already documented behavior without new user action, or CI/build changes that do not affect released artifacts, supported platforms, dependencies,
+     or user-visible build behavior.
+   - For split or staging PRs, a release note may be deferred to the umbrella PR when the umbrella PR owns the user-facing release story and the split PR is not expected to ship independently.
+     If deferring, verify and state the delegation reason; do not require duplicate release-note entries that would only create low-signal changelog noise.
+   - If the split PR can be released independently and the fix has meaningful user-facing impact, require the release note in the split PR.
+   - Required release notes must update `RELEASE-NOTES.md` in the proper category and describe the user-visible outcome, affected module or feature,
+     and important compatibility, configuration, upgrade, or rollback impact when applicable.
+   - Release notes must be understandable to users, DBAs, operators, and application developers, not only maintainers.
+   - Missing, misleading, implementation-only, wrong-category, or over-claimed release notes block mergeability only after the gate determines that a release note is required for the current PR.
+9. User Documentation Impact Gate:
+   - If users need documentation to correctly use, configure, upgrade, troubleshoot, or understand the changed behavior, check the relevant user docs.
+   - Missing required docs for user-facing configuration, DistSQL, SQL support, API/SPI usage, Proxy/JDBC behavior, or upgrade flow block mergeability.
+10. Breaking Change / Migration Impact Gate:
+   - If the PR changes default behavior, config keys, API/SPI contracts, protocols, metadata storage, SQL semantics, or released artifacts,
+     require explicit compatibility, migration, upgrade, and rollback evidence.
+   - Unexplained breaking or migration impact blocks mergeability.
+11. Error Message / Diagnostics Quality Gate:
+   - If the PR changes exceptions, error codes, logs, or diagnostic output, the result must be accurate, actionable, and safe for users.
+   - Diagnostics that hide the real failure, mislead users, regress troubleshooting, or expose sensitive information block mergeability.
+12. Dependency / Distribution Impact Gate:
+   - If dependency manifests, lockfiles, distribution packaging, native-image metadata, LICENSE, NOTICE, or release artifacts change,
+     check security, license, compatibility, packaging, and release impact before considering `Mergeable`.
+
+## Review Boundary
+
+- Review PR code, tests, behavior, compatibility, regression risk, and scope.
+- For GitHub PRs, derive the reviewed file list from the latest PR head and GitHub `/pulls/{number}/files`, then use local git only to reproduce and inspect that scope.
+- Do not inspect or use GitHub Actions, CI status, or check-run completion for the merge decision unless the user explicitly asks for CI review.
+- Do not treat CI pending, failing, or passing as a review finding by default; final approvers and mergers handle that gate.
+- Use the repository-declared formatting and style gates as authority. For ShardingSphere, Spotless and Checkstyle are the formatting/style gates.
+- Do not treat `git diff --check` as a blocker when it conflicts with Spotless/Checkstyle behavior, unless the user explicitly asks for that check.
+
+## Non-Behavioral Churn Rule
+
+- Still include import-only, whitespace-only, and formatter-only files in `Reviewed Scope` when GitHub `/pulls/{number}/files` includes them.
+- `import-only` includes normal imports, static imports, import ordering, import grouping, and unused-import cleanup when there is no production or test behavior change.
+- Do not report import-only, whitespace-only, or formatter-only changes as `Issues`, `Unrelated Changes`, or rollback requests by default.
+- Do not set `Merge Decision: Not Mergeable` solely because of import ordering, unused-import cleanup, whitespace normalization, or IDE/formatter cleanup.
+- Mention them only when they are excessive, obscure the real diff, fail Spotless/Checkstyle, touch many unrelated files, or conflict with an explicit reviewer/user/repo scope rule.
+
+## PR Diff Boundary Rule
+
+When reviewing a GitHub PR locally, never use `base.sha..head.sha` or the current base branch tip as the PR scope boundary.
+Those ranges can include changes that landed on the base branch after the PR branch diverged.
+
+Always reproduce GitHub PR "Files changed" with triple-dot semantics:
+
+1. Fetch the latest base ref and PR head ref.
+2. Record the latest PR `head.sha`, base ref/SHA, and local `MERGE_BASE=$(git merge-base <base-ref> <head-ref>)`.
+3. Review local changes with `git diff <MERGE_BASE>..<head-ref>` or `git diff <base-ref>...<head-ref>`.
+4. Cross-check `git diff --name-status <MERGE_BASE>..<head-ref>` against GitHub `/pulls/{number}/files`.
+5. If the file count or path list differs, do not report unrelated changes or scope findings; refresh refs or use the GitHub file list until the mismatch is explained.
 
 ## Execution Boundary
 
@@ -45,10 +211,27 @@ description: >-
 
 Priority from high to low:
 
-1. PR facts: diff, commit history, review comments, CI status, check results.
+1. PR facts: diff, commit history, GitHub-visible review comments, and code/test changes.
 2. Related issues in the same repo, relevant module code/tests, historical behavior (optional git blame/log).
 3. ShardingSphere official docs and official repo conventions.
 4. External authoritative specs only when necessary (official standards/docs only).
+
+For the GitHub-facing review body, cite or summarize only public evidence from the list above.
+Local verification may support the review, but output only sanitized command summaries, exit codes, and repository-relative paths.
+Do not output local absolute paths, random temporary file or directory names, private/internal/downstream identifiers, private chat content, prompt text, or intermediate reasoning notes.
+
+CI status and check-runs are out of scope unless explicitly requested by the user.
+
+For SQL parser reviews:
+
+- Prefer the target database's official SQL reference/manual as first-class evidence.
+- When the PR or your review comment mentions a concrete SQL syntax form, cite the exact official doc page that supports that form.
+- If the official docs do not clearly support the syntax, do not infer support from another dialect, secondary article, or parser implementation alone.
+- Build a dialect-family evidence set when parser logic changes:
+  - Check repo conventions for trunk/branch relationships first.
+  - If the touched dialect is a trunk parser, inspect affected branch dialect parser files, tests, and doc paths.
+  - If the touched dialect is a branch parser, inspect the trunk parser and any sibling branch dialects that may share or copy the same logic.
+- Check ShardingSphere docs/examples/release notes when parser behavior changes, especially if the PR alters supported syntax, unsupported syntax, or dialect-specific examples.
 
 Forbidden sources:
 
@@ -56,7 +239,7 @@ Forbidden sources:
 
 ## Review Efficiency Rules
 
-- In the current reply, prioritize blocking issues and `Merge Verdict`.
+- In the current reply, prioritize `Summary`, blocking issues, and minimum next actions.
 - If the PR is obviously too large (too many files or too much churn), suggest splitting first.
 - If full review cannot be completed immediately, provide high-risk blockers first to avoid blocking the delivery chain.
 
@@ -68,12 +251,27 @@ Before deep review, answer:
 2. Do current changes directly touch the suspected root-cause path?
 3. Is there corresponding validation (unit/integration/regression tests)?
 4. Are there file changes unrelated to the stated goal?
+5. Does the patch change documented semantics such as name resolution, default schema, fallback precedence, or routing order?
+6. Is there at least one counterexample or negative scenario validated, not only the reported happy path?
+7. If SQL parser is changed, has the review checked related trunk / branch dialects and confirmed whether the same issue also exists there?
+8. If SQL parser is changed, do official docs and ShardingSphere docs both support the new behavior, or is a doc update required?
+9. If the PR claims to fix one dialect/feature, do shared modules contain target-specific names, strings, state, or lifecycle methods?
+10. Are all shared-module changes generic hooks, or did the target-specific semantic owner move into shared code?
+11. Did the PR add or change constructors/public APIs in a way that allows partial initialization or hidden modes?
+12. Does the PR use ordinary values such as `null`, magic ids, empty strings, booleans, empty collections, no-op objects, or special enum values to represent feature-disabled,
+    cache-inactive, no-current-context, fallback, or other business state?
+13. If the PR links or claims to fix an issue, has the review decomposed the issue into required behaviors and verified that the PR fully covers each one?
+14. Does the PR need a release note entry, and if so, is the entry user-facing, accurate, correctly categorized, and scoped to the actual change?
+15. Does the PR require user documentation updates for configuration, DistSQL, SQL support, API/SPI usage, Proxy/JDBC behavior, troubleshooting, or upgrade flow?
+16. Does the PR introduce breaking, migration, compatibility, packaging, or rollback impact that users need to understand?
+17. If exceptions, error codes, logs, or diagnostics changed, are they accurate, actionable, and safe?
 
 Triage policy:
 
 - Information complete: proceed with full review.
 - Missing evidence: mark as "not mergeable" and request minimum additional info.
-- Any off-topic/unrelated changes: mark as "not mergeable" and require scope narrowing.
+- Any substantive off-topic/unrelated changes or substantive scope expansion: mark as "not mergeable" and require rollback or scope narrowing.
+  Ignore non-behavioral import-only, whitespace-only, and formatter-only churn for mergeability unless it meets the Non-Behavioral Churn Rule escalation conditions.
 - Change set too large: request split first, and provide only blocker-level feedback for current version.
 
 ## Minimum Additional Information List (Fixed Template)
@@ -86,30 +284,93 @@ When information gaps block mergeability, request at least:
 - Minimal reproducible input (SQL/request/config snippet) with expected vs actual behavior.
 - Key logs or stack traces.
 - Test evidence mapped one-to-one with fix points (new or adjusted tests).
+- Release note, user documentation, migration, or diagnostics evidence when the PR has user-visible impact.
+- For SQL parser reviews: official documentation links/pages for the exact syntax and version, plus any affected ShardingSphere doc paths or examples.
 
 ## Review Workflow
 
+CI/check-run review is not part of this workflow unless explicitly requested; do not query or report it by default.
+
 1. Define target and boundary: restate PR goal, impacted modules, target topology (JDBC or Proxy, Standalone or Cluster).
-2. Root-cause modeling: reconstruct "trigger condition -> failure path -> result" from issue and code path.
+2. Root-cause and linked-issue modeling: reconstruct "trigger condition -> failure path -> result" from issue and code path.
+   If the PR links an issue, decompose the issue body and relevant issue comments into required symptoms, expected behaviors, affected runtime topology, inputs,
+   boundary cases, and maintainer-requested constraints before assessing the patch.
 3. Fix mapping: verify each change covers the root-cause chain, not just symptoms.
+   For linked issues, map every required issue behavior to a concrete PR change and at least one validation point; do not infer complete issue closure from one happy path.
 4. Risk scan:
    - Design: abstraction level, responsibility boundaries, temporary compatibility branches
+   - Shared-layer ownership: if the PR is scoped to one dialect/feature but touches shared modules, separate required generic hooks from target-specific logic.
+     Check whether shared code now imports, names, stores, or branches on the target dialect/feature, and whether the shared abstraction would still make sense without that target.
+   - Constructor/API invariants: inspect every new/changed constructor and public/shared method. Check whether objects can now be constructed in partial, nullable, or hidden-mode states.
+   - Implicit state encoding: inspect whether ordinary values are used as hidden mode switches. Search the PR diff for `null`, magic ids, empty strings,
+     overloaded booleans, `UNKNOWN`/`NONE`/`DEFAULT`, empty collections, no-op implementations, type-name string checks, and begin/finish side effects.
+     Ask what state the value really represents and whether that state should instead be a named object, enum, key, token, or target-module-owned lifecycle API.
    - Performance: new loops/remote calls/object allocations on hot paths
+   - Performance: in Proxy/JDBC DML/DQL high-frequency SQL paths, flag direct `ConcurrentHashMap#computeIfAbsent` use without a preceding `get` miss check
    - Compatibility: behavior/config/API-SPI/SQL dialect versions
    - Regression: similar statements, adjacent features, exception branches
+   - For parser, binder, routing, and default-schema changes, explicitly compare the new behavior against official dialect semantics and check whether precedence or shadowing rules changed
+   - For SQL parser changes, build the dialect-family map first using repo conventions, then expand the review to related trunk / branch dialects that reuse, share, or copy the touched parser logic
+   - For SQL parser changes, verify every changed syntax form in the PR against the target database's official documentation, and reject syntax support that cannot be proven from official docs
+   - For SQL parser review comments, ensure every suggested SQL syntax example or recommended acceptance/rejection rule is also supported by the target database's official documentation; do not suggest parser behavior that official docs do not support
+   - For each related dialect in the same parser family, decide whether the same root cause exists, whether the PR also fixes it, and whether extra review feedback is required; do not silently treat unreviewed related dialects as safe
+   - Check ShardingSphere docs, examples, and release-note expectations for parser behavior changes; if docs and parser behavior diverge, require correction or explicit explanation
+   - If shared code is touched, build a blast-radius list of affected dialects/features and review at least one non-target example against its documented semantics
+   - If config flags or temporary properties exist on the touched path, review both enabled and disabled states
+   - If exceptions, error codes, logs, or diagnostics changed, check that users can understand and act on the new output and that no sensitive data is exposed
 5. Test adequacy:
    - Is there a failing case first or reproducible steps?
    - Are major branches, boundaries, and counterexamples covered?
    - Are tests mapped one-to-one with fix points?
+   - Does new or changed production code or behavior have corresponding test evidence, either from new/adjusted tests or existing tests that clearly cover the changed behavior?
+   - Does the requested validation prove a real behavior branch or root-cause path, rather than merely improving coverage percentage?
+   - If native-image, container, cluster, performance, or other expensive environment validation is missing, decide whether the current PR truly owns that integration proof,
+     or whether public-path tests plus code evidence are enough for this split PR and the environment proof belongs to a broader umbrella PR.
+   - Do not require coverage-rate proof as part of this review.
+   - For SQL parser family scans, check whether each related dialect with the same root cause has direct validation or explicit evidence for non-applicability
+   - Distinguish fixture-assisted validation from production-path validation; if tests bypass the real assembly chain,
+     metadata loader, SPI discovery path, or routing path, state that gap explicitly and downgrade confidence
+   - If the PR adds multiple static metadata definitions, verify that regression tests cover the originally reported objects one-to-one; do not infer coverage from a single representative object unless the code path is truly identical and that equivalence is stated
 6. Supply-chain and license gates (triggered by changes):
-   - If dependency manifests or lockfiles changed, check vulnerability severity and license constraints
+   - If dependency manifests, lockfiles, distribution packaging, native-image metadata, LICENSE, NOTICE, or release artifacts changed, check vulnerability severity, license constraints,
+     compatibility, packaging, and release impact
    - Mark whether extra security review is required
-7. Unrelated-change screening: identify code/format/refactor changes not directly tied to PR goal; require removal or rollback.
-8. Version baseline control:
+7. Unrelated-change screening: identify substantive code/config/refactor changes not directly tied to PR goal; require removal, rollback, or scope narrowing.
+   Ignore non-behavioral import-only, whitespace-only, and formatter-only churn for mergeability unless it meets the Non-Behavioral Churn Rule escalation conditions.
+8. User-facing impact screening:
+   - Decide whether `RELEASE-NOTES.md` is valuable and required for the current PR, not required with reason, delegated to an umbrella PR, missing, misleading, or over-claimed.
+   - Do not require low-signal release-note entries for narrow internal fixes that only restore already documented behavior and do not change what users must do.
+   - Decide whether user docs, migration notes, compatibility notes, or rollback guidance are required for the changed behavior.
+9. Version baseline control:
    - Base conclusion only on PR latest code version
    - If new commits are added, current conclusion becomes invalid and must be re-reviewed on latest version
-9. Merge decision: output `Merge Verdict`.
-10. Generate feedback: follow the output template below.
+10. Self-iteration gate: repeat internal review passes until the latest pass finds no new actionable findings.
+11. Merge decision: output `Merge Decision`.
+12. Generate feedback: follow the output template below.
+
+## Self-Iteration Gate
+
+Before producing the final review output, run an internal self-review loop on the latest PR version:
+
+1. Build the current candidate findings from the completed review pass.
+2. Ask explicitly:
+   "If I review this same latest PR again from a fresh critical perspective, can I find any new actionable issue, unresolved risk, missing evidence, or scope problem not already captured?"
+3. Re-run the review against the authoritative PR scope, focusing on:
+   - Missed root-cause gaps.
+   - Missed side effects or regression paths.
+   - Missed test adequacy gaps.
+   - Missed cross-dialect, feature-disabled, fallback, or boundary cases.
+   - Missed shared-layer ownership problems: target-specific concepts placed in shared modules, unclear owners for shared state, or generic hooks mixed with dialect semantics.
+   - Missed implicit-state problems: nullable constructors, partial object states, magic values, overloaded booleans, no-op objects, type-name switches, or other hidden mode encodings.
+   - Missed unrelated substantive changes.
+   - Missed release note, user documentation, migration, diagnostics, dependency, or distribution impact.
+   - Missed output-template or evidence gaps.
+4. If the self-review finds any new actionable issue, add it to the candidate findings, deduplicate it against existing findings,
+   update the merge decision and next steps if needed, and repeat the loop.
+5. Do not treat restatements, optional polish, speculative risks outside the PR scope, or already captured issues as new actionable findings.
+6. Stop only when the latest self-review pass finds no new actionable issues compared with the accumulated candidate findings.
+7. Do not expose intermediate review rounds, draft decisions, or self-review transcripts to the user.
+8. Produce one consolidated final review with exactly one `Merge Decision`.
 
 ## Root-Cause Validation Checklist (Must Answer Each)
 
@@ -118,33 +379,108 @@ When information gaps block mergeability, request at least:
 - Is it only adding null checks/defaults/try-catch without fixing root cause?
 - Does it introduce silent error swallowing or downgrade to wrong semantics?
 - Are adjacent paths sharing the same root cause also validated?
+- If SQL parser is touched, were related trunk / branch dialects checked for the same root cause or divergence in shared / copied parser logic?
+- Does the fix preserve the original precedence or lookup semantics for adjacent valid cases?
+- Would a same-name or shadowing case take a different path after this patch?
+- If the fix sits in shared code, would another dialect or feature now take a different path from its documented semantics?
+- Do the target database official docs and ShardingSphere docs/examples both support the resulting parser behavior, or is a documentation mismatch still open?
+- Does the config-disabled or feature-flag-off path still behave correctly?
 
-If the root-cause chain cannot be fully proven fixed, set `Merge Verdict: Not Mergeable`.
+If the root-cause chain cannot be fully proven fixed, set `Merge Decision: Not Mergeable`.
+
+## Linked Issue Completeness Gate
+
+Apply this gate whenever a PR title, body, commit message, label, or author comment claims to fix, close, resolve, or address one or more issues.
+
+Must answer:
+
+- Which issue(s) does the PR claim to fix or close?
+- What are the issue's stated symptoms, expected behavior, affected topology, database type/version, configuration, and reproduction path?
+- Are there implicit requirements in issue comments, maintainer replies, linked discussions, reproduction snippets, or follow-up clarifications?
+- Does the PR fix every required part of the issue, or only the primary happy path?
+- Does each issue requirement map to a concrete code change and at least one validation point?
+- Are any issue requirements left as future work, partial support, unsupported topology, or untested behavior?
+- Does the PR title/body over-claim the fix compared with the actual implementation scope?
+- If the PR narrows the issue scope, is that limitation explicit, technically justified, and accepted by maintainers or the issue context?
+
+If the linked issue cannot be read, the issue scope is ambiguous, or any required issue behavior is only partially fixed or unvalidated,
+set `Merge Decision: Not Mergeable` and list the minimum missing implementation or evidence.
+
+## Shared Scope & Implicit State Gate
+
+Apply this gate whenever a PR touches shared modules, session state, executor/connector paths, cache contexts, SPI contracts, or public constructors/methods.
+
+Must answer:
+
+- What is the target scope stated by the issue/PR?
+- Which changed files are shared by other dialects/features?
+- For each shared change, is it a generic mechanism or target-specific semantic leakage?
+- Does any shared class now contain target dialect names, string checks, protocol ids, target lifecycle methods, or target-specific comments/Javadocs?
+- Did any constructor become nullable, delegate to `this(null)`, or allow partial initialization?
+- Did any public/shared method start returning or accepting values that encode absence, active/inactive state, fallback, or feature enablement implicitly?
+- Did any field/cache key/token use ordinary values as sentinels, such as `null`, magic numbers, empty strings, special enum values, overloaded booleans,
+  empty collections, no-op objects, or type-name strings?
+- Is there a begin/finish temporal side effect or context/global side channel whose state is not explicit in the API contract?
+- Could the same behavior be expressed with a non-null generic key, explicit state object, clear enum, target-module-owned lifecycle API, or documented absence-return contract?
+- Do tests validate generic shared behavior separately from target dialect activation?
+
+If target-specific semantics leak into shared code, or if implicit state is used as a mode switch in new/changed shared APIs, set `Merge Decision: Not Mergeable`.
 
 ## Risk Checklist (Must Cover)
 
 - Design risk: broken layering, duplicated logic, bypassed SPI/metadata cache, implicit state.
-- Performance risk: complexity increase, extra hot-path allocations, unbounded retries, blocking I/O.
+- Performance risk: complexity increase, extra hot-path allocations, unbounded retries, blocking I/O, or direct `ConcurrentHashMap#computeIfAbsent` in Proxy/JDBC DML/DQL high-frequency SQL paths without a preceding `get` miss check.
 - Compatibility risk:
   - Behavior compatibility
   - Config compatibility
   - API/SPI compatibility
   - SQL compatibility (database/version/dialect)
+  - Name-resolution or fallback-precedence compatibility
+  - Feature-flag or disabled-path compatibility
 - Functional degradation risk: old-scenario regression, boundary input behavior changes, error-code/exception semantic drift.
+- Cross-dialect/shared-path risk: a target-specific fix changing generic behavior for other databases or features.
+- SQL parser family risk: the target dialect is fixed but branch dialects or copied parser variants still retain the same defect or become inconsistent.
+- Documentation risk: user-visible behavior changes without matching official-doc support, ShardingSphere docs/examples, or release notes that are valuable and required for the current PR.
+- Migration risk: breaking behavior, config, API/SPI, protocol, metadata storage, SQL semantic, distribution, or rollback impact without clear user-facing guidance.
+- Diagnostics risk: error messages, error codes, logs, or troubleshooting output that is misleading, unactionable, regressed, or unsafe.
 - Operational risk: config migration complexity, gray-release and rollback complexity.
-- Supply-chain risk: vulnerabilities, licenses, transitive dependency changes from new deps.
+- Supply-chain/distribution risk: vulnerabilities, licenses, transitive dependency changes, packaging changes, native-image metadata, LICENSE, NOTICE, or release artifact changes.
 
-## Coverage Statement (Required in Every Review)
+## Boundary Validation Review Guidance
 
-Each review must declare:
+- Identify the authoritative input boundary before requiring validation changes.
+  Examples: YAML swappers/validators, CLI parsers, REST/API request binders, SPI loaders, protocol decoders, SQL parsers, or config-center loaders.
+- If the authoritative boundary already rejects invalid input and all production entry paths pass through it,
+  do not require duplicate validation in downstream value holders, runtime contexts, or internal DTOs by default.
+- Require downstream validation only when there is evidence of another production path that bypasses the boundary, public/shared API exposure, untrusted deserialization,
+  asynchronous/shared ownership risk, or a documented invariant owned by the downstream type.
+- Prefer tests that prove boundary-to-runtime propagation and adjacent valid values over adding defensive checks at every layer.
+- If boundary ownership is unclear, ask for production entry-path evidence and treat duplicate validation as a design question, not an automatic blocker.
 
-- `Reviewed Scope`: files/modules actually reviewed this round.
+## Review Details Statement (Required in Every Review)
+
+Each review must include a `Review Details` section with:
+
+- `Reviewed Scope`: files/modules actually reviewed this round, plus the latest PR head SHA, local merge-base SHA when local git is used, and whether the local file list matched GitHub `/pulls/{number}/files`.
 - `Not Reviewed Scope`: unreviewed or only superficially reviewed areas.
-- `Need Expert Review`: whether domain reviewers are required (security, concurrency, performance, protocol, etc.).
+- `Verification`: reviewer-run commands and exit codes, or a short reason why local verification was not run.
+- `Release Note / User Docs`: required and verified, delegated to an umbrella PR with reason, missing, not required with reason, or not reviewed.
+- For SQL parser reviews, `Reviewed Scope` must explicitly name the target dialect, any related trunk / branch dialects checked, and the documentation pages / repo doc paths used to validate syntax behavior.
+
+If a required domain expert review is still needed, include `Expert Review Needed` in `Summary`; omit it when no expert review is required.
+Treat expert review as blocking only when the current PR's merge safety cannot be decided from available code, tests, docs, and authoritative evidence.
+Do not mark expert review as blocking merely because the PR is adjacent to a specialized domain, or because broader umbrella/integration validation remains outside this PR's scope.
+When the remaining specialized review is advisory, delegated to an umbrella PR, or only needed before a larger feature release, state that boundary in `Review Details` instead of blocking mergeability.
+Require blocking expert review when merge safety for the current PR depends on specialized domains such as security, parser grammar or dialect semantics, Proxy protocol/authentication/packet behavior,
+high-concurrency or high-frequency performance paths, transaction/pipeline/data consistency, shared metadata/binder/routing/default-schema behavior, dependency/license changes,
+or any area the reviewer cannot confidently validate from available evidence.
 
 ## Multi-Round Change Request Comparison Rules
 
-When the user provides previous-round feedback or PR adds new commits, perform incremental comparison:
+Apply this section only when previous feedback exists in GitHub-visible PR review comments, review threads, or change requests.
+Do not output `Multi-Round Comparison` for local chat-only iterations, private reviewer analysis, or commit-history-only changes.
+
+When GitHub-visible previous-round feedback exists, perform incremental comparison:
 
 1. Build a "previous issues list" and mark each as:
    - Fixed
@@ -158,41 +494,110 @@ When the user provides previous-round feedback or PR adds new commits, perform i
 
 ## Output Structure
 
+### GitHub Review Markdown Requirements
+
+- Format every review as GitHub-flavored Markdown that can be pasted directly into a PR comment or review body.
+- The GitHub-facing review body must not be wrapped in a code fence, blockquote, XML/HTML container, or plain-text transcript.
+- Use the same natural language as the user request unless the user explicitly asks for another language.
+- Use Markdown headings (`### Summary`, `### Issues`, etc.) with a blank line before and after each heading.
+- Keep the GitHub Markdown structure unchanged regardless of output language.
+- Keep `Merge Decision: ...` as a bold bullet in `Summary`, and output exactly one merge-decision line.
+- Keep stable review labels in English, such as `Merge Decision`, `Reason`, `Expert Review Needed`, `Reviewed Scope`, `Not Reviewed Scope`, and `Verification`,
+  so they remain searchable and consistent.
+- Do not include internal self-iteration rounds, draft decisions, or self-review transcripts in the GitHub-facing review body.
+- Keep `Reason` to one sentence or one short bullet; put proof in `Evidence`, and put confirmed blockers plus missing required proof in `Issues`.
+- Use `Evidence` for facts found in the reviewed artifacts, such as code paths, tests, documentation, compatibility checks, and root-cause proof.
+- Use `Verification` only for reviewer-run local commands and exit codes, or why those commands were not run.
+- Use short unordered bullets under each heading; use bold inline labels such as `Problem:`, `Impact:`, and `Required Change:` for issue details.
+- In `### Issues`, list every merge-blocking issue discovered in the reviewed scope; do not imply that other unlisted blocking issues exist.
+- Use only `P0`, `P1`, or `P2` for issue severity: `P0` for security, data-loss, metadata corruption, or broken core behavior; `P1` for confirmed functional regressions,
+  incomplete root-cause fixes, incompatible behavior, or high-risk side effects; `P2` for lower-risk but still merge-blocking defects, missing targeted validation, or required scope cleanup.
+- Omit optional nits from `### Issues` unless they are part of a merge-blocking pattern.
+- If missing required evidence blocks mergeability, mention that in `Summary` -> `Reason`, and include the detailed blocker in `### Issues`.
+- Only missing evidence that blocks mergeability belongs in `### Issues`; non-blocking verification gaps belong in `Review Details` -> `Verification`.
+- Do not put blocking missing-evidence requests only in `Review Details`; that section is for review scope and verification facts.
+- Omit `### Next Steps` unless it adds non-duplicative cross-issue sequencing, verification commands, or minimum missing information.
+- Use repo-relative paths with line numbers, for example `infra/.../Foo.java:123`; do not use local absolute file paths in GitHub-facing review text.
+- Prefer bullets over tables. Use tables only for compact status summaries that remain readable in GitHub's narrow review pane.
+- Keep command evidence in inline code or short fenced blocks; avoid long raw JSON, full logs, or unrendered terminal transcripts.
+- Before final output, perform a formatting self-check on the inner GitHub-facing review body:
+  - The inner GitHub-facing review body is not wrapped in a code fence, blockquote, XML/HTML container, or transcript.
+  - The inner GitHub-facing review body contains the required `###` headings for the selected decision template.
+  - The inner GitHub-facing review body contains exactly one bold `Merge Decision: ...` line.
+  - File references are repo-relative paths with line numbers, not local absolute paths.
+  - Stable labels remain in English.
+  - The inner GitHub-facing review body contains no non-public downstream project names, private/internal repository names, customer-specific or vendor-specific context,
+    private chat content, prompt process, internal self-review notes, local-only archive details, private migration background, or intermediate discussion results.
+  - Local verification evidence is sanitized: no local absolute paths, home directories, random temporary file or directory names, tokens, private addresses, or undisclosed vulnerability details.
+
+### Codex Chat Delivery
+
+- When returning the review in Codex chat for the user to copy, wrap the GitHub-facing review body in a fenced `markdown` code block.
+- The fenced code block is only a chat delivery wrapper; it is not part of the GitHub-facing review body.
+- Tell the user to copy only the content inside the fenced block.
+- Keep any copy instruction outside the fenced block, and keep it free of non-public downstream, private/internal, customer-specific, vendor-specific,
+  prompt-process, or intermediate-discussion details.
+- When posting directly to GitHub through an API or tool, submit only the inner GitHub-facing review body and do not include the outer fence.
+- Apply the formatting self-check to the inner GitHub-facing review body, not to the chat delivery wrapper.
+
 ### A. Not Mergeable (Change Request)
 
-Use committer tone, gentle wording, no emojis; structure:
+Use committer tone, gentle wording, no emojis; use this GitHub Markdown skeleton for required sections:
 
-1. Decision block
-   - `Merge Verdict: Not Mergeable`
-   - `Reviewed Scope / Not Reviewed Scope / Need Expert Review`
-2. Positive feedback (optional)
-   - Include only when there are genuinely correct direction-aligned changes.
-   - Omit if none.
-3. Major issues
-   - List unreasonable/incorrect points by severity.
-   - Each issue includes: label, symptom, risk, recommended action (fix or rollback).
-4. Newly introduced issues
-   - Point out defects/regression risks introduced by this PR.
-   - Clearly require fix or rollback.
-5. Unrelated changes (output only when present)
-   - List changes unrelated to this PR goal and request rollback.
-6. Next-step suggestions
-   - Provide executable fix checklist and encourage next revision.
-7. Multi-round comparison (only when history exists)
-   - Versus previous round: closed, unresolved, and new items.
-8. Evidence supplement (only when information is insufficient)
-   - Explicitly list minimum additional information and review entry points.
+When required, add `- **Expert Review Needed:** ...` under `Summary`; omit this bullet when no expert review is required.
+
+```markdown
+### Summary
+
+- **Merge Decision: Not Mergeable**
+- **Reason:** ...
+
+### Issues
+
+- **[P0|P1|P2] Short issue title** (`path/to/File.java:123`)
+  - **Problem:** ...
+  - **Impact:** ...
+  - **Required Change:** Please ...
+
+### Review Details
+
+- **Reviewed Scope:** ...
+- **Not Reviewed Scope:** ...
+- **Verification:** ...
+- **Release Note / User Docs:** ...
+```
+
+Optional sections for `Not Mergeable`; do not output optional headings with placeholder text:
+
+- `### Positive Feedback`: insert after `Summary` only when there is a genuinely correct direction-aligned change.
+- `### Unrelated Changes`: insert after `Issues` only when substantive unrelated changes or substantive scope expansion exist, and explicitly ask for rollback or scope narrowing.
+- `### Next Steps`: insert before `Review Details` only when it adds non-duplicative cross-issue sequencing, verification commands, or minimum missing information.
+- `### Multi-Round Comparison`: insert before `Review Details` only when previous-round feedback exists in GitHub-visible PR comments, review threads, or change requests.
 
 ### B. Mergeable
 
-1. Decision block
-   - `Merge Verdict: Mergeable`
-   - `Reviewed Scope / Not Reviewed Scope / Need Expert Review`
-2. Basis
-   - Root-cause fix evidence.
-   - Risk assessment results (proving no unresolved risk).
-3. Pre-merge checks
-   - CI, tests, compatibility confirmations.
+Use this GitHub Markdown skeleton:
+
+When required, add `- **Expert Review Needed:** ...` under `Summary`; omit this bullet when no expert review is required.
+
+```markdown
+### Summary
+
+- **Merge Decision: Mergeable**
+- **Reason:** ...
+
+### Evidence
+
+- Root-cause fix evidence.
+- Hard gate evidence covering scope/ownership, regression risk, tests, code quality, architecture, and user-facing release/docs impact.
+
+### Review Details
+
+- **Reviewed Scope:** ...
+- **Not Reviewed Scope:** ...
+- **Verification:** Reviewer-run local verification and exit codes, or why local verification was not run.
+- **Release Note / User Docs:** Required and verified, delegated to an umbrella PR with reason, missing, not required with reason, or not reviewed.
+```
 
 ## Change Request Tone Guidelines
 
@@ -208,6 +613,15 @@ Use committer tone, gentle wording, no emojis; structure:
 
 - Do not output `Mergeable` when evidence is insufficient or risks are unclear.
 - Do not use "fallback logic passes tests" to replace proof of root-cause repair.
-- Do not ignore unrelated changes.
+- Do not treat fixture-injected or mocked-path tests as full end-to-end proof without explicitly stating the gap.
+- Do not output `Mergeable` only because previous-round blockers were closed; always do one fresh-pass semantic and regression scan on the latest head.
+- Do not ignore substantive unrelated changes.
 - Do not reuse old conclusions after new commits are added without re-review.
 - Do not include emojis in change request text.
+- Do not inspect or report GitHub Actions / CI status unless explicitly requested.
+- Do not include non-public downstream project names, private/internal repository names, customer-specific or vendor-specific context, private chats, prompt process, internal archive details,
+  private migration background, intermediate discussion results, local absolute paths, or unsanitized temporary file names in GitHub-facing review output.
+- Do not output `Mergeable` when a required hard gate remains unresolved, including missing required test evidence, release notes, user docs, migration guidance, or diagnostic quality evidence.
+- Do not output `Mergeable` for a shared-code change unless you have checked at least one non-target dialect or feature that also uses the changed path.
+- Do not output `Mergeable` when local verification omitted `-am` on a module-scoped Maven run and dependency freshness matters.
+- Do not output `Mergeable` when Proxy/JDBC DML/DQL high-frequency SQL paths directly call `ConcurrentHashMap#computeIfAbsent` without a preceding `get` miss check.

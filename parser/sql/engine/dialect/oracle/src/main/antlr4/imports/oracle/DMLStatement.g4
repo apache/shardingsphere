@@ -664,8 +664,12 @@ mainModel
     ;
 
 modelColumnClauses
-    : (PARTITION BY LP_ expr alias? (COMMA_ expr alias?)* RP_)?
-    DIMENSION BY LP_ expr alias? (COMMA_ expr alias?)* RP_ MEASURES LP_ expr alias? (COMMA_ expr alias?)* RP_
+    : (PARTITION BY LP_ modelColumn (COMMA_ modelColumn)* RP_)?
+    DIMENSION BY LP_ modelColumn (COMMA_ modelColumn)* RP_ MEASURES LP_ modelColumn (COMMA_ modelColumn)* RP_
+    ;
+
+modelColumn
+    : expr (AS? alias)?
     ;
 
 modelRulesClause
@@ -701,7 +705,7 @@ subquery
 modelExpr
     : (numberLiterals ASTERISK_)? ((measureColumn LBT_ (condition | expr) (COMMA_ (condition | expr))* RBT_)
     | (aggregationFunction LBT_ (((condition | expr) (COMMA_ (condition | expr))*) | (singleColumnForLoop (COMMA_ singleColumnForLoop)*) | multiColumnForLoop) RBT_)
-    | analyticFunction) ((PLUS_ | SLASH_) LP_? modelExpr* RP_? | ASTERISK_ numberLiterals (ASTERISK_ modelExpr)?)?
+    | analyticFunction) ((PLUS_ | SLASH_) LP_? modelExpr* RP_? | ASTERISK_ (numberLiterals | parameterMarker) (ASTERISK_ modelExpr)?)?
     | expr
     ;
 

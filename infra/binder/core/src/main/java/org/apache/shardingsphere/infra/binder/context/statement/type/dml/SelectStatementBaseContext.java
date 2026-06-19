@@ -53,6 +53,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
@@ -124,6 +126,8 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
     private Collection<WhereSegment> createWhereSegments(final SelectStatement selectStatement) {
         Collection<WhereSegment> result = new LinkedList<>();
         selectStatement.getWhere().ifPresent(result::add);
+        selectStatement.getHaving().ifPresent(optional -> result.add(new WhereSegment(optional.getExpr().getStartIndex(), optional.getExpr().getStopIndex(), optional.getExpr())));
+        result.addAll(WhereExtractor.extractHierarchicalQueryWhereSegments(selectStatement));
         result.addAll(WhereExtractor.extractSubqueryWhereSegments(selectStatement));
         result.addAll(WhereExtractor.extractJoinWhereSegments(selectStatement));
         return result;
@@ -396,6 +400,51 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
      * @return contains derived projections or not
      */
     public boolean containsDerivedProjections() {
-        return containsEnhancedTable && !projectionsContext.getExpandProjections().isEmpty();
+        return containsEnhancedTable && !containsPivotOutputShorthandProjection() && !projectionsContext.getExpandProjections().isEmpty();
+    }
+    
+    private boolean containsPivotOutputShorthandProjection() {
+        for (ProjectionSegment each : sqlStatement.getProjections().getProjections()) {
+            if (each instanceof ShorthandProjectionSegment && isPivotOutputShorthandProjection((ShorthandProjectionSegment) each)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isPivotOutputShorthandProjection(final ShorthandProjectionSegment projectionSegment) {
+        if (!sqlStatement.getFrom().isPresent()) {
+            return false;
+        }
+        TableSegment from = sqlStatement.getFrom().get();
+        return projectionSegment.getOwner().isPresent()
+                ? isOwnerPivotTable(projectionSegment.getOwner().get().getIdentifier().getValue(), from)
+                : containsPivotTable(from);
+    }
+    
+    private boolean isOwnerPivotTable(final String owner, final TableSegment tableSegment) {
+        if (tableSegment instanceof JoinTableSegment) {
+            JoinTableSegment joinTableSegment = (JoinTableSegment) tableSegment;
+            return isOwnerPivotTable(owner, joinTableSegment.getLeft()) || isOwnerPivotTable(owner, joinTableSegment.getRight());
+        }
+        return hasPivot(tableSegment) && isOwnerOfTable(owner, tableSegment);
+    }
+    
+    private boolean isOwnerOfTable(final String owner, final TableSegment tableSegment) {
+        return tableSegment.getAliasName().map(optional -> optional.equalsIgnoreCase(owner)).orElse(false)
+                || tableSegment instanceof SimpleTableSegment && ((SimpleTableSegment) tableSegment).getTableName().getIdentifier().getValue().equalsIgnoreCase(owner);
+    }
+    
+    private boolean containsPivotTable(final TableSegment tableSegment) {
+        if (tableSegment instanceof JoinTableSegment) {
+            JoinTableSegment joinTableSegment = (JoinTableSegment) tableSegment;
+            return containsPivotTable(joinTableSegment.getLeft()) || containsPivotTable(joinTableSegment.getRight());
+        }
+        return hasPivot(tableSegment);
+    }
+    
+    private boolean hasPivot(final TableSegment tableSegment) {
+        return tableSegment instanceof SimpleTableSegment && ((SimpleTableSegment) tableSegment).getPivot().isPresent()
+                || tableSegment instanceof SubqueryTableSegment && ((SubqueryTableSegment) tableSegment).getPivot().isPresent();
     }
 }

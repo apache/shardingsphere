@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.identifier;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -26,8 +29,17 @@ public final class IdentifierCaseRuleSet {
     
     private final IdentifierCaseRule defaultRule;
     
+    private final Map<IdentifierScope, IdentifierCaseRule> scopedRules;
+    
     public IdentifierCaseRuleSet(final IdentifierCaseRule defaultRule) {
+        this(defaultRule, Collections.emptyMap());
+    }
+    
+    public IdentifierCaseRuleSet(final IdentifierCaseRule defaultRule, final Map<IdentifierScope, IdentifierCaseRule> scopedRules) {
         this.defaultRule = Objects.requireNonNull(defaultRule, "defaultRule cannot be null.");
+        Map<IdentifierScope, IdentifierCaseRule> actualScopedRules = new EnumMap<>(IdentifierScope.class);
+        actualScopedRules.putAll(Objects.requireNonNull(scopedRules, "scopedRules cannot be null."));
+        this.scopedRules = Collections.unmodifiableMap(actualScopedRules);
     }
     
     /**
@@ -38,6 +50,6 @@ public final class IdentifierCaseRuleSet {
      */
     public IdentifierCaseRule getRule(final IdentifierScope identifierScope) {
         Objects.requireNonNull(identifierScope, "identifierScope cannot be null.");
-        return defaultRule;
+        return scopedRules.getOrDefault(identifierScope, defaultRule);
     }
 }

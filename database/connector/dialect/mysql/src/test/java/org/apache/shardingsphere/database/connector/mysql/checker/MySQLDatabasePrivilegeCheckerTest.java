@@ -233,6 +233,7 @@ class MySQLDatabasePrivilegeCheckerTest {
                 Arguments.of("xa with all privileges on mysql8", PrivilegeCheckType.XA, 8, null, "GRANT ALL PRIVILEGES ON *.* TO '%'@'%'"),
                 Arguments.of("select with select privilege on all databases", PrivilegeCheckType.SELECT, 0, "foo_db", "GRANT SELECT ON *.* TO '%'@'%'"),
                 Arguments.of("select with select privilege on target database", PrivilegeCheckType.SELECT, 0, "foo_db", "GRANT SELECT ON `FOO_DB`.* TO '%'@'%'"),
+                Arguments.of("select with escaped target database", PrivilegeCheckType.SELECT, 0, "account_db", "GRANT ALL PRIVILEGES ON `ACCOUNT\\_DB`.* TO '%'@'%'"),
                 Arguments.of("select with all privileges on all databases", PrivilegeCheckType.SELECT, 0, "foo_db", "GRANT ALL PRIVILEGES ON *.* TO '%'@'%'"),
                 Arguments.of("select with all privileges on target database", PrivilegeCheckType.SELECT, 0, "foo_db", "GRANT ALL PRIVILEGES ON `FOO_DB`.* TO '%'@'%'"));
     }

@@ -21,11 +21,9 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.DropSchemaStatement;
-
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Drop schema push down meta data refresher.
@@ -35,11 +33,7 @@ public final class DropSchemaPushDownMetaDataRefresher implements PushDownMetaDa
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) {
-        metaDataManagerPersistService.dropSchema(database, getSchemaNames(sqlStatement));
-    }
-    
-    private Collection<String> getSchemaNames(final DropSchemaStatement sqlStatement) {
-        return sqlStatement.getSchemaNames().stream().map(each -> each.getValue().toLowerCase()).collect(Collectors.toList());
+        metaDataManagerPersistService.dropSchema(database, SchemaRefreshUtils.getActualSchemaNames(database, sqlStatement.getSchemaNames(), props));
     }
     
     @Override

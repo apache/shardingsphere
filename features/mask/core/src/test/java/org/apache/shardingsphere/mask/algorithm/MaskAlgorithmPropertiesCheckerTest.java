@@ -70,7 +70,7 @@ class MaskAlgorithmPropertiesCheckerTest {
     @Test
     void assertCheckPositiveIntegerSuccess() {
         Properties props = PropertiesBuilder.build(new Property("key", "123"));
-        MaskAlgorithmPropertiesChecker.checkPositiveInteger(props, "key", mock(MaskAlgorithm.class));
+        assertDoesNotThrow(() -> MaskAlgorithmPropertiesChecker.checkPositiveInteger(props, "key", mock(MaskAlgorithm.class)));
     }
     
     @Test

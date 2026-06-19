@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.having.ExpectedHavingClause;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.hierarchical.ExpectedHierarchicalQueryClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.limit.ExpectedLimitClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.lock.ExpectedLockClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.model.ExpectedModelClause;
@@ -59,6 +60,9 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "having")
     private ExpectedHavingClause havingClause;
+    
+    @XmlElement(name = "hierarchical-query")
+    private ExpectedHierarchicalQueryClause hierarchicalQueryClause;
     
     @XmlElement(name = "window")
     private ExpectedWindowClause windowClause;

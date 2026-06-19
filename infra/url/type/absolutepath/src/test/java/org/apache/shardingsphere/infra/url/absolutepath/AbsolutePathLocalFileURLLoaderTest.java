@@ -32,13 +32,13 @@ class AbsolutePathLocalFileURLLoaderTest {
     @Test
     @EnabledOnOs({OS.LINUX, OS.MAC})
     void assertGetContentOnLinux() {
-        assertGetContent(1783);
+        assertGetContent(1872);
     }
     
     @Test
     @EnabledOnOs(OS.WINDOWS)
     void assertGetContentOnWindows() {
-        assertGetContent(1839);
+        assertGetContent(1932);
     }
     
     private void assertGetContent(final int expectedLength) {

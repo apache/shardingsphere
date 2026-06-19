@@ -31,6 +31,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
@@ -58,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.Em
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -321,7 +323,55 @@ class PortalTest {
         PostgreSQLParameterStatusPacket parameterStatusPacket = (PostgreSQLParameterStatusPacket) actualPackets.get(1);
         String actualValue = (String) Plugins.getMemberAccessor().get(PostgreSQLParameterStatusPacket.class.getDeclaredField("value"), parameterStatusPacket);
         assertThat(actualPackets.get(0), isA(PostgreSQLCommandCompletePacket.class));
-        assertThat(actualValue, is("utf8"));
+        assertThat(actualValue, is("UTF8"));
+    }
+    
+    @Test
+    void assertExecuteSetStatementWithDefaultClientEncoding() throws SQLException, ReflectiveOperationException {
+        UpdateResponseHeader responseHeader = mock(UpdateResponseHeader.class);
+        when(proxyBackendHandler.execute()).thenReturn(responseHeader);
+        when(proxyBackendHandler.next()).thenReturn(false);
+        VariableAssignSegment assignSegment = new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "client_encoding"), "DEFAULT");
+        SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(assignSegment));
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                "", new CommonSQLStatementContext(setStatement), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
+        portal.bind();
+        List<DatabasePacket> actualPackets = portal.execute(0);
+        PostgreSQLParameterStatusPacket parameterStatusPacket = (PostgreSQLParameterStatusPacket) actualPackets.get(1);
+        String actualValue = (String) Plugins.getMemberAccessor().get(PostgreSQLParameterStatusPacket.class.getDeclaredField("value"), parameterStatusPacket);
+        assertThat(actualValue, is("UTF8"));
+    }
+    
+    @Test
+    void assertExecuteResetClientEncoding() throws SQLException, ReflectiveOperationException {
+        UpdateResponseHeader responseHeader = mock(UpdateResponseHeader.class);
+        when(proxyBackendHandler.execute()).thenReturn(responseHeader);
+        when(proxyBackendHandler.next()).thenReturn(false);
+        PostgreSQLResetParameterStatement resetStatement = new PostgreSQLResetParameterStatement(databaseType, "client_encoding");
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                "", new CommonSQLStatementContext(resetStatement), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
+        portal.bind();
+        List<DatabasePacket> actualPackets = portal.execute(0);
+        PostgreSQLCommandCompletePacket commandCompletePacket = (PostgreSQLCommandCompletePacket) actualPackets.get(0);
+        PostgreSQLParameterStatusPacket parameterStatusPacket = (PostgreSQLParameterStatusPacket) actualPackets.get(1);
+        String command = (String) Plugins.getMemberAccessor().get(PostgreSQLCommandCompletePacket.class.getDeclaredField("sqlCommand"), commandCompletePacket);
+        String actualValue = (String) Plugins.getMemberAccessor().get(PostgreSQLParameterStatusPacket.class.getDeclaredField("value"), parameterStatusPacket);
+        assertThat(actualPackets.size(), is(2));
+        assertThat(command, is("RESET"));
+        assertThat(actualValue, is("UTF8"));
+    }
+    
+    @Test
+    void assertBindWithInvalidClientEncoding() throws SQLException {
+        when(proxyBackendHandler.execute()).thenThrow(new InvalidParameterValueException("client_encoding", "latin1"));
+        VariableAssignSegment assignSegment = new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "client_encoding"), "'LATIN1'");
+        SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(assignSegment));
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                "", new CommonSQLStatementContext(setStatement), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
+        assertThrows(InvalidParameterValueException.class, portal::bind);
     }
     
     @Test

@@ -36,8 +36,6 @@ public final class EncryptInsertPredicateParameterRewriter implements ParameterR
     
     private final EncryptRule rule;
     
-    private final String databaseName;
-    
     private final Collection<EncryptCondition> encryptConditions;
     
     @Override
@@ -48,7 +46,7 @@ public final class EncryptInsertPredicateParameterRewriter implements ParameterR
     
     @Override
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
-        EncryptPredicateParameterRewriter rewriter = new EncryptPredicateParameterRewriter(rule, databaseName, encryptConditions);
+        EncryptPredicateParameterRewriter rewriter = new EncryptPredicateParameterRewriter(rule, encryptConditions);
         rewriter.rewrite(paramBuilder, ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext(), params);
     }
 }

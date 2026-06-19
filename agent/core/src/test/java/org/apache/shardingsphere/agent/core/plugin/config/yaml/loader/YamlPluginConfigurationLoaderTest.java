@@ -38,8 +38,7 @@ class YamlPluginConfigurationLoaderTest {
     @Test
     void assertLoad(@TempDir final Path tempDir) throws IOException {
         Path yamlFile = tempDir.resolve("agent.yaml");
-        String yamlContent = ""
-                + "plugins:\n"
+        String yamlContent = "plugins:\n"
                 + "  logging:\n"
                 + "    FILE:\n"
                 + "      host: localhost\n"

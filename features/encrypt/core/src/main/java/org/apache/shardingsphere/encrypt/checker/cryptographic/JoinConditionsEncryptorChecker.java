@@ -49,7 +49,7 @@ public final class JoinConditionsEncryptorChecker {
             }
             ColumnSegmentBoundInfo leftColumnInfo = ((ColumnSegment) each.getLeft()).getColumnBoundInfo();
             ColumnSegmentBoundInfo rightColumnInfo = ((ColumnSegment) each.getRight()).getColumnBoundInfo();
-            ShardingSpherePreconditions.checkState(EncryptorComparator.isSame(encryptRule, leftColumnInfo, rightColumnInfo),
+            ShardingSpherePreconditions.checkState(EncryptorComparator.isEquivalentFilterSame(encryptRule, leftColumnInfo, rightColumnInfo),
                     () -> new UnsupportedSQLOperationException("Can not use different encryptor for " + leftColumnInfo + " and " + rightColumnInfo + " in " + scenario));
         }
     }

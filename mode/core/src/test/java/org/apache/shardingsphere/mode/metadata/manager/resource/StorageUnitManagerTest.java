@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMetaDataPersistService;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,7 +74,7 @@ class StorageUnitManagerTest {
         when(reloadMetaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(reloadDatabase);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, true, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
+                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
             createManager(metaDataContexts, resourceSwitchManager).register(DATABASE_NAME, Collections.emptyMap());
         }
         verify(metaDataContexts).update(any(MetaDataContexts.class));
@@ -104,7 +106,7 @@ class StorageUnitManagerTest {
         when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, true, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
+                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
             createManager(metaDataContexts, resourceSwitchManager).alter(DATABASE_NAME, Collections.emptyMap());
         }
         verify(metaDataContexts).update(any(MetaDataContexts.class));
@@ -135,7 +137,7 @@ class StorageUnitManagerTest {
         when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, false, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
+                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
             createManager(metaDataContexts, resourceSwitchManager).unregister(DATABASE_NAME, "ds_0");
         }
         verify(metaDataContexts).update(any(MetaDataContexts.class));
@@ -167,8 +169,12 @@ class StorageUnitManagerTest {
     }
     
     private StorageUnitManager createManager(final MetaDataContexts metaDataContexts, final ResourceSwitchManager resourceSwitchManager) {
-        MetaDataPersistFacade metaDataPersistFacade = mock(MetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
-        lenient().when(metaDataPersistFacade.getDatabaseMetaDataFacade().getView().load(anyString(), anyString())).thenReturn(Collections.emptyList());
+        MetaDataPersistFacade metaDataPersistFacade = mock(MetaDataPersistFacade.class);
+        DatabaseMetaDataPersistFacade databaseMetaDataPersistFacade = mock(DatabaseMetaDataPersistFacade.class);
+        ViewMetaDataPersistService viewMetaDataPersistService = mock(ViewMetaDataPersistService.class);
+        lenient().when(metaDataPersistFacade.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataPersistFacade);
+        lenient().when(databaseMetaDataPersistFacade.getView()).thenReturn(viewMetaDataPersistService);
+        lenient().when(viewMetaDataPersistService.load(anyString(), anyString())).thenReturn(Collections.emptyList());
         return new StorageUnitManager(metaDataContexts, mock(ComputeNodeInstanceContext.class), resourceSwitchManager, metaDataPersistFacade);
     }
     

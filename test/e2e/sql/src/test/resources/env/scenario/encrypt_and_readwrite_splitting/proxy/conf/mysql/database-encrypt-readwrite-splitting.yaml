@@ -20,6 +20,7 @@ databaseName: encrypt_and_readwrite_splitting
 dataSources:
   encrypt_write_ds:
     url: jdbc:mysql://mysql.encrypt_and_readwrite_splitting.host:3306/encrypt_write_ds?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -29,6 +30,7 @@ dataSources:
     minPoolSize: 2
   encrypt_read_ds:
     url: jdbc:mysql://mysql.encrypt_and_readwrite_splitting.host:3306/encrypt_read_ds?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000

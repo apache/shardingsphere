@@ -70,6 +70,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeI
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeSetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeUpdateClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModelClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModelColumnClausesContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModelColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiColumnForLoopContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiTableElementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByClauseContext;
@@ -77,6 +79,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OuterJ
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParenthesisSelectSubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PivotClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryBlockContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryPartitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryTableExprClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryTableExprContext;
@@ -109,6 +112,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereC
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.HierarchicalQueryClauseContext;
 import org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
@@ -128,6 +133,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.ComplexExpressionSegment;
@@ -167,6 +173,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlSe
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlTableFunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ModelColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
@@ -511,7 +518,11 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 pivotInColumns.add(columnSegment);
             });
         }
-        return new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((CollectionValue<ColumnSegment>) visit(ctx.pivotForClause().columnNames())).getValue(), pivotInColumns);
+        PivotSegment result = new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ((CollectionValue<ColumnSegment>) visit(ctx.pivotForClause().columnNames())).getValue(), pivotInColumns);
+        result.setXml(null != ctx.XML());
+        ctx.aggregationFunction().forEach(each -> result.getPivotAggregationColumns().addAll(ColumnExtractor.extract((ExpressionSegment) visit(each))));
+        return result;
     }
     
     @SuppressWarnings("unchecked")
@@ -519,11 +530,15 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitUnpivotClause(final UnpivotClauseContext ctx) {
         Collection<ColumnSegment> unpivotInColumns = new LinkedList<>();
         if (null != ctx.unpivotInClause()) {
-            ctx.unpivotInClause().unpivotInClauseExpr().forEach(each -> unpivotInColumns.addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue()));
+            ctx.unpivotInClause().unpivotInClauseExpr().forEach(each -> {
+                if (null != each.columnNames()) {
+                    unpivotInColumns.addAll(((CollectionValue<ColumnSegment>) visit(each.columnNames())).getValue());
+                }
+            });
         }
-        PivotSegment result = new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((CollectionValue<ColumnSegment>) visit(ctx.pivotForClause().columnNames())).getValue(),
-                unpivotInColumns, true);
-        result.setUnpivotColumns(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
+        PivotSegment result = new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ((CollectionValue<ColumnSegment>) visit(ctx.pivotForClause().columnNames())).getValue(), unpivotInColumns, true);
+        result.setUnpivotColumns(null == ctx.columnNames() ? Collections.singleton((ColumnSegment) visit(ctx.columnName())) : ((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
         return result;
     }
     
@@ -735,6 +750,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 result.getOrderBySegments().add((OrderBySegment) visit(each));
             }
         }
+        appendModelColumns(ctx.mainModel().modelColumnClauses(), result);
         for (CellAssignmentContext each : ctx.mainModel().modelRulesClause().cellAssignment()) {
             result.getCellAssignmentColumns().add((ColumnSegment) visit(each.measureColumn().columnName()));
             if (null != each.singleColumnForLoop()) {
@@ -745,6 +761,30 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 result.getCellAssignmentColumns().addAll(extractColumnValuesFromMultiColumnForLoop(each.multiColumnForLoop()));
                 result.getCellAssignmentSelects().add(extractSelectSubqueryValueFromMultiColumnForLoop(each.multiColumnForLoop()));
             }
+        }
+        return result;
+    }
+    
+    private void appendModelColumns(final ModelColumnClausesContext ctx, final ModelSegment modelSegment) {
+        int dimensionStartIndex = ctx.DIMENSION().getSymbol().getStartIndex();
+        int measuresStartIndex = ctx.MEASURES().getSymbol().getStartIndex();
+        for (ModelColumnContext each : ctx.modelColumn()) {
+            ModelColumnSegment modelColumn = (ModelColumnSegment) visit(each);
+            if (each.start.getStartIndex() < dimensionStartIndex) {
+                modelSegment.getPartitionColumns().add(modelColumn);
+            } else if (each.start.getStartIndex() < measuresStartIndex) {
+                modelSegment.getDimensionColumns().add(modelColumn);
+            } else {
+                modelSegment.getMeasureColumns().add(modelColumn);
+            }
+        }
+    }
+    
+    @Override
+    public ASTNode visitModelColumn(final ModelColumnContext ctx) {
+        ModelColumnSegment result = new ModelColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
+        if (null != ctx.alias()) {
+            result.setAlias((AliasSegment) visit(ctx.alias()));
         }
         return result;
     }
@@ -803,14 +843,51 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                         getOriginalText(each));
                 CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(),
                         (AliasSegment) visit(each.queryName().alias()), subquery);
-                if (null != each.searchClause()) {
-                    ColumnNameContext columnName = each.searchClause().orderingColumn().columnName();
-                    commonTableExpression.getColumns().add((ColumnSegment) visit(columnName));
-                }
+                addCommonTableExpressionColumns(commonTableExpression, each);
                 commonTableExpressions.add(commonTableExpression);
             }
         }
-        return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressions);
+        return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressions, containsRecursiveCommonTableExpression(commonTableExpressions));
+    }
+    
+    private boolean containsRecursiveCommonTableExpression(final Collection<CommonTableExpressionSegment> commonTableExpressions) {
+        for (CommonTableExpressionSegment each : commonTableExpressions) {
+            if (each.getAliasName().isPresent() && containsTable(each.getSubquery().getSelect(), each.getAliasName().get())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsTable(final SelectStatement selectStatement, final String tableName) {
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromSelect(selectStatement);
+        return tableExtractor.getRewriteTables().stream().anyMatch(each -> tableName.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()));
+    }
+    
+    private void addCommonTableExpressionColumns(final CommonTableExpressionSegment commonTableExpression, final SubqueryFactoringClauseContext ctx) {
+        for (AliasContext each : ctx.alias()) {
+            commonTableExpression.getColumns().add(createCommonTableExpressionColumn(each));
+        }
+        if (null != ctx.searchClause()) {
+            for (AliasContext each : ctx.searchClause().alias()) {
+                commonTableExpression.getSearchColumns().add(createCommonTableExpressionColumn(each));
+            }
+            ColumnNameContext columnName = ctx.searchClause().orderingColumn().columnName();
+            commonTableExpression.getColumns().add((ColumnSegment) visit(columnName));
+        }
+        if (null != ctx.cycleClause()) {
+            List<AliasContext> aliases = ctx.cycleClause().alias();
+            for (AliasContext each : aliases.subList(0, aliases.size() - 1)) {
+                commonTableExpression.getCycleColumns().add(createCommonTableExpressionColumn(each));
+            }
+            commonTableExpression.getColumns().add(createCommonTableExpressionColumn(aliases.get(aliases.size() - 1)));
+        }
+    }
+    
+    private ColumnSegment createCommonTableExpressionColumn(final AliasContext ctx) {
+        AliasSegment alias = (AliasSegment) visit(ctx);
+        return new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), alias.getIdentifier());
     }
     
     @Override
@@ -915,7 +992,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         }
         if (projection instanceof XmlQueryAndExistsFunctionSegment || projection instanceof XmlPiFunctionSegment || projection instanceof XmlSerializeFunctionSegment
                 || projection instanceof XmlElementFunctionSegment) {
-            return projection;
+            return createExpressionProjectionSegment((ExpressionSegment) projection, alias);
         }
         throw new UnsupportedOperationException("Unsupported Complex Expression");
     }
@@ -956,7 +1033,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (projection instanceof IntervalExpressionProjection) {
             return createIntervalExpressionProjection((IntervalExpressionProjection) projection);
         }
-        if (projection instanceof CaseWhenExpression || projection instanceof VariableSegment
+        if (projection instanceof CaseWhenExpression || projection instanceof UnaryOperationExpression || projection instanceof VariableSegment
                 || projection instanceof BetweenExpression || projection instanceof InExpression || projection instanceof CollateExpression) {
             return createExpressionProjectionSegment((ExpressionSegment) projection, alias);
         }
@@ -1084,6 +1161,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 visitSelectJoinSpecification(ctx.innerCrossJoinClause().selectJoinSpecification(), result);
             }
         } else if (null != ctx.outerJoinClause()) {
+            setQueryPartitionListSegments(ctx.outerJoinClause(), result);
             TableSegment right = (TableSegment) visit(ctx.outerJoinClause().selectTableReference());
             result.setRight(right);
             if (null != ctx.outerJoinClause().selectJoinSpecification()) {
@@ -1094,6 +1172,21 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result.setRight(right);
         }
         return result;
+    }
+    
+    private void setQueryPartitionListSegments(final OuterJoinClauseContext ctx, final JoinTableSegment result) {
+        List<QueryPartitionClauseContext> queryPartitionClauses = ctx.queryPartitionClause();
+        if (queryPartitionClauses.isEmpty()) {
+            return;
+        }
+        if (queryPartitionClauses.get(0).getStart().getStartIndex() < ctx.outerJoinType().getStart().getStartIndex()) {
+            result.getLeftQueryPartitionListSegments().addAll(getPartitionListSegments(queryPartitionClauses.get(0)));
+        } else {
+            result.getRightQueryPartitionListSegments().addAll(getPartitionListSegments(queryPartitionClauses.get(0)));
+        }
+        if (queryPartitionClauses.size() > 1) {
+            result.getRightQueryPartitionListSegments().addAll(getPartitionListSegments(queryPartitionClauses.get(1)));
+        }
     }
     
     private boolean isNatural(final SelectJoinOptionContext ctx) {

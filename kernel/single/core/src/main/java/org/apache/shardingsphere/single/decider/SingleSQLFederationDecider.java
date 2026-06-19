@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
@@ -66,8 +65,8 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
         if (!includedDataNodes.isEmpty() && !isInnerCommaJoin(sqlStatementContext.getSqlStatement())) {
             return true;
         }
-        boolean result = rule.isAllTablesInSameComputeNode(includedDataNodes, singleTables);
-        includedDataNodes.addAll(getTableDataNodes(rule, singleTables));
+        boolean result = rule.isAllTablesInSameComputeNode(includedDataNodes, singleTables, database);
+        includedDataNodes.addAll(getTableDataNodes(rule, singleTables, database));
         return !result;
     }
     
@@ -82,7 +81,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
     
     private Collection<QualifiedTable> getSingleTables(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database, final SingleRule rule) {
         Collection<QualifiedTable> qualifiedTables = rule.getQualifiedTables(sqlStatementContext, database);
-        return rule.getSingleTables(qualifiedTables);
+        return rule.getSingleTables(qualifiedTables, database);
     }
     
     private boolean containsView(final ShardingSphereDatabase database, final Collection<QualifiedTable> singleTables) {
@@ -94,10 +93,10 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
         return false;
     }
     
-    private Collection<DataNode> getTableDataNodes(final SingleRule rule, final Collection<QualifiedTable> singleTables) {
+    private Collection<DataNode> getTableDataNodes(final SingleRule rule, final Collection<QualifiedTable> singleTables, final ShardingSphereDatabase database) {
         Collection<DataNode> result = new HashSet<>(singleTables.size(), 1F);
         for (QualifiedTable each : singleTables) {
-            rule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(result::add);
+            rule.findTableDataNode(database, each).ifPresent(result::add);
         }
         return result;
     }

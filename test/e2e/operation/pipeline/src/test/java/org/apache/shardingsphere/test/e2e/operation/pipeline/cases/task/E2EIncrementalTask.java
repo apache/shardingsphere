@@ -47,6 +47,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.ThreadLocalRandom;
 
 @RequiredArgsConstructor
@@ -74,6 +75,8 @@ public final class E2EIncrementalTask implements Runnable {
     private final DatabaseType databaseType;
     
     private final int loopCount;
+    
+    private final AtomicBoolean generatedJsonLiteralNullForUpdate = new AtomicBoolean(false);
     
     @Override
     public void run() {
@@ -152,7 +155,7 @@ public final class E2EIncrementalTask implements Runnable {
             Object[] parameters = {"中文测试", randomInt, randomInt, randomInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt,
                     randomUnsignedInt, 1.0F, 1.0, new BigDecimal("999"), now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue() + 1,
                     new byte[]{-1, 0, 1}, new byte[]{1, 2, -1, -3},
-                    "D".getBytes(), "A".getBytes(), "T".getBytes(), "E", "text", "mediumText", "3", "3", PipelineCaseHelper.generateJsonString(32, true), orderId};
+                    "D".getBytes(), "A".getBytes(), "T".getBytes(), "E", "text", "mediumText", "3", "3", generateMySQLJsonValue(), orderId};
             log.info("update sql: {}, params: {}", sql, parameters);
             DataSourceExecuteUtils.execute(dataSource, sql, parameters);
             return;
@@ -178,6 +181,10 @@ public final class E2EIncrementalTask implements Runnable {
             log.info("update sql: {}, params: {}", sql, parameters);
             DataSourceExecuteUtils.execute(dataSource, sql, parameters);
         }
+    }
+    
+    private String generateMySQLJsonValue() {
+        return generatedJsonLiteralNullForUpdate.compareAndSet(false, true) ? PipelineCaseHelper.generateJsonLiteralNull() : PipelineCaseHelper.generateJsonString(32, true);
     }
     
     private List<String> ignoreShardingColumns(final List<String> columnNames) {

@@ -171,8 +171,12 @@ public final class ExpressionExtractor {
             if (each instanceof TypeCastExpression) {
                 extractParameterMarkerExpressions(segments, Collections.singleton(((TypeCastExpression) each).getExpression()));
             }
+            if (each instanceof ListExpression) {
+                extractParameterMarkerExpressions(segments, ((ListExpression) each).getItems());
+            }
             if (each instanceof InExpression) {
-                extractParameterMarkerExpressions(segments, ((InExpression) each).getExpressionList());
+                extractParameterMarkerExpressions(segments, Collections.singleton(((InExpression) each).getLeft()));
+                extractParameterMarkerExpressions(segments, Collections.singleton(((InExpression) each).getRight()));
             }
             if (each instanceof CaseWhenExpression) {
                 extractParameterMarkerInCaseWhenExpression(segments, (CaseWhenExpression) each);
@@ -393,7 +397,7 @@ public final class ExpressionExtractor {
     private static void extractSubqueryCompareExpressionsFromExpression(final Collection<ExpressionSegment> result, final ExpressionSegment expressionSegment) {
         if (expressionSegment instanceof BinaryOperationExpression) {
             BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expressionSegment;
-            if (isComparisonOperator(binaryExpression.getOperator()) && containsSubquery(binaryExpression)) {
+            if (containsSubquery(binaryExpression)) {
                 result.add(binaryExpression);
             }
             extractSubqueryCompareExpressionsFromExpression(result, binaryExpression.getLeft());
@@ -452,16 +456,6 @@ public final class ExpressionExtractor {
     
     private static boolean containsSubqueryInIn(final InExpression inExpression) {
         return isSubqueryExpression(inExpression.getLeft()) || isSubqueryExpression(inExpression.getRight());
-    }
-    
-    private static boolean isComparisonOperator(final String operator) {
-        if (null == operator) {
-            return false;
-        }
-        String upperOperator = operator.toUpperCase();
-        return "=".equals(upperOperator) || "!=".equals(upperOperator) || "<>".equals(upperOperator)
-                || ">".equals(upperOperator) || "<".equals(upperOperator)
-                || ">=".equals(upperOperator) || "<=".equals(upperOperator);
     }
     
     private static boolean containsSubquery(final BinaryOperationExpression binaryExpression) {

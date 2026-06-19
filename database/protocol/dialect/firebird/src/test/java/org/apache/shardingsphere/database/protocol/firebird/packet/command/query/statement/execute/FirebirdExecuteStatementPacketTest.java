@@ -57,6 +57,9 @@ class FirebirdExecuteStatementPacketTest {
     void assertExecuteStatementPacket(final String name, final short blrType, final FirebirdBinaryColumnType expectedParameterType, final Object expectedParameterValue) {
         when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1, 123);
         when(payload.readInt1()).thenReturn(0);
+        if (FirebirdBinaryColumnType.BOOLEAN == expectedParameterType) {
+            when(payload.readInt1Unsigned()).thenReturn(1);
+        }
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, blrType, (short) BlrConstants.blr_end);
@@ -150,7 +153,7 @@ class FirebirdExecuteStatementPacketTest {
                 Arguments.of("skip_count_4", (short) BlrConstants.blr_varying2, FirebirdBinaryColumnType.VARYING, null),
                 Arguments.of("skip_count_2", (short) BlrConstants.blr_text, FirebirdBinaryColumnType.LEGACY_TEXT, null),
                 Arguments.of("skip_count_1", (short) BlrConstants.blr_long, FirebirdBinaryColumnType.LONG, 123),
-                Arguments.of("skip_count_0", (short) BlrConstants.blr_bool, FirebirdBinaryColumnType.BOOLEAN, 0),
+                Arguments.of("skip_count_0", (short) BlrConstants.blr_bool, FirebirdBinaryColumnType.BOOLEAN, true),
                 Arguments.of("blob_parameter", (short) BlrConstants.blr_quad, FirebirdBinaryColumnType.BLOB, 0L));
     }
     

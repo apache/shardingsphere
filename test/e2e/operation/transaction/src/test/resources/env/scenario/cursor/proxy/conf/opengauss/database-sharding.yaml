@@ -57,9 +57,6 @@ rules:
           standard:
             shardingColumn: order_id
             shardingAlgorithmName: t_order_inline
-        keyGenerateStrategy:
-          column: order_id
-          keyGeneratorName: snowflake
       t_order_view:
         actualDataNodes: ds_${0..1}.t_order_view_${0..1}
         databaseStrategy:
@@ -80,9 +77,6 @@ rules:
           standard:
             shardingColumn: order_id
             shardingAlgorithmName: t_order_item_inline
-        keyGenerateStrategy:
-          column: order_item_id
-          keyGeneratorName: snowflake
       account:
         actualDataNodes: ds_${0..1}.account_${0..1}
         databaseStrategy:
@@ -93,9 +87,23 @@ rules:
           standard:
             shardingColumn: id
             shardingAlgorithmName: account_inline
-        keyGenerateStrategy:
-          column: id
-          keyGeneratorName: snowflake
+    keyGenerateStrategies:
+      t_order_order_id:
+        keyGenerateType: column
+        keyGeneratorName: snowflake
+        logicTable: t_order
+        keyGenerateColumn: order_id
+      t_order_item_order_item_id:
+        keyGenerateType: column
+        keyGeneratorName: snowflake
+        logicTable: t_order_item
+        keyGenerateColumn: order_item_id
+      account_id:
+        keyGenerateType: column
+        keyGeneratorName: snowflake
+        logicTable: account
+        keyGenerateColumn: id
+
     bindingTables:
       - t_order,t_order_item,t_order_view
     defaultDatabaseStrategy:

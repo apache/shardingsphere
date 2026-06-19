@@ -30,5 +30,6 @@
     <modules>
         <module>mysql</module>
         <module>postgresql</module>
+        <module>firebird</module>
     </modules>
 </project>

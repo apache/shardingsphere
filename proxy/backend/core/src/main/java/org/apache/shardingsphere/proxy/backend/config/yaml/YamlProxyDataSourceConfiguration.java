@@ -32,6 +32,8 @@ public final class YamlProxyDataSourceConfiguration implements YamlConfiguration
     
     private String dataSourceClassName;
     
+    private String driverClassName;
+    
     private String url;
     
     private String username;

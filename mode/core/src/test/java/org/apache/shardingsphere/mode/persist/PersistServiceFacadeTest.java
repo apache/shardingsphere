@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.persist;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
@@ -31,8 +30,8 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -77,7 +76,6 @@ class PersistServiceFacadeTest {
     }
     
     private PersistServiceFacade createFacade(final MockedStatic<TypedSPILoader> mockedStatic) {
-        when(metaDataContextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED)).thenReturn(Boolean.TRUE);
         mockedStatic.when(() -> TypedSPILoader.getService(ModePersistServiceFacadeBuilder.class, "FIXTURE")).thenReturn(builder);
         when(builder.build(metaDataContextManager, repository)).thenReturn(modeFacade);
         return new PersistServiceFacade(repository, new ModeConfiguration("FIXTURE", null), metaDataContextManager);

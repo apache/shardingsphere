@@ -20,6 +20,7 @@ databaseName: distsql_rdl
 dataSources:
   ds_0:
     url: jdbc:postgresql://postgresql.distsql_rdl.host:5432/rdl_ds_0
+    driverClassName: org.postgresql.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -29,6 +30,7 @@ dataSources:
     minPoolSize: 2
   ds_1:
     url: jdbc:postgresql://postgresql.distsql_rdl.host:5432/rdl_ds_1
+    driverClassName: org.postgresql.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -38,6 +40,7 @@ dataSources:
     minPoolSize: 2
   ds_2:
     url: jdbc:postgresql://postgresql.distsql_rdl.host:5432/rdl_ds_2
+    driverClassName: org.postgresql.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000

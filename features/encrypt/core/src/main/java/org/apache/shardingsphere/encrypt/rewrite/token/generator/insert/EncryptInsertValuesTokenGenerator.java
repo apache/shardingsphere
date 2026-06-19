@@ -21,6 +21,9 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertAttachableColumnToken;
+import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertColumnToken;
+import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertSubstitutableColumnToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -28,14 +31,14 @@ import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnIte
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
-import org.apache.shardingsphere.infra.binder.context.segment.insert.values.expression.DerivedLiteralExpressionSegment;
-import org.apache.shardingsphere.infra.binder.context.segment.insert.values.expression.DerivedParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.PreviousSQLTokensAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Substitutable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.InsertValue;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.UseDefaultInsertColumnsToken;
@@ -96,7 +99,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
-            encryptToken(insertValuesToken.getInsertValues().get(count), schemaName, encryptTable, insertStatementContext, each);
+            applyInsertColumnTokens(insertValuesToken.getInsertValues().get(count), encryptToken(schemaName, encryptTable, insertStatementContext, each));
             count++;
         }
     }
@@ -110,7 +113,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                 .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = new InsertValue(new LinkedList<>(each.getValueExpressions()));
-            encryptToken(insertValueToken, schemaName, encryptTable, insertStatementContext, each);
+            applyInsertColumnTokens(insertValueToken, encryptToken(schemaName, encryptTable, insertStatementContext, each));
             result.getInsertValues().add(insertValueToken);
         }
         return result;
@@ -132,8 +135,9 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         return result;
     }
     
-    private void encryptToken(final InsertValue insertValueToken, final String schemaName, final EncryptTable encryptTable,
-                              final InsertStatementContext insertStatementContext, final InsertValueContext insertValueContext) {
+    private Collection<EncryptInsertColumnToken> encryptToken(final String schemaName, final EncryptTable encryptTable,
+                                                              final InsertStatementContext insertStatementContext, final InsertValueContext insertValueContext) {
+        Collection<EncryptInsertColumnToken> result = new LinkedList<>();
         String tableName = encryptTable.getTable();
         Optional<SQLToken> useDefaultInsertColumnsToken = findPreviousSQLToken(UseDefaultInsertColumnsToken.class);
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
@@ -147,56 +151,73 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                     .map(optional -> ((UseDefaultInsertColumnsToken) optional).getColumns().indexOf(columnName)).orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
             Object originalValue = insertValueContext.getLiteralValue(columnIndex).orElse(null);
             ExpressionSegment valueExpression = insertValueContext.getValueExpressions().get(columnIndex);
-            setCipherColumn(schemaName, tableName, encryptColumn, insertValueToken, valueExpression, columnIndex, originalValue);
-            int indexDelta = 1;
+            int parameterIndexCount = getParameterIndexCount(insertValueContext.getValueExpressions());
+            generateCipherColumnToken(schemaName, tableName, encryptColumn, valueExpression, columnIndex, originalValue).ifPresent(result::add);
             if (encryptColumn.getAssistedQuery().isPresent()) {
-                addAssistedQueryColumn(schemaName, tableName, encryptColumn, insertValueToken, valueExpression, columnIndex, indexDelta, originalValue);
-                indexDelta++;
+                addAssistedQueryColumn(schemaName, tableName, encryptColumn, valueExpression, columnIndex, originalValue, parameterIndexCount).ifPresent(result::add);
             }
             if (encryptColumn.getLikeQuery().isPresent()) {
-                addLikeQueryColumn(schemaName, tableName, encryptColumn, insertValueToken, valueExpression, columnIndex, indexDelta, originalValue);
+                addLikeQueryColumn(schemaName, tableName, encryptColumn, valueExpression, columnIndex, originalValue, parameterIndexCount).ifPresent(result::add);
+            }
+        }
+        return result;
+    }
+    
+    private void applyInsertColumnTokens(final InsertValue insertValueToken, final Collection<EncryptInsertColumnToken> insertColumnTokens) {
+        for (EncryptInsertColumnToken each : insertColumnTokens) {
+            if (each instanceof Substitutable) {
+                insertValueToken.putSubstitutedSQLToken(each.getColumnIndex(), each);
+                continue;
+            }
+            if (each instanceof Attachable) {
+                insertValueToken.addAddedSQLToken(each.getColumnIndex(), each);
             }
         }
     }
     
-    private void setCipherColumn(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
-                                 final InsertValue insertValueToken, final ExpressionSegment valueExpression, final int columnIndex, final Object originalValue) {
+    private Optional<EncryptInsertColumnToken> generateCipherColumnToken(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
+                                                                         final ExpressionSegment valueExpression, final int columnIndex, final Object originalValue) {
         if (valueExpression instanceof LiteralExpressionSegment) {
-            insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(
+            return Optional.of(new EncryptInsertSubstitutableColumnToken(columnIndex, new LiteralExpressionSegment(
                     valueExpression.getStartIndex(), valueExpression.getStopIndex(),
-                    encryptColumn.getCipher().encrypt(database.getName(), schemaName, tableName, encryptColumn.getName(), originalValue)));
+                    encryptColumn.getCipher().encrypt(database.getName(), schemaName, tableName, encryptColumn.getName(), originalValue))));
         }
+        if (valueExpression instanceof ColumnSegment) {
+            return Optional.of(new EncryptInsertSubstitutableColumnToken(columnIndex, createColumnSegment((ColumnSegment) valueExpression, encryptColumn.getCipher().getName())));
+        }
+        return Optional.empty();
     }
     
-    private void addAssistedQueryColumn(final String schemaName, final String tableName, final EncryptColumn encryptColumn, final InsertValue insertValueToken,
-                                        final ExpressionSegment valueExpression, final int columnIndex, final int indexDelta, final Object originalValue) {
+    private Optional<EncryptInsertColumnToken> addAssistedQueryColumn(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
+                                                                      final ExpressionSegment valueExpression, final int columnIndex, final Object originalValue,
+                                                                      final int parameterIndexCount) {
         Optional<AssistedQueryColumnItem> assistedQueryColumnItem = encryptColumn.getAssistedQuery();
         Preconditions.checkState(assistedQueryColumnItem.isPresent());
         Object derivedValue = assistedQueryColumnItem.get().encrypt(database.getName(), schemaName, tableName, encryptColumn.getName(), originalValue);
-        addDerivedColumn(insertValueToken, valueExpression, columnIndex, indexDelta, derivedValue, assistedQueryColumnItem.get().getName());
+        return addDerivedColumn(valueExpression, columnIndex, derivedValue, assistedQueryColumnItem.get().getName(), parameterIndexCount);
     }
     
-    private void addLikeQueryColumn(final String schemaName, final String tableName, final EncryptColumn encryptColumn, final InsertValue insertValueToken,
-                                    final ExpressionSegment valueExpression, final int columnIndex, final int indexDelta, final Object originalValue) {
+    private Optional<EncryptInsertColumnToken> addLikeQueryColumn(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
+                                                                  final ExpressionSegment valueExpression, final int columnIndex, final Object originalValue,
+                                                                  final int parameterIndexCount) {
         Optional<LikeQueryColumnItem> likeQueryColumnItem = encryptColumn.getLikeQuery();
         Preconditions.checkState(likeQueryColumnItem.isPresent());
         Object derivedValue = likeQueryColumnItem.get().encrypt(database.getName(), schemaName, tableName, encryptColumn.getName(), originalValue);
-        addDerivedColumn(insertValueToken, valueExpression, columnIndex, indexDelta, derivedValue, likeQueryColumnItem.get().getName());
+        return addDerivedColumn(valueExpression, columnIndex, derivedValue, likeQueryColumnItem.get().getName(), parameterIndexCount);
     }
     
-    private void addDerivedColumn(final InsertValue insertValueToken, final ExpressionSegment valueExpression, final int columnIndex, final int indexDelta, final Object derivedValue,
-                                  final String derivedColumnName) {
-        ExpressionSegment derivedExpression;
+    private Optional<EncryptInsertColumnToken> addDerivedColumn(final ExpressionSegment valueExpression, final int columnIndex, final Object derivedValue,
+                                                                final String derivedColumnName, final int parameterIndexCount) {
         if (valueExpression instanceof LiteralExpressionSegment) {
-            derivedExpression = new DerivedLiteralExpressionSegment(derivedValue);
-        } else if (valueExpression instanceof ParameterMarkerExpressionSegment) {
-            derivedExpression = new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
-        } else if (valueExpression instanceof ColumnSegment) {
-            derivedExpression = createColumnSegment((ColumnSegment) valueExpression, derivedColumnName);
-        } else {
-            derivedExpression = valueExpression;
+            return Optional.of(new EncryptInsertAttachableColumnToken(columnIndex, new LiteralExpressionSegment(0, 0, derivedValue)));
         }
-        insertValueToken.getValues().add(columnIndex + indexDelta, derivedExpression);
+        if (valueExpression instanceof ParameterMarkerExpressionSegment) {
+            return Optional.of(new EncryptInsertAttachableColumnToken(columnIndex, new ParameterMarkerExpressionSegment(0, 0, parameterIndexCount)));
+        }
+        if (valueExpression instanceof ColumnSegment) {
+            return Optional.of(new EncryptInsertAttachableColumnToken(columnIndex, createColumnSegment((ColumnSegment) valueExpression, derivedColumnName)));
+        }
+        return Optional.of(new EncryptInsertAttachableColumnToken(columnIndex, valueExpression));
     }
     
     private ColumnSegment createColumnSegment(final ColumnSegment originalColumn, final String columnName) {
@@ -209,9 +230,9 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         return result;
     }
     
-    private int getParameterIndexCount(final InsertValue insertValueToken) {
+    private int getParameterIndexCount(final Collection<ExpressionSegment> expressionSegments) {
         int result = 0;
-        for (ExpressionSegment each : insertValueToken.getValues()) {
+        for (ExpressionSegment each : expressionSegments) {
             if (each instanceof ParameterMarkerExpressionSegment) {
                 result++;
             }

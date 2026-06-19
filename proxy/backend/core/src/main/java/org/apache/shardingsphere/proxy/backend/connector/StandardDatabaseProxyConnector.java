@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorEx
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
@@ -85,6 +85,7 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -278,11 +279,12 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     }
     
     private ResponseHeader processExecuteQueryFederation(final ResultSet resultSet) throws SQLException {
-        int columnCount = resultSet.getMetaData().getColumnCount();
+        ShardingSphereResultSetMetaData resultSetMetaData = new ShardingSphereResultSetMetaData(resultSet.getMetaData(), database, queryContext.getSqlStatementContext());
+        int columnCount = resultSetMetaData.getColumnCount();
         queryHeaders = new ArrayList<>(columnCount);
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(null == database ? null : database.getProtocolType());
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            queryHeaders.add(queryHeaderBuilderEngine.build(new JDBCQueryResultMetaData(resultSet.getMetaData()), database, columnIndex));
+            queryHeaders.add(queryHeaderBuilderEngine.build(resultSetMetaData, database, columnIndex));
         }
         mergedResult = new IteratorStreamMergedResult(Collections.singletonList(new JDBCStreamQueryResult(resultSet)));
         return new QueryResponseHeader(queryHeaders);
@@ -298,8 +300,9 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         int columnCount = getColumnCount(sqlStatementContext, queryResultSample);
         List<QueryHeader> result = new ArrayList<>(columnCount);
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
+        ShardingSphereResultSetMetaData resultSetMetaData = new ShardingSphereResultSetMetaData(queryResultSample.getMetaData().getResultSetMetaData(), database, sqlStatementContext);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.add(createQueryHeader(queryHeaderBuilderEngine, sqlStatementContext, queryResultSample, database, columnIndex));
+            result.add(createQueryHeader(queryHeaderBuilderEngine, sqlStatementContext, resultSetMetaData, database, columnIndex));
         }
         return result;
     }
@@ -311,10 +314,10 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     }
     
     private QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final SQLStatementContext sqlStatementContext,
-                                          final QueryResult queryResultSample, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
+                                          final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
         return containsDerivedProjections
-                ? queryHeaderBuilderEngine.build(((SelectStatementContext) sqlStatementContext).getProjectionsContext(), queryResultSample.getMetaData(), database, columnIndex)
-                : queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
+                ? queryHeaderBuilderEngine.build(((SelectStatementContext) sqlStatementContext).getProjectionsContext(), resultSetMetaData, database, columnIndex)
+                : queryHeaderBuilderEngine.build(resultSetMetaData, database, columnIndex);
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
@@ -391,6 +394,9 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     private Collection<SQLException> closeStatements() {
         Collection<SQLException> result = new LinkedList<>();
         for (Statement each : cachedStatements) {
+            if (isCachedPreparedStatement(each)) {
+                continue;
+            }
             try {
                 each.cancel();
                 each.close();
@@ -400,6 +406,10 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         }
         cachedStatements.clear();
         return result;
+    }
+    
+    private boolean isCachedPreparedStatement(final Statement statement) {
+        return statement instanceof PreparedStatement && databaseConnectionManager.getConnectionSession().getPreparedStatementCacheContext().contains(statement);
     }
     
     private Optional<SQLException> closeSQLFederationEngine() {

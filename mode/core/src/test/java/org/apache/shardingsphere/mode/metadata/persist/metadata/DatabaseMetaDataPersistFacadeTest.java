@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.metadata;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -38,11 +39,9 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.exception.LoadTableMetaDataFailedException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.SchemaMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistDisabledService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistEnabledService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
-import org.apache.shardingsphere.mode.persist.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -99,7 +98,7 @@ class DatabaseMetaDataPersistFacadeTest {
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        databaseMetaDataFacade = new DatabaseMetaDataPersistFacade(repository, versionPersistService, true);
+        databaseMetaDataFacade = new DatabaseMetaDataPersistFacade(repository, versionPersistService);
         Plugins.getMemberAccessor().set(DatabaseMetaDataPersistFacade.class.getDeclaredField("schema"), databaseMetaDataFacade, schemaMetaDataService);
         Plugins.getMemberAccessor().set(DatabaseMetaDataPersistFacade.class.getDeclaredField("table"), databaseMetaDataFacade, tableMetaDataService);
         Plugins.getMemberAccessor().set(DatabaseMetaDataPersistFacade.class.getDeclaredField("view"), databaseMetaDataFacade, viewMetaDataService);
@@ -107,10 +106,8 @@ class DatabaseMetaDataPersistFacadeTest {
     
     @Test
     void assertConstructorChoosesTablePersistService() {
-        DatabaseMetaDataPersistFacade enabledFacade = new DatabaseMetaDataPersistFacade(repository, versionPersistService, true);
-        DatabaseMetaDataPersistFacade disabledFacade = new DatabaseMetaDataPersistFacade(repository, versionPersistService, false);
-        assertThat(enabledFacade.getTable(), isA(TableMetaDataPersistEnabledService.class));
-        assertThat(disabledFacade.getTable(), isA(TableMetaDataPersistDisabledService.class));
+        DatabaseMetaDataPersistFacade enabledFacade = new DatabaseMetaDataPersistFacade(repository, versionPersistService);
+        assertThat(enabledFacade.getTable(), isA(TableMetaDataPersistService.class));
     }
     
     @Test
@@ -120,8 +117,17 @@ class DatabaseMetaDataPersistFacadeTest {
         when(GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(any(), any()))
                 .thenReturn(Collections.singleton(new ShardingSphereSchema("Foo_Added", mock(DatabaseType.class))));
         databaseMetaDataFacade.persistReloadDatabase("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
-        verify(tableMetaDataService).persist(eq("foo_db"), eq("foo_added"), anyCollection());
-        verify(tableMetaDataService).drop(eq("foo_db"), eq("foo_dropped"), anyCollection());
+        verify(tableMetaDataService).persist(eq("foo_db"), eq("Foo_Added"), anyCollection());
+        verify(tableMetaDataService).drop(eq("foo_db"), eq("Foo_Dropped"), anyCollection());
+    }
+    
+    @Test
+    void assertPersistReloadDatabaseByUnloadSingleTable() {
+        when(GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(any(), any()))
+                .thenReturn(Collections.singleton(new ShardingSphereSchema("Foo_Dropped", mock(DatabaseType.class))));
+        databaseMetaDataFacade.persistReloadDatabaseByUnloadSingleTable("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
+        verify(tableMetaDataService).drop(eq("foo_db"), eq("Foo_Dropped"), anyCollection());
+        verify(tableMetaDataService, never()).persist(anyString(), anyString(), anyCollection());
     }
     
     @Test
@@ -148,8 +154,7 @@ class DatabaseMetaDataPersistFacadeTest {
     
     @Test
     void assertUnregisterStorageUnitsDropsTables() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null));
+        DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData();
         try (MockedStatic<DatabaseTypedSPILoader> mocked = mockStatic(DatabaseTypedSPILoader.class)) {
             mocked.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
             ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class));
@@ -164,8 +169,7 @@ class DatabaseMetaDataPersistFacadeTest {
     
     @Test
     void assertUnregisterStorageUnitsWhenLoadFailed() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null));
+        DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData();
         try (MockedStatic<DatabaseTypedSPILoader> mocked = mockStatic(DatabaseTypedSPILoader.class)) {
             mocked.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
             ShardingSphereDatabase database = createDatabase("foo_db", Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
@@ -177,8 +181,7 @@ class DatabaseMetaDataPersistFacadeTest {
     
     @Test
     void assertPersistAlteredTables() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null));
+        DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData();
         try (MockedStatic<DatabaseTypedSPILoader> mocked = mockStatic(DatabaseTypedSPILoader.class)) {
             mocked.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
             ShardingSphereSchema existedSchema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class));
@@ -199,8 +202,7 @@ class DatabaseMetaDataPersistFacadeTest {
     
     @Test
     void assertPersistAlteredTablesWhenLoadFailed() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null));
+        DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData();
         try (MockedStatic<DatabaseTypedSPILoader> mocked = mockStatic(DatabaseTypedSPILoader.class)) {
             mocked.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
             ShardingSphereDatabase database = createDatabase("foo_db", Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
@@ -223,7 +225,14 @@ class DatabaseMetaDataPersistFacadeTest {
     
     private ShardingSphereDatabase createDatabase(final String databaseName, final Collection<ShardingSphereSchema> schemas) {
         return new ShardingSphereDatabase(databaseName, databaseType,
-                new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas);
+                new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas, new ConfigurationProperties(new Properties()));
+    }
+    
+    private DialectDatabaseMetaData createDialectDatabaseMetaData() {
+        DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
+        when(result.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null));
+        when(result.getIdentifierPatternType()).thenReturn(IdentifierPatternType.KEEP_ORIGIN);
+        return result;
     }
     
     private ShardingSphereMetaData createMetaData(final ShardingSphereDatabase database) {

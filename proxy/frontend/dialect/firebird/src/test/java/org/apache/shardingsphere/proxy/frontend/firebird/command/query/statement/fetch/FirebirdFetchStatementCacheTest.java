@@ -73,11 +73,22 @@ class FirebirdFetchStatementCacheTest {
     }
     
     @Test
+    void assertGetFetchBackendHandlerWithoutConnection() {
+        assertNull(cache.getFetchBackendHandler(1, 10));
+    }
+    
+    @Test
     void assertUnregisterStatement() {
         cache.registerConnection(1);
         cache.registerStatement(1, 10, mock(ProxyBackendHandler.class));
         cache.unregisterStatement(1, 10);
         assertNull(cache.getFetchBackendHandler(1, 10));
+    }
+    
+    @Test
+    void assertUnregisterStatementWithoutConnection() {
+        cache.unregisterStatement(1, 10);
+        assertFalse(statementRegistry.containsKey(1));
     }
     
     @Test

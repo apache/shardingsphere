@@ -42,6 +42,12 @@ public final class ModelSegment implements SQLSegment {
     
     private final List<OrderBySegment> orderBySegments = new LinkedList<>();
     
+    private final List<ModelColumnSegment> partitionColumns = new LinkedList<>();
+    
+    private final List<ModelColumnSegment> dimensionColumns = new LinkedList<>();
+    
+    private final List<ModelColumnSegment> measureColumns = new LinkedList<>();
+    
     private final List<ColumnSegment> cellAssignmentColumns = new LinkedList<>();
     
     private final List<SubquerySegment> cellAssignmentSelects = new LinkedList<>();

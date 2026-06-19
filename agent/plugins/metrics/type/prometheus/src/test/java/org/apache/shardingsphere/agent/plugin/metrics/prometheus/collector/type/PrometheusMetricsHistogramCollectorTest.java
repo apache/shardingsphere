@@ -42,7 +42,7 @@ class PrometheusMetricsHistogramCollectorTest {
                 MetricCollectorType.HISTOGRAM, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.observe(1D);
         Histogram histogram = (Histogram) Plugins.getMemberAccessor().get(PrometheusMetricsHistogramCollector.class.getDeclaredField("histogram"), collector);
-        assertThat(histogram.collect().get(0).samples.stream().filter(sample -> sample.name.endsWith("_count")).findFirst().get().value, is(1D));
+        assertThat(histogram.collect().get(0).samples.stream().filter(sample -> sample.name.endsWith("_count")).findFirst().map(optional -> optional.value).orElse(0D), is(1D));
     }
     
     @Test

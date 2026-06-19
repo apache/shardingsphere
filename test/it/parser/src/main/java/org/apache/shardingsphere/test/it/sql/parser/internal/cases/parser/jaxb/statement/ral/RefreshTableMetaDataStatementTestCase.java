@@ -20,7 +20,9 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.identifier.ExpectedIdentifier;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
@@ -30,12 +32,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class RefreshTableMetaDataStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "table-name")
-    private String tableName;
+    @XmlElement(name = "table-name")
+    private ExpectedIdentifier tableName;
     
     @XmlAttribute(name = "storage-unit-name")
     private String storageUnitName;
     
-    @XmlAttribute(name = "schema-name")
-    private String schemaName;
+    @XmlElement(name = "schema-name")
+    private ExpectedIdentifier schemaName;
 }

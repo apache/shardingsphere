@@ -20,12 +20,26 @@ package org.apache.shardingsphere.sharding.distsql.statement;
 import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 
+import java.util.Optional;
+
 /**
  * Show sharding key generators statement.
  */
 public final class ShowShardingKeyGeneratorsStatement extends ShowDatabaseRulesStatement {
     
-    public ShowShardingKeyGeneratorsStatement(final FromDatabaseSegment fromDatabase) {
+    private final String name;
+    
+    public ShowShardingKeyGeneratorsStatement(final String name, final FromDatabaseSegment fromDatabase) {
         super(fromDatabase);
+        this.name = name;
+    }
+    
+    /**
+     * Get name.
+     *
+     * @return name
+     */
+    public Optional<String> getName() {
+        return Optional.ofNullable(name);
     }
 }

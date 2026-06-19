@@ -56,8 +56,8 @@ public final class MaskMergedResult extends DecoratorMergedResult {
         }
         String originalTableName = columnSegmentBoundInfo.get().getOriginalTable().getValue();
         String originalColumnName = columnSegmentBoundInfo.get().getOriginalColumn().getValue();
-        ShardingSphereDatabase database = metaData.containsDatabase(columnSegmentBoundInfo.get().getOriginalDatabase().getValue())
-                ? metaData.getDatabase(columnSegmentBoundInfo.get().getOriginalDatabase().getValue())
+        ShardingSphereDatabase database = metaData.containsDatabase(columnSegmentBoundInfo.get().getOriginalDatabase())
+                ? metaData.getDatabase(columnSegmentBoundInfo.get().getOriginalDatabase())
                 : this.database;
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
         if (!rule.isPresent() || !rule.get().findMaskTable(originalTableName).map(optional -> optional.findAlgorithm(originalColumnName).isPresent()).orElse(false)) {

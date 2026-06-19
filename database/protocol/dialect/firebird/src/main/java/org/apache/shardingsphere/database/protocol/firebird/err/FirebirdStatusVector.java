@@ -36,7 +36,7 @@ public final class FirebirdStatusVector extends FirebirdPacket {
     
     public FirebirdStatusVector(final SQLException ex) {
         gdsCode = ex.getErrorCode() >= ISCConstants.isc_arith_except ? ex.getErrorCode() : ISCConstants.isc_random;
-        String rawMessage = ex.getMessage();
+        String rawMessage = null == ex.getMessage() ? "" : ex.getMessage();
         int idx = rawMessage.indexOf(';');
         String message = idx >= 0 ? rawMessage.substring(idx + 1).trim() : rawMessage;
         int stateIdx = message.indexOf(" [SQLState:");
@@ -50,8 +50,10 @@ public final class FirebirdStatusVector extends FirebirdPacket {
     protected void write(final FirebirdPacketPayload payload) {
         payload.writeInt4(ISCConstants.isc_arg_gds);
         payload.writeInt4(gdsCode);
-        payload.writeInt4(ISCConstants.isc_arg_string);
-        payload.writeString(errorMessage);
+        if (!errorMessage.isEmpty()) {
+            payload.writeInt4(ISCConstants.isc_arg_string);
+            payload.writeString(errorMessage);
+        }
         payload.writeInt4(ISCConstants.isc_arg_end);
     }
 }

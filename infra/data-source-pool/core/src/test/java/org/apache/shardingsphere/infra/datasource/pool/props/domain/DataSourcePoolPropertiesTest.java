@@ -17,136 +17,122 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.props.domain;
 
-import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
+import com.google.common.base.Objects;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.not;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class DataSourcePoolPropertiesTest {
     
-    @SuppressWarnings("unchecked")
+    private static final String CUSTOM_POOL_CLASS_NAME = "com.example.CustomDataSource";
+    
     @Test
-    void assertGetDataSourceConfigurationWithConnectionInitSqls() {
-        MockedDataSource actualDataSource = new MockedDataSource();
-        actualDataSource.setDriverClassName(MockedDataSource.class.getName());
-        actualDataSource.setUrl("jdbc:mock://127.0.0.1/foo_ds");
-        actualDataSource.setUsername("root");
-        actualDataSource.setPassword("root");
-        actualDataSource.setConnectionInitSqls(Arrays.asList("SET names utf8mb4;", "SET names utf8;"));
-        DataSourcePoolProperties actual = DataSourcePoolPropertiesCreator.create(actualDataSource);
-        assertThat(actual.getPoolClassName(), is(MockedDataSource.class.getName()));
-        assertThat(actual.getAllLocalProperties().get("driverClassName").toString(), is(MockedDataSource.class.getName()));
-        assertThat(actual.getAllLocalProperties().get("url").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getAllLocalProperties().get("username").toString(), is("root"));
-        assertThat(actual.getAllLocalProperties().get("password").toString(), is("root"));
-        assertNull(actual.getAllLocalProperties().get("loginTimeout"));
-        assertThat(actual.getAllLocalProperties().get("connectionInitSqls"), isA(List.class));
-        List<String> actualConnectionInitSql = (List<String>) actual.getAllLocalProperties().get("connectionInitSqls");
-        assertThat(actualConnectionInitSql, hasItem("SET names utf8mb4;"));
-        assertThat(actualConnectionInitSql, hasItem("SET names utf8;"));
+    void assertGetAllStandardProperties() {
+        DataSourcePoolProperties dataSourcePoolProps = new DataSourcePoolProperties(CUSTOM_POOL_CLASS_NAME, createPropertiesWithoutMetaData());
+        Map<String, Object> actual = dataSourcePoolProps.getAllStandardProperties();
+        assertThat(dataSourcePoolProps.getPoolClassName(), is(CUSTOM_POOL_CLASS_NAME));
+        assertThat(actual.size(), is(7));
+        assertThat(actual.get("dataSourceClassName"), is(MockedDataSource.class.getName()));
+        assertThat(actual.get("url"), is("jdbc:mock://127.0.0.1/demo_ds"));
+        assertThat(actual.get("username"), is("root"));
+        assertThat(actual.get("password"), is("secret"));
+        assertThat(actual.get("connectionTimeoutMilliseconds"), is(5000L));
+        assertThat(actual.get("dataSourceProperties"), is(PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString()))));
+        assertThat(actual.get("applicationName"), is("demo"));
+    }
+    
+    private Map<String, Object> createPropertiesWithoutMetaData() {
+        Map<String, Object> result = new LinkedHashMap<>(7, 1F);
+        result.put("data_source_class_name", MockedDataSource.class.getName());
+        result.put("url", "jdbc:mock://127.0.0.1/demo_ds");
+        result.put("username", "root");
+        result.put("password", "secret");
+        result.put("connection_timeout_milliseconds", 5000L);
+        result.put("dataSourceProperties.rewriteBatchedStatements", Boolean.TRUE);
+        result.put("applicationName", "demo");
+        return result;
     }
     
     @Test
     void assertGetAllLocalProperties() {
-        DataSourcePoolProperties originalProps = new DataSourcePoolProperties(MockedDataSource.class.getName(), getProperties());
-        Map<String, Object> actualAllProps = originalProps.getAllLocalProperties();
-        assertThat(actualAllProps.size(), is(7));
-        assertTrue(actualAllProps.containsKey("driverClassName"));
-        assertTrue(actualAllProps.containsValue(MockedDataSource.class.getName()));
-        assertTrue(actualAllProps.containsKey("jdbcUrl"));
-        assertTrue(actualAllProps.containsValue("jdbc:mock://127.0.0.1/foo_ds"));
-        assertTrue(actualAllProps.containsKey("username"));
-        assertTrue(actualAllProps.containsValue("root"));
-        assertTrue(actualAllProps.containsKey("password"));
-        assertTrue(actualAllProps.containsValue("root"));
-        assertTrue(actualAllProps.containsKey("loginTimeout"));
-        assertTrue(actualAllProps.containsValue("5000"));
-        assertTrue(actualAllProps.containsKey("maximumPoolSize"));
-        assertTrue(actualAllProps.containsValue("30"));
-        assertTrue(actualAllProps.containsKey("idleTimeout"));
-        assertTrue(actualAllProps.containsValue("30000"));
+        DataSourcePoolProperties dataSourcePoolProps = new DataSourcePoolProperties(MockedDataSource.class.getName(), createPropertiesWithMetaData());
+        Map<String, Object> actual = dataSourcePoolProps.getAllLocalProperties();
+        assertThat(dataSourcePoolProps.getPoolClassName(), is(MockedDataSource.class.getName()));
+        assertThat(actual.size(), is(7));
+        assertThat(actual.get("driverClassName"), is(MockedDataSource.class.getName()));
+        assertThat(actual.get("jdbcUrl"), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.get("username"), is("root"));
+        assertThat(actual.get("password"), is("secret"));
+        assertThat(actual.get("maxPoolSize"), is(16));
+        assertThat(actual.get("featureFlag"), is("enabled"));
+        assertThat(actual.get("dataSourceProperties"), is(PropertiesBuilder.build(new Property("useLocalSessionState", Boolean.TRUE.toString()))));
+        assertFalse(actual.containsKey("closed"));
     }
     
-    private Map<String, Object> getProperties() {
-        Map<String, Object> result = new HashMap<>(7, 1F);
+    private Map<String, Object> createPropertiesWithMetaData() {
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("driverClassName", MockedDataSource.class.getName());
         result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
-        result.put("password", "root");
-        result.put("loginTimeout", "5000");
-        result.put("maximumPoolSize", "30");
-        result.put("idleTimeout", "30000");
+        result.put("password", "secret");
+        result.put("max_pool_size", 16);
+        result.put("closed", Boolean.FALSE);
+        result.put("featureFlag", "enabled");
+        result.put("dataSourceProperties.useLocalSessionState", Boolean.TRUE);
         return result;
     }
     
-    @Test
-    void assertEquals() {
-        assertThat(new DataSourcePoolProperties(MockedDataSource.class.getName(), createUserProperties("root")),
-                is(new DataSourcePoolProperties(MockedDataSource.class.getName(), createUserProperties("root"))));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("equalsArguments")
+    void assertEquals(final String name, final DataSourcePoolProperties actual, final Object other, final boolean expected) {
+        assertThat(actual.equals(other), is(expected));
     }
     
     @Test
-    void assertNotEqualsWithNullValue() {
-        assertNotNull(new DataSourcePoolProperties(MockedDataSource.class.getName(), Collections.emptyMap()));
+    void assertHashCode() {
+        DataSourcePoolProperties actual = new DataSourcePoolProperties(CUSTOM_POOL_CLASS_NAME, Collections.singletonMap("username", "root"));
+        assertThat(actual.hashCode(), is(Objects.hashCode(CUSTOM_POOL_CLASS_NAME, "usernameroot")));
     }
     
-    @Test
-    void assertNotEqualsWithDifferentDataSourceClassName() {
-        assertThat(new DataSourcePoolProperties("FooDataSourceClass", Collections.emptyMap()), not(new DataSourcePoolProperties("BarDataSourceClass", Collections.emptyMap())));
+    private static Stream<Arguments> equalsArguments() {
+        DataSourcePoolProperties sameReference = createComparableProperties(CUSTOM_POOL_CLASS_NAME, "root", "false");
+        return Stream.of(
+                Arguments.of("same instance", sameReference, sameReference, true),
+                Arguments.of("null", createComparableProperties(CUSTOM_POOL_CLASS_NAME, "root", "false"), null, false),
+                Arguments.of("different type", createComparableProperties(CUSTOM_POOL_CLASS_NAME, "root", "false"), "value", false),
+                Arguments.of("different pool class name", createComparableProperties(CUSTOM_POOL_CLASS_NAME, "root", "false"),
+                        createComparableProperties("com.example.OtherDataSource", "root", "false"), false),
+                Arguments.of("empty local properties", new DataSourcePoolProperties(CUSTOM_POOL_CLASS_NAME, Collections.emptyMap()),
+                        new DataSourcePoolProperties(CUSTOM_POOL_CLASS_NAME, Collections.emptyMap()), true),
+                Arguments.of("missing local property", createComparableProperties(CUSTOM_POOL_CLASS_NAME, "root", "false"),
+                        createComparableProperties(CUSTOM_POOL_CLASS_NAME, null, "false"), true),
+                Arguments.of("different map property", createComparableProperties(CUSTOM_POOL_CLASS_NAME, "root", "false"),
+                        createComparableProperties(CUSTOM_POOL_CLASS_NAME, "root", "true"), false),
+                Arguments.of("different string property", createComparableProperties(CUSTOM_POOL_CLASS_NAME, "root", "false"),
+                        createComparableProperties(CUSTOM_POOL_CLASS_NAME, "admin", "false"), false),
+                Arguments.of("equivalent properties", createComparableProperties(CUSTOM_POOL_CLASS_NAME, "root", "false"),
+                        createComparableProperties(CUSTOM_POOL_CLASS_NAME, "root", "false"), true));
     }
     
-    @Test
-    void assertNotEqualsWithDifferentProperties() {
-        DataSourcePoolProperties actual = new DataSourcePoolProperties(MockedDataSource.class.getName(), createUserProperties("foo"));
-        DataSourcePoolProperties expected = new DataSourcePoolProperties(MockedDataSource.class.getName(), createUserProperties("bar"));
-        assertThat(actual, not(expected));
-    }
-    
-    @Test
-    void assertSameHashCode() {
-        assertThat(new DataSourcePoolProperties(MockedDataSource.class.getName(), createUserProperties("root")).hashCode(),
-                is(new DataSourcePoolProperties(MockedDataSource.class.getName(), createUserProperties("root")).hashCode()));
-    }
-    
-    @Test
-    void assertDifferentHashCodeWithDifferentDataSourceClassName() {
-        assertThat(new DataSourcePoolProperties("FooDataSourceClass", createUserProperties("foo")).hashCode(),
-                not(new DataSourcePoolProperties("BarDataSourceClass", createUserProperties("foo")).hashCode()));
-    }
-    
-    @Test
-    void assertDifferentHashCodeWithDifferentProperties() {
-        assertThat(new DataSourcePoolProperties(MockedDataSource.class.getName(), createUserProperties("foo")).hashCode(),
-                not(new DataSourcePoolProperties(MockedDataSource.class.getName(), createUserProperties("bar")).hashCode()));
-    }
-    
-    private Map<String, Object> createUserProperties(final String username) {
+    private static DataSourcePoolProperties createComparableProperties(final String poolClassName, final String username, final String rewriteBatchedStatements) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
-        result.put("username", username);
-        result.put("dataSourceProperties", createDataSourcePoolProperties());
-        return result;
-    }
-    
-    private Map<String, String> createDataSourcePoolProperties() {
-        Map<String, String> result = new LinkedHashMap<>(3, 1F);
-        result.put("maintainTimeStats", Boolean.FALSE.toString());
-        result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
-        result.put("useLocalSessionState", Boolean.TRUE.toString());
-        return result;
+        if (null != username) {
+            result.put("username", username);
+        }
+        result.put("dataSourceProperties.rewriteBatchedStatements", rewriteBatchedStatements);
+        return new DataSourcePoolProperties(poolClassName, result);
     }
 }

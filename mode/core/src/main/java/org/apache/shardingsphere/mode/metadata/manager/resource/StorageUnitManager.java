@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.metadata.manager.resource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -63,7 +64,7 @@ public final class StorageUnitManager {
             closeStaleRules(database);
             boolean isInstanceConnectionEnabled = metaDataContexts.getMetaData().getTemporaryProps().<Boolean>getValue(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED);
             SwitchingResource switchingResource = resourceSwitchManager.switchByRegisterStorageUnit(database.getResourceMetaData(), propsMap, isInstanceConnectionEnabled);
-            buildNewMetaDataContext(databaseName, switchingResource, true);
+            buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed.", databaseName, ex);
         }
@@ -81,7 +82,7 @@ public final class StorageUnitManager {
             closeStaleRules(database);
             boolean isInstanceConnectionEnabled = metaDataContexts.getMetaData().getTemporaryProps().<Boolean>getValue(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED);
             SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), propsMap, isInstanceConnectionEnabled);
-            buildNewMetaDataContext(databaseName, switchingResource, true);
+            buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} alter storage unit failed.", databaseName, ex);
         }
@@ -98,23 +99,23 @@ public final class StorageUnitManager {
         try {
             closeStaleRules(database);
             SwitchingResource switchingResource = resourceSwitchManager.switchByUnregisterStorageUnit(database.getResourceMetaData(), Collections.singleton(storageUnitName));
-            buildNewMetaDataContext(databaseName, switchingResource, false);
+            buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed.", databaseName, ex);
         }
     }
     
-    private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource, final boolean isLoadSchemasFromRegisterCenter) throws SQLException {
+    private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource) throws SQLException {
         MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).createBySwitchResource(
-                databaseName, isLoadSchemasFromRegisterCenter, switchingResource, metaDataContexts);
+                databaseName, switchingResource, metaDataContexts);
         metaDataContexts.update(reloadMetaDataContexts);
-        metaDataContexts.getMetaData().putDatabase(buildDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName)));
+        metaDataContexts.getMetaData().putDatabase(buildDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName), reloadMetaDataContexts.getMetaData().getProps()));
         switchingResource.closeStaleDataSources();
     }
     
-    private ShardingSphereDatabase buildDatabase(final ShardingSphereDatabase originalDatabase) {
+    private ShardingSphereDatabase buildDatabase(final ShardingSphereDatabase originalDatabase, final ConfigurationProperties props) {
         return new ShardingSphereDatabase(
-                originalDatabase.getName(), originalDatabase.getProtocolType(), originalDatabase.getResourceMetaData(), originalDatabase.getRuleMetaData(), buildSchemas(originalDatabase));
+                originalDatabase.getName(), originalDatabase.getProtocolType(), originalDatabase.getResourceMetaData(), originalDatabase.getRuleMetaData(), buildSchemas(originalDatabase), props);
     }
     
     private Collection<ShardingSphereSchema> buildSchemas(final ShardingSphereDatabase originalDatabase) {

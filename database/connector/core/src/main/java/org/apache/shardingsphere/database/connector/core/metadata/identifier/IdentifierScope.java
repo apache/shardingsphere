@@ -22,9 +22,13 @@ package org.apache.shardingsphere.database.connector.core.metadata.identifier;
  */
 public enum IdentifierScope {
     
+    DATABASE,
+    
     SCHEMA,
     
     TABLE,
+    
+    LOGICAL_TABLE,
     
     VIEW,
     

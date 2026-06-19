@@ -19,6 +19,7 @@ databaseName: swapper_test
 
 dataSources:
   foo_db:
+    driverClassName: org.h2.Driver
     url: jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1
     username: sa
     password: ""

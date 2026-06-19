@@ -100,7 +100,7 @@ proxy 已包含 PostgreSQL JDBC 和 openGauss JDBC 驱动。
 
 | 数据库       | JDBC 驱动                                                                                                                        |
 |-----------|--------------------------------------------------------------------------------------------------------------------------------|
-| MySQL     | [mysql-connector-j-8.3.0.jar](https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.3.0/)                            |
+| MySQL     | [mysql-connector-j-8.4.0.jar](https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.4.0/)                            |
 
 4. 启动 ShardingSphere-Proxy：
 

@@ -29,10 +29,6 @@ public final class MySQLDefaultQueryPropertiesProvider implements DialectDefault
     @Override
     public Properties getDefaultQueryProperties() {
         Properties result = new Properties();
-        result.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
-        result.setProperty("cachePrepStmts", Boolean.TRUE.toString());
-        result.setProperty("prepStmtCacheSize", "8192");
-        result.setProperty("prepStmtCacheSqlLimit", "2048");
         result.setProperty("useLocalSessionState", Boolean.TRUE.toString());
         result.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
         result.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());

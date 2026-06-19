@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="delete_order_by" value="DELETE FROM t_order WHERE order_id = 1 ORDER BY user_id LIMIT 1" db-types="MySQL"/>
+    <sql-case id="delete_with_with_clause_and_in_subquery" value="WITH target_users AS (SELECT merchant_id AS user_id FROM t_merchant WHERE merchant_id = 15) DELETE FROM t_user WHERE user_id IN (SELECT user_id FROM target_users)" db-types="MySQL"/>
 </sql-cases>

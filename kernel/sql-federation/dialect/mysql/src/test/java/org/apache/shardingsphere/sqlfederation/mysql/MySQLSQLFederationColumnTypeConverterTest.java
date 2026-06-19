@@ -28,9 +28,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.Matchers.is;
 
 class MySQLSQLFederationColumnTypeConverterTest {
     
@@ -41,10 +40,6 @@ class MySQLSQLFederationColumnTypeConverterTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("convertValueSource")
     void assertConvertColumnValue(final String name, final Object input, final Object expected) {
-        if (null == expected) {
-            assertNull(converter.convertColumnValue(input));
-            return;
-        }
         assertThat(converter.convertColumnValue(input), is(expected));
     }
     

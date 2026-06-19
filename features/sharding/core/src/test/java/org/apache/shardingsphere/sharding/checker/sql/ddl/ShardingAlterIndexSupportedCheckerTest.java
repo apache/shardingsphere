@@ -58,11 +58,13 @@ class ShardingAlterIndexSupportedCheckerTest {
     void assertCheckWhenIndexExistRenameIndexNotExistForPostgreSQL() {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        IdentifierValue currentIndexName = new IdentifierValue("foo_tbl_idx");
+        IdentifierValue renamedIndexName = new IdentifierValue("foo_tbl_idx_new");
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
-        when(table.containsIndex("foo_tbl_idx")).thenReturn(true);
-        when(table.containsIndex("foo_tbl_idx_new")).thenReturn(false);
-        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType, new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_tbl_idx"))),
-                new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_tbl_idx_new"))), null);
+        when(table.containsIndex(currentIndexName)).thenReturn(true);
+        when(table.containsIndex(renamedIndexName)).thenReturn(false);
+        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType, new IndexSegment(0, 0, new IndexNameSegment(0, 0, currentIndexName)),
+                new IndexSegment(0, 0, new IndexNameSegment(0, 0, renamedIndexName)), null);
         assertDoesNotThrow(() -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
     
@@ -79,11 +81,13 @@ class ShardingAlterIndexSupportedCheckerTest {
     void assertCheckAlterIndexWhenIndexExistRenameIndexExistForPostgreSQL() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
+        IdentifierValue currentIndexName = new IdentifierValue("foo_tbl_idx");
+        IdentifierValue renamedIndexName = new IdentifierValue("foo_tbl_idx_new");
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
-        when(table.containsIndex("foo_tbl_idx")).thenReturn(true);
-        when(table.containsIndex("foo_tbl_idx_new")).thenReturn(true);
-        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType, new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_tbl_idx"))),
-                new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_tbl_idx_new"))), null);
+        when(table.containsIndex(currentIndexName)).thenReturn(true);
+        when(table.containsIndex(renamedIndexName)).thenReturn(true);
+        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType, new IndexSegment(0, 0, new IndexNameSegment(0, 0, currentIndexName)),
+                new IndexSegment(0, 0, new IndexNameSegment(0, 0, renamedIndexName)), null);
         assertThrows(DuplicateIndexException.class, () -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
 }

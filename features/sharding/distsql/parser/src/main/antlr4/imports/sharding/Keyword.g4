@@ -151,6 +151,10 @@ KEY
     : K E Y
     ;
 
+GENERATE
+    : G E N E R A T E
+    ;
+
 GENERATOR
     : G E N E R A T O R
     ;
@@ -159,8 +163,16 @@ GENERATORS
     : G E N E R A T O R S
     ;
 
+STRATEGIES
+    : S T R A T E G I E S
+    ;
+
 KEY_GENERATOR
     : K E Y UL_ G E N E R A T O R
+    ;
+
+SEQUENCE
+    : S E Q U E N C E
     ;
 
 UNUSED

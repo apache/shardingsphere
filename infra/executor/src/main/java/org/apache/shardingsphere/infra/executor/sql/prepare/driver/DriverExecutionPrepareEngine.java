@@ -35,8 +35,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -94,7 +94,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @Override
     protected List<ExecutionGroup<T>> group(final String databaseName, final String dataSourceName, final int connectionOffset, final List<List<ExecutionUnit>> executionUnitGroups,
                                             final ConnectionMode connectionMode) throws SQLException {
-        List<ExecutionGroup<T>> result = new LinkedList<>();
+        List<ExecutionGroup<T>> result = new ArrayList<>(executionUnitGroups.size());
         List<C> connections = databaseConnectionManager.getConnections(databaseName, dataSourceName, connectionOffset, executionUnitGroups.size(), connectionMode);
         int count = 0;
         for (List<ExecutionUnit> each : executionUnitGroups) {
@@ -106,11 +106,12 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("unchecked")
     private ExecutionGroup<T> createExecutionGroup(final String databaseName, final String dataSourceName, final List<ExecutionUnit> executionUnits, final C connection, final int connectionOffset,
                                                    final ConnectionMode connectionMode) throws SQLException {
-        List<T> inputs = new LinkedList<>();
+        List<T> inputs = new ArrayList<>(executionUnits.size());
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
         Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
-        DatabaseType databaseType = storageUnits.containsKey(dataSourceName) ? storageUnits.get(dataSourceName).getStorageType() : storageUnits.values().iterator().next().getStorageType();
+        StorageUnit storageUnit = storageUnits.get(dataSourceName);
+        DatabaseType databaseType = null == storageUnit ? storageUnits.values().iterator().next().getStorageType() : storageUnit.getStorageType();
         for (ExecutionUnit each : executionUnits) {
             inputs.add((T) sqlExecutionUnitBuilder.build(each, statementManager, connection, connectionOffset, connectionMode, option, databaseType));
         }

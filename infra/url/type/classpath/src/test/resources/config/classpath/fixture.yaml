@@ -33,6 +33,13 @@ dataSources:
 
 rules:
   - !SHARDING
+    keyGenerateStrategies:
+      t_order_user_id:
+        keyGenerateType: column
+        keyGeneratorName: snowflake
+        logicTable: t_order
+        keyGenerateColumn: user_id
+
     autoTables:
       t_order:
         actualDataSources: ds_0,ds_1
@@ -40,9 +47,6 @@ rules:
           standard:
             shardingColumn: order_id
             shardingAlgorithmName: auto_mod
-        keyGenerateStrategy:
-          column: user_id
-          keyGeneratorName: snowflake
     shardingAlgorithms:
       auto_mod:
         type: HASH_MOD

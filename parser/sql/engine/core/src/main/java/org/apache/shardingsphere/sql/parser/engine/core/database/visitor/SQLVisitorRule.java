@@ -299,6 +299,8 @@ public enum SQLVisitorRule {
     
     CANCEL_TASK("CancelTask", SQLStatementType.DDL),
     
+    CANCEL_MATERIALIZED_VIEW_TASK("CancelMaterializedViewTask", SQLStatementType.DDL),
+    
     RESUME_JOB("ResumeJob", SQLStatementType.DDL),
     
     RESUME_SYNC_JOB("ResumeSyncJob", SQLStatementType.DDL),
@@ -417,7 +419,11 @@ public enum SQLVisitorRule {
     
     SHOW_DATABASES("ShowDatabases", SQLStatementType.DAL),
     
+    SHOW_DATABASE("ShowDatabase", SQLStatementType.DAL),
+    
     SHOW_TABLES("ShowTables", SQLStatementType.DAL),
+    
+    SHOW_TABLE("ShowTable", SQLStatementType.DAL),
     
     SHOW_EVENTS("ShowEvents", SQLStatementType.DAL),
     
@@ -476,6 +482,8 @@ public enum SQLVisitorRule {
     SHOW_REPLICAS("ShowReplicas", SQLStatementType.DAL),
     
     SHOW_REPLICA_STATUS("ShowReplicaStatus", SQLStatementType.DAL),
+    
+    SHOW_RESOURCES("ShowResources", SQLStatementType.DAL),
     
     SHOW_SLAVE_HOSTS("ShowSlaveHosts", SQLStatementType.DAL),
     
@@ -577,6 +585,10 @@ public enum SQLVisitorRule {
     
     CANCEL_BACKUP("CancelBackup", SQLStatementType.DAL),
     
+    CANCEL_LOAD_STATEMENT("CancelLoadStatement", SQLStatementType.DAL),
+    
+    SHOW_LOAD_WARNINGS("ShowLoadWarnings", SQLStatementType.DAL),
+    
     DORIS_ALTER_SYSTEM("DorisAlterSystem", SQLStatementType.DAL),
     
     ADMIN_SET_REPLICA_STATUS("AdminSetReplicaStatus", SQLStatementType.DAL),
@@ -586,6 +598,10 @@ public enum SQLVisitorRule {
     ADMIN_COPY_TABLET("AdminCopyTablet", SQLStatementType.DAL),
     
     ADMIN_CLEAN_TRASH("AdminCleanTrash", SQLStatementType.DAL),
+    
+    CLEAN_ALL_PROFILE("CleanAllProfile", SQLStatementType.DAL),
+    
+    PLAN_REPLAYER_PLAY("PlanReplayerPlay", SQLStatementType.DAL),
     
     CREATE_SQL_BLOCK_RULE("CreateSqlBlockRule", SQLStatementType.DAL),
     

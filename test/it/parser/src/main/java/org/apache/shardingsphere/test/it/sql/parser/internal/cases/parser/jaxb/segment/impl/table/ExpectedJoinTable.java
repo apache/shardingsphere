@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,6 +47,14 @@ public final class ExpectedJoinTable extends AbstractExpectedDelimiterSQLSegment
     
     @XmlElement(name = "using-columns")
     private final List<ExpectedColumn> usingColumns = new LinkedList<>();
+    
+    @XmlElementWrapper(name = "left-query-partition-by")
+    @XmlElement(name = "column")
+    private final List<ExpectedColumn> leftQueryPartitionColumns = new LinkedList<>();
+    
+    @XmlElementWrapper(name = "right-query-partition-by")
+    @XmlElement(name = "column")
+    private final List<ExpectedColumn> rightQueryPartitionColumns = new LinkedList<>();
     
     @XmlAttribute(name = "join-type")
     private String joinType;

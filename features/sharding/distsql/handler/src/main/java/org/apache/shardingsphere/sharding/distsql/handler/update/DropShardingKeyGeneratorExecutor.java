@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import com.google.common.base.Strings;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
@@ -27,13 +26,11 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 /**
@@ -64,20 +61,9 @@ public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropE
     }
     
     private void checkInUsed(final DropShardingKeyGeneratorStatement sqlStatement) {
-        Collection<String> usedKeyGenerators = getUsedKeyGenerators();
+        Collection<String> usedKeyGenerators = UnusedAlgorithmFinder.findInUsedKeyGenerator(rule.getConfiguration());
         Collection<String> inUsedNames = sqlStatement.getNames().stream().filter(usedKeyGenerators::contains).collect(Collectors.toList());
         ShardingSpherePreconditions.checkMustEmpty(inUsedNames, () -> new InUsedAlgorithmException("Key generator", database.getName(), inUsedNames));
-    }
-    
-    private Collection<String> getUsedKeyGenerators() {
-        Collection<String> result = new LinkedHashSet<>();
-        rule.getConfiguration().getTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
-        rule.getConfiguration().getAutoTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
-        KeyGenerateStrategyConfiguration keyGenerateStrategy = rule.getConfiguration().getDefaultKeyGenerateStrategy();
-        if (null != keyGenerateStrategy && !Strings.isNullOrEmpty(keyGenerateStrategy.getKeyGeneratorName())) {
-            result.add(keyGenerateStrategy.getKeyGeneratorName());
-        }
-        return result;
     }
     
     @Override

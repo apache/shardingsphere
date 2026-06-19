@@ -47,6 +47,7 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.single.rule.attribute.SingleDataNodeRuleAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -63,6 +64,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -71,6 +73,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -160,10 +164,10 @@ class SingleSQLRouterTest {
         QualifiedTable qualifiedTable = new QualifiedTable("foo_db", "foo_tbl");
         SingleRule rule = mock(SingleRule.class);
         when(rule.getQualifiedTables(sqlStatementContext, database)).thenReturn(Collections.singletonList(qualifiedTable));
-        when(rule.getSingleTables(Collections.singletonList(qualifiedTable))).thenReturn(Collections.emptyList());
+        when(rule.getSingleTables(Collections.singletonList(qualifiedTable), database)).thenReturn(Collections.emptyList());
         RouteContext actual = singleSQLRouter.createRouteContext(queryContext, mock(), database, rule, Collections.singletonList("foo_tbl"), new ConfigurationProperties(new Properties()));
         assertTrue(actual.getRouteUnits().isEmpty());
-        verify(rule).getSingleTables(Collections.singletonList(qualifiedTable));
+        verify(rule).getSingleTables(Collections.singletonList(qualifiedTable), database);
     }
     
     @Test
@@ -185,7 +189,7 @@ class SingleSQLRouterTest {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
                 "foo_db", databaseType, Collections.singletonMap("readwrite_ds", new MockedDataSource()), Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
-                mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
+                databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleSQLRouter.decorateRouteContext(routeContext, createQueryContext(), database, rule, Collections.singletonList("foo_tbl"), new ConfigurationProperties(new Properties()));
         assertThat(routeContext.getActualDataSourceNames().size(), is(1));
         assertTrue(Arrays.asList("write_ds", "readwrite_ds").contains(routeContext.getActualDataSourceNames().iterator().next()));
@@ -264,7 +268,7 @@ class SingleSQLRouterTest {
         when(result.getName()).thenReturn("foo_db");
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("foo_tbl")).thenReturn(true);
-        when(result.getSchema(any())).thenReturn(schema);
+        when(result.getSchema(anyString())).thenReturn(schema);
         return result;
     }
     
@@ -301,5 +305,38 @@ class SingleSQLRouterTest {
         when(metaData.getDatabase("foo_db")).thenReturn(mock(ShardingSphereDatabase.class));
         return new QueryContext(new CommonSQLStatementContext(CreateTableStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(tableNameSegment)).build()),
                 "CREATE TABLE", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
+    }
+    
+    @Test
+    void assertCreateRouteContextWhenNoSingleTablesButSingleLogicalDataSource() {
+        SingleRule rule = mock(SingleRule.class);
+        when(rule.getQualifiedTables(any(), any())).thenReturn(Collections.emptyList());
+        when(rule.getSingleTables(anyCollection(), any())).thenReturn(Collections.emptyList());
+        when(rule.getDataSourceNames()).thenReturn(Collections.singleton("logical_ds"));
+        ShardingSphereDatabase database = mockDatabaseWithMultipleResources();
+        when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
+        when(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class))
+                .thenReturn(Collections.singletonList(new SingleDataNodeRuleAttribute(new LinkedHashMap<>())));
+        RouteContext actual = new SingleSQLRouter().createRouteContext(
+                createQueryContext(), mock(RuleMetaData.class), database, rule, Collections.singletonList("t_order"), new ConfigurationProperties(new Properties()));
+        assertThat(actual.getRouteUnits().size(), is(1));
+        RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
+        assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("logical_ds"));
+        assertThat(routeUnit.getDataSourceMapper().getActualName(), is("logical_ds"));
+    }
+    
+    @Test
+    void assertCreateRouteContextWhenNoSingleTablesAndMultipleDataNodeParticipants() {
+        SingleRule rule = mock(SingleRule.class);
+        when(rule.getQualifiedTables(any(), any())).thenReturn(Collections.emptyList());
+        when(rule.getSingleTables(anyCollection(), any())).thenReturn(Collections.emptyList());
+        when(rule.getDataSourceNames()).thenReturn(Collections.singleton("logical_ds"));
+        ShardingSphereDatabase database = mockDatabaseWithMultipleResources();
+        when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
+        when(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class))
+                .thenReturn(Arrays.asList(new SingleDataNodeRuleAttribute(new LinkedHashMap<>()), mock(DataNodeRuleAttribute.class)));
+        RouteContext actual = new SingleSQLRouter().createRouteContext(
+                createQueryContext(), mock(RuleMetaData.class), database, rule, Collections.singletonList("t_order"), new ConfigurationProperties(new Properties()));
+        assertTrue(actual.getRouteUnits().isEmpty());
     }
 }

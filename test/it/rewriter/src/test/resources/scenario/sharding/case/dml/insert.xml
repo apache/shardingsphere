@@ -78,8 +78,8 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="insert_values_with_columns_with_binary_operation_for_literals" db-types="MySQL">
-        <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (100, account_id + 100, OK)" />
-        <output sql="INSERT INTO t_account_0 (account_id, amount, status) VALUES (100, account_id + 100, OK)" />
+        <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (100, account_id + 100, 'OK')" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) VALUES (100, account_id + 100, 'OK')" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_multiple_values_with_columns_with_id_for_parameters" db-types="SQL92">

@@ -104,29 +104,30 @@ public final class EncryptProjectionTokenGenerator {
                 ? generateSelectSQLTokens((SelectStatementContext) sqlStatementContext, operator)
                 : Collections.emptyList();
         Collection<SQLToken> result = new LinkedList<>(sqlTokens);
-        Collection<Integer> processedSubqueryStartIndexes = new HashSet<>();
+        Collection<Integer> processedSubqueryIndexes = new HashSet<>();
         Map<Integer, SelectStatementContext> subqueryContexts = getSubqueryContexts(sqlStatementContext);
         for (ExpressionSegment each : ExpressionExtractor.getNestedSubqueryCompareExpressions(sqlStatementContext.getSqlStatement())) {
             if (each instanceof BinaryOperationExpression) {
                 BinaryOperationExpression binaryExpression = (BinaryOperationExpression) each;
                 checkBinaryOperationEncryptor(binaryExpression);
-                generateExpressionSQLTokens(binaryExpression.getLeft(), subqueryContexts, processedSubqueryStartIndexes, result, binaryExpression.getOperator());
-                generateExpressionSQLTokens(binaryExpression.getRight(), subqueryContexts, processedSubqueryStartIndexes, result, binaryExpression.getOperator());
+                String expressionOperator = binaryExpression.getOperator();
+                generateExpressionSQLTokens(binaryExpression.getLeft(), subqueryContexts, processedSubqueryIndexes, result, expressionOperator);
+                generateExpressionSQLTokens(binaryExpression.getRight(), subqueryContexts, processedSubqueryIndexes, result, expressionOperator);
             } else if (each instanceof InExpression) {
                 InExpression inExpression = (InExpression) each;
                 checkInExpressionEncryptor(inExpression);
-                generateExpressionSQLTokens(inExpression.getLeft(), subqueryContexts, processedSubqueryStartIndexes, result, "IN");
-                generateExpressionSQLTokens(inExpression.getRight(), subqueryContexts, processedSubqueryStartIndexes, result, "IN");
+                generateExpressionSQLTokens(inExpression.getLeft(), subqueryContexts, processedSubqueryIndexes, result, "IN");
+                generateExpressionSQLTokens(inExpression.getRight(), subqueryContexts, processedSubqueryIndexes, result, "IN");
             } else if (each instanceof BetweenExpression) {
                 BetweenExpression betweenExpression = (BetweenExpression) each;
-                generateExpressionSQLTokens(betweenExpression.getLeft(), subqueryContexts, processedSubqueryStartIndexes, result, "BETWEEN");
-                generateExpressionSQLTokens(betweenExpression.getBetweenExpr(), subqueryContexts, processedSubqueryStartIndexes, result, "BETWEEN");
-                generateExpressionSQLTokens(betweenExpression.getAndExpr(), subqueryContexts, processedSubqueryStartIndexes, result, "BETWEEN");
+                generateExpressionSQLTokens(betweenExpression.getLeft(), subqueryContexts, processedSubqueryIndexes, result, "BETWEEN");
+                generateExpressionSQLTokens(betweenExpression.getBetweenExpr(), subqueryContexts, processedSubqueryIndexes, result, "BETWEEN");
+                generateExpressionSQLTokens(betweenExpression.getAndExpr(), subqueryContexts, processedSubqueryIndexes, result, "BETWEEN");
             }
         }
         String subqueryOperator = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsCombine() ? "COMBINE" : "";
         for (Entry<Integer, SelectStatementContext> entry : subqueryContexts.entrySet()) {
-            if (!processedSubqueryStartIndexes.contains(entry.getKey())) {
+            if (!processedSubqueryIndexes.contains(entry.getKey())) {
                 result.addAll(generateSQLTokens(entry.getValue(), subqueryOperator));
             }
         }
@@ -149,10 +150,10 @@ public final class EncryptProjectionTokenGenerator {
     }
     
     private void generateExpressionSQLTokens(final ExpressionSegment expressionSegment, final Map<Integer, SelectStatementContext> subqueryContexts,
-                                             final Collection<Integer> processedSubqueryStartIndexes,
+                                             final Collection<Integer> processedSubqueryIndexes,
                                              final Collection<SQLToken> result, final String operator) {
         Integer subqueryStartIndex = getSubqueryStartIndex(expressionSegment);
-        if (null != subqueryStartIndex && processedSubqueryStartIndexes.add(subqueryStartIndex)) {
+        if (null != subqueryStartIndex && processedSubqueryIndexes.add(subqueryStartIndex)) {
             SelectStatementContext subqueryContext = subqueryContexts.get(subqueryStartIndex);
             if (null != subqueryContext) {
                 result.addAll(generateSQLTokens(subqueryContext, operator));
@@ -361,19 +362,29 @@ public final class EncryptProjectionTokenGenerator {
         return Optional.empty();
     }
     
+    private String getDerivedColumnName(final ColumnProjection columnProjection, final String actualColumnName, final EncryptDerivedColumnSuffix suffix) {
+        return TableSourceType.TEMPORARY_TABLE == columnProjection.getColumnBoundInfo().getTableSourceType() ? getDerivedColumnName(columnProjection, suffix) : actualColumnName;
+    }
+    
+    private String getDerivedColumnName(final ColumnProjection columnProjection, final EncryptDerivedColumnSuffix suffix) {
+        return null == suffix ? columnProjection.getName().getValue() : suffix.getDerivedColumnName(columnProjection.getName().getValue(), databaseType);
+    }
+    
     private Collection<Projection> generateProjectionsInInsertSelectSubquery(final EncryptColumn encryptColumn, final ColumnProjection columnProjection) {
-        IdentifierValue columnName = new IdentifierValue(encryptColumn.getCipher().getName(), columnProjection.getName().getQuoteCharacter());
+        String derivedColumnName = getDerivedColumnName(columnProjection, encryptColumn.getCipher().getName(), EncryptDerivedColumnSuffix.CIPHER);
+        QuoteCharacter quoteCharacter = getQuoteCharacter(columnProjection);
+        IdentifierValue columnName = new IdentifierValue(derivedColumnName, quoteCharacter);
         Collection<Projection> result = new LinkedList<>();
         ParenthesesSegment leftParentheses = columnProjection.getLeftParentheses().orElse(null);
         ParenthesesSegment rightParentheses = columnProjection.getRightParentheses().orElse(null);
         result.add(new ColumnProjection(columnProjection.getOwner().orElse(null), columnName, null, databaseType, leftParentheses, rightParentheses));
         IdentifierValue columOwner = columnProjection.getOwner().orElse(null);
-        encryptColumn.getAssistedQuery()
-                .ifPresent(optional -> result.add(
-                        new ColumnProjection(columOwner, new IdentifierValue(optional.getName(), dialectDatabaseMetaData.getQuoteCharacter()), null, databaseType, leftParentheses, rightParentheses)));
-        encryptColumn.getLikeQuery()
-                .ifPresent(optional -> result.add(
-                        new ColumnProjection(columOwner, new IdentifierValue(optional.getName(), dialectDatabaseMetaData.getQuoteCharacter()), null, databaseType, leftParentheses, rightParentheses)));
+        encryptColumn.getAssistedQuery().ifPresent(optional -> result.add(new ColumnProjection(columOwner,
+                new IdentifierValue(getDerivedColumnName(columnProjection, optional.getName(), EncryptDerivedColumnSuffix.ASSISTED_QUERY), quoteCharacter), null,
+                databaseType, leftParentheses, rightParentheses)));
+        encryptColumn.getLikeQuery().ifPresent(optional -> result.add(new ColumnProjection(columOwner,
+                new IdentifierValue(getDerivedColumnName(columnProjection, optional.getName(), EncryptDerivedColumnSuffix.LIKE_QUERY), quoteCharacter), null, databaseType,
+                leftParentheses, rightParentheses)));
         return result;
     }
     

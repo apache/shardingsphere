@@ -33,6 +33,7 @@ import java.util.Collections;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -66,7 +67,7 @@ class DropShardingTableReferenceExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(shardingRuleConfig);
         executor.setRule(rule);
-        executor.checkBeforeUpdate(statement);
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(statement));
     }
     
     @Test

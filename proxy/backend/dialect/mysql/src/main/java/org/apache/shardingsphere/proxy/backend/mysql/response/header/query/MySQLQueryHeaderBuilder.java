@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.response.header.query;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -34,39 +34,33 @@ import java.util.Optional;
 public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
     
     @Override
-    public QueryHeader build(final QueryResultMetaData queryResultMetaData,
-                             final ShardingSphereDatabase database, final String columnName, final String columnLabel, final int columnIndex) throws SQLException {
+    public QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final String columnName, final String columnLabel,
+                             final int columnIndex) throws SQLException {
         String schemaName = null == database ? "" : database.getName();
-        String actualTableName = queryResultMetaData.getTableName(columnIndex);
-        String tableName;
-        boolean primaryKey;
-        if (null == actualTableName || null == database) {
-            tableName = actualTableName;
-            primaryKey = false;
-        } else {
-            tableName = getLogicTableName(database, actualTableName);
-            ShardingSphereSchema schema = database.getSchema(schemaName);
-            primaryKey = null != schema
-                    && Optional.ofNullable(schema.getTable(tableName)).map(optional -> optional.getColumn(columnName)).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
-        }
-        int columnType = queryResultMetaData.getColumnType(columnIndex);
-        String columnTypeName = queryResultMetaData.getColumnTypeName(columnIndex);
-        int columnLength = queryResultMetaData.getColumnLength(columnIndex);
-        int decimals = queryResultMetaData.getDecimals(columnIndex);
-        boolean signed = queryResultMetaData.isSigned(columnIndex);
-        boolean notNull = queryResultMetaData.isNotNull(columnIndex);
-        boolean autoIncrement = queryResultMetaData.isAutoIncrement(columnIndex);
+        String tableName = resultSetMetaData.getTableName(columnIndex);
+        boolean primaryKey = isPrimaryKey(database, schemaName, tableName, columnName, resultSetMetaData, columnIndex);
+        int columnType = resultSetMetaData.getColumnType(columnIndex);
+        String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
+        int columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
+        int decimals = resultSetMetaData.getScale(columnIndex);
+        boolean signed = resultSetMetaData.isSigned(columnIndex);
+        boolean notNull = ResultSetMetaData.columnNoNulls == resultSetMetaData.isNullable(columnIndex);
+        boolean autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
         return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnType, columnTypeName, columnLength, decimals, signed, primaryKey, notNull, autoIncrement);
     }
     
-    private String getLogicTableName(final ShardingSphereDatabase database, final String actualTableName) {
-        for (DataNodeRuleAttribute each : database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
-            Optional<String> logicTable = each.findLogicTableByActualTable(actualTableName);
-            if (logicTable.isPresent()) {
-                return logicTable.get();
-            }
+    private boolean isPrimaryKey(final ShardingSphereDatabase database, final String schemaName, final String tableName, final String columnName,
+                                 final ShardingSphereResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
+        if (null == database || null == tableName) {
+            return false;
         }
-        return actualTableName;
+        ShardingSphereSchema schema = database.getSchema(schemaName);
+        return isPrimaryKey(schema, tableName, columnName) || isPrimaryKey(schema, tableName, resultSetMetaData.getColumnName(columnIndex));
+    }
+    
+    private boolean isPrimaryKey(final ShardingSphereSchema schema, final String tableName, final String columnName) {
+        return null != schema && null != columnName
+                && Optional.ofNullable(schema.getTable(tableName)).map(optional -> optional.getColumn(columnName)).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
     }
     
     @Override

@@ -109,6 +109,10 @@ shardingAlgorithmName
     : IDENTIFIER_
     ;
 
+keyGenerateStrategyName
+    : IDENTIFIER_
+    ;
+
 keyGeneratorName
     : IDENTIFIER_
     ;

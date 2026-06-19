@@ -24,8 +24,10 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.UnsupportedActualDataNodeStructureException;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
@@ -39,6 +41,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,6 +68,8 @@ class SchemaMetaDataUtilsTest {
     
     private static final DatabaseType MYSQL_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
+    private static final DatabaseType ORACLE_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
     @AfterEach
     void clearCachedDatabaseTables() {
         GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().clear();
@@ -72,8 +80,9 @@ class SchemaMetaDataUtilsTest {
     void assertGetMetaDataLoaderMaterials(final String name, final Map<String, StorageUnit> storageUnits, final Collection<DataNode> dataNodes,
                                           final ConfigurationProperties props, final String defaultSchemaName, final List<String> expectedStorageUnitNames,
                                           final List<List<String>> expectedActualTableNames, final List<String> expectedDefaultSchemaNames) {
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(mockDataNodeRule(dataNodes)), props, defaultSchemaName);
-        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material));
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(mockDataNodeRule(dataNodes)), props, defaultSchemaName,
+                DatabaseIdentifierContextFactory.createDefault());
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material, true));
         assertThat(actual.size(), is(expectedStorageUnitNames.size()));
         for (int i = 0; i < actual.size(); i++) {
             assertThat(actual.get(i).getStorageUnitName(), is(expectedStorageUnitNames.get(i)));
@@ -90,8 +99,8 @@ class SchemaMetaDataUtilsTest {
         storageUnits.put("ds.foo_db", mockStorageUnit(MYSQL_DATABASE_TYPE, mock(DataSource.class)));
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,
                 Collections.singleton(mockDataNodeRule(Collections.singleton(new DataNode("ds.foo_db", "foo_db", "foo_tbl")))),
-                createProperties(Boolean.FALSE, null), "foo_db");
-        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material));
+                createProperties(Boolean.FALSE, null), "foo_db", DatabaseIdentifierContextFactory.createDefault());
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material, true));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getStorageUnitName(), is("ds.foo_db"));
         assertThat(actual.get(0).getDataSource(), is(dataSource));
@@ -107,9 +116,9 @@ class SchemaMetaDataUtilsTest {
         storageUnits.put("ds.foo_db", mockStorageUnit(FIXTURE_DATABASE_TYPE, mock(DataSource.class)));
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,
                 Collections.singleton(mockDataNodeRule(Collections.singleton(new DataNode("ds.foo_db", "foo_db", "foo_tbl")))),
-                createProperties(Boolean.FALSE, null), "foo_db");
+                createProperties(Boolean.FALSE, null), "foo_db", DatabaseIdentifierContextFactory.createDefault());
         UnsupportedActualDataNodeStructureException actual = assertThrows(UnsupportedActualDataNodeStructureException.class,
-                () -> SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material));
+                () -> SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material, true));
         assertThat(actual.getMessage(), is("Can not support 3-tier structure for actual data node 'ds.foo_db.foo_tbl' with JDBC 'jdbc:mock'."));
     }
     
@@ -119,12 +128,42 @@ class SchemaMetaDataUtilsTest {
         storageUnits.put("ds_0", mockStorageUnit(FIXTURE_DATABASE_TYPE, mock(DataSource.class)));
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(
                 mockDataNodeRule(Arrays.asList(new DataNode("ds_0.foo_tbl_0"), new DataNode("ds_0.foo_tbl_1"), new DataNode("ds_0.foo_tbl_2")))),
-                createProperties(Boolean.TRUE, 2), "foo_db");
-        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material));
+                createProperties(Boolean.TRUE, 2), "foo_db", DatabaseIdentifierContextFactory.createDefault());
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material, true));
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getStorageUnitName(), is("ds_0"));
         assertThat(new ArrayList<>(actual.get(0).getActualTableNames()), is(Arrays.asList("foo_tbl_0", "foo_tbl_1")));
         assertThat(new ArrayList<>(actual.get(1).getActualTableNames()), is(Collections.singletonList("foo_tbl_2")));
+    }
+    
+    @Test
+    void assertGetMetaDataLoaderMaterialsNormalizeActualTableNamesByTableScope() {
+        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(1, 1F);
+        storageUnits.put("ds_0", mockStorageUnit(ORACLE_DATABASE_TYPE, mock(DataSource.class)));
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,
+                Collections.singleton(mockDataNodeRule(Collections.singleton(new DataNode("ds_0.t_user")))), props, "foo_db",
+                DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), storageUnits), props));
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material, false));
+        assertThat(actual.size(), is(1));
+        assertThat(new ArrayList<>(actual.get(0).getActualTableNames()), is(Collections.singletonList("T_USER")));
+    }
+    
+    @Test
+    void assertGetMetaDataLoaderMaterialsNormalizeActualTableNamesByStorageTypeWithMixedStorageUnits() throws SQLException {
+        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
+        storageUnits.put("ds_mysql", mockStorageUnit(MYSQL_DATABASE_TYPE, mockMySQLDataSource(1)));
+        storageUnits.put("ds_oracle", mockStorageUnit(ORACLE_DATABASE_TYPE, mock(DataSource.class)));
+        ConfigurationProperties props = createProperties(Boolean.TRUE, null);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(
+                mockDataNodeRule(Arrays.asList(new DataNode("ds_mysql.t_order"), new DataNode("ds_oracle.t_user")))), props, "foo_db",
+                DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), storageUnits), props));
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), material, false));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0).getStorageUnitName(), is("ds_mysql"));
+        assertThat(new ArrayList<>(actual.get(0).getActualTableNames()), is(Collections.singletonList("t_order")));
+        assertThat(actual.get(1).getStorageUnitName(), is("ds_oracle"));
+        assertThat(new ArrayList<>(actual.get(1).getActualTableNames()), is(Collections.singletonList("t_user")));
     }
     
     private ShardingSphereRule mockDataNodeRule(final Collection<DataNode> dataNodes) {
@@ -181,6 +220,19 @@ class SchemaMetaDataUtilsTest {
         StorageUnit result = mock(StorageUnit.class);
         when(result.getStorageType()).thenReturn(storageType);
         when(result.getDataSource()).thenReturn(dataSource);
+        return result;
+    }
+    
+    private static DataSource mockMySQLDataSource(final int lowerCaseTableNames) throws SQLException {
+        DataSource result = mock(DataSource.class);
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(result.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement("SELECT @@lower_case_table_names")).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getInt(1)).thenReturn(lowerCaseTableNames);
         return result;
     }
 }

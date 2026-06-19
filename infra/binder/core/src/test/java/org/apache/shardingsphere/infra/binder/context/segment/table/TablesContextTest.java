@@ -67,6 +67,23 @@ class TablesContextTest {
         assertThat(tablesContext.getTableNames(), is(Collections.singleton("tbl")));
     }
     
+    @Test
+    void assertGetIdentifierSchemaName() {
+        IdentifierValue schemaIdentifier = new IdentifierValue("foo_schema");
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 10, new IdentifierValue("tbl"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), schemaIdentifier));
+        TablesContext tablesContext = new TablesContext(Collections.singleton(new SimpleTableSegment(tableNameSegment)));
+        assertThat(tablesContext.getIdentifierSchemaName(), is(Optional.of(schemaIdentifier)));
+    }
+    
+    @Test
+    void assertGetIdentifierSchemaNameWithoutSchema() {
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 10, new IdentifierValue("tbl"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("")));
+        TablesContext tablesContext = new TablesContext(Collections.singleton(new SimpleTableSegment(tableNameSegment)));
+        assertThat(tablesContext.getIdentifierSchemaName(), is(Optional.empty()));
+    }
+    
     private SimpleTableSegment createTableSegment(final String tableName, final String alias, final String databaseName) {
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue(tableName));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(databaseName), new IdentifierValue(databaseName)));

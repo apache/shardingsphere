@@ -22,14 +22,15 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.assignment.AssignmentValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedInsertValue;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedInsertValuesClause;
 
 import java.util.Collection;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Insert values clause assert.
@@ -54,11 +55,18 @@ public final class InsertValuesClauseAssert {
     }
     
     private static void assertInsertValues(final SQLCaseAssertContext assertContext, final InsertValuesSegment actual, final ExpectedInsertValue expected) {
+        if (isNeedAssertSQLSegment(expected)) {
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
         assertThat(assertContext.getText("Insert assignment value size assertion error: "), actual.getValues().size(), is(expected.getAssignmentValues().size()));
         int count = 0;
         for (ExpressionSegment each : actual.getValues()) {
             AssignmentValueAssert.assertIs(assertContext, each, expected.getAssignmentValues().get(count));
             count++;
         }
+    }
+    
+    private static boolean isNeedAssertSQLSegment(final ExpectedInsertValue expected) {
+        return expected.getStartIndex() > 0 || expected.getStopIndex() > 0 || null != expected.getLiteralStartIndex() || null != expected.getLiteralStopIndex();
     }
 }

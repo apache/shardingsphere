@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Dialect sql batch option.
+ * Dialect SQL batch option.
  */
 @RequiredArgsConstructor
 @Getter

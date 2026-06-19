@@ -36,5 +36,5 @@ showLike
     ;
 
 likePattern
-    : STRING_
+    : distSQLString
     ;

@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.al
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CherryPickDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ModifyTableCommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
@@ -89,6 +90,8 @@ public final class AlterTableStatement extends DDLStatement {
     private final LockTableSegment lockTableSegment;
     
     private final DropPrimaryKeyDefinitionSegment dropPrimaryKeyDefinition;
+    
+    private final CherryPickDefinitionSegment cherryPickDefinition;
     
     private final Collection<PropertiesSegment> setPropertiesDefinitions;
     
@@ -146,6 +149,7 @@ public final class AlterTableStatement extends DDLStatement {
     private AlterTableStatement(final DatabaseType databaseType, final SimpleTableSegment table, final SimpleTableSegment renameTable, final ReplaceTableDefinitionSegment replaceTable,
                                 final ConvertTableDefinitionSegment convertTableDefinition, final ModifyCollectionRetrievalSegment modifyCollectionRetrieval,
                                 final AlgorithmTypeSegment algorithmSegment, final LockTableSegment lockTableSegment, final DropPrimaryKeyDefinitionSegment dropPrimaryKeyDefinition,
+                                final CherryPickDefinitionSegment cherryPickDefinition,
                                 @Singular("setPropertiesDefinition") final Collection<PropertiesSegment> setPropertiesDefinitions,
                                 @Singular("enableFeatureDefinition") final Collection<EnableFeatureSegment> enableFeatureDefinitions,
                                 @Singular("modifyTableCommentDefinition") final Collection<ModifyTableCommentSegment> modifyTableCommentDefinitions,
@@ -180,6 +184,7 @@ public final class AlterTableStatement extends DDLStatement {
         this.algorithmSegment = algorithmSegment;
         this.lockTableSegment = lockTableSegment;
         this.dropPrimaryKeyDefinition = dropPrimaryKeyDefinition;
+        this.cherryPickDefinition = cherryPickDefinition;
         this.setPropertiesDefinitions = setPropertiesDefinitions;
         this.enableFeatureDefinitions = enableFeatureDefinitions;
         this.modifyTableCommentDefinitions = modifyTableCommentDefinitions;
@@ -297,6 +302,15 @@ public final class AlterTableStatement extends DDLStatement {
      */
     public Optional<DropPrimaryKeyDefinitionSegment> getDropPrimaryKeyDefinition() {
         return Optional.ofNullable(dropPrimaryKeyDefinition);
+    }
+    
+    /**
+     * Get cherry pick definition.
+     *
+     * @return cherry pick definition
+     */
+    public Optional<CherryPickDefinitionSegment> getCherryPickDefinition() {
+        return Optional.ofNullable(cherryPickDefinition);
     }
     
     private class AlterTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {

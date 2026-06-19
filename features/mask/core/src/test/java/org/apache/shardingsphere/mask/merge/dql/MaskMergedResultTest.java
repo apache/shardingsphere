@@ -166,6 +166,8 @@ class MaskMergedResultTest {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
         when(result.containsDatabase("foo_db")).thenReturn(true);
         when(result.getDatabase("foo_db")).thenReturn(database);
+        when(result.containsDatabase(new IdentifierValue("foo_db"))).thenReturn(true);
+        when(result.getDatabase(new IdentifierValue("foo_db"))).thenReturn(database);
         return result;
     }
     

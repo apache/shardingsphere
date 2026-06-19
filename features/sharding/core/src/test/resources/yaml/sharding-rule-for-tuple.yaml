@@ -36,15 +36,12 @@ rules:
       tableStrategy: 
         hint:
           shardingAlgorithmName: core_hint_fixture
-    t_order: 
+    t_order:
       actualDataNodes: ds_${0..1}.t_order_${0..1}
-      tableStrategy: 
+      tableStrategy:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: table_inline
-      keyGenerateStrategy:
-        column: order_id
-        keyGeneratorName: snowflake
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:

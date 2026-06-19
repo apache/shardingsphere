@@ -27,7 +27,7 @@ columns:
     unsigned: false
     nullable: false
 indexes:
-   primary:
+   PRIMARY:
       name: PRIMARY
 constraints:
   foo_constraint:

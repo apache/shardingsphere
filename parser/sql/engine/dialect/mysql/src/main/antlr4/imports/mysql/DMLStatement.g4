@@ -257,8 +257,16 @@ withClause
     ;
 
 cteClause
-    : alias (LP_ columnNames RP_)? AS subquery
+    // MARIADB CHANGED BEGIN
+    : alias (LP_ columnNames RP_)? AS subquery cycleClause?
+    // MARIADB CHANGED END
     ;
+
+// MARIADB ADDED BEGIN
+cycleClause
+    : CYCLE columnNames RESTRICT
+    ;
+// MARIADB ADDED END
 
 selectSpecification
     : duplicateSpecification | HIGH_PRIORITY | STRAIGHT_JOIN | SQL_SMALL_RESULT | SQL_BIG_RESULT | SQL_BUFFER_RESULT | SQL_NO_CACHE | SQL_CALC_FOUND_ROWS

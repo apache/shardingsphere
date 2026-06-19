@@ -25,13 +25,19 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -145,6 +151,68 @@ class InsertStatementBinderTest {
         assertInsertSelect(actual);
     }
     
+    @Test
+    void assertBindInsertValuesSubqueryExpression() {
+        ProjectionsSegment projections = new ProjectionsSegment(8, 14);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(8, 14, new IdentifierValue("status"))));
+        ColumnSegment predicateColumn = new ColumnSegment(34, 41, new IdentifierValue("order_id"));
+        BinaryOperationExpression predicate = new BinaryOperationExpression(34, 48, predicateColumn, new LiteralExpressionSegment(45, 48, 1000), "=", "order_id = 1000");
+        SelectStatement subquerySelect = SelectStatement.builder().databaseType(databaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(22, 28, new IdentifierValue("t_order"))))
+                .where(new WhereSegment(34, 48, predicate)).build();
+        SubqueryExpressionSegment subqueryExpression = new SubqueryExpressionSegment(new SubquerySegment(0, 49, subquerySelect, "(SELECT status FROM t_order WHERE order_id = 1000)"));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
+                .insertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("status")))))
+                .values(Collections.singletonList(new InsertValuesSegment(0, 49, Collections.singletonList(subqueryExpression)))).build();
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
+        SubqueryExpressionSegment actualSubqueryExpression = (SubqueryExpressionSegment) actual.getValues().iterator().next().getValues().iterator().next();
+        ProjectionSegment projectionSegment = actualSubqueryExpression.getSubquery().getSelect().getProjections().getProjections().iterator().next();
+        assertThat(((ColumnProjectionSegment) projectionSegment).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        BinaryOperationExpression actualPredicate = (BinaryOperationExpression) actualSubqueryExpression.getSubquery().getSelect().getWhere().get().getExpr();
+        assertThat(((ColumnSegment) actualPredicate.getLeft()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+    }
+    
+    @Test
+    void assertBindInsertValuesWithOnDuplicateKeyColumns() {
+        ColumnAssignmentSegment onDuplicateAssignment = new ColumnAssignmentSegment(0, 0,
+                Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("status"))), new LiteralExpressionSegment(0, 0, "UPDATED"));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
+                .insertColumns(new InsertColumnsSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("order_id")),
+                        new ColumnSegment(0, 0, new IdentifierValue("user_id")), new ColumnSegment(0, 0, new IdentifierValue("status")))))
+                .values(Collections.singletonList(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
+                        new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK")))))
+                .onDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(onDuplicateAssignment))).build();
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
+        assertTrue(actual.getOnDuplicateKeyColumns().isPresent());
+        assertThat(actual.getOnDuplicateKeyColumns().get().getColumns().iterator().next().getColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+    }
+    
+    @Test
+    void assertBindInsertValuesWithOnDuplicateKeyColumnsAndExcludedValue() {
+        ColumnSegment excludedUserIdColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
+        excludedUserIdColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("EXCLUDED")));
+        ColumnAssignmentSegment onDuplicateAssignment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("user_id"))), excludedUserIdColumn);
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
+                .insertColumns(new InsertColumnsSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("order_id")),
+                        new ColumnSegment(0, 0, new IdentifierValue("user_id")), new ColumnSegment(0, 0, new IdentifierValue("status")))))
+                .values(Collections.singletonList(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
+                        new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK")))))
+                .onDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(onDuplicateAssignment))).build();
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
+        assertTrue(actual.getOnDuplicateKeyColumns().isPresent());
+        ColumnAssignmentSegment actualAssignment = actual.getOnDuplicateKeyColumns().get().getColumns().iterator().next();
+        assertThat(actualAssignment.getColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualAssignment.getValue(), isA(ColumnSegment.class));
+        ColumnSegment actualValue = (ColumnSegment) actualAssignment.getValue();
+        assertThat(excludedUserIdColumn, is(actualValue));
+        assertTrue(actualValue.getOwner().isPresent());
+        assertThat(actualValue.getOwner().get().getIdentifier().getValue(), is("EXCLUDED"));
+        assertThat(actualValue.getIdentifier().getValue(), is("user_id"));
+    }
+    
     private static void assertInsertSelect(final InsertStatement actual) {
         assertTrue(actual.getInsertSelect().isPresent());
         Collection<ProjectionSegment> actualProjections = actual.getInsertSelect().get().getSelect().getProjections().getProjections();
@@ -172,15 +240,27 @@ class InsertStatementBinderTest {
     
     private ShardingSphereMetaData createMetaData() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        IdentifierValue fooDatabase = new IdentifierValue("foo_db");
+        IdentifierValue tOrder = new IdentifierValue("t_order");
         when(schema.getTable("t_order").getAllColumns()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)));
+        when(schema.getTable(tOrder).getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase("foo_db").getSchema("foo_db")).thenReturn(schema);
+        when(result.getDatabase(fooDatabase).getSchema(fooDatabase)).thenReturn(schema);
         when(result.containsDatabase("foo_db")).thenReturn(true);
+        when(result.containsDatabase(fooDatabase)).thenReturn(true);
+        when(result.getDatabase("foo_db").getDefaultSchemaName()).thenReturn("foo_db");
+        when(result.getDatabase(fooDatabase).getDefaultSchemaName()).thenReturn("foo_db");
         when(result.getDatabase("foo_db").containsSchema("foo_db")).thenReturn(true);
+        when(result.getDatabase(fooDatabase).containsSchema(fooDatabase)).thenReturn(true);
         when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_order")).thenReturn(true);
+        when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tOrder)).thenReturn(true);
         return result;
     }
 }

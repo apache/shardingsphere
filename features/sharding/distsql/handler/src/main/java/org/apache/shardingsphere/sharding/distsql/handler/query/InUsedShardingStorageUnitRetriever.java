@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.distsql.handler.executor.rql.resource.InUsedStorageUnitRetriever;
 import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -35,7 +34,7 @@ public final class InUsedShardingStorageUnitRetriever implements InUsedStorageUn
     public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final ShardingRule rule) {
         Collection<String> result = new HashSet<>(rule.getShardingTables().size(), 1F);
         for (ShardingTable each : rule.getShardingTables().values()) {
-            if (new CaseInsensitiveSet<>(each.getActualDataSourceNames()).contains(sqlStatement.getStorageUnitName())) {
+            if (each.getActualDataSourceNames().contains(sqlStatement.getStorageUnitName())) {
                 result.add(each.getLogicTable());
             }
         }

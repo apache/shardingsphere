@@ -31,12 +31,12 @@ public final class MariaDBStorageContainerConnectOption implements StorageContai
     
     @Override
     public String getURL(final String host, final int port) {
-        return String.format("jdbc:mysql://%s:%s?%s", host, port, getQueryProperties());
+        return String.format("jdbc:mariadb://%s:%s?%s", host, port, getQueryProperties());
     }
     
     @Override
     public String getURL(final String host, final int port, final String dataSourceName) {
-        return String.format("jdbc:mysql://%s:%s/%s?%s", host, port, dataSourceName, getQueryProperties());
+        return String.format("jdbc:mariadb://%s:%s/%s?%s", host, port, dataSourceName, getQueryProperties());
     }
     
     private String getQueryProperties() {

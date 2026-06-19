@@ -102,6 +102,15 @@ class SystemSchemaManagerTest {
         }
     }
     
+    @Test
+    void assertGetAllInputStreamsWithTrunkDatabaseType() {
+        Collection<InputStream> actualInputStreams = SystemSchemaManager.getAllInputStreams("H2", "information_schema");
+        assertThat(actualInputStreams.size(), is(95));
+        for (InputStream each : actualInputStreams) {
+            assertNotNull(each);
+        }
+    }
+    
     private static Stream<Arguments> getTablesArguments() {
         return Stream.of(
                 Arguments.of("mysql information_schema", "MySQL", "information_schema", 95, "columns"),

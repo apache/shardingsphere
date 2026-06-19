@@ -20,6 +20,7 @@ databaseName: shadow
 dataSources:
   db:
     url: jdbc:mysql://mysql.shadow.host:3306/db?useSSL=false&characterEncoding=utf-8&tinyInt1isBit=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -29,6 +30,7 @@ dataSources:
     minPoolSize: 2
   shadow_db:
     url: jdbc:mysql://mysql.shadow.host:3306/shadow_db?useSSL=false&characterEncoding=utf-8&tinyInt1isBit=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000

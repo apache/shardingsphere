@@ -59,6 +59,15 @@ class IdentifierCaseRuleSetsTest {
         IdentifierCaseRule actual = IdentifierCaseRuleSets.newInsensitiveRuleSet().getRule(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.EXACT));
         assertTrue(actual.matches("Foo", "FOO", QuoteCharacter.NONE));
+        assertFalse(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
+    }
+    
+    @Test
+    void assertNewQuotedInsensitiveRuleSet() {
+        IdentifierCaseRule actual = IdentifierCaseRuleSets.newQuotedInsensitiveRuleSet().getRule(IdentifierScope.TABLE);
+        assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.NORMALIZED));
+        assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
+        assertTrue(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
     }
     
     @Test
@@ -66,6 +75,7 @@ class IdentifierCaseRuleSetsTest {
         IdentifierCaseRule actual = IdentifierCaseRuleSets.newMySQLInsensitiveRuleSet().getRule(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.NORMALIZED));
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
+        assertTrue(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
     }
     
     @ParameterizedTest(name = "{0}")

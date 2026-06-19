@@ -71,10 +71,17 @@ public final class PipelineE2EDistSQLFacade {
      */
     public void registerStorageUnit(final String storageUnitName) throws SQLException {
         String username = ProxyDatabaseTypeUtils.isOracleBranch(containerComposer.getDatabaseType()) ? storageUnitName : containerComposer.getUsername();
-        String registerStorageUnitSQL = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
+        String registerStorageUnitSQL = ("REGISTER STORAGE UNIT ${ds} ( "
+                + "URL='${url}', "
+                + "USER='${user}', "
+                + "PASSWORD='${password}', "
+                + "PROPERTIES('driverClassName'='${driverClassName}'))")
+                .replace("${ds}", storageUnitName)
                 .replace("${user}", username)
                 .replace("${password}", containerComposer.getPassword())
-                .replace("${url}", containerComposer.getActualJdbcUrlTemplate(storageUnitName, RunEnvironment.Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()));
+                .replace("${driverClassName}", containerComposer.getDriverClassName())
+                .replace("${url}", containerComposer.getActualJdbcUrlTemplate(storageUnitName,
+                        RunEnvironment.Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()));
         containerComposer.proxyExecuteWithLog(registerStorageUnitSQL, 0);
         int timeout = containerComposer.getDatabaseType() instanceof OpenGaussDatabaseType ? 60 : 10;
         Awaitility.waitAtMost(timeout, TimeUnit.SECONDS).ignoreExceptions().pollInterval(3L, TimeUnit.SECONDS).until(() -> containerComposer.showStorageUnitsName().contains(storageUnitName));

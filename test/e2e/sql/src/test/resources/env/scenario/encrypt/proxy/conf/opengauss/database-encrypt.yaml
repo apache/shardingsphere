@@ -20,6 +20,7 @@ databaseName: encrypt
 dataSources:
   encrypt:
     url: jdbc:opengauss://opengauss.encrypt.host:5432/encrypt
+    driverClassName: org.opengauss.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000

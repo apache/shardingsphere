@@ -65,7 +65,7 @@ class AlterTableMetadataCheckUtilsTest {
     void assertValidateAddColumns() {
         Collection<AddColumnDefinitionSegment> addColumns = createAddColumnDefinitions("new_col");
         when(alterTableStatement.getAddColumnDefinitions()).thenReturn(addColumns);
-        when(shardingSphereTable.containsColumn("new_col")).thenReturn(false);
+        when(shardingSphereTable.containsColumn(new IdentifierValue("new_col"))).thenReturn(false);
         assertDoesNotThrow(() -> AlterTableMetadataCheckUtils.checkAlterTable(alterTableStatement, shardingSphereTable));
     }
     
@@ -73,7 +73,7 @@ class AlterTableMetadataCheckUtilsTest {
     void assertAddColumnsFailed() {
         Collection<AddColumnDefinitionSegment> addColumns = createAddColumnDefinitions("new_col");
         when(alterTableStatement.getAddColumnDefinitions()).thenReturn(addColumns);
-        when(shardingSphereTable.containsColumn("new_col")).thenReturn(true);
+        when(shardingSphereTable.containsColumn(new IdentifierValue("new_col"))).thenReturn(true);
         assertThrows(DuplicateColumnException.class, () -> AlterTableMetadataCheckUtils.checkAlterTable(alterTableStatement, shardingSphereTable));
     }
     
@@ -81,7 +81,7 @@ class AlterTableMetadataCheckUtilsTest {
     void assertValidateModifyColumnsFailed() {
         Collection<ModifyColumnDefinitionSegment> modifyColumns = createModifyColumnDefinitions("col1");
         when(alterTableStatement.getModifyColumnDefinitions()).thenReturn(modifyColumns);
-        when(shardingSphereTable.containsColumn("col1")).thenReturn(false);
+        when(shardingSphereTable.containsColumn(new IdentifierValue("col1"))).thenReturn(false);
         assertThrows(ColumnNotFoundException.class, () -> AlterTableMetadataCheckUtils.checkAlterTable(alterTableStatement, shardingSphereTable));
     }
     
@@ -89,7 +89,7 @@ class AlterTableMetadataCheckUtilsTest {
     void assertValidateModifyColumns() {
         Collection<ModifyColumnDefinitionSegment> modifyColumns = createModifyColumnDefinitions("col1");
         when(alterTableStatement.getModifyColumnDefinitions()).thenReturn(modifyColumns);
-        when(shardingSphereTable.containsColumn("col1")).thenReturn(true);
+        when(shardingSphereTable.containsColumn(new IdentifierValue("col1"))).thenReturn(true);
         assertDoesNotThrow(() -> AlterTableMetadataCheckUtils.checkAlterTable(alterTableStatement, shardingSphereTable));
     }
     
@@ -97,8 +97,8 @@ class AlterTableMetadataCheckUtilsTest {
     void assertValidateRenameColumnsFailed() {
         Collection<RenameColumnSegment> renameColumns = createRenameColumnSegments("old_col", "new_col");
         when(alterTableStatement.getRenameColumnDefinitions()).thenReturn(renameColumns);
-        when(shardingSphereTable.containsColumn("new_col")).thenReturn(true);
-        when(shardingSphereTable.containsColumn("old_col")).thenReturn(true);
+        when(shardingSphereTable.containsColumn(new IdentifierValue("new_col"))).thenReturn(true);
+        when(shardingSphereTable.containsColumn(new IdentifierValue("old_col"))).thenReturn(true);
         assertThrows(DuplicateColumnException.class, () -> AlterTableMetadataCheckUtils.checkAlterTable(alterTableStatement, shardingSphereTable));
     }
     
@@ -106,8 +106,8 @@ class AlterTableMetadataCheckUtilsTest {
     void assertValidateRenameColumns() {
         Collection<RenameColumnSegment> renameColumns = createRenameColumnSegments("old_col", "new_col");
         when(alterTableStatement.getRenameColumnDefinitions()).thenReturn(renameColumns);
-        when(shardingSphereTable.containsColumn("new_col")).thenReturn(false);
-        when(shardingSphereTable.containsColumn("old_col")).thenReturn(true);
+        when(shardingSphereTable.containsColumn(new IdentifierValue("new_col"))).thenReturn(false);
+        when(shardingSphereTable.containsColumn(new IdentifierValue("old_col"))).thenReturn(true);
         assertDoesNotThrow(() -> AlterTableMetadataCheckUtils.checkAlterTable(alterTableStatement, shardingSphereTable));
     }
     
@@ -115,7 +115,7 @@ class AlterTableMetadataCheckUtilsTest {
     void assertValidateDropColumnsFailed() {
         Collection<DropColumnDefinitionSegment> dropColumns = createDropColumnDefinitions("col_to_drop");
         when(alterTableStatement.getDropColumnDefinitions()).thenReturn(dropColumns);
-        when(shardingSphereTable.containsColumn("col_to_drop")).thenReturn(false);
+        when(shardingSphereTable.containsColumn(new IdentifierValue("col_to_drop"))).thenReturn(false);
         assertThrows(ColumnNotFoundException.class, () -> AlterTableMetadataCheckUtils.checkAlterTable(alterTableStatement, shardingSphereTable));
     }
     
@@ -123,7 +123,7 @@ class AlterTableMetadataCheckUtilsTest {
     void assertValidateDropColumns() {
         Collection<DropColumnDefinitionSegment> dropColumns = createDropColumnDefinitions("col_to_drop");
         when(alterTableStatement.getDropColumnDefinitions()).thenReturn(dropColumns);
-        when(shardingSphereTable.containsColumn("col_to_drop")).thenReturn(true);
+        when(shardingSphereTable.containsColumn(new IdentifierValue("col_to_drop"))).thenReturn(true);
         assertDoesNotThrow(() -> AlterTableMetadataCheckUtils.checkAlterTable(alterTableStatement, shardingSphereTable));
     }
     

@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.single.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -36,8 +38,9 @@ import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -47,6 +50,9 @@ import java.util.stream.Collectors;
  */
 @Setter
 public final class ShowUnloadedSingleTablesExecutor implements DistSQLQueryExecutor<ShowUnloadedSingleTablesStatement>, DistSQLExecutorDatabaseAware, DistSQLExecutorRuleAware<SingleRule> {
+    
+    private static final Comparator<DataNode> DATA_NODE_COMPARATOR = Comparator.comparing(DataNode::getTableName)
+            .thenComparing(DataNode::getDataSourceName).thenComparing(DataNode::getSchemaName, Comparator.nullsFirst(String::compareTo));
     
     private ShardingSphereDatabase database;
     
@@ -65,23 +71,18 @@ public final class ShowUnloadedSingleTablesExecutor implements DistSQLQueryExecu
         for (Entry<String, Collection<DataNode>> entry : rule.getSingleTableDataNodes().entrySet()) {
             if (actualDataNodes.containsKey(entry.getKey())) {
                 if (entry.getValue().containsAll(actualDataNodes.get(entry.getKey()))) {
-                    actualDataNodes.remove(entry.getKey().toLowerCase());
+                    actualDataNodes.remove(entry.getKey());
                     continue;
                 }
                 Collection<DataNode> tableNodes = actualDataNodes.get(entry.getKey());
                 tableNodes.removeIf(each -> entry.getValue().contains(each));
             }
         }
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        actualDataNodes.values().stream().map(this::getRows).forEach(result::addAll);
-        return result;
-    }
-    
-    private Collection<LocalDataQueryResultRow> getRows(final Collection<DataNode> dataNodes) {
-        if (new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
-            return dataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName(), each.getSchemaName())).collect(Collectors.toList());
-        }
-        return dataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
+        boolean isSchemaAvailable = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable();
+        return actualDataNodes.values().stream().flatMap(Collection::stream).sorted(DATA_NODE_COMPARATOR)
+                .map(each -> isSchemaAvailable ? new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName(), each.getSchemaName())
+                        : new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName()))
+                .collect(Collectors.toList());
     }
     
     private Map<String, Collection<DataNode>> getActualDataNodes(final ShardingSphereDatabase database) {
@@ -90,8 +91,9 @@ public final class ShowUnloadedSingleTablesExecutor implements DistSQLQueryExecu
                 resourceMetaData.getStorageUnits().entrySet().stream()
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 database.getRuleMetaData().getRules());
+        Map<String, DatabaseType> databaseTypeMap = aggregateDataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> DatabaseTypeEngine.getStorageType(each.getValue())));
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(database.getRuleMetaData().getRules());
-        return SingleTableDataNodeLoader.load(database.getName(), aggregateDataSourceMap, excludedTables);
+        return SingleTableDataNodeLoader.load(database.getName(), aggregateDataSourceMap, Collections.emptySet(), excludedTables, databaseTypeMap);
     }
     
     @Override

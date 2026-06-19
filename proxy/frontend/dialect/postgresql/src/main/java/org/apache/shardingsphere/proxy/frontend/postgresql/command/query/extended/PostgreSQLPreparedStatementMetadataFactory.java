@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.PreparedStatementMetadataResolutionException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnection
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -63,10 +65,13 @@ public final class PostgreSQLPreparedStatementMetadataFactory {
                 sqlStatementContext, preparedStatement.getSql(), parameters, preparedStatement.getHintValueContext(), connectionSession.getConnectionContext(), metaData);
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps());
         ShardingSpherePreconditions.checkNotEmpty(executionContext.getExecutionUnits(),
-                () -> new SQLException("Can not resolve PostgreSQL prepared statement metadata because no execution unit was generated."));
+                () -> new PreparedStatementMetadataResolutionException("no execution unit was generated"));
         ExecutionUnit executionUnit = executionContext.getExecutionUnits().iterator().next();
         ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
-        return databaseConnectionManager.getConnections(connectionSession.getUsedDatabaseName(), executionUnit.getDataSourceName(), 0, 1, ConnectionMode.CONNECTION_STRICTLY)
-                .iterator().next().prepareStatement(executionUnit.getSqlUnit().getSql());
+        List<Connection> connections =
+                databaseConnectionManager.getConnections(connectionSession.getUsedDatabaseName(), executionUnit.getDataSourceName(), 0, 1, ConnectionMode.CONNECTION_STRICTLY);
+        ShardingSpherePreconditions.checkNotEmpty(connections,
+                () -> new PreparedStatementMetadataResolutionException("no backend connection was acquired"));
+        return connections.iterator().next().prepareStatement(executionUnit.getSqlUnit().getSql());
     }
 }

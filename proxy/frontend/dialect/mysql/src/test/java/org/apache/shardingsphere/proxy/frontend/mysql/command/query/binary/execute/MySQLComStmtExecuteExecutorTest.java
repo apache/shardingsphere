@@ -18,14 +18,18 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.execute;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.MySQLBinaryResultSetRowPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.MySQLNullBitmap;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -67,6 +71,7 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -74,18 +79,24 @@ import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -184,6 +195,8 @@ class MySQLComStmtExecuteExecutorTest {
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getStatementId()).thenReturn(2);
         when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST);
+        when(packet.getNewParameterTypes()).thenReturn(Collections.singletonList(new MySQLPreparedStatementParameterType(MySQLBinaryColumnType.LONG, 0)));
+        when(packet.readParameters(anyList(), any(), anyList(), anyList())).thenReturn(Collections.singletonList(1));
         MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(databaseType).build()));
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
@@ -207,5 +220,137 @@ class MySQLComStmtExecuteExecutorTest {
         assertFalse(actual.hasNext());
         executor.close();
         verify(proxyBackendHandler).close();
+    }
+    
+    @Test
+    void assertSingleNullParameter() throws SQLException {
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(1);
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        when(selectStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        when(selectStatement.getParameterCount()).thenReturn(1);
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
+                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE id = ?", selectStatementContext, new HintValueContext(), Collections.singletonList(0)));
+        when(packet.getNewParameterTypes()).thenReturn(Collections.emptyList());
+        when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST);
+        MySQLNullBitmap nullBitmap = mock(MySQLNullBitmap.class);
+        when(nullBitmap.isNullParameter(0)).thenReturn(true);
+        when(packet.getNullBitmap()).thenReturn(nullBitmap);
+        when(packet.readParameters(anyList(), any(), anyList(), anyList())).thenAnswer(invocation -> Collections.singletonList(null));
+        MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(selectStatement));
+        AtomicReference<QueryContext> actualQueryContext = new AtomicReference<>();
+        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenAnswer(invocation -> {
+            actualQueryContext.set(invocation.getArgument(1));
+            return proxyBackendHandler;
+        });
+        Iterator<DatabasePacket> actual = executor.execute().iterator();
+        assertThat(actual.next(), isA(MySQLOKPacket.class));
+        assertFalse(actual.hasNext());
+        assertThat(actualQueryContext.get().getParameters(), contains((Object) null));
+        ArgumentCaptor<List<MySQLPreparedStatementParameterType>> parameterTypesCaptor = ArgumentCaptor.forClass(List.class);
+        verify(packet).readParameters(parameterTypesCaptor.capture(), any(), anyList(), anyList());
+        assertThat(parameterTypesCaptor.getValue().size(), is(1));
+        assertThat(parameterTypesCaptor.getValue().get(0).getColumnType(), is(MySQLBinaryColumnType.NULL));
+    }
+    
+    @Test
+    void assertAllNullParameters() throws SQLException {
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(1);
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        when(selectStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        when(selectStatement.getParameterCount()).thenReturn(2);
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
+                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE col1 = ? AND col2 = ?", selectStatementContext, new HintValueContext(), Arrays.asList(0, 1)));
+        when(packet.getNewParameterTypes()).thenReturn(Collections.emptyList());
+        when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST);
+        MySQLNullBitmap nullBitmap = mock(MySQLNullBitmap.class);
+        when(nullBitmap.isNullParameter(0)).thenReturn(true);
+        when(nullBitmap.isNullParameter(1)).thenReturn(true);
+        when(packet.getNullBitmap()).thenReturn(nullBitmap);
+        when(packet.readParameters(anyList(), any(), anyList(), anyList())).thenReturn(Arrays.asList(null, null));
+        MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(selectStatement));
+        AtomicReference<QueryContext> actualQueryContext = new AtomicReference<>();
+        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenAnswer(invocation -> {
+            actualQueryContext.set(invocation.getArgument(1));
+            return proxyBackendHandler;
+        });
+        Iterator<DatabasePacket> actual = executor.execute().iterator();
+        assertThat(actual.next(), isA(MySQLOKPacket.class));
+        assertFalse(actual.hasNext());
+        assertThat(actualQueryContext.get().getParameters(), contains((Object) null, null));
+        ArgumentCaptor<List<MySQLPreparedStatementParameterType>> parameterTypesCaptor = ArgumentCaptor.forClass(List.class);
+        verify(packet).readParameters(parameterTypesCaptor.capture(), any(), anyList(), anyList());
+        assertThat(parameterTypesCaptor.getValue().size(), is(2));
+        assertThat(parameterTypesCaptor.getValue().get(0).getColumnType(), is(MySQLBinaryColumnType.NULL));
+        assertThat(parameterTypesCaptor.getValue().get(1).getColumnType(), is(MySQLBinaryColumnType.NULL));
+    }
+    
+    @Test
+    void assertThrowExceptionWhenMissingTypesContainNonNullParameter() {
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(1);
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        when(selectStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        when(selectStatement.getParameterCount()).thenReturn(2);
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
+                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE col1 = ? AND col2 = ?", selectStatementContext, new HintValueContext(), Arrays.asList(0, 1)));
+        when(packet.getNewParameterTypes()).thenReturn(Collections.emptyList());
+        when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST);
+        MySQLNullBitmap nullBitmap = mock(MySQLNullBitmap.class);
+        when(nullBitmap.isNullParameter(0)).thenReturn(true);
+        when(nullBitmap.isNullParameter(1)).thenReturn(false);
+        when(packet.getNullBitmap()).thenReturn(nullBitmap);
+        assertThrows(UnsupportedPreparedStatementException.class, () -> new MySQLComStmtExecuteExecutor(packet, connectionSession).execute());
+    }
+    
+    @Test
+    void assertUseNewParameterTypesWhenPresent() throws SQLException {
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(1);
+        when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST);
+        List<MySQLPreparedStatementParameterType> expectedTypes = Collections.singletonList(new MySQLPreparedStatementParameterType(MySQLBinaryColumnType.LONG, 0));
+        when(packet.getNewParameterTypes()).thenReturn(expectedTypes);
+        when(packet.readParameters(anyList(), any(), anyList(), anyList())).thenReturn(Collections.singletonList(1));
+        MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(databaseType).build()));
+        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
+        Iterator<DatabasePacket> actual = executor.execute().iterator();
+        assertThat(actual.next(), isA(MySQLOKPacket.class));
+        assertFalse(actual.hasNext());
+        ArgumentCaptor<List<MySQLPreparedStatementParameterType>> parameterTypesCaptor = ArgumentCaptor.forClass(List.class);
+        verify(packet).readParameters(parameterTypesCaptor.capture(), any(), anyList(), anyList());
+        assertThat(parameterTypesCaptor.getValue(), is(expectedTypes));
+    }
+    
+    @Test
+    void assertUseCachedParameterTypesWhenPresent() throws SQLException {
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(1);
+        when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST);
+        when(packet.getNewParameterTypes()).thenReturn(Collections.emptyList());
+        when(packet.readParameters(anyList(), any(), anyList(), anyList())).thenReturn(Collections.singletonList(1));
+        MySQLPreparedStatementParameterType expectedType = new MySQLPreparedStatementParameterType(MySQLBinaryColumnType.LONG, 0);
+        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE id = ?",
+                prepareSelectStatementContext(), new HintValueContext(), Collections.singletonList(0));
+        preparedStatement.getParameterTypes().add(expectedType);
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1)).thenReturn(preparedStatement);
+        MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(databaseType).build()));
+        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
+        Iterator<DatabasePacket> actual = executor.execute().iterator();
+        assertThat(actual.next(), isA(MySQLOKPacket.class));
+        assertFalse(actual.hasNext());
+        ArgumentCaptor<List<MySQLPreparedStatementParameterType>> parameterTypesCaptor = ArgumentCaptor.forClass(List.class);
+        verify(packet).readParameters(parameterTypesCaptor.capture(), any(), anyList(), anyList());
+        assertThat(parameterTypesCaptor.getValue(), contains(expectedType));
     }
 }

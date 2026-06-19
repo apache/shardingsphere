@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
@@ -33,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -76,6 +79,7 @@ class MySQLUseDatabaseExecutorTest {
     private ShardingSphereMetaData mockMetaData() {
         AuthorityRule rule = mock(AuthorityRule.class);
         return new ShardingSphereMetaData(
-                Collections.singleton(new ShardingSphereDatabase("foo_db", databaseType, mock(), mock(), Collections.emptyList())), mock(), new RuleMetaData(Collections.singleton(rule)), mock());
+                Collections.singleton(new ShardingSphereDatabase("foo_db", databaseType, mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties()))), mock(),
+                new RuleMetaData(Collections.singleton(rule)), mock());
     }
 }

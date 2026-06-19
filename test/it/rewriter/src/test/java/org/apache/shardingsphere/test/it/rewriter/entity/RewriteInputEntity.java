@@ -35,6 +35,9 @@ public final class RewriteInputEntity {
     @XmlAttribute(required = true)
     private String sql;
     
+    @XmlAttribute(name = "sql-file")
+    private String sqlFile;
+    
     @XmlAttribute
     private String parameters;
 }

@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.comp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.SimpleExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 
 import java.util.ArrayList;
@@ -93,10 +94,11 @@ public final class InsertClauseShardingConditionEngine {
     private void appendMissingShardingConditions(final InsertStatementContext sqlStatementContext, final Collection<String> columnNames, final List<ShardingCondition> shardingConditions) {
         String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName());
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
-        String tableName = sqlStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue())
-                .orElseGet(() -> sqlStatementContext.getTablesContext().getTableNames().iterator().next());
-        ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new NoSuchTableException(tableName));
-        for (String each : schema.getTable(tableName).findColumnNamesIfNotExistedFrom(columnNames)) {
+        IdentifierValue tableIdentifier = sqlStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier())
+                .orElseGet(() -> new IdentifierValue(sqlStatementContext.getTablesContext().getTableNames().iterator().next()));
+        String tableName = tableIdentifier.getValue();
+        ShardingSpherePreconditions.checkState(schema.containsTable(tableIdentifier), () -> new NoSuchTableException(tableName));
+        for (String each : schema.getTable(tableIdentifier).findColumnNamesIfNotExistedFrom(columnNames)) {
             if (!rule.isGenerateKeyColumn(each, tableName) && rule.findShardingColumn(each, tableName).isPresent()) {
                 appendMissingShardingConditions(tableName, each, shardingConditions);
             }

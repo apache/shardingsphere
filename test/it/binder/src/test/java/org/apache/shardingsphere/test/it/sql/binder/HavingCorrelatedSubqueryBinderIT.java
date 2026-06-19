@@ -88,7 +88,8 @@ class HavingCorrelatedSubqueryBinderIT {
     
     private ShardingSphereMetaData mockMetaData(final DatabaseType databaseType) {
         Collection<ShardingSphereDatabase> databases = new LinkedList<>();
-        databases.add(new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), mockSchemas(databaseType)));
+        databases.add(
+                new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), mockSchemas(databaseType), new ConfigurationProperties(new Properties())));
         return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
     }
     

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.Table
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckerFactory;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryCheckParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryChecker;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datanode.DataNodeUtils;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
@@ -35,9 +37,11 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
+import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
@@ -48,7 +52,9 @@ import org.apache.shardingsphere.data.pipeline.core.util.PipelineDataSourceConfi
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
 import java.util.LinkedHashMap;
@@ -98,7 +104,8 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         try (
                 PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
                 TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps)) {
-            PipelineDataSourceConfigurationUtils.transformPipelineDataSourceConfiguration(jobConfig.getJobId(), (ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget());
+            Map<String, StorageUnit> storageUnits = PipelineContextManager.getProxyContext().getStorageUnits(jobConfig.getTargetDatabaseName());
+            transformDataSourceConfigurations(storageUnits);
             if (progressContext.getTableCheckRangePositions().isEmpty()) {
                 progressContext.getTableCheckRangePositions().addAll(splitCrossTables());
             }
@@ -122,6 +129,18 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         }
         log.info("check done, jobId={}", jobConfig.getJobId());
         return checkResultMap.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().format(), Entry::getValue));
+    }
+    
+    private void transformDataSourceConfigurations(final Map<String, StorageUnit> targetStorageUnits) {
+        Map<String, DataSourcePoolProperties> sourceDataSourcePoolProps =
+                new PipelineDataSourcePersistService().load(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()), new MigrationJobType().getType());
+        for (Entry<String, PipelineDataSourceConfiguration> entry : jobConfig.getSources().entrySet()) {
+            entry.setValue(sourceDataSourcePoolProps.containsKey(entry.getKey())
+                    ? PipelineDataSourceConfigurationUtils.transformPipelineDataSourceConfiguration(jobConfig.getJobId(), entry.getKey(), entry.getValue(),
+                            sourceDataSourcePoolProps.get(entry.getKey()))
+                    : entry.getValue());
+        }
+        PipelineDataSourceConfigurationUtils.transformPipelineDataSourceConfiguration(jobConfig.getJobId(), (ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget(), targetStorageUnits);
     }
     
     private long getRecordsCount() {

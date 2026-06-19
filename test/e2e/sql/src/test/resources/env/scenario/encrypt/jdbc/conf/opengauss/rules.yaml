@@ -20,6 +20,7 @@ databaseName: encrypt
 dataSources:
   encrypt:
     url: jdbc:opengauss://opengauss.encrypt.host:5432/encrypt?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876

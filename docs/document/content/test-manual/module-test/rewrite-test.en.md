@@ -37,9 +37,6 @@ rules:
         standard:
           shardingColumn: account_id
           shardingAlgorithmName: account_table_inline
-      keyGenerateStrategy:
-        column: account_id
-        keyGeneratorName: snowflake
     t_account_detail:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
@@ -48,6 +45,12 @@ rules:
           shardingAlgorithmName: account_detail_table_inline
   bindingTables:
     - t_account, t_account_detail
+  keyGenerateStrategies:
+    t_account_account_id:
+      keyGenerateType: column
+      keyGeneratorName: snowflake
+      logicTable: t_account
+      keyGenerateColumn: account_id
   shardingAlgorithms:
     account_table_inline:
       type: INLINE

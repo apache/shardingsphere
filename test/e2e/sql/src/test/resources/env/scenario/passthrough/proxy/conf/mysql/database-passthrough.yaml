@@ -20,6 +20,7 @@ databaseName: passthrough
 dataSources:
   passthrough:
     url: jdbc:mysql://mysql.passthrough.host:3306/passthrough?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000

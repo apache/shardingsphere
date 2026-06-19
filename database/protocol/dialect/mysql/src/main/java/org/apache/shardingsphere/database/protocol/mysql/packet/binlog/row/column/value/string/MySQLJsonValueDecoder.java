@@ -89,6 +89,9 @@ public final class MySQLJsonValueDecoder {
                 case JsonValueTypes.STRING:
                     outputString(decodeString(byteBuf.slice()), stringBuilder);
                     break;
+                case JsonValueTypes.LITERAL:
+                    outputLiteral(byteBuf.readUnsignedByte(), stringBuilder);
+                    break;
                 default:
                     throw new UnsupportedSQLOperationException(String.valueOf(type));
             }
@@ -114,7 +117,8 @@ public final class MySQLJsonValueDecoder {
             if (0 < i) {
                 stringBuilder.append(',');
             }
-            stringBuilder.append('"').append(keys[i]).append("\":");
+            outputString(keys[i], stringBuilder);
+            stringBuilder.append(':');
             decodeValueEntry(isSmall, byteBuf, stringBuilder);
         }
         stringBuilder.append('}');
@@ -230,10 +234,37 @@ public final class MySQLJsonValueDecoder {
         out.append('"');
         for (int i = 0; i < str.length(); ++i) {
             char c = str.charAt(i);
-            if (c == '"' || c == '\\') {
-                out.append('\\');
+            switch (c) {
+                case '"':
+                case '\\':
+                    out.append('\\').append(c);
+                    break;
+                case '\b':
+                    out.append("\\b");
+                    break;
+                case '\f':
+                    out.append("\\f");
+                    break;
+                case '\n':
+                    out.append("\\n");
+                    break;
+                case '\r':
+                    out.append("\\r");
+                    break;
+                case '\t':
+                    out.append("\\t");
+                    break;
+                default:
+                    if (c < ' ') {
+                        out.append("\\u00");
+                        if (c < 0x10) {
+                            out.append('0');
+                        }
+                        out.append(Integer.toHexString(c));
+                    } else {
+                        out.append(c);
+                    }
             }
-            out.append(c);
         }
         out.append('"');
     }

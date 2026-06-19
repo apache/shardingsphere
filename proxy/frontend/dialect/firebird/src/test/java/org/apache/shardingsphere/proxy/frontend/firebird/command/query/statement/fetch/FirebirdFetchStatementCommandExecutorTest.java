@@ -84,13 +84,15 @@ class FirebirdFetchStatementCommandExecutorTest {
     @Test
     void assertExecuteWhenNoBackendHandler() throws SQLException {
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
-        Collection<DatabasePacket> actualPackets = executor.execute();
-        Iterator<DatabasePacket> packetIterator = actualPackets.iterator();
-        FirebirdFetchResponsePacket actualPacket = (FirebirdFetchResponsePacket) packetIterator.next();
-        assertThat(actualPackets.size(), is(1));
-        assertThat(actualPacket.getStatus(), is(ISCConstants.FETCH_NO_MORE_ROWS));
-        assertThat(actualPacket.getCount(), is(0));
-        assertNull(actualPacket.getRow());
+        assertNoMoreRowsResponse(executor.execute());
+    }
+    
+    @Test
+    void assertExecuteWhenNoBackendHandlerAfterSameHandleReprepare() throws SQLException {
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
+        executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
+        assertNoMoreRowsResponse(executor.execute());
     }
     
     @Test
@@ -138,5 +140,14 @@ class FirebirdFetchStatementCommandExecutorTest {
         assertThat(actualNoMorePacket.getCount(), is(0));
         assertNull(actualNoMorePacket.getRow());
         verify(databaseConnectionManager).unmarkResourceInUse(proxyBackendHandler);
+    }
+    
+    private void assertNoMoreRowsResponse(final Collection<DatabasePacket> actualPackets) {
+        Iterator<DatabasePacket> packetIterator = actualPackets.iterator();
+        FirebirdFetchResponsePacket actualPacket = (FirebirdFetchResponsePacket) packetIterator.next();
+        assertThat(actualPackets.size(), is(1));
+        assertThat(actualPacket.getStatus(), is(ISCConstants.FETCH_NO_MORE_ROWS));
+        assertThat(actualPacket.getCount(), is(0));
+        assertNull(actualPacket.getRow());
     }
 }

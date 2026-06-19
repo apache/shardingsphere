@@ -162,6 +162,23 @@ class GroupByRowComparatorTest {
         assertThat(groupByRowComparator.compare(o1, o2), is(0));
     }
     
+    @Test
+    void assertCompareToForVarBinaryWithGroupByItems() throws SQLException {
+        GroupBySegment groupBy = new GroupBySegment(0, 0, Collections.singletonList(
+                new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST)));
+        SelectStatement selectStatement = createSelectStatement(groupBy, new OrderBySegment(0, 0, Collections.emptyList()));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
+        GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, Arrays.asList(false, false));
+        MemoryQueryResultRow smaller = new MemoryQueryResultRow(mockQueryResult(new byte[]{1, 2}));
+        MemoryQueryResultRow larger = new MemoryQueryResultRow(mockQueryResult(new byte[]{(byte) 0x80}));
+        MemoryQueryResultRow equalToSmaller = new MemoryQueryResultRow(mockQueryResult(new byte[]{1, 2}));
+        assertTrue(groupByRowComparator.compare(smaller, larger) < 0);
+        assertThat(groupByRowComparator.compare(smaller, equalToSmaller), is(0));
+    }
+    
     private QueryResult mockQueryResult(final Object... values) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);

@@ -22,7 +22,10 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -43,6 +46,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheContext;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
@@ -67,6 +72,7 @@ import org.mockito.quality.Strictness;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -95,6 +101,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -125,9 +132,10 @@ class ProxyDatabaseConnectionManagerTest {
         when(connectionSession.getConnectionContext().getTransactionContext()).thenReturn(new TransactionConnectionContext());
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
         when(connectionSession.getUsedDatabaseName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(connectionSession.getCurrentPreparedStatementCacheKey()).thenReturn(Optional.empty());
         databaseConnectionManager = new ProxyDatabaseConnectionManager(connectionSession);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
-        JDBCBackendStatement backendStatement = new JDBCBackendStatement();
+        JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(new RequiredSessionVariableRecorder());
     }
@@ -142,7 +150,6 @@ class ProxyDatabaseConnectionManagerTest {
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         when(metaData.getAllDatabases()).thenReturn(Collections.singleton(database));
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
-        when(metaData.getProps().<Boolean>getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED)).thenReturn(true);
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singletonList(transactionRule)));
@@ -260,6 +267,18 @@ class ProxyDatabaseConnectionManagerTest {
         verify(connection).close();
         assertTrue(cachedConnections.isEmpty());
         verifyConnectionPostProcessorsEmpty();
+    }
+    
+    @Test
+    void assertCloseConnectionsClosesPreparedStatementCache() throws SQLException {
+        PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        Connection connection = prepareCachedConnections();
+        cacheContext.getOrCreate(connection, "SELECT 1", false, new PreparedStatementCacheKey("statement-1"), () -> preparedStatement);
+        when(connectionSession.getPreparedStatementCacheContext()).thenReturn(cacheContext);
+        databaseConnectionManager.closeConnections(false);
+        verify(preparedStatement).close();
+        assertThat(cacheContext.size(), is(0));
     }
     
     @SuppressWarnings("unchecked")
@@ -446,6 +465,18 @@ class ProxyDatabaseConnectionManagerTest {
     }
     
     @Test
+    void assertRemoveDatabaseProxyConnectorResource() {
+        ProxyBackendHandler engine = mock(DatabaseProxyConnector.class);
+        Collection<ProxyBackendHandler> backendHandlers = getProxyBackendHandlers();
+        Collection<ProxyBackendHandler> inUseProxyBackendHandlers = getInUseProxyBackendHandlers();
+        backendHandlers.add(engine);
+        inUseProxyBackendHandlers.add(engine);
+        databaseConnectionManager.removeResource(engine);
+        assertFalse(backendHandlers.contains(engine));
+        assertFalse(inUseProxyBackendHandlers.contains(engine));
+    }
+    
+    @Test
     void assertCloseHandlers() throws SQLException {
         ProxyBackendHandler engine = mock(DatabaseProxyConnector.class);
         ProxyBackendHandler inUseEngine = mock(DatabaseProxyConnector.class);
@@ -495,6 +526,34 @@ class ProxyDatabaseConnectionManagerTest {
         verifyNoInteractions(inUseHandler, cachedConnection);
         assertThat(getProxyBackendHandlers(), is(Collections.singleton(inUseHandler)));
         assertThat(getInUseProxyBackendHandlers(), is(Collections.singleton(inUseHandler)));
+    }
+    
+    @Test
+    void assertCloseExecutionResourcesKeepsFirebirdPreparedStatementReuseInHeldTransaction() throws SQLException, BackendConnectionException {
+        connectionSession.getTransactionStatus().setInTransaction(true);
+        connectionSession.getConnectionContext().getTransactionContext().beginTransaction(TransactionType.XA.name(), null);
+        PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
+        when(connectionSession.getPreparedStatementCacheContext()).thenReturn(cacheContext);
+        when(connectionSession.getCurrentPreparedStatementCacheKey()).thenReturn(Optional.of(new PreparedStatementCacheKey("statement-1")));
+        DatabaseType firebirdDatabaseType = mock(DatabaseType.class);
+        JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
+        Connection cachedConnection = prepareCachedConnections();
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(cachedConnection.prepareStatement("SELECT 1")).thenReturn(preparedStatement);
+        StatementOption statementOption = new StatementOption(false);
+        backendStatement.createStorageResource(
+                new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.singletonList(1))),
+                cachedConnection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
+        databaseConnectionManager.closeExecutionResources();
+        backendStatement.createStorageResource(
+                new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.singletonList(2))),
+                cachedConnection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, firebirdDatabaseType);
+        verify(cachedConnection, times(1)).prepareStatement("SELECT 1");
+        verify(preparedStatement, times(2)).clearParameters();
+        verify(preparedStatement).setObject(1, 1);
+        verify(preparedStatement).setObject(1, 2);
+        verify(cachedConnection, never()).close();
+        assertThat(cacheContext.size(), is(1));
     }
     
     @Test

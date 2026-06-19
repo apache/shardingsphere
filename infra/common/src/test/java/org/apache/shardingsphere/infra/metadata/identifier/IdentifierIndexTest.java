@@ -32,7 +32,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class IdentifierIndexTest {
@@ -47,11 +51,46 @@ class IdentifierIndexTest {
     }
     
     @Test
+    void assertGetAll() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        Map<String, String> values = new LinkedHashMap<>(2, 1F);
+        values.put("Foo", "value_1");
+        values.put("Bar", "value_2");
+        index.rebuild(values);
+        assertThat(index.getAll(), contains("value_1", "value_2"));
+    }
+    
+    @Test
+    void assertGetAllNames() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        Map<String, String> values = new LinkedHashMap<>(2, 1F);
+        values.put("Foo", "value_1");
+        values.put("Bar", "value_2");
+        index.rebuild(values);
+        assertThat(index.getAllNames(), contains("Foo", "Bar"));
+    }
+    
+    @Test
     void assertFindWithExactLookup() {
         IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
         index.rebuild(createSingleValueMap("Foo", "value_1"));
         Optional<String> actualValue = index.find(new IdentifierValue("\"Foo\""));
         assertThat(actualValue, is(Optional.of("value_1")));
+    }
+    
+    @Test
+    void assertPut() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        index.put("Foo", "value_1");
+        assertThat(index.find(new IdentifierValue("\"Foo\"")), is(Optional.of("value_1")));
+    }
+    
+    @Test
+    void assertPutOverridesExistingValue() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        index.put("Foo", "value_1");
+        index.put("Foo", "value_2");
+        assertThat(index.find(new IdentifierValue("\"Foo\"")), is(Optional.of("value_2")));
     }
     
     @Test
@@ -63,6 +102,69 @@ class IdentifierIndexTest {
     }
     
     @Test
+    void assertContainsWithNormalizedLookup() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createPostgreSQLRule())), IdentifierScope.TABLE);
+        index.rebuild(createSingleValueMap("foo", "value_1"));
+        assertTrue(index.contains("FOO"));
+    }
+    
+    @Test
+    void assertGetWithNormalizedLookup() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createPostgreSQLRule())), IdentifierScope.TABLE);
+        index.rebuild(createSingleValueMap("foo", "value_1"));
+        assertThat(index.get("FOO"), is("value_1"));
+    }
+    
+    @Test
+    void assertFindWithNormalizedLookupIgnoresNonMatchingStoredCase() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createPostgreSQLRule())), IdentifierScope.TABLE);
+        Map<String, String> values = new LinkedHashMap<>(2, 1F);
+        values.put("Foo", "value_1");
+        values.put("foo", "value_2");
+        index.rebuild(values);
+        Optional<String> actualValue = index.find(new IdentifierValue("FOO"));
+        assertThat(actualValue, is(Optional.of("value_2")));
+    }
+    
+    @Test
+    void assertFindWithQuotedNormalizedLookup() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        index.rebuild(createSingleValueMap("t_mask", "value_1"));
+        Optional<String> actualValue = index.find(new IdentifierValue("`T_MASK`"));
+        assertThat(actualValue, is(Optional.of("value_1")));
+    }
+    
+    @Test
+    void assertFindPrefersExactIdentifierWhenNormalizedLookupMatchesMultipleValues() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        index.rebuild(createAmbiguousValueMap());
+        Optional<String> actualValue = index.find(new IdentifierValue("foo"));
+        assertThat(actualValue, is(Optional.of("value_2")));
+    }
+    
+    @Test
+    void assertGetPrefersExactIdentifierWhenNormalizedLookupMatchesMultipleValues() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        index.rebuild(createAmbiguousValueMap());
+        assertThat(index.get("foo"), is("value_2"));
+    }
+    
+    @Test
+    void assertRemove() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        index.put("Foo", "value_1");
+        String actualValue = index.remove("Foo");
+        assertThat(actualValue, is("value_1"));
+        assertThat(index.find(new IdentifierValue("\"Foo\"")), is(Optional.empty()));
+    }
+    
+    @Test
+    void assertRemoveReturnsNullWhenMissing() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        assertNull(index.remove("Foo"));
+    }
+    
+    @Test
     void assertFindReturnsEmpty() {
         IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createPostgreSQLRule())), IdentifierScope.TABLE);
         index.rebuild(createSingleValueMap("foo", "value_1"));
@@ -71,10 +173,34 @@ class IdentifierIndexTest {
     }
     
     @Test
+    void assertIsEmpty() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        assertTrue(index.isEmpty());
+        index.put("Foo", "value_1");
+        assertFalse(index.isEmpty());
+    }
+    
+    @Test
+    void assertSize() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        assertThat(index.size(), is(0));
+        index.put("Foo", "value_1");
+        assertThat(index.size(), is(1));
+    }
+    
+    @Test
     void assertFindThrowsAmbiguousIdentifierException() {
         IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
         index.rebuild(createAmbiguousValueMap());
         AmbiguousIdentifierException actualException = assertThrows(AmbiguousIdentifierException.class, () -> index.find(new IdentifierValue("FOO")));
+        assertThat(actualException.getMessage(), is("Identifier 'FOO' is ambiguous, matched actual identifiers: Foo, foo."));
+    }
+    
+    @Test
+    void assertGetThrowsAmbiguousIdentifierException() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        index.rebuild(createAmbiguousValueMap());
+        AmbiguousIdentifierException actualException = assertThrows(AmbiguousIdentifierException.class, () -> index.get("FOO"));
         assertThat(actualException.getMessage(), is("Identifier 'FOO' is ambiguous, matched actual identifiers: Foo, foo."));
     }
     

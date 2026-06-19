@@ -68,8 +68,7 @@ class SQLStatementContextFactoryTest {
     
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementInstance() {
-        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
-                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl")))).build();
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl")))).build();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(insertStatement);
         assertThat(sqlStatementContext, isA(InsertStatementContext.class));
     }
@@ -106,18 +105,33 @@ class SQLStatementContextFactoryTest {
     @Test
     void assertNewInstanceForFetchStatement() {
         FetchStatement fetchStatement = new FetchStatement(databaseType, null, null);
-        assertThat(new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(fetchStatement), isA(CursorHeldSQLStatementContext.class));
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(fetchStatement);
+        assertThat(actual, isA(CursorHeldSQLStatementContext.class));
     }
     
     private ShardingSphereMetaData mockMetaData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        IdentifierValue fooDatabase = new IdentifierValue("foo_db");
+        IdentifierValue publicSchema = new IdentifierValue("public");
+        IdentifierValue dboSchema = new IdentifierValue("dbo");
+        IdentifierValue tbl = new IdentifierValue("tbl");
         when(database.getName()).thenReturn("foo_db");
         when(database.containsSchema("foo_db")).thenReturn(true);
         when(database.containsSchema("public")).thenReturn(true);
+        when(database.getDefaultSchemaName()).thenReturn("foo_db");
         when(database.getSchema("foo_db").containsTable("tbl")).thenReturn(true);
         when(database.getSchema("public").containsTable("tbl")).thenReturn(true);
         when(database.containsSchema("dbo")).thenReturn(true);
         when(database.getSchema("dbo").containsTable("tbl")).thenReturn(true);
+        when(database.containsSchema(fooDatabase)).thenReturn(true);
+        when(database.containsSchema(publicSchema)).thenReturn(true);
+        when(database.containsSchema(dboSchema)).thenReturn(true);
+        when(database.getSchema(fooDatabase).containsTable("tbl")).thenReturn(true);
+        when(database.getSchema(publicSchema).containsTable("tbl")).thenReturn(true);
+        when(database.getSchema(dboSchema).containsTable("tbl")).thenReturn(true);
+        when(database.getSchema(fooDatabase).containsTable(tbl)).thenReturn(true);
+        when(database.getSchema(publicSchema).containsTable(tbl)).thenReturn(true);
+        when(database.getSchema(dboSchema).containsTable(tbl)).thenReturn(true);
         return new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
 }

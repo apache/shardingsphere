@@ -39,6 +39,18 @@
             <rename-table name="t_order_item1" start-index="50" stop-index="62" />
         </rename>
     </rename-table>
+    
+    <rename-table sql-case-id="alter_table_rename_multi_tables">
+        <rename start-index="13" stop-index="31">
+            <table name="t_order" start-index="13" stop-index="19" />
+            <rename-table name="t_order1" start-index="24" stop-index="31" />
+        </rename>
+        <rename start-index="34" stop-index="53">
+            <table name="t_order1" start-index="34" stop-index="41" />
+            <rename-table name="t_order2" start-index="46" stop-index="53" />
+        </rename>
+    </rename-table>
+    
     <rename-table sql-case-id="rename_by_mysql_source">
         <rename start-index="13" stop-index="56">
             <table name="columns_priv" start-index="13" stop-index="30">

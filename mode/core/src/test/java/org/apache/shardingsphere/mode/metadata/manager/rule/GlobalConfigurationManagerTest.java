@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.listener.StatisticsCollectJobCronUpdateListener;
@@ -63,6 +64,8 @@ import static org.mockito.Mockito.withSettings;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ShardingSphereServiceLoader.class, GlobalRulesBuilder.class})
 class GlobalConfigurationManagerTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertAlterGlobalRuleConfigurationWithNullValue() {
@@ -140,8 +143,9 @@ class GlobalConfigurationManagerTest {
     void assertAlterPropertiesWithoutCronChange() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON)).thenReturn("0/10 * * * * ?");
+        when(metaDataContexts.getMetaData().getProtocolType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getProtocolType()).thenReturn(mock(DatabaseType.class));
+        when(database.getName()).thenReturn("foo_db");
         when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
@@ -152,7 +156,8 @@ class GlobalConfigurationManagerTest {
     
     private ShardingSphereMetaData createMetaData(final RuleMetaData globalRuleMetaData, final TemporaryConfigurationProperties temporaryProps) {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        doReturn(mock(DatabaseType.class)).when(database).getProtocolType();
+        doReturn("foo_db").when(database).getName();
+        doReturn(databaseType).when(database).getProtocolType();
         ShardingSphereMetaData result = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties()));
         result.getTemporaryProps().getProps().putAll(temporaryProps.getProps());
         return result;

@@ -90,14 +90,29 @@ public final class ProxyConfigurationLoader {
     }
     
     private static File getGlobalConfigFile(final String path) {
-        File result = getResourceFile(String.join("/", path, GLOBAL_CONFIG_FILE));
-        return result.exists() ? result : getResourceFile(String.join("/", path, COMPATIBLE_GLOBAL_CONFIG_FILE));
+        File globalFile = new File(path, GLOBAL_CONFIG_FILE);
+        if (globalFile.exists()) {
+            return globalFile;
+        }
+        File compatibleFile = new File(path, COMPATIBLE_GLOBAL_CONFIG_FILE);
+        if (compatibleFile.exists()) {
+            return compatibleFile;
+        }
+        File classpathGlobal = getResourceFile(String.join("/", path, GLOBAL_CONFIG_FILE));
+        if (classpathGlobal.exists()) {
+            return classpathGlobal;
+        }
+        return getResourceFile(String.join("/", path, COMPATIBLE_GLOBAL_CONFIG_FILE));
     }
     
     @SneakyThrows(URISyntaxException.class)
     private static File getResourceFile(final String path) {
+        File result = new File(path);
+        if (result.exists()) {
+            return result;
+        }
         URL url = ProxyConfigurationLoader.class.getResource(path);
-        return null == url ? new File(path) : new File(url.toURI().getPath());
+        return null == url ? result : new File(url.toURI());
     }
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {

@@ -54,7 +54,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Inte
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.join.OuterJoinExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.json.JsonNullClauseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.multiset.MultisetExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlElementFunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlQueryAndExistsFunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlSerializeFunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
@@ -97,6 +99,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedSubquery;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.function.ExpectedFunction;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.json.ExpectedJsonNullClauseSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.xml.ExpectedXmlElementFunctionSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.xml.ExpectedXmlSerializeFunctionSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.xmlquery.ExpectedXmlQueryAndExistsFunctionSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
 
@@ -628,6 +632,38 @@ public final class ExpressionAssert {
         }
     }
     
+    private static void assertXmlElementFunctionSegment(final SQLCaseAssertContext assertContext, final XmlElementFunctionSegment actual,
+                                                        final ExpectedXmlElementFunctionSegment expected) {
+        assertNotNull(expected, assertContext.getText("Expected XML element function should exist."));
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        assertThat(assertContext.getText("XML element function name assertion error: "), actual.getFunctionName(), is(expected.getFunctionName()));
+        assertThat(assertContext.getText("XML element identifier assertion error: "), actual.getIdentifier().getValue(), is(expected.getIdentifier()));
+        assertThat(assertContext.getText("XML element attribute size assertion error: "), actual.getXmlAttributes().size(), is(expected.getXmlAttributes().size()));
+        Iterator<ExpectedExpression> expectedAttributeIterator = expected.getXmlAttributes().iterator();
+        Iterator<ExpressionSegment> actualAttributeIterator = actual.getXmlAttributes().iterator();
+        while (expectedAttributeIterator.hasNext()) {
+            assertExpression(assertContext, actualAttributeIterator.next(), expectedAttributeIterator.next());
+        }
+        assertThat(assertContext.getText("XML element parameter size assertion error: "), actual.getParameters().size(), is(expected.getParameters().size()));
+        Iterator<ExpectedExpression> expectedParameterIterator = expected.getParameters().iterator();
+        Iterator<ExpressionSegment> actualParameterIterator = actual.getParameters().iterator();
+        while (expectedParameterIterator.hasNext()) {
+            assertExpression(assertContext, actualParameterIterator.next(), expectedParameterIterator.next());
+        }
+    }
+    
+    private static void assertXmlSerializeFunctionSegment(final SQLCaseAssertContext assertContext, final XmlSerializeFunctionSegment actual,
+                                                          final ExpectedXmlSerializeFunctionSegment expected) {
+        assertNotNull(expected, assertContext.getText("Expected XML serialize function should exist."));
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        assertThat(assertContext.getText("XML serialize function name assertion error: "), actual.getFunctionName(), is(expected.getFunctionName()));
+        assertThat(assertContext.getText("XML serialize data type assertion error: "), actual.getDataType(), is(expected.getDataType()));
+        assertThat(assertContext.getText("XML serialize encoding assertion error: "), actual.getEncoding(), is(expected.getEncoding()));
+        assertThat(assertContext.getText("XML serialize version assertion error: "), actual.getVersion(), is(expected.getVersion()));
+        assertThat(assertContext.getText("XML serialize indent size assertion error: "), actual.getIdentSize(), is(expected.getIndentSize()));
+        assertExpression(assertContext, actual.getParameter(), expected.getParameter());
+    }
+    
     /**
      * Assert key value segment.
      *
@@ -730,6 +766,10 @@ public final class ExpressionAssert {
             assertRowExpression(assertContext, (RowExpression) actual, expected.getRowExpression());
         } else if (actual instanceof UnaryOperationExpression) {
             assertUnaryOperationExpression(assertContext, (UnaryOperationExpression) actual, expected.getUnaryOperationExpression());
+        } else if (actual instanceof XmlElementFunctionSegment) {
+            assertXmlElementFunctionSegment(assertContext, (XmlElementFunctionSegment) actual, expected.getXmlElementFunctionSegment());
+        } else if (actual instanceof XmlSerializeFunctionSegment) {
+            assertXmlSerializeFunctionSegment(assertContext, (XmlSerializeFunctionSegment) actual, expected.getXmlSerializeFunctionSegment());
         } else if (actual instanceof XmlQueryAndExistsFunctionSegment) {
             assertXmlQueryAndExistsFunctionSegment(assertContext, (XmlQueryAndExistsFunctionSegment) actual, expected.getExpectedXmlQueryAndExistsFunctionSegment());
         } else if (actual instanceof KeyValueSegment) {

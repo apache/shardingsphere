@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.response.header.query;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttri
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.junit.jupiter.api.Test;
 
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
@@ -44,8 +45,8 @@ class MySQLQueryHeaderBuilderTest {
     
     @Test
     void assertBuild() throws SQLException {
-        QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
-        QueryHeader actual = new MySQLQueryHeaderBuilder().build(queryResultMetaData, createDatabase(), queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1);
+        ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData();
+        QueryHeader actual = new MySQLQueryHeaderBuilder().build(resultSetMetaData, createDatabase(), resultSetMetaData.getColumnName(1), resultSetMetaData.getColumnLabel(1), 1);
         assertThat(actual.getSchema(), is("foo_db"));
         assertThat(actual.getTable(), is("t_logic_order"));
         assertThat(actual.getColumnLabel(), is("order_id"));
@@ -61,14 +62,21 @@ class MySQLQueryHeaderBuilderTest {
     
     @Test
     void assertBuildWithoutPrimaryKeyColumn() throws SQLException {
-        QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
-        assertFalse(new MySQLQueryHeaderBuilder().build(queryResultMetaData, createDatabase(), queryResultMetaData.getColumnName(2), queryResultMetaData.getColumnLabel(2), 2).isPrimaryKey());
+        ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData();
+        assertFalse(new MySQLQueryHeaderBuilder().build(resultSetMetaData, createDatabase(), resultSetMetaData.getColumnName(2), resultSetMetaData.getColumnLabel(2), 2).isPrimaryKey());
+    }
+    
+    @Test
+    void assertBuildWithAliasColumnAndOriginalPrimaryKey() throws SQLException {
+        ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData();
+        QueryHeader actual = new MySQLQueryHeaderBuilder().build(resultSetMetaData, createDatabase(), "order_id_alias", "order_id_alias", 1);
+        assertTrue(actual.isPrimaryKey());
     }
     
     @Test
     void assertBuildWithNullDatabase() throws SQLException {
-        QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
-        QueryHeader actual = new MySQLQueryHeaderBuilder().build(queryResultMetaData, null, queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1);
+        ShardingSphereResultSetMetaData resultSetMetaData = createActualResultSetMetaData("t_order");
+        QueryHeader actual = new MySQLQueryHeaderBuilder().build(resultSetMetaData, null, resultSetMetaData.getColumnName(1), resultSetMetaData.getColumnLabel(1), 1);
         assertFalse(actual.isPrimaryKey());
         assertThat(actual.getTable(), is("t_order"));
     }
@@ -80,17 +88,17 @@ class MySQLQueryHeaderBuilderTest {
         DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
         when(ruleAttribute.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_order"));
         when(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
-        QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
-        QueryHeader actual = new MySQLQueryHeaderBuilder().build(queryResultMetaData, database, queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1);
+        ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData("t_order");
+        QueryHeader actual = new MySQLQueryHeaderBuilder().build(resultSetMetaData, database, resultSetMetaData.getColumnName(1), resultSetMetaData.getColumnLabel(1), 1);
         assertFalse(actual.isPrimaryKey());
         assertThat(actual.getTable(), is("t_order"));
     }
     
     @Test
     void assertBuildWithoutDataNodeContainedRule() throws SQLException {
-        QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
+        ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData();
         QueryHeader actual = new MySQLQueryHeaderBuilder().build(
-                queryResultMetaData, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1);
+                resultSetMetaData, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), resultSetMetaData.getColumnName(1), resultSetMetaData.getColumnLabel(1), 1);
         assertFalse(actual.isPrimaryKey());
         assertThat(actual.getTable(), is(actual.getTable()));
     }
@@ -109,19 +117,37 @@ class MySQLQueryHeaderBuilderTest {
         return result;
     }
     
-    private QueryResultMetaData createQueryResultMetaData() throws SQLException {
-        QueryResultMetaData result = mock(QueryResultMetaData.class);
-        when(result.getTableName(1)).thenReturn("t_order");
-        when(result.getTableName(2)).thenReturn("t_order");
+    private ShardingSphereResultSetMetaData createResultSetMetaData() throws SQLException {
+        return createResultSetMetaData("t_logic_order");
+    }
+    
+    private ShardingSphereResultSetMetaData createResultSetMetaData(final String tableName) throws SQLException {
+        ShardingSphereResultSetMetaData result = mock(ShardingSphereResultSetMetaData.class);
+        when(result.getTableName(1)).thenReturn(tableName);
+        when(result.getTableName(2)).thenReturn(tableName);
         when(result.getColumnLabel(1)).thenReturn("order_id");
         when(result.getColumnName(1)).thenReturn("order_id");
         when(result.getColumnName(2)).thenReturn("expr");
         when(result.getColumnType(1)).thenReturn(Types.INTEGER);
         when(result.isSigned(1)).thenReturn(true);
         when(result.isAutoIncrement(1)).thenReturn(true);
-        when(result.getColumnLength(1)).thenReturn(1);
-        when(result.getDecimals(1)).thenReturn(1);
-        when(result.isNotNull(1)).thenReturn(true);
+        when(result.getColumnDisplaySize(1)).thenReturn(1);
+        when(result.getScale(1)).thenReturn(1);
+        when(result.isNullable(1)).thenReturn(ResultSetMetaData.columnNoNulls);
         return result;
+    }
+    
+    private ShardingSphereResultSetMetaData createActualResultSetMetaData(final String tableName) throws SQLException {
+        ResultSetMetaData result = mock(ResultSetMetaData.class);
+        when(result.getTableName(1)).thenReturn(tableName);
+        when(result.getColumnLabel(1)).thenReturn("order_id");
+        when(result.getColumnName(1)).thenReturn("order_id");
+        when(result.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(result.isSigned(1)).thenReturn(true);
+        when(result.isAutoIncrement(1)).thenReturn(true);
+        when(result.getColumnDisplaySize(1)).thenReturn(1);
+        when(result.getScale(1)).thenReturn(1);
+        when(result.isNullable(1)).thenReturn(ResultSetMetaData.columnNoNulls);
+        return new ShardingSphereResultSetMetaData(result, null, null);
     }
 }
