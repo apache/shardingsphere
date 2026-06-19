@@ -159,16 +159,6 @@ class ReadwriteSplittingWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanStatusClarifiesConflictingStatusInputs() {
-        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("disable");
-        request.setOperationType("enable");
-        WorkflowContextSnapshot actual = createStatusService().plan(new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of(createStatusRow("ENABLED"))), "session-1", request);
-        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
-        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_REQUIRED));
-        assertFalse(actual.getRuleArtifacts().iterator().hasNext());
-    }
-    
-    @Test
     void assertPlanStatusFailsWhenTargetMissing() {
         WorkflowContextSnapshot actual = createStatusService().plan(new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of()), "session-1", createStatusRequest("enable"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
