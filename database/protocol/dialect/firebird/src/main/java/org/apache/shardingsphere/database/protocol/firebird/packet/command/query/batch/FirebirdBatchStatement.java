@@ -42,10 +42,6 @@ public final class FirebirdBatchStatement {
     
     private long accumulatedSize;
     
-    private int framedOffset;
-    
-    private long framedCount;
-    
     public FirebirdBatchStatement(final int statementHandle) {
         this(statementHandle, Collections.emptyList(), 0L, false);
     }
@@ -78,30 +74,10 @@ public final class FirebirdBatchStatement {
     }
     
     /**
-     * Remember how far the current batch message has been framed, so the next chunk only parses new messages.
-     *
-     * @param framedOffset byte offset (from packet start) of the next unparsed message
-     * @param framedCount number of messages already framed
-     */
-    public void setFramingProgress(final int framedOffset, final long framedCount) {
-        this.framedOffset = framedOffset;
-        this.framedCount = framedCount;
-    }
-    
-    /**
-     * Clear framing progress once a batch message packet is fully framed.
-     */
-    public void clearFramingProgress() {
-        framedOffset = 0;
-        framedCount = 0;
-    }
-    
-    /**
      * Reset accumulated batch state.
      */
     public void reset() {
         parameterValues.clear();
         accumulatedSize = 0;
-        clearFramingProgress();
     }
 }

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Batch send message command executor for Firebird.
@@ -51,6 +52,9 @@ public final class FirebirdBatchSendMessageCommandExecutor implements CommandExe
         if (batchStatement.getAccumulatedSize() + packet.getDataLength() > batchStatement.getBufferSize()) {
             throw new FirebirdProtocolException("Batch is too big: accumulated %d + %d bytes exceeds buffer size limit %d bytes",
                     batchStatement.getAccumulatedSize(), packet.getDataLength(), batchStatement.getBufferSize());
+        }
+        for (List<Object> each : packet.readParameterValues(batchStatement.getColumnTypes())) {
+            batchStatement.addParameterValues(each);
         }
         batchStatement.addSize(packet.getDataLength());
         return Collections.singleton(new FirebirdGenericResponsePacket());

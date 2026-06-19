@@ -50,6 +50,7 @@
 1. Proxy: Support non column projection for MySQL prepared statement in Proxy - [#38507](https://github.com/apache/shardingsphere/pull/38507)
 1. Proxy: Support driverClassName config in proxy storage unit to solve mysql and mariadb jdbc url conflict - [#38582](https://github.com/apache/shardingsphere/pull/38582)
 1. Proxy: Support Firebird prepared statement cache reuse for held connections - [#38644](https://github.com/apache/shardingsphere/pull/38644)
+1. Proxy: Support basic Firebird batch operations: create, send, execute, cancel, and release - [#38605](https://github.com/apache/shardingsphere/pull/38605)
 
 ## Release 5.5.3
 

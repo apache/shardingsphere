@@ -80,34 +80,40 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
         if (null == batchStatement) {
             throw new FirebirdProtocolException("Batch statement not found for connectionId: " + connectionId + ", statement handle: " + statementHandle);
         }
-        int availableDataBytes = availableBytes - FIXED_BATCH_MSG_HEADER_LENGTH;
-        if (batchStatement.getAccumulatedSize() + availableDataBytes > batchStatement.getBufferSize()) {
-            throw new FirebirdProtocolException("Batch is too big: accumulated %d + incoming %d data bytes exceeds buffer size limit %d bytes",
-                    batchStatement.getAccumulatedSize(), availableDataBytes, batchStatement.getBufferSize());
-        }
-        return parseBatchMessages(payload, startReaderIndex, payload.readInt4Unsigned(), batchStatement);
+        return parseBatchMessages(payload, startReaderIndex, payload.readInt4Unsigned(), batchStatement.getColumnTypes());
     }
     
-    private static int parseBatchMessages(final FirebirdPacketPayload payload, final int startReaderIndex, final long messageCount, final FirebirdBatchStatement batchStatement) {
-        List<FirebirdBinaryColumnType> columnTypes = batchStatement.getColumnTypes();
-        if (batchStatement.getFramedCount() > 0) {
-            payload.getByteBuf().readerIndex(startReaderIndex + batchStatement.getFramedOffset());
-        }
-        for (long each = batchStatement.getFramedCount(); each < messageCount; each++) {
+    private static int parseBatchMessages(final FirebirdPacketPayload payload, final int startReaderIndex, final long messageCount, final List<FirebirdBinaryColumnType> columnTypes) {
+        for (long each = 0; each < messageCount; each++) {
             int messageStartIndex = payload.getByteBuf().readerIndex();
             try {
-                batchStatement.addParameterValues(parseSingleMessage(payload, columnTypes));
+                parseSingleMessage(payload, columnTypes);
                 payload.skipPadding(payload.getByteBuf().readerIndex() - messageStartIndex);
                 // CHECKSTYLE:OFF
             } catch (final IndexOutOfBoundsException ex) {
                 // CHECKSTYLE:ON
                 payload.getByteBuf().readerIndex(messageStartIndex);
-                batchStatement.setFramingProgress(messageStartIndex - startReaderIndex, each);
                 return -1;
             }
         }
-        batchStatement.clearFramingProgress();
         return payload.getByteBuf().readerIndex() - startReaderIndex;
+    }
+    
+    /**
+     * Read batch parameter values from packet data.
+     *
+     * @param columnTypes column types
+     * @return batch parameter values
+     */
+    public List<List<Object>> readParameterValues(final List<FirebirdBinaryColumnType> columnTypes) {
+        FirebirdPacketPayload payload = new FirebirdPacketPayload(data.duplicate(), charset);
+        List<List<Object>> result = new ArrayList<>((int) Math.min(messageCount, Integer.MAX_VALUE));
+        for (long each = 0; each < messageCount; each++) {
+            int messageStartIndex = payload.getByteBuf().readerIndex();
+            result.add(parseSingleMessage(payload, columnTypes));
+            payload.skipPadding(payload.getByteBuf().readerIndex() - messageStartIndex);
+        }
+        return result;
     }
     
     private static List<Object> parseSingleMessage(final FirebirdPacketPayload payload, final List<FirebirdBinaryColumnType> columnTypes) {

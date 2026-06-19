@@ -29,6 +29,7 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdBatchCommandPacketTest {
     
@@ -68,23 +69,25 @@ class FirebirdBatchCommandPacketTest {
     @Test
     void assertBatchSendMessageGetLengthChecksDataSizeOnly() {
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID,
-                new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(FirebirdBinaryColumnType.LONG), 8L));
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(FirebirdBinaryColumnType.LONG), 8L);
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batchStatement);
         try {
             assertThat(FirebirdBatchSendMessageCommandPacket.getLength(createBatchMessagePayload(), CONNECTION_ID), is(20));
+            assertTrue(batchStatement.getParameterValues().isEmpty());
         } finally {
             FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
         }
     }
     
     @Test
-    void assertBatchSendMessageGetLengthWhenDataTooBig() {
+    void assertBatchSendMessageGetLengthIgnoresBatchBufferSize() {
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(FirebirdBinaryColumnType.LONG), 8L);
         batchStatement.addSize(1L);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batchStatement);
         try {
-            assertThrows(FirebirdProtocolException.class, () -> FirebirdBatchSendMessageCommandPacket.getLength(createBatchMessagePayload(), CONNECTION_ID));
+            assertThat(FirebirdBatchSendMessageCommandPacket.getLength(createBatchMessagePayload(), CONNECTION_ID), is(20));
+            assertTrue(batchStatement.getParameterValues().isEmpty());
         } finally {
             FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
         }

@@ -250,14 +250,12 @@ class FirebirdPacketCodecEngineTest {
             assertTrue(firstOut.isEmpty());
             assertThat(getPendingPacketType(), is(FirebirdCommandPacketType.BATCH_MSG));
             FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE);
-            assertThat(batchStatement.getParameterValues().size(), is(1));
-            assertThat(batchStatement.getParameterValues().get(0).get(0), is(100));
+            assertTrue(batchStatement.getParameterValues().isEmpty());
             List<Object> secondOut = new LinkedList<>();
             codecEngine.decode(context, secondFrame, secondOut);
             assertThat(secondOut.size(), is(1));
             assertThat(createBatchSendMessagePacket((ByteBuf) secondOut.iterator().next()).getMessageCount(), is(2L));
-            assertThat(batchStatement.getParameterValues().size(), is(2));
-            assertThat(batchStatement.getParameterValues().get(1).get(0), is(200));
+            assertTrue(batchStatement.getParameterValues().isEmpty());
             assertNull(getPendingPacketType());
             assertTrue(getPendingMessages().isEmpty());
         } finally {
