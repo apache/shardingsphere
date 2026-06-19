@@ -338,6 +338,8 @@ class LLMMCPConversationRunnerNextActionTest extends AbstractLLMMCPConversationR
         assertTrue(containsMessage(actualSecondTurnMessages,
                 "Call database_gateway_execute_query now with database `" + DATABASE_NAME + "`, schema `" + SCHEMA_NAME + "`, and sql `" + QUERY + "`"));
         assertTrue(containsMessage(actualSecondTurnMessages, "Do not call database_gateway_execute_update for SELECT or row-count verification."));
+        assertFalse(containsMessage(actualSecondTurnMessages, "\"tool_name\":\"database_gateway_execute_update\""));
+        assertFalse(containsMessage(actualSecondTurnMessages, "\"title\":\"Execute\""));
         assertThat(getToolNames(actualTools.getAllValues().get(1)), is(List.of("database_gateway_execute_query")));
         assertThat(actual.getInteractionTrace().get(1).getTargetName(), is("database_gateway_execute_update"));
         assertFalse(actual.getInteractionTrace().get(1).isValid());
