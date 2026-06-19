@@ -53,8 +53,7 @@ public final class ReadwriteSplittingStatusDistSQLPlanningService {
      * @return DistSQL status operation
      */
     public String resolveStatusOperation(final ReadwriteSplittingStatusWorkflowRequest request) {
-        String targetStatus = normalizeStatusOperation(request.getTargetStatus());
-        return !targetStatus.isEmpty() ? targetStatus : normalizeStatusOperation(request.getOperationType());
+        return normalizeStatusOperation(request.getTargetStatus());
     }
     
     private String normalizeStatusOperation(final String status) {

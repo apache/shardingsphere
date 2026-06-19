@@ -79,6 +79,13 @@ class ReadwriteSplittingDistSQLPlanningServiceTest {
     }
     
     @Test
+    void assertResolveStatusOperationIgnoresOperationType() {
+        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("");
+        request.setOperationType("enable");
+        assertThat(new ReadwriteSplittingStatusDistSQLPlanningService().resolveStatusOperation(request), is(""));
+    }
+    
+    @Test
     void assertPlanStatusRejectsMissingTargetStatus() {
         ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("");
         assertThrows(MCPInvalidRequestException.class, () -> new ReadwriteSplittingStatusDistSQLPlanningService().planStatus(request));

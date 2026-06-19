@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
+import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowIntentResolverSupport;
 
@@ -39,11 +39,10 @@ final class ReadwriteSplittingWorkflowIntentResolver {
     
     ClarifiedIntent resolveStatusIntent(final ReadwriteSplittingStatusWorkflowRequest request) {
         ClarifiedIntent result = new ClarifiedIntent();
-        String operationType = resolveStatusOperation(request);
-        if (!operationType.isEmpty() && request.getOperationType().isEmpty()) {
-            result.getInferredValues().put(WorkflowFieldNames.OPERATION_TYPE, operationType);
+        String targetStatus = resolveStatusOperation(request);
+        if (!targetStatus.isEmpty() && request.getTargetStatus().isEmpty()) {
+            result.getInferredValues().put(ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD, targetStatus);
         }
-        result.setOperationType(operationType);
         result.setReasoningNotes(WorkflowIntentResolverSupport.summarizeReasoning(result));
         return result;
     }

@@ -430,7 +430,7 @@ tools:
           description: "Preferred later apply mode captured by the plan."
         intent_inference:
           type: object
-          description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+          description: "Resolved intent fields, inferred values, unresolved fields, and reasoning notes."
         argument_provenance:
           type: object
           description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."
@@ -622,7 +622,7 @@ tools:
               reason: Inspect current readwrite-splitting status before planning changes.
               source_field: resources_to_read
           distsql_artifacts:
-            - operation_type: enable
+            - target_status: enable
               artifact_type: rule_distsql
               sql: ALTER READWRITE_SPLITTING RULE readwrite_ds ENABLE ds_read_0 FROM logic_db
           next_actions:

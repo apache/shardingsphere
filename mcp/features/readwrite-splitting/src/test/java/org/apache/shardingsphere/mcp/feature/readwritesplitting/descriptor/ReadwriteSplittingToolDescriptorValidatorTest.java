@@ -91,6 +91,14 @@ class ReadwriteSplittingToolDescriptorValidatorTest {
     }
     
     @Test
+    void assertStatusOutputExampleUsesTargetStatus() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(ReadwriteSplittingFeatureDefinition.PLAN_STATUS_TOOL_NAME);
+        String outputSchema = String.valueOf(descriptor.getOutputSchema());
+        assertTrue(outputSchema.contains("target_status=enable"));
+        assertFalse(outputSchema.contains("operation_type=enable"));
+    }
+    
+    @Test
     void assertDescriptorIsRuleDistSQLOnly() {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(ReadwriteSplittingFeatureDefinition.PLAN_RULE_TOOL_NAME);
         String descriptorText = descriptor.getDescription() + descriptor.getInputSchema() + descriptor.getOutputSchema() + descriptor.getMeta();

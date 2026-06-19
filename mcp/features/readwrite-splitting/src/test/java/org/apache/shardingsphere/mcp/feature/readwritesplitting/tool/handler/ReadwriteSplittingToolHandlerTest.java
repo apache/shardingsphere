@@ -110,7 +110,17 @@ class ReadwriteSplittingToolHandlerTest {
                 "database", "logic_db",
                 "target_status", "disable",
                 "structured_intent_evidence", Map.of("rule", "readwrite_ds", "storage_unit", "read_ds_0"))));
-        assertThat(actual.toPayload().get("workflow_kind"), is("readwrite.status"));
+        Map<String, Object> actualPayload = actual.toPayload();
+        assertThat(actualPayload.get("workflow_kind"), is("readwrite.status"));
+        Map<?, ?> actualIntentInference = (Map<?, ?>) actualPayload.get("intent_inference");
+        assertFalse(actualIntentInference.containsKey("operation_type"));
+        assertThat(actualIntentInference.get("target_status"), is("disable"));
+        Map<?, ?> actualArgumentProvenance = (Map<?, ?>) actualPayload.get("argument_provenance");
+        assertFalse(actualArgumentProvenance.containsKey("operation_type"));
+        assertThat(actualArgumentProvenance.get("target_status"), is("user_provided"));
+        Map<?, ?> actualDistSQLArtifact = (Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst();
+        assertFalse(actualDistSQLArtifact.containsKey("operation_type"));
+        assertThat(actualDistSQLArtifact.get("target_status"), is("disable"));
         ArgumentCaptor<ReadwriteSplittingStatusWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingStatusWorkflowRequest.class);
         verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
         assertThat(requestCaptor.getValue().getStorageUnit(), is("read_ds_0"));
@@ -150,6 +160,8 @@ class ReadwriteSplittingToolHandlerTest {
         request.setDatabase("logic_db");
         request.setRuleName("readwrite_ds");
         request.setStorageUnit("read_ds_0");
+        request.setTargetStatus("disable");
+        request.setOperationType("disable");
         WorkflowContextSnapshot result = createSnapshot(request, ReadwriteSplittingFeatureDefinition.STATUS_WORKFLOW_KIND.getValue());
         result.getRuleArtifacts().add(new RuleArtifact("disable", "ALTER READWRITE_SPLITTING RULE readwrite_ds DISABLE read_ds_0 FROM logic_db"));
         return result;
