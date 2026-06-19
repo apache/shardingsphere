@@ -245,7 +245,7 @@ The script is a heuristic input, not review evidence and not a finding source by
 Recommended command shape:
 
 ```bash
-python .codex/skills/review-pr/scripts/build_review_inventory.py \
+python3 .codex/skills/review-pr/scripts/build_review_inventory.py \
   --base-ref <base-ref-or-sha> \
   --head-ref <head-ref-or-sha> \
   --previous-head <previous-reviewed-head-if-any> \
