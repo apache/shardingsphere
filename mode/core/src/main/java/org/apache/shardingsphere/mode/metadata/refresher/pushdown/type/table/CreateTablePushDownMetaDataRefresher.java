@@ -55,7 +55,8 @@ public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaD
     
     private ShardingSphereTable loadTable(final ShardingSphereDatabase database, final String schemaName, final String tableName,
                                           final RuleMetaData ruleMetaData, final ConfigurationProperties props) throws SQLException {
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
+        GenericSchemaBuilderMaterial material =
+                new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName, database.getAllSchemas());
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(tableName), database.getProtocolType(), material);
         return schemas.get(schemaName).getTable(tableName);
     }

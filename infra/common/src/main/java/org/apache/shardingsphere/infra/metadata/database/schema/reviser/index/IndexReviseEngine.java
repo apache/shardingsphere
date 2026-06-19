@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 /**
  * Index revise engine.
- * 
+ *
  * @param <T> type of rule
  */
 @RequiredArgsConstructor
@@ -62,10 +62,25 @@ public final class IndexReviseEngine<T extends ShardingSphereRule> {
      */
     public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList,
                                             final Collection<TableMetaData> originalTableMetaDataList) {
+        return revise(tableName, originalMetaDataList, originalTableMetaDataList, Collections.emptyList());
+    }
+    
+    /**
+     * Revise index meta data.
+     *
+     * @param tableName table name
+     * @param originalMetaDataList original index meta data list
+     * @param originalTableMetaDataList original table meta data list
+     * @param schemaMetaDataRevisionCandidateTableMetaDataList schema meta data revision candidate table meta data list
+     * @return revised index meta data
+     */
+    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList,
+                                            final Collection<TableMetaData> originalTableMetaDataList,
+                                            final Collection<TableMetaData> schemaMetaDataRevisionCandidateTableMetaDataList) {
         Optional<? extends IndexReviser<T>> reviser = reviseEntry.getIndexReviser(rule, tableName);
         return reviser.isPresent()
                 ? originalMetaDataList.stream()
-                        .map(each -> reviser.get().revise(tableName, each, originalTableMetaDataList, rule))
+                        .map(each -> reviser.get().revise(tableName, each, originalTableMetaDataList, schemaMetaDataRevisionCandidateTableMetaDataList, rule))
                         .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList())
                 : originalMetaDataList;
     }

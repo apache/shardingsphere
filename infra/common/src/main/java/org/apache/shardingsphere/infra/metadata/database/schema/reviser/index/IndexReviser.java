@@ -26,10 +26,25 @@ import java.util.Optional;
 
 /**
  * Index reviser.
- * 
+ *
  * @param <T> type of rule
  */
 public interface IndexReviser<T extends ShardingSphereRule> {
+    
+    /**
+     * Revise index meta data.
+     *
+     * @param tableName table name
+     * @param originalMetaData original index meta data
+     * @param originalTableMetaDataList original table meta data list
+     * @param schemaMetaDataRevisionCandidateTableMetaDataList schema meta data revision candidate table meta data list
+     * @param rule rule
+     * @return revised index meta data
+     */
+    default Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final Collection<TableMetaData> originalTableMetaDataList,
+                                           final Collection<TableMetaData> schemaMetaDataRevisionCandidateTableMetaDataList, final T rule) {
+        return revise(tableName, originalMetaData, originalTableMetaDataList, rule);
+    }
     
     /**
      * Revise index meta data.

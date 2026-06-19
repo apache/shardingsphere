@@ -88,6 +88,25 @@ class ShardingIndexReviserTest {
         assertThat(actual.iterator().next().getName(), is(logicIndexName));
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Test
+    void assertReviseThroughSharedIndexReviseEngineWithAllTruncatedNamedActualIndexNamesUsingRevisionCandidates() {
+        String logicIndexName = "named_index_boundary_case_abcdefghijklmnopqrstuvwxyz_0123456789";
+        IndexMetaData firstTruncatedActualIndexMetaData = new IndexMetaData(
+                IndexMetaDataUtils.getActualIndexName(logicIndexName, "tbl_0", databaseType), Collections.singletonList("foo_col"));
+        IndexMetaData secondTruncatedActualIndexMetaData = new IndexMetaData(
+                IndexMetaDataUtils.getActualIndexName(logicIndexName, "tbl_1", databaseType), Collections.singletonList("foo_col"));
+        ShardingRule rule = mock(ShardingRule.class);
+        MetaDataReviseEntry reviseEntry = mock(MetaDataReviseEntry.class);
+        ShardingIndexReviser indexReviser = new ShardingIndexReviser(mockShardingTable());
+        when(reviseEntry.getIndexReviser(rule, "tbl_0")).thenReturn(Optional.of(indexReviser));
+        Collection<IndexMetaData> actual = new IndexReviseEngine<>(rule, reviseEntry).revise("tbl_0", Collections.singleton(firstTruncatedActualIndexMetaData),
+                Arrays.asList(tableMetaData("tbl_0", firstTruncatedActualIndexMetaData), tableMetaData("tbl_1", secondTruncatedActualIndexMetaData)),
+                Collections.singleton(tableMetaData("tbl", new IndexMetaData(logicIndexName, Collections.singletonList("foo_col")))));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getName(), is(logicIndexName));
+    }
+    
     @Test
     void assertReviseWithExactHashLikeIndexName() {
         Optional<IndexMetaData> actual = revise("tbl_0", new IndexMetaData("foo_h12345678", Collections.singletonList("foo_col")));
@@ -139,6 +158,7 @@ class ShardingIndexReviserTest {
     
     private static ShardingTable mockShardingTable() {
         ShardingTable result = mock(ShardingTable.class);
+        when(result.getLogicTable()).thenReturn("tbl");
         when(result.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("foo_schema", (String) null, "tbl_0"), new DataNode("foo_schema", (String) null, "tbl_1")));
         return result;
     }

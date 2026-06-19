@@ -162,7 +162,8 @@ public final class MetaDataContextsFactory {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
         return isLoadSchemasFromRegisterCenter
                 ? createFromRegisterCenter(databaseName, protocolType, databaseConfig, originalMetaDataContext)
-                : ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, props, instanceContext);
+                : ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, props, instanceContext,
+                        originalMetaDataContext.getMetaData().getDatabase(databaseName).getAllSchemas());
     }
     
     private ShardingSphereDatabase createFromRegisterCenter(final String databaseName, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
