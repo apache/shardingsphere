@@ -34,12 +34,12 @@ public final class ReadwriteSplittingStatusDistSQLPlanningService {
      *
      * @param request status workflow request
      * @return rule artifact
-     * @throws MCPInvalidRequestException when status request fields resolve to conflicting operations
+     * @throws MCPInvalidRequestException when no status operation can be resolved
      */
     public RuleArtifact planStatus(final ReadwriteSplittingStatusWorkflowRequest request) {
         String operation = resolveStatusOperation(request);
         if (operation.isEmpty()) {
-            throw new MCPInvalidRequestException("target_status and operation_type must resolve to the same readwrite-splitting status operation.");
+            throw new MCPInvalidRequestException("target_status is required for readwrite-splitting status.");
         }
         return new RuleArtifact(operation.toLowerCase(Locale.ENGLISH), String.format("ALTER READWRITE_SPLITTING RULE %s %s %s FROM %s",
                 WorkflowSQLUtils.formatDistSQLIdentifier(request.getRuleName()), operation,
@@ -53,12 +53,8 @@ public final class ReadwriteSplittingStatusDistSQLPlanningService {
      * @return DistSQL status operation
      */
     public String resolveStatusOperation(final ReadwriteSplittingStatusWorkflowRequest request) {
-        String operationType = normalizeStatusOperation(request.getOperationType());
         String targetStatus = normalizeStatusOperation(request.getTargetStatus());
-        if (!operationType.isEmpty() && !targetStatus.isEmpty() && !operationType.equals(targetStatus)) {
-            return "";
-        }
-        return !targetStatus.isEmpty() ? targetStatus : operationType;
+        return !targetStatus.isEmpty() ? targetStatus : normalizeStatusOperation(request.getOperationType());
     }
     
     private String normalizeStatusOperation(final String status) {

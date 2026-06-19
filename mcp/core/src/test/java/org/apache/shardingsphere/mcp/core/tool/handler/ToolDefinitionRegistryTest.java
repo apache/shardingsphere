@@ -87,10 +87,8 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
-    void assertGetToolDefinitionWithLegacyAlias() {
-        MCPToolDefinition actual = ToolDefinitionRegistry.getToolDefinition("database_gateway_validate_proxy_connectivity");
-        assertThat(actual.getDescriptor().getName(), is("database_gateway_validate_runtime_database"));
-        assertThat(actual.getHandler().getToolName(), is("database_gateway_validate_runtime_database"));
+    void assertGetToolDefinitionRejectsLegacyAlias() {
+        assertThrows(UnsupportedToolException.class, () -> ToolDefinitionRegistry.getToolDefinition("database_gateway_validate_proxy_connectivity"));
     }
     
     @Test
@@ -106,15 +104,8 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
-    void assertDispatchWithLegacyAlias() {
-        MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
-        runtimeContext.getSessionManager().createSession("session-1");
-        try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
-            MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition("database_gateway_validate_proxy_connectivity");
-            MCPResponse actual = ToolDefinitionRegistry.dispatch(requestContext, toolDefinition, "session-1", Map.of("database", "missing_db"));
-            assertThat(toolDefinition.getDescriptor().getName(), is("database_gateway_validate_runtime_database"));
-            assertThat(actual.toPayload().get("response_mode"), is("validation"));
-        }
+    void assertDispatchRejectsLegacyAlias() {
+        assertThrows(UnsupportedToolException.class, () -> dispatch("database_gateway_validate_proxy_connectivity", Map.of("database", "missing_db")));
     }
     
     @Test

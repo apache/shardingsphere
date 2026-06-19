@@ -450,21 +450,6 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          properties:
-            rule:
-              type: string
-            source_storage_unit:
-              type: string
-            shadow_storage_unit:
-              type: string
-            table:
-              type: string
-            algorithm_type:
-              type: string
-          required: []
-          additionalProperties: false
       required: []
       additionalProperties: false
     outputSchema: &workflowPlanOutputSchema
@@ -653,13 +638,6 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          properties:
-            algorithm_type:
-              type: string
-          required: []
-          additionalProperties: false
       required: []
       additionalProperties: false
     outputSchema:
@@ -723,13 +701,6 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          properties:
-            algorithm_name:
-              type: string
-          required: []
-          additionalProperties: false
       required: []
       additionalProperties: false
     outputSchema:

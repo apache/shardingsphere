@@ -99,14 +99,14 @@ class MCPInteractionPayloadsTest {
     }
     
     @Test
-    void assertGetStructuredContentFromTextContent() {
+    void assertGetStructuredContentRejectsTextContentFallback() {
         Map<String, Object> payload = Map.of("result", Map.of("content", List.of(Map.of("text", "{\"status\":\"ok\"}"))));
-        assertThat(MCPInteractionPayloads.getStructuredContent(payload).get("status"), is("ok"));
+        assertThrows(IllegalStateException.class, () -> MCPInteractionPayloads.getStructuredContent(payload));
     }
     
     @Test
     void assertGetStructuredContentWithoutContent() {
-        assertTrue(MCPInteractionPayloads.getStructuredContent(Map.of("result", Map.of())).isEmpty());
+        assertThrows(IllegalStateException.class, () -> MCPInteractionPayloads.getStructuredContent(Map.of("result", Map.of())));
     }
     
     @Test

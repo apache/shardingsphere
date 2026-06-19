@@ -64,7 +64,7 @@ public final class PlanReadwriteSplittingRuleToolHandler implements MCPToolHandl
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
         ReadwriteSplittingRuleWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ReadwriteSplittingRuleWorkflowRequest::new, toolCall.getArguments(),
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
+                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
         WorkflowContextSnapshot snapshot = planningService.plan(
                 workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
         return new MCPMapResponse(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
@@ -86,10 +86,6 @@ public final class PlanReadwriteSplittingRuleToolHandler implements MCPToolHandl
         applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.TRANSACTIONAL_READ_QUERY_STRATEGY_FIELD, request::setTransactionalReadQueryStrategy);
         applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD, request::setLoadBalancerType);
         applyMapField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_PROPERTIES_FIELD, request::putLoadBalancerProperties);
-    }
-    
-    private void applyUserOverrides(final ReadwriteSplittingRuleWorkflowRequest request, final Map<String, Object> userOverrides) {
-        applyStructuredIntentEvidence(request, userOverrides);
     }
     
     private void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {

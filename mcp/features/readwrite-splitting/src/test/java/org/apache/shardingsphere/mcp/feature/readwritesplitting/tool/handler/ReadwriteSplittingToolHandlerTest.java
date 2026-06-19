@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.handler;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
@@ -46,6 +47,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -62,8 +64,8 @@ class ReadwriteSplittingToolHandlerTest {
         WorkflowContextFixture fixture = createWorkflowContextFixture();
         MCPResponse actual = new PlanReadwriteSplittingRuleToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
                 "database", "logic_db",
-                "structured_intent_evidence", Map.of("rule", "inferred_rule", "read_storage_units", "read_ds_1"),
-                "user_overrides", Map.of("rule", "readwrite_ds"))));
+                "rule", "readwrite_ds",
+                "structured_intent_evidence", Map.of("rule", "inferred_rule", "read_storage_units", "read_ds_1"))));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
         ArgumentCaptor<ReadwriteSplittingRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingRuleWorkflowRequest.class);
         verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
@@ -82,13 +84,6 @@ class ReadwriteSplittingToolHandlerTest {
     void assertHandlePlanRuleWithStructuredIntentLoadBalancerProperties() {
         ReadwriteSplittingRuleWorkflowRequest actual = handlePlanRule(Map.of("database", "logic_db",
                 "structured_intent_evidence", Map.of("load_balancer_properties", Map.of("read_ds_0", "2"))));
-        assertThat(actual.getLoadBalancerProperties(), is(Map.of("read_ds_0", "2")));
-    }
-    
-    @Test
-    void assertHandlePlanRuleWithUserOverrideLoadBalancerProperties() {
-        ReadwriteSplittingRuleWorkflowRequest actual = handlePlanRule(Map.of("database", "logic_db",
-                "user_overrides", Map.of("load_balancer_properties", Map.of("read_ds_0", "2"))));
         assertThat(actual.getLoadBalancerProperties(), is(Map.of("read_ds_0", "2")));
     }
     
@@ -113,13 +108,21 @@ class ReadwriteSplittingToolHandlerTest {
         WorkflowContextFixture fixture = createWorkflowContextFixture();
         MCPResponse actual = new PlanReadwriteSplittingStatusToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
                 "database", "logic_db",
-                "structured_intent_evidence", Map.of("rule", "readwrite_ds", "storage_unit", "read_ds_0"),
-                "user_overrides", Map.of("target_status", "disable"))));
+                "target_status", "disable",
+                "structured_intent_evidence", Map.of("rule", "readwrite_ds", "storage_unit", "read_ds_0"))));
         assertThat(actual.toPayload().get("workflow_kind"), is("readwrite.status"));
         ArgumentCaptor<ReadwriteSplittingStatusWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingStatusWorkflowRequest.class);
         verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
         assertThat(requestCaptor.getValue().getStorageUnit(), is("read_ds_0"));
         assertThat(requestCaptor.getValue().getTargetStatus(), is("disable"));
+    }
+    
+    @Test
+    void assertHandlePlanStatusRejectsOperationTypeAlias() {
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                () -> new PlanReadwriteSplittingStatusToolHandler(mock(ReadwriteSplittingStatusWorkflowPlanningService.class)).handle(
+                        createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of("operation_type", "disable"))));
+        assertThat(actual.getMessage(), is("operation_type is not supported for readwrite-splitting status. Use target_status instead."));
     }
     
     private WorkflowContextSnapshot createRuleSnapshot() {

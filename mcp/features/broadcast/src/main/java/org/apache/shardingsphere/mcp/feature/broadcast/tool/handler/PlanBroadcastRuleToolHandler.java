@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastWor
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
@@ -61,7 +60,7 @@ public final class PlanBroadcastRuleToolHandler implements MCPToolHandler<MCPWor
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
         BroadcastWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(BroadcastWorkflowRequest::new, toolCall.getArguments(),
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
+                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
         WorkflowContextSnapshot snapshot = planningService.plan(
                 workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
         return new MCPMapResponse(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
@@ -75,17 +74,6 @@ public final class PlanBroadcastRuleToolHandler implements MCPToolHandler<MCPWor
         Object tables = structuredIntentEvidence.get(BroadcastFeatureDefinition.TABLES_FIELD);
         if (null != tables) {
             request.setTables(String.valueOf(tables));
-        }
-    }
-    
-    private void applyUserOverrides(final BroadcastWorkflowRequest request, final Map<String, Object> userOverrides) {
-        Object tables = userOverrides.get(BroadcastFeatureDefinition.TABLES_FIELD);
-        if (null != tables) {
-            request.setTables(String.valueOf(tables));
-        }
-        Object table = userOverrides.get(WorkflowFieldNames.TABLE);
-        if (null != table) {
-            request.setTable(String.valueOf(table));
         }
     }
 }

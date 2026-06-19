@@ -54,7 +54,7 @@ public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflow
     
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
-        WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(toolCall.getArguments(), this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
+        WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(toolCall.getArguments(), this::bindFeatureArguments, this::applyStructuredIntentEvidence);
         WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getMetadataQueryFacade(),
                 workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
         return new MCPMapResponse(new MaskWorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
@@ -70,13 +70,6 @@ public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflow
         Object fieldSemantics = structuredIntentEvidence.get(WorkflowFieldNames.FIELD_SEMANTICS);
         if (null != fieldSemantics) {
             request.setFieldSemantics(String.valueOf(fieldSemantics).trim());
-        }
-    }
-    
-    private void applyUserOverrides(final WorkflowRequest request, final Map<String, Object> userOverrides) {
-        Object algorithmType = userOverrides.get(WorkflowFieldNames.ALGORITHM_TYPE);
-        if (null != algorithmType && !String.valueOf(algorithmType).trim().isEmpty()) {
-            request.setAlgorithmType(String.valueOf(algorithmType).trim());
         }
     }
 }

@@ -82,14 +82,6 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
         ReadwriteSplittingStatusWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
-        if (intentResolver.hasConflictingStatusInputs(mergedRequest)) {
-            clarifiedIntent.getClarificationMessages().add("Please provide matching target_status and operation_type, or provide only one status field.");
-            result.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", "intaking",
-                    "Readwrite-splitting status request has conflicting target_status and operation_type values.",
-                    "Use enable/enabled or disable/disabled consistently.", true,
-                    Map.of("operation_type", mergedRequest.getOperationType(), "target_status", mergedRequest.getTargetStatus())));
-            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
-        }
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
         if (!ensurePlanningContext(mergedRequest, clarifiedIntent, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());

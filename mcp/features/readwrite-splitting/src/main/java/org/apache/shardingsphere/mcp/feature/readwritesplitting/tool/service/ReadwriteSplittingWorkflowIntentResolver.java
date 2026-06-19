@@ -48,23 +48,10 @@ final class ReadwriteSplittingWorkflowIntentResolver {
         return result;
     }
     
-    boolean hasConflictingStatusInputs(final ReadwriteSplittingStatusWorkflowRequest request) {
-        String operationType = normalizeStatusOperation(request.getOperationType());
-        String targetStatus = normalizeStatusOperation(request.getTargetStatus());
-        return !operationType.isEmpty() && !targetStatus.isEmpty() && !operationType.equals(targetStatus);
-    }
-    
     private String resolveStatusOperation(final ReadwriteSplittingStatusWorkflowRequest request) {
-        if (hasConflictingStatusInputs(request)) {
-            return "";
-        }
         String targetStatus = normalizeStatusOperation(request.getTargetStatus());
         if (!targetStatus.isEmpty()) {
             return targetStatus;
-        }
-        String operationType = normalizeStatusOperation(request.getOperationType());
-        if (!operationType.isEmpty()) {
-            return operationType;
         }
         String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("enable") || naturalLanguageIntent.contains("启用")) {

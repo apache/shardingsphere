@@ -114,10 +114,9 @@ next_action_contract:
   optional_fields: [reason, depends_on]
   description: Call another MCP tool with server-suggested arguments.
 - type: completion
-  required_fields: [order, type, title, reference_type, reference, argument_name,
-    context_arguments]
-  optional_fields: [argument_prefix, missing_context_arguments, resume_target_type,
-    resume_target, resume_arguments, reason, depends_on]
+  required_fields: [order, type, title, ref, argument]
+  optional_fields: [context, missing_context_arguments, resume_ref, resume_arguments,
+    reason, depends_on]
   description: Use MCP completion for one argument before retrying.
 - type: ask_user
   required_fields: [order, type, title, question]

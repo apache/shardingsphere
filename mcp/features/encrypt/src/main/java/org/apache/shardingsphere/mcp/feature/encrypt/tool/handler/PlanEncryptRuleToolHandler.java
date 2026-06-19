@@ -55,7 +55,7 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkf
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
         EncryptWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(EncryptWorkflowRequest::new, toolCall.getArguments(),
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
+                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
         WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getMetadataQueryFacade(),
                 workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
         return new MCPMapResponse(new EncryptWorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
@@ -89,30 +89,11 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkf
         }
     }
     
-    private void applyUserOverrides(final EncryptWorkflowRequest request, final Map<String, Object> userOverrides) {
-        request.setAlgorithmType(resolveOverrideValue(request.getAlgorithmType(), userOverrides.get(WorkflowFieldNames.ALGORITHM_TYPE)));
-        request.getOptions().setAssistedQueryAlgorithmType(resolveOverrideValue(
-                request.getOptions().getAssistedQueryAlgorithmType(), userOverrides.get(WorkflowFieldNames.ASSISTED_QUERY_ALGORITHM_TYPE)));
-        request.getOptions().setLikeQueryAlgorithmType(resolveOverrideValue(request.getOptions().getLikeQueryAlgorithmType(), userOverrides.get(WorkflowFieldNames.LIKE_QUERY_ALGORITHM_TYPE)));
-        request.getOptions().setCipherColumnName(resolveOverrideValue(request.getOptions().getCipherColumnName(), userOverrides.get(WorkflowFieldNames.CIPHER_COLUMN_NAME)));
-        request.getOptions().setAssistedQueryColumnName(resolveOverrideValue(
-                request.getOptions().getAssistedQueryColumnName(), userOverrides.get(WorkflowFieldNames.ASSISTED_QUERY_COLUMN_NAME)));
-        request.getOptions().setLikeQueryColumnName(resolveOverrideValue(request.getOptions().getLikeQueryColumnName(), userOverrides.get(WorkflowFieldNames.LIKE_QUERY_COLUMN_NAME)));
-    }
-    
     private Boolean getNullableBoolean(final Map<String, Object> source, final String fieldName) {
         if (!source.containsKey(fieldName) || null == source.get(fieldName)) {
             return null;
         }
         Object rawValue = source.get(fieldName);
         return rawValue instanceof Boolean ? (Boolean) rawValue : Boolean.parseBoolean(String.valueOf(rawValue).trim());
-    }
-    
-    private String resolveOverrideValue(final String currentValue, final Object rawValue) {
-        if (null == rawValue) {
-            return currentValue;
-        }
-        String actualValue = String.valueOf(rawValue).trim();
-        return actualValue.isEmpty() ? currentValue : actualValue;
     }
 }

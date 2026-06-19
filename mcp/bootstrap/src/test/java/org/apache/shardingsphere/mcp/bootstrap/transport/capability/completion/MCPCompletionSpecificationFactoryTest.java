@@ -84,7 +84,7 @@ class MCPCompletionSpecificationFactoryTest {
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("missing_context"));
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS), is(List.of("database", "schema")));
         assertThat(((Map<?, ?>) actual.meta().get(MCPShardingSphereMetadataKeys.RECOVERY)).get("recovery_category"), is("missing_context"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).getFirst();
         assertThat(actualNextAction.get("type"), is("resource_read"));
         assertThat(actualNextAction.get("resource_uri"), is("shardingsphere://databases"));
     }
@@ -118,9 +118,9 @@ class MCPCompletionSpecificationFactoryTest {
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("database", "zzz")));
         assertThat(actual.completion().values(), is(List.of()));
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("prefix_filtered_all_candidates"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).getFirst();
         assertThat(actualNextAction.get("type"), is("completion"));
-        assertThat(actualNextAction.get("argument_name"), is("database"));
+        assertThat(actualNextAction.get("argument"), is(Map.of("name", "database", "value", "zzz")));
     }
     
     @Test
@@ -131,7 +131,7 @@ class MCPCompletionSpecificationFactoryTest {
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("recover_workflow"), new McpSchema.CompleteRequest.CompleteArgument("plan_id", "")));
         assertThat(actual.completion().values(), is(List.of()));
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("no_candidates"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).getFirst();
         assertThat(actualNextAction.get("type"), is("resource_read"));
         assertThat(actualNextAction.get("resource_uri"), is("shardingsphere://capabilities"));
     }
@@ -148,7 +148,7 @@ class MCPCompletionSpecificationFactoryTest {
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("recover_workflow"), new McpSchema.CompleteRequest.CompleteArgument("plan_id", "plan-")));
         assertThat(actual.completion().values(), is(List.of("plan-1")));
         assertThat(actual.completion().total(), is(1));
-        assertThat(((Map<?, ?>) ((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.VALUE_DETAILS)).get(0)).get("rankingReason"), is("recent-plan-first-for-plan_id"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.VALUE_DETAILS)).getFirst()).get("rankingReason"), is("recent-plan-first-for-plan_id"));
     }
     
     @Test

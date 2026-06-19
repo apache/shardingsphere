@@ -365,7 +365,7 @@ final class ShardingWorkflowPlanningKernel {
             return require(request, request.getKeyGeneratorName(), "Please provide key generator name.");
         }
         return require(request, request.getKeyGeneratorName(), "Please provide key generator name.")
-                && require(request, request.getKeyGeneratorType().isEmpty() ? request.getAlgorithmType() : request.getKeyGeneratorType(), "Please provide key generator type.");
+                && require(request, request.getKeyGeneratorType(), "Please provide key generator type.");
     }
     
     private boolean hasRequiredKeyGenerateStrategyInputs(final ShardingWorkflowRequest request) {
@@ -375,7 +375,7 @@ final class ShardingWorkflowPlanningKernel {
         return require(request, request.getKeyGenerateStrategyName(), "Please provide key generate strategy name.")
                 && require(request, request.getSequenceName().isEmpty() ? request.getTable() : request.getSequenceName(), "Please provide table or sequence.")
                 && require(request, request.getSequenceName().isEmpty() ? request.getColumn() : "ok", "Please provide key generate column.")
-                && require(request, request.getKeyGeneratorName().isEmpty() ? request.getAlgorithmType() : request.getKeyGeneratorName(), "Please provide generator or key algorithm type.");
+                && require(request, request.getKeyGeneratorName().isEmpty() ? request.getKeyGeneratorType() : request.getKeyGeneratorName(), "Please provide generator or key generator type.");
     }
     
     private boolean hasRequiredCleanupInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
@@ -453,7 +453,7 @@ final class ShardingWorkflowPlanningKernel {
     }
     
     private String resolveKeyGeneratorType(final ShardingWorkflowRequest request) {
-        return request.getKeyGeneratorType().isEmpty() ? request.getAlgorithmType() : request.getKeyGeneratorType();
+        return request.getKeyGeneratorType();
     }
     
     private boolean isUnusedComponent(final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request) {

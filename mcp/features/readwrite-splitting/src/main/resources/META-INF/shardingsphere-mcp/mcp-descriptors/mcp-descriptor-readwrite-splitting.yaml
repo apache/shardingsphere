@@ -372,32 +372,6 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          description: "Optional user-selected readwrite-splitting rule fields."
-          properties:
-            rule:
-              type: string
-              description: "Rule name override."
-            write_storage_unit:
-              type: string
-              description: "Write storage unit override."
-            read_storage_units:
-              type: string
-              description: "Read storage units override."
-            transactional_read_query_strategy:
-              type: string
-              description: "Transactional read query strategy override."
-            load_balancer_type:
-              type: string
-              description: "Load-balance algorithm type override."
-            load_balancer_properties:
-              type: object
-              description: "Load-balance algorithm properties override."
-              additionalProperties:
-                type: string
-          required: []
-          additionalProperties: false
       required: []
       additionalProperties: false
     outputSchema: &workflowPlanOutputSchema
@@ -591,12 +565,6 @@ tools:
           enum:
             - enable
             - disable
-        operation_type:
-          type: string
-          description: "Alias for target_status when user intent is expressed as an operation."
-          enum:
-            - enable
-            - disable
         natural_language_intent:
           type: string
           description: "User request in natural language, used to infer enable or disable when target_status is absent."
@@ -627,21 +595,6 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          description: "Optional user-selected readwrite-splitting status fields."
-          properties:
-            rule:
-              type: string
-              description: "Rule name override."
-            storage_unit:
-              type: string
-              description: "Read storage unit override."
-            target_status:
-              type: string
-              description: "Target status override."
-          required: []
-          additionalProperties: false
       required: []
       additionalProperties: false
     outputSchema:

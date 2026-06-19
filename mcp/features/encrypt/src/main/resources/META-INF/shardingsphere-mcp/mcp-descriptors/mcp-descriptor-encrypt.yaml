@@ -233,33 +233,9 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          description: "Optional user-selected encrypt algorithms and explicit rule column names."
-          properties:
-            algorithm_type:
-              type: string
-              description: "Primary encrypt algorithm type override."
-            assisted_query_algorithm_type:
-              type: string
-              description: "Assisted-query encrypt algorithm type override."
-            like_query_algorithm_type:
-              type: string
-              description: "LIKE-query encrypt algorithm type override."
-            cipher_column_name:
-              type: string
-              description: "Cipher column name to put into CREATE or ALTER ENCRYPT RULE."
-            assisted_query_column_name:
-              type: string
-              description: "Assisted-query column name to put into CREATE or ALTER ENCRYPT RULE when equality filtering is required."
-            like_query_column_name:
-              type: string
-              description: "LIKE-query column name to put into CREATE or ALTER ENCRYPT RULE when LIKE query support is required."
-          required: []
-          additionalProperties: false
         algorithm_type:
           type: string
-          description: "Primary encrypt algorithm type override; equivalent to user_overrides.algorithm_type."
+          description: "Primary encrypt algorithm type override."
         assisted_query_algorithm_type:
           type: string
           description: "Assisted-query algorithm type override used for equality filtering."

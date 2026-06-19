@@ -67,8 +67,8 @@ class MaskToolHandlerTest {
                 "database", "logic_db",
                 "table", "orders",
                 "column", "phone",
-                "structured_intent_evidence", Map.of("field_semantics", "phone"),
-                "user_overrides", Map.of("algorithm_type", "KEEP_FIRST_N_LAST_M"))));
+                "algorithm_type", "KEEP_FIRST_N_LAST_M",
+                "structured_intent_evidence", Map.of("field_semantics", "phone"))));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
         ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
         verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());

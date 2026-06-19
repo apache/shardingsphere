@@ -37,9 +37,9 @@ class LLMStructuredAnswerTest {
                   "query": " SELECT COUNT(*) FROM orders ",
                   "totalOrders": 2,
                   "interactionSequence": [
-                    {"tool": "mcp_read_resource"},
-                    {"targetName": "database_gateway_execute_query"},
-                    {"name": "mcp_complete"},
+                    "mcp_read_resource",
+                    "database_gateway_execute_query",
+                    "mcp_complete",
                     "database_gateway_search_metadata"
                   ]
                 }
@@ -53,12 +53,17 @@ class LLMStructuredAnswerTest {
     }
     
     @Test
-    void assertFromJsonWithLegacyToolSequence() {
-        LLMStructuredAnswer actual = LLMStructuredAnswer.fromJson("""
+    void assertFromJsonRejectsLegacyToolSequence() {
+        assertThrows(IllegalArgumentException.class, () -> LLMStructuredAnswer.fromJson("""
                 {"database":"logic_db","schema":"public","table":"orders","query":"SELECT 1","totalOrders":"2","toolSequence":["database_gateway_execute_query"]}
-                """);
-        assertThat(actual.getTotalOrders(), is(2));
-        assertThat(actual.getInteractionSequence(), is(List.of("database_gateway_execute_query")));
+                """));
+    }
+    
+    @Test
+    void assertFromJsonRejectsObjectInteractionSequenceEntries() {
+        assertThrows(IllegalArgumentException.class, () -> LLMStructuredAnswer.fromJson("""
+                {"database":"logic_db","schema":"public","table":"orders","query":"SELECT 1","totalOrders":"2","interactionSequence":[{"tool":"database_gateway_execute_query"}]}
+                """));
     }
     
     @Test

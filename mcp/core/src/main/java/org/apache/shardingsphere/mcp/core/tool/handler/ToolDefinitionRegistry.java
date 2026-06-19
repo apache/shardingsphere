@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
-import org.apache.shardingsphere.mcp.core.tool.handler.metadata.ValidateProxyConnectivityToolHandler;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 
 import java.util.Collection;
@@ -46,9 +45,6 @@ import java.util.Optional;
 public final class ToolDefinitionRegistry {
     
     private static final Map<String, MCPToolDefinition> REGISTERED_TOOL_DEFINITIONS;
-    
-    private static final Map<String, String> TOOL_ALIASES = Map.of(
-            ValidateProxyConnectivityToolHandler.LEGACY_TOOL_NAME, ValidateProxyConnectivityToolHandler.TOOL_NAME);
     
     static {
         REGISTERED_TOOL_DEFINITIONS = createRegisteredToolDefinitions(
@@ -110,11 +106,7 @@ public final class ToolDefinitionRegistry {
      * @return tool definition
      */
     public static MCPToolDefinition getToolDefinition(final String toolName) {
-        return Optional.ofNullable(REGISTERED_TOOL_DEFINITIONS.get(resolveToolName(toolName))).orElseThrow(() -> new UnsupportedToolException(toolName));
-    }
-    
-    private static String resolveToolName(final String toolName) {
-        return TOOL_ALIASES.getOrDefault(toolName, toolName);
+        return Optional.ofNullable(REGISTERED_TOOL_DEFINITIONS.get(toolName)).orElseThrow(() -> new UnsupportedToolException(toolName));
     }
     
     /**
