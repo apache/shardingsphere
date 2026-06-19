@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,9 +50,6 @@ public final class WorkflowSecretReferenceUtils {
         if (rawValue instanceof Map) {
             return createAlgorithmProperties((Map<?, ?>) rawValue, algorithmRole);
         }
-        if (rawValue instanceof Collection) {
-            return createAlgorithmProperties((Collection<?>) rawValue);
-        }
         return Map.of();
     }
     
@@ -67,22 +63,6 @@ public final class WorkflowSecretReferenceUtils {
             result.put(key, isSecretReferenceObject(entry.getValue())
                     ? SecretReferenceValue.createPlaceholder(algorithmRole, key)
                     : Objects.toString(entry.getValue(), "").trim());
-        }
-        return result;
-    }
-    
-    private static Map<String, String> createAlgorithmProperties(final Collection<?> rawValue) {
-        Map<String, String> result = new LinkedHashMap<>(rawValue.size(), 1F);
-        for (Object each : rawValue) {
-            String actualEntry = Objects.toString(each, "").trim();
-            int separatorIndex = actualEntry.indexOf('=');
-            if (-1 == separatorIndex) {
-                continue;
-            }
-            String key = actualEntry.substring(0, separatorIndex).trim();
-            if (!key.isEmpty()) {
-                result.put(key, actualEntry.substring(separatorIndex + 1).trim());
-            }
         }
         return result;
     }

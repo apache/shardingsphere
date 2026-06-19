@@ -178,6 +178,7 @@ class EncryptToolDescriptorValidatorTest {
     void assertInputSchemaDeclaresSecretReferenceObjects() {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
         Map<String, Object> properties = (Map<String, Object>) descriptor.getInputSchema().get("properties");
+        assertFalse(properties.containsKey("user_overrides"));
         assertTrue(String.valueOf(((Map<?, ?>) properties.get("primary_algorithm_properties")).get("description")).contains("protected placeholder objects"));
         assertTrue(String.valueOf(((Map<?, ?>) properties.get("assisted_query_algorithm_properties")).get("description")).contains("protected placeholder objects"));
         assertTrue(String.valueOf(((Map<?, ?>) properties.get("like_query_algorithm_properties")).get("description")).contains("protected placeholder objects"));

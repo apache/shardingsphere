@@ -74,7 +74,7 @@ class MCPCompletionServiceTest {
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("missing_context"));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS), is(List.of("database", "schema")));
         assertThat(((Map<?, ?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.RECOVERY)).get("recovery_category"), is("missing_context"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).getFirst();
         assertThat(actualNextAction.get("resource_uri"), is("shardingsphere://databases"));
     }
     
@@ -82,9 +82,9 @@ class MCPCompletionServiceTest {
     void assertCompleteMissingContextUsesProtocolReferenceType() {
         MCPCompletionResult actual = complete(new InMemoryWorkflowSessionContext(), createDescriptor("inspect_metadata", "table", 50), "table", "order", new LinkedHashMap<>(),
                 List.of(new MissingContextCompletionProvider()));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).get(0);
-        assertThat(actualNextAction.get("reference_type"), is("ref/prompt"));
-        assertThat(actualNextAction.get("resume_target_type"), is("ref/prompt"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).getFirst();
+        assertThat(actualNextAction.get("ref"), is(Map.of("type", "ref/prompt", "name", "inspect_metadata")));
+        assertThat(actualNextAction.get("resume_ref"), is(Map.of("type", "ref/prompt", "name", "inspect_metadata")));
     }
     
     @Test
@@ -96,7 +96,7 @@ class MCPCompletionServiceTest {
                 createSnapshot("plan-clarifying", WorkflowLifecycle.STATUS_CLARIFYING, Instant.parse("2026-05-04T13:00:00Z"))));
         MCPCompletionResult actual = complete(workflowSessionContext, createDescriptor("recover_workflow", "plan_id", 50), "plan_id", "plan-", new LinkedHashMap<>());
         assertThat(actual.getValues(), is(List.of("plan-new", "plan-old")));
-        assertThat(((Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.VALUE_DETAILS)).get(0)).get("rankingReason"), is("recent-plan-first-for-plan_id"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.VALUE_DETAILS)).getFirst()).get("rankingReason"), is("recent-plan-first-for-plan_id"));
     }
     
     @Test

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
+import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowIntentResolverSupport;
 
@@ -39,32 +39,18 @@ final class ReadwriteSplittingWorkflowIntentResolver {
     
     ClarifiedIntent resolveStatusIntent(final ReadwriteSplittingStatusWorkflowRequest request) {
         ClarifiedIntent result = new ClarifiedIntent();
-        String operationType = resolveStatusOperation(request);
-        if (!operationType.isEmpty() && request.getOperationType().isEmpty()) {
-            result.getInferredValues().put(WorkflowFieldNames.OPERATION_TYPE, operationType);
+        String targetStatus = resolveStatusOperation(request);
+        if (!targetStatus.isEmpty() && request.getTargetStatus().isEmpty()) {
+            result.getInferredValues().put(ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD, targetStatus);
         }
-        result.setOperationType(operationType);
         result.setReasoningNotes(WorkflowIntentResolverSupport.summarizeReasoning(result));
         return result;
     }
     
-    boolean hasConflictingStatusInputs(final ReadwriteSplittingStatusWorkflowRequest request) {
-        String operationType = normalizeStatusOperation(request.getOperationType());
-        String targetStatus = normalizeStatusOperation(request.getTargetStatus());
-        return !operationType.isEmpty() && !targetStatus.isEmpty() && !operationType.equals(targetStatus);
-    }
-    
     private String resolveStatusOperation(final ReadwriteSplittingStatusWorkflowRequest request) {
-        if (hasConflictingStatusInputs(request)) {
-            return "";
-        }
         String targetStatus = normalizeStatusOperation(request.getTargetStatus());
         if (!targetStatus.isEmpty()) {
             return targetStatus;
-        }
-        String operationType = normalizeStatusOperation(request.getOperationType());
-        if (!operationType.isEmpty()) {
-            return operationType;
         }
         String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("enable") || naturalLanguageIntent.contains("启用")) {

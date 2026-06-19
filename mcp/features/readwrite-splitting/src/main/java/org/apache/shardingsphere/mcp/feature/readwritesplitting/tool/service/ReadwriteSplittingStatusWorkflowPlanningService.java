@@ -82,15 +82,7 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
         ReadwriteSplittingStatusWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
-        if (intentResolver.hasConflictingStatusInputs(mergedRequest)) {
-            clarifiedIntent.getClarificationMessages().add("Please provide matching target_status and operation_type, or provide only one status field.");
-            result.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", "intaking",
-                    "Readwrite-splitting status request has conflicting target_status and operation_type values.",
-                    "Use enable/enabled or disable/disabled consistently.", true,
-                    Map.of("operation_type", mergedRequest.getOperationType(), "target_status", mergedRequest.getTargetStatus())));
-            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
-        }
-        planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
+        applyResolvedStatusIntent(mergedRequest, clarifiedIntent);
         if (!ensurePlanningContext(mergedRequest, clarifiedIntent, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
@@ -107,6 +99,14 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         ReadwriteSplittingStatusWorkflowRequest result = ReadwriteSplittingStatusWorkflowRequest.merge(snapshot.getRequest(), request);
         return planningSupport.prepareSnapshot(snapshot, ReadwriteSplittingFeatureDefinition.STATUS_WORKFLOW_KIND, result, null,
                 intentResolver.resolveStatusIntent(result), "Readwrite-splitting status workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+    }
+    
+    private void applyResolvedStatusIntent(final ReadwriteSplittingStatusWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+        request.setFieldSemantics(clarifiedIntent.getFieldSemantics());
+        Object targetStatus = clarifiedIntent.getInferredValues().get(ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD);
+        if (request.getTargetStatus().isEmpty() && targetStatus instanceof String) {
+            request.setTargetStatus((String) targetStatus);
+        }
     }
     
     private boolean ensurePlanningContext(final ReadwriteSplittingStatusWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {

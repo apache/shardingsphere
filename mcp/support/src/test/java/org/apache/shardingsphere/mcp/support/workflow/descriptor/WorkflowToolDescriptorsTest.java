@@ -39,7 +39,7 @@ class WorkflowToolDescriptorsTest {
         assertThat(getInputFieldNames(actual), is(List.of(
                 "plan_id", "database", "schema", "table", "column", "operation_type",
                 "natural_language_intent", "structured_intent_evidence", "delivery_mode",
-                "execution_mode", "algorithm_type", "user_overrides")));
+                "execution_mode", "algorithm_type")));
         assertThat(findInputProperty(actual, "operation_type").get("enum"), is(List.of("create", "alter", "drop")));
         assertThat(findInputProperty(actual, "delivery_mode").get("enum"), is(List.of("all-at-once", "step-by-step")));
         assertThat(findInputProperty(actual, "execution_mode").get("enum"), is(List.of("review-then-execute", "manual-only")));

@@ -214,18 +214,9 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          description: "Optional user-selected mask algorithm fields."
-          properties:
-            algorithm_type:
-              type: string
-              description: "Primary mask algorithm type override."
-          required: []
-          additionalProperties: false
         algorithm_type:
           type: string
-          description: "Primary mask algorithm type override; equivalent to user_overrides.algorithm_type."
+          description: "Primary mask algorithm type override."
         primary_algorithm_properties:
           type: object
           description: "Plugin-defined primary mask algorithm properties. Values may be strings or protected placeholder objects with secret_ref and optional label; placeholders require manual execution outside MCP."

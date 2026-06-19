@@ -94,7 +94,7 @@ public final class ShardingAlgorithmRecommendationService {
     }
     
     private String resolveKeyGeneratorType(final ShardingWorkflowRequest request) {
-        return request.getKeyGeneratorType().isEmpty() ? request.getAlgorithmType() : request.getKeyGeneratorType();
+        return request.getKeyGeneratorType();
     }
     
     private AlgorithmCandidate createCandidate(final String role, final String algorithmType, final int score, final String reason) {

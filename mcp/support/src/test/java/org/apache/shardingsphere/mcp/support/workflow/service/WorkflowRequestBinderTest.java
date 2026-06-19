@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,20 +43,16 @@ class WorkflowRequestBinderTest {
         arguments.put("natural_language_intent", "encrypt the user id");
         arguments.put("delivery_mode", "step-by-step");
         arguments.put("execution_mode", "manual-only");
+        arguments.put("algorithm_type", "MD5");
         arguments.put("structured_intent_evidence", Map.of("field_semantics", "identifier"));
-        arguments.put("user_overrides", Map.of("algorithm_type", "MD5"));
         AtomicReference<String> actualFeatureAlgorithm = new AtomicReference<>();
         AtomicReference<Map<String, Object>> actualStructuredIntentEvidence = new AtomicReference<>();
-        AtomicReference<Map<String, Object>> actualUserOverrides = new AtomicReference<>();
         WorkflowRequest actual = WorkflowRequestBinder.bindPlanningRequest(arguments, (request, workflowPlanningArguments) -> {
             request.setAlgorithmType(workflowPlanningArguments.getStringArgument("algorithm_type"));
             actualFeatureAlgorithm.set(workflowPlanningArguments.getStringArgument("algorithm_type"));
         }, (request, structuredIntentEvidence) -> {
             request.setFieldSemantics(String.valueOf(structuredIntentEvidence.get("field_semantics")));
             actualStructuredIntentEvidence.set(structuredIntentEvidence);
-        }, (request, userOverrides) -> {
-            request.setAlgorithmType(String.valueOf(userOverrides.get("algorithm_type")));
-            actualUserOverrides.set(userOverrides);
         });
         assertThat(actual.getPlanId(), is("plan-1"));
         assertThat(actual.getDatabase(), is("logic_db"));
@@ -70,46 +65,36 @@ class WorkflowRequestBinderTest {
         assertThat(actual.getExecutionMode(), is("manual-only"));
         assertThat(actual.getFieldSemantics(), is("identifier"));
         assertThat(actual.getAlgorithmType(), is("MD5"));
-        assertThat(actualFeatureAlgorithm.get(), is(""));
+        assertThat(actualFeatureAlgorithm.get(), is("MD5"));
         assertThat(actualStructuredIntentEvidence.get(), is(Map.of("field_semantics", "identifier")));
-        assertThat(actualUserOverrides.get(), is(Map.of("algorithm_type", "MD5")));
     }
     
     @Test
-    void assertBindPlanningRequestIgnoresPlanIdPlaceholder() {
+    void assertBindPlanningRequestKeepsPlanIdValue() {
         WorkflowRequest actual = WorkflowRequestBinder.bindPlanningRequest(Map.of("plan_id", "plan_id", "database", "logic_db"),
                 (request, workflowPlanningArguments) -> {
                 }, (request, structuredIntentEvidence) -> {
-                }, (request, userOverrides) -> {
                 });
-        assertThat(actual.getPlanId(), is(""));
+        assertThat(actual.getPlanId(), is("plan_id"));
         assertThat(actual.getDatabase(), is("logic_db"));
     }
     
     @Test
-    void assertBindPlanningRequestRejectsConflictingUserOverrides() {
-        Map<String, Object> arguments = Map.of("algorithm_type", "AES", "user_overrides", Map.of("algorithm_type", "MD5"));
-        WorkflowArgumentConflictException actual = assertThrows(WorkflowArgumentConflictException.class,
-                () -> WorkflowRequestBinder.bindPlanningRequest(arguments,
+    void assertBindPlanningRequestRejectsUserOverrides() {
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                () -> WorkflowRequestBinder.bindPlanningRequest(Map.of("user_overrides", Map.of("algorithm_type", "MD5")),
                         (request, workflowPlanningArguments) -> request.setAlgorithmType(workflowPlanningArguments.getStringArgument("algorithm_type")),
-                        (request, structuredIntentEvidence) -> request.setFieldSemantics(String.valueOf(structuredIntentEvidence.get("field_semantics"))),
-                        (request, userOverrides) -> request.setAlgorithmType(String.valueOf(userOverrides.get("algorithm_type")))));
-        assertThat(actual.getConflictingArguments(), is(List.of("algorithm_type conflicts with user_overrides.algorithm_type")));
+                        (request, structuredIntentEvidence) -> request.setFieldSemantics(String.valueOf(structuredIntentEvidence.get("field_semantics")))));
+        assertThat(actual.getMessage(), is("user_overrides is not supported. Use top-level workflow arguments instead."));
     }
     
     @Test
-    void assertBindPlanningRequestSkipsMissingObjectMaps() {
-        AtomicInteger actualStructuredIntentCount = new AtomicInteger();
-        AtomicInteger actualUserOverrideCount = new AtomicInteger();
-        WorkflowRequest actual = WorkflowRequestBinder.bindPlanningRequest(Map.of(
+    void assertBindPlanningRequestRejectsInvalidStructuredIntentEvidence() {
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> WorkflowRequestBinder.bindPlanningRequest(Map.of(
                 "database", "logic_db",
-                "structured_intent_evidence", "invalid",
-                "user_overrides", 1), (request, workflowPlanningArguments) -> request.setAlgorithmType("AES"),
-                (request, structuredIntentEvidence) -> actualStructuredIntentCount.incrementAndGet(),
-                (request, userOverrides) -> actualUserOverrideCount.incrementAndGet());
-        assertThat(actual.getDatabase(), is("logic_db"));
-        assertThat(actual.getAlgorithmType(), is("AES"));
-        assertThat(actualStructuredIntentCount.get(), is(0));
-        assertThat(actualUserOverrideCount.get(), is(0));
+                "structured_intent_evidence", "invalid"), (request, workflowPlanningArguments) -> request.setAlgorithmType("AES"),
+                (request, structuredIntentEvidence) -> {
+                }));
+        assertThat(actual.getMessage(), is("structured_intent_evidence must be an object."));
     }
 }

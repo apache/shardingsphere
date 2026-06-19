@@ -36,7 +36,6 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolExce
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArgumentConflictException;
 
 import java.util.Map;
 
@@ -70,9 +69,6 @@ final class MCPRecoveryPayloadFactory {
         }
         if (cause instanceof MCPInvalidApprovedStepsException) {
             return MCPWorkflowRecoveryPayloadFactory.createInvalidApprovedStepsRecovery((MCPInvalidApprovedStepsException) cause);
-        }
-        if (cause instanceof WorkflowArgumentConflictException) {
-            return MCPWorkflowRecoveryPayloadFactory.createWorkflowArgumentConflictRecovery((WorkflowArgumentConflictException) cause);
         }
         if (cause instanceof MCPWorkflowStateException) {
             return MCPWorkflowRecoveryPayloadFactory.createWorkflowStateRecovery((MCPWorkflowStateException) cause);

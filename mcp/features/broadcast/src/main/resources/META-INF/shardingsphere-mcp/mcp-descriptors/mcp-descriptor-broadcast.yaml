@@ -203,18 +203,6 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          description: "Optional user-selected broadcast rule fields."
-          properties:
-            table:
-              type: string
-              description: "Single logical table override."
-            tables:
-              type: string
-              description: "Comma-separated logical table overrides."
-          required: []
-          additionalProperties: false
       required: []
       additionalProperties: false
     outputSchema:

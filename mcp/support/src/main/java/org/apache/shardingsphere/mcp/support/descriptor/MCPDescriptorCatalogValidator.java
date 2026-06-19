@@ -43,6 +43,8 @@ final class MCPDescriptorCatalogValidator {
     private static final Collection<String> BANNED_PUBLIC_ALIAS_FIELDS = List.of(
             "recommended_next_tool", "suggested_next_tool", "suggested_next_tools", "recommended_recovery", "suggested_next_action");
     
+    private static final Collection<String> BANNED_PUBLIC_INPUT_FIELDS = List.of("user_overrides");
+    
     private static final Collection<String> BANNED_NEXT_ACTION_FIELDS = List.of("action_kind", "target_tool", "target_resource", "required_arguments");
     
     private static final Collection<String> MODEL_CRITICAL_HINT_FIELDS = List.of(
@@ -140,6 +142,14 @@ final class MCPDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Tool `%s` inputSchema must be an object.", descriptor.getName())));
         Object properties = inputSchema.get("properties");
         ShardingSpherePreconditions.checkState(properties instanceof Map, () -> new IllegalStateException(String.format("Tool `%s` inputSchema must declare properties.", descriptor.getName())));
+        validateNoBannedPublicInputFields(descriptor, (Map<?, ?>) properties);
+    }
+    
+    private static void validateNoBannedPublicInputFields(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
+        for (String each : BANNED_PUBLIC_INPUT_FIELDS) {
+            ShardingSpherePreconditions.checkState(!properties.containsKey(each),
+                    () -> new IllegalStateException(String.format("Tool `%s` inputSchema must use canonical fields instead of banned `%s`.", descriptor.getName(), each)));
+        }
     }
     
     private static void validateToolOutputSchema(final MCPToolDescriptor descriptor, final Collection<MCPToolDescriptorValidator> descriptorValidators) {

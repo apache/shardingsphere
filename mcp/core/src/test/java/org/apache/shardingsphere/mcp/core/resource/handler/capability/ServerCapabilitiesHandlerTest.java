@@ -163,7 +163,7 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> readResource = findByKey((List<?>) capabilities.get("next_action_contract"), "type", "resource_read");
         assertThat(readResource.get("required_fields"), is(List.of("order", "type", "title", "resource_uri")));
         Map<?, ?> completion = findByKey((List<?>) capabilities.get("next_action_contract"), "type", "completion");
-        assertTrue(((List<?>) completion.get("required_fields")).contains("argument_name"));
+        assertThat(completion.get("required_fields"), is(List.of("order", "type", "title", "ref", "argument")));
         Map<?, ?> askUser = findByKey((List<?>) capabilities.get("next_action_contract"), "type", "ask_user");
         assertThat(askUser.get("required_fields"), is(List.of("order", "type", "title", "question")));
         Map<?, ?> stop = findByKey((List<?>) capabilities.get("next_action_contract"), "type", "terminal");

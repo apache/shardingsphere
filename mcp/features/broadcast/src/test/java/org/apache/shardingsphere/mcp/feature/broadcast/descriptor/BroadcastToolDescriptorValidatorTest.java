@@ -65,6 +65,7 @@ class BroadcastToolDescriptorValidatorTest {
         assertFalse(properties.containsKey("column"));
         assertFalse(properties.containsKey("algorithm_type"));
         assertFalse(properties.containsKey("primary_algorithm_properties"));
+        assertFalse(properties.containsKey("user_overrides"));
     }
     
     @Test

@@ -63,7 +63,7 @@ public final class PlanShadowRuleToolHandler implements MCPToolHandler<MCPWorkfl
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
         ShadowRuleWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowRuleWorkflowRequest::new, toolCall.getArguments(),
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
+                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
         WorkflowContextSnapshot snapshot = planningService.planRule(
                 workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
         return new MCPMapResponse(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
@@ -85,10 +85,6 @@ public final class PlanShadowRuleToolHandler implements MCPToolHandler<MCPWorkfl
         applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.TABLE_FIELD, request::setTableName);
         applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
         applyMapField(structuredIntentEvidence, request);
-    }
-    
-    private void applyUserOverrides(final ShadowRuleWorkflowRequest request, final Map<String, Object> userOverrides) {
-        applyStructuredIntentEvidence(request, userOverrides);
     }
     
     private void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {

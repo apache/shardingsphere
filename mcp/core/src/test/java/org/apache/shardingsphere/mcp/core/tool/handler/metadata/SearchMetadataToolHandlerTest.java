@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -43,6 +44,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -123,14 +125,11 @@ class SearchMetadataToolHandlerTest {
     }
     
     @Test
-    void assertHandleSearchMetadataIgnoresQueryInObjectTypes() {
+    void assertHandleSearchMetadataRejectsQueryInObjectTypes() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
-                    Map.of("database", "logic_db", "schema", "public", "query", "orders", "object_types", List.of("table", "orders"))));
-            Map<String, Object> actualPayload = actual.toPayload();
-            assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
-            assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).getFirst()).getName(), is("orders"));
-            assertThat(((Map<?, ?>) actualPayload.get("search_context")).get("object_types"), is(List.of("table")));
+            MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
+                    Map.of("database", "logic_db", "schema", "public", "query", "orders", "object_types", List.of("table", "orders")))));
+            assertThat(actual.getMessage(), is("Unsupported object_types value `orders`."));
         }
     }
     

@@ -77,6 +77,25 @@ class ReadwriteSplittingToolDescriptorValidatorTest {
         assertTrue(properties.containsKey(ReadwriteSplittingFeatureDefinition.READ_STORAGE_UNITS_FIELD));
         assertFalse(properties.containsKey("column"));
         assertFalse(properties.containsKey("primary_algorithm_properties"));
+        assertFalse(properties.containsKey("user_overrides"));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertStatusInputSchemaUsesTargetStatusOnly() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(ReadwriteSplittingFeatureDefinition.PLAN_STATUS_TOOL_NAME);
+        Map<String, Object> properties = (Map<String, Object>) descriptor.getInputSchema().get("properties");
+        assertTrue(properties.containsKey(ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD));
+        assertFalse(properties.containsKey("operation_type"));
+        assertFalse(properties.containsKey("user_overrides"));
+    }
+    
+    @Test
+    void assertStatusOutputExampleUsesTargetStatus() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(ReadwriteSplittingFeatureDefinition.PLAN_STATUS_TOOL_NAME);
+        String outputSchema = String.valueOf(descriptor.getOutputSchema());
+        assertTrue(outputSchema.contains("target_status=enable"));
+        assertFalse(outputSchema.contains("operation_type=enable"));
     }
     
     @Test

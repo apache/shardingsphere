@@ -30,7 +30,6 @@ import java.net.http.HttpResponse;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -100,8 +99,8 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
         assertThat(String.valueOf(recovery.get("plan_id")), is("plan-missing"));
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("type")), is("completion"));
-        assertThat(String.valueOf(nextAction.get("argument_name")), is("plan_id"));
-        HttpResponse<String> completion = sendCompletionRequest(httpClient, sessionId, createCompletionReference(nextAction), String.valueOf(nextAction.get("argument_name")));
+        assertThat(castToMap(nextAction.get("argument")).get("name"), is("plan_id"));
+        HttpResponse<String> completion = sendCompletionRequest(httpClient, sessionId, castToMap(nextAction.get("ref")), String.valueOf(castToMap(nextAction.get("argument")).get("name")));
         assertThat(completion.statusCode(), is(200));
         Map<String, Object> completionPayload = getResultPayload(completion);
         assertThat(castToMap(completionPayload.get("completion")).get("total"), is(0));
@@ -142,12 +141,6 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
         params.put("argument", Map.of("name", argumentName, "value", ""));
         return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
                 "completion-1", "completion/complete", params));
-    }
-    
-    private Map<String, Object> createCompletionReference(final Map<String, Object> action) {
-        String referenceType = Objects.toString(action.get("reference_type"), "");
-        String reference = Objects.toString(action.get("reference"), "");
-        return "ref/resource".equals(referenceType) ? Map.of("type", referenceType, "uri", reference) : Map.of("type", referenceType, "name", reference);
     }
     
     private Map<String, Object> createEncryptRulePlanArguments() {
