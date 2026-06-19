@@ -64,8 +64,8 @@ Before applying the numbered review gates, enforce the public evidence boundary:
     Do not interpret the trigger signals above as a complete list. If this blast-radius scan is missing, bias to `Not Mergeable`.
 13. If local verification is used to support mergeability and the command is module-scoped, include `-am` by default unless you can prove all dependent modules were built from the same latest PR head.
     Do not treat a scoped run without dependent modules as conclusive evidence for `Mergeable`.
-14. Before any final output, complete the `Self-Iteration Gate` and stop only after the latest internal review pass finds no new actionable issues.
-    Do not expose intermediate review rounds; output one consolidated review with exactly one `Merge Decision`.
+14. Before any final output, complete the `Anti-Drip Review Gate` and `Self-Iteration Gate`.
+    Do not expose intermediate review rounds or candidate blockers; output one consolidated review with exactly one `Merge Decision`.
 15. During the self-iteration loop, include at least one explicit adversarial pass that assumes the PR is unsafe and actively searches for:
     - one cross-dialect or adjacent-feature regression path,
     - one config-disabled or feature-flag-off path,
@@ -237,6 +237,30 @@ Forbidden sources:
 
 - Unverifiable blogs, forum posts, or AI-reposted content.
 
+## Inventory Script Usage
+
+When local git refs are available, use `scripts/build_review_inventory.py` to generate a bounded local review-inventory draft before deep review.
+The script is a heuristic input, not review evidence and not a finding source by itself.
+
+Recommended command shape:
+
+```bash
+python3 .codex/skills/review-pr/scripts/build_review_inventory.py \
+  --base-ref <base-ref-or-sha> \
+  --head-ref <head-ref-or-sha> \
+  --previous-head <previous-reviewed-head-if-any> \
+  --github-files <optional-file-containing-GitHub-PR-file-list> \
+  --format markdown
+```
+
+Rules:
+
+- The script must not replace manual review. Confirm each candidate risk through code, tests, docs, or authoritative specs before reporting it.
+- The script is local-only. It does not query GitHub; if GitHub `/pulls/{number}/files` is available, pass a one-path-per-line file list with `--github-files`.
+- If the script cannot run, complete the same inventory manually and mention the fallback in `Review Details`.
+- Treat dirty-worktree warnings as contamination warnings. Review PR refs, not unrelated local modifications.
+- Keep script output out of GitHub-facing review bodies unless it has been converted into public, verified, repo-relative evidence.
+
 ## Review Efficiency Rules
 
 - In the current reply, prioritize `Summary`, blocking issues, and minimum next actions.
@@ -341,18 +365,57 @@ CI/check-run review is not part of this workflow unless explicitly requested; do
    - Decide whether `RELEASE-NOTES.md` is valuable and required for the current PR, not required with reason, delegated to an umbrella PR, missing, misleading, or over-claimed.
    - Do not require low-signal release-note entries for narrow internal fixes that only restore already documented behavior and do not change what users must do.
    - Decide whether user docs, migration notes, compatibility notes, or rollback guidance are required for the changed behavior.
-9. Version baseline control:
+9. Anti-drip review inventory:
+   - Build an internal inventory before producing final review output.
+   - Cover authoritative changed files, changed entry points, new public production types, public/shared APIs, stateful registries/caches/session fields,
+     lifecycle cleanup paths, supported-vs-rejected feature boundaries, tests, release notes, docs, and verification.
+   - For progress updates while reviewing, describe areas being inspected rather than releasing candidate blockers before the findings are frozen,
+     unless the user explicitly asks for status or high-risk early blockers.
+10. Version baseline control:
    - Base conclusion only on PR latest code version
    - If new commits are added, current conclusion becomes invalid and must be re-reviewed on latest version
-10. Self-iteration gate: repeat internal review passes until the latest pass finds no new actionable findings.
-11. Merge decision: output `Merge Decision`.
-12. Generate feedback: follow the output template below.
+11. Latest delta plus full-path review:
+   - When new commits arrive after previous feedback, review the latest delta to classify newly introduced risk.
+   - Re-run full-path review on the latest PR head; do not conclude mergeability only because earlier comments were fixed.
+12. Self-iteration gate: repeat internal review passes until the latest pass finds no new actionable findings with an independent fix boundary.
+13. Merge decision: output `Merge Decision`.
+14. Generate feedback: follow the output template below.
+
+## Anti-Drip Review Gate
+
+Before producing the final review, build and freeze an internal review inventory for the latest PR head.
+Do not expose intermediate findings, draft issue lists, or candidate blockers before the inventory is frozen, unless the user explicitly asks for status or early high-risk blockers.
+
+The inventory must cover:
+
+- Authoritative scope: latest head SHA, base ref/SHA, merge-base, local file list, and GitHub `/pulls/{number}/files` match status when available.
+- Changed file categories: production, tests, docs, release notes, build/config, distribution, generated/baseline resources, and non-behavioral churn.
+- Entry points and execution paths changed by the PR.
+- New public production types and whether each has direct focused tests.
+- New or changed public/shared methods, constructors, fields, return values, cache keys, and session/executor state.
+- Stateful registries, caches, session fields, handles, lifecycle begin/use/free/release/error paths, and cleanup ownership.
+- Supported feature matrix: what the PR accepts, rejects, or leaves unsupported; flag unsupported-but-accepted inputs.
+- Boundary cases: empty, null, invalid, stale, repeated, split/coalesced, disabled, fallback, release/free, and error paths.
+- Latest-commit delta risks when previous public feedback or review rounds exist.
+- Release note, user documentation, migration, diagnostics, dependency, and distribution impact.
+
+For each candidate issue, record internally:
+
+- Evidence path and line.
+- Whether it is caused by this PR, pre-existing on base, exposed by this PR, newly introduced by latest commits, or newly discovered but present in earlier PR revisions.
+- The minimum independent fix boundary.
+- Whether it duplicates another candidate issue.
+- Whether it is a confirmed blocker, missing-evidence blocker, non-blocking risk, or out-of-scope note.
+
+Deduplicate findings by independent fix boundary before output.
+A fix boundary is independent when it requires a different code owner, lifecycle hook, protocol/model contract, validation boundary, or test contract to close safely.
+Merge duplicate symptoms into one issue; split only when fixes are genuinely independent.
 
 ## Self-Iteration Gate
 
 Before producing the final review output, run an internal self-review loop on the latest PR version:
 
-1. Build the current candidate findings from the completed review pass.
+1. Build the current candidate findings from the frozen review inventory.
 2. Ask explicitly:
    "If I review this same latest PR again from a fresh critical perspective, can I find any new actionable issue, unresolved risk, missing evidence, or scope problem not already captured?"
 3. Re-run the review against the authoritative PR scope, focusing on:
@@ -365,12 +428,14 @@ Before producing the final review output, run an internal self-review loop on th
    - Missed unrelated substantive changes.
    - Missed release note, user documentation, migration, diagnostics, dependency, or distribution impact.
    - Missed output-template or evidence gaps.
-4. If the self-review finds any new actionable issue, add it to the candidate findings, deduplicate it against existing findings,
+4. Include at least one latest-delta pass when new commits were added after previous public feedback, and one full-path pass on the latest PR head.
+5. If the self-review finds any new actionable issue with an independent fix boundary, add it to the inventory, deduplicate it against existing findings,
    update the merge decision and next steps if needed, and repeat the loop.
-5. Do not treat restatements, optional polish, speculative risks outside the PR scope, or already captured issues as new actionable findings.
-6. Stop only when the latest self-review pass finds no new actionable issues compared with the accumulated candidate findings.
-7. Do not expose intermediate review rounds, draft decisions, or self-review transcripts to the user.
-8. Produce one consolidated final review with exactly one `Merge Decision`.
+6. Do not reset the loop for duplicate symptoms, optional polish, speculative risks outside the PR scope, or already captured issues.
+7. Stop only after one full adversarial pass finds no new actionable issue with an independent fix boundary.
+8. If the inventory cannot be completed because public evidence is unavailable, state the minimum missing evidence and set `Merge Decision: Not Mergeable` rather than emitting a partial approval.
+9. Do not expose intermediate review rounds, draft decisions, raw inventory, or self-review transcripts in GitHub-facing output.
+10. Produce one consolidated final review with exactly one `Merge Decision`.
 
 ## Root-Cause Validation Checklist (Must Answer Each)
 
@@ -487,10 +552,19 @@ When GitHub-visible previous-round feedback exists, perform incremental comparis
    - Partially fixed
    - Not fixed
    - Newly introduced issue
-2. Keep only unresolved and newly introduced items as current focus; do not repeat closed items.
-3. Every suggestion must cite corresponding diff evidence.
-4. For partially fixed items, specify exactly what is still needed to close.
-5. If new commits were added, continue review only on the latest version; no need to output historical commit SHA.
+2. Classify every current blocker privately as one of:
+   - Previously reported and still unresolved
+   - Previously reported and partially fixed
+   - Newly introduced by latest commits
+   - Newly discovered but present in earlier PR revisions
+   - Pre-existing on base and only exposed by this PR
+   - Out of PR scope
+3. Keep only unresolved, partially fixed, and newly discovered current blockers in the GitHub-facing review.
+   Do not repeat closed items except in a concise `Multi-Round Comparison`.
+4. Every suggestion must cite corresponding diff evidence.
+5. For partially fixed items, specify exactly what is still needed to close.
+6. If new commits were added, continue review only on the latest version, but use prior heads only to classify origin; no need to output historical commit SHA unless useful and public-safe.
+7. Do not include private reviewer accountability, local chat context, raw inventory, or internal origin notes in GitHub-facing review.
 
 ## Output Structure
 
