@@ -354,10 +354,10 @@ class LLMMCPConversationRunnerNextActionTest extends AbstractLLMMCPConversationR
     }
     
     @Test
-    void assertRunRejectsReadOnlyUpdateCallAfterSideEffectPreviewInSameCompletion() throws IOException, InterruptedException {
+    void assertRunRetriesReadOnlyUpdateCallAfterSideEffectPreviewInSameCompletion() throws IOException, InterruptedException {
         List<String> toolNames = List.of("database_gateway_execute_update", "database_gateway_execute_query");
         LLME2EScenario actualScenario = createScenario(toolNames);
-        LLMMCPConversationRunner actualRunner = createRunner(3);
+        LLMMCPConversationRunner actualRunner = createRunner(4);
         Map<String, Object> previewArguments = Map.of(
                 "database", DATABASE_NAME,
                 "schema", SCHEMA_NAME,
@@ -368,23 +368,35 @@ class LLMMCPConversationRunnerNextActionTest extends AbstractLLMMCPConversationR
                 "schema", SCHEMA_NAME,
                 "sql", QUERY,
                 "execution_mode", "preview");
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(new LLMChatCompletion("",
-                List.of(
-                        new LLMToolCall("tool-1", "database_gateway_execute_update", JsonUtils.toJsonString(previewArguments)),
-                        new LLMToolCall("tool-2", "database_gateway_execute_update", JsonUtils.toJsonString(misroutedQueryArguments))),
-                "compound-tool-response"));
+        Map<String, Object> expectedQueryArguments = createExecuteQueryArguments(QUERY);
+        final ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
+        final ArgumentCaptor<List<Map<String, Object>>> actualTools = createToolDefinitionsCaptor();
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+                new LLMChatCompletion("",
+                        List.of(
+                                new LLMToolCall("tool-1", "database_gateway_execute_update", JsonUtils.toJsonString(previewArguments)),
+                                new LLMToolCall("tool-2", "database_gateway_execute_update", JsonUtils.toJsonString(misroutedQueryArguments))),
+                        "compound-tool-response"),
+                createToolCallCompletion("tool-3", "database_gateway_execute_query", expectedQueryArguments, "query-response"));
         when(getMCPInteractionClient().call("database_gateway_execute_update", previewArguments)).thenReturn(Map.of("response_mode", "preview", "next_actions", List.of(Map.of(
                 "type", "tool_call",
                 "tool_name", "database_gateway_execute_update",
                 "arguments", Map.of("database", DATABASE_NAME, "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "execute")))));
+        when(getMCPInteractionClient().call("database_gateway_execute_query", expectedQueryArguments)).thenReturn(createResultSetPayload(2));
+        when(getLLMChatClient().complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(createFinalAnswerCompletion(toolNames, 2, "final-answer-response"));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
-        assertFalse(actual.getAssertionReport().isSuccess());
-        assertThat(actual.getAssertionReport().getFailureType(), is("invalid_tool_arguments"));
+        assertTrue(actual.getAssertionReport().isSuccess());
+        verify(getLLMChatClient(), times(2)).complete(actualMessages.capture(), actualTools.capture(), eq("required"), eq(false));
+        List<LLMChatMessage> actualSecondTurnMessages = actualMessages.getAllValues().get(1);
+        assertTrue(containsMessage(actualSecondTurnMessages, "\"reason\":\"tool_not_available_in_current_turn\""));
+        assertTrue(containsMessage(actualSecondTurnMessages, "previous response requested `database_gateway_execute_update`"));
+        assertTrue(containsMessage(actualSecondTurnMessages, "Available MCP tools for this turn: database_gateway_execute_query"));
+        assertThat(getToolNames(actualTools.getAllValues().get(1)), is(List.of("database_gateway_execute_query")));
+        assertThat(actual.getInteractionTrace().size(), is(2));
         assertThat(actual.getInteractionTrace().get(0).getTargetName(), is("database_gateway_execute_update"));
-        assertThat(actual.getInteractionTrace().get(1).getTargetName(), is("database_gateway_execute_update"));
-        assertFalse(actual.getInteractionTrace().get(1).isValid());
+        assertThat(actual.getInteractionTrace().get(1).getTargetName(), is("database_gateway_execute_query"));
         verify(getMCPInteractionClient(), never()).call("database_gateway_execute_update", misroutedQueryArguments);
     }
     

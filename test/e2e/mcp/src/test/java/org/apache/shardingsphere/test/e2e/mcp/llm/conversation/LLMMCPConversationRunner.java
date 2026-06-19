@@ -94,7 +94,7 @@ public final class LLMMCPConversationRunner {
                 finalAnswerRequested = requestFinalAnswerIfReady(scenario, messages, artifacts, finalAnswerRequested);
                 List<String> turnToolNames = finalAnswerRequested ? List.of() : createTurnToolNames(scenario, artifacts.getInteractionTrace());
                 LLMChatCompletion completion = completeTurn(scenario, messages, artifacts, finalAnswerRequested, turnToolNames);
-                Optional<LLME2EArtifactBundle> toolCallFailure = processToolCallCompletion(scenario, completion, messages, artifacts, turnToolNames);
+                Optional<LLME2EArtifactBundle> toolCallFailure = processToolCallCompletion(scenario, completion, messages, artifacts);
                 if (toolCallFailure.isPresent()) {
                     return toolCallFailure.get();
                 }
@@ -236,35 +236,33 @@ public final class LLMMCPConversationRunner {
     }
     
     private Optional<LLME2EArtifactBundle> processToolCallCompletion(final LLME2EScenario scenario, final LLMChatCompletion completion,
-                                                                     final List<LLMChatMessage> messages, final LLMMCPConversationArtifacts artifacts,
-                                                                     final List<String> turnToolNames) throws InterruptedException {
+                                                                     final List<LLMChatMessage> messages, final LLMMCPConversationArtifacts artifacts) throws InterruptedException {
         if (completion.getToolCalls().isEmpty()) {
             return Optional.empty();
         }
-        if (hasSideEffectExecutionNextAction(artifacts.getInteractionTrace())) {
-            for (LLMToolCall each : completion.getToolCalls()) {
-                if (turnToolNames.contains(each.getName())) {
-                    continue;
+        messages.add(LLMChatMessage.assistant(completion.getContent(), completion.getToolCalls()));
+        for (LLMToolCall each : completion.getToolCalls()) {
+            List<String> availableToolNames = hasSideEffectExecutionNextAction(artifacts.getInteractionTrace()) ? createTurnToolNames(scenario, artifacts.getInteractionTrace()) : List.of();
+            if (!availableToolNames.isEmpty() && !availableToolNames.contains(each.getName())) {
+                Map<String, Object> toolResponse = new LinkedHashMap<>(4, 1F);
+                toolResponse.put("response_mode", "tool_call_rejected");
+                toolResponse.put("reason", "tool_not_available_in_current_turn");
+                toolResponse.put("available_tools", availableToolNames);
+                String expectedQueryInstruction = "";
+                if (availableToolNames.contains("database_gateway_execute_query")) {
+                    LLMStructuredAnswer expectedAnswer = scenario.getExpectedAnswer();
+                    toolResponse.put("next_action", Map.of("tool_name", "database_gateway_execute_query", "arguments",
+                            Map.of("database", expectedAnswer.getDatabase(), "schema", expectedAnswer.getSchema(), "sql", expectedAnswer.getQuery())));
+                    expectedQueryInstruction = String.format(Locale.ENGLISH, " Call database_gateway_execute_query now with database `%s`, schema `%s`, and sql `%s`.",
+                            expectedAnswer.getDatabase(), expectedAnswer.getSchema(), expectedAnswer.getQuery());
                 }
-                if (turnToolNames.isEmpty()) {
-                    artifacts.addInteractionTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", each.getName(),
-                            Map.of("rawArgumentsJson", each.getArgumentsJson()), "unexpected_tool_requested"));
-                    return Optional.of(createFailureBundle(scenario, artifacts, "unexpected_tool_requested", "Model requested an MCP tool when no tools were available."));
-                }
-                LLMStructuredAnswer expectedAnswer = scenario.getExpectedAnswer();
-                String expectedQueryInstruction = turnToolNames.contains("database_gateway_execute_query")
-                        ? String.format(Locale.ENGLISH, " Call database_gateway_execute_query now with database `%s`, schema `%s`, and sql `%s`.",
-                                expectedAnswer.getDatabase(), expectedAnswer.getSchema(), expectedAnswer.getQuery())
-                        : "";
+                messages.add(LLMChatMessage.tool(each.getId(), JsonUtils.toJsonString(toolResponse)));
                 messages.add(LLMChatMessage.user(String.format(Locale.ENGLISH,
                         "The previous response requested `%s`, but that MCP tool is not available in this turn. Available MCP tools for this turn: %s. "
                                 + "Do not call tools outside this list.%s",
-                        each.getName(), String.join(", ", turnToolNames), expectedQueryInstruction)));
+                        each.getName(), String.join(", ", availableToolNames), expectedQueryInstruction)));
                 return Optional.empty();
             }
-        }
-        messages.add(LLMChatMessage.assistant(completion.getContent(), completion.getToolCalls()));
-        for (LLMToolCall each : completion.getToolCalls()) {
             Optional<LLME2EArtifactBundle> result = processToolCall(scenario, each, messages, artifacts);
             if (result.isPresent()) {
                 return result;
