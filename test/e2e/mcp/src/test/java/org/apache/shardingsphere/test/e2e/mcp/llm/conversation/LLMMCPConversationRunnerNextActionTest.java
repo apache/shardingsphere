@@ -335,6 +335,9 @@ class LLMMCPConversationRunnerNextActionTest extends AbstractLLMMCPConversationR
         verify(getLLMChatClient(), times(2)).complete(actualMessages.capture(), actualTools.capture(), eq("required"), eq(false));
         List<LLMChatMessage> actualSecondTurnMessages = actualMessages.getAllValues().get(1);
         assertTrue(containsMessage(actualSecondTurnMessages, "side-effect execution next_actions"));
+        assertTrue(containsMessage(actualSecondTurnMessages,
+                "Call database_gateway_execute_query now with database `" + DATABASE_NAME + "`, schema `" + SCHEMA_NAME + "`, and sql `" + QUERY + "`"));
+        assertTrue(containsMessage(actualSecondTurnMessages, "Do not call database_gateway_execute_update for SELECT or row-count verification."));
         assertThat(getToolNames(actualTools.getAllValues().get(1)), is(List.of("database_gateway_execute_query")));
         assertThat(actual.getInteractionTrace().get(1).getTargetName(), is("database_gateway_execute_update"));
         assertFalse(actual.getInteractionTrace().get(1).isValid());

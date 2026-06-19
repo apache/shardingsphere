@@ -307,7 +307,7 @@ public final class LLMMCPConversationRunner {
             return;
         }
         if (hasSideEffectExecutionNextAction(interactionTrace)) {
-            messages.add(LLMChatMessage.user(createSideEffectExecutionNextActionInstruction()));
+            messages.add(LLMChatMessage.user(createSideEffectExecutionNextActionInstruction(scenario.getExpectedAnswer())));
         }
     }
     
@@ -540,8 +540,12 @@ public final class LLMMCPConversationRunner {
         return missingToolNames.stream().anyMatch(each -> each.startsWith(LLMMCPScenarioInference.PLANNING_TOOL_NAME_PREFIX));
     }
     
-    private String createSideEffectExecutionNextActionInstruction() {
-        return "The latest MCP response contains side-effect execution next_actions; do not execute them in this score lane. Continue only with remaining read-only verification.";
+    private String createSideEffectExecutionNextActionInstruction(final LLMStructuredAnswer expectedAnswer) {
+        return String.format(Locale.ENGLISH,
+                "The latest MCP response contains side-effect execution next_actions; do not execute them in this score lane. "
+                        + "Call database_gateway_execute_query now with database `%s`, schema `%s`, and sql `%s`. "
+                        + "Do not call database_gateway_execute_update for SELECT or row-count verification.",
+                expectedAnswer.getDatabase(), expectedAnswer.getSchema(), expectedAnswer.getQuery());
     }
     
     private boolean hasSideEffectExecutionNextAction(final List<MCPInteractionTraceRecord> interactionTrace) {
