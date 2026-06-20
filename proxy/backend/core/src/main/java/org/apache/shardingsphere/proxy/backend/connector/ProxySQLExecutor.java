@@ -65,6 +65,7 @@ import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionSt
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -323,6 +324,9 @@ public final class ProxySQLExecutor {
         }
         if (expr instanceof LiteralExpressionSegment) {
             return generatedKeyOption.isGeneratedKeyTriggerValue(((LiteralExpressionSegment) expr).getLiterals());
+        }
+        if (expr instanceof CommonExpressionSegment) {
+            return generatedKeyOption.isGeneratedKeyTriggerValue(expr.getText());
         }
         return false;
     }

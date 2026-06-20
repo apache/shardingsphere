@@ -37,6 +37,6 @@ public final class MySQLGeneratedKeyOption extends DialectGeneratedKeyOption {
             return true;
         }
         String valueStr = value.toString();
-        return "0".equals(valueStr) || "NULL".equalsIgnoreCase(valueStr);
+        return "0".equals(valueStr) || "NULL".equalsIgnoreCase(valueStr) || "DEFAULT".equalsIgnoreCase(valueStr);
     }
 }

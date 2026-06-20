@@ -60,6 +60,7 @@ import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -306,6 +307,7 @@ class ProxySQLExecutorTest {
                 Arguments.of("execute-with-driver-param-marker-nonspecial", false, createInsertStatement(mysqlDatabaseType), true, true, false),
                 Arguments.of("execute-with-driver-param-marker-special-zero", false, createInsertStatement(mysqlDatabaseType), true, true, true),
                 Arguments.of("execute-with-driver-param-marker-special-null", false, createInsertStatement(mysqlDatabaseType), true, true, true),
+                Arguments.of("execute-with-driver-and-explicit-keys-special-default", false, createInsertStatement(mysqlDatabaseType), true, true, true),
                 Arguments.of("execute-with-driver-and-no-transaction", false, createInsertStatement(postgresqlDatabaseType), false, false, false));
     }
     
@@ -445,6 +447,13 @@ class ProxySQLExecutorTest {
                 when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)));
                 when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
                 params = Collections.singletonList(null);
+            } else if ("execute-with-driver-and-explicit-keys-special-default".equals(name)) {
+                GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
+                when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
+                InsertValueContext insertValueContext = mock(InsertValueContext.class);
+                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new CommonExpressionSegment(0, 0, "DEFAULT")));
+                when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
             } else {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", isReturnGeneratedKeys);
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
