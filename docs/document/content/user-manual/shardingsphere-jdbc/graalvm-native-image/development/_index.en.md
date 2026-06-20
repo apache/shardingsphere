@@ -229,48 +229,6 @@ developer should place it in the classpath of the `shardingsphere-test-native` s
 
 ## Known limitations
 
-### `reachability-metadata.json` limitations
-
-Affected by https://github.com/apache/shardingsphere/issues/33206,
-after developers execute `./mvnw -PgenerateMetadata -T 1C -e clean test native:metadata-copy`,
-`infra/reachability-metadata/src/main/resources/META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/reachability-metadata.json` will generate unnecessary JSON entries containing absolute paths.
-
-For Ubuntu, it is similar to the following,
-
-```json
-{
-  "resources": [
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
-      },
-      "glob": "home/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/mysql/"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
-      },
-      "glob": "home/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/mysql//global.yaml"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
-      },
-      "glob": "home/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql/"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
-      },
-      "glob": "home/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql//global.yaml"
-    }
-  ]
-}
-```
-
-Contributors who need to submit PRs for ShardingSphere should always manually remove these JSON entries containing absolute paths
-and wait for https://github.com/oracle/graal/issues/8417 to be resolved.
-
 ### Unit test library limitations
 
 For the Maven Module of `shardingsphere-test-native`,

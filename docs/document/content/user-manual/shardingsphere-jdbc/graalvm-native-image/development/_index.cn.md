@@ -222,47 +222,6 @@ cd ./shardingsphere/
 
 ## 已知限制
 
-### `reachability-metadata.json` 限制
-
-受 https://github.com/apache/shardingsphere/issues/33206 影响，
-开发者执行 `./mvnw -PgenerateMetadata -T 1C -e clean test native:metadata-copy` 后，
-`infra/reachability-metadata/src/main/resources/META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/reachability-metadata.json` 会生成不必要的包含绝对路径的 JSON 条目，
-
-对于 Ubuntu，类似如下，
-
-```json
-{
-  "resources": [
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
-      },
-      "glob": "home/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/mysql/"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
-      },
-      "glob": "home/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/mysql//global.yaml"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
-      },
-      "glob": "home/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql/"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
-      },
-      "glob": "home/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql//global.yaml"
-    }
-  ]
-}
-```
-
-需要为 ShardingSphere 提交 PR 的贡献者应始终手动删除这些包含绝对路径的 JSON 条目，并等待 https://github.com/oracle/graal/issues/8417 被解决。
-
 ### 单元测试库限制
 
 对于 `shardingsphere-test-native` 的 Maven Module，
