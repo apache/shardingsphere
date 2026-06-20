@@ -24,7 +24,7 @@ the possible Maven dependencies are as follows,
         <groupId>com.clickhouse</groupId>
         <artifactId>clickhouse-jdbc</artifactId>
         <classifier>all</classifier>
-        <version>0.9.5</version>
+        <version>0.9.8</version>
     </dependency>
 </dependencies>
 ```
