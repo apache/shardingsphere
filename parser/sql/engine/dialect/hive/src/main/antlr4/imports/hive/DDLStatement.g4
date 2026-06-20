@@ -83,6 +83,7 @@ alterTable
     | alterTableCommonClause dropTag
     | alterTableCommonClause deleteOrphanFile
     | alterTableCommonClause cherryPickClause
+    | alterTableCommonClause tableRollback
     ;
 
 createView
@@ -544,4 +545,9 @@ deleteOrphanFile
 
 cherryPickClause
     : EXECUTE CHERRY_PICK NUMBER_
+    ;
+
+tableRollback
+    : EXECUTE ROLLBACK LP_ string_ RP_
+    | EXECUTE ROLLBACK LP_ NUMBER_ RP_
     ;
