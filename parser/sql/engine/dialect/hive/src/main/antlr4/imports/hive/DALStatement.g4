@@ -39,6 +39,10 @@ show
     | showCompactions
     ;
 
+optimizeTable
+    : OPTIMIZE TABLE tableName REWRITE DATA
+    ;
+
 describe
     : describeDatabase
     | describeConnector
