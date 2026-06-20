@@ -211,6 +211,7 @@ def build_inventory(args: argparse.Namespace) -> dict[str, object]:
         "manual_checklist": [
             "Confirm GitHub file list matches local triple-dot scope before reporting scope findings.",
             "Classify each blocker origin: PR-caused, base-existing, exposed-by-PR, latest-introduced, older-PR-revision, or out-of-scope.",
+            "Classify each Not Mergeable result as Change Request or Needs Discussion before drafting feedback.",
             "Deduplicate candidate issues by independent fix boundary before output.",
             "Review lifecycle paths for every new registry/cache/session/handle state.",
             "Review supported-vs-rejected feature matrix and flag unsupported-but-accepted inputs.",
