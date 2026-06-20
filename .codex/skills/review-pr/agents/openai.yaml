@@ -17,8 +17,9 @@
 
 interface:
   display_name: "Review PR"
-  short_description: "Root-cause-first merge review for ShardingSphere PRs"
+  short_description: "Root-cause-first merge review and discussion triage"
   default_prompt: >-
     Use $review-pr to check whether this ShardingSphere PR fixes the root cause,
     assess design/performance/compatibility risks, produce a merge decision, and
-    output committer-style change requests in the same language as the user.
+    output committer-style change requests or needs-discussion feedback in the same
+    language as the user.
