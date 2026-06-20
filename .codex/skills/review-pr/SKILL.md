@@ -367,14 +367,19 @@ Before producing the final review output, run an internal self-review loop on th
    - Missed root-cause, problem-model, or feedback-mode gaps.
    - Missed side effects, regression paths, test adequacy gaps, cross-dialect paths, feature-disabled paths, fallback paths, or boundary cases.
    - Missed ownership, implicit-state, unrelated-change, release note, user documentation, migration, diagnostics, dependency, distribution, output-template, or evidence gaps.
-4. Include at least one latest-delta pass when new commits were added after previous public feedback, and one full-path pass on the latest PR head.
-5. If the self-review finds any new actionable issue with an independent fix boundary, add it to the inventory, deduplicate it against existing findings,
+4. Include at least one explicit adversarial pass that assumes the PR is unsafe and actively searches for:
+   - one cross-dialect or adjacent-feature regression path,
+   - one config-disabled or feature-flag-off path,
+   - one original symptom path that is only partially covered by tests.
+   If any of these remain unresolved, set `Merge Decision: Not Mergeable`.
+5. Include at least one latest-delta pass when new commits were added after previous public feedback, and one full-path pass on the latest PR head.
+6. If the self-review finds any new actionable issue with an independent fix boundary, add it to the inventory, deduplicate it against existing findings,
    update the merge decision and next steps if needed, and repeat the loop.
-6. Do not reset the loop for duplicate symptoms, optional polish, speculative risks outside the PR scope, or already captured issues.
-7. Stop only after one full adversarial pass finds no new actionable issue with an independent fix boundary.
-8. If the inventory cannot be completed because public evidence is unavailable, state the minimum missing evidence and set `Merge Decision: Not Mergeable` rather than emitting a partial approval.
-9. Do not expose intermediate review rounds, draft decisions, raw inventory, or self-review transcripts in GitHub-facing output.
-10. Produce one consolidated final review with exactly one `Merge Decision`.
+7. Do not reset the loop for duplicate symptoms, optional polish, speculative risks outside the PR scope, or already captured issues.
+8. Stop only after one full adversarial pass finds no new actionable issue with an independent fix boundary.
+9. If the inventory cannot be completed because public evidence is unavailable, state the minimum missing evidence and set `Merge Decision: Not Mergeable` rather than emitting a partial approval.
+10. Do not expose intermediate review rounds, draft decisions, raw inventory, or self-review transcripts in GitHub-facing output.
+11. Produce one consolidated final review with exactly one `Merge Decision`.
 
 ## Root-Cause Validation Checklist (Must Answer Each)
 
