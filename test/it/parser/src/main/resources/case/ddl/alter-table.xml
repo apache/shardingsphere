@@ -3736,4 +3736,18 @@
             <snapshot-id value="8602659039622823857" start-index="37" stop-index="55" />
         </cherry-pick>
     </alter-table>
+
+    <alter-table sql-case-id="alter_execute_rollback_timestamp">
+        <table name="ice_t" start-index="12" stop-index="16" />
+        <table-rollback start-index="18" stop-index="55">
+            <timestamp value="2022-05-12 00:00:00" start-index="35" stop-index="55" />
+        </table-rollback>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_execute_rollback_snapshot_id">
+        <table name="ice_t" start-index="12" stop-index="16" />
+        <table-rollback start-index="18" stop-index="38">
+            <snapshot-id value="1111" start-index="35" stop-index="38" />
+        </table-rollback>
+    </alter-table>
 </sql-parser-test-cases>

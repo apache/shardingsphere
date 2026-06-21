@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Mod
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CherryPickDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.TableRollbackDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.OrderByColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
@@ -139,6 +140,7 @@ public final class AlterTableStatementAssert {
         assertModifyCollectionRetrievalDefinitions(assertContext, actual, expected);
         assertDropPrimaryKeyDefinition(assertContext, actual, expected);
         assertCherryPickDefinition(assertContext, actual, expected);
+        assertTableRollbackDefinition(assertContext, actual, expected);
         assertSetPropertiesDefinitions(assertContext, actual, expected);
         assertEnableFeatureDefinitions(assertContext, actual, expected);
         assertModifyTableCommentDefinitions(assertContext, actual, expected);
@@ -587,6 +589,19 @@ public final class AlterTableStatementAssert {
             CherryPickDefinitionSegment actualCherryPickDefinition = cherryPickDefinition.get();
             ExpressionAssert.assertLiteralExpression(assertContext, actualCherryPickDefinition.getSnapshotId(), expected.getCherryPickDefinition().getSnapshotId());
             SQLSegmentAssert.assertIs(assertContext, actualCherryPickDefinition, expected.getCherryPickDefinition());
+        }
+    }
+    
+    private static void assertTableRollbackDefinition(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        Optional<TableRollbackDefinitionSegment> tableRollbackDefinition = actual.getTableRollbackDefinition();
+        if (null == expected.getTableRollbackDefinition()) {
+            assertFalse(tableRollbackDefinition.isPresent(), assertContext.getText("Actual table rollback definition should not exist."));
+        } else {
+            assertTrue(tableRollbackDefinition.isPresent(), assertContext.getText("Actual table rollback definition should exist."));
+            TableRollbackDefinitionSegment actualTableRollbackDefinition = tableRollbackDefinition.get();
+            ExpressionAssert.assertLiteralExpression(assertContext, actualTableRollbackDefinition.getTimestamp().orElse(null), expected.getTableRollbackDefinition().getTimestamp());
+            ExpressionAssert.assertLiteralExpression(assertContext, actualTableRollbackDefinition.getSnapshotId().orElse(null), expected.getTableRollbackDefinition().getSnapshotId());
+            SQLSegmentAssert.assertIs(assertContext, actualTableRollbackDefinition, expected.getTableRollbackDefinition());
         }
     }
     

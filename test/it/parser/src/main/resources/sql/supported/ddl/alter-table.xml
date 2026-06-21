@@ -472,4 +472,6 @@
     <sql-case id="alter_table_modify_column_with_key_null_comment_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k3 VARCHAR(50) KEY NULL COMMENT 'to 50'" db-types="Doris" />
     <sql-case id="alter_table_modify_column_with_key_not_null_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k3 VARCHAR(50) KEY NOT NULL COMMENT 'not null'" db-types="Doris" />
     <sql-case id="alter_table_execute_cherry_pick" value="ALTER table test EXECUTE CHERRY-PICK 8602659039622823857;" db-types="Hive" />
+    <sql-case id="alter_execute_rollback_timestamp" value="ALTER TABLE ice_t EXECUTE ROLLBACK('2022-05-12 00:00:00')" db-types="Hive" />
+    <sql-case id="alter_execute_rollback_snapshot_id" value="ALTER TABLE ice_t EXECUTE ROLLBACK(1111);" db-types="Hive" />
 </sql-cases>

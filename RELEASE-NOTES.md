@@ -37,6 +37,7 @@
 1. SQL Parser: Support Hive OPTIMIZE Statement about iceberg statement parse - [#38877](https://github.com/apache/shardingsphere/pull/38877)
 1. SQL Parser: Support Hive DELETE ORPHAN-FILES Statement about iceberg statement parse - [#38669](https://github.com/apache/shardingsphere/pull/38669)
 1. SQL Parser: Support Hive ALTER TABLE... EXECUTE CHERRY-PICK about iceberg statement parse- [#38823](https://github.com/apache/shardingsphere/pull/38823)
+1. SQL Parser: Support Hive ALTER TABLE... EXECUTE ROLLBACK about iceberg statement parse- [#38876](https://github.com/apache/shardingsphere/pull/38876)
 1. SQL Parser: Support MySQL Function statement parse - [#38182](https://github.com/apache/shardingsphere/pull/38182) [#38219](https://github.com/apache/shardingsphere/pull/38219)
 1. SQL Parser: Support additional MySQL SELECT index hint and MATCH ... AGAINST WITH ROLLUP syntax - [#38233](https://github.com/apache/shardingsphere/pull/38233)
 1. SQL Parser: Support MySQL CREATE EVENT and additional CREATE FUNCTION RETURN syntax - [#38237](https://github.com/apache/shardingsphere/pull/38237)
