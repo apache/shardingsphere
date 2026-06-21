@@ -50,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Ren
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.PivotSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
@@ -158,7 +159,7 @@ public final class SimpleTableSegmentBinder {
         if (!updateStatement.getFrom().isPresent()) {
             return false;
         }
-        if (!isSupportUpdateTargetTableAlias(binderContext)) {
+        if (!updateStatement.isTargetTableIsFromAlias()) {
             return false;
         }
         if (!(updateStatement.getTable() instanceof SimpleTableSegment)) {
@@ -173,18 +174,16 @@ public final class SimpleTableSegmentBinder {
         return tableBinderContexts.containsKey(CaseInsensitiveString.of(tableNameValue));
     }
     
-    private static boolean isSupportUpdateTargetTableAlias(final SQLStatementBinderContext binderContext) {
-        return "SQLServer".equalsIgnoreCase(binderContext.getSqlStatement().getDatabaseType().getType());
-    }
-    
     private static SimpleTableSegment bindUpdateTargetTableAlias(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext,
                                                                  final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts, final IdentifierValue databaseName,
                                                                  final Optional<IdentifierValue> schemaName, final IdentifierValue tableName) {
-        TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName);
+        IdentifierValue originalTableName = tableBinderContexts.get(CaseInsensitiveString.of(tableName.getValue())).stream()
+                .map(TableSegmentBinderContext::getOriginalTableName).filter(Optional::isPresent).map(Optional::get).findFirst().orElse(tableName);
+        TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), originalTableName);
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName.orElse(null)));
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
         segment.getOwner().ifPresent(result::setOwner);
-        segment.getAliasSegment().ifPresent(result::setAlias);
+        result.setAlias(segment.getAliasSegment().orElseGet(() -> new AliasSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName)));
         return result;
     }
     
@@ -358,7 +357,7 @@ public final class SimpleTableSegmentBinder {
             columnProjectionSegment.setVisible(each.isVisible());
             projectionSegments.add(columnProjectionSegment);
         }
-        return Optional.of(new SimpleTableSegmentBinderContext(projectionSegments, TableSourceType.PHYSICAL_TABLE));
+        return Optional.of(new SimpleTableSegmentBinderContext(projectionSegments, TableSourceType.PHYSICAL_TABLE, tableName));
     }
     
     private static ColumnSegment createColumnSegment(final SimpleTableSegment segment, final IdentifierValue databaseName, final IdentifierValue schemaName,

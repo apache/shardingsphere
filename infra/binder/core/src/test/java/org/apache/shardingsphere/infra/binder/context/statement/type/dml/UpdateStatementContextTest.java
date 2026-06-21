@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,8 +79,6 @@ class UpdateStatementContextTest {
     
     @Test
     void assertGetTableNamesWithSQLServerUpdateAliasTargetExcludesAlias() {
-        DatabaseType sqlServerType = mock(DatabaseType.class);
-        when(sqlServerType.getType()).thenReturn("SQLServer");
         SimpleTableSegment scrapReason = new SimpleTableSegment(new TableNameSegment(50, 65, new IdentifierValue("ScrapReason")));
         scrapReason.setAlias(new AliasSegment(67, 68, new IdentifierValue("sr")));
         SimpleTableSegment workOrder = new SimpleTableSegment(new TableNameSegment(75, 83, new IdentifierValue("WorkOrder")));
@@ -91,7 +88,8 @@ class UpdateStatementContextTest {
         joinTable.setRight(workOrder);
         SimpleTableSegment aliasTarget = new SimpleTableSegment(new TableNameSegment(7, 8, new IdentifierValue("sr")));
         UpdateStatement updateStatement = UpdateStatement.builder()
-                .databaseType(sqlServerType).table(aliasTarget).from(joinTable).setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList())).build();
+                .databaseType(databaseType).table(aliasTarget).from(joinTable).setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true).build();
         UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
         assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("ScrapReason", "WorkOrder"))));
         assertFalse(actual.getTablesContext().getTableNames().contains("sr"));
@@ -99,14 +97,13 @@ class UpdateStatementContextTest {
     
     @Test
     void assertGetTableNamesWithPostgreSQLUpdateFromClauseIncludesTargetTable() {
-        DatabaseType postgresType = mock(DatabaseType.class);
-        when(postgresType.getType()).thenReturn("PostgreSQL");
         SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(7, 18, new IdentifierValue("ScrapReason")));
         targetTable.setAlias(new AliasSegment(20, 21, new IdentifierValue("sr")));
         SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(50, 58, new IdentifierValue("WorkOrder")));
         fromTable.setAlias(new AliasSegment(60, 61, new IdentifierValue("wo")));
         UpdateStatement updateStatement = UpdateStatement.builder()
-                .databaseType(postgresType).table(targetTable).from(fromTable).setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList())).build();
+                .databaseType(databaseType).table(targetTable).from(fromTable).setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
         UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
         assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("ScrapReason", "WorkOrder"))));
         assertFalse(actual.getTablesContext().getTableNames().contains("sr"));

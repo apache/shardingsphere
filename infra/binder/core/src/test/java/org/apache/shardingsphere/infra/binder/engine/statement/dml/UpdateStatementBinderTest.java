@@ -104,6 +104,30 @@ class UpdateStatementBinderTest {
         assertThat(actualOrderByItem.getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
     }
     
+    @Test
+    void assertBindUpdateTargetTableAlias() {
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("o")));
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(targetTable)
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new LiteralExpressionSegment(0, 0, 1)))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        ColumnSegment actualColumn = actual.getAssignment().get().getAssignments().iterator().next()
+                .getColumns().iterator().next();
+        assertThat(((SimpleTableSegment) actual.getTable()).getTableName().getIdentifier().getValue(), is("t_order"));
+        assertThat(((SimpleTableSegment) actual.getTable()).getAliasName().get(), is("o"));
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertTrue(actual.isTargetTableIsFromAlias());
+    }
+    
     private WithSegment createWithSegment() {
         return new WithSegment(0, 0, new LinkedList<>(Collections.singletonList(
                 new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("combined_users")),

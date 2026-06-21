@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context;
 
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -49,4 +50,13 @@ public interface TableSegmentBinderContext {
      * @return table source type
      */
     TableSourceType getTableSourceType();
+    
+    /**
+     * Get original table name.
+     *
+     * @return original table name
+     */
+    default Optional<IdentifierValue> getOriginalTableName() {
+        return Optional.empty();
+    }
 }

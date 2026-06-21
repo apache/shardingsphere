@@ -48,7 +48,7 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         TableSegment boundFrom;
         TableSegment boundTable;
-        if (isSQLServerUpdateFromAlias(sqlStatement)) {
+        if (sqlStatement.isTargetTableIsFromAlias()) {
             boundFrom = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
             boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, outerTableBinderContexts);
         } else {
@@ -63,14 +63,11 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
         return copy(sqlStatement, boundWith, boundTable, boundFrom, boundSetAssignment, boundWhere, boundOrderBy);
     }
     
-    private boolean isSQLServerUpdateFromAlias(final UpdateStatement sqlStatement) {
-        return sqlStatement.getFrom().isPresent() && "SQLServer".equalsIgnoreCase(sqlStatement.getDatabaseType().getType());
-    }
-    
     private UpdateStatement copy(final UpdateStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final TableSegment boundFrom,
                                  final SetAssignmentSegment boundSetAssignment, final WhereSegment boundWhere, final OrderBySegment boundOrderBy) {
         UpdateStatement result = UpdateStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).table(boundTable)
-                .from(boundFrom).setAssignment(boundSetAssignment).where(boundWhere).orderBy(boundOrderBy).limit(sqlStatement.getLimit().orElse(null)).build();
+                .from(boundFrom).setAssignment(boundSetAssignment).where(boundWhere).orderBy(boundOrderBy).limit(sqlStatement.getLimit().orElse(null))
+                .targetTableIsFromAlias(sqlStatement.isTargetTableIsFromAlias()).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
