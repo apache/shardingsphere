@@ -412,6 +412,7 @@ identifierKeywordsUnambiguous
     | ROUTINE
     | ROW_COUNT
     | ROW_FORMAT
+    | REWRITE
     | RTREE
     | SCHEDULE
     | SCHEMA_NAME
