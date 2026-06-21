@@ -78,7 +78,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -103,7 +102,7 @@ public final class DataSetResetScopeCalculator {
     }
     
     private Collection<String> calculateResetTableNames(final E2ETestParameter testParam) {
-        Set<String> result = new LinkedHashSet<>();
+        Collection<String> result = new LinkedHashSet<>();
         if (!addParsedTableNames(result, testParam.getTestCaseContext().getTestCase().getSql(), testParam.getDatabaseType())) {
             return Collections.emptyList();
         }
@@ -191,8 +190,8 @@ public final class DataSetResetScopeCalculator {
             if (isUnextractedWithSQL(sql, sqlStatement)) {
                 return false;
             }
-            Set<String> virtualTableNames = new LinkedHashSet<>();
-            Set<String> parsedTableNames = new LinkedHashSet<>();
+            Collection<String> virtualTableNames = new LinkedHashSet<>();
+            Collection<String> parsedTableNames = new LinkedHashSet<>();
             TableExtractor tableExtractor = new TableExtractor();
             tableExtractor.extractTablesFromSQLStatement(sqlStatement);
             addExtractedRewriteTableNames(parsedTableNames, tableExtractor);

@@ -49,7 +49,6 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -326,7 +325,7 @@ class DDLE2EIT implements SQLE2EIT {
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
-        Set<DataSetColumn> result = new LinkedHashSet<>();
+        Collection<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
             try (Connection connection = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualColumns(connection, each.getTableName()));
@@ -352,7 +351,7 @@ class DDLE2EIT implements SQLE2EIT {
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
     private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes) throws SQLException {
-        Set<DataSetIndex> result = new LinkedHashSet<>();
+        Collection<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
             try (Connection connection = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualIndexes(connection, each.getTableName()));
