@@ -313,7 +313,9 @@ Before any candidate enters `### Issues`, verify:
 - The requested action is necessary in the current PR scope.
 - The blocker satisfies `Evidence Sufficiency and CI Judgment`.
 
-Run one adversarial pass on the latest head that looks for missed root-cause gaps, side effects, feature-disabled paths, adjacent-feature regressions, ownership issues, release/doc impacts, and required verification gaps.
+Run an adversarial pass on the latest head that looks for missed root-cause gaps, side effects, feature-disabled paths, adjacent-feature regressions, ownership issues, release/doc impacts, and required verification gaps.
+If the pass finds any new actionable finding with an independent fix boundary, add it to the inventory, deduplicate and classify it, update the review result if needed, and repeat the pass.
+Stop only after one full adversarial pass finds no new actionable finding.
 If the inventory cannot be completed because required public evidence is unavailable or unattributable, output `Review Result: Review Incomplete`.
 Produce one consolidated review with exactly one `Review Result`.
 
