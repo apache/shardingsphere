@@ -47,10 +47,15 @@ import java.sql.Types;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -61,7 +66,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseDQLE2EIT implements SQLE2EIT {
     
-    private static final Collection<String> FILLED_SUITES = new HashSet<>();
+    private static final Collection<String> FILLED_SUITES = ConcurrentHashMap.newKeySet();
+    
+    private static final Map<String, Object> FILL_DATA_LOCKS = new ConcurrentHashMap<>();
+    
+    private static final ReadWriteLock DQL_EXECUTION_LOCK = new ReentrantReadWriteLock(true);
     
     private DataSource expectedDataSource;
     
@@ -69,6 +78,25 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
     
     @Setter
     private SQLE2EEnvironmentEngine environmentEngine;
+    
+    /**
+     * Execute DQL with concurrent execution control.
+     *
+     * @param context SQL E2E IT context
+     * @param callback DQL execution callback
+     * @throws SQLException SQL exception
+     * @throws IOException IO exception
+     * @throws JAXBException JAXB exception
+     */
+    protected final void executeDQL(final SQLE2EITContext context, final DQLExecutionCallback callback) throws SQLException, IOException, JAXBException {
+        Lock lock = DQLExclusiveExecutionDetector.requiresExclusiveExecution(context.getSQL()) ? DQL_EXECUTION_LOCK.writeLock() : DQL_EXECUTION_LOCK.readLock();
+        lock.lock();
+        try {
+            callback.execute();
+        } finally {
+            lock.unlock();
+        }
+    }
     
     protected final void init(final AssertionTestParameter testParam, final SQLE2EITContext context) throws IOException, JAXBException {
         fillDataOnlyOnce(testParam);
@@ -92,16 +120,16 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
         if (FILLED_SUITES.contains(cacheKey)) {
             return;
         }
-        synchronized (FILLED_SUITES) {
+        synchronized (FILL_DATA_LOCKS.computeIfAbsent(cacheKey, unused -> new Object())) {
             if (FILLED_SUITES.contains(cacheKey)) {
                 return;
             }
             new DataSetEnvironmentManager(
                     new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(),
-                    testParam.getDatabaseType()).fillData();
+                    testParam.getDatabaseType()).fillData(Collections.emptyList());
             new DataSetEnvironmentManager(
                     new ScenarioDataPath(testParam.getScenario(), Type.EXPECTED).getDataSetFile(), getEnvironmentEngine().getExpectedDataSourceMap(),
-                    testParam.getDatabaseType()).fillData();
+                    testParam.getDatabaseType()).fillData(Collections.emptyList());
             FILLED_SUITES.add(cacheKey);
         }
     }
@@ -228,5 +256,21 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
         assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
         assertThat(String.valueOf(actual.getObject(columnLabel)).trim(), is(expected));
+    }
+    
+    /**
+     * DQL execution callback.
+     */
+    @FunctionalInterface
+    protected interface DQLExecutionCallback {
+        
+        /**
+         * Execute DQL.
+         *
+         * @throws SQLException SQL exception
+         * @throws IOException IO exception
+         * @throws JAXBException JAXB exception
+         */
+        void execute() throws SQLException, IOException, JAXBException;
     }
 }
