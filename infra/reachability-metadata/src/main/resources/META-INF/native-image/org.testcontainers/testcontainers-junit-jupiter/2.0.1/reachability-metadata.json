@@ -284,6 +284,32 @@
         "typeReached": "org.testcontainers.shaded.org.hamcrest.internal.ReflectiveTypeFinder"
       },
       "type": "org.testcontainers.shaded.org.awaitility.core.ConditionFactory$1"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.containers.GenericContainer"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.testcontainers.containers.GenericContainer",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.org.awaitility.core.LambdaErrorMessageGenerator"
+      },
+      "type": {
+        "lambda": {
+          "declaringClass": "org.testcontainers.images.RemoteDockerImage",
+          "interfaces": [
+            "java.util.concurrent.Callable"
+          ]
+        }
+      }
     }
   ],
   "resources": [

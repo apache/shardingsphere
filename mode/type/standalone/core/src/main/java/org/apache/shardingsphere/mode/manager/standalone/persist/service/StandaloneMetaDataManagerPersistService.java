@@ -334,7 +334,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     private ShardingSphereDatabase rebuildDatabaseSchemaIndex(final String databaseName, final MetaDataContexts metaDataContexts) {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), database.getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getProps(), new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName), database.getIdentifierContext());
+                metaDataContexts.getMetaData().getProps(), new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName), database.getIdentifierContext(),
+                database.getAllSchemas());
         Collection<ShardingSphereSchema> schemas = new LinkedList<>(GenericSchemaBuilder.build(database.getProtocolType(), material).values());
         return new ShardingSphereDatabase(database.getName(), database.getProtocolType(), database.getResourceMetaData(), database.getRuleMetaData(), schemas,
                 metaDataContexts.getMetaData().getProps());

@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.index;
 
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
  * Index reviser.
- * 
+ *
  * @param <T> type of rule
  */
 public interface IndexReviser<T extends ShardingSphereRule> {
@@ -34,8 +36,24 @@ public interface IndexReviser<T extends ShardingSphereRule> {
      *
      * @param tableName table name
      * @param originalMetaData original index meta data
+     * @param originalTableMetaDataList original table meta data list
+     * @param schemaMetaDataRevisionCandidateTableMetaDataList schema meta data revision candidate table meta data list
      * @param rule rule
      * @return revised index meta data
      */
-    Optional<IndexMetaData> revise(String tableName, IndexMetaData originalMetaData, T rule);
+    default Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final Collection<TableMetaData> originalTableMetaDataList,
+                                           final Collection<TableMetaData> schemaMetaDataRevisionCandidateTableMetaDataList, final T rule) {
+        return revise(tableName, originalMetaData, originalTableMetaDataList, rule);
+    }
+    
+    /**
+     * Revise index meta data.
+     *
+     * @param tableName table name
+     * @param originalMetaData original index meta data
+     * @param originalTableMetaDataList original table meta data list
+     * @param rule rule
+     * @return revised index meta data
+     */
+    Optional<IndexMetaData> revise(String tableName, IndexMetaData originalMetaData, Collection<TableMetaData> originalTableMetaDataList, T rule);
 }

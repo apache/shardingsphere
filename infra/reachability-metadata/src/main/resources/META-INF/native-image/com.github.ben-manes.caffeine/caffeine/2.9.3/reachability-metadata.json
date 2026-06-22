@@ -13,7 +13,7 @@
     },
     {
       "condition": {
-        "typeReached": "com.github.benmanes.caffeine.cache.BoundedLocalCache$BoundedLocalLoadingCache"
+        "typeReached": "com.github.benmanes.caffeine.cache.LocalCacheFactory"
       },
       "type": "com.github.benmanes.caffeine.cache.SIMS",
       "methods": [
