@@ -57,6 +57,13 @@ class StatementClassifierTest {
         assertThat(actualException.getMessage(), is(expectedMessage));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertClassifyMetadataStatementTypeCases")
+    void assertClassifyMetadataStatementType(final String name, final String sql, final String expectedStatementType) {
+        MetadataIntrospectionSQLStatementException actual = assertThrows(MetadataIntrospectionSQLStatementException.class, () -> statementClassifier.classify(sql));
+        assertThat(actual.getStatementType(), is(expectedStatementType));
+    }
+    
     @Test
     void assertClassifyExplainAnalyzeInnerStatementClass() {
         ClassificationResult actualResult = statementClassifier.classify("EXPLAIN ANALYZE UPDATE foo_orders SET status = 'DONE'");
@@ -238,6 +245,15 @@ class StatementClassifierTest {
                         new String[]{"logic_db.foo_orders", "other_db.foo_order_items"}),
                 Arguments.of("qualified function query", "SELECT other_db.foo_refresh_orders()",
                         new String[]{"other_db.foo_refresh_orders"}));
+    }
+    
+    private static Stream<Arguments> assertClassifyMetadataStatementTypeCases() {
+        return Stream.of(
+                Arguments.of("show storage units", "SHOW STORAGE UNITS FROM logic_db", "SHOW STORAGE UNITS"),
+                Arguments.of("show rules used storage unit", "SHOW RULES USED STORAGE UNIT write_ds FROM logic_db", "SHOW RULES USED STORAGE UNIT"),
+                Arguments.of("show single tables", "SHOW SINGLE TABLES FROM logic_db", "SHOW SINGLE TABLES"),
+                Arguments.of("show single table", "SHOW SINGLE TABLE t_user FROM logic_db", "SHOW SINGLE TABLE"),
+                Arguments.of("show default single table storage unit", "SHOW DEFAULT SINGLE TABLE STORAGE UNIT FROM logic_db", "SHOW DEFAULT SINGLE TABLE STORAGE UNIT"));
     }
     
     private static Stream<Arguments> assertClassifyWithInvalidStatementCases() {

@@ -55,7 +55,7 @@ class ToolDefinitionRegistryTest {
     
     @Test
     void assertGetSupportedTools() {
-        assertThat(ToolDefinitionRegistry.getSupportedTools(), contains("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query",
+        assertThat(ToolDefinitionRegistry.getSupportedTools(), contains("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query",
                 "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow"));
     }
     
@@ -63,7 +63,7 @@ class ToolDefinitionRegistryTest {
     void assertGetSupportedToolDescriptors() {
         List<MCPToolDescriptor> actual = ToolDefinitionRegistry.getSupportedToolDescriptors();
         assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(),
-                is(List.of("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query", "database_gateway_execute_update",
+                is(List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query", "database_gateway_execute_update",
                         "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
         assertToolFields(actual.get(0), List.of("database", "schema", "query", "object_types"));
         assertToolFields(actual.get(1), List.of("database"));
@@ -87,6 +87,11 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
+    void assertGetToolDefinitionRejectsLegacyAlias() {
+        assertThrows(UnsupportedToolException.class, () -> ToolDefinitionRegistry.getToolDefinition("database_gateway_validate_proxy_connectivity"));
+    }
+    
+    @Test
     void assertDispatch() {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
         runtimeContext.getSessionManager().createSession("session-1");
@@ -96,6 +101,11 @@ class ToolDefinitionRegistryTest {
             assertThat(toolDefinition.getDescriptor().getName(), is("database_gateway_search_metadata"));
             assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
         }
+    }
+    
+    @Test
+    void assertDispatchRejectsLegacyAlias() {
+        assertThrows(UnsupportedToolException.class, () -> dispatch("database_gateway_validate_proxy_connectivity", Map.of("database", "missing_db")));
     }
     
     @Test
@@ -143,10 +153,10 @@ class ToolDefinitionRegistryTest {
     void assertDispatchWithInvalidEnumArgument() {
         MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
                 () -> dispatch("database_gateway_search_metadata", Map.of("query", "order", "object_types", List.of("TABLE"))));
-        assertThat(actual.getMessage(), is("object_types[0] must be one of [database, schema, table, view, column, index, sequence]."));
+        assertThat(actual.getMessage(), is("object_types[0] must be one of [database, schema, table, view, column, index, storage_unit, sequence]."));
         assertThat(actual.getArgumentPath(), is("object_types[0]"));
         assertThat(actual.getCategory(), is("invalid_enum_value"));
-        assertThat(actual.getAllowedValues(), is(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
+        assertThat(actual.getAllowedValues(), is(List.of("database", "schema", "table", "view", "column", "index", "storage_unit", "sequence")));
         assertThat(actual.getSuggestedArguments(), is(Map.of("query", "order")));
     }
     

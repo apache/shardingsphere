@@ -189,7 +189,7 @@ vfox install java@21.0.7-ms
 vfox use --global java@21.0.7-ms
 ```
 
-When Windows pops up a window asking you to allow an application with a path like `C:\users\lingh\.version-fox\cache\java\v-21.0.7-ms\java-21.0.7-ms\bin\java.exe` to pass through Windows Firewall,
+When Windows pops up a window asking you to allow an application with a path like `C:\users\shard\.version-fox\cache\java\v-21.0.7-ms\java-21.0.7-ms\bin\java.exe` to pass through Windows Firewall,
 you should approve it.
 Background reference https://support.microsoft.com/en-us/windows/risks-of-allowing-apps-through-windows-firewall-654559af-3f54-3dcf-349f-71ccd90bcc5c .
 

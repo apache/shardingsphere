@@ -1,5 +1,15 @@
 # ShardingSphere AI Development Guide
 
+## TOKEN EFFICIENCY ACTION — READ OR REUSE .codex/context/token-efficiency.md
+
+Before running Maven, E2E, Proxy startup, database clients, IDE/MCP run configurations, any command likely to output more than 100 lines,
+or any task likely to produce large analysis or review output, I MUST ensure `.codex/context/token-efficiency.md` is available in the active context.
+If this exact file from this repository has already been read in the current session and there is no evidence it changed, reuse the loaded content.
+Otherwise, read it before running the high-output command or producing the large structured output.
+Execute the command according to the Mandatory Execution Contract in that file.
+This file is the repository-local source of truth for token-efficient command classification, log capture, filtered summaries, final reporting, and structured output.
+Paths in this section are relative to the Apache ShardingSphere repository root.
+
 This guide is written **for AI coding agents only**. Follow it literally; improvise only when the rules explicitly authorize it.
 
 ## Core Immutable Principles
@@ -33,7 +43,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       An overriding method should add Javadocs only when it documents implementation-specific behavior, stricter preconditions, side effects, exceptions, compatibility notes,
       or semantics not already covered by the parent declaration.
       When cleaning redundant override Javadocs, change comments only and verify no public contract information is lost.
-    - Keep variable declarations adjacent to first use; if a value must be retained, declare it `final` to satisfy Checkstyle VariableDeclarationUsageDistance.
+    - Keep variable declarations adjacent to first use to satisfy Checkstyle VariableDeclarationUsageDistance; do not mark local variables as `final`.
     - Single-use local variables must be inlined by default; keep a local variable only when it is reused (for stubbing/verification/assertions) or materially improves readability.
     - Do not add explicit defensive immutable collection copies in constructors or method return values by default.
       Avoid `List.copyOf`, `Set.copyOf`, `Map.copyOf`, `Collections.unmodifiableList`, `Collections.unmodifiableSet`, `Collections.unmodifiableMap`,
@@ -138,6 +148,30 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - Validate: run the narrowest meaningful checks (see Verification & Commands) and prefer scoped runs; note any sandbox or limit blocks and alternatives.
 - Report & self-check: share intent, edits, verification results, and next steps; ensure all required instructions, coverage, and mocking rules are satisfied, with remaining risks called out.
 
+### Protocol / Client Compatibility Evidence Gate
+- Treat protocol compatibility, native-client smoke, driver compatibility, packet-trace, and externally visible client behavior failures as evidence-first failures until proven otherwise.
+- Before changing protocol bytes, packet order, handshake/authentication/session lifecycle, status/error semantics, cursor or fetch lifecycle, row-transfer payloads, or client-specific completion logic,
+  create a reference-versus-current behavior record for the same scenario.
+- The behavior record must use the same client or driver version, server or database version, schema/configuration, input SQL or scripts, and execution markers.
+- The behavior record must identify the first actionable mismatch, such as a missing message, extra message, wrong order, wrong status or error semantics, wrong lifecycle transition, wrong field value, or wrong bounded payload shape.
+- Capture complete is not analysis complete. A record is code-ready only when it includes scenario identity, reference/current inventories, chronological request/response correlation,
+  critical response ownership, the first actionable mismatch, non-mismatch exclusions, minimum fix scope, and a deterministic guard plan.
+- If any correlation field is missing, continue capture, source analysis, or behavior analysis. Do not change production code, rewrite test expectations, rerun the same or adjacent sentinel,
+  or send a progress-only final response unless the user explicitly asks for status or stop.
+- A deterministic guard is not an exploratory probe. Add or run it only after the behavior record states the expected branch.
+  If the guard failure matches the recorded mismatch, implement the smallest in-scope fix. If it exposes a wrong guard expectation or route assumption, return to behavior correlation before changing code or test expectations.
+- After one fix, run only one sentinel that matches the recorded mismatch. If the sentinel fails, update the behavior record before any further code change.
+- Having no current question for the user is not a reason to continue rerunning the failed scenario, but it is also not a reason to stop work. Continue analysis until the behavior record is complete, then proceed with an in-scope fix when available.
+- Stop and ask the user only when the next action requires scope expansion, third-party license or login approval, deleting files, adding dependencies, changing project goals, or when analysis reaches an actual impasse that cannot be resolved from local evidence.
+
+### E2E / Integration Failure Gate
+- When an E2E, integration, client-smoke, Docker-smoke, or protocol scenario fails, hangs, times out, or requires guess-and-retry debugging, stop further reruns immediately. This means stop the rerun loop, not stop the task.
+- Before rerunning the scenario, classify the failure as environment, classpath, stale snapshot, dependency, test design, protocol implementation, data setup, assertion logic, or external-service behavior.
+- Record the root cause, the evidence inspected, and the minimum fix scope before changing code or configuration.
+- Complete deterministic gates first, such as classpath consistency, stale bytecode scan, dependency alignment, packet-trace completeness, or direct/proxy evidence review.
+- After the gate passes, rerun only one sentinel scenario. If that sentinel fails unexpectedly, stop rerunning and return to analysis instead of applying small speculative patches.
+- Do not loop through repeated E2E attempts, incremental guesses, or patch-and-rerun cycles unless the user explicitly approves that debugging mode for the current task.
+
 ## Compliance Guardrails & Checklists
 - **Pre-task checklist (do before planning/coding):** re-read AGENTS.md and `CODE_OF_CONDUCT.md`; restate user goal, constraints, forbidden tools/APIs, coverage expectations, sandbox/network/approval limits; prefer `rg`/`./mvnw`/`apply_patch`; avoid destructive commands (`git reset --hard`, `git checkout --`, bulk deletes) and generated paths like `target/`.
 - **Change boundary checklist:** determine and declare the change boundary before planning or editing.
@@ -145,8 +179,23 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
   If the boundary is missing or ambiguous, ask the developer to confirm it before making changes.
 - **Risk gate:** if any action fits the Dangerous Operation Checklist, pause and use the confirmation template before proceeding.
 - **Planning rules:** use Sequential Thinking with 3-10 actionable steps (no single-step plans) via the plan tool for non-trivial tasks; convert all hard requirements (SPI usage, mocking rules, coverage/test naming, forbidden APIs) into a checklist inside the plan and do not code until each item is addressed or explicitly waived.
-- **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use and mark retained values `final`; inline single-use locals by default unless reuse/readability justifies retention; delete dead code and avoid placeholders/TODOs.
+- **Report root-cause rule:** for report, audit, review, or analysis tasks, if a reported finding, verdict, or conclusion is challenged, disproved, or shown to be inaccurate,
+  do not stop at patching the output artifact. First fix the highest-leverage root cause in rules, workflow, schema, validators, prompts, regression cases,
+  or tests so the same class of error is less likely to recur. Update the report artifact afterward as a consequence of that root-cause fix, unless the user explicitly requests a one-off result correction only.
+- **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use without marking local variables `final`; inline single-use locals by default unless reuse/readability justifies retention; delete dead code and avoid placeholders/TODOs.
   Verify code and skills do not contain local machine paths before handoff.
+- **CI impact gate:** before handoff, determine affected GitHub Actions from changed files.
+  Use `rg` or small `sed` ranges to inspect only matching workflow `paths`, job names, and execution commands instead of reading every workflow file.
+  For production code, tests, E2E, build configuration, or project-rule changes, run the local equivalent of the affected workflow command when practical.
+  For docs-only or clearly unrelated changes, or when a workflow-equivalent run is not practical, state the rationale, residual risk, and narrower verification that was run.
+- **Public contract propagation gate:** when changing any public contract or externally visible identifier, search the affected reference surfaces with `rg` before handoff.
+  This includes API names, SQL syntax, configuration keys, YAML keys, SPI types, error codes, protocol fields, CLI commands, resource identifiers, canonical documentation names, descriptors, examples, distributions, tests, E2E fixtures, and baseline resources.
+  Exclude generated directories such as `.git` and `target`.
+  If a compatibility alias remains, document whether it is discoverable; if it must stay hidden, cover that with a focused test or contract check.
+- **External output safety gate:** when changing externally visible errors, diagnostics, log summaries, HTTP/JSON payloads, CLI output, or exception conversion, test the complete external output when inputs may contain connection strings, credentials, tokens, SQL text, filesystem paths, or user data.
+  Do not rely only on nested-field assertions when the full payload could still expose sensitive or misleading text.
+- **Generated contract and baseline gate:** when a change can affect snapshots, baselines, golden files, fingerprints, expected SQL cases, protocol descriptors, generated schemas, or client/model-visible metadata, regenerate or verify those artifacts with the existing project tool or test before handoff.
+  Run the corresponding contract, golden, baseline, or E2E check when practical; otherwise report why it was not practical and what narrower verification was used.
 - **AGENTS.md maintenance:** do not add or update a `Session Notes` section in `AGENTS.md`. Keep task-specific notes in the active conversation, issue, or PR; only stable project-level rules may be generalized into this file.
 - **Post-task self-check (before replying):** confirm all instructions were honored; verify no placeholders/unused code; ensure Checkstyle/Spotless gates for touched modules are satisfied or explain why not run and what to run; list commands with exit codes; call out risks and follow-ups; complete all applicable checks before replying and do not rely on users to find missed rule violations.
 - **End-of-task format/style gate:** for any task that edits files, run `./mvnw spotless:apply -Pcheck -T1C` after the final edit, then run `./mvnw checkstyle:check -Pcheck -T1C` when production, test, or project-rule files are touched.

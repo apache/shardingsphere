@@ -29,6 +29,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -103,6 +104,7 @@ class EncryptRuleInspectionServiceTest {
         when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "AES"), Map.of("type", "CUSTOM")));
         List<Map<String, Object>> actual = service.queryEncryptAlgorithms(queryFacade);
         assertTrue((Boolean) actual.getFirst().get("supports_decrypt"));
+        assertTrue((Boolean) actual.getFirst().get("capability_confirmed"));
         assertThat(actual.getFirst().get("required_properties"), is(List.of("aes-key-value")));
         assertThat(actual.getFirst().get("optional_properties"), is(List.of("digest-algorithm-name")));
         assertThat(actual.getFirst().get("secret_properties"), is(List.of("aes-key-value")));
@@ -110,6 +112,7 @@ class EncryptRuleInspectionServiceTest {
         assertThat(((Map<?, ?>) propertyTemplates.getFirst()).get("property_key"), is("aes-key-value"));
         assertThat(actual.get(1).get("type"), is("CUSTOM"));
         assertNull(actual.get(1).get("supports_like"));
+        assertFalse((Boolean) actual.get(1).get("capability_confirmed"));
         assertThat(actual.get(1).get("property_templates"), is(List.of()));
     }
     

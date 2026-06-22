@@ -42,13 +42,6 @@ class MCPToolArgumentsTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getObjectTypesWithIgnoredUnsupportedValuesCases")
-    void assertGetObjectTypesWithIgnoredUnsupportedValues(final String name, final Map<String, Object> rawArguments, final Set<String> ignoredUnsupportedValues,
-                                                          final Set<SupportedMCPMetadataObjectType> expectedObjectTypes) {
-        assertThat(new MCPToolArguments(rawArguments).getObjectTypes(Set.of(SupportedMCPMetadataObjectType.TABLE), ignoredUnsupportedValues), is(expectedObjectTypes));
-    }
-    
-    @ParameterizedTest(name = "{0}")
     @MethodSource("invalidObjectTypesCases")
     void assertGetObjectTypesWithInvalidArgument(final String name, final Map<String, Object> rawArguments, final Set<SupportedMCPMetadataObjectType> supportedObjectTypes,
                                                  final String expectedMessage) {
@@ -92,12 +85,6 @@ class MCPToolArgumentsTest {
         assertThat(new MCPToolArguments(rawArguments).getStringCollectionArgument("steps"), is(expectedValues));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getMapArgumentCases")
-    void assertGetMapArgument(final String name, final Map<String, Object> rawArguments, final Map<String, String> expectedValues) {
-        assertThat(new MCPToolArguments(rawArguments).getMapArgument("props"), is(expectedValues));
-    }
-    
     private static Stream<Arguments> getObjectTypesCases() {
         return Stream.of(
                 Arguments.of("missing object types", Map.of(), Set.of(SupportedMCPMetadataObjectType.TABLE), Set.of()),
@@ -105,12 +92,6 @@ class MCPToolArgumentsTest {
                 Arguments.of("normalized object types", Map.of("object_types", List.of("table", " VIEW ", "table")),
                         Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW),
                         Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW)));
-    }
-    
-    private static Stream<Arguments> getObjectTypesWithIgnoredUnsupportedValuesCases() {
-        return Stream.of(
-                Arguments.of("ignored query value", Map.of("object_types", List.of("table", "orders")), Set.of("orders"), Set.of(SupportedMCPMetadataObjectType.TABLE)),
-                Arguments.of("only ignored query value", Map.of("object_types", List.of("orders")), Set.of("orders"), Set.of()));
     }
     
     private static Stream<Arguments> invalidObjectTypesCases() {
@@ -166,12 +147,4 @@ class MCPToolArgumentsTest {
                 Arguments.of("normalized collection", Map.of("steps", List.of(" ddl ", "", "rule_distsql")), List.of("ddl", "rule_distsql")));
     }
     
-    private static Stream<Arguments> getMapArgumentCases() {
-        return Stream.of(
-                Arguments.of("missing map", Map.of(), Map.of()),
-                Arguments.of("map argument", Map.of("props", Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")),
-                        Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")),
-                Arguments.of("entry list argument", Map.of("props", List.of(" aes-key-value = 123456 ", "digest-algorithm-name=SHA-1")),
-                        Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")));
-    }
 }

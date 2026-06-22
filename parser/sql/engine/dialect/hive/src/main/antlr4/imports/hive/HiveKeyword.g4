@@ -3581,3 +3581,7 @@ ORPHAN_FILES
 OLDER
     : O L D E R
     ;
+
+CHERRY_PICK
+    : C H E R R Y '-' P I C K
+    ;

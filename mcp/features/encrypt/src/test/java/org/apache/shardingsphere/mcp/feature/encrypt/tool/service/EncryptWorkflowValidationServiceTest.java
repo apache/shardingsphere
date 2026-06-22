@@ -28,8 +28,11 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyReq
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureData;
+import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.junit.jupiter.api.Test;
@@ -43,6 +46,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -58,7 +62,7 @@ class EncryptWorkflowValidationServiceTest {
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-2",
                         workflowSessionContext.getRequired("plan-1"));
         assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
     }
     
     @Test
@@ -83,6 +87,35 @@ class EncryptWorkflowValidationServiceTest {
         assertFalse(actual.containsKey("sql_executability_validation"));
         verifyNoInteractions(metadataQueryFacade);
         verifyNoInteractions(executionFacade);
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsRejectsInvalidGeneratedEncryptRuleArtifact() {
+        String sql = "CREATE ENCRYPT RULE t_user (COLUMNS((NAME=name, CIPHER=name_cipher, "
+                + "ENCRYPT_ALGORITHM(TYPE(NAME=AES, PROPERTIES('aes-key-value'='123456'))))))";
+        List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(new WorkflowContextSnapshot(),
+                List.of(createRuleDistSQLArtifact(sql, sql.replace("123456", "******"))));
+        assertThat(actual.size(), is(3));
+        assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
+        assertThat(actual.getFirst().get("message"), is("Generated encrypt DistSQL uses reserved logical column identifier `name` without DistSQL quoting."));
+        assertFalse(String.valueOf(actual).contains("123456"));
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsAllowsNamePrefixColumn() {
+        String sql = "CREATE ENCRYPT RULE t_user (COLUMNS((NAME=name_cipher, CIPHER=name_cipher_value, "
+                + "ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456', 'digest-algorithm-name'='SHA-1'))))))";
+        List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(new WorkflowContextSnapshot(),
+                List.of(createRuleDistSQLArtifact(sql, sql.replace("123456", "******"))));
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsIgnoresNonEncryptRuleArtifacts() {
+        String sql = "CREATE MASK RULE orders (COLUMNS((NAME=name, "
+                + "MASK_ALGORITHM(TYPE(NAME=AES, PROPERTIES('description'='CREATE ENCRYPT RULE', 'aes-key-value'='123456'))))))";
+        List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(new WorkflowContextSnapshot(), List.of(createRuleDistSQLArtifact(sql, sql)));
+        assertTrue(actual.isEmpty());
     }
     
     @Test
@@ -148,7 +181,7 @@ class EncryptWorkflowValidationServiceTest {
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).get(0)).get("expected"), is("cipher_column=phone_cipher"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("cipher_column=phone_cipher"));
     }
     
     @Test
@@ -173,7 +206,60 @@ class EncryptWorkflowValidationServiceTest {
         assertThat(actual.get("status"), is("failed"));
         assertFalse(String.valueOf(actual.get("mismatches")).contains("123456"));
         assertFalse(String.valueOf(actual.get("mismatches")).contains("old-key"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).get(0)).get("expected"), is("encryptor_props={aes-key-value=******}"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("encryptor_props={aes-key-value=******}"));
+    }
+    
+    @Test
+    void assertValidateExpectedStateAcceptsResolvedReferencedProperty() throws ReflectiveOperationException {
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
+        snapshot.getRequest().getPrimaryAlgorithmProperties().put("aes-key-value", "secret_reference:primary.aes-key-value");
+        snapshot.getRequest().getPrimaryAlgorithmSecretReferences().put("aes-key-value", SecretReferenceValue.create());
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of(
+                "logic_column", "phone",
+                "cipher_column", "phone_cipher",
+                "encryptor_type", "AES",
+                "encryptor_props", Map.of("aes-key-value", "secret_reference:primary.aes-key-value")))));
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
+                "logic_column", "phone",
+                "cipher_column", "phone_cipher",
+                "encryptor_type", "AES",
+                "encryptor_props", Map.of("aes-key-value", "raw-actual-secret"))));
+        Map<String, Object> actual = createService(ruleInspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("validated"));
+        assertThat(actual.get("overall_status"), is("passed"));
+        assertThat(((List<?>) actual.get("mismatches")).size(), is(0));
+        assertFalse(String.valueOf(actual).contains("raw-actual-secret"));
+        assertFalse(String.valueOf(actual).contains("placeholder://secret-value-1"));
+    }
+    
+    @Test
+    void assertValidateExpectedStateDetectsUnresolvedReferencedProperty() throws ReflectiveOperationException {
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
+        snapshot.getRequest().getPrimaryAlgorithmProperties().put("aes-key-value", "secret_reference:primary.aes-key-value");
+        snapshot.getRequest().getPrimaryAlgorithmSecretReferences().put("aes-key-value", SecretReferenceValue.create());
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of(
+                "logic_column", "phone",
+                "cipher_column", "phone_cipher",
+                "encryptor_type", "AES",
+                "encryptor_props", Map.of("aes-key-value", "secret_reference:primary.aes-key-value")))));
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
+                "logic_column", "phone",
+                "cipher_column", "phone_cipher",
+                "encryptor_type", "AES",
+                "encryptor_props", Map.of("aes-key-value", "secret_reference:primary.aes-key-value"))));
+        Map<String, Object> actual = createService(ruleInspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("encryptor_props={aes-key-value=******}"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("actual"), is("encryptor_props={aes-key-value=******}"));
+        assertFalse(String.valueOf(actual).contains("placeholder://secret-value-1"));
     }
     
     @Test
@@ -189,7 +275,23 @@ class EncryptWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(ruleInspectionService)
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).get(0)).get("expected"), is("logic_column=email"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("logic_column=email"));
+    }
+    
+    @Test
+    void assertValidateExpectedStateDetectsUnexpectedExtraRule() throws ReflectiveOperationException {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(createRuleRow())));
+        workflowSessionContext.save(snapshot);
+        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(
+                createRuleRow(),
+                Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES")));
+        Map<String, Object> actual = createService(ruleInspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("actual"), is("logic_column=email"));
     }
     
     private EncryptWorkflowValidationService createService(final EncryptRuleInspectionService ruleInspectionService) throws ReflectiveOperationException {
@@ -238,5 +340,9 @@ class EncryptWorkflowValidationServiceTest {
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES");
+    }
+    
+    private ExecutableWorkflowArtifact createRuleDistSQLArtifact(final String sql, final String displaySql) {
+        return new ExecutableWorkflowArtifact(WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL, WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, sql, displaySql, true);
     }
 }

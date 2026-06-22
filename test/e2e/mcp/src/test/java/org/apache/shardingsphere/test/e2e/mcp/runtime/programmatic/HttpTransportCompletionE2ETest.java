@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
-class HttpTransportCompletionE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class HttpTransportCompletionE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final String PLAN_MASK_PROMPT_NAME = "plan_mask_rule";
     

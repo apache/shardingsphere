@@ -29,6 +29,8 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Data set loader.
@@ -37,6 +39,10 @@ import java.io.IOException;
 public final class DataSetLoader {
     
     private static final String DATA_SET_FOLDER_NAME = "dataset";
+    
+    private static final JAXBContext JAXB_CONTEXT = createJAXBContext();
+    
+    private static final Map<String, DataSet> DATA_SET_CACHE = new ConcurrentHashMap<>();
     
     /**
      * Load data set.
@@ -48,10 +54,29 @@ public final class DataSetLoader {
      * @param dataSetFile name of data set file
      * @return data set
      */
-    @SneakyThrows({JAXBException.class, IOException.class})
     public static DataSet load(final String parentPath, final String scenario, final DatabaseType databaseType, final Mode mode, final String dataSetFile) {
-        try (FileReader reader = new FileReader(getFile(parentPath, scenario, databaseType, mode, dataSetFile))) {
-            return (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
+        return load(getFile(parentPath, scenario, databaseType, mode, dataSetFile));
+    }
+    
+    /**
+     * Load data set.
+     *
+     * @param dataSetFile data set file
+     * @return data set
+     */
+    public static DataSet load(final String dataSetFile) {
+        return DATA_SET_CACHE.computeIfAbsent(dataSetFile, DataSetLoader::loadDataSet);
+    }
+    
+    @SneakyThrows(JAXBException.class)
+    private static JAXBContext createJAXBContext() {
+        return JAXBContext.newInstance(DataSet.class);
+    }
+    
+    @SneakyThrows({JAXBException.class, IOException.class})
+    private static DataSet loadDataSet(final String dataSetFile) {
+        try (FileReader reader = new FileReader(dataSetFile)) {
+            return (DataSet) JAXB_CONTEXT.createUnmarshaller().unmarshal(reader);
         }
     }
     

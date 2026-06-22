@@ -67,8 +67,8 @@ class MaskToolHandlerTest {
                 "database", "logic_db",
                 "table", "orders",
                 "column", "phone",
-                "structured_intent_evidence", Map.of("field_semantics", "phone"),
-                "user_overrides", Map.of("algorithm_type", "KEEP_FIRST_N_LAST_M"))));
+                "algorithm_type", "KEEP_FIRST_N_LAST_M",
+                "structured_intent_evidence", Map.of("field_semantics", "phone"))));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
         ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
         verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
@@ -92,19 +92,37 @@ class MaskToolHandlerTest {
         assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("first-n"), is("3"));
         assertFalse(actualPayload.containsKey("ddl_artifacts"));
         assertFalse(actualPayload.containsKey("index_plan"));
-        assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).get(0)).get("sql")).contains("keep_first_n_last_m"));
+        assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("keep_first_n_last_m"));
         List<String> actualResourceUris = extractResourceUris((List<?>) actualPayload.get("resources_to_read"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/mask/algorithms"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/rules"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/tables/orders/rules"));
         assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
         assertThat(actualNextAction.get("type"), is("tool_call"));
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
         assertFalse(actualNextAction.containsKey("requires_user_approval"));
         assertFalse(actualNextAction.containsKey("required_arguments"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("plan_id"), is("plan-1"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
+    }
+    
+    @Test
+    void assertHandlePlanMaskRuleWithSecretReference() throws ReflectiveOperationException {
+        PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
+        MaskWorkflowPlanningService planningService = mock(MaskWorkflowPlanningService.class);
+        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+        setField(handler, "planningService", planningService);
+        setField(handler, "propertyTemplateService", new MaskAlgorithmPropertyTemplateService());
+        WorkflowContextFixture fixture = createWorkflowContextFixture();
+        handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                "database", "logic_db",
+                "primary_algorithm_properties", Map.of("replace-char", Map.of("secret_ref", "placeholder://secret-value-1")))));
+        ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
+        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+        WorkflowRequest actualRequest = requestCaptor.getValue();
+        assertThat(actualRequest.getPrimaryAlgorithmProperties().get("replace-char"), is("secret_reference:primary.replace-char"));
+        assertFalse(actualRequest.getSecretReferences("primary").get("replace-char").isMalformed());
     }
     
     private WorkflowContextSnapshot createSnapshot(final String planId, final String status) {

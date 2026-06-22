@@ -57,6 +57,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     
     @Test
     void assertCompleteMaskAlgorithmThroughProxy() throws IOException, InterruptedException {
+        useSharedReadOnlyRuntimeFixture();
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.complete(Map.of("type", "ref/prompt", "name", PLAN_PROMPT_NAME), "algorithm_type", "KEEP", Map.of());
             assertThat(getStringList(getMap(actual.get("completion")).get("values")), hasItem("KEEP_FIRST_N_LAST_M"));

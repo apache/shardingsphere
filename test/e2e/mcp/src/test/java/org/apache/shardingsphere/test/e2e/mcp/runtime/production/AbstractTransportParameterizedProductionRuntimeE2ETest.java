@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.junit.jupiter.api.AfterEach;
 
 abstract class AbstractTransportParameterizedProductionRuntimeE2ETest extends AbstractProductionRuntimeE2ETest {
     
@@ -25,6 +26,11 @@ abstract class AbstractTransportParameterizedProductionRuntimeE2ETest extends Ab
     
     protected final void useTransport(final RuntimeTransport transport) {
         this.transport = transport;
+    }
+    
+    @AfterEach
+    void clearTransport() {
+        transport = null;
     }
     
     @Override

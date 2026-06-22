@@ -210,13 +210,4 @@ public final class MCPDescriptorCatalogIndex {
     public static Map<String, Object> createCapabilityPayload(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
         return MCPDescriptorCatalogPayloadBuilder.build(CATALOG, supportedResources, supportedTools, supportedStatements);
     }
-    
-    /**
-     * Get descriptor catalog fingerprint.
-     *
-     * @return descriptor catalog fingerprint
-     */
-    public static String getDescriptorCatalogFingerprint() {
-        return MCPDescriptorCatalogPayloadBuilder.createDescriptorCatalogFingerprint(CATALOG);
-    }
 }

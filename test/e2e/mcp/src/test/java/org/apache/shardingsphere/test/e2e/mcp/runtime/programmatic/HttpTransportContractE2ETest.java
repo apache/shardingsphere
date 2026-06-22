@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
-class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class HttpTransportContractE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final List<String> OFFICIAL_TOOL_NAMES = OfficialMCPToolNames.getAll();
     
@@ -69,11 +69,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertTrue(((List<?>) actualCapabilities.get("prompts")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
         assertTrue(((List<?>) actualCapabilities.get("completionTargets")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
         assertTrue(((List<?>) actualCapabilities.get("resourceNavigation")).stream().map(String::valueOf).anyMatch(each -> each.contains("database_gateway_apply_workflow")));
-        Map<String, Object> actualFingerprints = castToMap(actualCapabilities.get("fingerprints"));
-        assertFalse(String.valueOf(actualFingerprints.get("descriptorCatalog")).isEmpty());
-        assertFalse(String.valueOf(actualFingerprints.get("promptSet")).isEmpty());
-        assertFalse(String.valueOf(actualFingerprints.get("resourceNavigation")).isEmpty());
-        assertFalse(String.valueOf(actualFingerprints.get("modelFacingSchemas")).isEmpty());
+        assertFalse(actualCapabilities.containsKey("fingerprints"));
         Map<String, Object> actualProtocolAvailability = castToMap(actualCapabilities.get("protocolAvailability"));
         assertTrue((Boolean) actualProtocolAvailability.get("prompts"));
         assertTrue((Boolean) actualProtocolAvailability.get("completions"));

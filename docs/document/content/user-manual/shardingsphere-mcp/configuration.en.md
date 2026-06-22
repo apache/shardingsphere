@@ -95,6 +95,32 @@ Notes:
 - Schema, table, view, index, and sequence metadata depends on JDBC metadata from the connection target. Proxy-visible metadata and direct-connection metadata may differ.
 - If the target JDBC driver is not packaged, copy the driver jar under `plugins/`.
 
+## Secret Placeholders
+
+Rule-change tools may require sensitive algorithm parameters such as keys, tokens, or replacement characters.
+Do not put real sensitive values into model-visible tool input, ordinary documents, chat records, or logs.
+Tool input can pass a secret placeholder object inside algorithm properties. The MCP Server only plans, previews, and generates safe manual execution packages; it does not read or resolve real values.
+Planning, preview, and manual artifact packages return only neutral placeholders or `******`; they do not return `secret_ref` or real sensitive values.
+
+Example reference object in algorithm properties:
+
+```json
+{
+  "primary_algorithm_properties": {
+    "aes-key-value": {
+      "secret_ref": "placeholder://secret-value-1"
+    }
+  }
+}
+```
+
+Notes:
+
+- MCP Server only records the sensitive slot that requires manual replacement; it does not fetch real sensitive values from external systems.
+- Automatic execution with sensitive placeholders stops before side effects and returns `secret_reference_manual_execution_required`.
+- When using a manual execution package, operators replace neutral placeholders with real values outside MCP and the AI application, then execute the DistSQL or YAML.
+- Documentation and examples use neutral placeholders only to avoid exposing real keys, paths, or internal system details to model context.
+
 ## Choose a Connection Target
 
 `runtimeDatabases` can use any reachable JDBC URL. The database objects users can see and the governance tasks they can perform depend on the connection target.

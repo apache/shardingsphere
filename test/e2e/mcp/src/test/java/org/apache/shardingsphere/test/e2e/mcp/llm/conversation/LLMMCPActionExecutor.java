@@ -24,11 +24,8 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPIntera
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class LLMMCPActionExecutor {
@@ -54,110 +51,95 @@ final class LLMMCPActionExecutor {
             return mcpInteractionClient.listPrompts();
         }
         if (MCPInteractionActionNames.GET_PROMPT.equals(actionName)) {
-            return mcpInteractionClient.getPrompt(Objects.toString(args.get("name"), "").trim(), LLMMCPJsonValues.castToMap(args.getOrDefault("arguments", Map.of())));
+            return mcpInteractionClient.getPrompt(getRequiredString(args.get("name"), "Prompt name is required."), getOptionalObjectMap(args, "arguments", "Prompt arguments must be an object."));
         }
         return MCPInteractionActionNames.COMPLETE.equals(actionName) ? complete(args) : mcpInteractionClient.call(actionName, args);
     }
     
     private Map<String, Object> readResource(final Map<String, Object> args) throws IOException, InterruptedException {
-        String resourceUri = Objects.toString(args.get("uri"), "").trim();
-        if (resourceUri.isEmpty()) {
-            throw new IllegalArgumentException("Resource URI is required.");
-        }
-        return mcpInteractionClient.readResource(resourceUri);
+        return mcpInteractionClient.readResource(getRequiredString(args.get("uri"), "Resource URI is required."));
     }
     
     private Map<String, Object> complete(final Map<String, Object> args) throws IOException, InterruptedException {
-        Map<String, Object> reference = normalizeCompletionReference(args);
-        String argumentName = normalizeCompletionArgumentName(args);
-        if (reference.isEmpty() || argumentName.isEmpty()) {
-            return createCompletionRecovery(args, reference, argumentName);
-        }
-        return mcpInteractionClient.complete(reference, argumentName,
-                Objects.toString(args.getOrDefault("argument_value", ""), ""),
-                LLMMCPJsonValues.castToStringMap(args.getOrDefault("context_arguments", Map.of())));
+        Map<String, Object> reference = requireCompletionReference(args.get("ref"));
+        Map<String, Object> argument = getRequiredObjectMap(args.get("argument"), "mcp_complete requires argument.");
+        return mcpInteractionClient.complete(reference,
+                getRequiredString(argument.get("name"), "mcp_complete argument.name is required."),
+                getOptionalString(argument, "value", "mcp_complete argument.value must be a string."),
+                getCompletionContextArguments(args));
     }
     
-    private Map<String, Object> normalizeCompletionReference(final Map<String, Object> args) {
-        Object reference = args.get("reference");
-        if (!(reference instanceof Map)) {
-            return normalizeInlineCompletionReference(args);
+    private Map<String, Object> requireCompletionReference(final Object rawReference) {
+        Map<String, Object> result = getRequiredObjectMap(rawReference, "mcp_complete requires ref.");
+        String type = getRequiredString(result.get("type"), "mcp_complete ref.type is required.");
+        if (!"ref/prompt".equals(type) && !"ref/resource".equals(type)) {
+            throw new IllegalArgumentException("mcp_complete ref.type must be ref/prompt or ref/resource.");
         }
-        Map<String, Object> result = new LinkedHashMap<>(LLMMCPJsonValues.castToMap(reference));
-        normalizeCompletionReferenceType(result);
+        if ("ref/prompt".equals(type)) {
+            getRequiredString(result.get("name"), "mcp_complete prompt ref requires name.");
+        }
+        if ("ref/resource".equals(type)) {
+            getRequiredString(result.get("uri"), "mcp_complete resource ref requires uri.");
+        }
         return result;
     }
     
-    private Map<String, Object> normalizeInlineCompletionReference(final Map<String, Object> args) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        String referenceType = Objects.toString(args.get("reference_type"), "").trim();
-        String promptName = Objects.toString(args.getOrDefault("prompt_name", args.get("name")), "").trim();
-        String resourceUri = Objects.toString(args.getOrDefault("resource_uri", args.get("uri")), "").trim();
-        if (!referenceType.isEmpty()) {
-            result.put("type", referenceType);
-        } else if (!promptName.isEmpty()) {
-            result.put("type", "ref/prompt");
-        } else if (!resourceUri.isEmpty()) {
-            result.put("type", "ref/resource");
+    private Map<String, String> getCompletionContextArguments(final Map<String, Object> args) {
+        if (!args.containsKey("context")) {
+            return Map.of();
         }
-        if (!promptName.isEmpty()) {
-            result.put("name", promptName);
+        Map<String, Object> context = getOptionalObjectMap(args, "context", "mcp_complete context must be an object.");
+        if (!context.containsKey("arguments")) {
+            throw new IllegalArgumentException("mcp_complete context.arguments is required.");
         }
-        if (!resourceUri.isEmpty()) {
-            result.put("uri", resourceUri);
-        }
-        normalizeCompletionReferenceType(result);
-        return result;
-    }
-    
-    private String normalizeCompletionArgumentName(final Map<String, Object> args) {
-        String result = Objects.toString(args.get("argument_name"), "").trim();
-        if (!result.isEmpty()) {
-            return result;
-        }
-        for (Entry<String, Object> entry : args.entrySet()) {
-            if (entry.getKey().toLowerCase(Locale.ENGLISH).contains("argument_name")) {
-                result = Objects.toString(entry.getValue(), "").trim();
-                if (!result.isEmpty()) {
-                    return result;
-                }
+        Map<String, Object> rawArguments = getOptionalObjectMap(context, "arguments", "mcp_complete context.arguments must be an object.");
+        Map<String, String> result = new LinkedHashMap<>(rawArguments.size(), 1F);
+        for (Entry<String, Object> entry : rawArguments.entrySet()) {
+            if (!(entry.getValue() instanceof String)) {
+                throw new IllegalArgumentException("mcp_complete context.arguments values must be strings.");
             }
+            result.put(entry.getKey(), (String) entry.getValue());
         }
-        return "";
+        return result;
     }
     
-    private void normalizeCompletionReferenceType(final Map<String, Object> completionReference) {
-        String referenceType = Objects.toString(completionReference.get("type"), "").trim().toLowerCase(Locale.ENGLISH);
-        if ("prompt".equals(referenceType)) {
-            completionReference.put("type", "ref/prompt");
-        } else if ("resource".equals(referenceType)) {
-            completionReference.put("type", "ref/resource");
+    private Map<String, Object> getRequiredObjectMap(final Object value, final String errorMessage) {
+        if (!(value instanceof Map)) {
+            throw new IllegalArgumentException(errorMessage);
         }
+        return LLMMCPJsonValues.castToMap(value);
     }
     
-    private Map<String, Object> createCompletionRecovery(final Map<String, Object> args, final Map<String, Object> reference, final String argumentName) {
-        Map<String, Object> retryArguments = new LinkedHashMap<>(4, 1F);
-        if (!reference.isEmpty()) {
-            retryArguments.put("reference", reference);
+    private Map<String, Object> getOptionalObjectMap(final Map<String, Object> args, final String argumentName, final String errorMessage) {
+        if (!args.containsKey(argumentName)) {
+            return Map.of();
         }
-        if (!argumentName.isEmpty()) {
-            retryArguments.put("argument_name", argumentName);
+        Object value = args.get(argumentName);
+        if (!(value instanceof Map)) {
+            throw new IllegalArgumentException(errorMessage);
         }
-        retryArguments.put("argument_value", Objects.toString(args.getOrDefault("argument_value", ""), ""));
-        retryArguments.put("context_arguments", args.getOrDefault("context_arguments", Map.of()));
-        return Map.of(
-                "response_mode", "recovery",
-                "error_code", "invalid_tool_arguments",
-                "message", "mcp_complete requires a reference object and argument_name.",
-                "recovery", Map.of(
-                        "recoverable", true,
-                        "model_action", "Retry mcp_complete with the prompt or resource reference from the user request, prompt payload, or previous MCP response.",
-                        "required_fields", List.of("reference", "argument_name"),
-                        "next_actions", List.of(Map.of(
-                                "order", 1,
-                                "type", "completion",
-                                "title", "Retry completion",
-                                "tool_name", MCPInteractionActionNames.COMPLETE,
-                                "arguments", retryArguments))));
+        return LLMMCPJsonValues.castToMap(value);
+    }
+    
+    private String getRequiredString(final Object value, final String errorMessage) {
+        if (!(value instanceof String)) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+        String result = ((String) value).trim();
+        if (result.isEmpty()) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+        return result;
+    }
+    
+    private String getOptionalString(final Map<String, Object> args, final String argumentName, final String errorMessage) {
+        if (!args.containsKey(argumentName)) {
+            return "";
+        }
+        Object value = args.get(argumentName);
+        if (!(value instanceof String)) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+        return (String) value;
     }
 }

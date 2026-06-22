@@ -170,7 +170,7 @@ final class LLMMCPModelFacingToolResponseFormatter {
         copyIfPresent(recovery, compactRecovery, "completion_first");
         copyIfPresent(recovery, compactRecovery, "suggested_arguments");
         copyIfPresent(recovery, compactRecovery, "resources_to_read");
-        copyIfPresent(recovery, compactRecovery, "next_actions");
+        copyModelFacingNextActions(recovery, compactRecovery);
         target.put("recovery", compactRecovery);
     }
     
@@ -181,16 +181,12 @@ final class LLMMCPModelFacingToolResponseFormatter {
         }
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : nextActions) {
-            result.add(LLMMCPSideEffectNextAction.isExecutionAction(each) ? createSideEffectExecutionNextActionSummary(each) : each);
+            if (!LLMMCPSideEffectNextAction.isExecutionAction(each)) {
+                result.add(each);
+            }
         }
-        target.put("next_actions", result);
-    }
-    
-    private static Map<String, Object> createSideEffectExecutionNextActionSummary(final Map<String, Object> action) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        copyIfPresent(action, result, "type");
-        copyIfPresent(action, result, "title");
-        copyIfPresent(action, result, "reason");
-        return result;
+        if (!result.isEmpty()) {
+            target.put("next_actions", result);
+        }
     }
 }

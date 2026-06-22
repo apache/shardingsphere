@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgo
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +46,9 @@ class ShadowWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService(inspectionService, new ShadowDistSQLPlanningService())
                 .planRule(new TestWorkflowSessionContext(), queryFacade, "session-1", createRuleRequest());
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
-        assertTrue(actual.getRuleArtifacts().get(0).getSql().startsWith("CREATE SHADOW RULE shadow_rule"));
+        assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmType(), is("VALUE_MATCH"));
+        assertThat(actual.getPropertyRequirements().getFirst().getPropertyKey(), is("operation"));
+        assertTrue(actual.getRuleArtifacts().getFirst().getSql().startsWith("CREATE SHADOW RULE shadow_rule"));
     }
     
     @Test
@@ -55,7 +58,24 @@ class ShadowWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService()
                 .planRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
         assertTrue(actual.getRuleArtifacts().isEmpty());
+    }
+    
+    @Test
+    void assertPlanRuleWithDefaultSqlHintRecommendation() {
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        ShadowRuleWorkflowRequest request = createRuleRequest();
+        request.setAlgorithmType("");
+        request.getAlgorithmProperties().clear();
+        when(inspectionService.queryAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "SQL_HINT")));
+        when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of());
+        WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService(inspectionService, new ShadowDistSQLPlanningService())
+                .planRule(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
+        assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmType(), is("SQL_HINT"));
+        assertTrue(actual.getPropertyRequirements().isEmpty());
     }
     
     @Test
@@ -68,7 +88,7 @@ class ShadowWorkflowPlanningServiceTest {
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "default_shadow_algorithm")));
         WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService(inspectionService, new ShadowDistSQLPlanningService())
                 .planDefaultAlgorithm(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
-        assertThat(actual.getRuleArtifacts().get(0).getSql(), is("DROP DEFAULT SHADOW ALGORITHM"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP DEFAULT SHADOW ALGORITHM"));
     }
     
     @Test
@@ -81,7 +101,7 @@ class ShadowWorkflowPlanningServiceTest {
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of());
         WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService(inspectionService, new ShadowDistSQLPlanningService())
                 .planAlgorithmCleanup(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
-        assertThat(actual.getRuleArtifacts().get(0).getSql(), is("DROP SHADOW ALGORITHM unused_algorithm"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP SHADOW ALGORITHM unused_algorithm"));
     }
     
     @Test

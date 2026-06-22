@@ -109,7 +109,7 @@ public final class MCPErrorConverter {
     }
     
     private static MCPErrorResponse createError(final Throwable cause, final String defaultMessage) {
-        String message = Objects.toString(cause.getMessage(), defaultMessage).trim();
+        String message = MCPQueryRecoveryPayloadFactory.isQueryFailure(cause) ? defaultMessage : Objects.toString(cause.getMessage(), defaultMessage).trim();
         return new MCPErrorResponse(message, MCPRecoveryPayloadFactory.create(cause));
     }
 }

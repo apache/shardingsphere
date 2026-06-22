@@ -9,7 +9,7 @@ This page explains how to connect Claude Code to an already running ShardingSphe
 
 - Use this page when you want to connect an already running ShardingSphere-MCP HTTP Server to Claude Code CLI.
 - Use this page when you want Claude Code to start ShardingSphere-MCP locally through STDIO in a local development environment.
-- After integration, Claude Code can inspect logic databases, inspect table structures, run controlled read-only queries, or call `database_gateway_validate_proxy_connectivity` for preflight validation.
+- After integration, Claude Code can inspect logic databases, inspect table structures, run controlled read-only queries, or call `database_gateway_validate_runtime_database` for preflight validation.
 
 ## Prerequisites
 
@@ -77,7 +77,7 @@ Invocation succeeds when:
 - In a Claude Code conversation, run a minimal validation task such as:
   - Show the tables in `<logic-database>`.
   - Show columns and indexes for the `orders` table.
-  - Run `database_gateway_validate_proxy_connectivity` against a configured runtime database.
+  - Run `database_gateway_validate_runtime_database` against a configured runtime database.
 - If the tools are listed and the validation query succeeds, the integration is working.
 
 ## Notes

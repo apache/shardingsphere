@@ -19,7 +19,8 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import java.util.Collection;
+import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -74,10 +75,28 @@ public final class WorkflowPlanningArguments {
         if (rawValue instanceof Map) {
             return createMapArgument((Map<?, ?>) rawValue);
         }
-        if (rawValue instanceof Collection) {
-            return createMapArgument((Collection<?>) rawValue);
-        }
         return Collections.emptyMap();
+    }
+    
+    /**
+     * Get algorithm property map argument.
+     *
+     * @param name argument name
+     * @param algorithmRole algorithm role
+     * @return algorithm property map
+     */
+    public Map<String, String> getAlgorithmPropertyMapArgument(final String name, final String algorithmRole) {
+        return WorkflowSecretReferenceUtils.createAlgorithmProperties(arguments.get(name), algorithmRole);
+    }
+    
+    /**
+     * Get secret reference map argument.
+     *
+     * @param name argument name
+     * @return secret reference map
+     */
+    public Map<String, SecretReferenceValue> getSecretReferenceMapArgument(final String name) {
+        return WorkflowSecretReferenceUtils.createSecretReferences(arguments.get(name));
     }
     
     private Map<String, String> createMapArgument(final Map<?, ?> rawValue) {
@@ -91,20 +110,4 @@ public final class WorkflowPlanningArguments {
         return result;
     }
     
-    private Map<String, String> createMapArgument(final Collection<?> rawValue) {
-        Map<String, String> result = new LinkedHashMap<>(rawValue.size(), 1F);
-        for (Object each : rawValue) {
-            String actualEntry = Objects.toString(each, "").trim();
-            int separatorIndex = actualEntry.indexOf('=');
-            if (-1 == separatorIndex) {
-                continue;
-            }
-            String actualKey = actualEntry.substring(0, separatorIndex).trim();
-            String actualValue = actualEntry.substring(separatorIndex + 1).trim();
-            if (!actualKey.isEmpty()) {
-                result.put(actualKey, actualValue);
-            }
-        }
-        return result;
-    }
 }

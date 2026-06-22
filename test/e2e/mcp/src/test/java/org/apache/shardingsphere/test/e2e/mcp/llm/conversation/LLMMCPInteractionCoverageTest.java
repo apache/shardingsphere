@@ -50,6 +50,13 @@ class LLMMCPInteractionCoverageTest {
                 createTrace("database_gateway_execute_query", true, Map.of("error_code", "failed")))));
     }
     
+    @Test
+    void assertHasRequiredInteractionCoverageExcludesHarnessOrigin() {
+        assertFalse(LLMMCPInteractionCoverage.hasRequiredInteractionCoverage(List.of("database_gateway_execute_query"), List.of(
+                new MCPInteractionTraceRecord(1, "tool_call", MCPInteractionTraceRecord.HARNESS_TEXT_RECOVERY_ORIGIN,
+                        "database_gateway_execute_query", Map.of(), Map.of("result_kind", "result_set"), true, 0L))));
+    }
+    
     private MCPInteractionTraceRecord createTrace(final String targetName, final boolean valid, final Map<String, Object> structuredContent) {
         return new MCPInteractionTraceRecord(1, "tool_call", MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN, targetName, Map.of(), structuredContent, valid, 0L);
     }

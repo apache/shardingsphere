@@ -25,6 +25,7 @@ import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
+import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,10 +39,11 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -83,8 +85,12 @@ class FirebirdFetchStatementCommandExecutorTest {
     
     @Test
     void assertExecuteWhenNoBackendHandler() throws SQLException {
+        when(packet.getFetchSize()).thenReturn(Integer.MAX_VALUE);
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
-        assertNoMoreRowsResponse(executor.execute());
+        Collection<DatabasePacket> actualPackets = executor.execute();
+        assertThat(actualPackets.size(), is(1));
+        assertNoMoreRowsResponse((FirebirdFetchResponsePacket) actualPackets.iterator().next());
+        assertFalse(executor.next());
     }
     
     @Test
@@ -92,61 +98,97 @@ class FirebirdFetchStatementCommandExecutorTest {
         FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
-        assertNoMoreRowsResponse(executor.execute());
-    }
-    
-    @Test
-    void assertExecuteWithRowsAndFetchEnd() throws SQLException {
-        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
-        when(packet.getFetchSize()).thenReturn(2);
-        QueryResponseRow responseRow = new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1)));
-        when(proxyBackendHandler.next()).thenReturn(true, true);
-        when(proxyBackendHandler.getRowData()).thenReturn(responseRow, responseRow);
-        executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
-        Iterator<DatabasePacket> packetIterator = actualPackets.iterator();
-        FirebirdFetchResponsePacket actualFirstPacket = (FirebirdFetchResponsePacket) packetIterator.next();
-        assertThat(actualPackets.size(), is(3));
-        assertThat(actualFirstPacket.getStatus(), is(ISCConstants.FETCH_OK));
-        assertThat(actualFirstPacket.getCount(), is(1));
-        assertNotNull(actualFirstPacket.getRow());
-        FirebirdFetchResponsePacket actualSecondPacket = (FirebirdFetchResponsePacket) packetIterator.next();
-        assertThat(actualSecondPacket.getStatus(), is(ISCConstants.FETCH_OK));
-        assertThat(actualSecondPacket.getCount(), is(1));
-        assertNotNull(actualSecondPacket.getRow());
-        FirebirdFetchResponsePacket actualEndPacket = (FirebirdFetchResponsePacket) packetIterator.next();
-        assertThat(actualEndPacket.getStatus(), is(ISCConstants.FETCH_OK));
-        assertThat(actualEndPacket.getCount(), is(0));
-        assertNull(actualEndPacket.getRow());
+        assertThat(actualPackets.size(), is(1));
+        assertNoMoreRowsResponse((FirebirdFetchResponsePacket) actualPackets.iterator().next());
+        assertFalse(executor.next());
     }
     
     @Test
-    void assertExecuteStopsWhenRowsExhausted() throws SQLException {
+    void assertGetResponseType() {
+        executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
+        assertThat(executor.getResponseType(), is(ResponseType.QUERY));
+    }
+    
+    @Test
+    void assertNextReturnsFalseWhenFetchCountExceeded() throws SQLException {
+        executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
+        executor.execute();
+        assertFalse(executor.next());
+    }
+    
+    @Test
+    void assertNextReturnsTrueWhenFetchCountNotExceeded() throws SQLException {
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        when(packet.getFetchSize()).thenReturn(2);
+        when(proxyBackendHandler.next()).thenReturn(true);
+        QueryResponseRow responseRow = new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1)));
+        when(proxyBackendHandler.getRowData()).thenReturn(responseRow);
+        executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
+        executor.execute();
+        assertTrue(executor.next());
+        FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
+    }
+    
+    @Test
+    void assertExecuteWhenBackendHandlerReturnsRow() throws SQLException {
         FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
         when(packet.getFetchSize()).thenReturn(2);
         QueryResponseRow responseRow = new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1)));
-        when(proxyBackendHandler.next()).thenReturn(true, false);
+        when(proxyBackendHandler.next()).thenReturn(true);
         when(proxyBackendHandler.getRowData()).thenReturn(responseRow);
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
-        Iterator<DatabasePacket> packetIterator = actualPackets.iterator();
-        FirebirdFetchResponsePacket actualRowPacket = (FirebirdFetchResponsePacket) packetIterator.next();
-        assertThat(actualPackets.size(), is(2));
-        assertThat(actualRowPacket.getStatus(), is(ISCConstants.FETCH_OK));
-        assertThat(actualRowPacket.getCount(), is(1));
-        assertNotNull(actualRowPacket.getRow());
-        FirebirdFetchResponsePacket actualNoMorePacket = (FirebirdFetchResponsePacket) packetIterator.next();
-        assertThat(actualNoMorePacket.getStatus(), is(ISCConstants.FETCH_NO_MORE_ROWS));
-        assertThat(actualNoMorePacket.getCount(), is(0));
-        assertNull(actualNoMorePacket.getRow());
-        verify(databaseConnectionManager).unmarkResourceInUse(proxyBackendHandler);
+        assertThat(actualPackets.size(), is(1));
+        assertFetchRowResponse((FirebirdFetchResponsePacket) actualPackets.iterator().next());
+        assertTrue(executor.next());
+        assertFetchRowResponse((FirebirdFetchResponsePacket) executor.getQueryRowPacket());
+        assertTrue(executor.next());
+        assertFetchEndResponse((FirebirdFetchResponsePacket) executor.getQueryRowPacket());
+        assertFalse(executor.next());
+        FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
     }
     
-    private void assertNoMoreRowsResponse(final Collection<DatabasePacket> actualPackets) {
-        Iterator<DatabasePacket> packetIterator = actualPackets.iterator();
-        FirebirdFetchResponsePacket actualPacket = (FirebirdFetchResponsePacket) packetIterator.next();
+    @Test
+    void assertExecuteWhenBackendHandlerReturnsNoMoreRows() throws SQLException {
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        when(packet.getFetchSize()).thenReturn(Integer.MAX_VALUE);
+        when(proxyBackendHandler.next()).thenReturn(false);
+        executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
+        assertNoMoreRowsResponse((FirebirdFetchResponsePacket) actualPackets.iterator().next());
+        verify(databaseConnectionManager).unmarkResourceInUse(proxyBackendHandler);
+        assertFalse(executor.next());
+        FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
+    }
+    
+    @Test
+    void assertGetQueryRowPacketWhenEnd() throws SQLException {
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        when(packet.getFetchSize()).thenReturn(0);
+        executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actualPackets = executor.execute();
+        assertThat(actualPackets.size(), is(1));
+        assertFetchEndResponse((FirebirdFetchResponsePacket) actualPackets.iterator().next());
+        assertFalse(executor.next());
+        FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
+    }
+    
+    private void assertNoMoreRowsResponse(final FirebirdFetchResponsePacket actualPacket) {
         assertThat(actualPacket.getStatus(), is(ISCConstants.FETCH_NO_MORE_ROWS));
+        assertThat(actualPacket.getCount(), is(0));
+        assertNull(actualPacket.getRow());
+    }
+    
+    private void assertFetchRowResponse(final FirebirdFetchResponsePacket actualPacket) {
+        assertThat(actualPacket.getStatus(), is(ISCConstants.FETCH_OK));
+        assertThat(actualPacket.getCount(), is(1));
+        assertNotNull(actualPacket.getRow());
+    }
+    
+    private void assertFetchEndResponse(final FirebirdFetchResponsePacket actualPacket) {
+        assertThat(actualPacket.getStatus(), is(ISCConstants.FETCH_OK));
         assertThat(actualPacket.getCount(), is(0));
         assertNull(actualPacket.getRow());
     }

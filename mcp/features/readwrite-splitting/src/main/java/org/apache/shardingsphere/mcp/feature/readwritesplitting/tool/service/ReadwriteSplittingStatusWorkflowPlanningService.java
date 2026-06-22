@@ -82,7 +82,7 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
         ReadwriteSplittingStatusWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
-        planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
+        applyResolvedStatusIntent(mergedRequest, clarifiedIntent);
         if (!ensurePlanningContext(mergedRequest, clarifiedIntent, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
@@ -99,6 +99,14 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         ReadwriteSplittingStatusWorkflowRequest result = ReadwriteSplittingStatusWorkflowRequest.merge(snapshot.getRequest(), request);
         return planningSupport.prepareSnapshot(snapshot, ReadwriteSplittingFeatureDefinition.STATUS_WORKFLOW_KIND, result, null,
                 intentResolver.resolveStatusIntent(result), "Readwrite-splitting status workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+    }
+    
+    private void applyResolvedStatusIntent(final ReadwriteSplittingStatusWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+        request.setFieldSemantics(clarifiedIntent.getFieldSemantics());
+        Object targetStatus = clarifiedIntent.getInferredValues().get(ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD);
+        if (request.getTargetStatus().isEmpty() && targetStatus instanceof String) {
+            request.setTargetStatus((String) targetStatus);
+        }
     }
     
     private boolean ensurePlanningContext(final ReadwriteSplittingStatusWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {

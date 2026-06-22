@@ -19,7 +19,10 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTransportProvider;
+import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
+import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator;
 import io.modelcontextprotocol.spec.HttpHeaders;
+import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpStreamableServerSession;
 import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
@@ -30,6 +33,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.MCPTransportSecurityException;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.ServerTransportSecurityValidatorFactory;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -37,6 +42,9 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -55,6 +63,10 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final HttpServletStreamableServerTransportProvider delegate;
     
+    private final McpJsonMapper jsonMapper;
+    
+    private final ServerTransportSecurityValidator securityValidator;
+    
     private final MCPSessionManager sessionManager;
     
     private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
@@ -67,7 +79,9 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final HttpTransportConfiguration config) {
         sessionAttributionResolver = new SessionAttributionResolver(config.getSessionAttributionSource());
-        delegate = createDelegate(sessionManager, jsonMapper, config.getBindHost(), config.getEndpointPath(), sessionAttributionResolver);
+        securityValidator = ServerTransportSecurityValidatorFactory.create(sessionManager, config.getBindHost(), sessionAttributionResolver);
+        delegate = createDelegate(jsonMapper, config.getEndpointPath(), securityValidator);
+        this.jsonMapper = jsonMapper;
         this.sessionManager = sessionManager;
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         sessionProtocolVersions = new ConcurrentHashMap<>();
@@ -75,10 +89,10 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         closed = new AtomicBoolean();
     }
     
-    private static HttpServletStreamableServerTransportProvider createDelegate(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper,
-                                                                               final String bindHost, final String endpointPath, final SessionAttributionResolver sessionAttributionResolver) {
+    private static HttpServletStreamableServerTransportProvider createDelegate(final McpJsonMapper jsonMapper, final String endpointPath,
+                                                                               final ServerTransportSecurityValidator securityValidator) {
         return HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath)
-                .securityValidator(ServerTransportSecurityValidatorFactory.create(sessionManager, bindHost, sessionAttributionResolver)).build();
+                .securityValidator(securityValidator).build();
     }
     
     @Override
@@ -153,7 +167,43 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private void serviceRequest(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         setUtf8Encoding(request, response);
+        if (!validateTransportSecurity(request, response)) {
+            return;
+        }
         serviceWithApplicationClassLoader(request, response);
+    }
+    
+    private boolean validateTransportSecurity(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        try {
+            securityValidator.validateHeaders(extractHeaders(request));
+            return true;
+        } catch (final MCPTransportSecurityException ex) {
+            writeTransportSecurityError(response, ex);
+            return false;
+        } catch (final ServerTransportSecurityException ex) {
+            response.sendError(ex.getStatusCode(), ex.getMessage());
+            return false;
+        }
+    }
+    
+    private void writeTransportSecurityError(final HttpServletResponse response, final MCPTransportSecurityException cause) throws IOException {
+        McpError error = MCPTransportErrorFactory.createError(cause);
+        response.setStatus(cause.getStatusCode());
+        response.setContentType(JSON_CONTENT_TYPE);
+        response.getWriter().write(jsonMapper.writeValueAsString(Map.of("jsonrpc", McpSchema.JSONRPC_VERSION, "error", error.getJsonRpcError())));
+    }
+    
+    private Map<String, List<String>> extractHeaders(final HttpServletRequest request) {
+        Enumeration<String> headerNames = request.getHeaderNames();
+        if (null == headerNames) {
+            return Map.of();
+        }
+        Map<String, List<String>> result = new LinkedHashMap<>();
+        for (String each : Collections.list(headerNames)) {
+            Enumeration<String> headerValues = request.getHeaders(each);
+            result.put(each, null == headerValues ? List.of() : Collections.list(headerValues));
+        }
+        return result;
     }
     
     @Override

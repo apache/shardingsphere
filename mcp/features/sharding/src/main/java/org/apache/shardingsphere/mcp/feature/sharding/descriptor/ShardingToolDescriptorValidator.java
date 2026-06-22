@@ -25,11 +25,21 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Sharding tool descriptor validator.
  */
 public final class ShardingToolDescriptorValidator implements MCPToolDescriptorValidator {
+    
+    private static final List<String> REQUIRED_OUTPUT_FIELDS = List.of(
+            "response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs", "clarification_questions",
+            "elicitation_support", "fallback_reason", "issues", "global_steps", "current_step", "algorithm_recommendations", "property_requirements",
+            "validation_strategy", "delivery_mode", "execution_mode", "intent_inference", "argument_provenance", "review_focus", "proxy_topology_hint",
+            "distsql_artifacts", MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS);
+    
+    private static final List<String> REQUIRED_META_FIELDS = List.of(
+            "org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
     
     @Override
     public boolean supports(final MCPToolDescriptor toolDescriptor) {
@@ -43,8 +53,16 @@ public final class ShardingToolDescriptorValidator implements MCPToolDescriptorV
     
     @Override
     public void validate(final MCPToolDescriptor toolDescriptor) {
-        MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor,
-                List.of("response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs",
-                        MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS));
+        MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor, REQUIRED_OUTPUT_FIELDS);
+        validateRequiredMetaFields(toolDescriptor);
+    }
+    
+    private void validateRequiredMetaFields(final MCPToolDescriptor toolDescriptor) {
+        Map<String, Object> meta = toolDescriptor.getMeta();
+        for (String each : REQUIRED_META_FIELDS) {
+            if (!meta.containsKey(each)) {
+                throw new IllegalStateException(String.format("Tool `%s` metadata must declare `%s`.", toolDescriptor.getName(), each));
+            }
+        }
     }
 }

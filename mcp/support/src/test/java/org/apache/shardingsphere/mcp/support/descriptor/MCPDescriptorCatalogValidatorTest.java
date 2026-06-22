@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +59,16 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     @Test
+    void assertValidateRejectsPublicUserOverridesInputField() {
+        assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
+                "database_gateway_test_tool", "Test Tool", "Run a test tool.",
+                createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query."),
+                        "user_overrides", Map.of("type", "object", "description", "Removed duplicate input."))),
+                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of()))),
+                "Tool `database_gateway_test_tool` inputSchema must use canonical fields instead of banned `user_overrides`.");
+    }
+    
+    @Test
     void assertValidateRejectsFeatureOwnedToolDescriptor() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
                 "database_gateway_extension_test_tool", new MCPToolAnnotations("Extension Tool", true, false, true, true), createOutputSchema()))),
@@ -65,6 +79,53 @@ class MCPDescriptorCatalogValidatorTest {
     void assertValidateDoesNotHardcodeCoreToolDescriptor() {
         assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createCatalog(List.of(), List.of(createToolDescriptor(
                 "database_gateway_search_metadata", new MCPToolAnnotations("Search Metadata", true, false, true, true), createOutputSchema())))));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertValidateRejectsApplyDescriptorWithoutSecretReferenceSummary() {
+        MCPToolDescriptor descriptor = WorkflowToolDescriptors.createExecution();
+        Map<String, Object> outputSchema = new LinkedHashMap<>(descriptor.getOutputSchema());
+        Map<String, Object> properties = new LinkedHashMap<>((Map<String, Object>) outputSchema.get("properties"));
+        properties.remove("secret_reference_summary");
+        outputSchema.put("properties", properties);
+        assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
+                descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), outputSchema, descriptor.getAnnotations(), descriptor.getMeta()))),
+                "Tool `database_gateway_apply_workflow` outputSchema must declare `secret_reference_summary`.");
+    }
+    
+    @Test
+    void assertValidateRejectsUnsupportedModelFacingPromptPlaceholder() {
+        assertValidationError(createPromptCatalog(List.of(createPromptDescriptor("test_prompt", List.of(), Map.of())),
+                List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-single-brace-placeholder.md"))),
+                "Prompt template `META-INF/shardingsphere-mcp/prompts/fixture-single-brace-placeholder.md` contains unsupported model-facing placeholder `{database}`.");
+    }
+    
+    @Test
+    void assertValidatePreservesResourceUriTemplatesInPrompt() {
+        assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createPromptCatalog(List.of(createPromptDescriptor("test_prompt", List.of(), Map.of())),
+                List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-uri-template.md")))));
+    }
+    
+    @Test
+    void assertValidateRejectsModelFacingPromptPlaceholderNearResourceUriTemplate() {
+        assertValidationError(createPromptCatalog(List.of(createPromptDescriptor("test_prompt", List.of(), Map.of())),
+                List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-mixed-placeholder-and-uri-template.md"))),
+                "Prompt template `META-INF/shardingsphere-mcp/prompts/fixture-mixed-placeholder-and-uri-template.md` contains unsupported model-facing placeholder `{database}`.");
+    }
+    
+    @Test
+    void assertValidateRejectsUnrenderedPromptArgument() {
+        assertValidationError(createPromptCatalog(List.of(createPromptDescriptor("test_prompt", Map.of())),
+                List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-uri-template.md"))),
+                "Prompt `test_prompt` declares argument `database` but template `META-INF/shardingsphere-mcp/prompts/fixture-uri-template.md` does not render it.");
+    }
+    
+    @Test
+    void assertValidateAcceptsClientFormOnlyPromptArgument() {
+        assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createPromptCatalog(List.of(createPromptDescriptor("test_prompt",
+                Map.of("org.apache.shardingsphere/client-form-only-arguments", List.of("database")))),
+                List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-uri-template.md")))));
     }
     
     private void assertValidationError(final MCPDescriptorCatalog catalog, final String expectedMessage) {
@@ -81,9 +142,21 @@ class MCPDescriptorCatalogValidatorTest {
         return new MCPDescriptorCatalog(resourceDescriptors, resourceTemplateDescriptors, List.of(), toolDescriptors, List.of(), List.of(), List.of(), List.of(), List.of());
     }
     
+    private MCPDescriptorCatalog createPromptCatalog(final List<MCPPromptDescriptor> promptDescriptors, final List<MCPPromptTemplateBinding> promptTemplateBindings) {
+        return new MCPDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), promptDescriptors, promptTemplateBindings, List.of(), List.of(), List.of());
+    }
+    
     private MCPResourceDescriptor createResourceDescriptor(final MCPResourceAnnotations annotations) {
         return new MCPResourceDescriptor("shardingsphere://capabilities", "server-capability-catalog", "Server Capability Catalog",
                 "Read the model-facing capability catalog.", "application/json", annotations, Map.of());
+    }
+    
+    private MCPPromptDescriptor createPromptDescriptor(final String name, final Map<String, Object> meta) {
+        return createPromptDescriptor(name, List.of(new MCPPromptArgumentDescriptor("database", "Database", "Logical database.", false)), meta);
+    }
+    
+    private MCPPromptDescriptor createPromptDescriptor(final String name, final List<MCPPromptArgumentDescriptor> args, final Map<String, Object> meta) {
+        return new MCPPromptDescriptor(name, "Test Prompt", "Guide the model through a test prompt.", args, meta);
     }
     
     private MCPToolDescriptor createToolDescriptor(final MCPToolAnnotations annotations) {
@@ -95,7 +168,11 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     private Map<String, Object> createInputSchema() {
-        return Map.of("type", "object", "properties", Map.of("query", Map.of("type", "string", "description", "Query.")), "required", List.of("query"), "additionalProperties", false);
+        return createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query.")));
+    }
+    
+    private Map<String, Object> createInputSchema(final Map<String, Object> properties) {
+        return Map.of("type", "object", "properties", properties, "required", List.of("query"), "additionalProperties", false);
     }
     
     private Map<String, Object> createOutputSchema() {

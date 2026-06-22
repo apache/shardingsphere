@@ -41,6 +41,19 @@ class ShardingDistSQLPlanningServiceTest {
     }
     
     @Test
+    void assertPlanTableRuleCreateFormatsReservedIdentifiers() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setTable("table");
+        request.setColumn("from");
+        request.setKeyGenerateColumn("key");
+        RuleArtifact actual = new ShardingDistSQLPlanningService().planTableRule(request, "create");
+        assertThat(actual.getSql(), is("CREATE SHARDING TABLE RULE `table`(DATANODES('ds_${0..1}.t_order_${0..1}'), "
+                + "TABLE_STRATEGY(TYPE='standard', SHARDING_COLUMN=`from`, "
+                + "SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))), "
+                + "KEY_GENERATE_STRATEGY(COLUMN=`key`, TYPE(NAME='snowflake')))"));
+    }
+    
+    @Test
     void assertPlanTableRuleCreateWithComplexStrategy() {
         ShardingWorkflowRequest request = createTableRuleRequest();
         request.setColumn("");

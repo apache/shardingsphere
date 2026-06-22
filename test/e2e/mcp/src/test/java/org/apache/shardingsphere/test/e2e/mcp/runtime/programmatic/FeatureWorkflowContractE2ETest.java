@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
-class FeatureWorkflowContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final List<String> FORBIDDEN_ARTIFACT_TOKENS = List.of(
             "create table", "alter table", "drop table", "create index", "drop index", "migrate", "migration", "backfill", "data probe", "physical metadata",

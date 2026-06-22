@@ -233,33 +233,9 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          description: "Optional user-selected encrypt algorithms and explicit rule column names."
-          properties:
-            algorithm_type:
-              type: string
-              description: "Primary encrypt algorithm type override."
-            assisted_query_algorithm_type:
-              type: string
-              description: "Assisted-query encrypt algorithm type override."
-            like_query_algorithm_type:
-              type: string
-              description: "LIKE-query encrypt algorithm type override."
-            cipher_column_name:
-              type: string
-              description: "Cipher column name to put into CREATE or ALTER ENCRYPT RULE."
-            assisted_query_column_name:
-              type: string
-              description: "Assisted-query column name to put into CREATE or ALTER ENCRYPT RULE when equality filtering is required."
-            like_query_column_name:
-              type: string
-              description: "LIKE-query column name to put into CREATE or ALTER ENCRYPT RULE when LIKE query support is required."
-          required: []
-          additionalProperties: false
         algorithm_type:
           type: string
-          description: "Primary encrypt algorithm type override; equivalent to user_overrides.algorithm_type."
+          description: "Primary encrypt algorithm type override."
         assisted_query_algorithm_type:
           type: string
           description: "Assisted-query algorithm type override used for equality filtering."
@@ -277,15 +253,15 @@ tools:
           description: "LIKE-query column name to put into CREATE or ALTER ENCRYPT RULE when LIKE query support is required."
         primary_algorithm_properties:
           type: object
-          description: "Plugin-defined primary encrypt algorithm properties. Accepted keys depend on the selected algorithm descriptor returned in planning output."
+          description: "Plugin-defined primary encrypt algorithm properties. Values may be strings or protected placeholder objects with secret_ref and optional label; placeholders require manual execution outside MCP."
           additionalProperties: true
         assisted_query_algorithm_properties:
           type: object
-          description: "Plugin-defined assisted-query algorithm properties. Accepted keys depend on the selected algorithm descriptor returned in planning output."
+          description: "Plugin-defined assisted-query algorithm properties. Values may be strings or protected placeholder objects with secret_ref and optional label; placeholders require manual execution outside MCP."
           additionalProperties: true
         like_query_algorithm_properties:
           type: object
-          description: "Plugin-defined LIKE-query algorithm properties. Accepted keys depend on the selected algorithm descriptor returned in planning output."
+          description: "Plugin-defined LIKE-query algorithm properties. Values may be strings or protected placeholder objects with secret_ref and optional label; placeholders require manual execution outside MCP."
           additionalProperties: true
       required: []
       additionalProperties: false
@@ -376,6 +352,9 @@ tools:
         review_focus:
           type: object
           description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
+        secret_reference_summary:
+          type: object
+          description: "Safe summary of protected algorithm-property placeholders. It never contains raw secret_ref identifiers or real sensitive values."
         proxy_topology_hint:
           type: object
           description: "Proxy metadata view expected by this workflow and safe recovery guidance when runtime metadata looks inconsistent."
@@ -384,19 +363,6 @@ tools:
           description: "Masked rule DistSQL artifacts generated for review before applying the workflow."
           items:
             type: object
-        ddl_artifacts:
-          type: array
-          description: "Reviewable DDL artifact list returned by workflow payloads; encrypt rule planning normally leaves this empty."
-          items:
-            type: object
-        index_plan:
-          type: array
-          description: "Reviewable index plan list returned by workflow payloads; encrypt rule planning normally leaves this empty."
-          items:
-            type: object
-        derived_column_plan:
-          type: object
-          description: "Encrypt-specific physical column plan for cipher, assisted-query, and LIKE-query columns."
         masked_property_preview:
           type: object
           description: "Encrypt-specific preview of algorithm properties with secret values masked before returning them to MCP clients."
@@ -459,10 +425,40 @@ tools:
               property_key: aes-key-value
               required: true
               secret: true
+            - role: primary
+              property_key: digest-algorithm-name
+              required: false
+              secret: false
+              default_value: SHA-1
           validation_strategy: {}
           delivery_mode: all-at-once
           execution_mode: review-then-execute
           intent_inference: {}
+          argument_provenance:
+            database: user
+            table: user
+            column: user
+            algorithm_type: resource
+          review_focus:
+            artifact_categories:
+              - rule_dist_sql
+            side_effect_scope: runtime_encrypt_rule
+            next_review_action: preview_before_apply
+          proxy_topology_hint:
+            metadata_source: ShardingSphere-Proxy
+            recovery_hint: Read encrypt algorithm and rule resources again if runtime metadata looks stale.
+          distsql_artifacts:
+            - artifact_id: create-encrypt-rule
+              artifact_type: rule_dist_sql
+              sql: >-
+                CREATE ENCRYPT RULE orders (COLUMNS((NAME=status, CIPHER=status_cipher,
+                ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='******', 'digest-algorithm-name'='SHA-1'))))))
+          masked_property_preview:
+            primary:
+              aes-key-value: "******"
+              digest-algorithm-name: SHA-1
+            assisted_query: {}
+            like_query: {}
           resources_to_read:
             - uri: shardingsphere://features/encrypt/algorithms
               resource_kind: algorithm

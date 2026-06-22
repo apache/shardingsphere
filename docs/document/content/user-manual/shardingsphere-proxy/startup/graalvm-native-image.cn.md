@@ -185,7 +185,7 @@ vfox install java@21.0.7-ms
 vfox use --global java@21.0.7-ms
 ```
 
-当 Windows 弹出窗口，要求允许类似 `C:\users\lingh\.version-fox\cache\java\v-21.0.7-ms\java-21.0.7-ms\bin\java.exe` 路径的应用通过 Windows 防火墙时，
+当 Windows 弹出窗口，要求允许类似 `C:\users\shard\.version-fox\cache\java\v-21.0.7-ms\java-21.0.7-ms\bin\java.exe` 路径的应用通过 Windows 防火墙时，
 应当批准。 
 背景参考 https://support.microsoft.com/en-us/windows/risks-of-allowing-apps-through-windows-firewall-654559af-3f54-3dcf-349f-71ccd90bcc5c 。
 

@@ -22,7 +22,9 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestExc
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
+import org.apache.shardingsphere.mcp.core.resource.handler.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 
 import java.util.LinkedHashMap;
@@ -38,14 +40,18 @@ import java.util.Set;
 public final class SearchMetadataToolService {
     
     private static final Map<String, Integer> OBJECT_TYPE_ORDERS = Map.of(
-            "database", 0, "schema", 1, "table", 2, "view", 3, "column", 4, "index", 5, "sequence", 6);
+            "database", 0, "schema", 1, "storage_unit", 2, "table", 3, "view", 4, "column", 5, "index", 6, "sequence", 7);
     
     private final MetadataSearchCollector collector;
     
     private final MetadataSearchMatcher matcher = new MetadataSearchMatcher();
     
     public SearchMetadataToolService(final MCPMetadataQueryFacade metadataQueryFacade) {
-        collector = new MetadataSearchCollector(metadataQueryFacade, new MetadataSearchResourceUriFactory());
+        collector = new MetadataSearchCollector(metadataQueryFacade, null, new GovernanceMetadataQueryService(), new MetadataSearchResourceUriFactory());
+    }
+    
+    public SearchMetadataToolService(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade) {
+        collector = new MetadataSearchCollector(metadataQueryFacade, queryFacade, new GovernanceMetadataQueryService(), new MetadataSearchResourceUriFactory());
     }
     
     /**

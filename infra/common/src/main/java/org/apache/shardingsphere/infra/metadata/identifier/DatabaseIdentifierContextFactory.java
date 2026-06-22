@@ -129,16 +129,25 @@ public final class DatabaseIdentifierContextFactory {
     
     private static IdentifierCaseRuleSet createScopeAwareRuleSet(final IdentifierCaseRuleSet protocolRuleSet, final IdentifierCaseRuleSet storageRuleSet) {
         IdentifierCaseRuleSet databaseRuleSet = IdentifierCaseRuleSets.newInsensitiveRuleSet();
+        IdentifierCaseRuleSet storageObjectRuleSet = IdentifierCaseRuleSets.newQuotedInsensitiveRuleSet();
         Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
         for (IdentifierScope each : IdentifierScope.values()) {
             if (IdentifierScope.DATABASE == each) {
                 scopedRules.put(each, databaseRuleSet.getRule(each));
                 continue;
             }
+            if (isStorageObjectScope(each)) {
+                scopedRules.put(each, storageObjectRuleSet.getRule(each));
+                continue;
+            }
             scopedRules.put(each, IdentifierScope.SCHEMA == each ? protocolRuleSet.getRule(each) : storageRuleSet.getRule(each));
         }
         scopedRules.put(IdentifierScope.LOGICAL_TABLE, protocolRuleSet.getRule(IdentifierScope.LOGICAL_TABLE));
         return new IdentifierCaseRuleSet(storageRuleSet.getRule(IdentifierScope.TABLE), scopedRules);
+    }
+    
+    private static boolean isStorageObjectScope(final IdentifierScope identifierScope) {
+        return IdentifierScope.COLUMN == identifierScope || IdentifierScope.INDEX == identifierScope || IdentifierScope.CONSTRAINT == identifierScope;
     }
     
     private static Optional<DatabaseType> getIdentifierRuleDatabaseType(final ResourceMetaData resourceMetaData) {
