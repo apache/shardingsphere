@@ -33,7 +33,8 @@ class ShardingPlanningRequestBinderTest {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindTableRule(Map.of(
                 "database", "logic_db",
                 "structured_intent_evidence", Map.of("table", "t_order", "column", "order_id", "algorithm_type", "INLINE"),
-                "user_overrides", Map.of("algorithm_properties", Map.of("algorithm-expression", "t_order_${order_id % 2}"), "auditors", "dml_auditor"))).toWorkflowRequest();
+                "algorithm_properties", Map.of("algorithm-expression", "t_order_${order_id % 2}"),
+                "auditors", "dml_auditor")).toWorkflowRequest();
         assertThat(actual.getDatabase(), is("logic_db"));
         assertThat(actual.getTable(), is("t_order"));
         assertThat(actual.getAlgorithmType(), is("INLINE"));
@@ -63,8 +64,9 @@ class ShardingPlanningRequestBinderTest {
     @Test
     void assertBindKeyGenerator() {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindKeyGenerator(Map.of(
-                "database", "logic_db", "key_generator", "snowflake_generator", "user_overrides",
-                Map.of("key_generator_type", "SNOWFLAKE", "key_generator_properties", Map.of("worker-id", "1")))).toWorkflowRequest();
+                "database", "logic_db", "key_generator", "snowflake_generator",
+                "key_generator_type", "SNOWFLAKE",
+                "key_generator_properties", Map.of("worker-id", "1"))).toWorkflowRequest();
         assertThat(actual.getKeyGeneratorName(), is("snowflake_generator"));
         assertThat(actual.getKeyGeneratorType(), is("SNOWFLAKE"));
         assertThat(actual.getKeyGeneratorProperties(), is(Map.of("worker-id", "1")));

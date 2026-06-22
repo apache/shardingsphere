@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
@@ -312,6 +313,34 @@ class WorkflowExecutionServiceTest {
         Map<?, ?> actualPreviewArtifact = (Map<?, ?>) ((List<?>) actualResponse.get("preview_artifacts")).getFirst();
         assertThat(actualPreviewArtifact.get("sql"), is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
         assertFalse(String.valueOf(actualResponse).contains("123456"));
+    }
+    
+    @Test
+    void assertApplyPreviewBlocksArtifactValidatorIssues() {
+        WorkflowContextSnapshot snapshot = createSnapshot();
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("mask.rule"));
+        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        Map<String, Object> actualResponse = new WorkflowExecutionService().apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
+                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP,
+                (workflowSnapshot, artifacts) -> List.of(new WorkflowIssue(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "error", "review",
+                        "Generated workflow artifact is invalid.", "Regenerate the workflow artifact before approval.", true,
+                        Map.of("sql", artifacts.iterator().next().displaySql())).toMap()),
+                "session-1", snapshot, List.of(), "preview");
+        assertThat(actualResponse.get("status"), is("failed"));
+        assertThat(actualResponse.get("response_mode"), is("preview"));
+        assertFalse((Boolean) actualResponse.get("would_apply"));
+        assertThat(((List<?>) actualResponse.get("preview_artifacts")).size(), is(0));
+        assertThat(((List<?>) actualResponse.get("manual_artifacts")).size(), is(0));
+        assertThat(actualResponse.get("manual_artifact_package"), is(Map.of()));
+        assertThat(((List<?>) actualResponse.get("issues")).size(), is(1));
+        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
+        assertThat(actualIssue.get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
+        assertThat(actualIssue.get("message"), is("Generated workflow artifact is invalid."));
+        assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("failed"));
+        verify(executionFacade, never()).execute(any());
     }
     
     @Test

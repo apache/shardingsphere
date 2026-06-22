@@ -51,7 +51,7 @@ class ServerCapabilitiesHandlerTest {
         assertFalse(((List<?>) actual.get("prompts")).isEmpty());
         assertFalse(((List<?>) actual.get("completionTargets")).isEmpty());
         assertFalse(((List<?>) actual.get("resourceNavigation")).isEmpty());
-        assertTrue(((Map<?, ?>) actual.get("fingerprints")).containsKey("descriptorCatalog"));
+        assertFalse(actual.containsKey("fingerprints"));
         assertModelFirstSummary(actual);
         assertModelContract(actual);
         assertSurfaceSummary(actual);
@@ -78,7 +78,7 @@ class ServerCapabilitiesHandlerTest {
     private void assertBaselineTopLevelKeys(final Map<String, Object> capabilities) {
         assertThat(capabilities.keySet(), is(Set.of("response_mode", "model_first_summary", "supportedResources", "supportedTools", "supportedStatementClasses", "model_contract",
                 "surface_summary", "field_naming_contract", "next_action_contract", "common_flows", "security_hints", "resources", "resourceTemplates", "tools", "prompts",
-                "completionTargets", "resourceNavigation", "protocolAvailability", "fingerprints")));
+                "completionTargets", "resourceNavigation", "protocolAvailability")));
     }
     
     private void assertProtocolAvailability(final Map<String, Object> capabilities) {
@@ -163,7 +163,7 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> readResource = findByKey((List<?>) capabilities.get("next_action_contract"), "type", "resource_read");
         assertThat(readResource.get("required_fields"), is(List.of("order", "type", "title", "resource_uri")));
         Map<?, ?> completion = findByKey((List<?>) capabilities.get("next_action_contract"), "type", "completion");
-        assertTrue(((List<?>) completion.get("required_fields")).contains("argument_name"));
+        assertThat(completion.get("required_fields"), is(List.of("order", "type", "title", "ref", "argument")));
         Map<?, ?> askUser = findByKey((List<?>) capabilities.get("next_action_contract"), "type", "ask_user");
         assertThat(askUser.get("required_fields"), is(List.of("order", "type", "title", "question")));
         Map<?, ?> stop = findByKey((List<?>) capabilities.get("next_action_contract"), "type", "terminal");

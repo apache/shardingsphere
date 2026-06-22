@@ -41,12 +41,6 @@ class WorkflowSecretReferenceUtilsTest {
     }
     
     @Test
-    void assertCreateAlgorithmPropertiesFromEntries() {
-        assertThat(WorkflowSecretReferenceUtils.createAlgorithmProperties(List.of(" aes-key-value = 123456 ", "digest-algorithm-name=SHA-256"), "primary"),
-                is(Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-256")));
-    }
-    
-    @Test
     void assertCreateSecretReferences() {
         Map<String, Object> rawProperties = Map.of(
                 "aes-key-value", Map.of("secret_ref", " placeholder://secret-value-1 ", "label", "user label"),

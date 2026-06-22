@@ -36,7 +36,7 @@ public final class MCPModelContractAssertions {
     private static final Map<String, Set<String>> NEXT_ACTION_REQUIRED_FIELDS = Map.of(
             "resource_read", Set.of("order", "type", "title", "resource_uri"),
             "tool_call", Set.of("order", "type", "title", "tool_name", "arguments"),
-            "completion", Set.of("order", "type", "title", "reference_type", "reference", "argument_name", "context_arguments"),
+            "completion", Set.of("order", "type", "title", "ref", "argument"),
             "ask_user", Set.of("order", "type", "title", "question"),
             "terminal", Set.of("order", "type", "title"));
     

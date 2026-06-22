@@ -68,7 +68,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         String query = toolArguments.getStringArgument("query");
         MetadataSearchRequest request = new MetadataSearchRequest(
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), query,
-                toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES, query.isEmpty() ? Set.of() : Set.of(query)));
+                toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES));
         MetadataSearchResult searchResult = new SearchMetadataToolService(databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade()).execute(request);
         return new MCPItemsResponse(searchResult.getItems(), "", createSearchPayloadMetadata(databaseContext, request, searchResult), MCPResponseMode.SEARCH);
     }

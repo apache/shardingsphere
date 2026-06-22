@@ -151,21 +151,23 @@ class ReadwriteSplittingWorkflowPlanningServiceTest {
     }
     
     @Test
+    void assertPlanStatusInfersTargetStatus() {
+        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("");
+        request.setNaturalLanguageIntent("disable read storage unit");
+        WorkflowContextSnapshot actual = createStatusService().plan(
+                new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of(createStatusRow("ENABLED"))), "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
+        assertThat(((ReadwriteSplittingStatusWorkflowRequest) actual.getRequest()).getTargetStatus(), is("disable"));
+        assertThat(actual.getRequest().getOperationType(), is(""));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("ALTER READWRITE_SPLITTING RULE readwrite_ds DISABLE read_ds_0 FROM logic_db"));
+    }
+    
+    @Test
     void assertPlanStatusClarifiesMissingStatus() {
         ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("");
         WorkflowContextSnapshot actual = createStatusService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_REQUIRED));
-    }
-    
-    @Test
-    void assertPlanStatusClarifiesConflictingStatusInputs() {
-        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("disable");
-        request.setOperationType("enable");
-        WorkflowContextSnapshot actual = createStatusService().plan(new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of(createStatusRow("ENABLED"))), "session-1", request);
-        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
-        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_REQUIRED));
-        assertFalse(actual.getRuleArtifacts().iterator().hasNext());
     }
     
     @Test

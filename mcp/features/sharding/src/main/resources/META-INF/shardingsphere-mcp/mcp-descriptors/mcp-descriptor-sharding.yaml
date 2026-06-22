@@ -783,7 +783,6 @@ tools:
         structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
         delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
         execution_mode: {type: string, description: "Preferred later apply mode.", enum: [review-then-execute, manual-only]}
-        user_overrides: {type: object, description: "Explicit user overrides.", additionalProperties: true}
       required: []
       additionalProperties: false
     outputSchema: &workflowPlanOutputSchema
@@ -866,7 +865,6 @@ tools:
         structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
         delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
         execution_mode: {type: string, description: "Preferred later apply mode.", enum: [review-then-execute, manual-only]}
-        user_overrides: {type: object, description: "Explicit user overrides.", additionalProperties: true}
       required: []
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
@@ -898,7 +896,6 @@ tools:
         structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
         delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
         execution_mode: {type: string, description: "Preferred later apply mode.", enum: [review-then-execute, manual-only]}
-        user_overrides: {type: object, description: "Explicit user overrides.", additionalProperties: true}
       required: []
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
@@ -923,13 +920,11 @@ tools:
         key_generator: {type: string, description: "Key generator name."}
         operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
         key_generator_type: {type: string, description: "Key generator algorithm type."}
-        algorithm_type: {type: string, description: "Alias for key_generator_type."}
         key_generator_properties: {type: object, description: "Key generator properties.", additionalProperties: {type: string}}
         natural_language_intent: {type: string, description: "Original user request."}
         structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
         delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
         execution_mode: {type: string, description: "Preferred later apply mode.", enum: [review-then-execute, manual-only]}
-        user_overrides: {type: object, description: "Explicit user overrides.", additionalProperties: true}
       required: []
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
@@ -958,13 +953,11 @@ tools:
         sequence: {type: string, description: "Sequence name for a sequence-based strategy."}
         key_generator: {type: string, description: "Existing key generator name."}
         key_generator_type: {type: string, description: "Key generator algorithm type when creating an inline generator."}
-        algorithm_type: {type: string, description: "Alias for key_generator_type."}
         key_generator_properties: {type: object, description: "Key generator properties.", additionalProperties: {type: string}}
         natural_language_intent: {type: string, description: "Original user request."}
         structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
         delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
         execution_mode: {type: string, description: "Preferred later apply mode.", enum: [review-then-execute, manual-only]}
-        user_overrides: {type: object, description: "Explicit user overrides.", additionalProperties: true}
       required: []
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
@@ -994,7 +987,6 @@ tools:
         structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
         delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
         execution_mode: {type: string, description: "Preferred later apply mode.", enum: [review-then-execute, manual-only]}
-        user_overrides: {type: object, description: "Explicit user overrides.", additionalProperties: true}
       required: []
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema

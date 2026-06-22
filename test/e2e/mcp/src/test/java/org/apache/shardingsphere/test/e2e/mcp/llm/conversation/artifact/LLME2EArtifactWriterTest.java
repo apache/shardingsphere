@@ -30,6 +30,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -43,14 +44,13 @@ class LLME2EArtifactWriterTest {
     @Test
     void assertWriteRedactsSecretsAndRecordsRunContext() throws IOException {
         LLME2EArtifactBundle artifactBundle = new LLME2EArtifactBundle("scenario-id", "system", "user",
-                "openai-compatible", MODEL_NAME, Map.of("descriptorCatalog", "abc123"),
-                "{\"api_key\":\"secret-value\"}", List.of("{\"token\":\"raw-secret\"}"), List.of(),
+                "openai-compatible", MODEL_NAME, "{\"api_key\":\"secret-value\"}", List.of("{\"token\":\"raw-secret\"}"), List.of(),
                 List.of("Authorization: Bearer runtime-secret", "MCP_LLM_API_KEY=runtime-secret"), LLME2EAssertionReport.failure("boom", "failed"));
         new LLME2EArtifactWriter().write(tempDir, artifactBundle, createScoreClosingEvidence());
         Map<String, Object> runContext = JsonUtils.fromJsonString(Files.readString(tempDir.resolve("run-context.json")), new TypeReference<>() {
         });
         assertThat(runContext.get("modelName"), is(MODEL_NAME));
-        assertThat(castToMap(runContext.get("capabilityFingerprints")).get("descriptorCatalog"), is("abc123"));
+        assertFalse(runContext.containsKey("capabilityFingerprints"));
         assertThat(castToMap(runContext.get("runtime")).get("runtimeMode"), is("docker"));
         assertTrue((boolean) castToMap(runContext.get("runtime")).get("dockerOwned"));
         assertThat(castToMap(runContext.get("runtime")).get("serverRuntime"), is("llama.cpp"));
@@ -65,7 +65,7 @@ class LLME2EArtifactWriterTest {
     @Test
     void assertWriteWithMissingScoreClosingEvidence() {
         LLME2EArtifactBundle artifactBundle = new LLME2EArtifactBundle("scenario-id", "system", "user",
-                "openai-compatible", MODEL_NAME, Map.of(), "{}", List.of(), List.of(), List.of(), LLME2EAssertionReport.failure("boom", "failed"));
+                "openai-compatible", MODEL_NAME, "{}", List.of(), List.of(), List.of(), LLME2EAssertionReport.failure("boom", "failed"));
         IllegalStateException actualException = assertThrows(IllegalStateException.class,
                 () -> new LLME2EArtifactWriter().write(tempDir, artifactBundle, Map.of("scoreClosing", true)));
         assertThat(actualException.getMessage(), is("Missing score-closing LLM runtime evidence field `runtimeMode`."));

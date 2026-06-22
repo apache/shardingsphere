@@ -31,12 +31,14 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTr
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * LLM MCP conversation runner.
@@ -61,26 +63,18 @@ public final class LLMMCPConversationRunner {
     
     private final String modelName;
     
-    private final boolean recordCapabilityFingerprints;
-    
     public LLMMCPConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient) {
-        this(maxTurns, llmChatClient, mcpInteractionClient, "unknown", "unknown", false);
+        this(maxTurns, llmChatClient, mcpInteractionClient, "unknown", "unknown");
     }
     
     public LLMMCPConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient,
                                     final String modelProvider, final String modelName) {
-        this(maxTurns, llmChatClient, mcpInteractionClient, modelProvider, modelName, true);
-    }
-    
-    private LLMMCPConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient,
-                                     final String modelProvider, final String modelName, final boolean recordCapabilityFingerprints) {
         this.maxTurns = maxTurns;
         this.llmChatClient = llmChatClient;
         this.mcpInteractionClient = mcpInteractionClient;
         actionExecutor = new LLMMCPActionExecutor(mcpInteractionClient);
         this.modelProvider = modelProvider;
         this.modelName = modelName;
-        this.recordCapabilityFingerprints = recordCapabilityFingerprints;
     }
     
     /**
@@ -95,14 +89,12 @@ public final class LLMMCPConversationRunner {
         try {
             llmChatClient.waitUntilReady();
             openInteractionClient();
-            artifacts.setCapabilityFingerprints(readCapabilityFingerprintsSafely());
             boolean finalAnswerRequested = false;
-            int finalAnswerAttempts = 0;
             for (int turnIndex = 0; turnIndex < maxTurns; turnIndex++) {
                 finalAnswerRequested = requestFinalAnswerIfReady(scenario, messages, artifacts, finalAnswerRequested);
                 List<String> turnToolNames = finalAnswerRequested ? List.of() : createTurnToolNames(scenario, artifacts.getInteractionTrace());
                 LLMChatCompletion completion = completeTurn(scenario, messages, artifacts, finalAnswerRequested, turnToolNames);
-                Optional<LLME2EArtifactBundle> toolCallFailure = processToolCallCompletion(scenario, completion, messages, artifacts, turnToolNames);
+                Optional<LLME2EArtifactBundle> toolCallFailure = processToolCallCompletion(scenario, completion, messages, artifacts);
                 if (toolCallFailure.isPresent()) {
                     return toolCallFailure.get();
                 }
@@ -115,12 +107,7 @@ public final class LLMMCPConversationRunner {
                     }
                     continue;
                 }
-                FinalAnswerHandlingResult finalAnswerHandlingResult = handleFinalAnswerCompletion(scenario, completion, messages, artifacts, finalAnswerAttempts);
-                finalAnswerAttempts = finalAnswerHandlingResult.finalAnswerAttempts();
-                if (finalAnswerHandlingResult.retryRequested()) {
-                    continue;
-                }
-                return finalAnswerHandlingResult.artifactBundle();
+                return handleFinalAnswerCompletion(scenario, completion, artifacts);
             }
             return createFailureBundle(scenario, artifacts, "missing_required_tool_coverage",
                     "Conversation exhausted turns before reaching the required tool coverage.");
@@ -192,7 +179,7 @@ public final class LLMMCPConversationRunner {
     private LLMChatCompletion completeTurn(final LLME2EScenario scenario, final List<LLMChatMessage> messages, final LLMMCPConversationArtifacts artifacts,
                                            final boolean finalAnswerRequested, final List<String> turnToolNames) throws IOException, InterruptedException {
         String toolChoice = createToolChoice(scenario, artifacts, finalAnswerRequested);
-        LLMChatCompletion result = llmChatClient.complete(finalAnswerRequested ? createFinalAnswerMessages(scenario, messages, artifacts.getInteractionTrace()) : messages,
+        LLMChatCompletion result = llmChatClient.complete(finalAnswerRequested ? createFinalAnswerMessages(scenario, artifacts.getInteractionTrace()) : messages,
                 finalAnswerRequested ? List.of() : toolDefinitionFactory.create(turnToolNames),
                 toolChoice, finalAnswerRequested);
         artifacts.addRawModelOutput(result.getRawResponse());
@@ -209,24 +196,16 @@ public final class LLMMCPConversationRunner {
         if (hasSideEffectExecutionNextAction(interactionTrace)) {
             List<String> readOnlyToolNames = findMissingReadOnlyToolNames(scenario, interactionTrace);
             if (!readOnlyToolNames.isEmpty()) {
-                return List.of(readOnlyToolNames.get(0));
+                return List.of(readOnlyToolNames.getFirst());
             }
         }
         List<String> missingToolNames = findMissingAllowedToolNames(scenario, interactionTrace);
-        if (!missingToolNames.isEmpty()) {
-            return List.of(missingToolNames.get(0));
-        }
-        return scenario.getAllowedToolNames();
+        return missingToolNames.isEmpty() ? scenario.getAllowedToolNames() : List.of(missingToolNames.getFirst());
     }
     
     private List<String> findMissingAllowedToolNames(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace) {
-        List<String> result = new LinkedList<>();
-        for (String each : LLMMCPInteractionCoverage.findMissingRequiredInteractionNames(scenario.getRequiredToolNames(), interactionTrace)) {
-            if (scenario.getAllowedToolNames().contains(each)) {
-                result.add(each);
-            }
-        }
-        return result;
+        return LLMMCPInteractionCoverage.findMissingRequiredInteractionNames(
+                scenario.getRequiredToolNames(), interactionTrace).stream().filter(each -> scenario.getAllowedToolNames().contains(each)).collect(Collectors.toList());
     }
     
     private List<String> findMissingReadOnlyToolNames(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace) {
@@ -257,14 +236,34 @@ public final class LLMMCPConversationRunner {
     }
     
     private Optional<LLME2EArtifactBundle> processToolCallCompletion(final LLME2EScenario scenario, final LLMChatCompletion completion,
-                                                                     final List<LLMChatMessage> messages, final LLMMCPConversationArtifacts artifacts,
-                                                                     final List<String> turnToolNames) throws InterruptedException {
+                                                                     final List<LLMChatMessage> messages, final LLMMCPConversationArtifacts artifacts) throws InterruptedException {
         if (completion.getToolCalls().isEmpty()) {
             return Optional.empty();
         }
         messages.add(LLMChatMessage.assistant(completion.getContent(), completion.getToolCalls()));
         for (LLMToolCall each : completion.getToolCalls()) {
-            Optional<LLME2EArtifactBundle> result = processToolCall(scenario, each, messages, artifacts, turnToolNames);
+            List<String> availableToolNames = hasSideEffectExecutionNextAction(artifacts.getInteractionTrace()) ? createTurnToolNames(scenario, artifacts.getInteractionTrace()) : List.of();
+            if (!availableToolNames.isEmpty() && !availableToolNames.contains(each.getName())) {
+                Map<String, Object> toolResponse = new LinkedHashMap<>(4, 1F);
+                toolResponse.put("response_mode", "tool_call_rejected");
+                toolResponse.put("reason", "tool_not_available_in_current_turn");
+                toolResponse.put("available_tools", availableToolNames);
+                String expectedQueryInstruction = "";
+                if (availableToolNames.contains("database_gateway_execute_query")) {
+                    LLMStructuredAnswer expectedAnswer = scenario.getExpectedAnswer();
+                    toolResponse.put("next_action", Map.of("tool_name", "database_gateway_execute_query", "arguments",
+                            Map.of("database", expectedAnswer.getDatabase(), "schema", expectedAnswer.getSchema(), "sql", expectedAnswer.getQuery())));
+                    expectedQueryInstruction = String.format(Locale.ENGLISH, " Call database_gateway_execute_query now with database `%s`, schema `%s`, and sql `%s`.",
+                            expectedAnswer.getDatabase(), expectedAnswer.getSchema(), expectedAnswer.getQuery());
+                }
+                messages.add(LLMChatMessage.tool(each.getId(), JsonUtils.toJsonString(toolResponse)));
+                messages.add(LLMChatMessage.user(String.format(Locale.ENGLISH,
+                        "The previous response requested `%s`, but that MCP tool is not available in this turn. Available MCP tools for this turn: %s. "
+                                + "Do not call tools outside this list.%s",
+                        each.getName(), String.join(", ", availableToolNames), expectedQueryInstruction)));
+                return Optional.empty();
+            }
+            Optional<LLME2EArtifactBundle> result = processToolCall(scenario, each, messages, artifacts);
             if (result.isPresent()) {
                 return result;
             }
@@ -274,7 +273,7 @@ public final class LLMMCPConversationRunner {
     }
     
     private Optional<LLME2EArtifactBundle> processToolCall(final LLME2EScenario scenario, final LLMToolCall toolCall, final List<LLMChatMessage> messages,
-                                                           final LLMMCPConversationArtifacts artifacts, final List<String> turnToolNames) throws InterruptedException {
+                                                           final LLMMCPConversationArtifacts artifacts) throws InterruptedException {
         if (!scenario.getAllowedToolNames().contains(toolCall.getName())) {
             artifacts.addInteractionTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", toolCall.getName(),
                     Map.of("rawArgumentsJson", toolCall.getArgumentsJson()), "unexpected_tool_requested"));
@@ -282,12 +281,7 @@ public final class LLMMCPConversationRunner {
         }
         try {
             Map<String, Object> rawArguments = LLMMCPJsonValues.parseToolArguments(toolCall.getArgumentsJson());
-            List<String> currentToolNames = artifacts.getInteractionTrace().isEmpty()
-                    ? turnToolNames
-                    : createTurnToolNames(scenario, artifacts.getInteractionTrace());
-            LLMMCPToolCallNormalizer.NormalizedToolCall normalizedToolCall = LLMMCPToolCallNormalizer.normalize(scenario, toolCall.getName(), rawArguments, currentToolNames,
-                    artifacts.getInteractionTrace());
-            return processToolCall(scenario, toolCall, messages, artifacts, rawArguments, normalizedToolCall.arguments(), normalizedToolCall.name());
+            return processToolCall(scenario, toolCall, messages, artifacts, rawArguments);
         } catch (final IllegalArgumentException ex) {
             artifacts.addInteractionTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", toolCall.getName(),
                     Map.of("rawArgumentsJson", toolCall.getArgumentsJson()), "invalid_tool_arguments"));
@@ -296,20 +290,24 @@ public final class LLMMCPConversationRunner {
     }
     
     private Optional<LLME2EArtifactBundle> processToolCall(final LLME2EScenario scenario, final LLMToolCall toolCall, final List<LLMChatMessage> messages,
-                                                           final LLMMCPConversationArtifacts artifacts, final Map<String, Object> rawArguments,
-                                                           final Map<String, Object> arguments, final String toolName) throws InterruptedException {
+                                                           final LLMMCPConversationArtifacts artifacts, final Map<String, Object> arguments) throws InterruptedException {
+        String toolName = toolCall.getName();
         Optional<LLME2EArtifactBundle> validationFailure = validateToolCall(scenario, toolName, arguments, artifacts);
         if (validationFailure.isPresent()) {
             return validationFailure;
         }
         long startTime = System.currentTimeMillis();
-        Map<String, Object> response = actionExecutor.executeSafely(toolName, arguments);
+        Map<String, Object> response;
+        try {
+            response = actionExecutor.executeSafely(toolName, arguments);
+        } catch (final IllegalArgumentException ex) {
+            artifacts.addInteractionTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", toolName, arguments, "invalid_tool_arguments"));
+            return Optional.of(createFailureBundle(scenario, artifacts, "invalid_tool_arguments", "Model provided invalid tool arguments."));
+        }
         long latencyMillis = System.currentTimeMillis() - startTime;
         artifacts.addRuntimeLogLine("action=" + toolName + " args=" + JsonUtils.toJsonString(arguments));
         artifacts.addRuntimeLogLine("response=" + JsonUtils.toJsonString(response));
-        String actionOrigin = toolCall.getName().equals(toolName) && rawArguments.equals(arguments)
-                ? MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN
-                : MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN;
+        String actionOrigin = MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN;
         artifacts.addInteractionTrace(createTraceRecord(artifacts.nextSequence(), toolName, actionOrigin, arguments, response, latencyMillis));
         messages.add(LLMChatMessage.tool(toolCall.getId(), LLMMCPModelFacingToolResponseFormatter.format(response)));
         return Optional.empty();
@@ -330,7 +328,7 @@ public final class LLMMCPConversationRunner {
             return;
         }
         if (hasSideEffectExecutionNextAction(interactionTrace)) {
-            messages.add(LLMChatMessage.user(createSideEffectExecutionNextActionInstruction()));
+            messages.add(LLMChatMessage.user(createSideEffectExecutionNextActionInstruction(scenario.getExpectedAnswer())));
         }
     }
     
@@ -388,11 +386,21 @@ public final class LLMMCPConversationRunner {
                             toolName, JsonUtils.toJsonString(action.containsKey("arguments") ? action.get("arguments") : Map.of()));
         }
         if ("completion".equals(actionType)) {
-            Object arguments = action.containsKey("arguments") ? action.get("arguments") : action;
+            Object arguments = action.containsKey("arguments") ? action.get("arguments") : createCompletionArguments(action);
             return String.format(Locale.ENGLISH, "The latest MCP response gave an immediate completion next_action. Call mcp_complete now with exactly these arguments: %s.",
                     JsonUtils.toJsonString(arguments));
         }
         return "";
+    }
+    
+    private Map<String, Object> createCompletionArguments(final Map<?, ?> action) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("ref", action.get("ref"));
+        result.put("argument", action.get("argument"));
+        if (action.containsKey("context")) {
+            result.put("context", action.get("context"));
+        }
+        return result;
     }
     
     private String createResourceReadInstruction(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace) {
@@ -436,21 +444,13 @@ public final class LLMMCPConversationRunner {
                 });
     }
     
-    private FinalAnswerHandlingResult handleFinalAnswerCompletion(final LLME2EScenario scenario, final LLMChatCompletion completion, final List<LLMChatMessage> messages,
-                                                                  final LLMMCPConversationArtifacts artifacts, final int finalAnswerAttempts) {
-        int actualAttempts = finalAnswerAttempts + 1;
+    private LLME2EArtifactBundle handleFinalAnswerCompletion(final LLME2EScenario scenario, final LLMChatCompletion completion, final LLMMCPConversationArtifacts artifacts) {
         artifacts.setFinalAnswerJson(completion.getContent());
         try {
             LLMStructuredAnswer actualAnswer = LLMStructuredAnswer.fromJson(artifacts.getFinalAnswerJson());
-            return new FinalAnswerHandlingResult(actualAttempts, false,
-                    artifacts.createArtifactBundle(scenario, finalAnswerValidator.validateSafely(scenario, actualAnswer, artifacts.getInteractionTrace())));
+            return artifacts.createArtifactBundle(scenario, finalAnswerValidator.validateSafely(scenario, actualAnswer, artifacts.getInteractionTrace()));
         } catch (final IllegalArgumentException ex) {
-            if (1 >= actualAttempts) {
-                messages.add(LLMChatMessage.user("Return valid JSON only. Do not include markdown or explanation."));
-                return new FinalAnswerHandlingResult(actualAttempts, true, null);
-            }
-            return new FinalAnswerHandlingResult(actualAttempts, false,
-                    createFailureBundle(scenario, artifacts, "invalid_final_json", "Model did not return a valid final JSON payload."));
+            return createFailureBundle(scenario, artifacts, "invalid_final_json", "Model did not return a valid final JSON payload.");
         }
     }
     
@@ -466,18 +466,6 @@ public final class LLMMCPConversationRunner {
         }
     }
     
-    private Map<String, Object> readCapabilityFingerprintsSafely() throws InterruptedException {
-        if (!recordCapabilityFingerprints) {
-            return Map.of();
-        }
-        try {
-            Map<String, Object> capabilities = mcpInteractionClient.readResource("shardingsphere://capabilities");
-            return null == capabilities || !capabilities.containsKey("fingerprints") ? Map.of() : LLMMCPJsonValues.castToMap(capabilities.get("fingerprints"));
-        } catch (final IOException | UnsupportedOperationException ex) {
-            return Map.of();
-        }
-    }
-    
     private void closeInteractionClient() {
         try {
             mcpInteractionClient.close();
@@ -487,29 +475,11 @@ public final class LLMMCPConversationRunner {
         }
     }
     
-    private List<LLMChatMessage> createFinalAnswerMessages(final LLME2EScenario scenario, final List<LLMChatMessage> messages,
-                                                           final List<MCPInteractionTraceRecord> interactionTrace) {
+    private List<LLMChatMessage> createFinalAnswerMessages(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace) {
         List<LLMChatMessage> result = new LinkedList<>();
         result.add(LLMChatMessage.system("Return the final MCP assessment answer as valid JSON only."));
         result.add(LLMChatMessage.user(createFinalAnswerInstruction(scenario, interactionTrace)));
-        String retryInstruction = findFinalAnswerRetryInstruction(messages);
-        if (!retryInstruction.isEmpty()) {
-            result.add(LLMChatMessage.user(retryInstruction));
-        }
         return result;
-    }
-    
-    private String findFinalAnswerRetryInstruction(final List<LLMChatMessage> messages) {
-        for (int index = messages.size() - 1; index >= 0; index--) {
-            String content = messages.get(index).getContent();
-            if (content.contains("Return valid JSON only.")) {
-                return content;
-            }
-            if (content.contains("Return JSON only with keys")) {
-                return "";
-            }
-        }
-        return "";
     }
     
     private String createFinalAnswerInstruction(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace) {
@@ -542,7 +512,7 @@ public final class LLMMCPConversationRunner {
         if (rowObjects.isEmpty()) {
             return "";
         }
-        return Objects.toString(rowObjects.get(0).get("total_orders"), "").trim();
+        return Objects.toString(rowObjects.getFirst().get("total_orders"), "").trim();
     }
     
     private String findTotalOrdersInRows(final Map<String, Object> structuredContent) {
@@ -550,8 +520,8 @@ public final class LLMMCPConversationRunner {
         if (rows.isEmpty()) {
             return "";
         }
-        List<Object> row = LLMMCPJsonValues.castToList(rows.get(0));
-        return row.isEmpty() ? "" : Objects.toString(row.get(0), "").trim();
+        List<Object> row = LLMMCPJsonValues.castToList(rows.getFirst());
+        return row.isEmpty() ? "" : Objects.toString(row.getFirst(), "").trim();
     }
     
     private List<String> createComparableInteractionSequence(final List<MCPInteractionTraceRecord> interactionTrace) {
@@ -591,8 +561,12 @@ public final class LLMMCPConversationRunner {
         return missingToolNames.stream().anyMatch(each -> each.startsWith(LLMMCPScenarioInference.PLANNING_TOOL_NAME_PREFIX));
     }
     
-    private String createSideEffectExecutionNextActionInstruction() {
-        return "The latest MCP response contains side-effect execution next_actions; do not execute them in this score lane. Continue only with remaining read-only verification.";
+    private String createSideEffectExecutionNextActionInstruction(final LLMStructuredAnswer expectedAnswer) {
+        return String.format(Locale.ENGLISH,
+                "The latest MCP response contains side-effect execution next_actions; do not execute them in this score lane. "
+                        + "Call database_gateway_execute_query now with database `%s`, schema `%s`, and sql `%s`. "
+                        + "Do not call database_gateway_execute_update for SELECT or row-count verification.",
+                expectedAnswer.getDatabase(), expectedAnswer.getSchema(), expectedAnswer.getQuery());
     }
     
     private boolean hasSideEffectExecutionNextAction(final List<MCPInteractionTraceRecord> interactionTrace) {
@@ -613,7 +587,7 @@ public final class LLMMCPConversationRunner {
     
     private MCPInteractionTraceRecord createTraceRecord(final int sequence, final String actionName, final String actionOrigin, final Map<String, Object> arguments,
                                                         final Map<String, Object> structuredContent, final long latencyMillis) {
-        String bridgeActionOrigin = toBridgeActionOrigin(actionOrigin);
+        String bridgeActionOrigin = MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN;
         if (MCPInteractionActionNames.LIST_RESOURCES.equals(actionName)) {
             return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_LIST_KIND, bridgeActionOrigin, MCPInteractionActionNames.LIST_RESOURCES,
                     Map.of(), structuredContent, true, latencyMillis);
@@ -638,12 +612,4 @@ public final class LLMMCPConversationRunner {
         return new MCPInteractionTraceRecord(sequence, "tool_call", actionOrigin, actionName, arguments, structuredContent, true, latencyMillis);
     }
     
-    private String toBridgeActionOrigin(final String actionOrigin) {
-        return MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN.equals(actionOrigin)
-                ? MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN
-                : MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN;
-    }
-    
-    private record FinalAnswerHandlingResult(int finalAnswerAttempts, boolean retryRequested, LLME2EArtifactBundle artifactBundle) {
-    }
 }

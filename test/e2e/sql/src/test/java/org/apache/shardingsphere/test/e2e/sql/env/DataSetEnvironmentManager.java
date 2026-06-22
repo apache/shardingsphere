@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -133,7 +132,7 @@ public final class DataSetEnvironmentManager {
         return result.toString();
     }
     
-    private Map<DataNode, InsertDataNodePlan> createInsertDataNodePlans(final Set<String> tableNames, final Map<DataNode, DataSetMetaData> metaDataMap) {
+    private Map<DataNode, InsertDataNodePlan> createInsertDataNodePlans(final Collection<String> tableNames, final Map<DataNode, DataSetMetaData> metaDataMap) {
         Map<DataNode, InsertDataNodePlan> result = new LinkedHashMap<>(dataSet.getRows().size(), 1F);
         for (DataSetRow each : dataSet.getRows()) {
             if (each.getDataNode().contains("t_product_extend") && !"MySQL".equals(databaseType.getType())) {
@@ -222,7 +221,7 @@ public final class DataSetEnvironmentManager {
     }
     
     private ResetPlan createResetPlan(final Collection<String> tableNames) {
-        Set<String> effectiveTableNames = getEffectiveTableNames(tableNames);
+        Collection<String> effectiveTableNames = getEffectiveTableNames(tableNames);
         if (!effectiveTableNames.isEmpty() && !containsMatchedMetaData(effectiveTableNames)) {
             effectiveTableNames = Collections.emptySet();
         }
@@ -231,7 +230,7 @@ public final class DataSetEnvironmentManager {
         return new ResetPlan(createInsertDataNodePlans(effectiveTableNames, metaDataMap), tableNamesByDataSourceName);
     }
     
-    private Map<DataNode, DataSetMetaData> createMetaDataMap(final Set<String> tableNames, final Map<String, Collection<String>> tableNamesByDataSourceName) {
+    private Map<DataNode, DataSetMetaData> createMetaDataMap(final Collection<String> tableNames, final Map<String, Collection<String>> tableNamesByDataSourceName) {
         Map<DataNode, DataSetMetaData> result = new LinkedHashMap<>();
         for (DataSetMetaData each : dataSet.getMetaDataList()) {
             if (!isMatchedMetaData(each, tableNames)) {
@@ -253,11 +252,11 @@ public final class DataSetEnvironmentManager {
         tableNamesByDataSourceName.get(dataNode.getDataSourceName()).add(dataNode.getTableName());
     }
     
-    private Set<String> getEffectiveTableNames(final Collection<String> tableNames) {
+    private Collection<String> getEffectiveTableNames(final Collection<String> tableNames) {
         return tableNames.stream().filter(each -> null != each && !each.isEmpty()).map(each -> each.toLowerCase(Locale.ENGLISH)).collect(Collectors.toSet());
     }
     
-    private boolean isMatchedMetaData(final DataSetMetaData dataSetMetaData, final Set<String> tableNames) {
+    private boolean isMatchedMetaData(final DataSetMetaData dataSetMetaData, final Collection<String> tableNames) {
         if (tableNames.isEmpty()) {
             return true;
         }
@@ -272,7 +271,7 @@ public final class DataSetEnvironmentManager {
         return false;
     }
     
-    private boolean containsMatchedMetaData(final Set<String> tableNames) {
+    private boolean containsMatchedMetaData(final Collection<String> tableNames) {
         for (DataSetMetaData each : dataSet.getMetaDataList()) {
             if (isMatchedMetaData(each, tableNames)) {
                 return true;
@@ -281,7 +280,7 @@ public final class DataSetEnvironmentManager {
         return false;
     }
     
-    private boolean isMatchedDataNode(final DataNode dataNode, final Set<String> tableNames) {
+    private boolean isMatchedDataNode(final DataNode dataNode, final Collection<String> tableNames) {
         return tableNames.isEmpty() || getPossibleTableNames(dataNode.getTableName()).stream().anyMatch(tableNames::contains);
     }
     

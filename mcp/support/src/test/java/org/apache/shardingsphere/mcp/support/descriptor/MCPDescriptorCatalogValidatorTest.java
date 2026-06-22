@@ -59,6 +59,16 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     @Test
+    void assertValidateRejectsPublicUserOverridesInputField() {
+        assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
+                "database_gateway_test_tool", "Test Tool", "Run a test tool.",
+                createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query."),
+                        "user_overrides", Map.of("type", "object", "description", "Removed duplicate input."))),
+                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of()))),
+                "Tool `database_gateway_test_tool` inputSchema must use canonical fields instead of banned `user_overrides`.");
+    }
+    
+    @Test
     void assertValidateRejectsFeatureOwnedToolDescriptor() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
                 "database_gateway_extension_test_tool", new MCPToolAnnotations("Extension Tool", true, false, true, true), createOutputSchema()))),
@@ -158,7 +168,11 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     private Map<String, Object> createInputSchema() {
-        return Map.of("type", "object", "properties", Map.of("query", Map.of("type", "string", "description", "Query.")), "required", List.of("query"), "additionalProperties", false);
+        return createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query.")));
+    }
+    
+    private Map<String, Object> createInputSchema(final Map<String, Object> properties) {
+        return Map.of("type", "object", "properties", properties, "required", List.of("query"), "additionalProperties", false);
     }
     
     private Map<String, Object> createOutputSchema() {

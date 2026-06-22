@@ -45,7 +45,6 @@ import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchEx
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArgumentConflictException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -175,21 +174,6 @@ class MCPErrorConverterTest {
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).getFirst();
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
         assertThat(actualNextAction.get("arguments"), is(Map.of("execution_mode", "preview")));
-    }
-    
-    @Test
-    void assertConvertWorkflowArgumentConflictWithRecovery() {
-        Map<String, Object> actual = MCPErrorConverter.convert(new WorkflowArgumentConflictException(
-                List.of("algorithm_type conflicts with user_overrides.algorithm_type"))).toPayload();
-        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
-        assertThat(actualRecovery.get("category"), is("workflow_argument_conflict"));
-        assertThat(actualRecovery.get("conflicting_arguments"), is(List.of("algorithm_type conflicts with user_overrides.algorithm_type")));
-        Map<?, ?> actualClarificationQuestion = (Map<?, ?>) ((List<?>) actualRecovery.get("clarification_questions")).getFirst();
-        assertThat(actualClarificationQuestion.get("field"), is("algorithm_type"));
-        assertThat(actualClarificationQuestion.get("conflict"), is("algorithm_type conflicts with user_overrides.algorithm_type"));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).getFirst()).get("type"), is("ask_user"));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).getFirst()).get("required_inputs"), is(List.of("algorithm_type")));
-        assertFalse(actualRecovery.containsKey("requires_user_approval"));
     }
     
     @Test
@@ -375,8 +359,8 @@ class MCPErrorConverterTest {
         assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://capabilities"));
         Map<?, ?> actualCompletionAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).getFirst();
         assertThat(actualCompletionAction.get("type"), is("completion"));
-        assertThat(actualCompletionAction.get("reference_type"), is("ref/resource"));
-        assertThat(actualCompletionAction.get("resume_target_type"), is("ref/resource"));
+        assertThat(actualCompletionAction.get("ref"), is(Map.of("type", "ref/resource", "uri", "shardingsphere://workflows/{plan_id}")));
+        assertThat(actualCompletionAction.get("resume_ref"), is(Map.of("type", "ref/resource", "uri", "shardingsphere://workflows/{plan_id}")));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1)).get("type"), is("resource_read"));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1)).get("depends_on"), is(List.of(1)));
     }

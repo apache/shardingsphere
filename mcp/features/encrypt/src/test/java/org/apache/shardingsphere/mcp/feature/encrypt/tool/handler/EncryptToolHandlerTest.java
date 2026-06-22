@@ -69,8 +69,8 @@ class EncryptToolHandlerTest {
                 "table", "orders",
                 "column", "phone",
                 "algorithm_type", "AES",
-                "structured_intent_evidence", Map.of("field_semantics", "phone", "requires_decrypt", true),
-                "user_overrides", Map.of("cipher_column_name", "phone_cipher"))));
+                "cipher_column_name", "phone_cipher",
+                "structured_intent_evidence", Map.of("field_semantics", "phone", "requires_decrypt", true))));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
         ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
         verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());

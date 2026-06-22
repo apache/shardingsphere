@@ -21,7 +21,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -79,8 +78,6 @@ class WorkflowPlanningArgumentsTest {
         return Stream.of(
                 Arguments.of("missing map", Map.of(), Map.of()),
                 Arguments.of("map argument", Map.of("props", Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")),
-                        Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")),
-                Arguments.of("entry list argument", Map.of("props", List.of(" aes-key-value = 123456 ", "digest-algorithm-name=SHA-1")),
                         Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")));
     }
     
@@ -88,8 +85,7 @@ class WorkflowPlanningArgumentsTest {
         return Stream.of(
                 Arguments.of("secret reference object", Map.of("props", Map.of("aes-key-value", Map.of("secret_ref", "placeholder://secret-value-1"))),
                         Map.of("aes-key-value", "secret_reference:primary.aes-key-value")),
-                Arguments.of("literal map argument", Map.of("props", Map.of("digest-algorithm-name", "SHA-256")), Map.of("digest-algorithm-name", "SHA-256")),
-                Arguments.of("entry list argument", Map.of("props", List.of("aes-key-value=123456")), Map.of("aes-key-value", "123456")));
+                Arguments.of("literal map argument", Map.of("props", Map.of("digest-algorithm-name", "SHA-256")), Map.of("digest-algorithm-name", "SHA-256")));
     }
     
     private static Stream<Arguments> getSecretReferenceMapArgumentCases() {

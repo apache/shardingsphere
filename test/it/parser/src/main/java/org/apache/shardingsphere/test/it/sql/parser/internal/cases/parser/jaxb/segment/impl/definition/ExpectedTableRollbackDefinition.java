@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.workflow.service;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
 
-import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Exception for conflicting public workflow arguments.
+ * Expected table rollback definition.
  */
 @Getter
-public final class WorkflowArgumentConflictException extends MCPInvalidRequestException {
+@Setter
+public final class ExpectedTableRollbackDefinition extends AbstractExpectedSQLSegment {
     
-    private static final long serialVersionUID = -2772609954982385217L;
+    @XmlElement(name = "timestamp")
+    private ExpectedLiteralExpression timestamp;
     
-    private final List<String> conflictingArguments;
-    
-    public WorkflowArgumentConflictException(final List<String> conflictingArguments) {
-        super(String.format("Conflicting workflow arguments: %s.", String.join(", ", conflictingArguments)));
-        this.conflictingArguments = conflictingArguments;
-    }
+    @XmlElement(name = "snapshot-id")
+    private ExpectedLiteralExpression snapshotId;
 }

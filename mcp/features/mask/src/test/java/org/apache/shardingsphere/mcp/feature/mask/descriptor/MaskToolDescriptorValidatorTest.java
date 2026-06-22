@@ -93,6 +93,7 @@ class MaskToolDescriptorValidatorTest {
     void assertStructuredIntentEvidenceIsMaskSpecific() {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(MaskFeatureDefinition.PLAN_TOOL_NAME);
         Map<String, Object> properties = (Map<String, Object>) descriptor.getInputSchema().get("properties");
+        assertFalse(properties.containsKey("user_overrides"));
         Map<String, Object> structuredIntentEvidence = (Map<String, Object>) properties.get("structured_intent_evidence");
         Map<String, Object> actualProperties = (Map<String, Object>) structuredIntentEvidence.get("properties");
         assertTrue(actualProperties.containsKey("field_semantics"));

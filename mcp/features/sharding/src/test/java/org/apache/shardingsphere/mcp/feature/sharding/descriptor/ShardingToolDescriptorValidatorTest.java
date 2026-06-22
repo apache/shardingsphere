@@ -86,6 +86,7 @@ class ShardingToolDescriptorValidatorTest {
         assertFalse(properties.containsKey("component_type"));
         assertFalse(properties.containsKey("default_strategy_type"));
         assertFalse(properties.containsKey("ddl_artifacts"));
+        assertFalse(properties.containsKey("user_overrides"));
     }
     
     @Test
@@ -101,6 +102,17 @@ class ShardingToolDescriptorValidatorTest {
         assertTrue(cleanupProperties.containsKey("component_name"));
         assertFalse(cleanupProperties.containsKey("data_nodes"));
         assertFalse(cleanupProperties.containsKey("reference_tables"));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertKeyGeneratorInputSchemasUseKeyGeneratorTypeOnly() {
+        for (String each : List.of(ShardingFeatureDefinition.PLAN_KEY_GENERATOR_TOOL_NAME, ShardingFeatureDefinition.PLAN_KEY_GENERATE_STRATEGY_TOOL_NAME)) {
+            Map<String, Object> properties = (Map<String, Object>) MCPDescriptorCatalogIndex.getRequiredToolDescriptor(each).getInputSchema().get("properties");
+            assertTrue(properties.containsKey("key_generator_type"));
+            assertFalse(properties.containsKey("algorithm_type"));
+            assertFalse(properties.containsKey("user_overrides"));
+        }
     }
     
     @Test

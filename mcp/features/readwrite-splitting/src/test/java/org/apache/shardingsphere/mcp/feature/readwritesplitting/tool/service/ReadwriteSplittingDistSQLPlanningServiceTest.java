@@ -39,6 +39,19 @@ class ReadwriteSplittingDistSQLPlanningServiceTest {
     }
     
     @Test
+    void assertPlanCreateRuleFormatsReservedIdentifiers() {
+        ReadwriteSplittingRuleWorkflowRequest request = createRuleRequest();
+        request.setRuleName("type");
+        request.setWriteStorageUnit("from");
+        request.setReadStorageUnits("order,table");
+        request.getLoadBalancerProperties().clear();
+        request.putLoadBalancerProperties(Map.of("order", "2", "table", "1"));
+        assertThat(new ReadwriteSplittingRuleDistSQLPlanningService().planCreateRule(request).getSql(),
+                is("CREATE READWRITE_SPLITTING RULE `type` (WRITE_STORAGE_UNIT=`from`, READ_STORAGE_UNITS(`order`, `table`), "
+                        + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC', TYPE(NAME='weight', PROPERTIES('order'='2', 'table'='1')))"));
+    }
+    
+    @Test
     void assertPlanAlterRule() {
         assertThat(new ReadwriteSplittingRuleDistSQLPlanningService().planAlterRule(createRuleRequest()).getOperationType(), is("alter"));
     }
@@ -60,14 +73,21 @@ class ReadwriteSplittingDistSQLPlanningServiceTest {
     }
     
     @Test
-    void assertResolveStatusOperationRejectsConflictingInputs() {
-        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("enable", "disable");
+    void assertResolveStatusOperationUsesTargetStatus() {
+        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("disable");
+        assertThat(new ReadwriteSplittingStatusDistSQLPlanningService().resolveStatusOperation(request), is("DISABLE"));
+    }
+    
+    @Test
+    void assertResolveStatusOperationIgnoresOperationType() {
+        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("");
+        request.setOperationType("enable");
         assertThat(new ReadwriteSplittingStatusDistSQLPlanningService().resolveStatusOperation(request), is(""));
     }
     
     @Test
-    void assertPlanStatusRejectsConflictingInputs() {
-        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("enable", "disable");
+    void assertPlanStatusRejectsMissingTargetStatus() {
+        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("");
         assertThrows(MCPInvalidRequestException.class, () -> new ReadwriteSplittingStatusDistSQLPlanningService().planStatus(request));
     }
     
@@ -82,12 +102,11 @@ class ReadwriteSplittingDistSQLPlanningServiceTest {
         return result;
     }
     
-    private ReadwriteSplittingStatusWorkflowRequest createStatusRequest(final String operationType, final String targetStatus) {
+    private ReadwriteSplittingStatusWorkflowRequest createStatusRequest(final String targetStatus) {
         ReadwriteSplittingStatusWorkflowRequest result = new ReadwriteSplittingStatusWorkflowRequest();
         result.setDatabase("logic_db");
         result.setRuleName("readwrite_ds");
         result.setStorageUnit("read_ds_0");
-        result.setOperationType(operationType);
         result.setTargetStatus(targetStatus);
         return result;
     }

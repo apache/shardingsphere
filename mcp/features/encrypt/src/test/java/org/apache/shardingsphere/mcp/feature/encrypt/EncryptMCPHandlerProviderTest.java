@@ -60,6 +60,7 @@ class EncryptMCPHandlerProviderTest {
         WorkflowRuntimeDefinition actual = new EncryptMCPHandlerProvider().getWorkflowDefinitions().iterator().next();
         assertThat(actual.getWorkflowKind(), is(EncryptFeatureDefinition.WORKFLOW_KIND));
         assertThat(actual.getApplySynchronizationHandler(), isA(EncryptWorkflowValidationService.class));
+        assertThat(actual.getApplyArtifactValidator(), isA(EncryptWorkflowValidationService.class));
         assertThat(actual.getValidationHandler(), isA(EncryptWorkflowValidationService.class));
     }
 }

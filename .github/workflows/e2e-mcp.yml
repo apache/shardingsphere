@@ -108,7 +108,6 @@ jobs:
             echo "target_platform=${target_platform}"
             echo "server_image=$(load_property 'mcp.llm.server-image')"
             echo "base_server_image=${base_server_image}"
-            echo "server_runtime=$(load_property 'mcp.llm.server-runtime')"
             echo "model_repository=$(load_property 'mcp.llm.model-repository')"
             echo "model_quantization=$(load_property 'mcp.llm.model-quantization')"
             echo "model_reference=$(load_property 'mcp.llm.model')"
@@ -125,7 +124,6 @@ jobs:
             -f test/e2e/mcp/src/test/resources/docker/llm-runtime/Dockerfile \
             -t "${{ steps.mcp-e2e-properties.outputs.server_image }}" \
             --build-arg "BASE_IMAGE=${{ steps.mcp-e2e-properties.outputs.base_server_image }}" \
-            --build-arg "SERVER_RUNTIME=${{ steps.mcp-e2e-properties.outputs.server_runtime }}" \
             --build-arg "MODEL_REPOSITORY=${{ steps.mcp-e2e-properties.outputs.model_repository }}" \
             --build-arg "MODEL_QUANTIZATION=${{ steps.mcp-e2e-properties.outputs.model_quantization }}" \
             --build-arg "MODEL_REFERENCE=${{ steps.mcp-e2e-properties.outputs.model_reference }}" \

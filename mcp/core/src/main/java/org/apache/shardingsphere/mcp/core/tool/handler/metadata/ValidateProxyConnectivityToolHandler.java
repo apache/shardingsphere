@@ -38,8 +38,6 @@ public final class ValidateProxyConnectivityToolHandler implements MCPToolHandle
     
     public static final String TOOL_NAME = "database_gateway_validate_runtime_database";
     
-    public static final String LEGACY_TOOL_NAME = "database_gateway_validate_proxy_connectivity";
-    
     private final ProxyPreflightValidationService validationService;
     
     public ValidateProxyConnectivityToolHandler() {

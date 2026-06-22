@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -76,9 +75,6 @@ public final class WorkflowPlanningArguments {
         if (rawValue instanceof Map) {
             return createMapArgument((Map<?, ?>) rawValue);
         }
-        if (rawValue instanceof Collection) {
-            return createMapArgument((Collection<?>) rawValue);
-        }
         return Collections.emptyMap();
     }
     
@@ -114,20 +110,4 @@ public final class WorkflowPlanningArguments {
         return result;
     }
     
-    private Map<String, String> createMapArgument(final Collection<?> rawValue) {
-        Map<String, String> result = new LinkedHashMap<>(rawValue.size(), 1F);
-        for (Object each : rawValue) {
-            String actualEntry = Objects.toString(each, "").trim();
-            int separatorIndex = actualEntry.indexOf('=');
-            if (-1 == separatorIndex) {
-                continue;
-            }
-            String actualKey = actualEntry.substring(0, separatorIndex).trim();
-            String actualValue = actualEntry.substring(separatorIndex + 1).trim();
-            if (!actualKey.isEmpty()) {
-                result.put(actualKey, actualValue);
-            }
-        }
-        return result;
-    }
 }

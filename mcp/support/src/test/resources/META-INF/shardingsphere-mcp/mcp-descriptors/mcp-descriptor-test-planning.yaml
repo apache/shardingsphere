@@ -79,15 +79,6 @@ tools:
         algorithm_type:
           type: string
           description: "Algorithm type."
-        user_overrides:
-          type: object
-          description: "User overrides."
-          properties:
-            algorithm_type:
-              type: string
-              description: "Algorithm type override."
-          required: []
-          additionalProperties: false
       required: []
       additionalProperties: false
     outputSchema:

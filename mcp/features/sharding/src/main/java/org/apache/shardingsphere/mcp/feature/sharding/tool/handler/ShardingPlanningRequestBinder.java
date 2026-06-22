@@ -100,7 +100,7 @@ public final class ShardingPlanningRequestBinder {
     }
     
     private ShardingWorkflowRequest bind(final Map<String, Object> arguments, final FeatureArgumentBinder argumentBinder, final EvidenceBinder evidenceBinder) {
-        return WorkflowRequestBinder.bindPlanningRequest(ShardingWorkflowRequest::new, arguments, argumentBinder::bind, evidenceBinder::bind, evidenceBinder::bind);
+        return WorkflowRequestBinder.bindPlanningRequest(ShardingWorkflowRequest::new, arguments, argumentBinder::bind, evidenceBinder::bind);
     }
     
     private void bindTableRuleArguments(final ShardingWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
@@ -167,7 +167,6 @@ public final class ShardingPlanningRequestBinder {
     private void bindKeyGeneratorArguments(final ShardingWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
         applyStringArgument(workflowPlanningArguments, "key_generator", request::setKeyGeneratorName);
         applyStringArgument(workflowPlanningArguments, "key_generator_type", request::setKeyGeneratorType);
-        applyStringArgument(workflowPlanningArguments, "algorithm_type", request::setAlgorithmType);
         request.putKeyGeneratorProperties(workflowPlanningArguments.getMapArgument("key_generator_properties"));
         request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument("algorithm_properties"));
     }
@@ -175,7 +174,6 @@ public final class ShardingPlanningRequestBinder {
     private void applyKeyGeneratorEvidence(final ShardingWorkflowRequest request, final Map<String, Object> values) {
         applyStringField(values, "key_generator", request::setKeyGeneratorName);
         applyStringField(values, "key_generator_type", request::setKeyGeneratorType);
-        applyStringField(values, "algorithm_type", request::setAlgorithmType);
         applyMapField(values, "key_generator_properties", request::putKeyGeneratorProperties);
         applyMapField(values, "algorithm_properties", request::putAlgorithmProperties);
     }
@@ -185,7 +183,6 @@ public final class ShardingPlanningRequestBinder {
         applyStringArgument(workflowPlanningArguments, "sequence", request::setSequenceName);
         applyStringArgument(workflowPlanningArguments, "key_generator", request::setKeyGeneratorName);
         applyStringArgument(workflowPlanningArguments, "key_generator_type", request::setKeyGeneratorType);
-        applyStringArgument(workflowPlanningArguments, "algorithm_type", request::setAlgorithmType);
         request.putKeyGeneratorProperties(workflowPlanningArguments.getMapArgument("key_generator_properties"));
         request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument("algorithm_properties"));
     }
@@ -197,7 +194,6 @@ public final class ShardingPlanningRequestBinder {
         applyStringField(values, "sequence", request::setSequenceName);
         applyStringField(values, "key_generator", request::setKeyGeneratorName);
         applyStringField(values, "key_generator_type", request::setKeyGeneratorType);
-        applyStringField(values, "algorithm_type", request::setAlgorithmType);
         applyMapField(values, "key_generator_properties", request::putKeyGeneratorProperties);
         applyMapField(values, "algorithm_properties", request::putAlgorithmProperties);
     }
