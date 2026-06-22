@@ -109,7 +109,7 @@ public final class FirebirdParseBatchBlr {
     }
     
     private static FirebirdBatchColumnDescriptor readDescriptor(final ByteBuf buffer, final int blrType) {
-        if (BlrConstants.blr_blob2 == blrType) {
+        if (BlrConstants.blr_blob2 == blrType || BlrConstants.blr_quad == blrType) {
             // TODO Implement BATCH_REGBLOB, BATCH_BLOB_STREAM and BATCH_SET_BPB before accepting BLOB fields.
             throw new FirebirdProtocolException("BLOB fields are not supported in Firebird batch operations");
         }
@@ -126,8 +126,7 @@ public final class FirebirdParseBatchBlr {
             length += buffer.readUnsignedByte() << 8;
             return new FirebirdBatchColumnDescriptor(type, BlrConstants.blr_varying2 == blrType ? length + Short.BYTES : length, scale, 0);
         }
-        if (BlrConstants.blr_short == blrType || BlrConstants.blr_long == blrType || BlrConstants.blr_int64 == blrType
-                || BlrConstants.blr_quad == blrType || BlrConstants.blr_int128 == blrType) {
+        if (BlrConstants.blr_short == blrType || BlrConstants.blr_long == blrType || BlrConstants.blr_int64 == blrType || BlrConstants.blr_int128 == blrType) {
             int scale = buffer.readByte();
             return new FirebirdBatchColumnDescriptor(type, fixedLengthOf(blrType), scale, 0);
         }

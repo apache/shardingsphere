@@ -51,7 +51,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     private final List<ByteBuf> pendingMessages = new LinkedList<>();
     
-    private final Map<Integer, List<FirebirdBatchColumnDescriptor>> deferredBatchFormats = new HashMap<>();
+    private final Map<Integer, List<FirebirdBatchColumnDescriptor>> deferredBatchFormats = new HashMap<>(1, 1F);
     
     private FirebirdCommandPacketType pendingPacketType;
     

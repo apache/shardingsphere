@@ -133,8 +133,18 @@ public final class FirebirdBatchedStatementsExecutor {
     
     private void addExecutionUnitParams(final ExecutionContext executionContext, final int batchMessageIndex) {
         for (ExecutionUnit each : executionContext.getExecutionUnits()) {
-            executionUnitParams.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
-            executionUnitBatchMessageIndexes.computeIfAbsent(each, unused -> new LinkedList<>()).add(batchMessageIndex);
+            List<List<Object>> params = executionUnitParams.get(each);
+            if (null == params) {
+                params = new LinkedList<>();
+                executionUnitParams.put(each, params);
+            }
+            params.add(each.getSqlUnit().getParameters());
+            List<Integer> batchMessageIndexes = executionUnitBatchMessageIndexes.get(each);
+            if (null == batchMessageIndexes) {
+                batchMessageIndexes = new LinkedList<>();
+                executionUnitBatchMessageIndexes.put(each, batchMessageIndexes);
+            }
+            batchMessageIndexes.add(batchMessageIndex);
         }
     }
     

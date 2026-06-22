@@ -101,9 +101,10 @@ class FirebirdParseBatchBlrTest {
         assertThrows(IllegalArgumentException.class, () -> FirebirdParseBatchBlr.parse(blr, blr.readableBytes()));
     }
     
-    @Test
-    void assertParseBlob() {
-        ByteBuf blr = createBlr(BlrConstants.blr_version5, new byte[]{(byte) BlrConstants.blr_blob2}, 2);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("blobTypeArguments")
+    void assertParseBlob(final String name, final int blrType) {
+        ByteBuf blr = createBlr(BlrConstants.blr_version5, new byte[]{(byte) blrType}, 2);
         FirebirdProtocolException actual = assertThrows(FirebirdProtocolException.class, () -> FirebirdParseBatchBlr.parse(blr, blr.readableBytes()));
         assertThat(actual.getMessage(), is("BLOB fields are not supported in Firebird batch operations"));
     }
@@ -117,7 +118,6 @@ class FirebirdParseBatchBlrTest {
                 Arguments.of("short", BlrConstants.blr_version5, field(BlrConstants.blr_short, -1), FirebirdBinaryColumnType.SHORT, 2, -1, 4, 4),
                 Arguments.of("long", BlrConstants.blr_version5, field(BlrConstants.blr_long, -2), FirebirdBinaryColumnType.LONG, 4, -2, 6, 4),
                 Arguments.of("int64", BlrConstants.blr_version5, field(BlrConstants.blr_int64, -3), FirebirdBinaryColumnType.INT64, 8, -3, 10, 8),
-                Arguments.of("quad", BlrConstants.blr_version5, field(BlrConstants.blr_quad, 0), FirebirdBinaryColumnType.BLOB, 8, 0, 10, 8),
                 Arguments.of("int128", BlrConstants.blr_version5, field(BlrConstants.blr_int128, -4), FirebirdBinaryColumnType.INT128, 16, -4, 18, 16),
                 Arguments.of("float", BlrConstants.blr_version5, field(BlrConstants.blr_float), FirebirdBinaryColumnType.FLOAT, 4, 0, 6, 4),
                 Arguments.of("date", BlrConstants.blr_version5, field(BlrConstants.blr_sql_date), FirebirdBinaryColumnType.DATE, 4, 0, 6, 4),
@@ -126,6 +126,12 @@ class FirebirdParseBatchBlrTest {
                 Arguments.of("d_float", BlrConstants.blr_version5, field(BlrConstants.blr_d_float), FirebirdBinaryColumnType.D_FLOAT, 8, 0, 10, 8),
                 Arguments.of("timestamp", BlrConstants.blr_version5, field(BlrConstants.blr_timestamp), FirebirdBinaryColumnType.TIMESTAMP, 8, 0, 10, 8),
                 Arguments.of("boolean", BlrConstants.blr_version5, field(BlrConstants.blr_bool), FirebirdBinaryColumnType.BOOLEAN, 1, 0, 4, 4));
+    }
+    
+    private static Stream<Arguments> blobTypeArguments() {
+        return Stream.of(
+                Arguments.of("blob2", BlrConstants.blr_blob2),
+                Arguments.of("quad", BlrConstants.blr_quad));
     }
     
     private static Stream<Arguments> invalidHeaderArguments() {
