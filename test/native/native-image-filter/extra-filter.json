@@ -8,6 +8,7 @@
     {"excludeClasses": "dm.jdbc.driver.DmdbTimestamp"},
     {"excludeClasses": "groovy.**"},
     {"excludeClasses": "io.**"},
+    {"excludeClasses": "java.lang.**"},
     {"excludeClasses": "javax.**"},
     {"excludeClasses": "jdk.internal.misc.**"},
     {"excludeClasses": "libcore.io.**"},
@@ -17,7 +18,8 @@
     {"excludeClasses": "JdkLogger"},
 
     {"includeClasses": "com.oracle.svm.core.**"},
-    {"includeClasses": "com.sun.management.**"},
+    {"includeClasses": "java.lang.*"},
+    {"includeClasses": "java.lang.reflect.*"},
     {"includeClasses": "org.apache.shardingsphere.**"},
     {"includeClasses": "sun.security.provider.SecureRandom"},
 

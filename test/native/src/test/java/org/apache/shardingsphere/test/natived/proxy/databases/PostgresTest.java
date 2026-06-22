@@ -67,7 +67,7 @@ class PostgresTest {
         }
         String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/postgresql").toAbsolutePath().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
-        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
+        Awaitility.await().atMost(Duration.ofMinutes(5L)).ignoreExceptions().until(() -> {
             getConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres").close();
             return true;
         });

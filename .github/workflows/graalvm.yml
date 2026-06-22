@@ -50,7 +50,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ 'ubuntu-latest', 'windows-latest' ]
-        java-version: [ '24.0.2' ]
+        java-version: [ '25.0.2' ]
     steps:
       - uses: actions/checkout@v6.0.1
       - name: Free Disk Space on Ubuntu
@@ -74,4 +74,4 @@ jobs:
         run: ./mvnw -PgenerateMetadata -e -T 1C clean verify
       - name: Run nativeTest with GraalVM CE for ${{ matrix.java-version }}
         if: matrix.os == 'ubuntu-latest'
-        run: ./mvnw -PnativeTestInShardingSphere -e "-DjvmArgs=-XX:MaxRAMPercentage=85.0" clean verify
+        run: ./mvnw -PnativeTestInShardingSphere -e clean verify
