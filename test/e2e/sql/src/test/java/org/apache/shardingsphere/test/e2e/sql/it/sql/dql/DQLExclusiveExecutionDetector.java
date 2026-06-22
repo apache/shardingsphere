@@ -21,11 +21,13 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
- * Locking SELECT detector for SQL E2E tests.
+ * Exclusive execution detector for SQL E2E tests.
  */
-public final class DQLLockingSelectDetector {
+public final class DQLExclusiveExecutionDetector {
     
     private static final Pattern SELECT_PATTERN = Pattern.compile("\\bSELECT\\b");
+    
+    private static final Pattern DML_RETURNING_PATTERN = Pattern.compile("\\b(?:INSERT|UPDATE|DELETE|MERGE)\\b.*\\bRETURNING\\b");
     
     private static final Pattern FOR_UPDATE_PATTERN = Pattern.compile("\\bFOR\\s+(?:NO\\s+KEY\\s+)?UPDATE\\b");
     
@@ -40,20 +42,25 @@ public final class DQLLockingSelectDetector {
     
     private static final Pattern WITH_LOCK_PATTERN = Pattern.compile("\\bWITH\\s+LOCK\\b(?!\\s+AS\\b)");
     
-    private DQLLockingSelectDetector() {
+    private DQLExclusiveExecutionDetector() {
     }
     
     /**
-     * Judge whether SQL contains SELECT locking syntax.
+     * Judge whether SQL requires exclusive execution.
      *
      * @param sql SQL
-     * @return contains SELECT locking syntax or not
+     * @return requires exclusive execution or not
      */
-    public static boolean containsLockingSelect(final String sql) {
+    public static boolean requiresExclusiveExecution(final String sql) {
         String normalizedSQL = normalize(sql);
-        return SELECT_PATTERN.matcher(normalizedSQL).find() && (FOR_UPDATE_PATTERN.matcher(normalizedSQL).find() || FOR_SHARE_PATTERN.matcher(normalizedSQL).find()
-                || LOCK_IN_SHARE_MODE_PATTERN.matcher(normalizedSQL).find() || SQL_SERVER_LOCK_HINT_PATTERN.matcher(normalizedSQL).find()
-                || KEEP_LOCKS_PATTERN.matcher(normalizedSQL).find() || WITH_LOCK_PATTERN.matcher(normalizedSQL).find());
+        return DML_RETURNING_PATTERN.matcher(normalizedSQL).find() || containsLockingSelect(normalizedSQL);
+    }
+    
+    private static boolean containsLockingSelect(final String normalizedSQL) {
+        return SELECT_PATTERN.matcher(normalizedSQL).find()
+                && (FOR_UPDATE_PATTERN.matcher(normalizedSQL).find() || FOR_SHARE_PATTERN.matcher(normalizedSQL).find() || LOCK_IN_SHARE_MODE_PATTERN.matcher(normalizedSQL).find()
+                        || SQL_SERVER_LOCK_HINT_PATTERN.matcher(normalizedSQL).find() || KEEP_LOCKS_PATTERN.matcher(normalizedSQL).find()
+                        || WITH_LOCK_PATTERN.matcher(normalizedSQL).find());
     }
     
     private static String normalize(final String sql) {

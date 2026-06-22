@@ -118,7 +118,6 @@ public final class DataSetResetScopeCalculator {
         StringBuilder result = new StringBuilder();
         appendCacheKeyValue(result, testParam.getKey());
         appendCacheKeyValue(result, testParam.getMode().name());
-        appendCacheKeyValue(result, testParam instanceof AssertionTestParameter ? ((AssertionTestParameter) testParam).getSqlExecuteType().name() : "");
         appendCacheKeyValue(result, testParam.getTestCaseContext().getParentPath());
         appendCacheKeyValue(result, testParam.getTestCaseContext().getTestCase().getSql());
         for (SQLE2ETestCaseAssertion each : getAssertions(testParam)) {
@@ -134,7 +133,6 @@ public final class DataSetResetScopeCalculator {
         }
         appendCacheKeyValue(cacheKey, assertion.getExpectedDataFile());
         appendCacheKeyValue(cacheKey, assertion.getExpectedGeneratedKeyDataFile());
-        appendCacheKeyValue(cacheKey, assertion.getParameters());
         appendSQLCacheKey(cacheKey, assertion.getInitialSQL());
         appendSQLCacheKey(cacheKey, assertion.getAssertionSQL());
     }

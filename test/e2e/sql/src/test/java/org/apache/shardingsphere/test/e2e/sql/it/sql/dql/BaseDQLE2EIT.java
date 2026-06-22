@@ -89,7 +89,7 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
      * @throws JAXBException JAXB exception
      */
     protected final void executeDQL(final SQLE2EITContext context, final DQLExecutionCallback callback) throws SQLException, IOException, JAXBException {
-        Lock lock = DQLLockingSelectDetector.containsLockingSelect(context.getSQL()) ? DQL_EXECUTION_LOCK.writeLock() : DQL_EXECUTION_LOCK.readLock();
+        Lock lock = DQLExclusiveExecutionDetector.requiresExclusiveExecution(context.getSQL()) ? DQL_EXECUTION_LOCK.writeLock() : DQL_EXECUTION_LOCK.readLock();
         lock.lock();
         try {
             callback.execute();
