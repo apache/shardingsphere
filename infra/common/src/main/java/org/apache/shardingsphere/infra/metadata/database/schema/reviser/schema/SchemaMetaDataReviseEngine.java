@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
@@ -38,24 +39,14 @@ import java.util.stream.Collectors;
 /**
  * Schema meta data revise engine.
  */
+@RequiredArgsConstructor
 public final class SchemaMetaDataReviseEngine {
     
     private final Collection<ShardingSphereRule> rules;
     
     private final ConfigurationProperties props;
     
-    private final Collection<ShardingSphereSchema> schemaMetaDataRevisionCandidateSchemas;
-    
-    public SchemaMetaDataReviseEngine(final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) {
-        this(rules, props, Collections.emptyList());
-    }
-    
-    public SchemaMetaDataReviseEngine(final Collection<ShardingSphereRule> rules, final ConfigurationProperties props,
-                                      final Collection<ShardingSphereSchema> schemaMetaDataRevisionCandidateSchemas) {
-        this.rules = rules;
-        this.props = props;
-        this.schemaMetaDataRevisionCandidateSchemas = schemaMetaDataRevisionCandidateSchemas;
-    }
+    private final Collection<ShardingSphereSchema> revisionCandidateSchemas;
     
     /**
      * Revise schema meta data.
@@ -74,20 +65,20 @@ public final class SchemaMetaDataReviseEngine {
     
     private <T extends ShardingSphereRule> SchemaMetaData revise(final SchemaMetaData originalMetaData, final T rule, final MetaDataReviseEntry<T> reviseEntry) {
         TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<>(rule, reviseEntry);
-        Collection<TableMetaData> schemaMetaDataRevisionCandidateTableMetaDataList = createSchemaMetaDataRevisionCandidateTableMetaDataList(originalMetaData);
+        Collection<TableMetaData> revisionCandidateTableMetaDataList = createRevisionCandidateTableMetaDataList(originalMetaData);
         Optional<? extends SchemaTableAggregationReviser<T>> aggregationReviser = reviseEntry.getSchemaTableAggregationReviser(props);
         if (!aggregationReviser.isPresent()) {
             return new SchemaMetaData(originalMetaData.getName(), originalMetaData.getTables().stream()
-                    .map(each -> tableMetaDataReviseEngine.revise(each, originalMetaData.getTables(), schemaMetaDataRevisionCandidateTableMetaDataList)).collect(Collectors.toList()));
+                    .map(each -> tableMetaDataReviseEngine.revise(each, originalMetaData.getTables(), revisionCandidateTableMetaDataList)).collect(Collectors.toList()));
         }
         for (TableMetaData each : originalMetaData.getTables()) {
-            aggregationReviser.get().add(tableMetaDataReviseEngine.revise(each, originalMetaData.getTables(), schemaMetaDataRevisionCandidateTableMetaDataList));
+            aggregationReviser.get().add(tableMetaDataReviseEngine.revise(each, originalMetaData.getTables(), revisionCandidateTableMetaDataList));
         }
         return new SchemaMetaData(originalMetaData.getName(), aggregationReviser.get().aggregate(rule));
     }
     
-    private Collection<TableMetaData> createSchemaMetaDataRevisionCandidateTableMetaDataList(final SchemaMetaData originalMetaData) {
-        return schemaMetaDataRevisionCandidateSchemas.stream().filter(each -> each.getName().equalsIgnoreCase(originalMetaData.getName()))
+    private Collection<TableMetaData> createRevisionCandidateTableMetaDataList(final SchemaMetaData originalMetaData) {
+        return revisionCandidateSchemas.stream().filter(each -> each.getName().equalsIgnoreCase(originalMetaData.getName()))
                 .flatMap(each -> each.getAllTables().stream()).map(SchemaMetaDataReviseEngine::convertToTableMetaData).collect(Collectors.toList());
     }
     
