@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.Fi
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
@@ -131,7 +132,8 @@ class FirebirdBatchSendMessageCommandExecutorTest {
         when(context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get()).thenReturn(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(FirebirdBinaryColumnType.LONG), 8L);
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(STATEMENT_ID,
+                Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.LONG, Integer.BYTES, 0, 0)), 8L);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batchStatement);
         try {
             List<Object> out = new LinkedList<>();

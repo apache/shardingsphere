@@ -80,14 +80,15 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
         if (null == batchStatement) {
             throw new FirebirdProtocolException("Batch statement not found for connectionId: " + connectionId + ", statement handle: " + statementHandle);
         }
-        return parseBatchMessages(payload, startReaderIndex, payload.readInt4Unsigned(), batchStatement.getColumnTypes());
+        return parseBatchMessages(payload, startReaderIndex, payload.readInt4Unsigned(), batchStatement.getColumnDescriptors());
     }
     
-    private static int parseBatchMessages(final FirebirdPacketPayload payload, final int startReaderIndex, final long messageCount, final List<FirebirdBinaryColumnType> columnTypes) {
+    private static int parseBatchMessages(final FirebirdPacketPayload payload, final int startReaderIndex, final long messageCount,
+                                          final List<FirebirdBatchColumnDescriptor> columnDescriptors) {
         for (long each = 0; each < messageCount; each++) {
             int messageStartIndex = payload.getByteBuf().readerIndex();
             try {
-                parseSingleMessage(payload, columnTypes);
+                parseSingleMessage(payload, columnDescriptors);
                 payload.skipPadding(payload.getByteBuf().readerIndex() - messageStartIndex);
                 // CHECKSTYLE:OFF
             } catch (final IndexOutOfBoundsException ex) {
@@ -102,34 +103,46 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
     /**
      * Read batch parameter values from packet data.
      *
-     * @param columnTypes column types
+     * @param columnDescriptors column descriptors
      * @return batch parameter values
      */
-    public List<List<Object>> readParameterValues(final List<FirebirdBinaryColumnType> columnTypes) {
+    public List<List<Object>> readParameterValues(final List<FirebirdBatchColumnDescriptor> columnDescriptors) {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(data.duplicate(), charset);
         List<List<Object>> result = new ArrayList<>((int) Math.min(messageCount, Integer.MAX_VALUE));
         for (long each = 0; each < messageCount; each++) {
             int messageStartIndex = payload.getByteBuf().readerIndex();
-            result.add(parseSingleMessage(payload, columnTypes));
+            result.add(parseSingleMessage(payload, columnDescriptors));
             payload.skipPadding(payload.getByteBuf().readerIndex() - messageStartIndex);
         }
         return result;
     }
     
-    private static List<Object> parseSingleMessage(final FirebirdPacketPayload payload, final List<FirebirdBinaryColumnType> columnTypes) {
-        List<Integer> nullBits = readNullBits(payload, columnTypes.size());
-        List<Object> result = new ArrayList<>(columnTypes.size());
-        for (int i = 0; i < columnTypes.size(); i++) {
+    private static List<Object> parseSingleMessage(final FirebirdPacketPayload payload, final List<FirebirdBatchColumnDescriptor> columnDescriptors) {
+        List<Integer> nullBits = readNullBits(payload, columnDescriptors.size());
+        List<Object> result = new ArrayList<>(columnDescriptors.size());
+        for (int i = 0; i < columnDescriptors.size(); i++) {
             int nullBit = nullBits.get(i / 8);
             if (((nullBit >> i % 8) & 1) != 0) {
                 result.add(null);
                 continue;
             }
-            FirebirdBinaryColumnType columnType = columnTypes.get(i);
-            FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(columnType);
-            result.add(FirebirdBinaryColumnType.BLOB == columnType ? payload.readInt8() : binaryProtocolValue.read(payload));
+            FirebirdBatchColumnDescriptor descriptor = columnDescriptors.get(i);
+            result.add(readValue(payload, descriptor));
         }
         return result;
+    }
+    
+    private static Object readValue(final FirebirdPacketPayload payload, final FirebirdBatchColumnDescriptor descriptor) {
+        if (FirebirdBinaryColumnType.BLOB == descriptor.getType()) {
+            return payload.readInt8();
+        }
+        if (FirebirdBinaryColumnType.TEXT == descriptor.getType() || FirebirdBinaryColumnType.LEGACY_TEXT == descriptor.getType()) {
+            String result = payload.readBytes(descriptor.getLength()).toString(payload.getCharset());
+            payload.skipPadding(descriptor.getLength());
+            return result;
+        }
+        FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(descriptor.getType());
+        return binaryProtocolValue.read(payload);
     }
     
     private static List<Integer> readNullBits(final FirebirdPacketPayload payload, final int columnCount) {

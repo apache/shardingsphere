@@ -21,7 +21,6 @@ import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
@@ -31,10 +30,8 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Create Batch command executor for Firebird.
@@ -85,17 +82,9 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         }
         ByteBuf batchParametersBuffer = packet.getBatchParametersBuffer();
         BatchParameters batchParameters = BatchParameters.parse(batchParametersBuffer);
-        registerBatch(connectionId, statementId, messageFormat, batchParameters);
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
-    }
-    
-    private void registerBatch(final int connectionId, final int statementId, final FirebirdParseBatchBlr messageFormat, final BatchParameters batchParameters) {
-        List<FirebirdBinaryColumnType> columnTypes = new ArrayList<>(messageFormat.getFields().size());
-        for (FirebirdParseBatchBlr.FirebirdBlrFieldDescriptor each : messageFormat.getFields()) {
-            columnTypes.add(each.getType());
-        }
         FirebirdBatchRegistry.getInstance().registerBatchStatement(connectionId, statementId,
-                new FirebirdBatchStatement(statementId, columnTypes, batchParameters.getBufferSize(), batchParameters.isRecordCounts()));
+                new FirebirdBatchStatement(statementId, messageFormat.getFields(), batchParameters.getBufferSize(), batchParameters.isRecordCounts()));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
     }
     
     @Getter

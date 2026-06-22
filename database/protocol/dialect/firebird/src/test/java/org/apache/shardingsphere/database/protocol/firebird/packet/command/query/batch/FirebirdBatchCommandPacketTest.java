@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -24,7 +25,9 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -69,7 +72,7 @@ class FirebirdBatchCommandPacketTest {
     @Test
     void assertBatchSendMessageGetLengthChecksDataSizeOnly() {
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(FirebirdBinaryColumnType.LONG), 8L);
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(longDescriptor()), 8L);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batchStatement);
         try {
             assertThat(FirebirdBatchSendMessageCommandPacket.getLength(createBatchMessagePayload(), CONNECTION_ID), is(20));
@@ -82,7 +85,7 @@ class FirebirdBatchCommandPacketTest {
     @Test
     void assertBatchSendMessageGetLengthIgnoresBatchBufferSize() {
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(FirebirdBinaryColumnType.LONG), 8L);
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(longDescriptor()), 8L);
         batchStatement.addSize(1L);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batchStatement);
         try {
@@ -93,6 +96,40 @@ class FirebirdBatchCommandPacketTest {
         }
     }
     
+    @Test
+    void assertReadText() {
+        ByteBuf data = Unpooled.buffer().writeByte(0).writeZero(3);
+        data.writeCharSequence("abc", StandardCharsets.UTF_8);
+        data.writeByte(0);
+        assertThat(createBatchSendMessagePacket(data)
+                .readParameterValues(Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.TEXT, 3, 4, 0))),
+                is(Collections.singletonList(Collections.singletonList("abc"))));
+    }
+    
+    @Test
+    void assertReadVarying() {
+        ByteBuf data = Unpooled.buffer().writeByte(0).writeZero(3).writeInt(3);
+        data.writeCharSequence("abc", StandardCharsets.UTF_8);
+        data.writeByte(0);
+        assertThat(createBatchSendMessagePacket(data)
+                .readParameterValues(Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.VARYING, 5, 4, 0))),
+                is(Collections.singletonList(Collections.singletonList("abc"))));
+    }
+    
+    @Test
+    void assertReadMixedTypes() {
+        ByteBuf data = Unpooled.buffer().writeByte(0).writeZero(3);
+        data.writeCharSequence("abc", StandardCharsets.UTF_8);
+        data.writeByte(0).writeInt(3);
+        data.writeCharSequence("def", StandardCharsets.UTF_8);
+        data.writeByte(0).writeInt(42);
+        List<FirebirdBatchColumnDescriptor> descriptors = Arrays.asList(
+                new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.TEXT, 3, 4, 0),
+                new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.VARYING, 5, 4, 6), longDescriptor());
+        assertThat(createBatchSendMessagePacket(data).readParameterValues(descriptors),
+                is(Collections.singletonList(Arrays.asList("abc", "def", 42))));
+    }
+    
     private FirebirdPacketPayload createBatchMessagePayload() {
         return new FirebirdPacketPayload(Unpooled.buffer()
                 .writeZero(4)
@@ -101,5 +138,14 @@ class FirebirdBatchCommandPacketTest {
                 .writeByte(0)
                 .writeZero(3)
                 .writeInt(1), StandardCharsets.UTF_8);
+    }
+    
+    private FirebirdBatchSendMessageCommandPacket createBatchSendMessagePacket(final ByteBuf data) {
+        return new FirebirdBatchSendMessageCommandPacket(new FirebirdPacketPayload(Unpooled.buffer()
+                .writeZero(4).writeInt(STATEMENT_ID).writeInt(1).writeBytes(data), StandardCharsets.UTF_8));
+    }
+    
+    private FirebirdBatchColumnDescriptor longDescriptor() {
+        return new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.LONG, Integer.BYTES, 0, 0);
     }
 }

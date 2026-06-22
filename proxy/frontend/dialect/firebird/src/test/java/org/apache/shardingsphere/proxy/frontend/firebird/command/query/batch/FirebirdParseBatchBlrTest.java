@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdParseBatchBlr.FirebirdBlrFieldDescriptor;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -176,7 +176,7 @@ class FirebirdParseBatchBlrTest {
                 .writeShortLE(fieldCount).writeBytes(fields).writeByte(BlrConstants.blr_end).writeByte(BlrConstants.blr_eoc);
     }
     
-    private static void assertDescriptor(final FirebirdBlrFieldDescriptor actual, final FirebirdBinaryColumnType expectedType,
+    private static void assertDescriptor(final FirebirdBatchColumnDescriptor actual, final FirebirdBinaryColumnType expectedType,
                                          final int expectedLength, final int expectedScale, final int expectedOffset) {
         assertThat(actual.getType(), is(expectedType));
         assertThat(actual.getLength(), is(expectedLength));

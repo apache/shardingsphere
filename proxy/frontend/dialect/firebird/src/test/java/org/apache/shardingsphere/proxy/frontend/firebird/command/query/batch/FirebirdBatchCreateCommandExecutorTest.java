@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
@@ -103,6 +104,11 @@ class FirebirdBatchCreateCommandExecutorTest {
         assertNotNull(actualBatchStatement);
         assertThat(actualBatchStatement.getStatementHandle(), is(STATEMENT_ID));
         assertFalse(actualBatchStatement.isRecordCounts());
+        assertThat(actualBatchStatement.getColumnDescriptors().size(), is(1));
+        assertThat(actualBatchStatement.getColumnDescriptors().get(0).getType(), is(FirebirdBinaryColumnType.LEGACY_TEXT));
+        assertThat(actualBatchStatement.getColumnDescriptors().get(0).getLength(), is(4));
+        assertThat(actualBatchStatement.getColumnDescriptors().get(0).getScale(), is(0));
+        assertThat(actualBatchStatement.getColumnDescriptors().get(0).getOffset(), is(0));
     }
     
     @Test
@@ -235,7 +241,7 @@ class FirebirdBatchCreateCommandExecutorTest {
     private ByteBuf createBatchBlr() {
         return Unpooled.wrappedBuffer(new byte[]{
                 (byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0,
-                2, 0, (byte) BlrConstants.blr_long, 0, (byte) BlrConstants.blr_short, 0, (byte) BlrConstants.blr_end, (byte) BlrConstants.blr_eoc});
+                2, 0, (byte) BlrConstants.blr_text, 4, 0, (byte) BlrConstants.blr_short, 0, (byte) BlrConstants.blr_end, (byte) BlrConstants.blr_eoc});
     }
     
     private ByteBuf createEmptyBatchBlr() {

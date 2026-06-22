@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
 import lombok.Getter;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +30,7 @@ public final class FirebirdBatchStatement {
     
     private final int statementHandle;
     
-    private final List<FirebirdBinaryColumnType> columnTypes;
+    private final List<FirebirdBatchColumnDescriptor> columnDescriptors;
     
     private final long bufferSize;
     
@@ -46,13 +44,13 @@ public final class FirebirdBatchStatement {
         this(statementHandle, Collections.emptyList(), 0L, false);
     }
     
-    public FirebirdBatchStatement(final int statementHandle, final List<FirebirdBinaryColumnType> columnTypes, final long bufferSize) {
-        this(statementHandle, columnTypes, bufferSize, false);
+    public FirebirdBatchStatement(final int statementHandle, final List<FirebirdBatchColumnDescriptor> columnDescriptors, final long bufferSize) {
+        this(statementHandle, columnDescriptors, bufferSize, false);
     }
     
-    public FirebirdBatchStatement(final int statementHandle, final List<FirebirdBinaryColumnType> columnTypes, final long bufferSize, final boolean recordCounts) {
+    public FirebirdBatchStatement(final int statementHandle, final List<FirebirdBatchColumnDescriptor> columnDescriptors, final long bufferSize, final boolean recordCounts) {
         this.statementHandle = statementHandle;
-        this.columnTypes = columnTypes;
+        this.columnDescriptors = columnDescriptors;
         this.bufferSize = bufferSize;
         this.recordCounts = recordCounts;
     }

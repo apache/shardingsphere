@@ -31,6 +31,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.junit.jupiter.api.BeforeEach;
@@ -310,7 +311,8 @@ class FirebirdPacketCodecEngineTest {
     private void setUpBatchContext() {
         FirebirdBatchRegistry.getInstance().registerConnection(BATCH_CONNECTION_ID);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE,
-                new FirebirdBatchStatement(BATCH_STATEMENT_HANDLE, Collections.singletonList(FirebirdBinaryColumnType.LONG), 256L * 1024 * 1024));
+                new FirebirdBatchStatement(BATCH_STATEMENT_HANDLE,
+                        Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.LONG, Integer.BYTES, 0, 0)), 256L * 1024 * 1024));
     }
     
     private void tearDownBatchContext() {

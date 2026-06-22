@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.firebirdsql.gds.BlrConstants;
 
 import java.util.ArrayList;
@@ -35,13 +35,13 @@ public final class FirebirdParseBatchBlr {
     
     private static final int HEADER_LENGTH = 4;
     
-    private final List<FirebirdBlrFieldDescriptor> fields;
+    private final List<FirebirdBatchColumnDescriptor> fields;
     
     private final int messageLength;
     
     private final int netLength;
     
-    private FirebirdParseBatchBlr(final List<FirebirdBlrFieldDescriptor> fields, final int messageLength, final int netLength) {
+    private FirebirdParseBatchBlr(final List<FirebirdBatchColumnDescriptor> fields, final int messageLength, final int netLength) {
         this.fields = fields;
         this.messageLength = messageLength;
         this.netLength = netLength;
@@ -78,12 +78,12 @@ public final class FirebirdParseBatchBlr {
         int count = buffer.readUnsignedByte();
         count += buffer.readUnsignedByte() << 8;
         int columnCount = count / 2;
-        List<FirebirdBlrFieldDescriptor> fields = new ArrayList<>(columnCount);
+        List<FirebirdBatchColumnDescriptor> fields = new ArrayList<>(columnCount);
         int offset = 0;
         int netLength = 0;
         for (int i = 0; i < columnCount; i++) {
             int blrType = buffer.readUnsignedByte();
-            FirebirdBlrFieldDescriptor descriptor = readDescriptor(buffer, blrType);
+            FirebirdBatchColumnDescriptor descriptor = readDescriptor(buffer, blrType);
             offset = alignTo(offset, alignmentOf(blrType));
             final int fieldOffset = offset;
             offset += descriptor.getLength();
@@ -91,7 +91,7 @@ public final class FirebirdParseBatchBlr {
                     ? HEADER_LENGTH + alignTo(descriptor.getLength() - Short.BYTES, 4)
                     : alignTo(descriptor.getLength(), 4);
             offset = appendNullIndicator(buffer, offset);
-            fields.add(new FirebirdBlrFieldDescriptor(descriptor.getType(), descriptor.getLength(), descriptor.getScale(), fieldOffset));
+            fields.add(new FirebirdBatchColumnDescriptor(descriptor.getType(), descriptor.getLength(), descriptor.getScale(), fieldOffset));
         }
         return new FirebirdParseBatchBlr(fields, offset, netLength);
     }
@@ -109,7 +109,7 @@ public final class FirebirdParseBatchBlr {
         return FirebirdBinaryColumnType.VARYING == type || FirebirdBinaryColumnType.LEGACY_VARYING == type;
     }
     
-    private static FirebirdBlrFieldDescriptor readDescriptor(final ByteBuf buffer, final int blrType) {
+    private static FirebirdBatchColumnDescriptor readDescriptor(final ByteBuf buffer, final int blrType) {
         if (BlrConstants.blr_blob2 == blrType) {
             // TODO Implement BATCH_REGBLOB, BATCH_BLOB_STREAM and BATCH_SET_BPB before accepting BLOB fields.
             throw new FirebirdProtocolException("BLOB fields are not supported in Firebird batch operations");
@@ -118,25 +118,21 @@ public final class FirebirdParseBatchBlr {
         if (BlrConstants.blr_text == blrType || BlrConstants.blr_varying == blrType) {
             int length = buffer.readUnsignedByte();
             length += buffer.readUnsignedByte() << 8;
-            return new FirebirdBlrFieldDescriptor(type, BlrConstants.blr_varying == blrType ? length + Short.BYTES : length, 0, 0);
+            return new FirebirdBatchColumnDescriptor(type, BlrConstants.blr_varying == blrType ? length + Short.BYTES : length, 0, 0);
         }
         if (BlrConstants.blr_text2 == blrType || BlrConstants.blr_varying2 == blrType) {
             int scale = buffer.readUnsignedByte();
             scale += buffer.readUnsignedByte() << 8;
             int length = buffer.readUnsignedByte();
             length += buffer.readUnsignedByte() << 8;
-            return new FirebirdBlrFieldDescriptor(type, BlrConstants.blr_varying2 == blrType ? length + Short.BYTES : length, scale, 0);
+            return new FirebirdBatchColumnDescriptor(type, BlrConstants.blr_varying2 == blrType ? length + Short.BYTES : length, scale, 0);
         }
         if (BlrConstants.blr_short == blrType || BlrConstants.blr_long == blrType || BlrConstants.blr_int64 == blrType
                 || BlrConstants.blr_quad == blrType || BlrConstants.blr_int128 == blrType) {
             int scale = buffer.readByte();
-            return new FirebirdBlrFieldDescriptor(type, fixedLengthOf(blrType), scale, 0);
+            return new FirebirdBatchColumnDescriptor(type, fixedLengthOf(blrType), scale, 0);
         }
-        // if (BlrConstants.blr_blob2 == blrType) {
-        // buffer.skipBytes(HEADER_LENGTH);
-        // return new FirebirdBlrFieldDescriptor(type, Integer.BYTES * 2, 0, 0);
-        // }
-        return new FirebirdBlrFieldDescriptor(type, fixedLengthOf(blrType), 0, 0);
+        return new FirebirdBatchColumnDescriptor(type, fixedLengthOf(blrType), 0, 0);
     }
     
     private static int fixedLengthOf(final int blrType) {
@@ -176,19 +172,4 @@ public final class FirebirdParseBatchBlr {
         return value + alignment - 1 & ~(alignment - 1);
     }
     
-    /**
-     * Single field descriptor parsed from BLR.
-     */
-    @RequiredArgsConstructor
-    @Getter
-    public static final class FirebirdBlrFieldDescriptor {
-        
-        private final FirebirdBinaryColumnType type;
-        
-        private final int length;
-        
-        private final int scale;
-        
-        private final int offset;
-    }
 }

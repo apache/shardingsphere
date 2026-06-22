@@ -53,7 +53,7 @@ public final class FirebirdBatchSendMessageCommandExecutor implements CommandExe
             throw new FirebirdProtocolException("Batch is too big: accumulated %d + %d bytes exceeds buffer size limit %d bytes",
                     batchStatement.getAccumulatedSize(), packet.getDataLength(), batchStatement.getBufferSize());
         }
-        for (List<Object> each : packet.readParameterValues(batchStatement.getColumnTypes())) {
+        for (List<Object> each : packet.readParameterValues(batchStatement.getColumnDescriptors())) {
             batchStatement.addParameterValues(each);
         }
         batchStatement.addSize(packet.getDataLength());
