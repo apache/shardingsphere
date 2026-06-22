@@ -70,6 +70,22 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
         return getLength(payload, connectionId, payload.getByteBuf().readerIndex(), payload.getByteBuf().readableBytes());
     }
     
+    /**
+     * Get length of batch message packet by parsing every message with the supplied BLR column descriptors.
+     *
+     * @param payload Firebird packet payload
+     * @param columnDescriptors BLR column descriptors
+     * @return length of packet, or {@code -1} when the packet is incomplete
+     */
+    public static int getLength(final FirebirdPacketPayload payload, final List<FirebirdBatchColumnDescriptor> columnDescriptors) {
+        int startReaderIndex = payload.getByteBuf().readerIndex();
+        if (payload.getByteBuf().readableBytes() < FIXED_BATCH_MSG_HEADER_LENGTH) {
+            return -1;
+        }
+        payload.skipReserved(8);
+        return parseBatchMessages(payload, startReaderIndex, payload.readInt4Unsigned(), columnDescriptors);
+    }
+    
     private static int getLength(final FirebirdPacketPayload payload, final int connectionId, final int startReaderIndex, final int availableBytes) {
         if (availableBytes < FIXED_BATCH_MSG_HEADER_LENGTH) {
             return -1;

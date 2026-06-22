@@ -25,12 +25,18 @@ import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Database packet codec for Firebird.
@@ -44,6 +50,8 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     private static final int FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH = MESSAGE_TYPE_LENGTH + 8;
     
     private final List<ByteBuf> pendingMessages = new LinkedList<>();
+    
+    private final Map<Integer, List<FirebirdBatchColumnDescriptor>> deferredBatchFormats = new HashMap<>();
     
     private FirebirdCommandPacketType pendingPacketType;
     
@@ -123,11 +131,18 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             if (packetLength < 0) {
                 pendingPacketType = commandType;
                 pendingMessages.add(buffer.readRetainedSlice(buffer.readableBytes()));
+                if (FirebirdCommandPacketType.BATCH_MSG != commandType) {
+                    deferredBatchFormats.clear();
+                }
                 return;
+            }
+            if (FirebirdCommandPacketType.BATCH_CREATE == commandType) {
+                rememberBatchFormat(buffer, packetLength, charset);
             }
             pendingPacketType = null;
             out.add(buffer.readRetainedSlice(packetLength));
         }
+        deferredBatchFormats.clear();
     }
     
     private int findPacketLength(final ChannelHandlerContext context, final ByteBuf buffer, final FirebirdCommandPacketType commandType, final Charset charset) {
@@ -136,8 +151,11 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         ByteBuf slice = buffer.retainedSlice(readerIndex, readableBytes);
         try {
             FirebirdPacketPayload payload = new FirebirdPacketPayload(slice, charset);
-            int expectedLength = FirebirdCommandPacketFactory.getExpectedLength(commandType, payload,
-                    context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get());
+            List<FirebirdBatchColumnDescriptor> columnDescriptors = getDeferredBatchFormat(buffer, commandType);
+            int expectedLength = null == columnDescriptors
+                    ? FirebirdCommandPacketFactory.getExpectedLength(commandType, payload,
+                            context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get())
+                    : FirebirdBatchSendMessageCommandPacket.getLength(payload, columnDescriptors);
             if (expectedLength < 0) {
                 return -1;
             }
@@ -147,6 +165,19 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         } finally {
             slice.release();
         }
+    }
+    
+    private List<FirebirdBatchColumnDescriptor> getDeferredBatchFormat(final ByteBuf buffer, final FirebirdCommandPacketType commandType) {
+        return FirebirdCommandPacketType.BATCH_MSG == commandType && buffer.readableBytes() >= 8
+                ? deferredBatchFormats.get(buffer.getInt(buffer.readerIndex() + MESSAGE_TYPE_LENGTH))
+                : null;
+    }
+    
+    private void rememberBatchFormat(final ByteBuf buffer, final int packetLength, final Charset charset) {
+        FirebirdBatchCreateCommandPacket packet = new FirebirdBatchCreateCommandPacket(
+                new FirebirdPacketPayload(buffer.slice(buffer.readerIndex(), packetLength), charset));
+        ByteBuf batchBlr = packet.getBatchBlr();
+        deferredBatchFormats.put(packet.getStatementHandle(), FirebirdParseBatchBlr.parse(batchBlr, batchBlr.readableBytes()).getFields());
     }
     
     @Override

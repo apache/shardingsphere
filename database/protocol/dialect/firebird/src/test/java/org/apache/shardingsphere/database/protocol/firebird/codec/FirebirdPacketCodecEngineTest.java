@@ -34,6 +34,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -308,6 +309,34 @@ class FirebirdPacketCodecEngineTest {
         }
     }
     
+    @Test
+    void assertDecodeCoalescedBatchCreateAndMessage() {
+        ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildBatchCreate(), buildBatchMessage(BATCH_STATEMENT_HANDLE, 100));
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        assertThat(out.size(), is(2));
+        assertThat(((ByteBuf) out.get(0)).getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
+        assertThat(createBatchSendMessagePacket((ByteBuf) out.get(1)).getMessageCount(), is(1L));
+        assertNull(getPendingPacketType());
+        assertTrue(getPendingMessages().isEmpty());
+    }
+    
+    @Test
+    void assertDecodeCoalescedBatchCreateAndSplitMessage() {
+        ByteBuf batchMessage = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100);
+        ByteBuf firstFrame = Unpooled.wrappedUnmodifiableBuffer(buildBatchCreate(), batchMessage.readRetainedSlice(18));
+        List<Object> firstOut = new LinkedList<>();
+        codecEngine.decode(context, firstFrame, firstOut);
+        assertThat(firstOut.size(), is(1));
+        assertThat(getPendingPacketType(), is(FirebirdCommandPacketType.BATCH_MSG));
+        List<Object> secondOut = new LinkedList<>();
+        codecEngine.decode(context, batchMessage.readRetainedSlice(batchMessage.readableBytes()), secondOut);
+        assertThat(secondOut.size(), is(1));
+        assertThat(createBatchSendMessagePacket((ByteBuf) secondOut.get(0)).getMessageCount(), is(1L));
+        assertNull(getPendingPacketType());
+        assertTrue(getPendingMessages().isEmpty());
+    }
+    
     private void setUpBatchContext() {
         FirebirdBatchRegistry.getInstance().registerConnection(BATCH_CONNECTION_ID);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE,
@@ -334,6 +363,15 @@ class FirebirdPacketCodecEngineTest {
             result.writeInt(value);
         }
         return result;
+    }
+    
+    private ByteBuf buildBatchCreate() {
+        ByteBuf blr = Unpooled.buffer()
+                .writeByte(BlrConstants.blr_version5).writeByte(BlrConstants.blr_begin).writeByte(BlrConstants.blr_message).writeByte(0)
+                .writeShortLE(2).writeByte(BlrConstants.blr_long).writeByte(0).writeByte(BlrConstants.blr_short).writeByte(0)
+                .writeByte(BlrConstants.blr_end).writeByte(BlrConstants.blr_eoc);
+        return Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_CREATE.getValue()).writeInt(BATCH_STATEMENT_HANDLE)
+                .writeInt(blr.readableBytes()).writeBytes(blr).writeZero((4 - blr.readableBytes() % 4) % 4).writeInt(6).writeInt(0);
     }
     
     private ByteBuf createCommandPackets(final FirebirdCommandPacketType commandType, final int packetLength, final int packetCount) {

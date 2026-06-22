@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.firebirdsql.gds.BlrConstants;
 
 import java.util.ArrayList;
