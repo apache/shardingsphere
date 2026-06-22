@@ -67,16 +67,16 @@ public final class TableMetaDataReviseEngine<T extends ShardingSphereRule> {
      *
      * @param originalMetaData original table meta data
      * @param originalMetaDataList original table meta data list
-     * @param schemaMetaDataRevisionCandidateTableMetaDataList schema meta data revision candidate table meta data list
+     * @param indexNameRecoveryCandidateTables index name recovery candidate tables
      * @return revised table meta data
      */
     public TableMetaData revise(final TableMetaData originalMetaData, final Collection<TableMetaData> originalMetaDataList,
-                                final Collection<TableMetaData> schemaMetaDataRevisionCandidateTableMetaDataList) {
+                                final Collection<TableMetaData> indexNameRecoveryCandidateTables) {
         Optional<? extends TableNameReviser<T>> tableNameReviser = reviseEntry.getTableNameReviser();
         String revisedTableName = tableNameReviser.map(optional -> optional.revise(originalMetaData.getName(), rule)).orElse(originalMetaData.getName());
         return new TableMetaData(revisedTableName, new ColumnReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getColumns()),
                 new IndexReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getIndexes(), originalMetaDataList,
-                        schemaMetaDataRevisionCandidateTableMetaDataList),
+                        indexNameRecoveryCandidateTables),
                 new ConstraintReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getConstraints()), originalMetaData.getType());
     }
 }

@@ -64,14 +64,14 @@ public final class TableMetaDataRefresherLoader {
      * @param schemaName schema name
      * @param tableIdentifierValue table identifier value
      * @param props configuration properties
-     * @param schemaMetaDataRevisionCandidateSchemas schema meta data revision candidate schemas
+     * @param revisionCandidateSchemas revision candidate schemas
      * @return loaded table meta data
      * @throws SQLException SQL exception
      */
     public ShardingSphereTable loadCreatedTable(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName,
                                                 final IdentifierValue tableIdentifierValue, final ConfigurationProperties props,
-                                                final Collection<ShardingSphereSchema> schemaMetaDataRevisionCandidateSchemas) throws SQLException {
-        return loadTable(database, logicDataSourceName, schemaName, tableIdentifierValue, props, false, schemaMetaDataRevisionCandidateSchemas);
+                                                final Collection<ShardingSphereSchema> revisionCandidateSchemas) throws SQLException {
+        return loadTable(database, logicDataSourceName, schemaName, tableIdentifierValue, props, false, revisionCandidateSchemas);
     }
     
     /**
@@ -92,7 +92,7 @@ public final class TableMetaDataRefresherLoader {
     
     private ShardingSphereTable loadTable(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName,
                                           final IdentifierValue tableIdentifierValue, final ConfigurationProperties props, final boolean fallbackWhenMissing,
-                                          final Collection<ShardingSphereSchema> schemaMetaDataRevisionCandidateSchemas) throws SQLException {
+                                          final Collection<ShardingSphereSchema> revisionCandidateSchemas) throws SQLException {
         String candidateTableName = TableRefreshUtils.getTableLoadCandidateName(database, tableIdentifierValue, props);
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         boolean singleTable = TableRefreshUtils.isSingleTable(candidateTableName, database);
@@ -100,7 +100,7 @@ public final class TableMetaDataRefresherLoader {
             ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, candidateTableName));
         }
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName,
-                database.getIdentifierContext(), schemaMetaDataRevisionCandidateSchemas);
+                database.getIdentifierContext(), revisionCandidateSchemas);
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(candidateTableName), database.getProtocolType(), material);
         ShardingSphereTable result = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(candidateTableName))
                 .orElseGet(() -> fallbackWhenMissing ? new ShardingSphereTable(candidateTableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()) : null);

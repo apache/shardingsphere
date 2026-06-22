@@ -45,16 +45,16 @@ public final class IndexReviseEngine<T extends ShardingSphereRule> {
      * @param tableName table name
      * @param originalMetaDataList original index meta data list
      * @param originalTableMetaDataList original table meta data list
-     * @param schemaMetaDataRevisionCandidateTableMetaDataList schema meta data revision candidate table meta data list
+     * @param indexNameRecoveryCandidateTables index name recovery candidate tables
      * @return revised index meta data
      */
     public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList,
                                             final Collection<TableMetaData> originalTableMetaDataList,
-                                            final Collection<TableMetaData> schemaMetaDataRevisionCandidateTableMetaDataList) {
+                                            final Collection<TableMetaData> indexNameRecoveryCandidateTables) {
         Optional<? extends IndexReviser<T>> reviser = reviseEntry.getIndexReviser(rule, tableName);
         return reviser.isPresent()
                 ? originalMetaDataList.stream()
-                        .map(each -> reviser.get().revise(tableName, each, originalTableMetaDataList, schemaMetaDataRevisionCandidateTableMetaDataList, rule))
+                        .map(each -> reviser.get().revise(tableName, each, originalTableMetaDataList, indexNameRecoveryCandidateTables, rule))
                         .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList())
                 : originalMetaDataList;
     }

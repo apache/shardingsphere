@@ -105,7 +105,7 @@ class ShardingSphereDatabaseFactoryTest {
     }
     
     @Test
-    void assertCreateWithDatabaseConfigurationAndSchemaMetaDataRevisionCandidates() throws SQLException {
+    void assertCreateWithDatabaseConfigurationAndRevisionCandidateSchemas() throws SQLException {
         DatabaseType protocolType = mock(DatabaseType.class);
         ShardingSphereSchema candidateSchema = new ShardingSphereSchema("candidate_schema", protocolType);
         try (
@@ -117,10 +117,10 @@ class ShardingSphereDatabaseFactoryTest {
             mockedRulesBuilder.when(() -> DatabaseRulesBuilder.build(eq("foo_db"), eq(protocolType), eq(databaseConfig), eq(computeNodeInstanceContext), any(ResourceMetaData.class)))
                     .thenReturn(Collections.singleton(mock(ShardingSphereRule.class)));
             mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.build(eq(protocolType),
-                    argThat(material -> material.getSchemaMetaDataRevisionCandidateSchemas().contains(candidateSchema))))
+                    argThat(material -> material.getRevisionCandidateSchemas().contains(candidateSchema))))
                     .thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", protocolType)));
             mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build("foo_db", protocolType, props)).thenReturn(Collections.emptyMap());
-            ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.createWithSchemaMetaDataRevisionCandidates(
+            ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.createWithRevisionCandidateSchemas(
                     "foo_db", protocolType, databaseConfig, props, computeNodeInstanceContext, Collections.singleton(candidateSchema));
             assertTrue(actual.containsSchema("foo_schema"));
         }

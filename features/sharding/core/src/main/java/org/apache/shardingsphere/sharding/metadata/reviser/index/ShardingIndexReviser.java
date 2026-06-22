@@ -42,12 +42,12 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
     
     @Override
     public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final Collection<TableMetaData> originalTableMetaDataList,
-                                          final Collection<TableMetaData> indexNameRecoveryCandidateTableMetaDataList, final ShardingRule rule) {
+                                          final Collection<TableMetaData> indexNameRecoveryCandidateTables, final ShardingRule rule) {
         if (shardingTable.getActualDataNodes().isEmpty()) {
             return Optional.empty();
         }
         String logicIndexName = IndexMetaDataUtils.findGeneratedLogicIndexName(originalMetaData.getName(), tableName,
-                findCandidateLogicIndexNames(originalMetaData, originalTableMetaDataList, indexNameRecoveryCandidateTableMetaDataList)).orElse(originalMetaData.getName());
+                findCandidateLogicIndexNames(originalMetaData, originalTableMetaDataList, indexNameRecoveryCandidateTables)).orElse(originalMetaData.getName());
         IndexMetaData result = new IndexMetaData(
                 logicIndexName, originalMetaData.getColumns());
         result.setUnique(originalMetaData.isUnique());
@@ -55,7 +55,7 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
     }
     
     private Collection<String> findCandidateLogicIndexNames(final IndexMetaData originalMetaData, final Collection<TableMetaData> originalTableMetaDataList,
-                                                            final Collection<TableMetaData> indexNameRecoveryCandidateTableMetaDataList) {
+                                                            final Collection<TableMetaData> indexNameRecoveryCandidateTables) {
         Collection<String> result = new LinkedHashSet<>();
         result.add(getGeneratedAnonymousIndexName(originalMetaData));
         for (TableMetaData eachTable : originalTableMetaDataList) {
@@ -63,7 +63,7 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
                 result.addAll(findCandidateLogicIndexNames(eachTable));
             }
         }
-        for (TableMetaData each : indexNameRecoveryCandidateTableMetaDataList) {
+        for (TableMetaData each : indexNameRecoveryCandidateTables) {
             if (isLogicTable(each.getName())) {
                 result.addAll(findCandidateLogicIndexNamesFromRevisionCandidate(each));
             }
