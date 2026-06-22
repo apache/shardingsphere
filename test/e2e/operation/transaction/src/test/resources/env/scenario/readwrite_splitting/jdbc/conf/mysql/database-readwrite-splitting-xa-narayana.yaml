@@ -24,7 +24,7 @@
 databaseName: sharding_db
 dataSources:
   write_ds:
-    url: jdbc:mysql://mysql.readwrite-splitting.host:3306/write_ds?useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.readwrite_splitting.host:3306/write_ds?useSSL=false&characterEncoding=utf-8
     driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
@@ -34,7 +34,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   read_ds_0:
-    url: jdbc:mysql://mysql.readwrite-splitting.host:3306/read_ds_0?useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.readwrite_splitting.host:3306/read_ds_0?useSSL=false&characterEncoding=utf-8
     driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
@@ -44,7 +44,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   read_ds_1:
-    url: jdbc:mysql://mysql.readwrite-splitting.host:3306/read_ds_1?useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.readwrite_splitting.host:3306/read_ds_1?useSSL=false&characterEncoding=utf-8
     driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
