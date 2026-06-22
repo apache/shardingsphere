@@ -83,7 +83,7 @@ class ShardingIndexReviserTest {
         ShardingIndexReviser indexReviser = new ShardingIndexReviser(mockShardingTable());
         when(reviseEntry.getIndexReviser(rule, "tbl_0")).thenReturn(Optional.of(indexReviser));
         Collection<IndexMetaData> actual = new IndexReviseEngine<>(rule, reviseEntry).revise("tbl_0", Collections.singleton(truncatedActualIndexMetaData),
-                Arrays.asList(tableMetaData("tbl_0", truncatedActualIndexMetaData), tableMetaData("tbl_1", legacyActualIndexMetaData)));
+                Arrays.asList(tableMetaData("tbl_0", truncatedActualIndexMetaData), tableMetaData("tbl_1", legacyActualIndexMetaData)), Collections.emptyList());
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getName(), is(logicIndexName));
     }

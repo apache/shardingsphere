@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaData
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -39,31 +38,6 @@ public final class IndexReviseEngine<T extends ShardingSphereRule> {
     private final T rule;
     
     private final MetaDataReviseEntry<T> reviseEntry;
-    
-    /**
-     * Revise index meta data.
-     *
-     * @param tableName table name
-     * @param originalMetaDataList original index meta data list
-     * @return revised index meta data
-     */
-    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList) {
-        return revise(tableName, originalMetaDataList,
-                Collections.singleton(new TableMetaData(tableName, Collections.emptyList(), originalMetaDataList, Collections.emptyList())));
-    }
-    
-    /**
-     * Revise index meta data.
-     *
-     * @param tableName table name
-     * @param originalMetaDataList original index meta data list
-     * @param originalTableMetaDataList original table meta data list
-     * @return revised index meta data
-     */
-    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList,
-                                            final Collection<TableMetaData> originalTableMetaDataList) {
-        return revise(tableName, originalMetaDataList, originalTableMetaDataList, Collections.emptyList());
-    }
     
     /**
      * Revise index meta data.
