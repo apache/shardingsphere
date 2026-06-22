@@ -1702,10 +1702,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.withClause()) {
             result.with((WithSegment) visit(ctx.withClause()));
         }
-        result.table((TableSegment) visit(ctx.tableReferences()));
+        TableSegment targetTable = (TableSegment) visit(ctx.tableReferences());
+        result.table(targetTable);
         result.setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        TableSegment fromTable = null;
         if (null != ctx.fromClause()) {
-            result.from((TableSegment) visit(ctx.fromClause()));
+            fromTable = (TableSegment) visit(ctx.fromClause());
+            result.from(fromTable);
         }
         if (null != ctx.withTableHint()) {
             result.withTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
@@ -1719,9 +1722,28 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.outputClause()) {
             result.output((OutputSegment) visit(ctx.outputClause()));
         }
+        result.targetTableIsFromAlias(isTargetTableAliasInFromClause(targetTable, fromTable));
         UpdateStatement updateStatement = result.build();
         updateStatement.addParameterMarkers(getParameterMarkerSegments());
         return updateStatement;
+    }
+    
+    private boolean isTargetTableAliasInFromClause(final TableSegment targetTable, final TableSegment fromTable) {
+        if (null == fromTable || !(targetTable instanceof SimpleTableSegment)) {
+            return false;
+        }
+        String targetName = ((SimpleTableSegment) targetTable).getTableName().getIdentifier().getValue();
+        return isAliasInFromClause(targetName, fromTable);
+    }
+    
+    private boolean isAliasInFromClause(final String targetName, final TableSegment fromSegment) {
+        if (fromSegment instanceof SimpleTableSegment) {
+            return targetName.equalsIgnoreCase(((SimpleTableSegment) fromSegment).getAliasName().orElse(null));
+        }
+        if (fromSegment instanceof JoinTableSegment) {
+            return isAliasInFromClause(targetName, ((JoinTableSegment) fromSegment).getLeft()) || isAliasInFromClause(targetName, ((JoinTableSegment) fromSegment).getRight());
+        }
+        return false;
     }
     
     @Override
