@@ -38,7 +38,7 @@ public final class EncryptIndexReviser implements IndexReviser<EncryptRule> {
     
     @Override
     public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final Collection<TableMetaData> originalTableMetaDataList,
-                                          final Collection<TableMetaData> indexNameRecoveryCandidateTableMetaDataList, final EncryptRule rule) {
+                                          final Collection<TableMetaData> indexNameRecoveryCandidateTables, final EncryptRule rule) {
         if (originalMetaData.getColumns().isEmpty()) {
             return Optional.empty();
         }

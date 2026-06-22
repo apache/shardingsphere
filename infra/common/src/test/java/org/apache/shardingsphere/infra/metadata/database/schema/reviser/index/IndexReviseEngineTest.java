@@ -86,7 +86,7 @@ class IndexReviseEngineTest {
     }
     
     @Test
-    void assertReviseWithSchemaMetaDataRevisionCandidateTableMetaDataList() {
+    void assertReviseWithIndexNameRecoveryCandidateTables() {
         IndexReviser reviser = mock(IndexReviser.class);
         Collection<IndexMetaData> originalIndexes = Arrays.asList(new IndexMetaData("idx_0"), new IndexMetaData("idx_1"));
         Collection<TableMetaData> originalTables = Collections.singleton(new TableMetaData("foo_tbl", Collections.emptyList(), originalIndexes, Collections.emptyList()));

@@ -109,7 +109,7 @@ class MetaDataContextsFactoryTest {
         when(ShardingSphereDatabaseFactory.create(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class),
                 any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class), anyCollection()))
                 .thenAnswer(invocation -> createDatabaseFromConfiguration(invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(5)));
-        when(ShardingSphereDatabaseFactory.createWithSchemaMetaDataRevisionCandidates(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class),
+        when(ShardingSphereDatabaseFactory.createWithRevisionCandidateSchemas(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class),
                 any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class), anyCollection()))
                 .thenAnswer(invocation -> createDatabaseFromConfiguration(invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(5)));
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));

@@ -46,7 +46,7 @@ public final class GenericSchemaBuilderMaterial {
     
     private final DatabaseIdentifierContext identifierContext;
     
-    private final Collection<ShardingSphereSchema> schemaMetaDataRevisionCandidateSchemas;
+    private final Collection<ShardingSphereSchema> revisionCandidateSchemas;
     
     public GenericSchemaBuilderMaterial(final Map<String, StorageUnit> storageUnits, final Collection<ShardingSphereRule> rules, final ConfigurationProperties props,
                                         final String defaultSchemaName, final DatabaseIdentifierContext identifierContext) {

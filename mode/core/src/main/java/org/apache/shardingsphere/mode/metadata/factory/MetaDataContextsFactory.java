@@ -172,7 +172,7 @@ public final class MetaDataContextsFactory {
                                                                   final MetaDataContexts originalMetaDataContext) throws SQLException {
         ConfigurationProperties props = originalMetaDataContext.getMetaData().getProps();
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
-        return ShardingSphereDatabaseFactory.createWithSchemaMetaDataRevisionCandidates(databaseName, protocolType, databaseConfig, props, instanceContext,
+        return ShardingSphereDatabaseFactory.createWithRevisionCandidateSchemas(databaseName, protocolType, databaseConfig, props, instanceContext,
                 originalMetaDataContext.getMetaData().getDatabase(databaseName).getAllSchemas());
     }
     

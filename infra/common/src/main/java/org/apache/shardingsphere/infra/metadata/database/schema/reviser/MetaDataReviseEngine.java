@@ -65,7 +65,7 @@ public final class MetaDataReviseEngine {
         Map<String, ShardingSphereSchema> result = new HashMap<>(schemaMetaDataMap.size(), 1F);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             SchemaMetaData schemaMetaData = new SchemaMetaDataReviseEngine(
-                    rules, material.getProps(), material.getSchemaMetaDataRevisionCandidateSchemas()).revise(entry.getValue());
+                    rules, material.getProps(), material.getRevisionCandidateSchemas()).revise(entry.getValue());
             result.put(entry.getKey(), new ShardingSphereSchema(entry.getKey(), protocolType, convertToTables(schemaMetaData.getTables()), new LinkedList<>()));
         }
         return result;

@@ -96,7 +96,6 @@ class CreateTablePushDownMetaDataRefresherTest {
         assertThat(persistService.getCreatedTable().getName(), is("Foo_Tbl"));
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
     void assertRefreshCreatedShardingTableRestoresTruncatedNamedIndexFromCreateTableStatementCandidate() throws SQLException {
         String logicTableName = "tbl";
@@ -118,7 +117,7 @@ class CreateTablePushDownMetaDataRefresherTest {
         Map<ShardingSphereRule, MetaDataReviseEntry<?>> reviseEntries = Collections.singletonMap(rule, new CreateTableCandidateMetaDataReviseEntry());
         PushDownMetaDataManagerPersistServiceFixture persistService = new PushDownMetaDataManagerPersistServiceFixture();
         try (MockedStatic<OrderedSPILoader> mockedLoader = mockStatic(OrderedSPILoader.class, CALLS_REAL_METHODS)) {
-            mockedLoader.when(() -> OrderedSPILoader.getServices(eq(MetaDataReviseEntry.class), anyCollection())).thenReturn((Map) reviseEntries);
+            mockedLoader.when(() -> OrderedSPILoader.getServices(eq(MetaDataReviseEntry.class), anyCollection())).thenReturn(reviseEntries);
             new CreateTablePushDownMetaDataRefresher().refresh(persistService, createDatabase(dataSource, new RuleMetaData(Collections.singleton(rule))), LOGIC_DATA_SOURCE_NAME, SCHEMA_NAME,
                     databaseType, createCreateTableStatement(logicTableName, logicIndexName), createPropertiesWithCheckMetaDataEnabled());
         }
@@ -296,8 +295,8 @@ class CreateTablePushDownMetaDataRefresherTest {
         
         @Override
         public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final Collection<TableMetaData> originalTableMetaDataList,
-                                              final Collection<TableMetaData> indexNameRecoveryCandidateTableMetaDataList, final CreateTableCandidateRule rule) {
-            Collection<String> candidateIndexNames = indexNameRecoveryCandidateTableMetaDataList.stream()
+                                              final Collection<TableMetaData> indexNameRecoveryCandidateTables, final CreateTableCandidateRule rule) {
+            Collection<String> candidateIndexNames = indexNameRecoveryCandidateTables.stream()
                     .filter(each -> rule.logicTableName.equalsIgnoreCase(each.getName())).flatMap(each -> each.getIndexes().stream()).map(IndexMetaData::getName).collect(Collectors.toSet());
             IndexMetaData result = new IndexMetaData(IndexMetaDataUtils.findGeneratedLogicIndexName(
                     originalMetaData.getName(), tableName, candidateIndexNames).orElse(originalMetaData.getName()), originalMetaData.getColumns());

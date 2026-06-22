@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -47,7 +48,7 @@ public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaD
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         ShardingSphereTable loadedTable = metaDataLoader.loadCreatedTable(database, logicDataSourceName, schemaName, sqlStatement.getTable().getTableName().getIdentifier(), props,
-                createSchemaMetaDataRevisionCandidateSchemas(database, schemaName, sqlStatement, props));
+                createRevisionCandidateSchemas(database, schemaName, sqlStatement, props));
         metaDataManagerPersistService.createTable(database, schemaName, loadedTable);
     }
     
@@ -56,9 +57,9 @@ public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaD
         return CreateTableStatement.class;
     }
     
-    private Collection<ShardingSphereSchema> createSchemaMetaDataRevisionCandidateSchemas(final ShardingSphereDatabase database, final String schemaName,
-                                                                                          final CreateTableStatement sqlStatement, final ConfigurationProperties props) {
-        Collection<ShardingSphereIndex> indexes = createIndexMetaDataRevisionCandidates(sqlStatement);
+    private Collection<ShardingSphereSchema> createRevisionCandidateSchemas(final ShardingSphereDatabase database, final String schemaName,
+                                                                            final CreateTableStatement sqlStatement, final ConfigurationProperties props) {
+        Collection<ShardingSphereIndex> indexes = createRevisionCandidateIndexes(sqlStatement);
         if (indexes.isEmpty()) {
             return database.getAllSchemas();
         }
@@ -69,12 +70,12 @@ public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaD
         return result;
     }
     
-    private Collection<ShardingSphereIndex> createIndexMetaDataRevisionCandidates(final CreateTableStatement sqlStatement) {
+    private Collection<ShardingSphereIndex> createRevisionCandidateIndexes(final CreateTableStatement sqlStatement) {
         Collection<ShardingSphereIndex> result = new LinkedList<>();
         for (ConstraintDefinitionSegment each : sqlStatement.getConstraintDefinitions()) {
             each.getIndexName().ifPresent(optional -> result.add(new ShardingSphereIndex(
                     optional.getIndexName().getIdentifier().getValue(), each.getIndexColumns().stream()
-                            .map(ColumnSegment::getIdentifier).map(optionalColumn -> optionalColumn.getValue()).collect(Collectors.toList()),
+                            .map(ColumnSegment::getIdentifier).map(IdentifierValue::getValue).collect(Collectors.toList()),
                     each.isUniqueKey() || optional.isUniqueKey())));
         }
         return result;
