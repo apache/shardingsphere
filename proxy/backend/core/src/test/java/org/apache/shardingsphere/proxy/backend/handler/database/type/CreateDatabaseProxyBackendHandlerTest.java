@@ -50,7 +50,8 @@ class CreateDatabaseProxyBackendHandlerTest {
     @Test
     void assertExecuteCreateDatabaseWithInvalidName() {
         when(statement.getDatabaseName()).thenReturn("foo-db");
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new CreateDatabaseProxyBackendHandler(statement, mock(ContextManager.class, RETURNS_DEEP_STUBS)).execute());
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new CreateDatabaseProxyBackendHandler(statement, mock(ContextManager.class, RETURNS_DEEP_STUBS)).execute());
         assertThat(actual.getMessage(), is("Database name `foo-db` is invalid, the database name should start with a letter and can contain letters, numbers and underscores only."));
     }
     
