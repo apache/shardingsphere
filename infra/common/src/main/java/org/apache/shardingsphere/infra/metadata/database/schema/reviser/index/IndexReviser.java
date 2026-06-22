@@ -37,23 +37,10 @@ public interface IndexReviser<T extends ShardingSphereRule> {
      * @param tableName table name
      * @param originalMetaData original index meta data
      * @param originalTableMetaDataList original table meta data list
-     * @param schemaMetaDataRevisionCandidateTableMetaDataList schema meta data revision candidate table meta data list
+     * @param indexNameRecoveryCandidateTableMetaDataList index name recovery candidate table meta data list
      * @param rule rule
      * @return revised index meta data
      */
-    default Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final Collection<TableMetaData> originalTableMetaDataList,
-                                           final Collection<TableMetaData> schemaMetaDataRevisionCandidateTableMetaDataList, final T rule) {
-        return revise(tableName, originalMetaData, originalTableMetaDataList, rule);
-    }
-    
-    /**
-     * Revise index meta data.
-     *
-     * @param tableName table name
-     * @param originalMetaData original index meta data
-     * @param originalTableMetaDataList original table meta data list
-     * @param rule rule
-     * @return revised index meta data
-     */
-    Optional<IndexMetaData> revise(String tableName, IndexMetaData originalMetaData, Collection<TableMetaData> originalTableMetaDataList, T rule);
+    Optional<IndexMetaData> revise(String tableName, IndexMetaData originalMetaData,
+                                   Collection<TableMetaData> originalTableMetaDataList, Collection<TableMetaData> indexNameRecoveryCandidateTableMetaDataList, T rule);
 }

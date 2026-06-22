@@ -90,7 +90,7 @@ class SchemaMetaDataReviseEngineTest {
         }
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     @Test
     void assertRevisePassesSameSchemaRevisionCandidateTableMetaDataToIndexReviser() {
         TableMetaData actualTableMetaData = new TableMetaData("actual_tbl", Collections.emptyList(),

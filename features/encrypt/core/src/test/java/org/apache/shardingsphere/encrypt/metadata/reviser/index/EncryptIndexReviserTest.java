@@ -39,13 +39,13 @@ class EncryptIndexReviserTest {
     @Test
     void assertReviseWithEmptyColumn() {
         assertFalse(new EncryptIndexReviser(mock(EncryptTable.class))
-                .revise("foo_tbl", new IndexMetaData("foo_idx"), Collections.emptyList(), mock(EncryptRule.class)).isPresent());
+                .revise("foo_tbl", new IndexMetaData("foo_idx"), Collections.emptyList(), Collections.emptyList(), mock(EncryptRule.class)).isPresent());
     }
     
     @Test
     void assertReviseWithColumns() {
         Optional<IndexMetaData> actual = new EncryptIndexReviser(mockEncryptTable())
-                .revise("foo_tbl", new IndexMetaData("foo_idx", Arrays.asList("cipher_col", "assisted_col", "other_col")), Collections.emptyList(), mock(EncryptRule.class));
+                .revise("foo_tbl", new IndexMetaData("foo_idx", Arrays.asList("cipher_col", "assisted_col", "other_col")), Collections.emptyList(), Collections.emptyList(), mock(EncryptRule.class));
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("foo_idx"));
         assertThat(actual.get().getColumns(), is(new LinkedHashSet<>(Arrays.asList("col_1", "col_2", "other_col"))));

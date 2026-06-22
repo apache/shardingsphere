@@ -46,7 +46,7 @@ class ShardingIndexReviserTest {
     
     @Test
     void assertReviseWithEmptyActualDataNode() {
-        assertThat(new ShardingIndexReviser(mock(ShardingTable.class)).revise("foo_tbl", new IndexMetaData("foo_idx"), Collections.emptyList(), mock(ShardingRule.class)),
+        assertThat(new ShardingIndexReviser(mock(ShardingTable.class)).revise("foo_tbl", new IndexMetaData("foo_idx"), Collections.emptyList(), Collections.emptyList(), mock(ShardingRule.class)),
                 is(Optional.empty()));
     }
     
@@ -148,7 +148,7 @@ class ShardingIndexReviserTest {
     
     private Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final TableMetaData... originalTableMetaDataList) {
         return new ShardingIndexReviser(mockShardingTable()).revise(tableName, originalMetaData,
-                0 == originalTableMetaDataList.length ? Collections.singleton(tableMetaData(tableName, originalMetaData)) : Arrays.asList(originalTableMetaDataList),
+                0 == originalTableMetaDataList.length ? Collections.singleton(tableMetaData(tableName, originalMetaData)) : Arrays.asList(originalTableMetaDataList), Collections.emptyList(),
                 mock(ShardingRule.class));
     }
     
