@@ -21,7 +21,7 @@ By default, ShardingSphere Proxy Native only contains,
 This section assumes one of the following system environments,
 
 1. Linux (amd64, aarch64)
-2. MacOS (amd64, aarch64/M1)
+2. MacOS (aarch64/M1)
 3. Windows (amd64)
 
 This section is still limited by the recorded content of [GraalVM Native Image](/en/user-manual/shardingsphere-jdbc/graalvm-native-image) on the ShardingSphere JDBC side.
@@ -293,7 +293,7 @@ services:
 
 Contributors must have installed on their devices,
 
-1. GraalVM CE 24.0.2, or a GraalVM downstream distribution compatible with GraalVM CE 24.0.2. Refer to [GraalVM Native Image](/en/user-manual/shardingsphere-jdbc/graalvm-native-image).
+1. GraalVM CE 25.0.2, or a GraalVM downstream distribution compatible with GraalVM CE 25.0.2. Refer to [GraalVM Native Image](/en/user-manual/shardingsphere-jdbc/graalvm-native-image).
 2. The native toolchain required to compile GraalVM Native Image. Refer to https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites .
 
 The possible required operations under Ubuntu and Windows are consistent with [Development and test](/en/user-manual/shardingsphere-jdbc/graalvm-native-image/development).
