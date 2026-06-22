@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.util;
 
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.TemporalLiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.DateTimeLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -93,6 +96,30 @@ class SQLUtilsTest {
     @Test
     void assertGetExactlyExpression() {
         assertThat(SQLUtils.getExactlyExpression("((a + b*c))"), is("((a+b*c))"));
+    }
+    
+    @Test
+    void assertCreateLiteralExpressionForTemporalLiteral() {
+        TemporalLiteralExpressionSegment actual = (TemporalLiteralExpressionSegment) SQLUtils.createLiteralExpression(
+                new TemporalLiteralValue("DATE", "'2024-03-01'"), 0, 16, "DATE '2024-03-01'");
+        assertThat(actual.getLiterals(), is("2024-03-01"));
+        assertThat(actual.getText(), is("DATE '2024-03-01'"));
+    }
+    
+    @Test
+    void assertCreateLiteralExpressionForDateTimeLiteral() {
+        TemporalLiteralExpressionSegment actual = (TemporalLiteralExpressionSegment) SQLUtils.createLiteralExpression(
+                new DateTimeLiteralValue("DATE", "'2024-03-01'", false), 0, 16, "DATE '2024-03-01'");
+        assertThat(actual.getLiterals(), is("2024-03-01"));
+        assertThat(actual.getText(), is("DATE '2024-03-01'"));
+    }
+    
+    @Test
+    void assertCreateLiteralExpressionForBraceDateTimeLiteral() {
+        TemporalLiteralExpressionSegment actual = (TemporalLiteralExpressionSegment) SQLUtils.createLiteralExpression(
+                new DateTimeLiteralValue("ts", "'2024-03-01 10:00:00'", true), 0, 25, "{ts '2024-03-01 10:00:00'}");
+        assertThat(actual.getLiterals(), is("2024-03-01 10:00:00"));
+        assertThat(actual.getText(), is("{ts '2024-03-01 10:00:00'}"));
     }
     
     @Test
