@@ -42,20 +42,12 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
     
     @Override
     public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final Collection<TableMetaData> originalTableMetaDataList,
-                                          final ShardingRule rule) {
-        return revise(tableName, originalMetaData, originalTableMetaDataList, Collections.emptyList(), rule);
-    }
-    
-    @Override
-    public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final Collection<TableMetaData> originalTableMetaDataList,
-                                          final Collection<TableMetaData> schemaMetaDataRevisionCandidateTableMetaDataList, final ShardingRule rule) {
+                                          final Collection<TableMetaData> indexNameRecoveryCandidateTableMetaDataList, final ShardingRule rule) {
         if (shardingTable.getActualDataNodes().isEmpty()) {
             return Optional.empty();
         }
-        String actualTableName = tableName;
-        String logicIndexName = IndexMetaDataUtils.findGeneratedLogicIndexName(
-                originalMetaData.getName(), actualTableName,
-                findCandidateLogicIndexNames(originalMetaData, originalTableMetaDataList, schemaMetaDataRevisionCandidateTableMetaDataList)).orElse(originalMetaData.getName());
+        String logicIndexName = IndexMetaDataUtils.findGeneratedLogicIndexName(originalMetaData.getName(), tableName,
+                findCandidateLogicIndexNames(originalMetaData, originalTableMetaDataList, indexNameRecoveryCandidateTableMetaDataList)).orElse(originalMetaData.getName());
         IndexMetaData result = new IndexMetaData(
                 logicIndexName, originalMetaData.getColumns());
         result.setUnique(originalMetaData.isUnique());
@@ -63,7 +55,7 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
     }
     
     private Collection<String> findCandidateLogicIndexNames(final IndexMetaData originalMetaData, final Collection<TableMetaData> originalTableMetaDataList,
-                                                            final Collection<TableMetaData> schemaMetaDataRevisionCandidateTableMetaDataList) {
+                                                            final Collection<TableMetaData> indexNameRecoveryCandidateTableMetaDataList) {
         Collection<String> result = new LinkedHashSet<>();
         result.add(getGeneratedAnonymousIndexName(originalMetaData));
         for (TableMetaData eachTable : originalTableMetaDataList) {
@@ -71,7 +63,7 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
                 result.addAll(findCandidateLogicIndexNames(eachTable));
             }
         }
-        for (TableMetaData each : schemaMetaDataRevisionCandidateTableMetaDataList) {
+        for (TableMetaData each : indexNameRecoveryCandidateTableMetaDataList) {
             if (isLogicTable(each.getName())) {
                 result.addAll(findCandidateLogicIndexNamesFromRevisionCandidate(each));
             }

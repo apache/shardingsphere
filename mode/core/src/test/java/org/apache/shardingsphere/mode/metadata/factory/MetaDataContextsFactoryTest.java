@@ -151,7 +151,7 @@ class MetaDataContextsFactoryTest {
     }
     
     @Test
-    void assertCreateBySwitchResourceFiltersStaleResources() throws SQLException {
+    void assertCreateBySwitchResourceFiltersStaleResources() {
         StorageNode staleNode = new StorageNode("stale_ds");
         StorageNode activeNode = new StorageNode("active_ds");
         Map<StorageNode, DataSource> currentStorageNodes = new LinkedHashMap<>(2, 1F);
@@ -180,7 +180,7 @@ class MetaDataContextsFactoryTest {
     }
     
     @Test
-    void assertCreateBySwitchResourceKeepsExistingNodesWhenNoNewDataSources() throws SQLException {
+    void assertCreateBySwitchResourceKeepsExistingNodesWhenNoNewDataSources() {
         ResourceMetaData resourceMetaData = createResourceMetaDataWithSingleUnit();
         ShardingSphereDatabase database =
                 new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
@@ -195,7 +195,7 @@ class MetaDataContextsFactoryTest {
     }
     
     @Test
-    void assertCreateByAlterRuleKeepsPersistedSchemasWhenEnabled() throws SQLException {
+    void assertCreateByAlterRuleKeepsPersistedSchemasWhenEnabled() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, createResourceMetaDataWithSingleUnit(), new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
