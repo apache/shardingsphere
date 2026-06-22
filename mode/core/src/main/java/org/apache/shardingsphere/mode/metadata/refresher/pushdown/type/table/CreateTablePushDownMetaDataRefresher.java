@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDa
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -52,11 +53,6 @@ public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaD
         metaDataManagerPersistService.createTable(database, schemaName, loadedTable);
     }
     
-    @Override
-    public Class<CreateTableStatement> getType() {
-        return CreateTableStatement.class;
-    }
-    
     private Collection<ShardingSphereSchema> createRevisionCandidateSchemas(final ShardingSphereDatabase database, final String schemaName,
                                                                             final CreateTableStatement sqlStatement, final ConfigurationProperties props) {
         Collection<ShardingSphereIndex> indexes = createRevisionCandidateIndexes(sqlStatement);
@@ -73,11 +69,18 @@ public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaD
     private Collection<ShardingSphereIndex> createRevisionCandidateIndexes(final CreateTableStatement sqlStatement) {
         Collection<ShardingSphereIndex> result = new LinkedList<>();
         for (ConstraintDefinitionSegment each : sqlStatement.getConstraintDefinitions()) {
-            each.getIndexName().ifPresent(optional -> result.add(new ShardingSphereIndex(
-                    optional.getIndexName().getIdentifier().getValue(), each.getIndexColumns().stream()
-                            .map(ColumnSegment::getIdentifier).map(IdentifierValue::getValue).collect(Collectors.toList()),
-                    each.isUniqueKey() || optional.isUniqueKey())));
+            if (!each.getIndexName().isPresent()) {
+                continue;
+            }
+            IndexSegment indexSegment = each.getIndexName().get();
+            Collection<String> columns = each.getIndexColumns().stream().map(ColumnSegment::getIdentifier).map(IdentifierValue::getValue).collect(Collectors.toList());
+            result.add(new ShardingSphereIndex(indexSegment.getIndexName().getIdentifier().getValue(), columns, each.isUniqueKey() || indexSegment.isUniqueKey()));
         }
         return result;
+    }
+    
+    @Override
+    public Class<CreateTableStatement> getType() {
+        return CreateTableStatement.class;
     }
 }
