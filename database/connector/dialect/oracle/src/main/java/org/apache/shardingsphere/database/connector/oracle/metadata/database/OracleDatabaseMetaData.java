@@ -43,6 +43,8 @@ import java.util.Optional;
  */
 public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     
+    private static final int INDEX_NAME_MAX_LENGTH = 30;
+    
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
@@ -70,7 +72,7 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectIndexOption getIndexOption() {
-        return new DialectIndexOption(true);
+        return new DialectIndexOption(true, INDEX_NAME_MAX_LENGTH);
     }
     
     @Override

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -91,7 +92,9 @@ class OpenGaussDatabaseMetaDataTest {
     
     @Test
     void assertGetIndexOption() {
-        assertTrue(dialectDatabaseMetaData.getIndexOption().isSchemaUniquenessLevel());
+        DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
+        assertTrue(actual.isSchemaUniquenessLevel());
+        assertThat(actual.getIndexNameMaxLength(), is(63));
     }
     
     @Test
