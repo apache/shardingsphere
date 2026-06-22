@@ -59,7 +59,7 @@ class SchemaMetaDataReviseEngineTest {
     @Test
     void assertReviseWithoutMetaDataReviseEntry() {
         SchemaMetaData schemaMetaData = new SchemaMetaData("foo_schema", Collections.singleton(mock(TableMetaData.class)));
-        SchemaMetaData actual = new SchemaMetaDataReviseEngine(Collections.emptyList(), new ConfigurationProperties(new Properties())).revise(schemaMetaData);
+        SchemaMetaData actual = new SchemaMetaDataReviseEngine(Collections.emptyList(), new ConfigurationProperties(new Properties()), Collections.emptyList()).revise(schemaMetaData);
         assertThat(actual.getName(), is(schemaMetaData.getName()));
         assertThat(actual.getTables(), is(schemaMetaData.getTables()));
     }
@@ -67,7 +67,8 @@ class SchemaMetaDataReviseEngineTest {
     @Test
     void assertReviseWithMetaDataReviseEntry() {
         SchemaMetaData schemaMetaData = new SchemaMetaData("foo_schema", Collections.singletonList(createTableMetaData()));
-        SchemaMetaData actual = new SchemaMetaDataReviseEngine(Collections.singleton(new FixtureGlobalRule()), new ConfigurationProperties(new Properties())).revise(schemaMetaData);
+        SchemaMetaData actual = new SchemaMetaDataReviseEngine(
+                Collections.singleton(new FixtureGlobalRule()), new ConfigurationProperties(new Properties()), Collections.emptyList()).revise(schemaMetaData);
         assertThat(actual.getName(), is(schemaMetaData.getName()));
         assertThat(actual.getTables().size(), is(schemaMetaData.getTables().size()));
         Iterator<TableMetaData> expectedTableIterator = schemaMetaData.getTables().iterator();
@@ -84,7 +85,7 @@ class SchemaMetaDataReviseEngineTest {
         Map<ShardingSphereRule, MetaDataReviseEntry<?>> entries = Collections.singletonMap(rule, reviseEntry);
         try (MockedStatic<OrderedSPILoader> mocked = mockStatic(OrderedSPILoader.class)) {
             mocked.when(() -> OrderedSPILoader.getServices(MetaDataReviseEntry.class, Collections.singleton(rule))).thenReturn(entries);
-            SchemaMetaData actual = new SchemaMetaDataReviseEngine(Collections.singleton(rule), new ConfigurationProperties(new Properties())).revise(schemaMetaData);
+            SchemaMetaData actual = new SchemaMetaDataReviseEngine(Collections.singleton(rule), new ConfigurationProperties(new Properties()), Collections.emptyList()).revise(schemaMetaData);
             assertThat(actual.getName(), is(schemaMetaData.getName()));
             assertThat(actual.getTables().size(), is(schemaMetaData.getTables().size()));
         }
