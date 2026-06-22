@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
  * ShardingSphere schema builder material.
  */
-@RequiredArgsConstructor
 @Getter
 public final class GenericSchemaBuilderMaterial {
     
@@ -43,4 +43,22 @@ public final class GenericSchemaBuilderMaterial {
     private final String defaultSchemaName;
     
     private final DatabaseIdentifierContext identifierContext;
+    
+    private final Collection<ShardingSphereSchema> schemaMetaDataRevisionCandidateSchemas;
+    
+    public GenericSchemaBuilderMaterial(final Map<String, StorageUnit> storageUnits, final Collection<ShardingSphereRule> rules, final ConfigurationProperties props,
+                                        final String defaultSchemaName, final DatabaseIdentifierContext identifierContext) {
+        this(storageUnits, rules, props, defaultSchemaName, identifierContext, Collections.emptyList());
+    }
+    
+    public GenericSchemaBuilderMaterial(final Map<String, StorageUnit> storageUnits, final Collection<ShardingSphereRule> rules, final ConfigurationProperties props,
+                                        final String defaultSchemaName, final DatabaseIdentifierContext identifierContext,
+                                        final Collection<ShardingSphereSchema> schemaMetaDataRevisionCandidateSchemas) {
+        this.storageUnits = storageUnits;
+        this.rules = rules;
+        this.props = props;
+        this.defaultSchemaName = defaultSchemaName;
+        this.identifierContext = identifierContext;
+        this.schemaMetaDataRevisionCandidateSchemas = schemaMetaDataRevisionCandidateSchemas;
+    }
 }

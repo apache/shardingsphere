@@ -142,7 +142,7 @@ public final class PipelineJobDataSourcePreparer {
     
     private Optional<String> decorateTargetTableSQL(final CreateTableConfiguration createTableConfig, final SQLParserEngine sqlParserEngine,
                                                     final ShardingSphereMetaData metaData, final String targetDatabaseName, final String sql) {
-        String schemaName = createTableConfig.getSourceName().getSchemaName();
+        String schemaName = createTableConfig.getTargetName().getSchemaName();
         String targetTableName = createTableConfig.getTargetName().getTableName();
         Optional<String> decoratedSQL = new PipelineDDLDecorator(metaData).decorate(databaseType, targetDatabaseName, schemaName, targetTableName, sqlParserEngine, sql);
         return decoratedSQL.map(String::trim).filter(trimmedSql -> !Strings.isNullOrEmpty(trimmedSql));
