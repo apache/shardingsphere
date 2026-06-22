@@ -48,22 +48,6 @@ public final class TableMetaDataRefresherLoader {
      * @param schemaName schema name
      * @param tableIdentifierValue table identifier value
      * @param props configuration properties
-     * @return loaded table meta data
-     * @throws SQLException SQL exception
-     */
-    public ShardingSphereTable loadCreatedTable(final ShardingSphereDatabase database, final String logicDataSourceName,
-                                                final String schemaName, final IdentifierValue tableIdentifierValue, final ConfigurationProperties props) throws SQLException {
-        return loadCreatedTable(database, logicDataSourceName, schemaName, tableIdentifierValue, props, database.getAllSchemas());
-    }
-    
-    /**
-     * Load created table meta data.
-     *
-     * @param database database
-     * @param logicDataSourceName logic data source name
-     * @param schemaName schema name
-     * @param tableIdentifierValue table identifier value
-     * @param props configuration properties
      * @param revisionCandidateSchemas revision candidate schemas
      * @return loaded table meta data
      * @throws SQLException SQL exception
