@@ -177,12 +177,16 @@ public final class SimpleTableSegmentBinder {
     private static SimpleTableSegment bindUpdateTargetTableAlias(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext,
                                                                  final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts, final IdentifierValue databaseName,
                                                                  final Optional<IdentifierValue> schemaName, final IdentifierValue tableName) {
-        IdentifierValue originalTableName = tableBinderContexts.get(CaseInsensitiveString.of(tableName.getValue())).stream()
+        Collection<TableSegmentBinderContext> fromTableContexts = tableBinderContexts.get(CaseInsensitiveString.of(tableName.getValue()));
+        IdentifierValue originalTableName = fromTableContexts.stream()
                 .map(TableSegmentBinderContext::getOriginalTableName).filter(Optional::isPresent).map(Optional::get).findFirst().orElse(tableName);
+        Optional<OwnerSegment> fromTableOwner = fromTableContexts.stream()
+                .map(TableSegmentBinderContext::getOriginalOwner).filter(Optional::isPresent).map(Optional::get).findFirst();
+        IdentifierValue resolvedSchemaName = fromTableOwner.map(OwnerSegment::getIdentifier).orElseGet(() -> schemaName.orElse(null));
         TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), originalTableName);
-        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName.orElse(null)));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(databaseName, resolvedSchemaName));
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
-        segment.getOwner().ifPresent(result::setOwner);
+        fromTableOwner.ifPresent(result::setOwner);
         result.setAlias(segment.getAliasSegment().orElseGet(() -> new AliasSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName)));
         return result;
     }
@@ -357,7 +361,9 @@ public final class SimpleTableSegmentBinder {
             columnProjectionSegment.setVisible(each.isVisible());
             projectionSegments.add(columnProjectionSegment);
         }
-        return Optional.of(new SimpleTableSegmentBinderContext(projectionSegments, TableSourceType.PHYSICAL_TABLE, tableName));
+        SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(projectionSegments, TableSourceType.PHYSICAL_TABLE, tableName);
+        segment.getOwner().ifPresent(result::setOriginalOwner);
+        return Optional.of(result);
     }
     
     private static ColumnSegment createColumnSegment(final SimpleTableSegment segment, final IdentifierValue databaseName, final IdentifierValue schemaName,

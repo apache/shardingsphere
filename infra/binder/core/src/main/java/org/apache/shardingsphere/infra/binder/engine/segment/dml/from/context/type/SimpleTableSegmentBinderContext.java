@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -46,6 +47,8 @@ public final class SimpleTableSegmentBinderContext implements TableSegmentBinder
     private final TableSourceType tableSourceType;
     
     private IdentifierValue originalTableName;
+    
+    private OwnerSegment originalOwner;
     
     private boolean fromWithSegment;
     
@@ -83,5 +86,10 @@ public final class SimpleTableSegmentBinderContext implements TableSegmentBinder
     @Override
     public Optional<IdentifierValue> getOriginalTableName() {
         return Optional.ofNullable(originalTableName);
+    }
+    
+    @Override
+    public Optional<OwnerSegment> getOriginalOwner() {
+        return Optional.ofNullable(originalOwner);
     }
 }
