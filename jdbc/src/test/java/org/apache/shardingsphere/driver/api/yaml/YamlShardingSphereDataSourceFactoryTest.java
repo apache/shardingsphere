@@ -32,6 +32,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class YamlShardingSphereDataSourceFactoryTest {
     
@@ -71,6 +72,14 @@ class YamlShardingSphereDataSourceFactoryTest {
     @Test
     void assertCreateDataSourceWithBytesForExternalSingleDataSource() throws SQLException, IOException {
         assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), SystemResourceFileUtils.readFile(YAML_FILE).getBytes()));
+    }
+    
+    @Test
+    void assertCreateDataSourceWithHyphenDatabaseName() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> YamlShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), "databaseName: logic-db".getBytes()));
+        assertThat(actual.getMessage(),
+                is("Database name `logic-db` is invalid, the database name should start with a letter and can contain letters, numbers and underscores only."));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

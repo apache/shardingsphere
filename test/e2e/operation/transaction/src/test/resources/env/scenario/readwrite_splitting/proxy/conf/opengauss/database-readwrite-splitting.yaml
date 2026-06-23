@@ -21,10 +21,10 @@
 # 
 ######################################################################################################
 
-databaseName: readwrite-splitting
+databaseName: readwrite_splitting
 dataSources:
   write_ds:
-    url: jdbc:postgresql://postgresql.default.host:5432/write_ds
+    url: jdbc:opengauss://opengauss.default.host:5432/write_ds
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -33,7 +33,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   read_ds_0:
-    url: jdbc:postgresql://postgresql.default.host:5432/read_ds_0
+    url: jdbc:opengauss://opengauss.default.host:5432/read_ds_0
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -42,7 +42,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   read_ds_1:
-    url: jdbc:postgresql://postgresql.default.host:5432/read_ds_1
+    url: jdbc:opengauss://opengauss.default.host:5432/read_ds_1
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -51,7 +51,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   read_ds_error:
-    url: jdbc:postgresql://postgresql.default.host:5432/read_ds_error
+    url: jdbc:opengauss://opengauss.default.host:5432/read_ds_error
     username: test_user
     password: wrong_password
     connectionTimeoutMilliseconds: 5000
