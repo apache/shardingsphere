@@ -104,4 +104,9 @@
         <input sql="UPDATE ScrapReason AS sr SET Name = Name || ' - tool malfunction', Remark = 'tool malfunction' FROM WorkOrder AS wo WHERE sr.ScrapReasonID = wo.ScrapReasonID AND wo.ScrappedQty &gt; 300" />
         <output sql="UPDATE ScrapReason AS sr SET Name = Name || ' - tool malfunction', &quot;remark_cipher&quot; = 'encrypt_tool malfunction' FROM WorkOrder AS wo WHERE sr.ScrapReasonID = wo.ScrapReasonID AND wo.ScrappedQty &gt; 300" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="update_state_province_country_region_view_for_literals" db-types="SQLServer">
+        <input sql="UPDATE dbo.vStateProvinceCountryRegion SET CountryRegionName = 'United States of America' WHERE CountryRegionName = 'United States'" />
+        <output sql="UPDATE dbo.vStateProvinceCountryRegion SET [country_region_name_cipher] = 'encrypt_United States of America' WHERE [country_region_name_cipher] = 'encrypt_United States'" />
+    </rewrite-assertion>
 </rewrite-assertions>
