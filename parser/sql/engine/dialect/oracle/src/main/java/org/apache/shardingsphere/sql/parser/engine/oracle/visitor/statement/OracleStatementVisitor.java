@@ -373,10 +373,19 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
         if (null != ctx.STRING_()) {
-            return new StringLiteralValue(ctx.getText());
+            String text = ctx.getText();
+            return new StringLiteralValue(isAlternativeQuotedText(text) ? convertAlternativeQuotedText(text) : text);
         } else {
             return new StringLiteralValue(ctx.getText().substring(1));
         }
+    }
+    
+    private boolean isAlternativeQuotedText(final String text) {
+        return text.length() > 4 && ('q' == text.charAt(0) || 'Q' == text.charAt(0)) && '\'' == text.charAt(1);
+    }
+    
+    private String convertAlternativeQuotedText(final String text) {
+        return "'" + text.substring(3, text.length() - 2) + "'";
     }
     
     @Override
