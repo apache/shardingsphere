@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.Ord
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -102,6 +103,53 @@ class UpdateStatementBinderTest {
                 "foo_db", new HintValueContext(), updateStatement));
         ColumnOrderByItemSegment actualOrderByItem = (ColumnOrderByItemSegment) actual.getOrderBy().get().getOrderByItems().iterator().next();
         assertThat(actualOrderByItem.getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+    }
+    
+    @Test
+    void assertBindUpdateTargetTableAlias() {
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("o")));
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(targetTable)
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new LiteralExpressionSegment(0, 0, 1)))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        ColumnSegment actualColumn = actual.getAssignment().get().getAssignments().iterator().next()
+                .getColumns().iterator().next();
+        assertThat(((SimpleTableSegment) actual.getTable()).getTableName().getIdentifier().getValue(), is("t_order"));
+        assertThat(((SimpleTableSegment) actual.getTable()).getAliasName().get(), is("o"));
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertTrue(actual.isTargetTableIsFromAlias());
+    }
+    
+    @Test
+    void assertBindSchemaQualifiedUpdateTargetTableAlias() {
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("o")));
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        fromTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_db")));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(targetTable)
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("status"))), new LiteralExpressionSegment(0, 0, 1)))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        assertThat(((SimpleTableSegment) actual.getTable()).getTableName().getIdentifier().getValue(), is("t_order"));
+        assertThat(((SimpleTableSegment) actual.getTable()).getAliasName().get(), is("o"));
+        assertTrue(((SimpleTableSegment) actual.getTable()).getOwner().isPresent());
+        assertThat(((SimpleTableSegment) actual.getTable()).getOwner().get().getIdentifier().getValue(), is("foo_db"));
+        assertTrue(actual.isTargetTableIsFromAlias());
     }
     
     private WithSegment createWithSegment() {

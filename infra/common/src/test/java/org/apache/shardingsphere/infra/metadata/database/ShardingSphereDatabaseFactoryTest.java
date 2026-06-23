@@ -50,6 +50,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -100,6 +101,28 @@ class ShardingSphereDatabaseFactoryTest {
             assertTrue(actual.containsSchema("foo_schema"));
             assertTrue(actual.containsSchema("system_schema"));
             assertTrue(actual.containsSchema("metadata_schema"));
+        }
+    }
+    
+    @Test
+    void assertCreateWithDatabaseConfigurationAndRevisionCandidateSchemas() throws SQLException {
+        DatabaseType protocolType = mock(DatabaseType.class);
+        ShardingSphereSchema candidateSchema = new ShardingSphereSchema("candidate_schema", protocolType);
+        try (
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_schema"));
+                MockedStatic<DatabaseRulesBuilder> mockedRulesBuilder = mockStatic(DatabaseRulesBuilder.class);
+                MockedStatic<GenericSchemaBuilder> mockedGenericSchemaBuilder = mockStatic(GenericSchemaBuilder.class);
+                MockedStatic<SystemSchemaBuilder> mockedSystemSchemaBuilder = mockStatic(SystemSchemaBuilder.class)) {
+            ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
+            mockedRulesBuilder.when(() -> DatabaseRulesBuilder.build(eq("foo_db"), eq(protocolType), eq(databaseConfig), eq(computeNodeInstanceContext), any(ResourceMetaData.class)))
+                    .thenReturn(Collections.singleton(mock(ShardingSphereRule.class)));
+            mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.build(eq(protocolType),
+                    argThat(material -> material.getRevisionCandidateSchemas().contains(candidateSchema))))
+                    .thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", protocolType)));
+            mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build("foo_db", protocolType, props)).thenReturn(Collections.emptyMap());
+            ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.createWithRevisionCandidateSchemas(
+                    "foo_db", protocolType, databaseConfig, props, computeNodeInstanceContext, Collections.singleton(candidateSchema));
+            assertTrue(actual.containsSchema("foo_schema"));
         }
     }
     

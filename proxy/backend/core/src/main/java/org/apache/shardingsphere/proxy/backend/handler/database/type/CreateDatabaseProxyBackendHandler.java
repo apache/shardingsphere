@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.database.type;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.DatabaseNameValidator;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -38,6 +39,7 @@ public final class CreateDatabaseProxyBackendHandler implements ProxyBackendHand
     
     @Override
     public ResponseHeader execute() {
+        DatabaseNameValidator.validate(sqlStatement.getDatabaseName());
         ShardingSpherePreconditions.checkState(sqlStatement.isIfNotExists() || !contextManager.getMetaDataContexts().getMetaData().containsDatabase(sqlStatement.getDatabaseName()),
                 () -> new DatabaseCreateExistsException(sqlStatement.getDatabaseName()));
         contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().createDatabase(sqlStatement.getDatabaseName());

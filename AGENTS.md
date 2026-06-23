@@ -74,7 +74,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Test Naming Simplicity**: keep test names concise and scenario-focused (avoid “ReturnsXXX”/overly wordy or AI-like phrasing); describe the scenario directly.
 - **Coverage Discipline**: follow the dedicated coverage & branch checklist before coding when coverage targets are stated.
 - **Dedicated and scoped tests**: each public production method must be covered by dedicated test methods; each test method covers only one scenario and invokes the target public method at most once (repeat only when the same scenario needs extra assertions), and different branches/inputs belong in separate test methods.
-- **No interface-only tests**: do not create unit tests for interfaces themselves; cover behavior through concrete implementations instead, and avoid dedicated test classes for pure contracts such as `MCPHandlerProvider`.
+- **No interface-only tests**: do not create unit tests for interfaces themselves; cover behavior through concrete implementations instead, and avoid dedicated test classes for pure contracts or SPI interfaces.
 - **Parameterized tests naming**: all parameterized tests must set an explicit `name` and use the `"{0}"` template for display names.
 - **Mocking Rule**: default to mocks; see Mocking & SPI Guidance for static/constructor mocking and spy avoidance details.
 - **Reflection Rule**: when tests must touch fields or methods via reflection, use `Plugins.getMemberAccessor()`—direct reflection APIs are forbidden.
@@ -148,21 +148,35 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - Validate: run the narrowest meaningful checks (see Verification & Commands) and prefer scoped runs; note any sandbox or limit blocks and alternatives.
 - Report & self-check: share intent, edits, verification results, and next steps; ensure all required instructions, coverage, and mocking rules are satisfied, with remaining risks called out.
 
-### Protocol / Client Compatibility Evidence Gate
-- Treat protocol compatibility, native-client smoke, driver compatibility, packet-trace, and externally visible client behavior failures as evidence-first failures until proven otherwise.
-- Before changing protocol bytes, packet order, handshake/authentication/session lifecycle, status/error semantics, cursor or fetch lifecycle, row-transfer payloads, or client-specific completion logic,
-  create a reference-versus-current behavior record for the same scenario.
+### Database Protocol / Client Compatibility Evidence Gate
+- Apply this gate only to database wire-protocol, proxy frontend protocol, native/client compatibility, protocol E2E, Docker/native client smoke,
+  packet/trace/log/client behavior evidence, and database client-visible protocol behavior work.
+  It does not apply to unrelated feature work, ordinary unit-test failures, formatting failures, documentation-only changes, or non-protocol implementation tasks.
+- Treat database protocol compatibility, native-client smoke, driver compatibility, packet/trace/log evidence, and externally visible client behavior failures
+  as evidence-first failures until proven otherwise.
+- Evidence-first, capture-first, trace-first, or packet-first is an execution method, not a user-confirmation stop gate.
+  When the next action remains inside the approved scope, continue with evidence collection, behavior correlation, root-cause classification,
+  the smallest deterministic fix, focused checks, and one matching sentinel instead of stopping only to report progress.
+- Before changing protocol bytes, packet order, handshake/authentication/session lifecycle, status/error semantics, cursor or fetch lifecycle,
+  row-transfer payloads, metadata payloads, or client-specific completion logic, create a reference-versus-current behavior record for the same scenario.
 - The behavior record must use the same client or driver version, server or database version, schema/configuration, input SQL or scripts, and execution markers.
-- The behavior record must identify the first actionable mismatch, such as a missing message, extra message, wrong order, wrong status or error semantics, wrong lifecycle transition, wrong field value, or wrong bounded payload shape.
-- Capture complete is not analysis complete. A record is code-ready only when it includes scenario identity, reference/current inventories, chronological request/response correlation,
-  critical response ownership, the first actionable mismatch, non-mismatch exclusions, minimum fix scope, and a deterministic guard plan.
-- If any correlation field is missing, continue capture, source analysis, or behavior analysis. Do not change production code, rewrite test expectations, rerun the same or adjacent sentinel,
-  or send a progress-only final response unless the user explicitly asks for status or stop.
+- The behavior record must identify the first actionable mismatch, such as a missing message, extra message, wrong order, wrong status or error semantics,
+  wrong lifecycle transition, wrong field value, wrong metadata shape, or wrong bounded payload shape.
+- Capture, trace, log, or packet collection complete is not analysis complete. A record is code-ready only when it includes scenario identity,
+  reference/current inventories, chronological request/response correlation, critical response ownership, the first actionable mismatch,
+  non-mismatch exclusions, minimum fix scope, and a deterministic guard plan.
+- If any correlation field is missing, continue capture, source analysis, or behavior analysis. Do not change protocol implementation code,
+  rewrite test expectations, rerun the same or adjacent sentinel, or send a progress-only final response unless the user explicitly asks for status or stop.
 - A deterministic guard is not an exploratory probe. Add or run it only after the behavior record states the expected branch.
-  If the guard failure matches the recorded mismatch, implement the smallest in-scope fix. If it exposes a wrong guard expectation or route assumption, return to behavior correlation before changing code or test expectations.
-- After one fix, run only one sentinel that matches the recorded mismatch. If the sentinel fails, update the behavior record before any further code change.
-- Having no current question for the user is not a reason to continue rerunning the failed scenario, but it is also not a reason to stop work. Continue analysis until the behavior record is complete, then proceed with an in-scope fix when available.
-- Stop and ask the user only when the next action requires scope expansion, third-party license or login approval, deleting files, adding dependencies, changing project goals, or when analysis reaches an actual impasse that cannot be resolved from local evidence.
+  If the guard failure matches the recorded mismatch, implement the smallest in-scope fix. If it exposes a wrong guard expectation or route assumption,
+  return to behavior correlation before changing protocol code or test expectations.
+- After one fix, run only one sentinel that matches the recorded mismatch. If the sentinel fails, update the behavior record before any further code change or rerun.
+- Having no current question for the user is not a reason to continue rerunning the failed scenario, but it is also not a reason to stop work.
+  Continue analysis until the behavior record is complete, then proceed with an in-scope fix when available.
+- If a database-specific spec, task state, evidence matrix, or machine gate exists, follow it as the specialization of this general rule.
+  Database-specific specializations may be stricter than this root rule.
+- Stop and ask the user only when the next action requires scope expansion, third-party license or login approval, deleting files, adding dependencies,
+  changing project goals, or when analysis reaches an actual impasse that cannot be resolved from local evidence.
 
 ### E2E / Integration Failure Gate
 - When an E2E, integration, client-smoke, Docker-smoke, or protocol scenario fails, hangs, times out, or requires guess-and-retry debugging, stop further reruns immediately. This means stop the rerun loop, not stop the task.
@@ -171,6 +185,9 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - Complete deterministic gates first, such as classpath consistency, stale bytecode scan, dependency alignment, packet-trace completeness, or direct/proxy evidence review.
 - After the gate passes, rerun only one sentinel scenario. If that sentinel fails unexpectedly, stop rerunning and return to analysis instead of applying small speculative patches.
 - Do not loop through repeated E2E attempts, incremental guesses, or patch-and-rerun cycles unless the user explicitly approves that debugging mode for the current task.
+- Slow-loop fuse: after one matching sentinel fails, or when 30-45 minutes of work on the same failing scenario produces no new mismatch,
+  guard expectation, state transition, or closed task, stop reruns and blind patches immediately and continue analysis, state repair, or handoff.
+  This is not a user stop gate unless the next action needs approval under the dangerous-operation or scope-expansion rules.
 
 ## Compliance Guardrails & Checklists
 - **Pre-task checklist (do before planning/coding):** re-read AGENTS.md and `CODE_OF_CONDUCT.md`; restate user goal, constraints, forbidden tools/APIs, coverage expectations, sandbox/network/approval limits; prefer `rg`/`./mvnw`/`apply_patch`; avoid destructive commands (`git reset --hard`, `git checkout --`, bulk deletes) and generated paths like `target/`.
@@ -310,18 +327,18 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - **Success recipe:** explain why the change exists, cite the affected data-flow step, keep public APIs backward compatible, and record defaults/knobs alongside code changes.
 
 ## Verification & Commands
-- Core commands: `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=ClassName test` (fast verification), `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
+- Core commands: `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=<TestClassName> test` (fast verification), `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
 - Coverage: when tests change or targets demand it, run `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` or scoped `-pl <module> -am -Djacoco.skip=false test jacoco:report`; pair with the Coverage & Branch Checklist.
 - Format: after code or documentation changes, run `./mvnw spotless:apply -Pcheck -T1C`; do not use any other formatting method.
   This must be repeated after the last file-changing action before handoff.
 - Style: after formatting, run `./mvnw checkstyle:check -Pcheck -T1C` when production, test, or project-rule files are touched.
 - Scoped defaults: prefer module-scoped runs over whole-repo builds; include `-Dsurefire.failIfNoSpecifiedTests=false` when targeting specific tests.
-- Testing ground rules: JUnit 5 + Mockito, `ClassNameTest` naming, Arrange–Act–Assert, mock external systems/time/network, reset static caches, and reuse swappers/helpers for complex configs.
+- Testing ground rules: JUnit 5 + Mockito, `<ProductionClassName>Test` naming, Arrange–Act–Assert, mock external systems/time/network, reset static caches, and reuse swappers/helpers for complex configs.
 - API bans: if a user forbids a tool/assertion, add it to the plan, avoid it during implementation, and cite verification searches (e.g., `rg assertEquals`) in the final report.
 
 ## Run & Triage Quick Sheet
 - **Proxy quick start:** `./mvnw -pl proxy -am package` then `shardingsphere-proxy/bin/start.sh -c conf/server.yaml`; report command, exit code, config path, and protocol.
-- **JDBC smoke:** `./mvnw -pl jdbc -am test -Dtest=YourTest` with datasource configs from `examples`; note test name, datasource setup, and failure logs.
+- **JDBC smoke:** `./mvnw -pl jdbc -am test -Dtest=<TestClassName>` with datasource configs from `examples`; note test name, datasource setup, and failure logs.
 - **Config validation:** update standalone `server.yaml` and cluster `mode/` configs together; call out defaults and any edits that affect both.
 - **Failure triage:** collect `proxy/logs/` plus `target/surefire-reports`, quote the relevant log lines, map them to the data-flow step, and propose the next diagnostic.
 - **Routing mistakes:** check feature-rule configs, metadata freshness, and parser dialect; include SQL + config snippet plus impacted module (`features` or `kernel`), and add/plan targeted tests.
@@ -357,7 +374,7 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Name tests after the production method under test; never probe private helpers directly—document unreachable branches instead.
 - Mock heavy dependencies (database/cache/registry/network) and prefer mocking over building deep object graphs.
 - For static/constructor mocking, use `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings`; avoid hand-written `mockStatic`/`mockConstruction` unless you documented why the extension cannot be used.
-- When static methods or constructors need mocking, prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings` (or the extension’s constructor-mocking support); when a class is listed in `@StaticMockSettings`, do not call `mockStatic`/`mockConstruction` directly—stub via `when(...)` instead. Only if AutoMockExtension cannot be used and the reason is documented in the plan may you fall back to `mockStatic`/`mockConstruction`, wrapped in try-with-resources.
+- When static methods or constructors need mocking, prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings` (or the extension's constructor-mocking support); when a class is listed in `@StaticMockSettings`, do not call `mockStatic`/`mockConstruction` directly—stub via `when(...)` instead. Only if `AutoMockExtension` cannot be used and the reason is documented in the plan may you fall back to `mockStatic`/`mockConstruction`, wrapped in try-with-resources.
 - Before coding tests, follow the Coverage & Branch Checklist to map inputs/branches to planned assertions.
 - When a component is available via SPI (e.g., `TypedSPILoader`, `DatabaseTypedSPILoader`, `PushDownMetaDataRefresher`), obtain the instance through SPI by default; note any exceptions in the plan.
 - If the class under test implements `TypedSPI` or `DatabaseTypedSPI`, instantiate it via `TypedSPILoader` or `DatabaseTypedSPILoader` instead of calling `new` directly.
