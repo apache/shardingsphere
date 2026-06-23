@@ -8730,6 +8730,41 @@
         </from>
     </select>
 
+    <select sql-case-id="select_national_alternative_quoted_literal_oracle">
+        <projections start-index="7" stop-index="25" literal-start-index="7" literal-stop-index="25">
+            <expression-projection text="national text" start-index="7" stop-index="25" literal-start-index="7"
+                                   literal-stop-index="25">
+                <literalText>national text</literalText>
+                <expr>
+                    <literal-expression value="national text" start-index="7" stop-index="25" literal-start-index="7"
+                                        literal-stop-index="25"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="32" stop-index="35" literal-start-index="32"
+                          literal-stop-index="35"/>
+        </from>
+    </select>
+
+    <select sql-case-id="select_alternative_quoted_literal_with_parameter_marker_oracle" parameters="'OK'">
+        <projections start-index="7" stop-index="43" literal-start-index="7" literal-stop-index="46">
+            <expression-projection text="John's ?" start-index="7" stop-index="30" literal-start-index="7"
+                                   literal-stop-index="30" alias="content">
+                <literalText>John's ?</literalText>
+                <expr>
+                    <literal-expression value="John's ?" start-index="7" stop-index="19" literal-start-index="7"
+                                        literal-stop-index="19"/>
+                </expr>
+            </expression-projection>
+            <parameter-marker-expression parameter-index="0" start-index="33" stop-index="43" literal-stop-index="46" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="50" stop-index="53" literal-start-index="53"
+                          literal-stop-index="56"/>
+        </from>
+    </select>
+
     <select sql-case-id="select_wm_concat_function1">
         <projections start-index="7" stop-index="72">
             <expression-projection alias="ID" text="TO_CHAR(WM_CONCAT(DISTINCT TEST_ID) OVER(PARTITION BY TEST_ID))" start-index="7" stop-index="72">
