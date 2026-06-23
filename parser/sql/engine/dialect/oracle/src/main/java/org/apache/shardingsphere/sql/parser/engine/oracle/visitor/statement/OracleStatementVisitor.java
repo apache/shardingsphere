@@ -357,7 +357,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     @Override
     public ASTNode visitDateTimeLiterals(final DateTimeLiteralsContext ctx) {
         if (null != ctx.LBE_()) {
-            return new DateTimeLiteralValue(ctx.identifier().getText(), ((StringLiteralValue) visit(ctx.stringLiterals())).getValue(), true);
+            return new DateTimeLiteralValue(ctx.identifier().getText(), ctx.stringLiterals().getText(), true);
         }
         String dateTimeType;
         if (null != ctx.DATE()) {
@@ -367,7 +367,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         } else {
             dateTimeType = ctx.TIMESTAMP().getText();
         }
-        return new DateTimeLiteralValue(dateTimeType, ((StringLiteralValue) visit(ctx.stringLiterals())).getValue(), false);
+        return new DateTimeLiteralValue(dateTimeType, ctx.stringLiterals().getText(), false);
     }
     
     @Override

@@ -1008,8 +1008,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (projection instanceof LiteralExpressionSegment) {
             LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
             ExpressionProjectionSegment result = null == alias
-                    ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
-                    : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
+                    ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), column.getText(), column)
+                    : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), column.getText(), column);
             result.setAlias(alias);
             return result;
         }

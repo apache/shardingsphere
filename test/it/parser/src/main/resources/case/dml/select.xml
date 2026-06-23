@@ -14198,7 +14198,11 @@
 
     <select sql-case-id="select_datetime_lbe_literal_oracle">
         <projections start-index="7" stop-index="32">
-            <expression-projection text="{ts '2020-02-02 10:00:00'}" start-index="7" stop-index="32" />
+            <expression-projection text="{ts '2020-02-02 10:00:00'}" start-index="7" stop-index="32">
+                <expr>
+                    <literal-expression value="2020-02-02 10:00:00" start-index="7" stop-index="32" />
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table name="dual" start-index="39" stop-index="42" />
