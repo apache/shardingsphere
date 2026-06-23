@@ -320,7 +320,9 @@ class DDLE2EIT implements SQLE2EIT {
     }
     
     private boolean containsTable(final Connection connection, final String tableName) throws SQLException {
-        return connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE", "VIEW"}).next();
+        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE", "VIEW"})) {
+            return resultSet.next();
+        }
     }
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
