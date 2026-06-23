@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
@@ -74,7 +75,9 @@ class OracleDatabaseMetaDataTest {
     
     @Test
     void assertGetIndexOption() {
-        assertTrue(dialectDatabaseMetaData.getIndexOption().isSchemaUniquenessLevel());
+        DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
+        assertTrue(actual.isSchemaUniquenessLevel());
+        assertThat(actual.getIndexNameMaxLength(), is(30));
     }
     
     @Test

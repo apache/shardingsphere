@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
@@ -44,6 +45,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class IndexMetaDataUtilsTest {
     
@@ -131,6 +133,16 @@ class IndexMetaDataUtilsTest {
         String actual = IndexMetaDataUtils.getActualIndexName(logicIndexName, "t_account_0", oracleDatabaseType);
         assertTrue(actual.matches(".*_h[0-9a-z]{8}$"));
         assertThat(actual.getBytes(StandardCharsets.UTF_8).length, is(30));
+    }
+    
+    @Test
+    void assertGetActualIndexNameKeepsLegacyFormatWithoutDialectMetaData() {
+        DatabaseType databaseType = mock(DatabaseType.class);
+        when(databaseType.getType()).thenReturn("UNKNOWN");
+        when(databaseType.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        String logicIndexName = "very_long_named_index_boundary_case_for_sharding_length_safety_validation";
+        String actual = IndexMetaDataUtils.getActualIndexName(logicIndexName, "t_account_0", databaseType);
+        assertThat(actual, is("very_long_named_index_boundary_case_for_sharding_length_safety_validation_t_account_0"));
     }
     
     @Test
