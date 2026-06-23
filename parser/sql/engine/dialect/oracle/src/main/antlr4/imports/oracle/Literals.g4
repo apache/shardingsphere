@@ -34,8 +34,11 @@ SINGLE_QUOTED_TEXT
 
 ALTERNATIVE_QUOTED_TEXT
     : Q SQ_ LBT_ .*? RBT_ SQ_
+    | Q SQ_ RBT_ .*? RBT_ SQ_
     | Q SQ_ LBE_ .*? RBE_ SQ_
+    | Q SQ_ RBE_ .*? RBE_ SQ_
     | Q SQ_ LP_ .*? RP_ SQ_
+    | Q SQ_ RP_ .*? RP_ SQ_
     | Q SQ_ LT_ .*? GT_ SQ_
     | Q SQ_ NOT_ .*? NOT_ SQ_
     | Q SQ_ TILDE_ .*? TILDE_ SQ_

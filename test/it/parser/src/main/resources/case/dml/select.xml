@@ -8747,6 +8747,23 @@
         </from>
     </select>
 
+    <select sql-case-id="select_alternative_quoted_literal_with_right_delimiter_oracle">
+        <projections start-index="7" stop-index="26" literal-start-index="7" literal-stop-index="26">
+            <expression-projection text="right delimiter" start-index="7" stop-index="26" literal-start-index="7"
+                                   literal-stop-index="26">
+                <literalText>right delimiter</literalText>
+                <expr>
+                    <literal-expression value="right delimiter" start-index="7" stop-index="26" literal-start-index="7"
+                                        literal-stop-index="26"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="33" stop-index="36" literal-start-index="33"
+                          literal-stop-index="36"/>
+        </from>
+    </select>
+
     <select sql-case-id="select_alternative_quoted_literal_with_parameter_marker_oracle" parameters="'OK'">
         <projections start-index="7" stop-index="43" literal-start-index="7" literal-stop-index="46">
             <expression-projection text="John's ?" start-index="7" stop-index="30" literal-start-index="7"
