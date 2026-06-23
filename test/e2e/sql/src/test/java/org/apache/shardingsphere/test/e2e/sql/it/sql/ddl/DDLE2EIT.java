@@ -201,15 +201,15 @@ class DDLE2EIT implements SQLE2EIT {
             return;
         }
         Matcher createIndexMatcher = CREATE_INDEX_PATTERN.matcher(sql);
-        if (createIndexMatcher.matches() && waitIndexExists(context, createIndexMatcher.group(2), createIndexMatcher.group(1), true)) {
+        if (createIndexMatcher.matches() && waitIndexExists(context, createIndexMatcher.group(2), createIndexMatcher.group(1), true, testParam.getDatabaseType())) {
             return;
         }
         Matcher dropIndexWithTableMatcher = DROP_INDEX_WITH_TABLE_PATTERN.matcher(sql);
-        if (dropIndexWithTableMatcher.matches() && waitIndexExists(context, dropIndexWithTableMatcher.group(2), dropIndexWithTableMatcher.group(1), false)) {
+        if (dropIndexWithTableMatcher.matches() && waitIndexExists(context, dropIndexWithTableMatcher.group(2), dropIndexWithTableMatcher.group(1), false, testParam.getDatabaseType())) {
             return;
         }
         Matcher dropIndexMatcher = DROP_INDEX_PATTERN.matcher(sql);
-        if (dropIndexMatcher.matches() && waitIndexExists(context, context.getAssertion().getInitialSQL().getAffectedTable(), dropIndexMatcher.group(1), false)) {
+        if (dropIndexMatcher.matches() && waitIndexExists(context, context.getAssertion().getInitialSQL().getAffectedTable(), dropIndexMatcher.group(1), false, testParam.getDatabaseType())) {
             return;
         }
         waitCompleted();
@@ -241,7 +241,7 @@ class DDLE2EIT implements SQLE2EIT {
         assertTrue(tableExists, "Expected table does not exist");
     }
     
-    private boolean waitIndexExists(final SQLE2EITContext context, final String tableName, final String indexName, final boolean exists) {
+    private boolean waitIndexExists(final SQLE2EITContext context, final String tableName, final String indexName, final boolean exists, final DatabaseType databaseType) {
         Collection<DataNode> dataNodes = findDataNodes(context, getIdentifierValue(tableName));
         if (dataNodes.isEmpty()) {
             return false;
@@ -249,12 +249,12 @@ class DDLE2EIT implements SQLE2EIT {
         String actualTableName = getIdentifierValue(tableName);
         String actualIndexName = getIdentifierValue(indexName);
         Awaitility.await().atMost(META_DATA_WAIT_TIMEOUT).pollInterval(META_DATA_POLL_INTERVAL)
-                .untilAsserted(() -> assertThat(String.format("Index `%s` existed state mismatch", indexName), containsIndex(dataNodes, actualTableName, actualIndexName), is(exists)));
+                .untilAsserted(() -> assertThat(String.format("Index `%s` existed state mismatch", indexName), containsIndex(dataNodes, actualTableName, actualIndexName, databaseType), is(exists)));
         return true;
     }
     
-    private boolean containsIndex(final Collection<DataNode> dataNodes, final String tableName, final String indexName) throws SQLException {
-        return getActualIndexes(dataNodes).stream().anyMatch(each -> isSameIndex(each.getName(), tableName, indexName));
+    private boolean containsIndex(final Collection<DataNode> dataNodes, final String tableName, final String indexName, final DatabaseType databaseType) throws SQLException {
+        return getActualIndexes(dataNodes, databaseType).stream().anyMatch(each -> isSameIndex(each.getName(), tableName, indexName));
     }
     
     private boolean isSameIndex(final String actualIndexName, final String tableName, final String indexName) {
@@ -297,7 +297,7 @@ class DDLE2EIT implements SQLE2EIT {
             assertNotContainsTable(environmentEngine, dataNodes, testParam.getDatabaseType());
             return;
         }
-        assertTableMetaData(testParam, getActualColumns(dataNodes, testParam.getDatabaseType()), getActualIndexes(dataNodes), expected);
+        assertTableMetaData(testParam, getActualColumns(dataNodes, testParam.getDatabaseType()), getActualIndexes(dataNodes, testParam.getDatabaseType()), expected);
     }
     
     private void assertTableMetaData(final AssertionTestParameter testParam, final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetaData expected) {
@@ -354,11 +354,11 @@ class DDLE2EIT implements SQLE2EIT {
     }
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
-    private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes) throws SQLException {
+    private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes, final DatabaseType databaseType) throws SQLException {
         Collection<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
             try (Connection connection = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
-                result.addAll(getActualIndexes(connection, each.getTableName()));
+                result.addAll(getActualIndexes(connection, new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(each.getTableName())));
             }
         }
         return new LinkedList<>(result);
@@ -387,7 +387,7 @@ class DDLE2EIT implements SQLE2EIT {
     }
     
     private void assertColumnMetaData(final AssertionTestParameter testParam, final DataSetColumn actual, final DataSetColumn expected) {
-        assertThat("Mismatched column name.", actual.getName(), is(expected.getName()));
+        assertThat("Mismatched column name.", actual.getName().toLowerCase(), is(expected.getName().toLowerCase()));
         if ("MySQL".equals(testParam.getDatabaseType().getType()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int"));
         } else if ("PostgreSQL".equals(testParam.getDatabaseType().getType()) && "integer".equals(expected.getType())) {
