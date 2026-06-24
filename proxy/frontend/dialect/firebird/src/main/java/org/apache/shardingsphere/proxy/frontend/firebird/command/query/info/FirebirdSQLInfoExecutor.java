@@ -20,10 +20,16 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLRecordsInfo;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +46,19 @@ public final class FirebirdSQLInfoExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdSQLInfoReturnPacket(packet.getInfoItems())));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdSQLInfoReturnPacket(packet.getInfoItems(), getRecordsInfo())));
+    }
+    
+    private FirebirdSQLRecordsInfo getRecordsInfo() {
+        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getHandle());
+        if (null == preparedStatement) {
+            return new FirebirdSQLRecordsInfo(0L, 0L, 0L);
+        }
+        long affectedRows = preparedStatement.getAffectedRows();
+        SQLStatement sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
+        long insertCount = sqlStatement instanceof InsertStatement ? affectedRows : 0L;
+        long updateCount = sqlStatement instanceof UpdateStatement ? affectedRows : 0L;
+        long deleteCount = sqlStatement instanceof DeleteStatement ? affectedRows : 0L;
+        return new FirebirdSQLRecordsInfo(insertCount, updateCount, deleteCount);
     }
 }

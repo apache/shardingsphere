@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatement;
 
 /**
- * Prepared statement for Firebird.
+ * Affected records info for Firebird isc_info_sql_records response.
  */
 @RequiredArgsConstructor
 @Getter
-public final class FirebirdServerPreparedStatement implements ServerPreparedStatement {
+public final class FirebirdSQLRecordsInfo {
     
-    private final String sql;
+    private final long insertCount;
     
-    private final SQLStatementContext sqlStatementContext;
+    private final long updateCount;
     
-    private final HintValueContext hintValueContext;
-    
-    @Setter
-    private long affectedRows;
+    private final long deleteCount;
 }
