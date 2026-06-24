@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarker
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.TemporalLiteralExpressionSegment;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -115,6 +116,9 @@ public class InsertValue {
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
             ParameterMarkerExpressionSegment segment = (ParameterMarkerExpressionSegment) expressionSegment;
             return ParameterMarkerType.QUESTION == segment.getParameterMarkerType() ? "?" : "$" + (segment.getParameterMarkerIndex() + 1);
+        }
+        if (expressionSegment instanceof TemporalLiteralExpressionSegment) {
+            return expressionSegment.getText();
         }
         if (expressionSegment instanceof LiteralExpressionSegment) {
             Object literals = ((LiteralExpressionSegment) expressionSegment).getLiterals();
