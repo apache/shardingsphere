@@ -303,6 +303,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.sqlserver.service.SQLServerCreateServiceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.sqlserver.service.SQLServerDropServiceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.sqlserver.statistics.SQLServerUpdateStatisticsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.sqlserver.variable.SQLServerDeclareVariableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.AlterPackageStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.CloseStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.CommentStatementTestCase;
@@ -2040,6 +2041,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "update-statistics")
     private final List<SQLServerUpdateStatisticsStatementTestCase> updateStatisticsStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "declare-variable")
+    private final List<SQLServerDeclareVariableStatementTestCase> declareVariableStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "spool")
     private final List<OracleSpoolStatementTestCase> oracleSpoolStatementTestCases = new LinkedList<>();

@@ -658,7 +658,7 @@ tableVariableClause
     ;
 
 variableTableColumnDefinition
-    : columnName (dataTypeName | AS expr) (COLLATE collationName)? ((DEFAULT expr)? | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_)?) ROWGUIDCOL? variableTableColumnConstraint
+    : columnName (dataType | AS expr) (COLLATE collationName)? ((DEFAULT expr)? | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_)?) ROWGUIDCOL? variableTableColumnConstraint
     ;
 
 variableTableColumnConstraint

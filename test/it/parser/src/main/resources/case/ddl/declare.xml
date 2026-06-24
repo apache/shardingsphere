@@ -28,4 +28,16 @@
             </projections>
         </select>
     </declare>
+    <declare-variable sql-case-id="declare_table_variable" table-variable="true">
+        <variable-name variable="@MyTableVar" start-index="8" stop-index="18" />
+        <column-definition type="INT" not-null="true" start-index="28" stop-index="45">
+            <column name="EmpID" />
+        </column-definition>
+        <column-definition type="INT" start-index="48" stop-index="67">
+            <column name="NewVacationHours" />
+        </column-definition>
+        <column-definition type="DATETIME" start-index="70" stop-index="90">
+            <column name="ModifiedDate" />
+        </column-definition>
+    </declare-variable>
 </sql-parser-test-cases>
