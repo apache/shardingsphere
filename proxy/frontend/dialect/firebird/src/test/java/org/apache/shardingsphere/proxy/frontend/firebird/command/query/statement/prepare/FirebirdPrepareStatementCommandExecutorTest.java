@@ -175,8 +175,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     @Test
     void assertExecuteWithValidStatementHandleCleansPreviousPreparedStatementResources() throws Exception {
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(
-                1, new FirebirdServerPreparedStatement("SELECT 0", mock(SelectStatementContext.class), new HintValueContext(), FirebirdSQLInfoReturnValue.SELECT));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, new FirebirdServerPreparedStatement("SELECT 0", mock(SelectStatementContext.class), new HintValueContext()));
         FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, 1, proxyBackendHandler);
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         executor.execute();

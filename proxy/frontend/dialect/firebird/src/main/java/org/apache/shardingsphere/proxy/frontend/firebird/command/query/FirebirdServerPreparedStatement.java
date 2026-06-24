@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatement;
@@ -36,17 +35,4 @@ public final class FirebirdServerPreparedStatement implements ServerPreparedStat
     private final SQLStatementContext sqlStatementContext;
     
     private final HintValueContext hintValueContext;
-    
-    private final FirebirdSQLInfoReturnValue statementType;
-    
-    private int recordCount;
-    
-    /**
-     * Set record count.
-     *
-     * @param recordCount record count
-     */
-    public void setRecordCount(final int recordCount) {
-        this.recordCount = recordCount;
-    }
 }

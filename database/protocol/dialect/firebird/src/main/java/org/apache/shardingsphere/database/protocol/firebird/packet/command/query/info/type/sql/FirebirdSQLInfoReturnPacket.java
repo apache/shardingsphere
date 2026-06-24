@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
@@ -30,13 +31,10 @@ import java.util.List;
  * SQL info return data packet for Firebird.
  */
 @RequiredArgsConstructor
+@Getter
 public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
     
     private final List<FirebirdInfoPacketType> infoItems;
-    
-    private final FirebirdSQLInfoReturnValue statementType;
-    
-    private final int recordCount;
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
@@ -53,6 +51,7 @@ public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
         // TODO implement other request types handle
         switch (type) {
             case RECORDS:
+                // TODO handle actual update count
                 processRecords(payload);
                 return;
             default:
@@ -61,23 +60,20 @@ public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
     }
     
     private void processRecords(final FirebirdPacketPayload payload) {
+        // TODO handle actual update count
         payload.writeInt1(FirebirdSQLInfoPacketType.RECORDS.getCode());
         payload.writeInt2LE(0);
         payload.writeInt1(FirebirdSQLInfoReturnValue.SELECT.getCode());
         payload.writeInt2LE(4);
-        payload.writeInt4LE(getRecordCount(FirebirdSQLInfoReturnValue.SELECT));
+        payload.writeInt4LE(0);
         payload.writeInt1(FirebirdSQLInfoReturnValue.INSERT.getCode());
         payload.writeInt2LE(4);
-        payload.writeInt4LE(getRecordCount(FirebirdSQLInfoReturnValue.INSERT));
+        payload.writeInt4LE(0);
         payload.writeInt1(FirebirdSQLInfoReturnValue.UPDATE.getCode());
         payload.writeInt2LE(4);
-        payload.writeInt4LE(getRecordCount(FirebirdSQLInfoReturnValue.UPDATE));
+        payload.writeInt4LE(0);
         payload.writeInt1(FirebirdSQLInfoReturnValue.DELETE.getCode());
         payload.writeInt2LE(4);
-        payload.writeInt4LE(getRecordCount(FirebirdSQLInfoReturnValue.DELETE));
-    }
-    
-    private int getRecordCount(final FirebirdSQLInfoReturnValue type) {
-        return type == statementType ? recordCount : 0;
+        payload.writeInt4LE(0);
     }
 }
