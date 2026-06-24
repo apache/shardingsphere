@@ -51,7 +51,9 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       An overriding method should add Javadocs only when it documents implementation-specific behavior, stricter preconditions, side effects, exceptions, compatibility notes,
       or semantics not already covered by the parent declaration.
       When cleaning redundant override Javadocs, change comments only and verify no public contract information is lost.
-    - Keep variable declarations adjacent to first use to satisfy Checkstyle VariableDeclarationUsageDistance; do not mark local variables as `final`.
+    - Keep variable declarations adjacent to first use to satisfy Checkstyle VariableDeclarationUsageDistance; do not mark local variables as `final`,
+      including ordinary local declarations, loop variables, enhanced `for` variables, and try-with-resources resources.
+      For parameters, use `final` only on method parameters, constructor parameters and `catch` parameters; leave lambda parameters without `final` unless surrounding code style or tooling requires it.
     - Single-use local variables must be inlined by default; keep a local variable only when it is reused (for stubbing/verification/assertions) or materially improves readability.
     - For collection declarations in production and test code, use the least-specific type that expresses the required contract.
       Prefer `Collection` for parameters, fields, local variables, and internal return values when the code only iterates, checks emptiness or size,
@@ -219,6 +221,7 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
   do not stop at patching the output artifact. First fix the highest-leverage root cause in rules, workflow, schema, validators, prompts, regression cases,
   or tests so the same class of error is less likely to recur. Update the report artifact afterward as a consequence of that root-cause fix, unless the user explicitly requests a one-off result correction only.
 - **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use without marking local variables `final`; inline single-use locals by default unless reuse/readability justifies retention; delete dead code and avoid placeholders/TODOs.
+  Before handoff, inspect the Java diff for newly added `final` declarations and remove any new meaningless local-variable `final`.
   Verify code and skills do not contain local machine paths before handoff.
 - **CI impact gate:** before handoff, determine affected GitHub Actions from changed files.
   Use `rg` or small `sed` ranges to inspect only matching workflow `paths`, job names, and execution commands instead of reading every workflow file.
