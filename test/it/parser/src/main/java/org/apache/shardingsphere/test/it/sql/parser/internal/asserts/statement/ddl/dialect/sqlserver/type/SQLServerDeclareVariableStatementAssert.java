@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.Co
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.ColumnDefinitionAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.sqlserver.variable.SQLServerDeclareVariableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLDeclareStatementTestCase;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -43,20 +43,20 @@ public final class SQLServerDeclareVariableStatementAssert {
      * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DeclareVariableStatement actual,
-                                final SQLServerDeclareVariableStatementTestCase expected) {
+                                final PostgreSQLDeclareStatementTestCase expected) {
         assertVariableName(assertContext, actual, expected);
         assertThat(assertContext.getText("Table variable assertion error: "), actual.isTableVariable(), is(expected.isTableVariable()));
         assertColumnDefinitions(assertContext, actual, expected);
     }
     
     private static void assertVariableName(final SQLCaseAssertContext assertContext, final DeclareVariableStatement actual,
-                                           final SQLServerDeclareVariableStatementTestCase expected) {
+                                           final PostgreSQLDeclareStatementTestCase expected) {
         SQLSegmentAssert.assertIs(assertContext, actual.getVariableName(), expected.getVariableName());
         assertThat(assertContext.getText("Variable name assertion error: "), actual.getVariableName().getVariable(), is(expected.getVariableName().getVariable()));
     }
     
     private static void assertColumnDefinitions(final SQLCaseAssertContext assertContext, final DeclareVariableStatement actual,
-                                                final SQLServerDeclareVariableStatementTestCase expected) {
+                                                final PostgreSQLDeclareStatementTestCase expected) {
         assertThat(assertContext.getText("Column definitions size assertion error: "), actual.getColumnDefinitions().size(), is(expected.getColumnDefinitions().size()));
         int count = 0;
         for (ColumnDefinitionSegment each : actual.getColumnDefinitions()) {

@@ -21,9 +21,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.cursor.ExpectedCursorName;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedColumnDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedVariableSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.SelectStatementTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Declare statement test case for PostgreSQL.
@@ -37,4 +42,13 @@ public final class PostgreSQLDeclareStatementTestCase extends SQLParserTestCase 
     
     @XmlElement(name = "select")
     private SelectStatementTestCase selectTestCase;
+    
+    @XmlElement(name = "variable-name")
+    private ExpectedVariableSegment variableName;
+    
+    @XmlAttribute(name = "table-variable")
+    private boolean tableVariable;
+    
+    @XmlElement(name = "column-definition")
+    private final List<ExpectedColumnDefinition> columnDefinitions = new LinkedList<>();
 }

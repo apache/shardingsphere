@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.sqlserver.type.SQLServerUpdateStatisticsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.sqlserver.statistics.SQLServerUpdateStatisticsStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.sqlserver.variable.SQLServerDeclareVariableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLDeclareStatementTestCase;
 
 /**
  * DDL statement assert for SQLServer.
@@ -47,7 +47,7 @@ public final class SQLServerDDLStatementAssert {
             SQLServerUpdateStatisticsStatementAssert.assertIs(assertContext, (SQLServerUpdateStatisticsStatement) actual, (SQLServerUpdateStatisticsStatementTestCase) expected);
         }
         if (actual instanceof DeclareVariableStatement) {
-            SQLServerDeclareVariableStatementAssert.assertIs(assertContext, (DeclareVariableStatement) actual, (SQLServerDeclareVariableStatementTestCase) expected);
+            SQLServerDeclareVariableStatementAssert.assertIs(assertContext, (DeclareVariableStatement) actual, (PostgreSQLDeclareStatementTestCase) expected);
         }
     }
 }
