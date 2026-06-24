@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.EmptyRuleException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -75,9 +76,12 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -302,6 +306,25 @@ class StandardDatabaseProxyConnectorTest {
             assertThat(mockedDatabaseTypeRegistry.constructed().size(), is(1));
             PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = mockedPushDownMetaDataRefreshEngine.constructed().iterator().next();
             verify(pushDownMetaDataRefreshEngine).refresh(any(), eq(database), any(ConfigurationProperties.class), any(Collection.class));
+        }
+    }
+    
+    @Test
+    void assertExecuteWithUnsupportedTemporaryTableDDL() {
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(CreateTableStatement.builder()
+                .databaseType(TypedSPILoader.getService(DatabaseType.class, "MySQL"))
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
+                .temporary(true)
+                .build());
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
+        try (
+                MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
+                        (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class)))
+                                .thenThrow(new UnsupportedSQLOperationException("CREATE TEMPORARY TABLE")));
+                MockedConstruction<PushDownMetaDataRefreshEngine> mockedPushDownMetaDataRefreshEngine = mockConstruction(PushDownMetaDataRefreshEngine.class)) {
+            assertThrows(UnsupportedSQLOperationException.class, engine::execute);
+            assertThat(mockedKernelProcessor.constructed().size(), is(1));
+            assertTrue(mockedPushDownMetaDataRefreshEngine.constructed().isEmpty());
         }
     }
     
