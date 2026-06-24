@@ -130,6 +130,24 @@ Always reproduce GitHub PR "Files changed" with triple-dot semantics:
 4. Cross-check `git diff --name-status <MERGE_BASE>..<head-ref>` against GitHub `/pulls/{number}/files`.
 5. If the file count or path list differs, do not report unrelated changes or scope findings; refresh refs or use the GitHub file list until the mismatch is explained.
 
+## GitHub Access Strategy
+
+Use authenticated GitHub evidence before treating PR facts as unavailable:
+
+1. Prefer the GitHub connector or app tools when available.
+2. Otherwise use `gh` when it is installed and has either an existing login or an available environment token.
+3. If `gh` is unavailable, check whether a GitHub token environment variable exists without printing its value. When one exists, use authenticated REST requests with an `Authorization: Bearer <token>` header and `Accept: application/vnd.github+json`.
+4. Use anonymous GitHub API or HTML only after authenticated connector, `gh`, or token-backed REST access is unavailable or fails.
+
+Safety and completeness rules:
+
+- Never print token values, auth headers, credential files, raw environment dumps, verbose curl traces, or token-bearing commands.
+- Do not treat an anonymous `404` as proof that PR facts are unavailable until authenticated access has been tried or shown unavailable.
+- Fetch all pages for `/pulls/{number}/files`, commits, issue comments, review comments, reviews, and other paginated endpoints. With `gh`, use pagination support; with REST, follow the `Link` header.
+- Classify access by endpoint. For example, PR metadata and files may be available while checks or workflow logs return `403`.
+- A `403` or `404` on checks, workflow logs, or another secondary endpoint blocks mergeability only when that endpoint is required under `Evidence Sufficiency and CI Judgment`; otherwise record the inaccessible endpoint in `Review Details`.
+- Do not include authentication method, token variable names, temporary API files, raw response bodies, or private access diagnostics in GitHub-facing review output.
+
 ## Execution Boundary
 
 - Review output only; do not modify code.
@@ -419,7 +437,7 @@ Each review must include a `Review Details` section with:
 
 - `Reviewed Scope`: files/modules actually reviewed this round, plus the latest PR head SHA, local merge-base SHA when local git is used, and whether the local file list matched GitHub `/pulls/{number}/files`.
 - `Not Reviewed Scope`: unreviewed or only superficially reviewed areas.
-- `Verification`: reviewer-run commands and exit codes, or a short reason why local verification was not run.
+- `Verification`: reviewer-run commands and exit codes, or a short reason why local verification was not run. Also state any relevant GitHub endpoint that was inaccessible and whether that gap affects mergeability.
 - `Release Note / User Docs`: required and verified, delegated to an umbrella PR with reason, missing, not required with reason, or not reviewed.
 - For SQL parser reviews, `Reviewed Scope` must explicitly name the target dialect, any related trunk / branch dialects checked, and the documentation pages / repo doc paths used to validate syntax behavior.
 
