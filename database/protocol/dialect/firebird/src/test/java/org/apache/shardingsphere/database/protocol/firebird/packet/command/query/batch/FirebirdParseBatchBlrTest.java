@@ -102,7 +102,7 @@ class FirebirdParseBatchBlrTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> FirebirdParseBatchBlr.parse(blr, blr.readableBytes()));
         assertThat(actual.getMessage(), is(expectedMessage));
     }
-
+    
     @Test
     void assertParseUnsupportedType() {
         ByteBuf blr = createBlr(BlrConstants.blr_version5, new byte[]{(byte) BlrConstants.blr_dec64, (byte) BlrConstants.blr_short, 0}, 2);
@@ -116,7 +116,7 @@ class FirebirdParseBatchBlrTest {
         FirebirdProtocolException actual = assertThrows(FirebirdProtocolException.class, () -> FirebirdParseBatchBlr.parse(blr, blr.readableBytes()));
         assertThat(actual.getMessage(), is("BLOB fields are not supported in Firebird batch operations"));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("blobFieldArguments")
     void assertParseForFramingAcceptsBlobStructurally(final String name, final byte[] fieldBlr, final int expectedScale) {
@@ -159,13 +159,13 @@ class FirebirdParseBatchBlrTest {
                 Arguments.of("wrong_blr_eoc", longFieldBlr(BlrConstants.blr_end, BlrConstants.blr_end), "Expected blr_eoc"),
                 Arguments.of("trailing_bytes", longFieldBlr(BlrConstants.blr_end, BlrConstants.blr_eoc, 0), "Unexpected trailing bytes in BLR"));
     }
-
+    
     private static byte[] longFieldBlr(final int... terminator) {
         byte[] base = {(byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0,
                 2, 0, (byte) BlrConstants.blr_long, 0, (byte) BlrConstants.blr_short, 0};
         return append(base, terminator);
     }
-
+    
     private static Stream<Arguments> invalidHeaderArguments() {
         return Stream.of(
                 Arguments.of("too_short", new byte[]{(byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message}, 3, "BLR is too short: 3"),

@@ -351,7 +351,7 @@ class FirebirdPacketCodecEngineTest {
         assertNull(getPendingPacketType());
         assertTrue(getPendingMessages().isEmpty());
     }
-
+    
     @Test
     void assertDecodeCoalescedBatchCreateWithBlobAndMessageDefersToCommandPath() {
         ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildBlobBatchCreate(), buildBlobBatchMessage());
@@ -364,7 +364,7 @@ class FirebirdPacketCodecEngineTest {
         assertNull(getPendingPacketType());
         assertTrue(getPendingMessages().isEmpty());
     }
-
+    
     private ByteBuf buildBlobBatchCreate() {
         ByteBuf blr = Unpooled.buffer()
                 .writeByte(BlrConstants.blr_version5).writeByte(BlrConstants.blr_begin).writeByte(BlrConstants.blr_message).writeByte(0)
@@ -372,12 +372,12 @@ class FirebirdPacketCodecEngineTest {
                 .writeByte(BlrConstants.blr_end).writeByte(BlrConstants.blr_eoc);
         return buildBatchCreate(blr, 8);
     }
-
+    
     private ByteBuf buildBlobBatchMessage() {
         return Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_MSG.getValue()).writeInt(BATCH_STATEMENT_HANDLE).writeInt(1)
                 .writeByte(0).writeZero(3).writeLong(123L);
     }
-
+    
     @Test
     void assertDecodeStandaloneBatchCreateWithInvalidBlrDefersToCommandPath() {
         ByteBuf in = buildInvalidBatchCreate();
@@ -389,7 +389,7 @@ class FirebirdPacketCodecEngineTest {
         assertNull(getPendingPacketType());
         assertTrue(getPendingMessages().isEmpty());
     }
-
+    
     @Test
     void assertDecodeCoalescedBatchCreateWithMalformedBlrClosesChannelAsFramingCorruption() {
         ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildInvalidBatchCreate(), buildBatchMessage(BATCH_STATEMENT_HANDLE, 100));
@@ -397,14 +397,14 @@ class FirebirdPacketCodecEngineTest {
         assertThrows(IllegalArgumentException.class, () -> codecEngine.decode(context, in, out));
         verify(context).close();
     }
-
+    
     private ByteBuf buildInvalidBatchCreate() {
         ByteBuf blr = Unpooled.buffer()
                 .writeByte(99).writeByte(BlrConstants.blr_begin).writeByte(BlrConstants.blr_message).writeByte(0)
                 .writeShortLE(0).writeByte(BlrConstants.blr_end).writeByte(BlrConstants.blr_eoc);
         return buildBatchCreate(blr, 0);
     }
-
+    
     private void setUpBatchContext() {
         FirebirdBatchRegistry.getInstance().registerConnection(BATCH_CONNECTION_ID);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE,

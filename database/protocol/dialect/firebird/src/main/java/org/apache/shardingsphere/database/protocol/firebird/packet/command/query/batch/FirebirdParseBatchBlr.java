@@ -60,7 +60,7 @@ public final class FirebirdParseBatchBlr {
         validateSupported(result.fields);
         return result;
     }
-
+    
     /**
      * Parse a BLR message buffer into its message format for codec framing only, without semantic support validation.
      *
@@ -94,7 +94,7 @@ public final class FirebirdParseBatchBlr {
         validateTermination(buffer, startReaderIndex, blrLength);
         return result;
     }
-
+    
     private static void validateTermination(final ByteBuf buffer, final int startReaderIndex, final int blrLength) {
         if (remainingWithinBlr(buffer, startReaderIndex, blrLength) < 1 || BlrConstants.blr_end != buffer.readUnsignedByte()) {
             throw new IllegalArgumentException("Expected blr_end");
@@ -106,11 +106,11 @@ public final class FirebirdParseBatchBlr {
             throw new IllegalArgumentException("Unexpected trailing bytes in BLR");
         }
     }
-
+    
     private static int remainingWithinBlr(final ByteBuf buffer, final int startReaderIndex, final int blrLength) {
         return blrLength - (buffer.readerIndex() - startReaderIndex);
     }
-
+    
     private static void validateSupported(final List<FirebirdBatchColumnDescriptor> fields) {
         for (FirebirdBatchColumnDescriptor each : fields) {
             if (FirebirdBinaryColumnType.BLOB == each.getType()) {

@@ -169,7 +169,7 @@ class FirebirdBatchCreateCommandExecutorTest {
         assertThat(actual.getMessage(), is("BLOB fields are not supported in Firebird batch operations"));
         assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
     }
-
+    
     @Test
     void assertBlobBatchCreateProducesFirebirdErrorResponseWithoutClosingChannel() {
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);

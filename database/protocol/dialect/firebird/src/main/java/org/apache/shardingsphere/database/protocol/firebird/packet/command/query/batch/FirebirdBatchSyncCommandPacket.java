@@ -24,15 +24,15 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
  * Firebird batch sync command packet.
  */
 public final class FirebirdBatchSyncCommandPacket extends FirebirdCommandPacket {
-
+    
     public FirebirdBatchSyncCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
     }
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
     }
-
+    
     /**
      * Get length of packet.
      *
