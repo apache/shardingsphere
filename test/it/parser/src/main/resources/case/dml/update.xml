@@ -119,7 +119,7 @@
         <table start-index="7" stop-index="31">
             <subquery-table start-index="7" stop-index="31">
                 <subquery>
-                    <select>
+                    <select subquery-type="TABLE">
                         <projections start-index="15" stop-index="15">
                             <shorthand-projection start-index="15" stop-index="15" />
                         </projections>
