@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -60,12 +62,6 @@ public final class IndexMetaDataUtils {
     private static final Pattern HASHED_INDEX_NAME_SUFFIX_PATTERN = Pattern.compile("_h[0-9a-z]{8}$");
     
     private static final Pattern TRUNCATED_INDEX_NAME_SUFFIX_PATTERN = Pattern.compile("_t[0-9a-z]{8}$");
-    
-    private static final int POSTGRESQL_INDEX_NAME_MAX_LENGTH = 63;
-    
-    private static final int OPENGAUSS_INDEX_NAME_MAX_LENGTH = 63;
-    
-    private static final int ORACLE_INDEX_NAME_MAX_LENGTH = 30;
     
     /**
      * Get logic index name.
@@ -278,19 +274,8 @@ public final class IndexMetaDataUtils {
     }
     
     private static int getIndexNameMaxLength(final DatabaseType databaseType) {
-        if (null == databaseType) {
-            return Integer.MAX_VALUE;
-        }
-        switch (databaseType.getType()) {
-            case "PostgreSQL":
-                return POSTGRESQL_INDEX_NAME_MAX_LENGTH;
-            case "openGauss":
-                return OPENGAUSS_INDEX_NAME_MAX_LENGTH;
-            case "Oracle":
-                return ORACLE_INDEX_NAME_MAX_LENGTH;
-            default:
-                return Integer.MAX_VALUE;
-        }
+        return null == databaseType ? Integer.MAX_VALUE
+                : DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType).map(optional -> optional.getIndexOption().getIndexNameMaxLength()).orElse(Integer.MAX_VALUE);
     }
     
     private static int getLengthSafeGeneratedSuffixLength() {

@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.database.connector.core.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardJdbcUrlParser;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +38,8 @@ public final class OracleConnectionPropertiesParser implements ConnectionPropert
     
     private static final int THIN_MATCH_GROUP_COUNT = 5;
     
+    private static final String QUERY_DELIMITER = "?";
+    
     private static final Pattern THIN_URL_PATTERN = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?(\\d*)[:/]([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
     
     private static final Pattern CONNECT_DESCRIPTOR_URL_PATTERN = Pattern.compile(
@@ -44,18 +47,20 @@ public final class OracleConnectionPropertiesParser implements ConnectionPropert
     
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        List<Matcher> matchers = Arrays.asList(THIN_URL_PATTERN.matcher(url), CONNECT_DESCRIPTOR_URL_PATTERN.matcher(url));
+        String urlWithoutQuery = url.contains(QUERY_DELIMITER) ? url.substring(0, url.indexOf(QUERY_DELIMITER)) : url;
+        Properties queryProps = url.contains(QUERY_DELIMITER) ? new StandardJdbcUrlParser().parseQueryProperties(url.substring(url.indexOf(QUERY_DELIMITER) + 1)) : new Properties();
+        List<Matcher> matchers = Arrays.asList(THIN_URL_PATTERN.matcher(urlWithoutQuery), CONNECT_DESCRIPTOR_URL_PATTERN.matcher(urlWithoutQuery));
         Matcher matcher = matchers.stream().filter(Matcher::find).findAny().orElseThrow(() -> new UnrecognizedDatabaseURLException(url, THIN_URL_PATTERN.pattern()));
         int groupCount = matcher.groupCount();
-        return THIN_MATCH_GROUP_COUNT == groupCount ? getThinConnectionProperties(username, matcher) : getStandardConnectionProperties(username, matcher);
+        return THIN_MATCH_GROUP_COUNT == groupCount ? getThinConnectionProperties(username, matcher, queryProps) : getStandardConnectionProperties(username, matcher, queryProps);
     }
     
-    private ConnectionProperties getThinConnectionProperties(final String username, final Matcher matcher) {
-        return new ConnectionProperties(matcher.group(3), Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4)), matcher.group(5), username, new Properties());
+    private ConnectionProperties getThinConnectionProperties(final String username, final Matcher matcher, final Properties queryProps) {
+        return new ConnectionProperties(matcher.group(3), Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4)), matcher.group(5), username, queryProps);
     }
     
-    private ConnectionProperties getStandardConnectionProperties(final String username, final Matcher matcher) {
-        return new ConnectionProperties(matcher.group(2), Integer.parseInt(matcher.group(3)), matcher.group(4), username, new Properties());
+    private ConnectionProperties getStandardConnectionProperties(final String username, final Matcher matcher, final Properties queryProps) {
+        return new ConnectionProperties(matcher.group(2), Integer.parseInt(matcher.group(3)), matcher.group(4), username, queryProps);
     }
     
     @Override

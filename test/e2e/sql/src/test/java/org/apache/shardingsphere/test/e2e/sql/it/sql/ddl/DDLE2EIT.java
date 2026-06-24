@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.e2e.sql.it.sql.ddl;
 
 import com.google.common.base.Splitter;
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
@@ -90,7 +92,7 @@ class DDLE2EIT implements SQLE2EIT {
             return;
         }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
-        init(context);
+        init(testParam, context);
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 executeUpdateForStatement(context, connection);
@@ -99,7 +101,7 @@ class DDLE2EIT implements SQLE2EIT {
             }
             assertTableMetaDataEventually(testParam, context);
         } finally {
-            tearDown(context);
+            tearDown(testParam, context);
         }
     }
     
@@ -124,7 +126,7 @@ class DDLE2EIT implements SQLE2EIT {
             return;
         }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
-        init(context);
+        init(testParam, context);
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 executeForStatement(context, connection);
@@ -133,7 +135,7 @@ class DDLE2EIT implements SQLE2EIT {
             }
             assertTableMetaDataEventually(testParam, context);
         } finally {
-            tearDown(context);
+            tearDown(testParam, context);
         }
     }
     
@@ -149,15 +151,15 @@ class DDLE2EIT implements SQLE2EIT {
         }
     }
     
-    private void init(final SQLE2EITContext context) throws SQLException {
+    private void init(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
         assertNotNull(context.getAssertion().getInitialSQL(), "Init SQL is required");
         assertNotNull(context.getAssertion().getInitialSQL().getAffectedTable(), "Expected affected table is required");
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
-            executeInitSQLs(context, connection);
+            executeInitSQLs(testParam, context, connection);
         }
     }
     
-    private void executeInitSQLs(final SQLE2EITContext context, final Connection connection) throws SQLException {
+    private void executeInitSQLs(final AssertionTestParameter testParam, final SQLE2EITContext context, final Connection connection) throws SQLException {
         if (null == context.getAssertion().getInitialSQL().getSql()) {
             return;
         }
@@ -165,19 +167,19 @@ class DDLE2EIT implements SQLE2EIT {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
-            waitSQLCompleted(each, context);
+            waitSQLCompleted(each, testParam, context);
         }
     }
     
-    private void tearDown(final SQLE2EITContext context) throws SQLException {
+    private void tearDown(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
         if (null != context.getAssertion().getDestroySQL()) {
             try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
-                executeDestroySQLs(context, connection);
+                executeDestroySQLs(testParam, context, connection);
             }
         }
     }
     
-    private void executeDestroySQLs(final SQLE2EITContext context, final Connection connection) throws SQLException {
+    private void executeDestroySQLs(final AssertionTestParameter testParam, final SQLE2EITContext context, final Connection connection) throws SQLException {
         if (null == context.getAssertion().getDestroySQL().getSql()) {
             return;
         }
@@ -185,17 +187,17 @@ class DDLE2EIT implements SQLE2EIT {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
-            waitSQLCompleted(each, context);
+            waitSQLCompleted(each, testParam, context);
         }
     }
     
-    private void waitSQLCompleted(final String sql, final SQLE2EITContext context) {
+    private void waitSQLCompleted(final String sql, final AssertionTestParameter testParam, final SQLE2EITContext context) {
         Matcher createTableOrViewMatcher = CREATE_TABLE_OR_VIEW_PATTERN.matcher(sql);
-        if (createTableOrViewMatcher.matches() && waitTableExists(context, createTableOrViewMatcher.group(1), true)) {
+        if (createTableOrViewMatcher.matches() && waitTableExists(testParam, context, createTableOrViewMatcher.group(1), true)) {
             return;
         }
         Matcher dropTableOrViewMatcher = DROP_TABLE_OR_VIEW_PATTERN.matcher(sql);
-        if (dropTableOrViewMatcher.matches() && waitTableExists(context, dropTableOrViewMatcher.group(1), false)) {
+        if (dropTableOrViewMatcher.matches() && waitTableExists(testParam, context, dropTableOrViewMatcher.group(1), false)) {
             return;
         }
         Matcher createIndexMatcher = CREATE_INDEX_PATTERN.matcher(sql);
@@ -213,24 +215,24 @@ class DDLE2EIT implements SQLE2EIT {
         waitCompleted();
     }
     
-    private boolean waitTableExists(final SQLE2EITContext context, final String tableName, final boolean exists) {
+    private boolean waitTableExists(final AssertionTestParameter testParam, final SQLE2EITContext context, final String tableName, final boolean exists) {
         Collection<DataNode> dataNodes = findDataNodes(context, getIdentifierValue(tableName));
         if (dataNodes.isEmpty()) {
             return false;
         }
-        Awaitility.await().atMost(META_DATA_WAIT_TIMEOUT).pollInterval(META_DATA_POLL_INTERVAL).untilAsserted(() -> assertTableState(dataNodes, exists));
+        Awaitility.await().atMost(META_DATA_WAIT_TIMEOUT).pollInterval(META_DATA_POLL_INTERVAL).untilAsserted(() -> assertTableState(dataNodes, exists, testParam.getDatabaseType()));
         return true;
     }
     
-    private void assertTableState(final Collection<DataNode> dataNodes, final boolean exists) throws SQLException {
+    private void assertTableState(final Collection<DataNode> dataNodes, final boolean exists, final DatabaseType databaseType) throws SQLException {
         if (!exists) {
-            assertNotContainsTable(environmentEngine, dataNodes);
+            assertNotContainsTable(environmentEngine, dataNodes, databaseType);
             return;
         }
         boolean tableExists = false;
         for (DataNode each : dataNodes) {
             try (Connection connection = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
-                if (containsTable(connection, each.getTableName())) {
+                if (containsTable(connection, each.getTableName(), databaseType)) {
                     tableExists = true;
                     break;
                 }
@@ -292,10 +294,10 @@ class DDLE2EIT implements SQLE2EIT {
         DataSetMetaData expected = context.getDataSet().findMetaData(tableName);
         Collection<DataNode> dataNodes = getDataNodes(expected);
         if (expected.getColumns().isEmpty()) {
-            assertNotContainsTable(environmentEngine, dataNodes);
+            assertNotContainsTable(environmentEngine, dataNodes, testParam.getDatabaseType());
             return;
         }
-        assertTableMetaData(testParam, getActualColumns(dataNodes), getActualIndexes(dataNodes), expected);
+        assertTableMetaData(testParam, getActualColumns(dataNodes, testParam.getDatabaseType()), getActualIndexes(dataNodes), expected);
     }
     
     private void assertTableMetaData(final AssertionTestParameter testParam, final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetaData expected) {
@@ -307,28 +309,30 @@ class DDLE2EIT implements SQLE2EIT {
         return InlineExpressionParserFactory.newInstance(metaData.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());
     }
     
-    private void assertNotContainsTable(final SQLE2EEnvironmentEngine environmentEngine, final Collection<DataNode> dataNodes) throws SQLException {
+    private void assertNotContainsTable(final SQLE2EEnvironmentEngine environmentEngine, final Collection<DataNode> dataNodes, final DatabaseType databaseType) throws SQLException {
         for (DataNode each : dataNodes) {
             try (Connection connection = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
-                assertNotContainsTable(connection, each.getTableName());
+                assertNotContainsTable(connection, each.getTableName(), databaseType);
             }
         }
     }
     
-    private void assertNotContainsTable(final Connection connection, final String tableName) throws SQLException {
-        assertFalse(containsTable(connection, tableName), String.format("Table `%s` should not existed", tableName));
+    private void assertNotContainsTable(final Connection connection, final String tableName, final DatabaseType databaseType) throws SQLException {
+        assertFalse(containsTable(connection, tableName, databaseType), String.format("Table `%s` should not existed", tableName));
     }
     
-    private boolean containsTable(final Connection connection, final String tableName) throws SQLException {
-        return connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE", "VIEW"}).next();
+    private boolean containsTable(final Connection connection, final String tableName, final DatabaseType databaseType) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(tableName), new String[]{"TABLE", "VIEW"})) {
+            return resultSet.next();
+        }
     }
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
-    private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
+    private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes, final DatabaseType databaseType) throws SQLException {
         Collection<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
             try (Connection connection = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
-                result.addAll(getActualColumns(connection, each.getTableName()));
+                result.addAll(getActualColumns(connection, new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(each.getTableName())));
             }
         }
         return new LinkedList<>(result);
