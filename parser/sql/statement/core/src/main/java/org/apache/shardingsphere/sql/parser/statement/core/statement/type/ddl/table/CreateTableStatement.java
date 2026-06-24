@@ -54,6 +54,8 @@ public final class CreateTableStatement extends DDLStatement {
     
     private final boolean ifNotExists;
     
+    private final boolean temporary;
+    
     private final SimpleTableSegment likeTable;
     
     private final CreateTableOptionSegment createTableOption;
@@ -70,13 +72,14 @@ public final class CreateTableStatement extends DDLStatement {
     
     @Builder
     private CreateTableStatement(final DatabaseType databaseType, final SimpleTableSegment table, final SelectStatement selectStatement,
-                                 final boolean ifNotExists, final SimpleTableSegment likeTable, final CreateTableOptionSegment createTableOption,
+                                 final boolean ifNotExists, final boolean temporary, final SimpleTableSegment likeTable, final CreateTableOptionSegment createTableOption,
                                  final Collection<ColumnDefinitionSegment> columnDefinitions, final Collection<ConstraintDefinitionSegment> constraintDefinitions,
                                  final List<ColumnSegment> columns, final Collection<RollupSegment> rollups) {
         super(databaseType);
         this.table = table;
         this.selectStatement = selectStatement;
         this.ifNotExists = ifNotExists;
+        this.temporary = temporary;
         this.likeTable = likeTable;
         this.createTableOption = createTableOption;
         this.columnDefinitions = null == columnDefinitions ? Collections.emptyList() : columnDefinitions;
