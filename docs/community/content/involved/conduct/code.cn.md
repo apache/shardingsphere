@@ -83,6 +83,7 @@ chapter = true
    - 日志与注释一律使用英文。
    - 注释只能包含 JAVADOC，TODO 和 FIXME。
    - 公开的类和方法必须有 JAVADOC，对用户的 API 和 SPI 的 JAVADOC 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 JAVADOC。
+   - 默认不得添加构造器 JAVADOC。 仅当构造器 JAVADOC 用于说明非显然行为、兼容性约束、副作用，或类契约未表达的 public API 语义时才允许添加。
 
 ## 单元测试规范
 
