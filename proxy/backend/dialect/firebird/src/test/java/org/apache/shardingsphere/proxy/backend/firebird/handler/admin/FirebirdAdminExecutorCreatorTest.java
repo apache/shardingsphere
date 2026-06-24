@@ -56,7 +56,7 @@ class FirebirdAdminExecutorCreatorTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("createArguments")
     void assertCreate(final String name, final SQLStatementContext sqlStatementContext, final String sql, final Class<? extends DatabaseAdminExecutor> expectedExecutorType) {
-        final Optional<DatabaseAdminExecutor> actual = creator.create(sqlStatementContext, sql, "", Collections.emptyList());
+        Optional<DatabaseAdminExecutor> actual = creator.create(sqlStatementContext, sql, "", Collections.emptyList());
         if (null == expectedExecutorType) {
             assertFalse(actual.isPresent(), name);
         } else {

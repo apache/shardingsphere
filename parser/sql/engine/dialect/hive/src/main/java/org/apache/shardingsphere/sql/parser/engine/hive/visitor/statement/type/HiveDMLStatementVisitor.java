@@ -995,7 +995,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         if (1 == statements.size() && null == ctx.fromClause()) {
             return visit(statements.get(0));
         }
-        final TableSegment sourceTable = null != ctx.fromClause() ? (TableSegment) visit(ctx.fromClause()) : null;
+        TableSegment sourceTable = null != ctx.fromClause() ? (TableSegment) visit(ctx.fromClause()) : null;
         if (1 == statements.size()) {
             InsertStatement single = (InsertStatement) visit(statements.get(0));
             if (null != sourceTable) {

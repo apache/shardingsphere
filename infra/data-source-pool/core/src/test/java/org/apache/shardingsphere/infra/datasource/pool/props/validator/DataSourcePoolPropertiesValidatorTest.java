@@ -107,7 +107,7 @@ class DataSourcePoolPropertiesValidatorTest {
     
     @Test
     void assertValidateWithCreateFailureBeforeAssignment() {
-        final Map<String, Object> props = createMockedDataSourceProperties();
+        Map<String, Object> props = createMockedDataSourceProperties();
         DataSourcePoolProperties dataSourcePoolProperties = new DataSourcePoolProperties(MockedDataSource.class.getName(), props);
         try (MockedStatic<DataSourcePoolCreator> dataSourcePoolCreator = mockStatic(DataSourcePoolCreator.class)) {
             dataSourcePoolCreator.when(() -> DataSourcePoolCreator.create(dataSourcePoolProperties)).thenThrow(new IllegalStateException("mock create failure"));

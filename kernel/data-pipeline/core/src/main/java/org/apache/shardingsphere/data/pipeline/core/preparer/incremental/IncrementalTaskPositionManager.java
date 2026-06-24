@@ -79,7 +79,7 @@ public final class IncrementalTaskPositionManager {
      * @throws SQLException SQL exception
      */
     public void destroyPosition(final String jobId, final PipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
-        final long startTimeMillis = System.currentTimeMillis();
+        long startTimeMillis = System.currentTimeMillis();
         log.info("Cleanup position, database type: {}, pipeline data source type: {}", databaseType.getType(), pipelineDataSourceConfig.getType());
         if (pipelineDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
             destroyPosition(jobId, (ShardingSpherePipelineDataSourceConfiguration) pipelineDataSourceConfig);

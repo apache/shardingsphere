@@ -70,7 +70,16 @@ public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
     
     @Override
     protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
-        final long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
+        executeTransfers();
+        log.info("The deadlock test case execution time is: {}", System.currentTimeMillis() - startTime);
+        executor.shutdown();
+        try (Connection connection = getDataSource().getConnection()) {
+            assertAccountRowCount(connection, 4);
+        }
+    }
+    
+    private void executeTransfers() {
         Collection<Future<Void>> futures = new LinkedList<>();
         futures.add(executor.submit(this::executeTransfer1));
         futures.add(executor.submit(this::executeTransfer2));
@@ -83,11 +92,6 @@ public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
                 assertThat(ex.getMessage(),
                         anyOf(containsString("Lock wait timeout exceeded; try restarting transaction"), containsString("Deadlock found when trying to get lock; try restarting transaction")));
             }
-        }
-        log.info("The deadlock test case execution time is: {}", System.currentTimeMillis() - startTime);
-        executor.shutdown();
-        try (Connection connection = getDataSource().getConnection()) {
-            assertAccountRowCount(connection, 4);
         }
     }
     

@@ -396,7 +396,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private void processExpressionProjection(final ExpressionProjection expr, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,
                                              final int columnCount) {
-        final ExpressionSegment exprSegment = expr.getExpressionSegment().getExpr();
+        ExpressionSegment exprSegment = expr.getExpressionSegment().getExpr();
         if (exprSegment instanceof FunctionSegment) {
             String functionName = ((FunctionSegment) exprSegment).getFunctionName();
             processCustomColumn(null, functionName, expr.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, columnCount);

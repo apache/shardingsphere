@@ -56,12 +56,6 @@ public final class PackagedDistributionProcessSupport implements AutoCloseable {
     
     private Thread outputCollector;
     
-    /**
-     * Construct process support for a prepared packaged distribution.
-     *
-     * @param distribution prepared packaged distribution
-     * @param outputCollectorThreadName output collector thread name
-     */
     public PackagedDistributionProcessSupport(final PreparedPackagedDistribution distribution, final String outputCollectorThreadName) {
         distributionHome = distribution.home();
         configFile = distribution.configFile();

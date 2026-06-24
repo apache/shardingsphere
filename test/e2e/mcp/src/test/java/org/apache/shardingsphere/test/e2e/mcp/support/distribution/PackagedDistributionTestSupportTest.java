@@ -140,7 +140,6 @@ class PackagedDistributionTestSupportTest {
         System.setProperty("mcp.distribution.home", distributionHome.toString());
         try {
             PreparedPackagedDistribution actual = PackagedDistributionTestSupport.prepare(tempDir.resolve(caseName + "-working"), transport);
-            final MCPLaunchConfiguration actualConfig = MCPConfigurationLoader.load(actual.configFile().toString());
             assertThat(actual.transport(), is(transport));
             assertFalse(Files.exists(actual.home().resolve("data")));
             assertFalse(Files.exists(actual.home().resolve("logs")));
@@ -150,6 +149,7 @@ class PackagedDistributionTestSupportTest {
             if ("start.sh".equals(actual.getStartScript().getFileName().toString())) {
                 assertTrue(actual.getStartScript().toFile().canExecute());
             }
+            MCPLaunchConfiguration actualConfig = MCPConfigurationLoader.load(actual.configFile().toString());
             assertThat(actualConfig.getTransportType(), is(expectedTransportType));
             if (RuntimeTransport.HTTP == transport) {
                 assertThat(actual.httpPort(), greaterThan(0));

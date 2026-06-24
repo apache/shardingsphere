@@ -30,18 +30,10 @@ public final class ShardingDefaultStrategyWorkflowPlanningService {
     
     private final Planner planner;
     
-    /**
-     * Create sharding default strategy workflow planning service.
-     */
     public ShardingDefaultStrategyWorkflowPlanningService() {
         this(new ShardingWorkflowPlanningKernel());
     }
     
-    /**
-     * Create sharding default strategy workflow planning service with delegate.
-     *
-     * @param delegate sharding workflow planning service
-     */
     public ShardingDefaultStrategyWorkflowPlanningService(final ShardingWorkflowPlanningService delegate) {
         this(delegate::planDefaultStrategy);
     }

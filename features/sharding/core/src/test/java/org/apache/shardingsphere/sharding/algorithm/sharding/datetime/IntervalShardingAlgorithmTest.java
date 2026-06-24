@@ -193,8 +193,8 @@ class IntervalShardingAlgorithmTest {
     
     @Test
     void assertRangeDoShardingByDays() {
-        final int expectSize = 24;
-        final int stepAmount = 2;
+        int expectSize = 24;
+        int stepAmount = 2;
         IntervalShardingAlgorithm algorithm = createAlgorithm("yyyy-MM-dd HH:mm:ss.SSS", "2021-06-01 00:00:00.000",
                 "2021-07-31 00:00:00.000", "yyyyMMdd", stepAmount, "DAYS");
         Collection<String> availableTargetNames = new LinkedList<>();
@@ -203,29 +203,29 @@ class IntervalShardingAlgorithmTest {
                 availableTargetNames.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
             }
         }
-        final LocalDateTime lower = LocalDateTime.of(2021, 6, 15, 2, 25, 27, 0);
-        final LocalDateTime upper = LocalDateTime.of(2021, 7, 31, 2, 25, 27, 0);
-        final RangeShardingValue<Comparable<?>> shardingValueAsLocalDateTime = createShardingValue(lower, upper);
+        LocalDateTime lower = LocalDateTime.of(2021, 6, 15, 2, 25, 27, 0);
+        LocalDateTime upper = LocalDateTime.of(2021, 7, 31, 2, 25, 27, 0);
+        RangeShardingValue<Comparable<?>> shardingValueAsLocalDateTime = createShardingValue(lower, upper);
         assertThat(algorithm.doSharding(availableTargetNames, shardingValueAsLocalDateTime).size(), is(expectSize));
-        final RangeShardingValue<Comparable<?>> shardingValueAsInstant = createShardingValue(
+        RangeShardingValue<Comparable<?>> shardingValueAsInstant = createShardingValue(
                 lower.atZone(ZoneId.systemDefault()).toInstant(),
                 upper.atZone(ZoneId.systemDefault()).toInstant());
         assertThat(algorithm.doSharding(availableTargetNames, shardingValueAsInstant).size(), is(expectSize));
-        final RangeShardingValue<Comparable<?>> shardingValueAsTimestamp = createShardingValue(Timestamp.valueOf(lower), Timestamp.valueOf(upper));
+        RangeShardingValue<Comparable<?>> shardingValueAsTimestamp = createShardingValue(Timestamp.valueOf(lower), Timestamp.valueOf(upper));
         assertThat(algorithm.doSharding(availableTargetNames, shardingValueAsTimestamp).size(), is(expectSize));
-        final RangeShardingValue<Comparable<?>> shardingValueAsOffsetDateTime = createShardingValue(
+        RangeShardingValue<Comparable<?>> shardingValueAsOffsetDateTime = createShardingValue(
                 OffsetDateTime.of(lower, OffsetDateTime.now().getOffset()),
                 OffsetDateTime.of(upper, OffsetDateTime.now().getOffset()));
         assertThat(algorithm.doSharding(availableTargetNames, shardingValueAsOffsetDateTime).size(), is(expectSize));
-        final RangeShardingValue<Comparable<?>> shardingValueAsZonedDateTime = createShardingValue(
+        RangeShardingValue<Comparable<?>> shardingValueAsZonedDateTime = createShardingValue(
                 ZonedDateTime.of(lower, ZoneId.systemDefault()),
                 ZonedDateTime.of(upper, ZoneId.systemDefault()));
         assertThat(algorithm.doSharding(availableTargetNames, shardingValueAsZonedDateTime).size(), is(expectSize));
-        final RangeShardingValue<Comparable<?>> shardingValueAsUtilDate = createShardingValue(
+        RangeShardingValue<Comparable<?>> shardingValueAsUtilDate = createShardingValue(
                 Date.from(lower.atZone(ZoneId.systemDefault()).toInstant()),
                 Date.from(upper.atZone(ZoneId.systemDefault()).toInstant()));
         assertThat(algorithm.doSharding(availableTargetNames, shardingValueAsUtilDate).size(), is(expectSize));
-        final RangeShardingValue<Comparable<?>> shardingValueAsSqlDate = createShardingValue(
+        RangeShardingValue<Comparable<?>> shardingValueAsSqlDate = createShardingValue(
                 new java.sql.Date(lower.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
                 new java.sql.Date(upper.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
         assertThrows(UnsupportedTemporalTypeException.class, () -> algorithm.doSharding(availableTargetNames, shardingValueAsSqlDate),
@@ -234,7 +234,7 @@ class IntervalShardingAlgorithmTest {
                 "2021-07-31", "yyyyMMdd", stepAmount, null)
                 .doSharding(availableTargetNames, shardingValueAsSqlDate).size(),
                 is(expectSize));
-        final RangeShardingValue<Comparable<?>> shardingValueAsString = createShardingValue(
+        RangeShardingValue<Comparable<?>> shardingValueAsString = createShardingValue(
                 DateTimeFormatterFactory.getDatetimeFormatter().format(lower),
                 DateTimeFormatterFactory.getDatetimeFormatter().format(upper));
         assertThat(algorithm.doSharding(availableTargetNames, shardingValueAsString).size(), is(expectSize));

@@ -35,11 +35,6 @@ public final class QueryHeaderBuilderEngine {
     
     private final QueryHeaderBuilder queryHeaderBuilder;
     
-    /**
-     * Create query header builder engine.
-     *
-     * @param databaseType database type
-     */
     public QueryHeaderBuilderEngine(final DatabaseType databaseType) {
         queryHeaderBuilder = DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType);
     }

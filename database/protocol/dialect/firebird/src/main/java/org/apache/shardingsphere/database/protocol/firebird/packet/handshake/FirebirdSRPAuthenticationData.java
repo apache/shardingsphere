@@ -123,7 +123,7 @@ public final class FirebirdSRPAuthenticationData {
     }
     
     private static byte[] pad(final BigInteger n) {
-        final byte[] byteArray = toBigByteArray(n);
+        byte[] byteArray = toBigByteArray(n);
         if (byteArray.length > SRP_KEY_SIZE) {
             return Arrays.copyOfRange(byteArray, byteArray.length - SRP_KEY_SIZE, byteArray.length);
         }
@@ -151,7 +151,7 @@ public final class FirebirdSRPAuthenticationData {
     }
     
     private BigInteger getUserHash(final String user, final String password, final byte[] salt) {
-        final byte[] hash1;
+        byte[] hash1;
         try {
             sha1Md.update(user.getBytes(StandardCharsets.UTF_8));
             sha1Md.update(SEPARATOR_BYTE);
@@ -159,7 +159,7 @@ public final class FirebirdSRPAuthenticationData {
         } finally {
             sha1Md.reset();
         }
-        final byte[] hash2 = sha1(salt, hash1);
+        byte[] hash2 = sha1(salt, hash1);
         return fromBigByteArray(hash2);
     }
     
@@ -178,10 +178,10 @@ public final class FirebirdSRPAuthenticationData {
      * @return byte array containing the server proof
      */
     public byte[] serverProof(final String user) {
-        final byte[] serverSessionKey = computeServerSessionKey();
-        final BigInteger n1 = fromBigByteArray(sha1(toBigByteArray(N)));
-        final BigInteger n2 = fromBigByteArray(sha1(toBigByteArray(G)));
-        final byte[] clientProof = clientProofHash(
+        byte[] serverSessionKey = computeServerSessionKey();
+        BigInteger n1 = fromBigByteArray(sha1(toBigByteArray(N)));
+        BigInteger n2 = fromBigByteArray(sha1(toBigByteArray(G)));
+        byte[] clientProof = clientProofHash(
                 toBigByteArray(n1.modPow(n2, N)),
                 stripLeadingZeroes(sha1(normalizeLogin(user).getBytes(StandardCharsets.UTF_8))),
                 salt,
@@ -225,7 +225,7 @@ public final class FirebirdSRPAuthenticationData {
     }
     
     private static String normalizeQuotedLogin(final String login) {
-        final StringBuilder sb = new StringBuilder(login.length() - 2);
+        StringBuilder sb = new StringBuilder(login.length() - 2);
         sb.append(login, 1, login.length() - 1);
         int idx = 0;
         while (idx < sb.length()) {
