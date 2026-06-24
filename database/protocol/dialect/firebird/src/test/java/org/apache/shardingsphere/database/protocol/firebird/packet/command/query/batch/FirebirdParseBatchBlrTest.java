@@ -95,6 +95,14 @@ class FirebirdParseBatchBlrTest {
         assertThat(actual.getMessage(), is("Expected blr_short NULL indicator, got: " + BlrConstants.blr_bool));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidTerminatorArguments")
+    void assertParseInvalidTerminator(final String name, final byte[] blrBytes, final String expectedMessage) {
+        ByteBuf blr = Unpooled.wrappedBuffer(blrBytes);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> FirebirdParseBatchBlr.parse(blr, blr.readableBytes()));
+        assertThat(actual.getMessage(), is(expectedMessage));
+    }
+
     @Test
     void assertParseUnsupportedType() {
         ByteBuf blr = createBlr(BlrConstants.blr_version5, new byte[]{(byte) BlrConstants.blr_dec64, (byte) BlrConstants.blr_short, 0}, 2);
@@ -102,11 +110,20 @@ class FirebirdParseBatchBlrTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("blobTypeArguments")
-    void assertParseBlob(final String name, final int blrType) {
-        ByteBuf blr = createBlr(BlrConstants.blr_version5, new byte[]{(byte) blrType}, 2);
+    @MethodSource("blobFieldArguments")
+    void assertParseRejectsBlob(final String name, final byte[] fieldBlr, final int scale) {
+        ByteBuf blr = createBlr(BlrConstants.blr_version5, fieldBlr, 2);
         FirebirdProtocolException actual = assertThrows(FirebirdProtocolException.class, () -> FirebirdParseBatchBlr.parse(blr, blr.readableBytes()));
         assertThat(actual.getMessage(), is("BLOB fields are not supported in Firebird batch operations"));
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("blobFieldArguments")
+    void assertParseForFramingAcceptsBlobStructurally(final String name, final byte[] fieldBlr, final int expectedScale) {
+        ByteBuf blr = createBlr(BlrConstants.blr_version5, fieldBlr, 2);
+        FirebirdParseBatchBlr actual = FirebirdParseBatchBlr.parseForFraming(blr, blr.readableBytes());
+        assertThat(actual.getFields().size(), is(1));
+        assertDescriptor(actual.getFields().get(0), FirebirdBinaryColumnType.BLOB, 8, expectedScale, 0);
     }
     
     private static Stream<Arguments> validSingleFieldArguments() {
@@ -128,12 +145,27 @@ class FirebirdParseBatchBlrTest {
                 Arguments.of("boolean", BlrConstants.blr_version5, field(BlrConstants.blr_bool), FirebirdBinaryColumnType.BOOLEAN, 1, 0, 4, 4));
     }
     
-    private static Stream<Arguments> blobTypeArguments() {
+    private static Stream<Arguments> blobFieldArguments() {
         return Stream.of(
-                Arguments.of("blob2", BlrConstants.blr_blob2),
-                Arguments.of("quad", BlrConstants.blr_quad));
+                Arguments.of("blob2", new byte[]{(byte) BlrConstants.blr_blob2, 0, 0, 0, 0, (byte) BlrConstants.blr_short, 0}, 0),
+                Arguments.of("quad", new byte[]{(byte) BlrConstants.blr_quad, -3, (byte) BlrConstants.blr_short, 0}, -3));
     }
     
+    private static Stream<Arguments> invalidTerminatorArguments() {
+        return Stream.of(
+                Arguments.of("missing_terminators", longFieldBlr(), "Expected blr_end"),
+                Arguments.of("wrong_blr_end", longFieldBlr(BlrConstants.blr_message, BlrConstants.blr_eoc), "Expected blr_end"),
+                Arguments.of("truncated_terminator", longFieldBlr(BlrConstants.blr_end), "Expected blr_eoc"),
+                Arguments.of("wrong_blr_eoc", longFieldBlr(BlrConstants.blr_end, BlrConstants.blr_end), "Expected blr_eoc"),
+                Arguments.of("trailing_bytes", longFieldBlr(BlrConstants.blr_end, BlrConstants.blr_eoc, 0), "Unexpected trailing bytes in BLR"));
+    }
+
+    private static byte[] longFieldBlr(final int... terminator) {
+        byte[] base = {(byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0,
+                2, 0, (byte) BlrConstants.blr_long, 0, (byte) BlrConstants.blr_short, 0};
+        return append(base, terminator);
+    }
+
     private static Stream<Arguments> invalidHeaderArguments() {
         return Stream.of(
                 Arguments.of("too_short", new byte[]{(byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message}, 3, "BLR is too short: 3"),

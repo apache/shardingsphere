@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.err.FirebirdErrorPacketFactory;
 import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -165,6 +167,19 @@ class FirebirdBatchCreateCommandExecutorTest {
         when(packet.getBatchBlr()).thenReturn(createBlobBatchBlr());
         FirebirdProtocolException actual = assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
         assertThat(actual.getMessage(), is("BLOB fields are not supported in Firebird batch operations"));
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
+    }
+
+    @Test
+    void assertBlobBatchCreateProducesFirebirdErrorResponseWithoutClosingChannel() {
+        FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
+        when(packet.getBatchBlr()).thenReturn(createBlobBatchBlr());
+        FirebirdProtocolException cause = assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+        FirebirdGenericResponsePacket errorPacket = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(cause);
+        assertThat(errorPacket.getErrorMessage(), containsString("BLOB fields are not supported in Firebird batch operations"));
         assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
     }
     

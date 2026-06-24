@@ -136,7 +136,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 }
                 return;
             }
-            if (FirebirdCommandPacketType.BATCH_CREATE == commandType) {
+            if (FirebirdCommandPacketType.BATCH_CREATE == commandType && buffer.readableBytes() > packetLength) {
                 rememberBatchFormat(buffer, packetLength, charset);
             }
             pendingPacketType = null;
@@ -177,7 +177,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         FirebirdBatchCreateCommandPacket packet = new FirebirdBatchCreateCommandPacket(
                 new FirebirdPacketPayload(buffer.slice(buffer.readerIndex(), packetLength), charset));
         ByteBuf batchBlr = packet.getBatchBlr();
-        deferredBatchFormats.put(packet.getStatementHandle(), FirebirdParseBatchBlr.parse(batchBlr, batchBlr.readableBytes()).getFields());
+        deferredBatchFormats.put(packet.getStatementHandle(), FirebirdParseBatchBlr.parseForFraming(batchBlr, batchBlr.readableBytes()).getFields());
     }
     
     @Override

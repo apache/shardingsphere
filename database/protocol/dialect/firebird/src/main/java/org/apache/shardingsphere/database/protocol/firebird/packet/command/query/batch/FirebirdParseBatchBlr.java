@@ -47,18 +47,38 @@ public final class FirebirdParseBatchBlr {
     }
     
     /**
-     * Parse a BLR message buffer into its message format.
+     * Parse a BLR message buffer into its message format and validate that every field is supported.
      *
      * @param blr BLR buffer
      * @param blrLength BLR length
      * @return parsed message format
-     * @throws IllegalArgumentException when BLR format is invalid
+     * @throws IllegalArgumentException when BLR format is structurally invalid
+     * @throws FirebirdProtocolException when BLR contains a field type that batch operations do not support yet
      */
     public static FirebirdParseBatchBlr parse(final ByteBuf blr, final int blrLength) {
+        FirebirdParseBatchBlr result = parseForFraming(blr, blrLength);
+        validateSupported(result.fields);
+        return result;
+    }
+
+    /**
+     * Parse a BLR message buffer into its message format for codec framing only, without semantic support validation.
+     *
+     * <p>Used by the packet codec to split a coalesced {@code BATCH_CREATE + BATCH_MSG} frame. Semantically unsupported
+     * but structurally valid fields (such as BLOB) are returned as descriptors instead of being rejected here, so that the
+     * rejection happens later on the command/error path rather than as a codec-level channel close.</p>
+     *
+     * @param blr BLR buffer
+     * @param blrLength BLR length
+     * @return parsed message format
+     * @throws IllegalArgumentException when BLR format is structurally invalid
+     */
+    public static FirebirdParseBatchBlr parseForFraming(final ByteBuf blr, final int blrLength) {
         if (blrLength < HEADER_LENGTH) {
             throw new IllegalArgumentException("BLR is too short: " + blrLength);
         }
         ByteBuf buffer = blr.duplicate();
+        final int startReaderIndex = buffer.readerIndex();
         int version = buffer.readUnsignedByte();
         if (BlrConstants.blr_version4 != version && BlrConstants.blr_version5 != version) {
             throw new IllegalArgumentException("Unsupported BLR version: " + version);
@@ -70,7 +90,34 @@ public final class FirebirdParseBatchBlr {
             throw new IllegalArgumentException("Expected blr_message");
         }
         buffer.skipBytes(1);
-        return parseFormat(buffer);
+        FirebirdParseBatchBlr result = parseFormat(buffer);
+        validateTermination(buffer, startReaderIndex, blrLength);
+        return result;
+    }
+
+    private static void validateTermination(final ByteBuf buffer, final int startReaderIndex, final int blrLength) {
+        if (remainingWithinBlr(buffer, startReaderIndex, blrLength) < 1 || BlrConstants.blr_end != buffer.readUnsignedByte()) {
+            throw new IllegalArgumentException("Expected blr_end");
+        }
+        if (remainingWithinBlr(buffer, startReaderIndex, blrLength) < 1 || BlrConstants.blr_eoc != buffer.readUnsignedByte()) {
+            throw new IllegalArgumentException("Expected blr_eoc");
+        }
+        if (0 != remainingWithinBlr(buffer, startReaderIndex, blrLength)) {
+            throw new IllegalArgumentException("Unexpected trailing bytes in BLR");
+        }
+    }
+
+    private static int remainingWithinBlr(final ByteBuf buffer, final int startReaderIndex, final int blrLength) {
+        return blrLength - (buffer.readerIndex() - startReaderIndex);
+    }
+
+    private static void validateSupported(final List<FirebirdBatchColumnDescriptor> fields) {
+        for (FirebirdBatchColumnDescriptor each : fields) {
+            if (FirebirdBinaryColumnType.BLOB == each.getType()) {
+                // TODO Implement BATCH_REGBLOB, BATCH_BLOB_STREAM and BATCH_SET_BPB before accepting BLOB fields.
+                throw new FirebirdProtocolException("BLOB fields are not supported in Firebird batch operations");
+            }
+        }
     }
     
     private static FirebirdParseBatchBlr parseFormat(final ByteBuf buffer) {
@@ -109,9 +156,13 @@ public final class FirebirdParseBatchBlr {
     }
     
     private static FirebirdBatchColumnDescriptor readDescriptor(final ByteBuf buffer, final int blrType) {
-        if (BlrConstants.blr_blob2 == blrType || BlrConstants.blr_quad == blrType) {
-            // TODO Implement BATCH_REGBLOB, BATCH_BLOB_STREAM and BATCH_SET_BPB before accepting BLOB fields.
-            throw new FirebirdProtocolException("BLOB fields are not supported in Firebird batch operations");
+        if (BlrConstants.blr_blob2 == blrType) {
+            buffer.skipBytes(4);
+            return new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.BLOB, Long.BYTES, 0, 0);
+        }
+        if (BlrConstants.blr_quad == blrType) {
+            int scale = buffer.readByte();
+            return new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.BLOB, Long.BYTES, scale, 0);
         }
         FirebirdBinaryColumnType type = FirebirdBinaryColumnType.valueOfBLRType(blrType);
         if (BlrConstants.blr_text == blrType || BlrConstants.blr_varying == blrType) {

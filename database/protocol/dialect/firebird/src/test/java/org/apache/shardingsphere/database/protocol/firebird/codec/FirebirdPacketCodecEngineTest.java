@@ -65,6 +65,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -339,6 +340,71 @@ class FirebirdPacketCodecEngineTest {
         assertTrue(getPendingMessages().isEmpty());
     }
     
+    @Test
+    void assertDecodeStandaloneBatchCreateWithBlobBlrDefersToCommandPath() {
+        ByteBuf in = buildBlobBatchCreate();
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        verify(context, never()).close();
+        assertThat(out.size(), is(1));
+        assertThat(((ByteBuf) out.get(0)).getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
+        assertNull(getPendingPacketType());
+        assertTrue(getPendingMessages().isEmpty());
+    }
+
+    @Test
+    void assertDecodeCoalescedBatchCreateWithBlobAndMessageDefersToCommandPath() {
+        ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildBlobBatchCreate(), buildBlobBatchMessage());
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        verify(context, never()).close();
+        assertThat(out.size(), is(2));
+        assertThat(((ByteBuf) out.get(0)).getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
+        assertThat(((ByteBuf) out.get(1)).getInt(0), is(FirebirdCommandPacketType.BATCH_MSG.getValue()));
+        assertNull(getPendingPacketType());
+        assertTrue(getPendingMessages().isEmpty());
+    }
+
+    private ByteBuf buildBlobBatchCreate() {
+        ByteBuf blr = Unpooled.buffer()
+                .writeByte(BlrConstants.blr_version5).writeByte(BlrConstants.blr_begin).writeByte(BlrConstants.blr_message).writeByte(0)
+                .writeShortLE(2).writeByte(BlrConstants.blr_blob2).writeZero(4).writeByte(BlrConstants.blr_short).writeByte(0)
+                .writeByte(BlrConstants.blr_end).writeByte(BlrConstants.blr_eoc);
+        return buildBatchCreate(blr, 8);
+    }
+
+    private ByteBuf buildBlobBatchMessage() {
+        return Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_MSG.getValue()).writeInt(BATCH_STATEMENT_HANDLE).writeInt(1)
+                .writeByte(0).writeZero(3).writeLong(123L);
+    }
+
+    @Test
+    void assertDecodeStandaloneBatchCreateWithInvalidBlrDefersToCommandPath() {
+        ByteBuf in = buildInvalidBatchCreate();
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        verify(context, never()).close();
+        assertThat(out.size(), is(1));
+        assertThat(((ByteBuf) out.get(0)).getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
+        assertNull(getPendingPacketType());
+        assertTrue(getPendingMessages().isEmpty());
+    }
+
+    @Test
+    void assertDecodeCoalescedBatchCreateWithMalformedBlrClosesChannelAsFramingCorruption() {
+        ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildInvalidBatchCreate(), buildBatchMessage(BATCH_STATEMENT_HANDLE, 100));
+        List<Object> out = new LinkedList<>();
+        assertThrows(IllegalArgumentException.class, () -> codecEngine.decode(context, in, out));
+        verify(context).close();
+    }
+
+    private ByteBuf buildInvalidBatchCreate() {
+        ByteBuf blr = Unpooled.buffer()
+                .writeByte(99).writeByte(BlrConstants.blr_begin).writeByte(BlrConstants.blr_message).writeByte(0)
+                .writeShortLE(0).writeByte(BlrConstants.blr_end).writeByte(BlrConstants.blr_eoc);
+        return buildBatchCreate(blr, 0);
+    }
+
     private void setUpBatchContext() {
         FirebirdBatchRegistry.getInstance().registerConnection(BATCH_CONNECTION_ID);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE,
