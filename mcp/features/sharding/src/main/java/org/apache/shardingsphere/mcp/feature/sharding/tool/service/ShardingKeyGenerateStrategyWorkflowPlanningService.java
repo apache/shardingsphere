@@ -30,18 +30,10 @@ public final class ShardingKeyGenerateStrategyWorkflowPlanningService {
     
     private final Planner planner;
     
-    /**
-     * Create sharding key generate strategy workflow planning service.
-     */
     public ShardingKeyGenerateStrategyWorkflowPlanningService() {
         this(new ShardingWorkflowPlanningKernel());
     }
     
-    /**
-     * Create sharding key generate strategy workflow planning service with delegate.
-     *
-     * @param delegate sharding workflow planning service
-     */
     public ShardingKeyGenerateStrategyWorkflowPlanningService(final ShardingWorkflowPlanningService delegate) {
         this(delegate::planKeyGenerateStrategy);
     }

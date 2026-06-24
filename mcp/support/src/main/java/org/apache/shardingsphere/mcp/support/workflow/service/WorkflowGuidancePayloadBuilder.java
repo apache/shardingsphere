@@ -217,7 +217,7 @@ public final class WorkflowGuidancePayloadBuilder {
     private static List<String> createMissingRequiredInputs(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
         ClarifiedIntent clarifiedIntent = snapshot.getClarifiedIntent();
-        for (final String each : clarifiedIntent.getUnresolvedFields()) {
+        for (String each : clarifiedIntent.getUnresolvedFields()) {
             String missingInput = normalizeMissingInput(snapshot, each);
             if (!result.contains(missingInput)) {
                 result.add(missingInput);

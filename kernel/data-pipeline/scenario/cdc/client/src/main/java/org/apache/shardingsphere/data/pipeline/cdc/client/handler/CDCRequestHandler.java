@@ -74,7 +74,7 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
         if (response.getStatus() != Status.SUCCEED) {
             Type requestType = Type.UNKNOWN;
             if (responseFuture.isPresent()) {
-                final ResponseFuture future = responseFuture.get();
+                ResponseFuture future = responseFuture.get();
                 future.setErrorCode(response.getErrorCode());
                 future.setErrorMessage(response.getErrorMessage());
                 future.countDown();

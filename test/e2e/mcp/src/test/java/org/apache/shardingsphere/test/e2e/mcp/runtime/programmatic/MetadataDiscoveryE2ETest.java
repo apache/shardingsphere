@@ -48,11 +48,11 @@ class MetadataDiscoveryE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ET
                 Map.of("database", "logic_db", "schema", "logic_db", "query", "order", "object_types", List.of("table", "view")));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualPayload = getStructuredContent(actual.body());
-        final List<Map<String, Object>> actualItems = getItems(actualPayload);
         assertThat(String.valueOf(actualPayload.get("response_mode")), is("search"));
         assertThat(actualPayload.get("count"), is(3));
         assertThat(actualPayload.get("total_match_count"), is(3));
         assertThat(getItemNames(actualPayload), is(List.of("order_items", "orders", "active_orders")));
+        List<Map<String, Object>> actualItems = getItems(actualPayload);
         Map<String, Object> actualResource = MCPInteractionPayloads.castToMap(actualItems.get(1).get("resource"));
         assertThat(String.valueOf(actualResource.get("uri")), is("shardingsphere://databases/logic_db/schemas/logic_db/tables/orders"));
         assertThat(MCPInteractionPayloads.castToList(actualItems.get(1).get("next_resources")).stream()

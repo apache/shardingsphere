@@ -27,7 +27,6 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionAc
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
@@ -42,7 +41,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,7 +52,6 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(3);
         Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
-        final ArgumentCaptor<List<Map<String, Object>>> actualTools = createToolDefinitionsCaptor();
         when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
         when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
@@ -67,12 +64,12 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         assertThat(actual.getInteractionTrace().size(), is(1));
         assertThat(actual.getInteractionTrace().getFirst().getActionOrigin(), is(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN));
         assertThat(actual.getRawModelOutputs(), is(List.of("tool-call-response", "final-answer-response")));
-        verify(getLLMChatClient()).complete(anyList(), actualTools.capture(), eq("required"), eq(false));
         verify(getMCPInteractionClient()).open();
         verify(getMCPInteractionClient()).call("database_gateway_execute_query", executeQueryArguments);
         verify(getMCPInteractionClient()).close();
-        assertThat(getToolName(actualTools.getValue().getFirst()), is("database_gateway_execute_query"));
-        assertThat(getMap(getFunction(actualTools.getValue().getFirst()).get("parameters")).get("required"), is(List.of("database", "sql")));
+        List<List<Map<String, Object>>> actualTools = captureRequiredToolDefinitions(1);
+        assertThat(getToolName(actualTools.getFirst().getFirst()), is("database_gateway_execute_query"));
+        assertThat(getMap(getFunction(actualTools.getFirst().getFirst()).get("parameters")).get("required"), is(List.of("database", "sql")));
     }
     
     @Test
@@ -155,7 +152,6 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
                 "schema", SCHEMA_NAME,
                 "sql", "UPDATE orders SET status = status WHERE order_id = -1",
                 "execution_mode", "preview");
-        final ArgumentCaptor<List<LLMChatMessage>> actualFinalMessages = createChatMessagesCaptor();
         when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(new LLMChatCompletion("",
                 List.of(
                         new LLMToolCall("tool-1", "database_gateway_execute_query", JsonUtils.toJsonString(executeQueryArguments)),
@@ -169,8 +165,8 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertTrue(actual.getAssertionReport().isSuccess());
-        verify(getLLMChatClient()).complete(actualFinalMessages.capture(), eq(List.of()), eq("none"), eq(true));
-        List<LLMChatMessage> actualMessages = actualFinalMessages.getValue();
+        List<List<LLMChatMessage>> actualFinalMessages = captureFinalChatMessages();
+        List<LLMChatMessage> actualMessages = actualFinalMessages.getFirst();
         String actualInstruction = actualMessages.getLast().getContent();
         assertThat(actualInstruction, containsString("interactionSequence exactly to this JSON array: [\"database_gateway_execute_query\",\"database_gateway_execute_update\"]"));
         assertThat(actualInstruction, not(containsString("database_gateway_search_metadata")));
@@ -262,7 +258,6 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         Map<String, Object> completionReference = Map.of("type", "ref/prompt", "name", PROMPT_NAME);
         Map<String, String> completionContext = Map.of("database", DATABASE_NAME);
         Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
-        final ArgumentCaptor<List<Map<String, Object>>> actualTools = createToolDefinitionsCaptor();
         when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(new LLMChatCompletion("",
                 List.of(
                         new LLMToolCall("tool-1", MCPInteractionActionNames.LIST_PROMPTS, "{}"),
@@ -287,32 +282,31 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         assertThat(actual.getInteractionTrace().getFirst().getActionKind(), is(MCPInteractionActionNames.PROMPT_LIST_KIND));
         assertThat(actual.getInteractionTrace().get(1).getActionKind(), is(MCPInteractionActionNames.PROMPT_GET_KIND));
         assertThat(actual.getInteractionTrace().get(2).getActionKind(), is(MCPInteractionActionNames.COMPLETION_KIND));
-        verify(getLLMChatClient()).complete(anyList(), actualTools.capture(), eq("required"), eq(false));
         verify(getMCPInteractionClient()).listPrompts();
         verify(getMCPInteractionClient()).getPrompt(PROMPT_NAME, promptArguments);
         verify(getMCPInteractionClient()).complete(completionReference, "schema", "pub", completionContext);
-        assertThat(getToolName(actualTools.getValue().getFirst()), is(MCPInteractionActionNames.LIST_PROMPTS));
+        List<List<Map<String, Object>>> actualTools = captureRequiredToolDefinitions(1);
+        assertThat(getToolName(actualTools.getFirst().getFirst()), is(MCPInteractionActionNames.LIST_PROMPTS));
     }
     
     @Test
     void assertRunWithSearchMetadataToolDefinition() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_search_metadata"));
         LLMMCPConversationRunner actualRunner = createRunner(1);
-        ArgumentCaptor<List<Map<String, Object>>> actualTools = createToolDefinitionsCaptor();
         when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response"));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("missing_required_tool_coverage"));
-        verify(getLLMChatClient()).complete(anyList(), actualTools.capture(), eq("required"), eq(false));
-        assertThat(getToolName(actualTools.getValue().getFirst()), is("database_gateway_search_metadata"));
-        assertThat(getRequiredFields(actualTools.getValue().getFirst()), is(List.of()));
-        assertThat(getPropertyType(actualTools.getValue().getFirst(), "database"), is("string"));
-        assertThat(getPropertyType(actualTools.getValue().getFirst(), "schema"), is("string"));
-        assertThat(getPropertyType(actualTools.getValue().getFirst(), "query"), is("string"));
-        assertThat(getPropertyType(actualTools.getValue().getFirst(), "object_types"), is("array"));
-        assertThat(getNestedPropertyType(actualTools.getValue().getFirst(), "object_types", "items"), is("string"));
+        List<List<Map<String, Object>>> actualTools = captureRequiredToolDefinitions(1);
+        assertThat(getToolName(actualTools.getFirst().getFirst()), is("database_gateway_search_metadata"));
+        assertThat(getRequiredFields(actualTools.getFirst().getFirst()), is(List.of()));
+        assertThat(getPropertyType(actualTools.getFirst().getFirst(), "database"), is("string"));
+        assertThat(getPropertyType(actualTools.getFirst().getFirst(), "schema"), is("string"));
+        assertThat(getPropertyType(actualTools.getFirst().getFirst(), "query"), is("string"));
+        assertThat(getPropertyType(actualTools.getFirst().getFirst(), "object_types"), is("array"));
+        assertThat(getNestedPropertyType(actualTools.getFirst().getFirst(), "object_types", "items"), is("string"));
     }
     
     @Test
@@ -324,7 +318,6 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         Map<String, Object> searchArguments = Map.of("query", TABLE_NAME);
         Map<String, Object> readResourceArguments = Map.of("uri", tableResourceUri);
         Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
-        final ArgumentCaptor<List<Map<String, Object>>> actualTools = createToolDefinitionsCaptor();
         when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", "database_gateway_search_metadata", searchArguments, "search-response"),
                 createToolCallCompletion("tool-2", MCPInteractionActionNames.READ_RESOURCE, readResourceArguments, "resource-response"),
@@ -337,16 +330,14 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertTrue(actual.getAssertionReport().isSuccess());
-        verify(getLLMChatClient(), times(3)).complete(anyList(), actualTools.capture(), eq("required"), eq(false));
-        assertThat(getToolNames(actualTools.getAllValues().getFirst()), is(List.of("database_gateway_search_metadata")));
-        assertThat(getToolNames(actualTools.getAllValues().get(1)), is(List.of(MCPInteractionActionNames.READ_RESOURCE)));
-        assertThat(getToolNames(actualTools.getAllValues().get(2)), is(List.of("database_gateway_execute_query")));
+        List<List<Map<String, Object>>> actualTools = captureRequiredToolDefinitions(3);
+        assertThat(getToolNames(actualTools.getFirst()), is(List.of("database_gateway_search_metadata")));
+        assertThat(getToolNames(actualTools.get(1)), is(List.of(MCPInteractionActionNames.READ_RESOURCE)));
+        assertThat(getToolNames(actualTools.get(2)), is(List.of("database_gateway_execute_query")));
     }
     
     @Test
     void assertRunRejectsObjectInteractionSequence() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
-        final LLMMCPConversationRunner actualRunner = createRunner(2);
         Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         Map<String, Object> finalAnswerPayload = createFinalAnswerPayload(List.of(), 2);
         finalAnswerPayload.put("interactionSequence", List.of(Map.of("tool", "database_gateway_execute_query", "arguments", executeQueryArguments)));
@@ -356,7 +347,7 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         when(getLLMChatClient().complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 new LLMChatCompletion(JsonUtils.toJsonString(finalAnswerPayload), List.of(), "final-answer-response"));
         
-        LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
+        LLME2EArtifactBundle actual = createRunner(2).run(createScenario(List.of("database_gateway_execute_query")));
         
         assertThat(actual.getAssertionReport().getFailureType(), is("invalid_final_json"));
     }
@@ -386,8 +377,6 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
     
     @Test
     void assertRunAcceptsSchemaQualifiedQuery() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
-        final LLMMCPConversationRunner actualRunner = createRunner(2);
         Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         Map<String, Object> finalAnswerPayload = createFinalAnswerPayload(List.of("database_gateway_execute_query"), 2);
         finalAnswerPayload.put("query", "SELECT COUNT(*) AS total_orders FROM public.orders");
@@ -397,7 +386,7 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         when(getLLMChatClient().complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 new LLMChatCompletion(JsonUtils.toJsonString(finalAnswerPayload), List.of(), "final-answer-response"));
         
-        LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
+        LLME2EArtifactBundle actual = createRunner(2).run(createScenario(List.of("database_gateway_execute_query")));
         
         assertTrue(actual.getAssertionReport().isSuccess());
     }

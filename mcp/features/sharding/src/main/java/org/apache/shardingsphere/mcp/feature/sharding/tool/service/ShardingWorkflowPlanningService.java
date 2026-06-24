@@ -45,9 +45,6 @@ public final class ShardingWorkflowPlanningService {
     
     private final ShardingRuleComponentCleanupWorkflowPlanningService ruleComponentCleanupPlanningService;
     
-    /**
-     * Create sharding workflow planning service.
-     */
     public ShardingWorkflowPlanningService() {
         this(new ShardingWorkflowPlanningKernel());
     }

@@ -94,7 +94,7 @@ class FirebirdPacketCodecEngineTest {
     
     @Test
     void assertDecodeWithIncompleteHeader() {
-        final ByteBuf pendingMessage = Unpooled.wrappedBuffer(new byte[]{1, 2});
+        ByteBuf pendingMessage = Unpooled.wrappedBuffer(new byte[]{1, 2});
         getPendingMessages().add(pendingMessage);
         ByteBuf in = Unpooled.wrappedBuffer(new byte[]{3});
         List<Object> out = new LinkedList<>();
@@ -178,7 +178,7 @@ class FirebirdPacketCodecEngineTest {
     @Test
     void assertDecodeWithProcessPacketsExceptionAndPendingMessages() {
         when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenThrow(IllegalStateException.class);
-        final ByteBuf pendingMessage = Unpooled.wrappedBuffer(new byte[]{1, 2, 3, 4});
+        ByteBuf pendingMessage = Unpooled.wrappedBuffer(new byte[]{1, 2, 3, 4});
         getPendingMessages().add(pendingMessage);
         ByteBuf in = createCommandPacket(FirebirdCommandPacketType.INFO_REQUEST, 8);
         List<Object> out = new LinkedList<>();

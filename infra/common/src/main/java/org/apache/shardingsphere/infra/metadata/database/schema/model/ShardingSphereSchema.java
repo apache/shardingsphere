@@ -278,18 +278,18 @@ public final class ShardingSphereSchema {
      * @param identifierContext database identifier context
      */
     public void refreshIdentifierContext(final DatabaseIdentifierContext identifierContext) {
-        final Collection<ShardingSphereTable> tables = new LinkedList<>(tableIndex.getAll());
-        final Collection<ShardingSphereView> views = new LinkedList<>(viewIndex.getAll());
         this.identifierContext = identifierContext;
+        Collection<ShardingSphereTable> tables = new LinkedList<>(tableIndex.getAll());
         tableIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.TABLE);
         logicalTableIndex = createLogicalTableIndex(identifierContext);
-        viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
         tables.forEach(this::refreshTableIdentifierContext);
         Map<String, ShardingSphereTable> tableMap = createTableMap(tables);
         tableIndex.rebuild(tableMap);
         if (null != logicalTableIndex) {
             logicalTableIndex.rebuild(tableMap);
         }
+        Collection<ShardingSphereView> views = new LinkedList<>(viewIndex.getAll());
+        viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
         viewIndex.rebuild(createViewMap(views));
     }
     

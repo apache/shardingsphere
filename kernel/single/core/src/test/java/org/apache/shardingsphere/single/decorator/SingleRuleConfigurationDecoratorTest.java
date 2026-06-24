@@ -118,7 +118,7 @@ class SingleRuleConfigurationDecoratorTest {
     
     @Test
     void assertDecorateUsesDefaultStorageTypeWhenNoDataSourceConfigured() {
-        final DataNode dataNode = new DataNode("foo_ds", "foo_schema", "t_order");
+        DataNode dataNode = new DataNode("foo_ds", "foo_schema", "t_order");
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap(dataNode.getTableName(), Collections.singleton(dataNode));
         Collection<String> splitTables = Collections.singleton("*.foo_schema.t_order");
         Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("foo_ds", "foo_schema", "t_order"));
@@ -133,14 +133,14 @@ class SingleRuleConfigurationDecoratorTest {
     
     @Test
     void assertDecorateThrowsWhenSpecifiedTableMismatch() {
-        final DataNode dataNode = new DataNode("bar_ds", "foo_schema", "t_order");
+        DataNode dataNode = new DataNode("bar_ds", "foo_schema", "t_order");
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap(dataNode.getTableName(), Collections.singleton(dataNode));
-        Collection<String> splitTables = Arrays.asList("*.foo_schema.t_order");
+        Collection<String> splitTables = Collections.singletonList("*.foo_schema.t_order");
         Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("foo_ds", "foo_schema", "t_order"));
         when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
-        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Arrays.asList("*.foo_schema.t_order"), null);
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Collections.singletonList("*.foo_schema.t_order"), null);
         assertThrows(InvalidSingleRuleConfigurationException.class,
                 () -> decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig));
     }
@@ -199,7 +199,7 @@ class SingleRuleConfigurationDecoratorTest {
     
     @Test
     void assertDecorateLoadsSpecifiedTablesByDataSourceExpand() {
-        final DataNode dataNode = new DataNode("expand_ds", "foo_schema", "expanded_tbl");
+        DataNode dataNode = new DataNode("expand_ds", "foo_schema", "expanded_tbl");
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap(dataNode.getTableName(), Collections.singleton(dataNode));
         Collection<String> splitTables = Collections.singleton("expand_ds.*.*");
         Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("expand_ds", SingleTableConstants.ASTERISK, SingleTableConstants.ASTERISK));
@@ -215,7 +215,7 @@ class SingleRuleConfigurationDecoratorTest {
     
     @Test
     void assertDecorateSkipsSchemaExpandWhenSchemaNotMatched() {
-        final DataNode dataNode = new DataNode("schema_ds", "bar_schema", "ignored_tbl");
+        DataNode dataNode = new DataNode("schema_ds", "bar_schema", "ignored_tbl");
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap(dataNode.getTableName(), Collections.singleton(dataNode));
         when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         Collection<String> splitTables = Collections.singleton("schema_ds.foo_schema.*");
@@ -228,7 +228,7 @@ class SingleRuleConfigurationDecoratorTest {
     
     @Test
     void assertDecorateThrowsWhenSpecifiedTableNotFound() {
-        final DataNode dataNode = new DataNode("foo_ds", "foo_schema", "t_order");
+        DataNode dataNode = new DataNode("foo_ds", "foo_schema", "t_order");
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap(dataNode.getTableName(), Collections.singleton(dataNode));
         when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         Collection<String> splitTables = Collections.singleton("*.foo_schema.missing_tbl");

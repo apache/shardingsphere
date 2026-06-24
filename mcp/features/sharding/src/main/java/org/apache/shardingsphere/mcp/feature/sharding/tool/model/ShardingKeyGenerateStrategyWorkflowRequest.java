@@ -22,11 +22,6 @@ package org.apache.shardingsphere.mcp.feature.sharding.tool.model;
  */
 public final class ShardingKeyGenerateStrategyWorkflowRequest extends AbstractShardingSpecificWorkflowRequest {
     
-    /**
-     * Create sharding key generate strategy workflow request.
-     *
-     * @param workflowRequest generic sharding workflow request
-     */
     public ShardingKeyGenerateStrategyWorkflowRequest(final ShardingWorkflowRequest workflowRequest) {
         super(workflowRequest);
     }

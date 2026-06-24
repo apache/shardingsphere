@@ -30,18 +30,10 @@ public final class ShardingTableRuleWorkflowPlanningService {
     
     private final Planner planner;
     
-    /**
-     * Create sharding table rule workflow planning service.
-     */
     public ShardingTableRuleWorkflowPlanningService() {
         this(new ShardingWorkflowPlanningKernel());
     }
     
-    /**
-     * Create sharding table rule workflow planning service with delegate.
-     *
-     * @param delegate sharding workflow planning service
-     */
     public ShardingTableRuleWorkflowPlanningService(final ShardingWorkflowPlanningService delegate) {
         this(delegate::planTableRule);
     }

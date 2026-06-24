@@ -34,26 +34,11 @@ public final class WorkflowRuntimeDefinition {
     
     private final MCPWorkflowApplyArtifactValidator applyArtifactValidator;
     
-    /**
-     * Create workflow runtime definition.
-     *
-     * @param workflowKind workflow kind
-     * @param validationHandler workflow validation handler
-     * @param applySynchronizationHandler workflow apply synchronization handler
-     */
     public WorkflowRuntimeDefinition(final WorkflowKind workflowKind, final MCPWorkflowValidationHandler validationHandler,
                                      final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler) {
         this(workflowKind, validationHandler, applySynchronizationHandler, MCPWorkflowApplyArtifactValidator.NO_OP);
     }
     
-    /**
-     * Create workflow runtime definition.
-     *
-     * @param workflowKind workflow kind
-     * @param validationHandler workflow validation handler
-     * @param applySynchronizationHandler workflow apply synchronization handler
-     * @param applyArtifactValidator workflow apply artifact validator
-     */
     public WorkflowRuntimeDefinition(final WorkflowKind workflowKind, final MCPWorkflowValidationHandler validationHandler,
                                      final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler, final MCPWorkflowApplyArtifactValidator applyArtifactValidator) {
         this.workflowKind = workflowKind;

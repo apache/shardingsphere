@@ -112,7 +112,7 @@ public final class PipelineJobDataSourcePreparer {
      * @throws SQLException SQL exception
      */
     public void prepareTargetTables(final PrepareTargetTablesParameter param) throws SQLException {
-        final long startTimeMillis = System.currentTimeMillis();
+        long startTimeMillis = System.currentTimeMillis();
         PipelineDataSourceManager dataSourceManager = param.getDataSourceManager();
         for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
             try (

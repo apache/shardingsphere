@@ -126,7 +126,6 @@ class ConditionValueBetweenOperatorGeneratorTest {
     void assertGenerateNowConditionValue() {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, 1);
-        final Date after = calendar.getTime();
         ExpressionSegment betweenSegment = new CommonExpressionSegment(0, 0, "now()");
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
         BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
@@ -135,6 +134,7 @@ class ConditionValueBetweenOperatorGeneratorTest {
         RangeShardingConditionValue<Date> rangeShardingConditionValue = (RangeShardingConditionValue<Date>) shardingConditionValue.get();
         assertThat(rangeShardingConditionValue.getColumnName(), is(column.getName()));
         assertThat(rangeShardingConditionValue.getTableName(), is(column.getTableName()));
+        Date after = calendar.getTime();
         assertTrue(rangeShardingConditionValue.getValueRange().upperEndpoint().before(after));
         assertTrue(rangeShardingConditionValue.getParameterMarkerIndexes().isEmpty());
     }
