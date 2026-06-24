@@ -782,12 +782,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((BooleanLiteralValue) astNode).getValue());
         }
         if (astNode instanceof ParameterMarkerValue) {
-            ParameterMarkerValue parameterMarker = (ParameterMarkerValue) astNode;
-            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(),
-                    parameterMarker.getValue(), parameterMarker.getType());
-            globalParameterMarkerSegments.add(segment);
-            statementParameterMarkerSegments.add(segment);
-            return segment;
+            return createParameterMarkerExpressionSegment((ParameterMarkerValue) astNode, context.start.getStartIndex(), context.stop.getStopIndex());
         }
         if (astNode instanceof SubquerySegment) {
             return new SubqueryExpressionSegment((SubquerySegment) astNode);
@@ -806,11 +801,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return new SubquerySegment(startIndex, stopIndex, (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
         }
         if (null != ctx.parameterMarker()) {
-            ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
-            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
-            globalParameterMarkerSegments.add(segment);
-            statementParameterMarkerSegments.add(segment);
-            return segment;
+            return createParameterMarkerExpressionSegment(ctx.parameterMarker());
         }
         if (null != ctx.literals()) {
             return SQLUtils.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
@@ -837,6 +828,17 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             }
         }
         return visitRemainSimpleExpr(ctx, startIndex, stopIndex);
+    }
+    
+    protected ParameterMarkerExpressionSegment createParameterMarkerExpressionSegment(final ParameterMarkerContext ctx) {
+        return createParameterMarkerExpressionSegment((ParameterMarkerValue) visit(ctx), ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+    }
+    
+    private ParameterMarkerExpressionSegment createParameterMarkerExpressionSegment(final ParameterMarkerValue parameterMarker, final int startIndex, final int stopIndex) {
+        ParameterMarkerExpressionSegment result = new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
+        globalParameterMarkerSegments.add(result);
+        statementParameterMarkerSegments.add(result);
+        return result;
     }
     
     private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx, final int startIndex, final int stopIndex) {

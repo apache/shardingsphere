@@ -27,10 +27,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,10 +50,11 @@ public final class OnDuplicateUpdateContext {
     
     private final List<ColumnSegment> columns;
     
-    public OnDuplicateUpdateContext(final Collection<ColumnAssignmentSegment> assignments, final List<Object> params, final int parametersOffset) {
+    public OnDuplicateUpdateContext(final Collection<ColumnAssignmentSegment> assignments, final List<Object> params, final int parametersOffset,
+                                    final Collection<ParameterMarkerSegment> parameterMarkers) {
         List<ExpressionSegment> expressionSegments = assignments.stream().map(ColumnAssignmentSegment::getValue).collect(Collectors.toList());
         valueExpressions = getValueExpressions(expressionSegments);
-        parameterMarkerExpressions = ExpressionExtractor.getParameterMarkerExpressions(expressionSegments);
+        parameterMarkerExpressions = getParameterMarkerExpressions(expressionSegments, assignments, parameterMarkers);
         parameterCount = parameterMarkerExpressions.size();
         parameters = getParameters(params, parametersOffset);
         columns = assignments.stream().map(each -> each.getColumns().get(0)).collect(Collectors.toList());
@@ -61,6 +64,39 @@ public final class OnDuplicateUpdateContext {
         List<ExpressionSegment> result = new ArrayList<>(assignments.size());
         result.addAll(assignments);
         return result;
+    }
+    
+    private List<ParameterMarkerExpressionSegment> getParameterMarkerExpressions(final Collection<ExpressionSegment> expressionSegments,
+                                                                                 final Collection<ColumnAssignmentSegment> assignments,
+                                                                                 final Collection<ParameterMarkerSegment> parameterMarkers) {
+        List<ParameterMarkerExpressionSegment> result = ExpressionExtractor.getParameterMarkerExpressions(expressionSegments);
+        for (ParameterMarkerSegment each : parameterMarkers) {
+            if (isInAssignments(each, assignments) && !containsParameterMarker(result, each)) {
+                result.add(each instanceof ParameterMarkerExpressionSegment
+                        ? (ParameterMarkerExpressionSegment) each
+                        : new ParameterMarkerExpressionSegment(each.getStartIndex(), each.getStopIndex(), each.getParameterIndex()));
+            }
+        }
+        result.sort(Comparator.comparingInt(ParameterMarkerExpressionSegment::getParameterMarkerIndex));
+        return result;
+    }
+    
+    private boolean isInAssignments(final ParameterMarkerSegment parameterMarkerSegment, final Collection<ColumnAssignmentSegment> assignments) {
+        for (ColumnAssignmentSegment each : assignments) {
+            if (each.getStartIndex() <= parameterMarkerSegment.getStartIndex() && each.getStopIndex() >= parameterMarkerSegment.getStopIndex()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsParameterMarker(final Collection<ParameterMarkerExpressionSegment> parameterMarkerExpressions, final ParameterMarkerSegment parameterMarkerSegment) {
+        for (ParameterMarkerExpressionSegment each : parameterMarkerExpressions) {
+            if (each.getParameterMarkerIndex() == parameterMarkerSegment.getParameterIndex()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private List<Object> getParameters(final List<Object> params, final int paramsOffset) {
