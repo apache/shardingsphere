@@ -79,6 +79,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
    - Logs and comments must be in English.
    - Comments can only contain JAVADOC, TODO and FIXME.
    - Public classes and methods must have JAVADOC. JAVADOC for user-facing APIs and SPIs needs to be clear and comprehensive. Other classes, methods, and methods overriding parent classes do not need JAVADOC.
+   - Constructor JAVADOC must not be added by default. It is allowed only when it documents non-obvious behavior, compatibility constraints, side effects, or public API semantics not expressed by the class contract.
 
 ## Unit Testing Standards
 

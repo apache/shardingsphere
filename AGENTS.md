@@ -34,10 +34,18 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       If neither private nor public fits, pause before coding and explain why.
     - Every new public production type must have direct, focused tests.
       Broad workflow tests do not replace public contract tests unless they explicitly exercise that public type's behavior.
+    - Do not add constructors, overloads, or wider constructor visibility to production code solely for tests.
+      Production constructors must represent production-supported construction paths.
+      Prefer testing through existing public constructors, factories, builders, SPI loaders, or production APIs; use mocks or fixtures when construction is incidental to the behavior under test.
+      If a test-only construction path seems necessary, pause before coding and explain why the production design should change.
     - New internal abstractions must reduce cognitive complexity instead of merely wrapping branches in more types.
       For simple internal two-path flows, avoid marker interfaces, multi-type result hierarchies, or extra DTO-style helpers.
       Add them only when they define a stable boundary, keep owner classes readable, or remove meaningful duplicated logic.
     - Delete unused code; when changing functionality, remove legacy compatibility shims.
+    - For production guard failures such as invalid state, invalid arguments, missing resources, or unsupported operations, prefer `ShardingSpherePreconditions` with lazy exception suppliers
+      over manual `if (...) { throw ...; }` guards.
+      Use manual throws only when the target module cannot depend on `infra/exception`, the check lives inside `ShardingSpherePreconditions` itself,
+      the surrounding API requires a different control flow, or the precondition form would obscure the semantics; record the reason in the plan or final response.
     - Do not add or keep Javadocs on methods that only override or implement a documented parent method.
       Keep the public contract on the declaring API, SPI, or interface.
       An overriding method should add Javadocs only when it documents implementation-specific behavior, stricter preconditions, side effects, exceptions, compatibility notes,
@@ -45,17 +53,28 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       When cleaning redundant override Javadocs, change comments only and verify no public contract information is lost.
     - Keep variable declarations adjacent to first use to satisfy Checkstyle VariableDeclarationUsageDistance; do not mark local variables as `final`.
     - Single-use local variables must be inlined by default; keep a local variable only when it is reused (for stubbing/verification/assertions) or materially improves readability.
-    - Do not add explicit defensive immutable collection copies in constructors or method return values by default.
-      Avoid `List.copyOf`, `Set.copyOf`, `Map.copyOf`, `Collections.unmodifiableList`, `Collections.unmodifiableSet`, `Collections.unmodifiableMap`,
+    - For collection declarations in production and test code, use the least-specific type that expresses the required contract.
+      Prefer `Collection` for parameters, fields, local variables, and internal return values when the code only iterates, checks emptiness or size,
+      or uses common collection operations.
+      Use `List` only when list-specific semantics or APIs are required, such as positional access, stable ordered contract, duplicate-preserving list contract,
+      or an external API or public contract that requires `List`.
+      Use `Set` only when uniqueness, set semantics, set-specific APIs, or an external API or public contract requires `Set`.
+      Do not declare implementation types such as `LinkedList`, `ArrayList`, or `HashSet` unless implementation-specific APIs are required.
+      Choose concrete implementations according to `CODE_OF_CONDUCT.md`.
+    - Do not add defensive collection copies, concrete collection re-wrapping, or immutable wrappers by default.
+      Avoid patterns such as `Collections.unmodifiableList(new LinkedList<>(values))`, `Collections.unmodifiableSet(new LinkedHashSet<>(values))`,
+      `new LinkedList<>(values)`, `new ArrayList<>(values)`, `List.copyOf`, `Set.copyOf`, `Map.copyOf`,
+      `Collections.unmodifiableList`, `Collections.unmodifiableSet`, `Collections.unmodifiableMap`,
       `Collectors.toUnmodifiableList`, `Collectors.toUnmodifiableSet`, `Collectors.toUnmodifiableMap`,
       Guava `ImmutableList` / `ImmutableSet` / `ImmutableMap`, or similar explicit immutable copy/wrapper APIs
       when the only reason is defensive programming.
-    - Ordinary collection literals or stream collection results are allowed when they express direct data construction or transformation.
+    - Ordinary collection literals or direct transformation results are allowed when they express data construction or transformation.
       Do not flag `List.of`, `Set.of`, `Map.of`, or `Stream.toList()` by default, and do not replace `Stream.toList()` with a mutable collector
       unless the code has a concrete mutability requirement.
-    - Explicit immutable collection copies or wrappers are allowed only with a concrete semantic reason, such as enforcing a documented public API contract,
-      preserving a snapshot across shared ownership or asynchronous execution, protecting cached/global state from mutation, or satisfying an external API requirement.
-      Record the reason in the plan, review note, or nearby code rationale.
+    - Explicit collection copies or wrappers are allowed only with a concrete semantic reason, such as enforcing a documented public API contract,
+      preserving a snapshot across shared ownership or asynchronous execution, protecting cached/global state from mutation,
+      isolating later local mutation, or satisfying an external API requirement.
+      Record the reason in the plan, review note, final response, or nearby code rationale.
 - **Complete Implementation**: no MVPs/placeholders/TODOs—deliver fully runnable solutions.
 
 ### Performance Standards
