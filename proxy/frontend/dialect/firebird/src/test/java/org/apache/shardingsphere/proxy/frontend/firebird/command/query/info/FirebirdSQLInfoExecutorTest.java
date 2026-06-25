@@ -61,6 +61,7 @@ class FirebirdSQLInfoExecutorTest {
     @Test
     void assertExecute() {
         when(packet.getInfoItems()).thenReturn(Collections.emptyList());
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         FirebirdSQLInfoExecutor executor = new FirebirdSQLInfoExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
